@@ -65,6 +65,11 @@ graph TD
 │   └── backend-api/         # NestJS 11 + @nestjs/cqrs + Prisma + BullMQ + MinIO/S3
 ├── packages/
 │   └── shared/              # Shared TypeScript package (Contracts, Zod DTOs, Enums)
+├── .agents/
+│   ├── rules/               # Architectural agent rules
+│   ├── skills/              # Agent skills
+│   ├── scripts/             # Lifecycle automation scripts
+│   └── hooks.json           # Agent lifecycle hooks (auto-formatting)
 ├── docker-compose.yml       # Local infrastructure: PostgreSQL 16, Redis 7, MinIO
 ├── pnpm-workspace.yaml      # Monorepo workspaces definition
 ├── turbo.json               # Turborepo pipeline orchestration
@@ -232,3 +237,17 @@ pnpm --filter @smartfeed/desktop tauri:build
    - Client requests presigned URL via `POST /api/storage/presigned-url`.
    - `GeneratePresignedUploadUrlHandler` generates S3 PUT URL via `@aws-sdk/s3-request-presigner`.
    - Client uploads binary asset directly to MinIO / Cloudflare R2 without burdening the API server.
+
+---
+
+## 📝 Правила актуалізації документації (Documentation Maintenance Rules)
+
+Будь-які зміни в архітектурі проєкту (нові модулі, зміна CQRS-потоків, Prisma-схеми, спільних контрактів `@smartfeed/shared`, нативних Tauri-команд, портів чи інфраструктури) **обов'язково** супроводжуються синхронним оновленням документації:
+
+1. **Головний `README.md`**: актуалізація Mermaid-діаграм архітектури, дерева модулів, опису CQRS-потоків, таблиці портів та списку CLI команд.
+2. **Глобальні правила для AI-агентів**: оновлення [AGENTS.md](file:///Users/oleg/AQA/SmartFeedStudio/AGENTS.md) та [.agents/rules/rules.md](file:///Users/oleg/AQA/SmartFeedStudio/.agents/rules/rules.md).
+3. **Локальні інструкції модулів**:
+   - [services/backend-api/AGENTS.md](file:///Users/oleg/AQA/SmartFeedStudio/services/backend-api/AGENTS.md) — для бекенд CQRS модулів, DTO, команд, запитів, подій та БД.
+   - [apps/admin-portal/AGENTS.md](file:///Users/oleg/AQA/SmartFeedStudio/apps/admin-portal/AGENTS.md) — для Next.js сторінок, маршрутів, shadcn/ui компонентів.
+   - [apps/desktop/AGENTS.md](file:///Users/oleg/AQA/SmartFeedStudio/apps/desktop/AGENTS.md) — для Tauri v2 Rust команд, SQLite/SQLCipher кешу та OS Keychain.
+   - [packages/shared/AGENTS.md](file:///Users/oleg/AQA/SmartFeedStudio/packages/shared/AGENTS.md) — для спільних Zod схем, DTO, Enums та CQRS контрактів.

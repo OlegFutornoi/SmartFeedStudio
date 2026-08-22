@@ -38,7 +38,10 @@ description: Core project information, architecture, tech stack, and coding stan
 ├── packages/
 │   └── shared/              # @smartfeed/shared (Zod schemas, CQRS contracts, Enums)
 ├── .agents/
-│   └── rules/rules.md       # Core architectural guidelines (Always active)
+│   ├── rules/rules.md       # Core architectural guidelines (Always active)
+│   ├── skills/              # Installed agent skills
+│   ├── scripts/             # Lifecycle hook automation scripts
+│   └── hooks.json           # Agent lifecycle hooks (auto-formatting on file edit)
 ├── docker-compose.yml       # Local infrastructure: PostgreSQL 16, Redis 7, MinIO
 ├── pnpm-workspace.yaml      # Monorepo workspaces definition
 ├── turbo.json               # Turborepo task pipeline config
@@ -93,6 +96,17 @@ To eliminate circular dependencies and adhere to Single Responsibility Principle
 - **`License`**: `id`, `userId`, `licenseKey`, `planType` (`FREE`, `PRO`, `ENTERPRISE`), `canCloudBackup`, `maxXmlLimit`, `aiCredits`, `isActive`, `expiresAt`.
 - **`Snapshot`**: `id`, `userId`, `snapshotName`, `s3Key`, `sizeBytes`, `createdAt`.
 - **`ProductImage`**: `id`, `userId`, `originalUrl`, `cloudUrl`, `s3Key`, `createdAt`.
+
+---
+
+### 4. Mandatory Documentation & Architecture Synchronization
+
+- **Rule**: Whenever any architectural change occurs (new modules, CQRS commands/queries/events, DB schema changes in `schema.prisma`, shared DTOs/enums in `@smartfeed/shared`, Tauri commands/services, API endpoints, or ports):
+  - **Always update documentation immediately**:
+    1. Root [AGENTS.md](file:///Users/oleg/AQA/SmartFeedStudio/AGENTS.md) and [.agents/rules/rules.md](file:///Users/oleg/AQA/SmartFeedStudio/.agents/rules/rules.md)
+    2. Sub-project guides ([services/backend-api/AGENTS.md](file:///Users/oleg/AQA/SmartFeedStudio/services/backend-api/AGENTS.md), [apps/admin-portal/AGENTS.md](file:///Users/oleg/AQA/SmartFeedStudio/apps/admin-portal/AGENTS.md), [apps/desktop/AGENTS.md](file:///Users/oleg/AQA/SmartFeedStudio/apps/desktop/AGENTS.md), [packages/shared/AGENTS.md](file:///Users/oleg/AQA/SmartFeedStudio/packages/shared/AGENTS.md))
+    3. Root [README.md](file:///Users/oleg/AQA/SmartFeedStudio/README.md) (including Mermaid architecture diagrams, folder trees, and CQRS flow steps).
+  - Outdated or drifting documentation is strictly prohibited.
 
 ---
 

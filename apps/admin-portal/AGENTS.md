@@ -61,6 +61,8 @@ apps/admin-portal/
    - Always import from `lucide-react` for visual consistency.
 4. **Shared Types**:
    - Import DTOs, Enums (`Role`, `PlanType`), and response contracts directly from `@smartfeed/shared`.
+5. **Documentation Synchronization**:
+   - When introducing new routes, layout patterns, UI modules, or shared dependencies, keep this [AGENTS.md](file:///Users/oleg/AQA/SmartFeedStudio/apps/admin-portal/AGENTS.md), root [AGENTS.md](file:///Users/oleg/AQA/SmartFeedStudio/AGENTS.md), [.agents/rules/rules.md](file:///Users/oleg/AQA/SmartFeedStudio/.agents/rules/rules.md), and root [README.md](file:///Users/oleg/AQA/SmartFeedStudio/README.md) synchronized.
 
 ---
 

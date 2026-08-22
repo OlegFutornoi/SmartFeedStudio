@@ -81,6 +81,9 @@ services/backend-api/
 4. **`StorageModule`**:
    - `GeneratePresignedUploadUrlHandler` signs direct upload URLs with S3 client.
 
+5. **Documentation Synchronization**:
+   - When adding new modules, commands, queries, events, DB models in `schema.prisma`, or API endpoints, immediately update this guide ([services/backend-api/AGENTS.md](file:///Users/oleg/AQA/SmartFeedStudio/services/backend-api/AGENTS.md)), root [AGENTS.md](file:///Users/oleg/AQA/SmartFeedStudio/AGENTS.md), [.agents/rules/rules.md](file:///Users/oleg/AQA/SmartFeedStudio/.agents/rules/rules.md), and root [README.md](file:///Users/oleg/AQA/SmartFeedStudio/README.md).
+
 ---
 
 ## ⚡ Essential Commands

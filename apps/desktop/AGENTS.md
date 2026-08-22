@@ -58,6 +58,9 @@ apps/desktop/
 3. **Offline Catalog Caching (`src/services/sqlite.ts`)**:
    - Stores catalog products locally in encrypted SQLite for instantaneous search and offline editing.
 
+4. **Documentation Synchronization**:
+   - When modifying Tauri Rust commands (`src-tauri/src/lib.rs`), local storage/SQLite schema, Keychain integration, or frontend service architecture, update this [AGENTS.md](file:///Users/oleg/AQA/SmartFeedStudio/apps/desktop/AGENTS.md), root [AGENTS.md](file:///Users/oleg/AQA/SmartFeedStudio/AGENTS.md), [.agents/rules/rules.md](file:///Users/oleg/AQA/SmartFeedStudio/.agents/rules/rules.md), and root [README.md](file:///Users/oleg/AQA/SmartFeedStudio/README.md).
+
 ---
 
 ## ⚡ Development & Build Commands
