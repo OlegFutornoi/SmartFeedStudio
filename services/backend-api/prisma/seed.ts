@@ -1,4 +1,5 @@
-import { PrismaClient, Role, PlanType } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
+import { Role, PlanType } from '@smartfeed/shared';
 import * as bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
