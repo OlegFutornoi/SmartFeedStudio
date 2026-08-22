@@ -1,0 +1,82 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+  USER
+}
+
+enum PlanType {
+  FREE
+  PRO
+  ENTERPRISE
+}
+
+model User {
+  id           String         @id @default(uuid())
+  email        String         @unique
+  passwordHash String
+  fullName     String?
+  role         Role           @default(USER)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  licenses     License[]
+  snapshots    Snapshot[]
+  images       ProductImage[]
+
+  @@map("users")
+}
+
+model License {
+  id             String    @id @default(uuid())
+  userId         String
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  licenseKey     String    @unique
+  planType       PlanType  @default(FREE)
+  canCloudBackup Boolean   @default(false)
+  maxXmlLimit    Int       @default(1000)
+  aiCredits      Int       @default(50)
+  isActive       Boolean   @default(true)
+  expiresAt      DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("licenses")
+}
+
+model Snapshot {
+  id           String   @id @default(uuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  snapshotName String
+  s3Key        String
+  sizeBytes    BigInt
+  createdAt    DateTime @default(now())
+
+  @@index([userId])
+  @@map("snapshots")
+}
+
+model ProductImage {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  originalUrl String
+  cloudUrl    String
+  s3Key       String
+  createdAt   DateTime @default(now())
+
+  @@index([userId])
+  @@map("product_images")
+}

@@ -1,0 +1,23 @@
+[package]
+name = "smartfeed-desktop"
+version = "0.1.0"
+description = "SmartFeed Studio Desktop Client"
+authors = ["SmartFeed Studio Team"]
+edition = "2021"
+
+[lib]
+name = "smartfeed_desktop_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2.0.0", features = [] }
+
+[dependencies]
+tauri = { version = "2.0.0", features = [] }
+tauri-plugin-shell = "2.0.0"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tokio = { version = "1", features = ["full"] }
+rusqlite = { version = "0.31", features = ["bundled", "sqlcipher"] }
+keyring = "2.1"
+reqwest = { version = "0.11", features = ["json", "stream"] }

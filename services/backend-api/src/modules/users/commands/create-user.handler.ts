@@ -1,0 +1,62 @@
+import { CommandHandler, EventBus, ICommandHandler } from '@nestjs/cqrs';
+import { ConflictException, Injectable, Logger } from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
+import { Role, UserProfile } from '@smartfeed/shared';
+import { PrismaService } from '../../../prisma/prisma.service';
+import { CreateUserCommand } from './create-user.command';
+import { UserCreatedEvent } from '../events/user-created.event';
+
+@Injectable()
+@CommandHandler(CreateUserCommand)
+export class CreateUserHandler implements ICommandHandler<CreateUserCommand, UserProfile> {
+  private readonly logger = new Logger(CreateUserHandler.name);
+
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly eventBus: EventBus,
+  ) {}
+
+  async execute(command: CreateUserCommand): Promise<UserProfile> {
+    const { email, password, fullName, role } = command;
+    const normalizedEmail = email.toLowerCase().trim();
+
+    // Check if user already exists
+    const existingUser = await this.prisma.user.findUnique({
+      where: { email: normalizedEmail },
+    });
+
+    if (existingUser) {
+      throw new ConflictException(`User with email "${normalizedEmail}" already exists`);
+    }
+
+    // Hash password with bcrypt
+    const saltRounds = 10;
+    const passwordHash = await bcrypt.hash(password, saltRounds);
+
+    // Persist user in DB
+    const user = await this.prisma.user.create({
+      data: {
+        email: normalizedEmail,
+        passwordHash,
+        fullName: fullName?.trim() || null,
+        role: role || Role.USER,
+      },
+    });
+
+    this.logger.log(`User created: id=${user.id}, email=${user.email}, role=${user.role}`);
+
+    // Publish UserCreatedEvent to EventBus
+    this.eventBus.publish(
+      new UserCreatedEvent(user.id, user.email, user.fullName, user.role as Role),
+    );
+
+    return {
+      id: user.id,
+      email: user.email,
+      fullName: user.fullName,
+      role: user.role as Role,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    };
+  }
+}
