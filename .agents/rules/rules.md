@@ -113,6 +113,14 @@ To eliminate circular dependencies and adhere to Single Responsibility Principle
 
 ---
 
+### 5. Git Commit & Push Policy (Explicit User Trigger Only)
+
+- **Rule**: The agent must **NEVER** automatically perform `git commit` or `git push` immediately after making changes or fixes.
+- All changes must be tested and verified locally, and presented to the user.
+- Staging, committing, and pushing must occur **strictly** upon the user's explicit request (e.g., `/git-commit`, `/commit`, "вивантаж", "закоміть").
+
+---
+
 ## ⚡ Key Terminal Commands
 
 - **Start Infrastructure**: `pnpm docker:up` (Postgres: 5432, Redis: 6379, MinIO: 9000/9001)

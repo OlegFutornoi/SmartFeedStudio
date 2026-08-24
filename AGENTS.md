@@ -64,6 +64,11 @@ SmartFeed Studio (Monorepo root)
      - Root [README.md](file:///Users/oleg/AQA/SmartFeedStudio/README.md) (Mermaid architecture diagrams, folder trees, CQRS flow references, and command cheat sheets)
    - Never leave documentation out of sync with actual code implementations.
 
+5. **Git Commit & Push Policy (Explicit User Trigger Only)**:
+   - **NEVER** automatically perform `git commit` or `git push` immediately after making changes.
+   - All code edits must be prepared, formatted, and verified locally first.
+   - You MUST wait for the USER's explicit command (e.g., `/git-commit`, `/commit`, "вивантаж", "закоміть") before staging, committing, or pushing to remote repositories.
+
 ---
 
 ## ⚡ Essential Commands Cheat Sheet
