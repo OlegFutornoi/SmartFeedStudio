@@ -71,5 +71,5 @@ jobs:
             - **macOS**: `.dmg` (Apple Silicon & Intel)
             - **Windows**: `.msi` / `.exe` installer
             - **Linux**: `.deb` / `.AppImage`
-          releaseDraft: true
+          releaseDraft: false
           prerelease: false
