@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="50%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#090d16"/>
+    </linearGradient>
+    <linearGradient id="primary" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="50%" stop-color="#6366f1"/>
+      <stop offset="100%" stop-color="#a855f7"/>
+    </linearGradient>
+    <linearGradient id="glow" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#a855f7" stop-opacity="0.1"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="16" stdDeviation="24" flood-color="#6366f1" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+  
+  <!-- Rounded App Icon Background -->
+  <rect width="1024" height="1024" rx="224" fill="url(#bg)"/>
+  <rect width="1016" height="1016" x="4" y="4" rx="220" fill="none" stroke="url(#primary)" stroke-width="8" stroke-opacity="0.4"/>
+  
+  <!-- Dynamic Feed Symbol & Studio Node Graph -->
+  <g filter="url(#shadow)" transform="translate(162, 162)">
+    <!-- Base Glow -->
+    <circle cx="350" cy="350" r="300" fill="url(#glow)" filter="blur(40px)"/>
+    
+    <!-- Feed Wave 1 -->
+    <path d="M120 480 C120 300 260 160 440 160" fill="none" stroke="url(#primary)" stroke-width="52" stroke-linecap="round"/>
+    
+    <!-- Feed Wave 2 -->
+    <path d="M120 340 C120 220 220 120 340 120" fill="none" stroke="url(#primary)" stroke-width="52" stroke-linecap="round"/>
+    
+    <!-- Central Feed Dot / Core Hub -->
+    <circle cx="150" cy="550" r="70" fill="url(#primary)"/>
+    
+    <!-- Product Catalog Matrix Hex Grid -->
+    <polygon points="460,260 560,200 660,260 660,380 560,440 460,380" fill="#1e293b" stroke="url(#primary)" stroke-width="16"/>
+    <polygon points="360,430 460,370 560,430 560,550 460,610 360,550" fill="#0f172a" stroke="url(#primary)" stroke-width="16"/>
+    <polygon points="560,430 660,370 760,430 760,550 660,610 560,550" fill="#1e293b" stroke="url(#primary)" stroke-width="16"/>
+    
+    <!-- AI Sparkle Core -->
+    <path d="M560 280 Q560 320 600 320 Q560 320 560 360 Q560 320 520 320 Q560 320 560 280 Z" fill="#38bdf8"/>
+    <path d="M460 450 Q460 490 500 490 Q460 490 460 530 Q460 490 420 490 Q460 490 460 450 Z" fill="#a855f7"/>
+  </g>
+</svg>
