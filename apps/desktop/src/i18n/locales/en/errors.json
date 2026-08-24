@@ -1,0 +1,13 @@
+{
+  "invalidCredentials": "Invalid email or password",
+  "userAlreadyExists": "User with this email already exists",
+  "invalidEmail": "Invalid email format",
+  "passwordTooShort": "Password must be at least 8 characters long",
+  "passwordsMismatch": "Passwords do not match",
+  "fillAllFields": "Please fill in all required fields",
+  "unauthorized": "Session expired. Please log in again",
+  "serverError": "Server error. Please try again later",
+  "networkError": "Network error. Unable to connect to server",
+  "unknownError": "An unexpected error occurred",
+  "invalidToken": "Invalid authorization token"
+}

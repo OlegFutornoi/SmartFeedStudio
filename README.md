@@ -173,7 +173,28 @@ pnpm prisma:studio
 
 ---
 
-### 5. 🛡 Контроль якості, лінтинг та форматування
+### 5. 🧪 E2E Тестування (Playwright)
+
+```bash
+# Запустити Playwright E2E тести бекенду (auth.e2e-spec.ts)
+pnpm --filter @smartfeed/backend-api test:e2e
+
+# Запустити Playwright E2E тести десктоп-клієнта (Headless CLI)
+pnpm test:desktop
+# або: pnpm --filter @smartfeed/desktop test:e2e
+
+# Запустити тести десктоп-клієнта у відкритому вікні браузера (Headed Mode)
+pnpm test:desktop:headed
+# або: pnpm --filter @smartfeed/desktop test:e2e:headed
+
+# Запустити інтерактивний Playwright UI Mode (Time-travel, Inspector, Traces)
+pnpm test:desktop:ui
+# або: pnpm --filter @smartfeed/desktop test:e2e:ui
+```
+
+---
+
+### 6. 🛡 Контроль якості, лінтинг та форматування
 
 ```bash
 # Запустити перевірку ESLint для всього репозиторію
@@ -194,7 +215,7 @@ pnpm lint-staged
 
 ---
 
-### 6. 🖥 Нативний десктоп-клієнт Tauri v2 (Rust)
+### 7. 🖥 Нативний десктоп-клієнт Tauri v2 (Rust)
 
 ```bash
 # Запустити нативний десктопний додаток у режимі розробки з гарячим перезавантаженням

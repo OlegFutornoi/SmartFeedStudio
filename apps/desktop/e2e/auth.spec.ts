@@ -21,7 +21,7 @@ test.describe('Desktop App — Авторизація, Реєстрація, М�
     await expect(page.getByTestId('register-link')).toBeVisible();
   });
 
-  test('неуспішна авторизація: введення невірних даних та перевірка появи повідомлення про помилку', async ({
+  test('неуспішна авторизація: введення невірних даних та локалізований вивід помилки (UA & EN)', async ({
     page,
   }) => {
     // Mock backend API 401 response for invalid credentials
@@ -40,14 +40,18 @@ test.describe('Desktop App — Авторизація, Реєстрація, М�
     await page.goto('/auth/login');
     await expect(page.getByTestId('login-page')).toBeVisible();
 
-    // Fill incorrect login details
+    // Fill incorrect login details in Ukrainian
     await page.getByTestId('email-input').fill('wrong@user.com');
     await page.getByTestId('password-input').fill('WrongPass123!');
     await page.getByTestId('login-button').click();
 
-    // Verify error alert appears with descriptive message
+    // Verify error alert appears with localized Ukrainian message
     await expect(page.getByTestId('error-alert')).toBeVisible();
-    await expect(page.getByTestId('error-message')).toContainText('Invalid email or password');
+    await expect(page.getByTestId('error-message')).toHaveText('Невірний email або пароль');
+
+    // Switch to English and verify error is translated to English
+    await page.getByTestId('language-toggle').click();
+    await expect(page.getByTestId('error-message')).toHaveText('Invalid email or password');
 
     // Verify user stays on login page
     await expect(page.getByTestId('login-page')).toBeVisible();

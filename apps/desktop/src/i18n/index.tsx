@@ -13,12 +13,16 @@ const localeModules: Record<Language, Record<Namespace, () => Promise<Translatio
       import('./locales/uk/common.json').then((m) => (m.default || m) as TranslationDict),
     auth: () => import('./locales/uk/auth.json').then((m) => (m.default || m) as TranslationDict),
     home: () => import('./locales/uk/home.json').then((m) => (m.default || m) as TranslationDict),
+    errors: () =>
+      import('./locales/uk/errors.json').then((m) => (m.default || m) as TranslationDict),
   },
   en: {
     common: () =>
       import('./locales/en/common.json').then((m) => (m.default || m) as TranslationDict),
     auth: () => import('./locales/en/auth.json').then((m) => (m.default || m) as TranslationDict),
     home: () => import('./locales/en/home.json').then((m) => (m.default || m) as TranslationDict),
+    errors: () =>
+      import('./locales/en/errors.json').then((m) => (m.default || m) as TranslationDict),
   },
 };
 
@@ -35,7 +39,7 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   // Active namespaces registered by mounted components
-  const activeNamespacesRef = useRef<Set<Namespace>>(new Set(['common']));
+  const activeNamespacesRef = useRef<Set<Namespace>>(new Set(['common', 'errors']));
 
   const loadNamespace = useCallback(
     async (ns: Namespace, lang = language) => {
@@ -101,9 +105,10 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
     [cache],
   );
 
-  // Initial load of 'common' namespace
+  // Initial load of 'common' and 'errors' namespaces
   useEffect(() => {
     loadNamespace('common', language);
+    loadNamespace('errors', language);
   }, [language, loadNamespace]);
 
   // Translation lookup function
@@ -112,7 +117,7 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
       // Search in all loaded namespaces for current language
       let foundText: string | undefined;
 
-      // Check if key is prefixed with namespace like "auth.loginTitle" or direct "loginTitle"
+      // Check if key is prefixed with namespace like "errors.invalidCredentials" or direct "invalidCredentials"
       const parts = key.split('.');
       if (parts.length === 2) {
         const [ns, k] = parts;
@@ -188,4 +193,54 @@ export function useTranslation(requiredNamespaces?: Namespace | Namespace[]) {
     setLanguage,
     isLoading,
   };
+}
+
+/**
+ * Utility helper to map any error (ApiError, Error, string) to localized text.
+ */
+export function getErrorMessage(error: unknown, t: (key: string) => string): string {
+  if (!error) return '';
+
+  const rawMessage = error instanceof Error ? error.message : String(error);
+
+  // Common backend error message mappings
+  if (
+    rawMessage.includes('Invalid email or password') ||
+    rawMessage.includes('Unauthorized') ||
+    rawMessage.includes('401')
+  ) {
+    return t('errors.invalidCredentials');
+  }
+
+  if (rawMessage.includes('already exists') || rawMessage.includes('409')) {
+    return t('errors.userAlreadyExists');
+  }
+
+  if (rawMessage.includes('email must be an email') || rawMessage.includes('invalid email')) {
+    return t('errors.invalidEmail');
+  }
+
+  if (rawMessage.includes('password must be longer') || rawMessage.includes('at least 8')) {
+    return t('errors.passwordTooShort');
+  }
+
+  if (
+    rawMessage.includes('Failed to fetch') ||
+    rawMessage.includes('NetworkError') ||
+    rawMessage.includes('ECONNREFUSED')
+  ) {
+    return t('errors.networkError');
+  }
+
+  if (rawMessage.includes('500') || rawMessage.includes('Internal server error')) {
+    return t('errors.serverError');
+  }
+
+  // Try direct key lookup in errors namespace
+  const translated = t(`errors.${rawMessage}`);
+  if (translated !== `errors.${rawMessage}`) {
+    return translated;
+  }
+
+  return rawMessage;
 }

@@ -79,13 +79,19 @@ apps/desktop/
 ### 📊 E2E Test Coverage
 
 ```bash
-# Run desktop Playwright E2E tests
+# Run desktop Playwright E2E tests (Headless)
 pnpm --filter @smartfeed/desktop test:e2e
+
+# Run desktop Playwright E2E tests in visible browser window (Headed)
+pnpm --filter @smartfeed/desktop test:e2e:headed
+
+# Run Playwright Interactive UI Mode (Inspector, Time-travel, Traces)
+pnpm --filter @smartfeed/desktop test:e2e:ui
 ```
 
-| Test File          | Scenarios Covered                                                                                                                      | Tests | Status  |
-| :----------------- | :------------------------------------------------------------------------------------------------------------------------------------- | :---: | :-----: |
-| `e2e/auth.spec.ts` | Route protection, failed login (401), successful login redirect, registration flow, multilingual switching (`UA` / `EN`), theme toggle |   6   | ✅ PASS |
+| Test File          | Scenarios Covered                                                                                                                                           | Tests | Status  |
+| :----------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------- | :---: | :-----: |
+| `e2e/auth.spec.ts` | Route protection, localized 401 error alert (`UA` / `EN`), successful login redirect, registration flow, multilingual switching (`UA` / `EN`), theme toggle |   6   | ✅ PASS |
 
 **Total: 6 tests — 6 passing**
 
@@ -94,8 +100,14 @@ pnpm --filter @smartfeed/desktop test:e2e
 ## ⚡ Development & Build Commands
 
 ```bash
-# Run Playwright E2E tests
+# Run Playwright E2E tests (Headless)
 pnpm --filter @smartfeed/desktop test:e2e
+
+# Run Playwright in visible browser (Headed)
+pnpm --filter @smartfeed/desktop test:e2e:headed
+
+# Run Playwright UI Mode
+pnpm --filter @smartfeed/desktop test:e2e:ui
 
 # Run Vite dev server in browser (Port 1420)
 pnpm dev:desktop
