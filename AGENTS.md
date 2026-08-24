@@ -64,6 +64,17 @@ SmartFeed Studio (Monorepo root)
      - Root [README.md](file:///Users/oleg/AQA/SmartFeedStudio/README.md) (Mermaid architecture diagrams, folder trees, CQRS flow references, and command cheat sheets)
    - Never leave documentation out of sync with actual code implementations.
 
+4b. **Mandatory Test Coverage Documentation (`services/backend-api/test/`)**:
+
+- Whenever a new `*.e2e-spec.ts` file is **added or modified** in `services/backend-api/test/`, you **MUST**:
+  1.  Run the full E2E suite to confirm all tests pass: `pnpm --filter @smartfeed/backend-api test:e2e`
+  2.  Update the coverage table in [services/backend-api/AGENTS.md](file:///Users/oleg/AQA/SmartFeedStudio/services/backend-api/AGENTS.md) (section `🧪 Testing Policy & Coverage`)
+  3.  Update the coverage table in [services/backend-api/README.md](file:///Users/oleg/AQA/SmartFeedStudio/services/backend-api/README.md) (section `📊 E2E Test Coverage`)
+- The **very first line** of `services/backend-api/README.md` section must always show the test run command:
+  ```bash
+  pnpm --filter @smartfeed/backend-api test:e2e
+  ```
+
 5. **Git Commit & Push Policy (Explicit User Trigger Only)**:
    - **NEVER** automatically perform `git commit` or `git push` immediately after making changes.
    - All code edits must be prepared, formatted, and verified locally first.

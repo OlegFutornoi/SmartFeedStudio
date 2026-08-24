@@ -113,6 +113,20 @@ To eliminate circular dependencies and adhere to Single Responsibility Principle
 
 ---
 
+### 4b. Mandatory Test Coverage Documentation (`services/backend-api/test/`)
+
+- **Rule**: Whenever a new or modified `*.e2e-spec.ts` file appears in `services/backend-api/test/`:
+  1. **Run the full E2E suite** to confirm all tests pass:
+     ```bash
+     pnpm --filter @smartfeed/backend-api test:e2e
+     ```
+  2. **Update the coverage table** in [services/backend-api/AGENTS.md](file:///Users/oleg/AQA/SmartFeedStudio/services/backend-api/AGENTS.md) under section `🧪 Testing Policy & Coverage`.
+  3. **Update the coverage table** in [services/backend-api/README.md](file:///Users/oleg/AQA/SmartFeedStudio/services/backend-api/README.md) under section `📊 E2E Test Coverage`.
+- The `services/backend-api/README.md` must **always begin** with the test run command as its first code block.
+- Never let coverage tables drift from actual test files.
+
+---
+
 ### 5. Git Commit & Push Policy (Explicit User Trigger Only)
 
 - **Rule**: The agent must **NEVER** automatically perform `git commit` or `git push` immediately after making changes or fixes.

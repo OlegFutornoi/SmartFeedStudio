@@ -109,4 +109,36 @@ pnpm prisma:seed
 
 # Open Prisma Studio GUI
 pnpm prisma:studio
+
+# Run E2E tests (requires Docker infra: pnpm docker:up)
+pnpm --filter @smartfeed/backend-api test:e2e
 ```
+
+---
+
+## 🧪 Testing Policy & Coverage
+
+### 📁 Test Location
+
+All E2E tests live in `services/backend-api/test/` as `*.e2e-spec.ts` files.
+
+### ⚠️ Mandatory Rule for Agents
+
+> **Whenever a new `*.e2e-spec.ts` file is added to `services/backend-api/test/`, you MUST:**
+>
+> 1. Run the tests to verify they pass (`pnpm --filter @smartfeed/backend-api test:e2e`)
+> 2. Update the coverage table below in this file (`services/backend-api/AGENTS.md`)
+> 3. Update the coverage table in `services/backend-api/README.md`
+
+### 📊 E2E Test Coverage
+
+```bash
+# Run all E2E tests
+pnpm --filter @smartfeed/backend-api test:e2e
+```
+
+| File                    | Endpoints Tested                                  | Tests | Status  |
+| :---------------------- | :------------------------------------------------ | :---: | :-----: |
+| `test/auth.e2e-spec.ts` | `POST /api/auth/register`, `POST /api/auth/login` |  12   | ✅ PASS |
+
+**Total: 12 tests — 12 passing**
