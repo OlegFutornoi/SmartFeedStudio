@@ -25,7 +25,8 @@ SmartFeed Studio (Monorepo root)
 │   ├── rules/               # Agent architectural rules (rules.md)
 │   ├── skills/              # Agent skills
 │   ├── scripts/             # Auto-formatting and lifecycle scripts
-│   └── hooks.json           # Antigravity lifecycle hooks (PostToolUse auto-format)
+│   ├── hooks.json           # Antigravity lifecycle hooks (PostToolUse auto-format)
+│   └── mcp_config.json      # Workspace MCP server integrations (Playwright)
 ├── docker-compose.yml       # Local infrastructure: PostgreSQL 16, Redis 7, MinIO
 ├── pnpm-workspace.yaml      # Monorepo workspaces definition
 ├── turbo.json               # Turborepo task pipeline config

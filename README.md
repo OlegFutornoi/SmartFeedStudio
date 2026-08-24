@@ -69,7 +69,8 @@ graph TD
 │   ├── rules/               # Architectural agent rules
 │   ├── skills/              # Agent skills
 │   ├── scripts/             # Lifecycle automation scripts
-│   └── hooks.json           # Agent lifecycle hooks (auto-formatting)
+│   ├── hooks.json           # Agent lifecycle hooks (auto-formatting)
+│   └── mcp_config.json      # Workspace MCP server integrations (Playwright)
 ├── docker-compose.yml       # Local infrastructure: PostgreSQL 16, Redis 7, MinIO
 ├── pnpm-workspace.yaml      # Monorepo workspaces definition
 ├── turbo.json               # Turborepo pipeline orchestration
