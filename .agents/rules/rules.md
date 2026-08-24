@@ -135,6 +135,13 @@ To eliminate circular dependencies and adhere to Single Responsibility Principle
 
 ---
 
+### 6. Best Practices Skills & Automated Self-Code Review
+
+- **Rule**: When writing code, the agent must **ALWAYS** apply relevant best-practice skills (`vercel-react-best-practices` for React/Next.js, `nestjs-best-practices` for NestJS CQRS, `shadcn` for UI design systems, `playwright-best-practices` for E2E tests, `frontend-desing` for visual standards).
+- **Rule**: Immediately after writing or modifying code, the agent must **automatically perform a self-code review** against these best practices (validating performance, minimal re-renders, bundle efficiency, accessibility, type safety, test isolation, and formatting) before finalizing work.
+
+---
+
 ## ⚡ Key Terminal Commands
 
 - **Start Infrastructure**: `pnpm docker:up` (Postgres: 5432, Redis: 6379, MinIO: 9000/9001)

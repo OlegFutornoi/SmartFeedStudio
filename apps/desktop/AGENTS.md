@@ -9,8 +9,11 @@ The **Desktop Client** is a high-performance native desktop application designed
 ## 🛠 Tech Stack
 
 - **Native Host Engine**: Tauri v2 (Rust 2021)
-- **Frontend Framework**: React 18 + Vite (TypeScript)
+- **Frontend Framework**: React 18 + Vite + React Router DOM (TypeScript)
+- **UI Architecture**: **shadcn/ui** pattern with HSL CSS variables and Light/Dark themes
+- **i18n Multi-language**: Dedicated page-based chunked translation engine (`uk` / `en` with dynamic namespace loading)
 - **Styling**: Tailwind CSS + Lucide Icons
+- **Testing**: Playwright (@playwright/test) E2E suite
 - **Security & Storage**:
   - `keyring` crate: Native OS Keychain storage for JWT refresh tokens (macOS Keychain, Windows Credential Manager, Linux Secret Service).
   - `rusqlite` crate with `sqlcipher`: Local SQLite database encrypted with AES-256 for fast catalog caching.
@@ -22,6 +25,8 @@ The **Desktop Client** is a high-performance native desktop application designed
 
 ```text
 apps/desktop/
+├── e2e/                       # Playwright E2E Test Suite
+│   └── auth.spec.ts           # Login, registration, i18n, and home page E2E tests
 ├── src-tauri/                 # Rust Native Core
 │   ├── src/
 │   │   ├── main.rs            # Entry point for Tauri binary
@@ -29,43 +34,69 @@ apps/desktop/
 │   ├── Cargo.toml             # Rust dependencies (tauri v2, keyring, rusqlite with sqlcipher)
 │   └── tauri.conf.json        # Tauri v2 configuration (window size, permissions, dev URL)
 ├── src/                       # React / Vite Frontend
+│   ├── i18n/                  # Page-based Multilingual Translation Engine
+│   │   ├── locales/           # UK / EN JSON translation dictionaries
+│   │   │   ├── uk/            # common.json, auth.json, home.json
+│   │   │   └── en/            # common.json, auth.json, home.json
+│   │   ├── types.ts           # Language & Namespace type definitions
+│   │   └── index.tsx          # I18nProvider & useTranslation hook with lazy loading
+│   ├── components/
+│   │   ├── ui/                # Reusable shadcn/ui components (button, input, label, card, alert, badge, theme-toggle, language-toggle)
+│   │   ├── login-form.tsx     # Official shadcn login-01 block component
+│   │   ├── signup-form.tsx    # Official shadcn signup-01 block component
+│   │   └── PrivateRoute.tsx   # Protected route guard
+│   ├── contexts/
+│   │   ├── AuthContext.tsx    # Auth state & token persistence
+│   │   └── ThemeContext.tsx   # Light / Dark / System theme management
+│   ├── pages/
+│   │   ├── auth/
+│   │   │   ├── LoginPage.tsx  # /auth/login (login-01, i18n, theme-toggle, data-testid)
+│   │   │   └── RegisterPage.tsx # /auth/register (signup-01, i18n, theme-toggle, data-testid)
+│   │   └── HomePage.tsx       # / (Protected home page: greeting, meetings counter, top 3 meetings, logout)
+│   ├── lib/
+│   │   ├── api.ts             # REST client for backend auth endpoints
+│   │   └── utils.ts           # cn() styling utility
 │   ├── services/
 │   │   ├── keychain.ts        # OS Keychain invoke wrapper (falls back gracefully in browser dev)
 │   │   ├── storage.ts         # Direct S3 Presigned URL uploader with progress tracking
 │   │   └── sqlite.ts          # Local SQLite / cache database interface
-│   ├── App.tsx                # Main desktop interface (XML Catalog, Direct S3, Cache, Keychain)
-│   ├── main.tsx               # React DOM root entry
-│   ├── index.css              # Dark desktop UI styles
+│   ├── App.tsx                # Route definitions (/auth/login, /auth/register, /)
+│   ├── main.tsx               # BrowserRouter + I18nProvider + ThemeProvider + AuthProvider
+│   ├── index.css              # Light & Dark theme HSL CSS variables (Zinc palette)
 │   └── vite-env.d.ts          # Vite client types
+├── playwright.config.ts       # Playwright E2E configuration
+├── tailwind.config.ts         # Tailwind CSS tokens
+├── postcss.config.js          # PostCSS config
 ├── vite.config.ts             # Vite config (Port 1420)
-├── tsconfig.json              # TypeScript configuration
+├── tsconfig.json              # TypeScript configuration with @/* path aliases
 └── package.json
 ```
 
 ---
 
-## 🔒 Security & S3 Upload Workflow
+## 🧪 Testing Policy & Coverage (Playwright)
 
-1. **OS Keychain Token Storage (`src/services/keychain.ts`)**:
-   - Access tokens (15m expiry) live in memory.
-   - Refresh tokens (7d expiry) are securely saved into the OS Keychain via Tauri's `store_refresh_token` Rust command.
+### 📊 E2E Test Coverage
 
-2. **Direct S3 Upload (`src/services/storage.ts`)**:
-   - Client sends `POST /api/storage/presigned-url` to NestJS Backend API.
-   - NestJS CQRS `GeneratePresignedUploadUrlHandler` generates an S3 PUT URL.
-   - Desktop client uploads the file directly to MinIO / Cloudflare R2 via HTTP PUT with progress updates, bypassing the API server for binary transfer.
+```bash
+# Run desktop Playwright E2E tests
+pnpm --filter @smartfeed/desktop test:e2e
+```
 
-3. **Offline Catalog Caching (`src/services/sqlite.ts`)**:
-   - Stores catalog products locally in encrypted SQLite for instantaneous search and offline editing.
+| Test File          | Scenarios Covered                                                                                                                      | Tests | Status  |
+| :----------------- | :------------------------------------------------------------------------------------------------------------------------------------- | :---: | :-----: |
+| `e2e/auth.spec.ts` | Route protection, failed login (401), successful login redirect, registration flow, multilingual switching (`UA` / `EN`), theme toggle |   6   | ✅ PASS |
 
-4. **Documentation Synchronization**:
-   - When modifying Tauri Rust commands (`src-tauri/src/lib.rs`), local storage/SQLite schema, Keychain integration, or frontend service architecture, update this [AGENTS.md](file:///Users/oleg/AQA/SmartFeedStudio/apps/desktop/AGENTS.md), root [AGENTS.md](file:///Users/oleg/AQA/SmartFeedStudio/AGENTS.md), [.agents/rules/rules.md](file:///Users/oleg/AQA/SmartFeedStudio/.agents/rules/rules.md), and root [README.md](file:///Users/oleg/AQA/SmartFeedStudio/README.md).
+**Total: 6 tests — 6 passing**
 
 ---
 
 ## ⚡ Development & Build Commands
 
 ```bash
+# Run Playwright E2E tests
+pnpm --filter @smartfeed/desktop test:e2e
+
 # Run Vite dev server in browser (Port 1420)
 pnpm dev:desktop
 

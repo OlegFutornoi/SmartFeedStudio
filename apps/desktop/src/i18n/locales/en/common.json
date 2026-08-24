@@ -1,0 +1,12 @@
+{
+  "appName": "SmartFeed Studio",
+  "desktop": "Desktop",
+  "loading": "Loading...",
+  "theme": "Theme",
+  "language": "Language",
+  "logout": "Logout",
+  "errorTitle": "Error",
+  "success": "Success",
+  "cancel": "Cancel",
+  "save": "Save"
+}

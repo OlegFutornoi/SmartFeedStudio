@@ -1,0 +1,21 @@
+{
+  "dashboardTitle": "Dashboard",
+  "welcomeBack": "Welcome back, {{name}}",
+  "createMeeting": "Create Meeting",
+  "totalMeetingsTitle": "Total Meetings",
+  "meetingsTrend": "+1 from scheduled today",
+  "sessionStatusTitle": "Session Status",
+  "sessionActive": "Active",
+  "userRole": "Role: {{role}}",
+  "platformTitle": "Communication Platform",
+  "platformValue": "Google Meet",
+  "platformSync": "Automatic Calendar Sync",
+  "latestMeetingsTitle": "Latest 3 Meetings",
+  "latestMeetingsDesc": "Upcoming and recently completed meetings",
+  "showingCount": "{{current}} of {{total}}",
+  "participantsCount": "{{count}} participants",
+  "statusScheduled": "Scheduled",
+  "statusInProgress": "In Progress",
+  "statusCompleted": "Completed",
+  "newMeetingDefaultTitle": "New Working Meeting #{{number}}"
+}

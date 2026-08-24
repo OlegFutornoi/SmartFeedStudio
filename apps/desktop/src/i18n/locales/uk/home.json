@@ -1,0 +1,21 @@
+{
+  "dashboardTitle": "Панель керування",
+  "welcomeBack": "З поверненням, {{name}}",
+  "createMeeting": "Створити зустріч",
+  "totalMeetingsTitle": "Загальна кількість зустрічей",
+  "meetingsTrend": "+1 від запланованих на сьогодні",
+  "sessionStatusTitle": "Статус сесії",
+  "sessionActive": "Активна",
+  "userRole": "Роль: {{role}}",
+  "platformTitle": "Платформа зв'язку",
+  "platformValue": "Google Meet",
+  "platformSync": "Автоматична синхронізація",
+  "latestMeetingsTitle": "Останні 3 зустрічі",
+  "latestMeetingsDesc": "Найближчі заплановані та завершені зустрічі",
+  "showingCount": "{{current}} з {{total}}",
+  "participantsCount": "{{count}} учасники",
+  "statusScheduled": "Заплановано",
+  "statusInProgress": "Триває",
+  "statusCompleted": "Завершено",
+  "newMeetingDefaultTitle": "Нова робоча зустріч #{{number}}"
+}

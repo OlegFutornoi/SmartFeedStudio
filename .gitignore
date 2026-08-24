@@ -41,6 +41,9 @@ pnpm-debug.log*
 *.sqlite
 *.sqlite3
 
-# Test coverage
+# Test coverage & reports
 coverage/
 *.lcov
+test-results/
+playwright-report/
+blob-report/

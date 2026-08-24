@@ -1,0 +1,12 @@
+{
+  "appName": "SmartFeed Studio",
+  "desktop": "Desktop",
+  "loading": "Завантаження...",
+  "theme": "Тема",
+  "language": "Мова",
+  "logout": "Вийти з акаунта",
+  "errorTitle": "Помилка",
+  "success": "Успішно",
+  "cancel": "Скасувати",
+  "save": "Зберегти"
+}

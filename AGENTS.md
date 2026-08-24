@@ -80,6 +80,10 @@ SmartFeed Studio (Monorepo root)
    - All code edits must be prepared, formatted, and verified locally first.
    - You MUST wait for the USER's explicit command (e.g., `/git-commit`, `/commit`, "вивантаж", "закоміть") before staging, committing, or pushing to remote repositories.
 
+6. **Best Practices Skills & Automated Self-Code Review**:
+   - When writing code, **ALWAYS** apply relevant best-practice skills (`vercel-react-best-practices` for React/Next.js, `nestjs-best-practices` for NestJS CQRS, `shadcn` for UI design systems, `playwright-best-practices` for E2E tests, `frontend-desing` for visual standards).
+   - Immediately after writing code, **automatically perform a rigorous self-code review** against these best practices (validating performance, minimal re-renders, bundle efficiency, accessibility, type safety, test isolation, and formatting) before finalizing the response.
+
 ---
 
 ## ⚡ Essential Commands Cheat Sheet
