@@ -147,6 +147,10 @@ To eliminate circular dependencies and adhere to Single Responsibility Principle
 - **Start Infrastructure**: `pnpm docker:up` (Postgres: 5432, Redis: 6379, MinIO: 9000/9001)
 - **Start All Apps (Dev)**: `pnpm dev`
 - **Build All Apps**: `pnpm build`
+- **Run Backend E2E Tests**: `pnpm --filter @smartfeed/backend-api test:e2e`
+- **Run Desktop E2E Tests**: `pnpm test:desktop`
+- **Run Desktop Tests (Headed)**: `pnpm test:desktop:headed`
+- **Run Desktop Tests (UI Mode)**: `pnpm test:desktop:ui`
 - **Lint & Format**: `pnpm lint:fix && pnpm format`
 - **Prisma Schema Sync**: `pnpm --filter @smartfeed/backend-api exec prisma db push`
 - **Prisma Studio**: `pnpm prisma:studio`

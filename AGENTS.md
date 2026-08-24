@@ -97,6 +97,10 @@ SmartFeed Studio (Monorepo root)
 | **Run Admin Portal**            | `pnpm dev:admin`                                           |
 | **Run Desktop Vite**            | `pnpm dev:desktop`                                         |
 | **Build Everything (Turbo)**    | `pnpm build`                                               |
+| **Run Backend E2E Tests**       | `pnpm --filter @smartfeed/backend-api test:e2e`            |
+| **Run Desktop E2E Tests**       | `pnpm test:desktop`                                        |
+| **Run Desktop Tests (Headed)**  | `pnpm test:desktop:headed`                                 |
+| **Run Desktop Tests (UI Mode)** | `pnpm test:desktop:ui`                                     |
 | **Sync Database Schema**        | `pnpm --filter @smartfeed/backend-api exec prisma db push` |
 | **Run Database Seeder**         | `pnpm prisma:seed`                                         |
 | **Open Prisma Studio**          | `pnpm prisma:studio`                                       |
