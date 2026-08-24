@@ -23,6 +23,13 @@ export const RefreshTokenDtoSchema = z.object({
 
 export type RefreshTokenDto = z.infer<typeof RefreshTokenDtoSchema>;
 
+export const ChangePasswordDtoSchema = z.object({
+  currentPassword: z.string().min(1, 'Current password is required'),
+  newPassword: z.string().min(8, 'New password must be at least 8 characters'),
+});
+
+export type ChangePasswordDto = z.infer<typeof ChangePasswordDtoSchema>;
+
 export interface AuthTokens {
   accessToken: string;
   refreshToken: string;

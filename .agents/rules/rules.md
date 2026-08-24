@@ -135,10 +135,12 @@ To eliminate circular dependencies and adhere to Single Responsibility Principle
 
 ---
 
-### 6. Best Practices Skills & Automated Self-Code Review
+### 6. Mandatory Post-Code-Writing Protocol (Self-Review, Error Checks, Skills & Formatting)
 
-- **Rule**: When writing code, the agent must **ALWAYS** apply relevant best-practice skills (`vercel-react-best-practices` for React/Next.js, `nestjs-best-practices` for NestJS CQRS, `shadcn` for UI design systems, `playwright-best-practices` for E2E tests, `frontend-desing` for visual standards).
-- **Rule**: Immediately after writing or modifying code, the agent must **automatically perform a self-code review** against these best practices (validating performance, minimal re-renders, bundle efficiency, accessibility, type safety, test isolation, and formatting) before finalizing work.
+- **Rule (Step 1 — Mandatory Domain Skills)**: When writing or refactoring code, the agent must **ALWAYS** actively apply relevant best-practice skills (`vercel-react-best-practices` for React/Next.js, `nestjs-best-practices` for NestJS CQRS, `shadcn` for UI design systems, `playwright-best-practices` for E2E tests, `frontend-desing` for visual standards, `prisma-postgres` for database operations, `systematic-debugging` for debugging).
+- **Rule (Step 2 — Immediate Self-Code Review & Dead Code Elimination)**: Immediately after writing or modifying code, the agent must **automatically perform a self-code review** against these best practices (validating: **zero unused imports** such as unreferenced icons or types, no unused variables, performance, minimal re-renders, bundle efficiency, accessibility, type safety, test isolation, and formatting) before finalizing work.
+- **Rule (Step 3 — Error, Lint & Type Checking)**: Check for syntax errors, compile errors, linting warnings (`pnpm lint` / `pnpm lint:fix`), and run relevant automated tests (`pnpm --filter @smartfeed/backend-api test:e2e` for backend, `pnpm test:desktop` for desktop). Guard against dev-cache overlap collisions (never run `next build` while `next dev` is running without proper cleanup).
+- **Rule (Step 4 — Mandatory Auto-Formatting)**: The agent must **ALWAYS** execute `pnpm format` (Prettier) to verify that no formatting errors or style inconsistencies exist.
 
 ---
 

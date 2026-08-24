@@ -22,14 +22,15 @@
     "test:desktop": "pnpm --filter @smartfeed/desktop test:e2e",
     "test:desktop:headed": "pnpm --filter @smartfeed/desktop test:e2e:headed",
     "test:desktop:ui": "pnpm --filter @smartfeed/desktop test:e2e:ui",
-    "prepare": "husky",
+    "prepare": "husky || true",
     "docker:up": "docker compose up -d",
     "docker:down": "docker compose down",
     "docker:logs": "docker compose logs -f",
     "prisma:generate": "pnpm --filter @smartfeed/backend-api prisma:generate",
     "prisma:migrate": "pnpm --filter @smartfeed/backend-api prisma:migrate",
     "prisma:studio": "pnpm --filter @smartfeed/backend-api prisma:studio",
-    "prisma:seed": "pnpm --filter @smartfeed/backend-api prisma:seed"
+    "prisma:seed": "pnpm --filter @smartfeed/backend-api prisma:seed",
+    "admin:set": "pnpm --filter @smartfeed/backend-api admin:set"
   },
   "devDependencies": {
     "@eslint/js": "^9.18.0",

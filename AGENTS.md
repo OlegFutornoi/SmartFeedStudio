@@ -80,9 +80,11 @@ SmartFeed Studio (Monorepo root)
    - All code edits must be prepared, formatted, and verified locally first.
    - You MUST wait for the USER's explicit command (e.g., `/git-commit`, `/commit`, "вивантаж", "закоміть") before staging, committing, or pushing to remote repositories.
 
-6. **Best Practices Skills & Automated Self-Code Review**:
-   - When writing code, **ALWAYS** apply relevant best-practice skills (`vercel-react-best-practices` for React/Next.js, `nestjs-best-practices` for NestJS CQRS, `shadcn` for UI design systems, `playwright-best-practices` for E2E tests, `frontend-desing` for visual standards).
-   - Immediately after writing code, **automatically perform a rigorous self-code review** against these best practices (validating performance, minimal re-renders, bundle efficiency, accessibility, type safety, test isolation, and formatting) before finalizing the response.
+6. **Mandatory Post-Code-Writing Protocol (Self-Review, Error Checks, Skills & Formatting)**:
+   - **Step 1 — Mandatory Domain Skills**: When writing or refactoring code, **ALWAYS** actively apply relevant best-practice skills (`vercel-react-best-practices` for React/Next.js, `nestjs-best-practices` for NestJS CQRS, `shadcn` for UI design systems, `playwright-best-practices` for E2E tests, `frontend-desing` for visual identity, `prisma-postgres` for database queries, `systematic-debugging` when resolving issues).
+   - **Step 2 — Immediate Self-Code Review & Dead Code Elimination**: Immediately after writing or modifying code, **automatically perform a rigorous self-code review** validating: **zero unused imports** (e.g., from `lucide-react`, DTOs, or React hooks), no unused variables/types, Single Responsibility Principle, CQRS module boundaries, minimal React re-renders, bundle efficiency, accessibility, type safety, test isolation, and absence of broken cache/bundle artifacts.
+   - **Step 3 — Verification, Lint & Error Checking**: Check for syntax errors, compile errors, linting warnings (`pnpm lint` / `pnpm lint:fix`), and run relevant automated tests (`pnpm --filter @smartfeed/backend-api test:e2e` for backend, `pnpm test:desktop` for desktop). Guard against dev-cache overlap collisions (never run `next build` while `next dev` is running without proper cleanup).
+   - **Step 4 — Mandatory Auto-Formatting**: **ALWAYS** execute `pnpm format` (Prettier) on all affected files to ensure zero formatting errors or style drift across the codebase.
 
 ---
 

@@ -1,0 +1,56 @@
+import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
+import { Role, PlanType } from '@smartfeed/shared';
+import { GetAccessibleNavigationQuery } from './get-accessible-navigation.query';
+import { PrismaService } from '../../../prisma/prisma.service';
+
+const PLAN_HIERARCHY: Record<PlanType, number> = {
+  [PlanType.FREE]: 1,
+  [PlanType.PRO]: 2,
+  [PlanType.ENTERPRISE]: 3,
+};
+
+@QueryHandler(GetAccessibleNavigationQuery)
+export class GetAccessibleNavigationHandler implements IQueryHandler<GetAccessibleNavigationQuery> {
+  constructor(private readonly prisma: PrismaService) {}
+
+  async execute(query: GetAccessibleNavigationQuery) {
+    const { userRole, userPlan, targetApp } = query;
+
+    // 1. Fetch active visible navigation items for the target app
+    const items = await this.prisma.navigationItem.findMany({
+      where: {
+        isVisible: true,
+        OR: [{ targetApp: targetApp as any }, { targetApp: 'ALL' as any }],
+      },
+      orderBy: { order: 'asc' },
+    });
+
+    // 2. Filter by role and license plan permissions
+    const userPlanLevel = userPlan ? (PLAN_HIERARCHY[userPlan] ?? 1) : 1;
+    const isElevatedAdmin = userRole === Role.SUPER_ADMIN || userRole === Role.ADMIN;
+
+    return items.filter((item) => {
+      // Role-based check
+      if (item.requiredRoles && item.requiredRoles.length > 0) {
+        if (!item.requiredRoles.includes(userRole as any)) {
+          return false;
+        }
+      }
+
+      // Elevated admins have access to all items
+      if (isElevatedAdmin) {
+        return true;
+      }
+
+      // Plan-based check
+      if (item.requiredPlan) {
+        const requiredLevel = PLAN_HIERARCHY[item.requiredPlan as PlanType] ?? 1;
+        if (userPlanLevel < requiredLevel) {
+          return false;
+        }
+      }
+
+      return true;
+    });
+  }
+}

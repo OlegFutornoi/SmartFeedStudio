@@ -6,9 +6,10 @@ import { LoginDto } from './dto/login.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { CurrentUser } from './decorators/current-user.decorator';
-import { QueryBus } from '@nestjs/cqrs';
+import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { GetUserByIdQuery } from '../users/queries/get-user-by-id.query';
-import { UserProfile } from '@smartfeed/shared';
+import { ChangePasswordCommand } from '../users/commands/change-password.command';
+import { ChangePasswordDto, UserProfile } from '@smartfeed/shared';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -16,6 +17,7 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly queryBus: QueryBus,
+    private readonly commandBus: CommandBus,
   ) {}
 
   @Post('register')
@@ -52,5 +54,18 @@ export class AuthController {
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async getProfile(@CurrentUser('id') userId: string): Promise<UserProfile> {
     return this.queryBus.execute(new GetUserByIdQuery(userId));
+  }
+
+  @Post('change-password')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Change password for current authenticated user' })
+  @ApiResponse({ status: 200, description: 'Password updated successfully' })
+  @ApiResponse({ status: 400, description: 'Current password is incorrect' })
+  async changePassword(@CurrentUser('id') userId: string, @Body() dto: ChangePasswordDto) {
+    return this.commandBus.execute(
+      new ChangePasswordCommand(userId, dto.currentPassword, dto.newPassword),
+    );
   }
 }

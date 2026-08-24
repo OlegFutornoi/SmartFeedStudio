@@ -11,10 +11,12 @@ RUN corepack enable && corepack prepare pnpm@9.15.4 --activate
 # Install libc for native dependencies
 RUN apk add --no-cache libc6-compat
 
-# Copy workspace definition files
+# Copy workspace definition files (all packages declared in pnpm-workspace.yaml to satisfy frozen-lockfile)
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json ./
 COPY packages/shared/package.json ./packages/shared/
+COPY services/backend-api/package.json ./services/backend-api/
 COPY apps/admin-portal/package.json ./apps/admin-portal/
+COPY apps/desktop/package.json ./apps/desktop/
 
 # Install dependencies
 RUN pnpm install --frozen-lockfile
@@ -22,6 +24,9 @@ RUN pnpm install --frozen-lockfile
 # Copy source code
 COPY packages/shared/ ./packages/shared/
 COPY apps/admin-portal/ ./apps/admin-portal/
+
+# Ensure public directory exists
+RUN mkdir -p /app/apps/admin-portal/public
 
 # Build shared library & Next.js admin portal
 RUN pnpm --filter @smartfeed/shared build

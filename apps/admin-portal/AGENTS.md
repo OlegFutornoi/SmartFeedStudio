@@ -2,16 +2,16 @@
 
 ## 📌 Purpose
 
-The **Admin Portal** is the centralized management dashboard for SmartFeed Studio, built for managing users, monitoring infrastructure health, managing license tiers (FREE, PRO, ENTERPRISE), and viewing telemetry metrics.
+The **Admin Portal** is the centralized management dashboard for SmartFeed Studio, built for managing users, monitoring infrastructure health, managing license tiers (FREE, PRO, ENTERPRISE), and changing administrator credentials.
 
 ---
 
 ## 🛠 Tech Stack
 
-- **Framework**: Next.js 14 (App Router)
+- **Framework**: Next.js 14 (App Router with Route Groups)
 - **UI Library**: React 18
 - **Styling**: Tailwind CSS (with HSL CSS variable design tokens)
-- **Component Architecture**: **shadcn/ui** pattern
+- **Component Architecture**: **shadcn/ui** pattern (`dashboard-01`, `sidebar-07`)
 - **Icons**: `lucide-react`
 - **Shared Types**: `@smartfeed/shared`
 
@@ -23,24 +23,46 @@ The **Admin Portal** is the centralized management dashboard for SmartFeed Studi
 apps/admin-portal/
 ├── src/
 │   ├── app/
-│   │   ├── globals.css         # Tailwind directives & CSS variable tokens (--background, --primary, etc.)
-│   │   ├── layout.tsx          # RootLayout with dark theme, Sidebar & Header
-│   │   ├── page.tsx            # Dashboard Overview (stats, CQRS health, recent users)
-│   │   ├── users/
-│   │   │   └── page.tsx        # User Directory & Role management
-│   │   └── licenses/
-│   │       └── page.tsx        # Subscription Tiers & License Key directory
-│   └── components/
-│       ├── layout/
-│       │   ├── sidebar.tsx     # Navigation sidebar with active state routing
-│       │   └── header.tsx      # Top bar with global search, notifications, profile
-│       └── ui/                 # Reusable shadcn/ui atomic components
-│           ├── card.tsx        # Card, CardHeader, CardTitle, CardContent, cn() helper
-│           ├── button.tsx      # Button (default, outline, secondary, destructive, ghost)
-│           └── badge.tsx       # Badge (default, secondary, outline, success, warning)
-├── next.config.mjs             # Next.js configuration (transpiles @smartfeed/shared)
-├── tailwind.config.ts          # Tailwind config with HSL color system
-├── tsconfig.json               # Path aliases (@/* -> ./src/*)
+│   │   ├── (auth)/
+│   │   │   └── login/
+│   │   │       └── page.tsx        # Protected Admin Login (no public register)
+│   │   ├── (dashboard)/
+│   │   │   ├── layout.tsx          # AuthGuard + Sidebar (sidebar-07) + Header
+│   │   │   ├── page.tsx            # Dashboard Overview (dashboard-01 style, Total Users metric)
+│   │   │   ├── users/
+│   │   │   │   └── page.tsx        # Users Directory & Live Search/Filtering
+│   │   │   ├── licenses/
+│   │   │   │   └── page.tsx        # Subscription Tiers & License Keys table
+│   │   │   └── settings/
+│   │   │       └── page.tsx        # Admin Profile & Password Change Form
+│   │   ├── globals.css             # Tailwind directives & CSS variable tokens
+│   │   └── layout.tsx              # Root layout with AuthProvider & dark theme
+│   ├── components/
+│   │   ├── auth/
+│   │   │   └── AuthGuard.tsx       # Route protection & loading state
+│   │   ├── layout/
+│   │   │   ├── sidebar.tsx         # Collapsible sidebar (sidebar-07) + User footer menu
+│   │   │   └── header.tsx          # System status header
+│   │   ├── profile/
+│   │   │   └── change-password-dialog.tsx # Password update modal dialog
+│   │   └── ui/                     # shadcn/ui primitives
+│   │       ├── avatar.tsx          # User avatars & initials
+│   │       ├── badge.tsx           # Status & tier badges
+│   │       ├── button.tsx          # Buttons (default, outline, ghost, etc.)
+│   │       ├── card.tsx            # Card, Header, Title, Description, Content, Footer
+│   │       ├── dialog.tsx          # Modal dialog primitive
+│   │       ├── input.tsx           # Form text & password inputs
+│   │       ├── label.tsx           # Form labels
+│   │       ├── separator.tsx       # Dividers
+│   │       └── table.tsx           # Data tables (Header, Body, Row, Cell)
+│   ├── contexts/
+│   │   └── AuthContext.tsx         # Session state, login, logout, changePassword
+│   └── lib/
+│       ├── api.ts                  # REST client with JWT Bearer auto-injection
+│       └── utils.ts                # cn() class merger
+├── next.config.mjs                 # Next.js configuration (transpiles @smartfeed/shared)
+├── tailwind.config.ts              # Tailwind config with HSL color system
+├── tsconfig.json                   # Path aliases (@/* -> ./src/*)
 └── package.json
 ```
 
@@ -50,12 +72,11 @@ apps/admin-portal/
 
 1. **Atomic Components in `src/components/ui/`**:
    - Always place composable UI primitives in `src/components/ui/`.
-   - Use `cn` from `src/components/ui/card.tsx` (or dedicated `src/lib/utils.ts`) to merge classes cleanly.
+   - Use `cn` from `src/lib/utils.ts` to merge classes cleanly.
 2. **Design Tokens & Theme Consistency**:
-   - Never hardcode arbitrary hex colors when theme classes are available (e.g. use `bg-card text-card-foreground border-border` instead of arbitrary colors).
    - Use semantic badges:
-     - `ENTERPRISE` plan -> `variant="default"`
-     - `PRO` plan -> `variant="success"`
+     - `ENTERPRISE` plan -> `variant="outline"` with amber accent
+     - `PRO` plan -> `variant="outline"` with emerald accent
      - `FREE` plan -> `variant="secondary"`
 3. **Icons**:
    - Always import from `lucide-react` for visual consistency.

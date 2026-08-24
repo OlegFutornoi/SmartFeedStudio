@@ -154,7 +154,7 @@ pnpm build:desktop
 
 ---
 
-### 4. 🗄 База даних та Prisma ORM
+### 4. 🗄 База даних, Prisma ORM та візуальний перегляд (GUI)
 
 ```bash
 # Згенерувати Prisma Client на основі schema.prisma
@@ -166,10 +166,22 @@ pnpm prisma:migrate
 # Швидко синхронізувати схему з БД без створення міграцій (db push)
 pnpm --filter @smartfeed/backend-api exec prisma db push
 
-# Відкрити візуальну веб-панель Prisma Studio (перегляд даних БД)
+# Наповнити БД тестовими даними (Admin акаунт)
+pnpm prisma:seed
+
+# Запустити візуальну веб-панель Prisma Studio (перегляд та редагування таблиць БД)
 pnpm prisma:studio
-# або: pnpm --filter @smartfeed/backend-api prisma:studio
+# Веб-інтерфейс доступний на: http://localhost:5555
 ```
+
+#### 🔍 Параметри підключення до БД (TablePlus / DBeaver / DataGrip / pgAdmin):
+
+- **Host**: `localhost` (або `127.0.0.1`)
+- **Port**: `5432`
+- **Database**: `smartfeed_db`
+- **Username**: `postgres`
+- **Password**: `postgrespassword`
+- **Connection URI**: `postgresql://postgres:postgrespassword@localhost:5432/smartfeed_db?schema=public`
 
 ---
 

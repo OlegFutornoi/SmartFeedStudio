@@ -9,3 +9,9 @@ export enum PlanType {
   PRO = 'PRO',
   ENTERPRISE = 'ENTERPRISE',
 }
+
+export enum TargetApp {
+  DESKTOP = 'DESKTOP',
+  ADMIN_PORTAL = 'ADMIN_PORTAL',
+  ALL = 'ALL',
+}

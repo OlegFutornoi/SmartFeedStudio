@@ -26,11 +26,13 @@ Central REST API for SmartFeed Studio built with **NestJS 11** + **CQRS** + **Pr
 > **Agent Rule:** Whenever a new `*.e2e-spec.ts` file is added to `services/backend-api/test/`,
 > update this table and the one in [AGENTS.md](./AGENTS.md).
 
-| Test File                                          | Endpoints Covered                                 | Tests | Status  |
-| :------------------------------------------------- | :------------------------------------------------ | :---: | :-----: |
-| [`test/auth.e2e-spec.ts`](./test/auth.e2e-spec.ts) | `POST /api/auth/register`, `POST /api/auth/login` |  12   | ✅ PASS |
+| Test File                                                      | Endpoints Covered                                                                                                                     | Tests | Status  |
+| :------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------ | :---: | :-----: |
+| [`test/auth.e2e-spec.ts`](./test/auth.e2e-spec.ts)             | `POST /api/auth/register`, `POST /api/auth/login`                                                                                     |  12   | ✅ PASS |
+| [`test/users.e2e-spec.ts`](./test/users.e2e-spec.ts)           | `GET /api/users`, `GET /api/users/stats`, `POST /api/auth/change-password`                                                            |   7   | ✅ PASS |
+| [`test/navigation.e2e-spec.ts`](./test/navigation.e2e-spec.ts) | `GET /api/navigation`, `GET /api/navigation/admin`, `POST /api/navigation`, `PATCH /api/navigation/:id`, `DELETE /api/navigation/:id` |   8   | ✅ PASS |
 
-**Total: 12 tests — 12 passing**
+**Total: 27 tests — 27 passing**
 
 ---
 
@@ -38,18 +40,37 @@ Central REST API for SmartFeed Studio built with **NestJS 11** + **CQRS** + **Pr
 
 ### Auth
 
-| Method | Endpoint             | Description                                      | Auth     |
-| :----- | :------------------- | :----------------------------------------------- | :------- |
-| `POST` | `/api/auth/register` | Register new user → returns JWT tokens           | —        |
-| `POST` | `/api/auth/login`    | Login with email + password → returns JWT tokens | —        |
-| `POST` | `/api/auth/refresh`  | Refresh access token using refresh token         | —        |
-| `GET`  | `/api/auth/me`       | Get current user profile                         | `Bearer` |
+| Method | Endpoint                    | Description                                      | Auth     |
+| :----- | :-------------------------- | :----------------------------------------------- | :------- |
+| `POST` | `/api/auth/register`        | Register new user → returns JWT tokens           | —        |
+| `POST` | `/api/auth/login`           | Login with email + password → returns JWT tokens | —        |
+| `POST` | `/api/auth/refresh`         | Refresh access token using refresh token         | —        |
+| `GET`  | `/api/auth/me`              | Get current user profile                         | `Bearer` |
+| `POST` | `/api/auth/change-password` | Change authenticated user password               | `Bearer` |
+
+### Users
+
+| Method | Endpoint           | Description                                  | Auth     |
+| :----- | :----------------- | :------------------------------------------- | :------- |
+| `GET`  | `/api/users`       | Get all registered users with their licenses | `Bearer` |
+| `GET`  | `/api/users/stats` | Get total users and license statistics       | `Bearer` |
 
 ### Licenses
 
 | Method | Endpoint           | Description                       | Auth     |
 | :----- | :----------------- | :-------------------------------- | :------- |
 | `GET`  | `/api/licenses/my` | Get current user license & quotas | `Bearer` |
+
+### Navigation (Dynamic & Role/Plan-Based Access Control)
+
+| Method   | Endpoint                  | Description                                                  | Auth             |
+| :------- | :------------------------ | :----------------------------------------------------------- | :--------------- |
+| `GET`    | `/api/navigation`         | Get accessible navigation items filtered by user role & plan | `Bearer`         |
+| `GET`    | `/api/navigation/admin`   | Get all navigation items for configuration (Admin only)      | `Bearer (Admin)` |
+| `POST`   | `/api/navigation`         | Create a new dynamic navigation item                         | `Bearer (Admin)` |
+| `PATCH`  | `/api/navigation/reorder` | Reorder navigation items                                     | `Bearer (Admin)` |
+| `PATCH`  | `/api/navigation/:id`     | Update label, path, icon, roles, plan, visibility            | `Bearer (Admin)` |
+| `DELETE` | `/api/navigation/:id`     | Delete dynamic navigation item                               | `Bearer (Admin)` |
 
 ### Storage
 
@@ -64,25 +85,35 @@ Central REST API for SmartFeed Studio built with **NestJS 11** + **CQRS** + **Pr
 ```
 HTTP Request
     │
-AuthController
+NavigationController / AuthController
     │
-AuthService ──── CommandBus ──── CreateUserCommand ──── CreateUserHandler ──── PrismaService (write)
-    │                                                                               │
-    │                                                                       EventBus → UserCreatedEvent
-    │                                                                               │
-    │                                                                      LicensesModule (FREE license)
+    ├── CommandBus ──── CreateNavigationItemCommand ──── CreateNavigationItemHandler ──── PrismaService (write)
+    │              └── UpdateNavigationItemCommand ──── UpdateNavigationItemHandler ──── PrismaService (write)
+    │              └── DeleteNavigationItemCommand ──── DeleteNavigationItemHandler ──── PrismaService (write)
+    │              └── ReorderNavigationItemsCommand ── ReorderNavigationItemsHandler ── PrismaService (write)
     │
-    └──── QueryBus ──── GetUserByEmailQuery ──── GetUserByEmailHandler ──── PrismaService (read)
-                   └── GetUserByIdQuery    ──── GetUserByIdHandler    ──── PrismaService (read)
+    └── QueryBus   ──── GetAccessibleNavigationQuery ─── GetAccessibleNavigationHandler ─ Filter by Role & Plan
+                   └── GetAllNavigationItemsQuery   ─── GetAllNavigationItemsHandler ─── PrismaService (read)
 ```
 
 ---
 
-## ⚡ Dev Commands
+## ⚡ Dev Commands & Database GUI
 
 ```bash
 pnpm dev:backend                                          # Start API in watch mode
 pnpm --filter @smartfeed/backend-api exec prisma db push  # Sync Prisma schema
-pnpm prisma:seed                                          # Seed admin account
-pnpm prisma:studio                                        # Open Prisma Studio GUI
+pnpm prisma:seed                                          # Seed admin account & default navigation
+pnpm prisma:studio                                        # Open Prisma Studio GUI (http://localhost:5555)
 ```
+
+### 🔍 Direct Database Connection (GUI Clients)
+
+Connect your database GUI (e.g., TablePlus, DBeaver, pgAdmin) using:
+
+- **Host**: `localhost`
+- **Port**: `5432`
+- **User**: `postgres`
+- **Password**: `postgrespassword`
+- **Database**: `smartfeed_db`
+- **Connection URL**: `postgresql://postgres:postgrespassword@localhost:5432/smartfeed_db?schema=public`

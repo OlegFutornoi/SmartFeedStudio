@@ -1,14 +1,25 @@
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 import { CreateUserHandler } from './commands/create-user.handler';
+import { ChangePasswordHandler } from './commands/change-password.handler';
 import { GetUserByEmailHandler } from './queries/get-user-by-email.handler';
 import { GetUserByIdHandler } from './queries/get-user-by-id.handler';
+import { GetUsersListHandler } from './queries/get-users-list.handler';
+import { GetUsersStatsHandler } from './queries/get-users-stats.handler';
+import { UsersController } from './users.controller';
 
-export const CommandHandlers = [CreateUserHandler];
-export const QueryHandlers = [GetUserByEmailHandler, GetUserByIdHandler];
+export const CommandHandlers = [CreateUserHandler, ChangePasswordHandler];
+export const QueryHandlers = [
+  GetUserByEmailHandler,
+  GetUserByIdHandler,
+  GetUsersListHandler,
+  GetUsersStatsHandler,
+];
 
 @Module({
   imports: [CqrsModule],
+  controllers: [UsersController],
   providers: [...CommandHandlers, ...QueryHandlers],
+  exports: [CqrsModule],
 })
 export class UsersModule {}

@@ -1,10 +1,5 @@
 import React from 'react';
-import { clsx, type ClassValue } from 'clsx';
-import { twMerge } from 'tailwind-merge';
-
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
-}
+import { cn } from '../../lib/utils';
 
 export const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => (
@@ -28,7 +23,7 @@ export const CardHeader = React.forwardRef<HTMLDivElement, React.HTMLAttributes<
 CardHeader.displayName = 'CardHeader';
 
 export const CardTitle = React.forwardRef<
-  HTMLParagraphElement,
+  HTMLHeadingElement,
   React.HTMLAttributes<HTMLHeadingElement>
 >(({ className, ...props }, ref) => (
   <h3
@@ -51,3 +46,10 @@ export const CardContent = React.forwardRef<HTMLDivElement, React.HTMLAttributes
   ({ className, ...props }, ref) => <div ref={ref} className={cn('pt-0', className)} {...props} />,
 );
 CardContent.displayName = 'CardContent';
+
+export const CardFooter = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
+  ({ className, ...props }, ref) => (
+    <div ref={ref} className={cn('flex items-center pt-4', className)} {...props} />
+  ),
+);
+CardFooter.displayName = 'CardFooter';

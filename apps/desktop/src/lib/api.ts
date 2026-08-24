@@ -1,4 +1,4 @@
-import type { AuthResponseDto, UserProfile, Role } from '@smartfeed/shared';
+import type { AuthResponseDto, UserProfile, Role, NavigationItemDto } from '@smartfeed/shared';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
 
@@ -84,4 +84,21 @@ export async function getCurrentUser(token: string): Promise<UserProfile> {
   }
 
   return data as UserProfile;
+}
+
+export async function getDesktopNavigation(token: string): Promise<NavigationItemDto[]> {
+  const response = await fetch(`${API_BASE_URL}/navigation?app=DESKTOP`, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  const data = await response.json().catch(() => []);
+
+  if (!response.ok) {
+    return [];
+  }
+
+  return data as NavigationItemDto[];
 }

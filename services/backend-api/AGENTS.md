@@ -137,8 +137,8 @@ All E2E tests live in `services/backend-api/test/` as `*.e2e-spec.ts` files.
 pnpm --filter @smartfeed/backend-api test:e2e
 ```
 
-| File                    | Endpoints Tested                                  | Tests | Status  |
-| :---------------------- | :------------------------------------------------ | :---: | :-----: |
-| `test/auth.e2e-spec.ts` | `POST /api/auth/register`, `POST /api/auth/login` |  12   | ✅ PASS |
+| `test/auth.e2e-spec.ts` | `POST /api/auth/register`, `POST /api/auth/login` | 12 | ✅ PASS |
+| `test/users.e2e-spec.ts` | `GET /api/users`, `GET /api/users/stats`, `POST /api/auth/change-password` | 7 | ✅ PASS |
+| `test/navigation.e2e-spec.ts` | `GET /api/navigation`, `GET /api/navigation/admin`, `POST /api/navigation`, `PATCH /api/navigation/:id`, `DELETE /api/navigation/:id` | 8 | ✅ PASS |
 
-**Total: 12 tests — 12 passing**
+**Total: 27 tests — 27 passing**

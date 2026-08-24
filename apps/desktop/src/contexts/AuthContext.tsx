@@ -41,7 +41,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return null;
   });
 
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(() => {
+    return !!localStorage.getItem(TOKEN_KEY);
+  });
 
   const logout = useCallback(() => {
     localStorage.removeItem(TOKEN_KEY);

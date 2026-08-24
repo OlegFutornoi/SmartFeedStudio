@@ -11,12 +11,14 @@ RUN corepack enable && corepack prepare pnpm@9.15.4 --activate
 # Install OpenSSL & libc for Prisma build
 RUN apk add --no-cache openssl libc6-compat
 
-# Copy workspace definition files
+# Copy workspace definition files (all packages declared in pnpm-workspace.yaml to satisfy frozen-lockfile)
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json ./
 COPY packages/shared/package.json ./packages/shared/
 COPY services/backend-api/package.json ./services/backend-api/
+COPY apps/admin-portal/package.json ./apps/admin-portal/
+COPY apps/desktop/package.json ./apps/desktop/
 
-# Install dependencies
+# Install all dependencies
 RUN pnpm install --frozen-lockfile
 
 # Copy source code and Prisma schema
@@ -45,23 +47,13 @@ RUN apk add --no-cache openssl libc6-compat
 RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 nestjs
 
-# Enable pnpm
-RUN corepack enable && corepack prepare pnpm@9.15.4 --activate
-
-# Copy workspace files for production install
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-COPY packages/shared/package.json ./packages/shared/
-COPY services/backend-api/package.json ./services/backend-api/
-COPY services/backend-api/prisma ./services/backend-api/prisma/
-
-# Install production dependencies only
-RUN pnpm install --frozen-lockfile --prod
-
-# Copy compiled artifacts from builder
-COPY --from=builder /app/packages/shared/dist ./packages/shared/dist
-COPY --from=builder /app/services/backend-api/dist ./services/backend-api/dist
-COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
-COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
+# Copy workspace dependencies & built assets from builder
+COPY --from=builder --chown=nestjs:nodejs /app/node_modules ./node_modules
+COPY --from=builder --chown=nestjs:nodejs /app/package.json /app/pnpm-workspace.yaml ./
+COPY --from=builder --chown=nestjs:nodejs /app/packages/shared ./packages/shared
+COPY --from=builder --chown=nestjs:nodejs /app/services/backend-api/package.json ./services/backend-api/
+COPY --from=builder --chown=nestjs:nodejs /app/services/backend-api/dist ./services/backend-api/dist
+COPY --from=builder --chown=nestjs:nodejs /app/services/backend-api/prisma ./services/backend-api/prisma
 
 USER nestjs
 

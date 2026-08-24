@@ -1,40 +1,123 @@
 'use client';
 
 import React from 'react';
-import { Bell, Search, User } from 'lucide-react';
+import Link from 'next/link';
+import { PanelLeft, Menu, Moon, Sun, Palette, Search, ShieldCheck } from 'lucide-react';
 import { Button } from '../ui/button';
+import { Badge } from '../ui/badge';
+import { useAuth } from '../../contexts/AuthContext';
+import { useTheme } from '../../contexts/ThemeContext';
+import { useSidebar } from '../../contexts/SidebarContext';
 
 export function Header() {
+  const { user } = useAuth();
+  const { setThemeMode, resolvedMode } = useTheme();
+  const { toggleSidebar, toggleMobileSidebar, isCollapsed } = useSidebar();
+
+  const toggleTheme = () => {
+    setThemeMode(resolvedMode === 'dark' ? 'light' : 'dark');
+  };
+
   return (
-    <header className="h-16 border-b border-border bg-card/30 backdrop-blur px-8 flex items-center justify-between sticky top-0 z-10">
-      <div className="flex items-center gap-4 flex-1 max-w-md">
+    <header className="h-16 border-b border-border bg-card/40 backdrop-blur-md px-4 sm:px-6 flex items-center justify-between sticky top-0 z-10 gap-4">
+      {/* Left side: Sidebar Toggle & System Status */}
+      <div className="flex items-center space-x-3">
+        {/* Desktop Sidebar Toggle Button (dashboard-01 style) */}
+        <Button
+          variant="ghost"
+          size="sm"
+          className="hidden md:flex h-9 w-9 p-0 text-muted-foreground hover:text-foreground hover:bg-muted/80 rounded-xl"
+          onClick={toggleSidebar}
+          title={isCollapsed ? 'Розгорнути бокове меню' : 'Згорнути бокове меню'}
+        >
+          <PanelLeft className="h-5 w-5 text-foreground" />
+        </Button>
+
+        {/* Mobile Menu Toggle Button */}
+        <Button
+          variant="ghost"
+          size="sm"
+          className="flex md:hidden h-9 w-9 p-0 text-muted-foreground hover:text-foreground hover:bg-muted/80 rounded-xl"
+          onClick={toggleMobileSidebar}
+          title="Відкрити меню"
+        >
+          <Menu className="h-5 w-5 text-foreground" />
+        </Button>
+
+        <div className="h-4 w-px bg-border hidden sm:block" />
+
+        <div className="flex items-center space-x-2">
+          <span className="text-sm font-semibold text-foreground hidden sm:inline">
+            SmartFeed Studio
+          </span>
+          <Badge
+            variant="outline"
+            className="text-[11px] bg-emerald-500/10 text-emerald-400 border-emerald-500/30 flex items-center gap-1"
+          >
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="hidden md:inline">Система</span> онлайн
+          </Badge>
+        </div>
+      </div>
+
+      {/* Center: Search input */}
+      <div className="hidden lg:flex items-center max-w-sm flex-1">
         <div className="relative w-full">
-          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <input
             type="text"
-            placeholder="Search users, licenses, XML feeds..."
-            className="w-full bg-secondary/50 border border-border rounded-lg pl-9 pr-4 py-1.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+            placeholder="Пошук у системі..."
+            className="w-full bg-secondary/40 border border-border/80 rounded-xl pl-9 pr-4 py-1.5 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
           />
         </div>
       </div>
 
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" size="sm" className="relative p-2">
-          <Bell className="w-4 h-4 text-muted-foreground" />
-          <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-primary" />
+      {/* Right side: Actions & User Avatar */}
+      <div className="flex items-center gap-2 sm:gap-3">
+        {/* Quick Theme Toggle Button */}
+        <Button
+          variant="outline"
+          size="sm"
+          className="h-8 w-8 p-0 border-border hover:bg-muted/80 rounded-lg"
+          onClick={toggleTheme}
+          title={`Перемкнути на ${resolvedMode === 'dark' ? 'світлу' : 'темну'} тему`}
+        >
+          {resolvedMode === 'dark' ? (
+            <Sun className="h-4 w-4 text-amber-400" />
+          ) : (
+            <Moon className="h-4 w-4 text-primary" />
+          )}
         </Button>
 
-        <div className="h-4 w-px bg-border" />
+        {/* Link to Settings */}
+        <Link href="/settings">
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-8 text-xs gap-1.5 border-border hover:bg-muted/80 rounded-lg"
+          >
+            <Palette className="w-3.5 h-3.5 text-primary" />
+            <span className="hidden sm:inline">Тема & Налаштування</span>
+          </Button>
+        </Link>
 
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary text-sm font-semibold border border-primary/30">
-            <User className="w-4 h-4" />
+        <div className="h-4 w-px bg-border hidden sm:block" />
+
+        {/* User Profile */}
+        <Link href="/settings" className="flex items-center gap-2.5 group">
+          <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary text-xs font-bold border border-primary/30 group-hover:scale-105 transition-transform">
+            {user?.fullName ? user.fullName.slice(0, 2).toUpperCase() : 'AD'}
           </div>
-          <div className="text-left">
-            <div className="text-xs font-semibold text-foreground">Super Admin</div>
-            <div className="text-[11px] text-muted-foreground">admin@smartfeed.studio</div>
+          <div className="text-left hidden xl:block">
+            <div className="text-xs font-semibold text-foreground flex items-center gap-1 group-hover:text-primary transition-colors">
+              {user?.fullName || 'Адміністратор'}
+              <ShieldCheck className="h-3 w-3 text-primary" />
+            </div>
+            <div className="text-[10px] text-muted-foreground font-mono truncate max-w-[130px]">
+              {user?.email || 'admin@gmail.com'}
+            </div>
           </div>
-        </div>
+        </Link>
       </div>
     </header>
   );

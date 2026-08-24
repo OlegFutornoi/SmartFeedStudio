@@ -22,6 +22,12 @@ enum PlanType {
   ENTERPRISE
 }
 
+enum TargetApp {
+  DESKTOP
+  ADMIN_PORTAL
+  ALL
+}
+
 model User {
   id           String         @id @default(uuid())
   email        String         @unique
@@ -79,4 +85,22 @@ model ProductImage {
 
   @@index([userId])
   @@map("product_images")
+}
+
+model NavigationItem {
+  id            String    @id @default(uuid())
+  key           String    @unique
+  labelUk       String
+  labelEn       String
+  path          String
+  icon          String    @default("LayoutDashboard")
+  order         Int       @default(0)
+  isVisible     Boolean   @default(true)
+  requiredRoles Role[]    @default([USER, ADMIN, SUPER_ADMIN])
+  requiredPlan  PlanType?
+  targetApp     TargetApp @default(DESKTOP)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@map("navigation_items")
 }
