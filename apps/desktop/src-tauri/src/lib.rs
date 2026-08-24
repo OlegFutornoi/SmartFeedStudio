@@ -1,4 +1,5 @@
 use keyring::Entry;
+#[allow(unused_imports)]
 use tauri::Manager;
 
 const SERVICE_NAME: &str = "SmartFeedStudio";
