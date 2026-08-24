@@ -42,12 +42,12 @@ jobs:
         with:
           workspaces: apps/desktop/src-tauri -> target
 
-      # Install Linux system dependencies required by WebKitGTK and Tauri
+      # Install Linux system dependencies required by WebKitGTK, Tauri, and Keyring
       - name: Install Linux System Dependencies
         if: matrix.os == 'ubuntu-22.04'
         run: |
           sudo apt-get update
-          sudo apt-get install -y libwebkit2gtk-4.1-dev build-essential curl wget file libssl-dev libgtk-3-dev libayatana-appindicator3-dev librsvg2-dev
+          sudo apt-get install -y libwebkit2gtk-4.1-dev build-essential curl wget file libssl-dev libgtk-3-dev libayatana-appindicator3-dev librsvg2-dev libdbus-1-dev
 
       - name: Install Monorepo Dependencies
         run: pnpm install --frozen-lockfile
