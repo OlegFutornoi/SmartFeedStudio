@@ -1,4 +1,18 @@
 {
+  "playwright-auto-approver": {
+    "PreToolUse": [
+      {
+        "matcher": "call_mcp_tool|browser_.*|mcp_playwright_.*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node ./scripts/allow-playwright.mjs",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  },
   "auto-formatter": {
     "PostToolUse": [
       {
