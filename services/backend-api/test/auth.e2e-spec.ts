@@ -2,12 +2,16 @@ import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 import { AppModule } from '../src/app.module';
+import { PrismaService } from '../src/prisma/prisma.service';
 
 /**
  * E2E Tests: Auth — Registration & Login
  *
- * TDD RED phase: tests written BEFORE implementation changes.
+ * TDD: tests written BEFORE implementation changes (RED → GREEN).
  * Each test describes the expected contract of the REST API.
+ *
+ * Cleanup: afterAll deletes every user (and their related License records)
+ * created during this test run so the DB is left in a clean state.
  *
  * POST /api/auth/register
  *   - Creates a new user in the database
@@ -26,6 +30,7 @@ import { AppModule } from '../src/app.module';
  */
 describe('Auth — Registration & Login (E2E)', () => {
   let app: INestApplication;
+  let prisma: PrismaService;
 
   // Unique email per test run to avoid conflicts with existing data
   const timestamp = Date.now();
@@ -35,12 +40,16 @@ describe('Auth — Registration & Login (E2E)', () => {
     fullName: 'E2E Test User',
   };
 
+  // Track all emails registered during this run for cleanup
+  const createdEmails: string[] = [];
+
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
 
     app = moduleFixture.createNestApplication();
+    prisma = moduleFixture.get<PrismaService>(PrismaService);
 
     // Mirror the same global pipes as main.ts
     app.setGlobalPrefix('api');
@@ -57,6 +66,16 @@ describe('Auth — Registration & Login (E2E)', () => {
   });
 
   afterAll(async () => {
+    // ── CLEANUP ───────────────────────────────────────────────────────────────
+    // Delete all users created during this test run.
+    // Prisma cascade will also remove related License records automatically.
+    if (createdEmails.length > 0) {
+      await prisma.user.deleteMany({
+        where: { email: { in: createdEmails } },
+      });
+    }
+    // ─────────────────────────────────────────────────────────────────────────
+
     await app.close();
   });
 
@@ -66,6 +85,8 @@ describe('Auth — Registration & Login (E2E)', () => {
 
   describe('POST /api/auth/register', () => {
     it('creates a new user and returns JWT tokens', async () => {
+      createdEmails.push(testUser.email); // mark for cleanup
+
       const response = await request(app.getHttpServer())
         .post('/api/auth/register')
         .send(testUser)
@@ -91,7 +112,6 @@ describe('Auth — Registration & Login (E2E)', () => {
     });
 
     it('returns 409 Conflict when registering with an already-taken email', async () => {
-      // The same email was registered in the test above — second attempt must fail
       await request(app.getHttpServer()).post('/api/auth/register').send(testUser).expect(409);
     });
 
@@ -130,7 +150,6 @@ describe('Auth — Registration & Login (E2E)', () => {
 
   describe('POST /api/auth/login', () => {
     it('authenticates an existing user and returns JWT tokens', async () => {
-      // User was created by the registration test above — login must succeed
       const response = await request(app.getHttpServer())
         .post('/api/auth/login')
         .send({ email: testUser.email, password: testUser.password })
@@ -165,8 +184,8 @@ describe('Auth — Registration & Login (E2E)', () => {
         .send({ email: testUser.email, password: testUser.password })
         .expect(200);
 
-      // If login created users, registering with same email would return 200 not 409.
-      // The 409 here proves the user count did NOT increase.
+      // If login created users, re-registering would return 200 not 409.
+      // The 409 proves the user count did NOT increase.
       await request(app.getHttpServer()).post('/api/auth/register').send(testUser).expect(409);
     });
 
