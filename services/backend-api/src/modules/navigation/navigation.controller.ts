@@ -8,7 +8,6 @@ import {
   Param,
   Query,
   UseGuards,
-  ForbiddenException,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags, ApiQuery } from '@nestjs/swagger';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
@@ -21,6 +20,8 @@ import {
   PlanType,
 } from '@smartfeed/shared';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../auth/decorators/roles.decorator';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { GetAccessibleNavigationQuery } from './queries/get-accessible-navigation.query';
 import { GetAllNavigationItemsQuery } from './queries/get-all-navigation-items.query';
@@ -55,67 +56,52 @@ export class NavigationController {
   }
 
   @Get('admin')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.SUPER_ADMIN, Role.ADMIN)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get all navigation items for management (Admin only)' })
   @ApiQuery({ name: 'app', enum: TargetApp, required: false })
-  async getAllForAdmin(@CurrentUser() user: any, @Query('app') app?: TargetApp) {
-    if (user.role !== Role.SUPER_ADMIN && user.role !== Role.ADMIN) {
-      throw new ForbiddenException('Only administrators can access this endpoint');
-    }
-
+  async getAllForAdmin(@CurrentUser() _user: any, @Query('app') app?: TargetApp) {
     return this.queryBus.execute(new GetAllNavigationItemsQuery(app));
   }
 
   @Post()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.SUPER_ADMIN, Role.ADMIN)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Create a new navigation item (Admin only)' })
-  async createItem(@CurrentUser() user: any, @Body() dto: CreateNavigationItemDto) {
-    if (user.role !== Role.SUPER_ADMIN && user.role !== Role.ADMIN) {
-      throw new ForbiddenException('Only administrators can create navigation items');
-    }
-
+  async createItem(@CurrentUser() _user: any, @Body() dto: CreateNavigationItemDto) {
     return this.commandBus.execute(new CreateNavigationItemCommand(dto));
   }
 
   @Patch('reorder')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.SUPER_ADMIN, Role.ADMIN)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Reorder navigation items (Admin only)' })
-  async reorderItems(@CurrentUser() user: any, @Body() dto: ReorderNavigationItemsDto) {
-    if (user.role !== Role.SUPER_ADMIN && user.role !== Role.ADMIN) {
-      throw new ForbiddenException('Only administrators can reorder navigation items');
-    }
-
+  async reorderItems(@CurrentUser() _user: any, @Body() dto: ReorderNavigationItemsDto) {
     return this.commandBus.execute(new ReorderNavigationItemsCommand(dto));
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.SUPER_ADMIN, Role.ADMIN)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Update a navigation item (Admin only)' })
   async updateItem(
-    @CurrentUser() user: any,
+    @CurrentUser() _user: any,
     @Param('id') id: string,
     @Body() dto: UpdateNavigationItemDto,
   ) {
-    if (user.role !== Role.SUPER_ADMIN && user.role !== Role.ADMIN) {
-      throw new ForbiddenException('Only administrators can update navigation items');
-    }
-
     return this.commandBus.execute(new UpdateNavigationItemCommand(id, dto));
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.SUPER_ADMIN, Role.ADMIN)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Delete a navigation item (Admin only)' })
-  async deleteItem(@CurrentUser() user: any, @Param('id') id: string) {
-    if (user.role !== Role.SUPER_ADMIN && user.role !== Role.ADMIN) {
-      throw new ForbiddenException('Only administrators can delete navigation items');
-    }
-
+  async deleteItem(@CurrentUser() _user: any, @Param('id') id: string) {
     return this.commandBus.execute(new DeleteNavigationItemCommand(id));
   }
 }

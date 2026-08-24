@@ -1,0 +1,64 @@
+import { Page, Locator, expect } from '@playwright/test';
+import { BasePage } from './base.page';
+import { HeaderComponent } from '../components/header.component';
+import { NavigationSimulatorComponent } from '../components/simulator.component';
+import { NavigationItemDialogComponent } from '../components/dialog.component';
+import { TargetApp } from '@smartfeed/shared';
+
+export class NavigationPage extends BasePage {
+  readonly header: HeaderComponent;
+  readonly simulator: NavigationSimulatorComponent;
+  readonly dialog: NavigationItemDialogComponent;
+  readonly pageTitle: Locator;
+  readonly addItemButton: Locator;
+  readonly itemsListCard: Locator;
+  readonly filterDesktopBtn: Locator;
+  readonly filterAdminBtn: Locator;
+  readonly filterAllBtn: Locator;
+
+  constructor(page: Page) {
+    super(page);
+    this.header = new HeaderComponent(page);
+    this.simulator = new NavigationSimulatorComponent(page);
+    this.dialog = new NavigationItemDialogComponent(page);
+    this.pageTitle = page.locator('h1');
+    this.addItemButton = page.getByRole('button', { name: /Додати пункт меню|Add Menu Item/i });
+    this.itemsListCard = page.getByTestId('navigation-items-card');
+    this.filterDesktopBtn = this.itemsListCard.getByRole('button', { name: /Desktop/i });
+    this.filterAdminBtn = this.itemsListCard.getByRole('button', { name: /Admin/i });
+    this.filterAllBtn = this.itemsListCard.getByRole('button', { name: /Всі|All/i });
+  }
+
+  async goto(): Promise<void> {
+    await this.page.goto('/navigation');
+    await this.waitForLoaded();
+  }
+
+  async openCreateDialog(): Promise<NavigationItemDialogComponent> {
+    await this.addItemButton.click();
+    await expect(this.dialog.container).toBeVisible();
+    return this.dialog;
+  }
+
+  async filterByApp(app: TargetApp | 'ALL'): Promise<void> {
+    if (app === TargetApp.DESKTOP) {
+      await this.filterDesktopBtn.click();
+    } else if (app === TargetApp.ADMIN_PORTAL) {
+      await this.filterAdminBtn.click();
+    } else {
+      await this.filterAllBtn.click();
+    }
+  }
+
+  async expectPageTitle(text: string): Promise<void> {
+    await expect(this.pageTitle).toContainText(text);
+  }
+
+  async expectItemInList(labelUk: string): Promise<void> {
+    await expect(this.itemsListCard.getByText(labelUk).first()).toBeVisible();
+  }
+
+  async expectItemNotInList(labelUk: string): Promise<void> {
+    await expect(this.itemsListCard.getByText(labelUk)).not.toBeVisible();
+  }
+}

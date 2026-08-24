@@ -1,0 +1,10 @@
+{
+  "title": "Управління ліцензіями",
+  "subtitle": "Моніторинг тарифних планів, квот лімітів XML-товарів та AI-кредитів",
+  "free_tier": "Free Plan",
+  "pro_tier": "PRO Plan",
+  "enterprise_tier": "Enterprise Plan",
+  "max_xml_limit": "Ліміт товарів XML",
+  "ai_credits": "AI Кредитів",
+  "cloud_backup": "Хмарний бекап"
+}

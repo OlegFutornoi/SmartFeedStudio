@@ -1,0 +1,10 @@
+{
+  "title": "License Management",
+  "subtitle": "Monitor subscription plans, XML product limits, and AI credit quotas",
+  "free_tier": "Free Plan",
+  "pro_tier": "PRO Plan",
+  "enterprise_tier": "Enterprise Plan",
+  "max_xml_limit": "Max XML Products",
+  "ai_credits": "AI Credits",
+  "cloud_backup": "Cloud Backup"
+}

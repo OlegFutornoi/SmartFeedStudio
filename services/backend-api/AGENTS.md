@@ -140,5 +140,15 @@ pnpm --filter @smartfeed/backend-api test:e2e
 | `test/auth.e2e-spec.ts` | `POST /api/auth/register`, `POST /api/auth/login` | 12 | ✅ PASS |
 | `test/users.e2e-spec.ts` | `GET /api/users`, `GET /api/users/stats`, `POST /api/auth/change-password` | 7 | ✅ PASS |
 | `test/navigation.e2e-spec.ts` | `GET /api/navigation`, `GET /api/navigation/admin`, `POST /api/navigation`, `PATCH /api/navigation/:id`, `DELETE /api/navigation/:id` | 8 | ✅ PASS |
+| `test/plans.e2e-spec.ts` | `GET /api/plans`, `GET /api/plans/admin`, `POST /api/plans`, `PATCH /api/plans/:id`, `DELETE /api/plans/:id`, `GET /api/licenses/admin` | 12 | ✅ PASS |
 
-**Total: 27 tests — 27 passing**
+**Total: 39 tests — 39 passing**
+
+### 🧹 Mandatory Test Data Teardown
+
+Every `*.e2e-spec.ts` suite **MUST** implement complete database teardown in `afterAll`:
+
+- Delete created users by IDs and created emails array
+- Cascade deletes to related `License`, `Snapshot`, and `ProductImage` records
+- Delete test navigation items (e.g. `analytics_*`)
+- Never leave dirty records or side effects in the test database

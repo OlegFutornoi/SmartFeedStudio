@@ -1,0 +1,13 @@
+{
+  "auth_token_missing_or_invalid": "Session expired or authentication token is invalid. Please log in again.",
+  "unauthorized": "Unauthorized. Please log into the system.",
+  "forbidden": "You do not have permission to perform this action.",
+  "invalid_credentials": "Invalid email or password.",
+  "user_already_exists": "A user with this email already exists.",
+  "network_error": "Network error. Failed to connect to the backend server.",
+  "unknown_error": "An unexpected error occurred. Please try again later.",
+  "load_items_failed": "Failed to load navigation items.",
+  "save_item_failed": "Failed to save navigation item.",
+  "delete_item_failed": "Failed to delete navigation item.",
+  "reorder_failed": "Failed to reorder navigation items."
+}

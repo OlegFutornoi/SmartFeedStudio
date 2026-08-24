@@ -4,27 +4,47 @@ import React, { createContext, useContext, useEffect, useState, useCallback } fr
 import { useAuth } from './AuthContext';
 
 export type ThemeMode = 'dark' | 'light' | 'system';
-export type AccentColor = 'violet' | 'blue' | 'emerald' | 'rose' | 'amber' | 'zinc';
+export type AccentColor = 'zinc' | 'slate' | 'stone' | 'gray' | 'neutral' | 'bronze';
 
 export interface AccentOption {
   id: AccentColor;
   name: string;
   colorHex: string;
-  badgeClass: string;
+  isDefault?: boolean;
 }
 
 export const ACCENT_OPTIONS: AccentOption[] = [
-  { id: 'violet', name: 'Фіолетовий (Default)', colorHex: '#8b5cf6', badgeClass: 'bg-violet-500' },
-  { id: 'blue', name: 'Синій (Blue)', colorHex: '#3b82f6', badgeClass: 'bg-blue-500' },
   {
-    id: 'emerald',
-    name: 'Смарагдовий (Emerald)',
-    colorHex: '#10b981',
-    badgeClass: 'bg-emerald-500',
+    id: 'zinc',
+    name: 'Zinc (Default)',
+    colorHex: '#ffffff',
+    isDefault: true,
   },
-  { id: 'rose', name: 'Рожевий (Rose)', colorHex: '#f43f5e', badgeClass: 'bg-rose-500' },
-  { id: 'amber', name: 'Бурштиновий (Amber)', colorHex: '#f59e0b', badgeClass: 'bg-amber-500' },
-  { id: 'zinc', name: 'Монохромний (Zinc)', colorHex: '#71717a', badgeClass: 'bg-zinc-400' },
+  {
+    id: 'slate',
+    name: 'Slate',
+    colorHex: '#94a3b8',
+  },
+  {
+    id: 'stone',
+    name: 'Stone',
+    colorHex: '#d6d3d1',
+  },
+  {
+    id: 'gray',
+    name: 'Gray',
+    colorHex: '#9ca3af',
+  },
+  {
+    id: 'neutral',
+    name: 'Neutral',
+    colorHex: '#a3a3a3',
+  },
+  {
+    id: 'bronze',
+    name: 'Bronze',
+    colorHex: '#d97706',
+  },
 ];
 
 interface ThemeContextType {
@@ -49,7 +69,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   );
 
   const [themeMode, setThemeModeState] = useState<ThemeMode>('dark');
-  const [accentColor, setAccentColorState] = useState<AccentColor>('violet');
+  const [accentColor, setAccentColorState] = useState<AccentColor>('zinc');
   const [resolvedMode, setResolvedMode] = useState<'dark' | 'light'>('dark');
 
   // Load theme settings when user changes
@@ -65,7 +85,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
     const savedAccent = (localStorage.getItem(userAccentKey) ||
       localStorage.getItem('smartfeed_theme_accent') ||
-      'violet') as AccentColor;
+      'zinc') as AccentColor;
 
     setThemeModeState(savedMode);
     setAccentColorState(savedAccent);

@@ -10,6 +10,10 @@ import {
   UpdateNavigationItemDto,
   ReorderNavigationItemsDto,
   TargetApp,
+  TariffPlanDto,
+  CreateTariffPlanDto,
+  UpdateTariffPlanDto,
+  AdminLicenseItemDto,
 } from '@smartfeed/shared';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
@@ -33,7 +37,7 @@ class ApiClient {
     const token = this.getToken();
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
-      ...(options.headers as Record<string, string>),
+      ...((options.headers as Record<string, string>) || {}),
     };
 
     if (token) {
@@ -45,22 +49,20 @@ class ApiClient {
       headers,
     });
 
-    if (response.status === 401) {
-      this.setToken(null);
-      if (typeof window !== 'undefined' && !window.location.pathname.startsWith('/login')) {
-        window.location.href = '/login';
-      }
-    }
-
     if (!response.ok) {
-      let errorMessage = 'An error occurred';
+      let errorMessage = 'Щось пішло не так';
       try {
         const errorData = await response.json();
         errorMessage = errorData.message || errorMessage;
       } catch {
-        errorMessage = response.statusText || errorMessage;
+        errorMessage = response.statusText;
       }
       throw new Error(errorMessage);
+    }
+
+    // Return empty object for 204 No Content
+    if (response.status === 204) {
+      return {} as T;
     }
 
     return response.json();
@@ -68,14 +70,14 @@ class ApiClient {
 
   // Auth Endpoints
   async login(dto: LoginDto): Promise<AuthResponseDto> {
-    const data = await this.request<AuthResponseDto>('/auth/login', {
+    const res = await this.request<AuthResponseDto>('/auth/login', {
       method: 'POST',
       body: JSON.stringify(dto),
     });
-    if (data?.tokens?.accessToken) {
-      this.setToken(data.tokens.accessToken);
+    if (res.tokens?.accessToken) {
+      this.setToken(res.tokens.accessToken);
     }
-    return data;
+    return res;
   }
 
   async getMe(): Promise<UserProfile> {
@@ -136,11 +138,46 @@ class ApiClient {
     });
   }
 
-  async reorderNavigationItems(dto: ReorderNavigationItemsDto): Promise<any> {
-    return this.request<any>('/navigation/reorder', {
+  async reorderNavigationItems(dto: ReorderNavigationItemsDto): Promise<{ success: boolean }> {
+    return this.request<{ success: boolean }>('/navigation/reorder', {
       method: 'PATCH',
       body: JSON.stringify(dto),
     });
+  }
+
+  // Tariff Plans Endpoints
+  async getTariffPlans(currency?: string): Promise<TariffPlanDto[]> {
+    const qs = currency ? `?currency=${currency}` : '';
+    return this.request<TariffPlanDto[]>(`/plans${qs}`);
+  }
+
+  async getAdminTariffPlans(): Promise<TariffPlanDto[]> {
+    return this.request<TariffPlanDto[]>('/plans/admin/all');
+  }
+
+  async createTariffPlan(dto: CreateTariffPlanDto): Promise<TariffPlanDto> {
+    return this.request<TariffPlanDto>('/plans', {
+      method: 'POST',
+      body: JSON.stringify(dto),
+    });
+  }
+
+  async updateTariffPlan(id: string, dto: UpdateTariffPlanDto): Promise<TariffPlanDto> {
+    return this.request<TariffPlanDto>(`/plans/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(dto),
+    });
+  }
+
+  async deleteTariffPlan(id: string): Promise<{ success: boolean }> {
+    return this.request<{ success: boolean }>(`/plans/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  // Licenses Endpoints
+  async getAdminLicenses(): Promise<AdminLicenseItemDto[]> {
+    return this.request<AdminLicenseItemDto[]>('/licenses/admin');
   }
 }
 

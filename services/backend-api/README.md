@@ -26,13 +26,16 @@ Central REST API for SmartFeed Studio built with **NestJS 11** + **CQRS** + **Pr
 > **Agent Rule:** Whenever a new `*.e2e-spec.ts` file is added to `services/backend-api/test/`,
 > update this table and the one in [AGENTS.md](./AGENTS.md).
 
-| Test File                                                      | Endpoints Covered                                                                                                                     | Tests | Status  |
-| :------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------ | :---: | :-----: |
-| [`test/auth.e2e-spec.ts`](./test/auth.e2e-spec.ts)             | `POST /api/auth/register`, `POST /api/auth/login`                                                                                     |  12   | ✅ PASS |
-| [`test/users.e2e-spec.ts`](./test/users.e2e-spec.ts)           | `GET /api/users`, `GET /api/users/stats`, `POST /api/auth/change-password`                                                            |   7   | ✅ PASS |
-| [`test/navigation.e2e-spec.ts`](./test/navigation.e2e-spec.ts) | `GET /api/navigation`, `GET /api/navigation/admin`, `POST /api/navigation`, `PATCH /api/navigation/:id`, `DELETE /api/navigation/:id` |   8   | ✅ PASS |
+| Test File                                                      | Endpoints Covered                                                                                                                       | Tests | Status  |
+| :------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------- | :---: | :-----: |
+| [`test/auth.e2e-spec.ts`](./test/auth.e2e-spec.ts)             | `POST /api/auth/register`, `POST /api/auth/login`                                                                                       |  12   | ✅ PASS |
+| [`test/users.e2e-spec.ts`](./test/users.e2e-spec.ts)           | `GET /api/users`, `GET /api/users/stats`, `POST /api/auth/change-password`                                                              |   7   | ✅ PASS |
+| [`test/navigation.e2e-spec.ts`](./test/navigation.e2e-spec.ts) | `GET /api/navigation`, `GET /api/navigation/admin`, `POST /api/navigation`, `PATCH /api/navigation/:id`, `DELETE /api/navigation/:id`   |   8   | ✅ PASS |
+| [`test/plans.e2e-spec.ts`](./test/plans.e2e-spec.ts)           | `GET /api/plans`, `GET /api/plans/admin`, `POST /api/plans`, `PATCH /api/plans/:id`, `DELETE /api/plans/:id`, `GET /api/licenses/admin` |  12   | ✅ PASS |
 
-**Total: 27 tests — 27 passing**
+**Total: 39 tests — 39 passing**
+
+> **🧹 Mandatory Data Teardown:** All E2E test suites cleanly wipe all test-generated users, licenses, tariff plans, and navigation items in `afterAll` to guarantee zero test leftovers or database pollution.
 
 ---
 

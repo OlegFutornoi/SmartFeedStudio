@@ -56,8 +56,12 @@ export default function SettingsPage() {
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
-    } catch (err: any) {
-      setError(err?.message || 'Не вдалося змінити пароль. Перевірте поточний пароль.');
+    } catch (err: unknown) {
+      const msg =
+        err instanceof Error
+          ? err.message
+          : 'Не вдалося змінити пароль. Перевірте поточний пароль.';
+      setError(msg);
     } finally {
       setIsSubmitting(false);
     }

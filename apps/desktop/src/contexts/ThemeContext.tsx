@@ -1,11 +1,60 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback, useMemo } from 'react';
 
 export type Theme = 'dark' | 'light' | 'system';
-export type AccentColor = 'emerald' | 'blue' | 'violet' | 'amber';
+export type AccentColor = 'zinc' | 'slate' | 'stone' | 'gray' | 'neutral' | 'bronze';
+
+export interface AccentOption {
+  id: AccentColor;
+  labelUk: string;
+  labelEn: string;
+  colorHex: string;
+  isDefault?: boolean;
+}
+
+export const ACCENT_OPTIONS: AccentOption[] = [
+  {
+    id: 'zinc',
+    labelUk: 'Zinc (Монохромна)',
+    labelEn: 'Zinc (Monochrome)',
+    colorHex: '#ffffff',
+    isDefault: true,
+  },
+  {
+    id: 'slate',
+    labelUk: 'Slate (Сланцева)',
+    labelEn: 'Slate (Cool Gray)',
+    colorHex: '#94a3b8',
+  },
+  {
+    id: 'stone',
+    labelUk: 'Stone (Теплий камінь)',
+    labelEn: 'Stone (Warm Gray)',
+    colorHex: '#d6d3d1',
+  },
+  {
+    id: 'gray',
+    labelUk: 'Gray (Графітова)',
+    labelEn: 'Gray (Graphite)',
+    colorHex: '#9ca3af',
+  },
+  {
+    id: 'neutral',
+    labelUk: 'Neutral (Нейтральна)',
+    labelEn: 'Neutral',
+    colorHex: '#a3a3a3',
+  },
+  {
+    id: 'bronze',
+    labelUk: 'Bronze (Темна бронза)',
+    labelEn: 'Bronze (Metallic)',
+    colorHex: '#d97706',
+  },
+];
 
 interface ThemeProviderProps {
   children: React.ReactNode;
   defaultTheme?: Theme;
+  defaultAccent?: AccentColor;
   storageKey?: string;
 }
 
@@ -22,6 +71,7 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 export function ThemeProvider({
   children,
   defaultTheme = 'dark',
+  defaultAccent = 'zinc',
   storageKey = 'smartfeed_theme',
 }: ThemeProviderProps) {
   const [theme, setThemeState] = useState<Theme>(() => {
@@ -29,7 +79,7 @@ export function ThemeProvider({
   });
 
   const [accentColor, setAccentColorState] = useState<AccentColor>(() => {
-    return (localStorage.getItem('smartfeed_theme_accent') as AccentColor) || 'emerald';
+    return (localStorage.getItem('smartfeed_theme_accent') as AccentColor) || defaultAccent;
   });
 
   const [resolvedTheme, setResolvedTheme] = useState<'dark' | 'light'>('dark');
@@ -56,23 +106,29 @@ export function ThemeProvider({
     root.setAttribute('data-accent', accentColor);
   }, [accentColor]);
 
-  const setTheme = (newTheme: Theme) => {
-    localStorage.setItem(storageKey, newTheme);
-    setThemeState(newTheme);
-  };
+  const setTheme = useCallback(
+    (newTheme: Theme) => {
+      localStorage.setItem(storageKey, newTheme);
+      setThemeState(newTheme);
+    },
+    [storageKey],
+  );
 
-  const setAccentColor = (newAccent: AccentColor) => {
+  const setAccentColor = useCallback((newAccent: AccentColor) => {
     localStorage.setItem('smartfeed_theme_accent', newAccent);
     setAccentColorState(newAccent);
-  };
+  }, []);
 
-  const value = {
-    theme,
-    setTheme,
-    resolvedTheme,
-    accentColor,
-    setAccentColor,
-  };
+  const value: ThemeContextType = useMemo(
+    () => ({
+      theme,
+      setTheme,
+      resolvedTheme,
+      accentColor,
+      setAccentColor,
+    }),
+    [theme, setTheme, resolvedTheme, accentColor, setAccentColor],
+  );
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 }

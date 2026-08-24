@@ -6,6 +6,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { LicensesModule } from './modules/licenses/licenses.module';
+import { PlansModule } from './modules/plans/plans.module';
 import { StorageModule } from './modules/storage/storage.module';
 import { NavigationModule } from './modules/navigation/navigation.module';
 
@@ -40,6 +41,7 @@ import { NavigationModule } from './modules/navigation/navigation.module';
     UsersModule,
     AuthModule,
     LicensesModule,
+    PlansModule,
     StorageModule,
     NavigationModule,
   ],

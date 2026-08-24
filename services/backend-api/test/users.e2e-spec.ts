@@ -44,11 +44,17 @@ describe('Users & Admin Endpoints (E2E)', () => {
   });
 
   afterAll(async () => {
-    // Cleanup created test user
+    // ── MANDATORY TEST DATA TEARDOWN ──────────────────────────────────────────
+    // Cleanup created test user and any lingering test users
     if (testUserId) {
       await prisma.license.deleteMany({ where: { userId: testUserId } });
       await prisma.user.deleteMany({ where: { id: testUserId } });
     }
+    await prisma.user.deleteMany({
+      where: { email: { startsWith: 'admintest-' } },
+    });
+    // ─────────────────────────────────────────────────────────────────────────
+
     await app.close();
   });
 

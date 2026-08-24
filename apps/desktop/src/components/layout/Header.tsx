@@ -1,3 +1,4 @@
+import React from 'react';
 import { PanelLeft, Menu, Search, User } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSidebar } from '@/contexts/SidebarContext';
@@ -6,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { LanguageToggle } from '@/components/ui/language-toggle';
 
-export function Header() {
+export const Header = React.memo(function Header() {
   const { user } = useAuth();
   const { toggleSidebar, toggleMobileSidebar, isCollapsed } = useSidebar();
 
@@ -91,4 +92,4 @@ export function Header() {
       </div>
     </header>
   );
-}
+});

@@ -22,6 +22,9 @@
     "test:desktop": "pnpm --filter @smartfeed/desktop test:e2e",
     "test:desktop:headed": "pnpm --filter @smartfeed/desktop test:e2e:headed",
     "test:desktop:ui": "pnpm --filter @smartfeed/desktop test:e2e:ui",
+    "test:admin": "pnpm --filter @smartfeed/admin-portal test:e2e",
+    "test:admin:headed": "pnpm --filter @smartfeed/admin-portal test:e2e:headed",
+    "test:admin:ui": "pnpm --filter @smartfeed/admin-portal test:e2e:ui",
     "prepare": "husky || true",
     "docker:up": "docker compose up -d",
     "docker:down": "docker compose down",
@@ -44,5 +47,8 @@
     "turbo": "^2.3.3",
     "typescript": "^5.7.3",
     "typescript-eslint": "^8.20.0"
+  },
+  "dependencies": {
+    "@sentry/nextjs": "^10"
   }
 }

@@ -66,7 +66,7 @@ describe('Auth — Registration & Login (E2E)', () => {
   });
 
   afterAll(async () => {
-    // ── CLEANUP ───────────────────────────────────────────────────────────────
+    // ── MANDATORY TEST DATA TEARDOWN ──────────────────────────────────────────
     // Delete all users created during this test run.
     // Prisma cascade will also remove related License records automatically.
     if (createdEmails.length > 0) {
@@ -74,6 +74,15 @@ describe('Auth — Registration & Login (E2E)', () => {
         where: { email: { in: createdEmails } },
       });
     }
+    await prisma.user.deleteMany({
+      where: {
+        OR: [
+          { email: { startsWith: 'e2e.test+' } },
+          { email: { startsWith: 'short-pw+' } },
+          { email: { startsWith: 'no-pw+' } },
+        ],
+      },
+    });
     // ─────────────────────────────────────────────────────────────────────────
 
     await app.close();

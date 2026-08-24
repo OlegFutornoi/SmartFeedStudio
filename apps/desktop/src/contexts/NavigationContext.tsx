@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback, useMemo } from 'react';
 import { NavigationItemDto, Role, TargetApp } from '@smartfeed/shared';
 import { useAuth } from './AuthContext';
 import { getDesktopNavigation } from '../lib/api';
@@ -96,17 +96,16 @@ export function NavigationProvider({ children }: { children: React.ReactNode }) 
     fetchNavigation();
   }, [fetchNavigation]);
 
-  return (
-    <NavigationContext.Provider
-      value={{
-        items,
-        isLoading,
-        refreshNavigation: fetchNavigation,
-      }}
-    >
-      {children}
-    </NavigationContext.Provider>
+  const value: NavigationContextType = useMemo(
+    () => ({
+      items,
+      isLoading,
+      refreshNavigation: fetchNavigation,
+    }),
+    [items, isLoading, fetchNavigation],
   );
+
+  return <NavigationContext.Provider value={value}>{children}</NavigationContext.Provider>;
 }
 
 export function useNavigation() {

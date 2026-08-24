@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Layers, Plus, Upload, RefreshCw, CheckCircle2, FileText, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
@@ -50,10 +50,14 @@ export function CatalogsPage() {
     },
   ]);
 
-  const filteredCatalogs = catalogs.filter(
-    (c) =>
-      c.name.toLowerCase().includes(search.toLowerCase()) ||
-      c.format.toLowerCase().includes(search.toLowerCase()),
+  const filteredCatalogs = useMemo(
+    () =>
+      catalogs.filter(
+        (c) =>
+          c.name.toLowerCase().includes(search.toLowerCase()) ||
+          c.format.toLowerCase().includes(search.toLowerCase()),
+      ),
+    [catalogs, search],
   );
 
   return (

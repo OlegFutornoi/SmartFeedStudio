@@ -1,0 +1,12 @@
+{
+  "title": "System Settings",
+  "subtitle": "Security configuration, theme customization, and infrastructure monitoring",
+  "account_info": "Profile Information",
+  "appearance_title": "Appearance",
+  "appearance_desc": "Personalize theme and color accents",
+  "theme_dark": "Dark",
+  "theme_light": "Light",
+  "theme_system": "System",
+  "language_title": "Interface Language",
+  "security_title": "Account Security"
+}

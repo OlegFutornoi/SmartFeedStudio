@@ -56,8 +56,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(res.user);
       setToken(res.tokens.accessToken);
       router.push('/');
-    } catch (err: any) {
-      const msg = err?.message || 'Не вдалося увійти. Перевірте email та пароль.';
+    } catch (err: unknown) {
+      const msg =
+        err instanceof Error ? err.message : 'Не вдалося увійти. Перевірте email та пароль.';
       setError(msg);
       throw err;
     } finally {

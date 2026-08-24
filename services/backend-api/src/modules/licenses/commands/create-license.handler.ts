@@ -14,7 +14,18 @@ export class CreateLicenseHandler implements ICommandHandler<CreateLicenseComman
 
   async execute(command: CreateLicenseCommand): Promise<LicenseEntity> {
     const { userId, planType = PlanType.FREE, expiresAt } = command;
-    const limits = PLAN_LIMITS_MAP[planType];
+
+    // Fetch dynamic plan from database if present, otherwise fallback to static map
+    const dbPlan = await this.prisma.tariffPlan.findUnique({
+      where: { code: planType },
+    });
+
+    const fallbackLimits = PLAN_LIMITS_MAP[planType] || PLAN_LIMITS_MAP[PlanType.FREE];
+
+    const canCloudBackup = dbPlan ? dbPlan.canCloudBackup : fallbackLimits.canCloudBackup;
+    const maxXmlLimit = dbPlan ? dbPlan.maxXmlLimit : fallbackLimits.maxXmlLimit;
+    const aiCredits = dbPlan ? dbPlan.aiCredits : fallbackLimits.aiCredits;
+    const tariffPlanId = dbPlan ? dbPlan.id : null;
 
     const randomBytes = crypto.randomBytes(6).toString('hex').toUpperCase();
     const licenseKey = `SF-${planType}-${randomBytes.slice(0, 4)}-${randomBytes.slice(4, 8)}-${randomBytes.slice(8, 12)}`;
@@ -24,9 +35,10 @@ export class CreateLicenseHandler implements ICommandHandler<CreateLicenseComman
         userId,
         licenseKey,
         planType,
-        canCloudBackup: limits.canCloudBackup,
-        maxXmlLimit: limits.maxXmlLimit,
-        aiCredits: limits.aiCredits,
+        tariffPlanId,
+        canCloudBackup,
+        maxXmlLimit,
+        aiCredits,
         isActive: true,
         expiresAt: expiresAt || null,
       },

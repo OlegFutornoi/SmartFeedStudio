@@ -27,7 +27,9 @@ graph TD
   subgraph "Backend API (services/backend-api)"
     AuthMod["AuthModule (JWT / Tokens / Passport)"]
     UsersMod["UsersModule (Prisma Data Layer)"]
+    PlansMod["PlansModule (Dynamic Tariff Plans)"]
     LicMod["LicensesModule (Plan Quotas)"]
+    NavMod["NavigationModule (Access Control)"]
     StorageMod["StorageModule (S3 Presigned URLs)"]
     CommandBus((CommandBus))
     QueryBus((QueryBus))

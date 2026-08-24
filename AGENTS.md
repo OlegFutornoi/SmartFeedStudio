@@ -45,7 +45,8 @@ SmartFeed Studio (Monorepo root)
 1. **Strict CQRS Decoupling on Backend (`services/backend-api`)**:
    - `UsersModule` handles **ONLY** database operations via Prisma. Never import JWT, tokens, or auth controllers into `UsersModule`.
    - `AuthModule` coordinates authentication endpoints (`/auth/register`, `/auth/login`, `/auth/refresh`, `/auth/me`). It interacts with `UsersModule` **strictly** via `CommandBus` (`CreateUserCommand`) and `QueryBus` (`GetUserByEmailQuery`, `GetUserByIdQuery`).
-   - `LicensesModule` listens to `UserCreatedEvent` on `EventBus` to auto-provision default `FREE` licenses (`SF-FREE-XXXX-XXXX-XXXX`).
+   - `PlansModule` manages dynamic tariff plans, quotas, pricing, and localized feature lists (`/api/plans`).
+   - `LicensesModule` listens to `UserCreatedEvent` on `EventBus` to auto-provision default `FREE` licenses (`SF-FREE-XXXX-XXXX-XXXX`) linked to DB `TariffPlan`, and handles admin license queries (`GetAdminLicensesQuery`).
    - `StorageModule` generates S3 Presigned URLs using `@aws-sdk/s3-request-presigner`. Clients upload binaries directly to S3 without burdening the API server.
 
 2. **UI & Design System (shadcn/ui & Tailwind CSS)**:
@@ -82,9 +83,17 @@ SmartFeed Studio (Monorepo root)
 
 6. **Mandatory Post-Code-Writing Protocol (Self-Review, Error Checks, Skills & Formatting)**:
    - **Step 1 — Mandatory Domain Skills**: When writing or refactoring code, **ALWAYS** actively apply relevant best-practice skills (`vercel-react-best-practices` for React/Next.js, `nestjs-best-practices` for NestJS CQRS, `shadcn` for UI design systems, `playwright-best-practices` for E2E tests, `frontend-desing` for visual identity, `prisma-postgres` for database queries, `systematic-debugging` when resolving issues).
-   - **Step 2 — Immediate Self-Code Review & Dead Code Elimination**: Immediately after writing or modifying code, **automatically perform a rigorous self-code review** validating: **zero unused imports** (e.g., from `lucide-react`, DTOs, or React hooks), no unused variables/types, Single Responsibility Principle, CQRS module boundaries, minimal React re-renders, bundle efficiency, accessibility, type safety, test isolation, and absence of broken cache/bundle artifacts.
-   - **Step 3 — Verification, Lint & Error Checking**: Check for syntax errors, compile errors, linting warnings (`pnpm lint` / `pnpm lint:fix`), and run relevant automated tests (`pnpm --filter @smartfeed/backend-api test:e2e` for backend, `pnpm test:desktop` for desktop). Guard against dev-cache overlap collisions (never run `next build` while `next dev` is running without proper cleanup).
+   - **Step 2 — Immediate Self-Code Review, Dead Code Elimination & Component Modularity**: Immediately after writing or modifying code, **automatically perform a rigorous architectural self-code review** validating:
+     - **Component Size Limit & Single Responsibility**: React components must remain compact, clean, and modular (recommended max ~250–300 lines). Monolithic components (e.g. 700–1000+ lines) are **strictly prohibited**. Always decompose complex views into dedicated subcomponents (`*Dialog.tsx`, `*List.tsx`, `*Row.tsx`, `*Header.tsx`, `*Preview.tsx`, custom hooks).
+     - **Zero Unused Imports & Dead Code**: Eliminate all unreferenced imports (e.g. from `lucide-react`, DTOs, or React hooks), unused variables, types, and unreachable code. Actively inspect IDE diagnostics and fix all unused items immediately.
+     - **Architectural Integrity & Zero Gaps**: Strictly adhere to CQRS module boundaries, minimal React re-renders (`vercel-react-best-practices`), proper design token usage (`shadcn`), bundle efficiency, accessibility, type safety, and test isolation.
+   - **Step 3 — Verification, Lint & Error Checking**: Check for syntax errors, compile errors, linting warnings (`pnpm lint` / `pnpm lint:fix`), and run relevant automated tests (`pnpm --filter @smartfeed/backend-api test:e2e` for backend, `pnpm test:desktop` for desktop, `pnpm test:admin` for admin portal). Guard against dev-cache overlap collisions (never run `next build` while `next dev` is running without proper cleanup).
    - **Step 4 — Mandatory Auto-Formatting**: **ALWAYS** execute `pnpm format` (Prettier) on all affected files to ensure zero formatting errors or style drift across the codebase.
+
+7. **Mandatory Test Isolation & Complete Data Cleanup Policy (Zero Leftovers)**:
+   - **Zero Test Data Leftovers**: Every automated test (Backend Jest E2E, Integration, Desktop/Admin Playwright E2E) that creates, modifies, or stores records (database users, licenses, navigation items, snapshots, files in object storage, localStorage, cookies) **MUST** guarantee 100% complete deletion and teardown of all test-generated data.
+   - **Backend Database Teardown**: In all `*.e2e-spec.ts` files, `afterAll` (and `afterEach` where applicable) hooks must explicitly delete all created entities using stored IDs, created emails, and scoped wildcard matching (e.g. `e2e.test+*`, `admintest-*`, `analytics_*`, `nav.admin+*`, `nav.user+*`). Never leave orphaned rows in PostgreSQL or Redis.
+   - **Frontend Test Isolation**: In Playwright E2E tests (`*.spec.ts`), always clear browser `localStorage`, `sessionStorage`, cookies, and route mocks before and after each test case to prevent state leakage and test cross-contamination.
 
 ---
 
@@ -103,6 +112,9 @@ SmartFeed Studio (Monorepo root)
 | **Run Desktop E2E Tests**       | `pnpm test:desktop`                                        |
 | **Run Desktop Tests (Headed)**  | `pnpm test:desktop:headed`                                 |
 | **Run Desktop Tests (UI Mode)** | `pnpm test:desktop:ui`                                     |
+| **Run Admin E2E Tests**         | `pnpm test:admin`                                          |
+| **Run Admin Tests (Headed)**    | `pnpm test:admin:headed`                                   |
+| **Run Admin Tests (UI Mode)**   | `pnpm test:admin:ui`                                       |
 | **Sync Database Schema**        | `pnpm --filter @smartfeed/backend-api exec prisma db push` |
 | **Run Database Seeder**         | `pnpm prisma:seed`                                         |
 | **Open Prisma Studio**          | `pnpm prisma:studio`                                       |

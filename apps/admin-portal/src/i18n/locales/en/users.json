@@ -1,0 +1,14 @@
+{
+  "title": "User Management",
+  "subtitle": "View registered accounts, active licenses, and manage system roles",
+  "search_placeholder": "Search by email or name...",
+  "filter_all_roles": "All Roles",
+  "total_users": "Total Users",
+  "active_users": "Active Users",
+  "super_admins": "Super Admins",
+  "col_user": "User",
+  "col_role": "Role",
+  "col_plan": "Plan",
+  "col_status": "Status",
+  "col_created": "Created"
+}

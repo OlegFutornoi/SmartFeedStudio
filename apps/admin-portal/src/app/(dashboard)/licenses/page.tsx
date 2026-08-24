@@ -1,228 +1,210 @@
 'use client';
 
-import React from 'react';
-import { KeyRound, CheckCircle2, Zap, Shield, Sparkles } from 'lucide-react';
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from '../../../components/ui/card';
-import { Badge } from '../../../components/ui/badge';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Plus, RefreshCw, Layers } from 'lucide-react';
 import { Button } from '../../../components/ui/button';
+import { api } from '../../../lib/api';
+import { useLanguage } from '../../../contexts/LanguageContext';
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '../../../components/ui/table';
+  TariffPlanDto,
+  CreateTariffPlanDto,
+  UpdateTariffPlanDto,
+  AdminLicenseItemDto,
+} from '@smartfeed/shared';
+import { PlanCard } from '../../../components/plans/PlanCard';
+import { PlanDialog } from '../../../components/plans/PlanDialog';
+import { LicensesTable } from '../../../components/plans/LicensesTable';
 
 export default function LicensesPage() {
-  const plans = [
-    {
-      name: 'FREE',
-      price: '$0',
-      description: 'Базовий план, що автоматично створюється при реєстрації через EventBus.',
-      features: [
-        'До 1,000 позицій XML каталогу',
-        '50 AI Кредитів на місяць',
-        'Локальне SQLite кешування',
-        'Ручний експорт файлів',
-      ],
-      badgeVariant: 'secondary' as const,
-      popular: false,
-    },
-    {
-      name: 'PRO',
-      price: '$49',
-      period: '/міс',
-      description: 'Для інтернет-магазинів із розширеним каталогом та AI оптимізацією.',
-      features: [
-        'До 50,000 позицій XML каталогу',
-        '500 AI Кредитів на місяць',
-        'Прямий S3 / MinIO Cloud Backup',
-        'Фонові черги BullMQ (Redis 7)',
-        'Безпечне збереження в OS Keychain',
-      ],
-      badgeVariant: 'default' as const,
-      popular: true,
-    },
-    {
-      name: 'ENTERPRISE',
-      price: '$199',
-      period: '/міс',
-      description: 'Корпоративна інфраструктура з високою пропускною здатністю.',
-      features: [
-        'До 1,000,000 позицій XML каталогу',
-        '5,000 AI Кредитів на місяць',
-        'Необмежені хмарні S3 Snapshots',
-        'Власний MinIO / Cloudflare R2 ендпоінт',
-        'Мульти-адмін доступ',
-      ],
-      badgeVariant: 'default' as const,
-      popular: false,
-    },
-  ];
+  const { locale } = useLanguage();
+  const isUk = locale === 'uk';
 
-  const activeLicenses = [
-    {
-      key: 'SF-ENTERPRISE-ADMIN-0001',
-      user: 'Super Administrator (admin@smartfeed.studio)',
-      plan: 'ENTERPRISE',
-      xmlLimit: '1,000,000',
-      aiCredits: '5,000',
-      backup: 'Увімкнено',
-      expires: 'Безстроково',
-    },
-    {
-      key: 'SF-PRO-DEMO-9900-1122',
-      user: 'Demo Store Manager (demo@smartfeed.studio)',
-      plan: 'PRO',
-      xmlLimit: '50,000',
-      aiCredits: '500',
-      backup: 'Увімкнено',
-      expires: '2027-12-31',
-    },
-  ];
+  const [plans, setPlans] = useState<TariffPlanDto[]>([]);
+  const [licenses, setLicenses] = useState<AdminLicenseItemDto[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [editingPlan, setEditingPlan] = useState<TariffPlanDto | null>(null);
+
+  const fetchData = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const [plansData, licensesData] = await Promise.all([
+        api.getAdminTariffPlans().catch(() => api.getTariffPlans()),
+        api.getAdminLicenses().catch(() => []),
+      ]);
+      setPlans(plansData);
+      setLicenses(licensesData);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Не вдалося завантажити дані тарифів';
+      setError(msg);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  const handleOpenCreate = () => {
+    setEditingPlan(null);
+    setIsDialogOpen(true);
+  };
+
+  const handleOpenEdit = (plan: TariffPlanDto) => {
+    setEditingPlan(plan);
+    setIsDialogOpen(true);
+  };
+
+  const handleDeletePlan = async (id: string, code: string) => {
+    if (
+      !confirm(
+        isUk
+          ? `Ви впевнені, що хочете видалити тарифний план "${code}"?`
+          : `Are you sure you want to delete tariff plan "${code}"?`,
+      )
+    ) {
+      return;
+    }
+
+    try {
+      await api.deleteTariffPlan(id);
+      await fetchData();
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Помилка видалення тарифного плану';
+      alert(msg);
+    }
+  };
+
+  const handleSavePlan = async (
+    dto: CreateTariffPlanDto | UpdateTariffPlanDto,
+    isEdit: boolean,
+  ) => {
+    if (isEdit && editingPlan) {
+      await api.updateTariffPlan(editingPlan.id, dto as UpdateTariffPlanDto);
+    } else {
+      await api.createTariffPlan(dto as CreateTariffPlanDto);
+    }
+    await fetchData();
+  };
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-300">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div
+      data-testid="licenses-page"
+      className="flex flex-col gap-8 animate-in fade-in duration-300"
+    >
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-border">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-            Ліцензійні плани та підписки
+          <h1
+            data-testid="licenses-header-title"
+            className="text-2xl font-semibold tracking-tight text-foreground"
+          >
+            {isUk ? 'Тарифні плани та ліцензії' : 'Tariff Plans & Licenses'}
           </h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Керування квотами ліцензій, генерацією ключів та тарифами платформи
+          <p className="text-xs text-muted-foreground mt-1">
+            {isUk
+              ? 'Керування квотами, ціноутворенням та активними ліцензіями користувачів'
+              : 'Manage dynamic tariff quotas, pricing tiers, and issued customer licenses'}
           </p>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            data-testid="refresh-plans-btn"
+            onClick={fetchData}
+            disabled={isLoading}
+            className="h-8 w-8 p-0"
+            title={isUk ? 'Оновити' : 'Refresh'}
+            aria-label={isUk ? 'Оновити' : 'Refresh'}
+          >
+            <RefreshCw className={`size-3.5 ${isLoading ? 'animate-spin' : ''}`} />
+          </Button>
+          <Button
+            size="sm"
+            data-testid="create-plan-btn"
+            onClick={handleOpenCreate}
+            className="h-8 text-xs gap-1.5"
+          >
+            <Plus className="size-3.5" />
+            <span>{isUk ? 'Створити тариф' : 'New Plan Tier'}</span>
+          </Button>
         </div>
       </div>
 
-      {/* Plan Tiers Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {plans.map((plan) => (
-          <Card
-            key={plan.name}
-            className={`relative flex flex-col justify-between border-border/80 bg-card/60 backdrop-blur-sm shadow-md ${
-              plan.popular ? 'border-primary shadow-lg shadow-primary/10' : ''
-            }`}
+      {error && (
+        <div
+          data-testid="licenses-error-alert"
+          className="p-3 rounded-lg bg-destructive/10 text-destructive text-xs border border-destructive/20"
+        >
+          {error}
+        </div>
+      )}
+
+      {/* Plans Section */}
+      <div className="flex flex-col gap-4">
+        <div className="flex items-center gap-2">
+          <Layers className="size-4 text-muted-foreground" />
+          <h2
+            data-testid="active-plans-section-title"
+            className="text-base font-semibold text-foreground"
           >
-            {plan.popular && (
-              <div className="absolute -top-3 right-6 bg-primary text-primary-foreground text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full flex items-center gap-1 shadow-md">
-                <Zap className="w-3 h-3 fill-current" /> Популярний вибір
-              </div>
-            )}
-            <div>
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-bold text-foreground">{plan.name}</h3>
-                <Badge
-                  variant="outline"
-                  className={
-                    plan.name === 'ENTERPRISE'
-                      ? 'bg-amber-500/10 text-amber-400 border-amber-500/30'
-                      : plan.name === 'PRO'
-                        ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
-                        : 'bg-secondary text-secondary-foreground'
-                  }
-                >
-                  {plan.name}
-                </Badge>
-              </div>
-              <div className="mt-4 flex items-baseline gap-1">
-                <span className="text-3xl font-extrabold text-foreground">{plan.price}</span>
-                {plan.period && (
-                  <span className="text-xs text-muted-foreground">{plan.period}</span>
-                )}
-              </div>
-              <p className="text-xs text-muted-foreground mt-2">{plan.description}</p>
+            {isUk ? 'Доступні тарифні плани' : 'Active Tariff Plans'}
+          </h2>
+        </div>
 
-              <div className="mt-6 space-y-2.5">
-                {plan.features.map((feat) => (
-                  <div key={feat} className="flex items-center gap-2 text-xs text-foreground">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                    <span>{feat}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="mt-8">
-              <Button
-                variant={plan.popular ? 'default' : 'outline'}
-                size="sm"
-                className="w-full h-9 border-border"
-              >
-                Налаштувати {plan.name}
-              </Button>
-            </div>
-          </Card>
-        ))}
+        {isLoading && plans.length === 0 ? (
+          <div
+            data-testid="plans-loading-skeleton"
+            className="grid grid-cols-1 md:grid-cols-3 gap-4"
+          >
+            {[1, 2, 3].map((i) => (
+              <div
+                key={i}
+                className="h-64 rounded-xl border border-border bg-card/40 animate-pulse"
+              />
+            ))}
+          </div>
+        ) : plans.length === 0 ? (
+          <div
+            data-testid="plans-empty-state"
+            className="p-8 text-center rounded-xl border border-dashed border-border text-muted-foreground text-xs"
+          >
+            {isUk
+              ? 'Тарифні плани не знайдено. Створіть перший план через кнопку вище.'
+              : 'No tariff plans found. Create your first plan above.'}
+          </div>
+        ) : (
+          <div data-testid="plans-grid" className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {plans.map((plan) => (
+              <PlanCard
+                key={plan.id}
+                plan={plan}
+                isUk={isUk}
+                onEdit={handleOpenEdit}
+                onDelete={handleDeletePlan}
+              />
+            ))}
+          </div>
+        )}
       </div>
 
-      {/* Active License Keys Table */}
-      <Card className="border-border/80 bg-card/60 backdrop-blur-sm shadow-md overflow-hidden">
-        <CardHeader>
-          <CardTitle className="text-lg">Видані ліцензійні ключі</CardTitle>
-          <CardDescription>
-            Ліцензії, сформовані сервісом LicensesModule та збережені в базі даних
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="p-0">
-          <Table>
-            <TableHeader>
-              <TableRow className="bg-muted/30">
-                <TableHead>Ліцензійний ключ</TableHead>
-                <TableHead>Користувач</TableHead>
-                <TableHead>План</TableHead>
-                <TableHead>Ліміт XML</TableHead>
-                <TableHead>AI Кредити</TableHead>
-                <TableHead>Cloud Backup</TableHead>
-                <TableHead className="text-right">Термін дії</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {activeLicenses.map((lic) => (
-                <TableRow key={lic.key} className="hover:bg-muted/40 transition-colors">
-                  <TableCell className="font-mono text-xs text-primary font-semibold">
-                    {lic.key}
-                  </TableCell>
-                  <TableCell className="text-xs text-foreground font-medium">{lic.user}</TableCell>
-                  <TableCell>
-                    <Badge
-                      variant="outline"
-                      className={
-                        lic.plan === 'ENTERPRISE'
-                          ? 'bg-amber-500/10 text-amber-400 border-amber-500/30'
-                          : lic.plan === 'PRO'
-                            ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
-                            : 'bg-secondary text-secondary-foreground'
-                      }
-                    >
-                      {lic.plan}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-xs text-muted-foreground">{lic.xmlLimit}</TableCell>
-                  <TableCell className="text-xs text-muted-foreground">{lic.aiCredits}</TableCell>
-                  <TableCell>
-                    <Badge
-                      variant="outline"
-                      className="bg-emerald-500/10 text-emerald-400 border-emerald-500/30 text-xs"
-                    >
-                      {lic.backup}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-right text-xs text-muted-foreground">
-                    {lic.expires}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+      {/* Active Issued Licenses Table */}
+      <LicensesTable licenses={licenses} isUk={isUk} />
+
+      {/* Plan Create/Edit Dialog */}
+      <PlanDialog
+        isOpen={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+        onSubmit={handleSavePlan}
+        initialData={editingPlan}
+        isUk={isUk}
+      />
     </div>
   );
 }

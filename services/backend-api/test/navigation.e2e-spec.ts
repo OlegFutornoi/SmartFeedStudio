@@ -62,12 +62,26 @@ describe('Navigation & Dynamic Access Control (E2E)', () => {
   });
 
   afterAll(async () => {
+    // ── MANDATORY TEST DATA TEARDOWN ──────────────────────────────────────────
+    // 1. Delete all navigation items created during tests
     if (createdItemId) {
       await prisma.navigationItem.deleteMany({ where: { id: createdItemId } });
     }
+    await prisma.navigationItem.deleteMany({
+      where: { key: { startsWith: 'analytics_' } },
+    });
+
+    // 2. Delete all test users and cascaded licenses created during tests
     if (createdEmails.length > 0) {
       await prisma.user.deleteMany({ where: { email: { in: createdEmails } } });
     }
+    await prisma.user.deleteMany({
+      where: {
+        OR: [{ email: { startsWith: 'nav.admin+' } }, { email: { startsWith: 'nav.user+' } }],
+      },
+    });
+    // ─────────────────────────────────────────────────────────────────────────
+
     await app.close();
   });
 

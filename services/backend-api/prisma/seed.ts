@@ -12,7 +12,193 @@ async function main() {
   const gmailAdminPasswordHash = await bcrypt.hash('admin@gmail.com', saltRounds);
   const userPasswordHash = await bcrypt.hash('UserPassword123!', saltRounds);
 
-  // 1. Create Super Admin (admin@smartfeed.studio)
+  // 1. Seed Dynamic Tariff Plans (FREE, PRO, ENTERPRISE)
+  const freePlan = await prisma.tariffPlan.upsert({
+    where: { code: 'FREE' },
+    update: {
+      nameUk: 'Базовий',
+      nameEn: 'Free Tier',
+      descriptionUk: 'Базовий план, що автоматично створюється при реєстрації через EventBus.',
+      descriptionEn: 'Basic free tier automatically provisioned on user registration via EventBus.',
+      priceMonthly: 0,
+      priceYearly: 0,
+      currency: 'USD',
+      maxXmlLimit: 1000,
+      aiCredits: 50,
+      canCloudBackup: false,
+      isPopular: false,
+      isActive: true,
+      order: 1,
+      featuresUk: [
+        'До 1,000 позицій XML каталогу',
+        '50 AI Кредитів на місяць',
+        'Локальне SQLite кешування',
+        'Ручний експорт файлів',
+      ],
+      featuresEn: [
+        'Up to 1,000 XML catalog items',
+        '50 AI Credits per month',
+        'Local SQLite encrypted caching',
+        'Manual file exports',
+      ],
+    },
+    create: {
+      code: 'FREE',
+      nameUk: 'Базовий',
+      nameEn: 'Free Tier',
+      descriptionUk: 'Базовий план, що автоматично створюється при реєстрації через EventBus.',
+      descriptionEn: 'Basic free tier automatically provisioned on user registration via EventBus.',
+      priceMonthly: 0,
+      priceYearly: 0,
+      currency: 'USD',
+      maxXmlLimit: 1000,
+      aiCredits: 50,
+      canCloudBackup: false,
+      isPopular: false,
+      isActive: true,
+      order: 1,
+      featuresUk: [
+        'До 1,000 позицій XML каталогу',
+        '50 AI Кредитів на місяць',
+        'Локальне SQLite кешування',
+        'Ручний експорт файлів',
+      ],
+      featuresEn: [
+        'Up to 1,000 XML catalog items',
+        '50 AI Credits per month',
+        'Local SQLite encrypted caching',
+        'Manual file exports',
+      ],
+    },
+  });
+
+  const proPlan = await prisma.tariffPlan.upsert({
+    where: { code: 'PRO' },
+    update: {
+      nameUk: 'Професійний',
+      nameEn: 'Pro Plan',
+      descriptionUk: 'Для інтернет-магазинів із розширеним каталогом та AI оптимізацією.',
+      descriptionEn: 'For growing e-commerce stores with automated AI catalog enrichment.',
+      priceMonthly: 49,
+      priceYearly: 490,
+      currency: 'USD',
+      maxXmlLimit: 50000,
+      aiCredits: 500,
+      canCloudBackup: true,
+      isPopular: true,
+      isActive: true,
+      order: 2,
+      featuresUk: [
+        'До 50,000 позицій XML каталогу',
+        '500 AI Кредитів на місяць',
+        'Прямий S3 / MinIO Cloud Backup',
+        'Фонові черги BullMQ (Redis 7)',
+        'Безпечне збереження в OS Keychain',
+      ],
+      featuresEn: [
+        'Up to 50,000 XML catalog items',
+        '500 AI Credits per month',
+        'Direct S3 / MinIO Cloud Backup',
+        'Background BullMQ (Redis 7) queues',
+        'Secure OS Keychain storage',
+      ],
+    },
+    create: {
+      code: 'PRO',
+      nameUk: 'Професійний',
+      nameEn: 'Pro Plan',
+      descriptionUk: 'Для інтернет-магазинів із розширеним каталогом та AI оптимізацією.',
+      descriptionEn: 'For growing e-commerce stores with automated AI catalog enrichment.',
+      priceMonthly: 49,
+      priceYearly: 490,
+      currency: 'USD',
+      maxXmlLimit: 50000,
+      aiCredits: 500,
+      canCloudBackup: true,
+      isPopular: true,
+      isActive: true,
+      order: 2,
+      featuresUk: [
+        'До 50,000 позицій XML каталогу',
+        '500 AI Кредитів на місяць',
+        'Прямий S3 / MinIO Cloud Backup',
+        'Фонові черги BullMQ (Redis 7)',
+        'Безпечне збереження в OS Keychain',
+      ],
+      featuresEn: [
+        'Up to 50,000 XML catalog items',
+        '500 AI Credits per month',
+        'Direct S3 / MinIO Cloud Backup',
+        'Background BullMQ (Redis 7) queues',
+        'Secure OS Keychain storage',
+      ],
+    },
+  });
+
+  const enterprisePlan = await prisma.tariffPlan.upsert({
+    where: { code: 'ENTERPRISE' },
+    update: {
+      nameUk: 'Корпоративний',
+      nameEn: 'Enterprise',
+      descriptionUk: 'Корпоративна інфраструктура з високою пропускною здатністю.',
+      descriptionEn: 'High-throughput enterprise infrastructure with dedicated cloud storage.',
+      priceMonthly: 199,
+      priceYearly: 1990,
+      currency: 'USD',
+      maxXmlLimit: 1000000,
+      aiCredits: 5000,
+      canCloudBackup: true,
+      isPopular: false,
+      isActive: true,
+      order: 3,
+      featuresUk: [
+        'До 1,000,000 позицій XML каталогу',
+        '5,000 AI Кредитів на місяць',
+        'Необмежені хмарні S3 Snapshots',
+        'Власний MinIO / Cloudflare R2 ендпоінт',
+        'Мульти-адмін доступ',
+      ],
+      featuresEn: [
+        'Up to 1,000,000 XML catalog items',
+        '5,000 AI Credits per month',
+        'Unlimited S3 Cloud Snapshots',
+        'Custom MinIO / Cloudflare R2 endpoint',
+        'Multi-admin role management',
+      ],
+    },
+    create: {
+      code: 'ENTERPRISE',
+      nameUk: 'Корпоративний',
+      nameEn: 'Enterprise',
+      descriptionUk: 'Корпоративна інфраструктура з високою пропускною здатністю.',
+      descriptionEn: 'High-throughput enterprise infrastructure with dedicated cloud storage.',
+      priceMonthly: 199,
+      priceYearly: 1990,
+      currency: 'USD',
+      maxXmlLimit: 1000000,
+      aiCredits: 5000,
+      canCloudBackup: true,
+      isPopular: false,
+      isActive: true,
+      order: 3,
+      featuresUk: [
+        'До 1,000,000 позицій XML каталогу',
+        '5,000 AI Кредитів на місяць',
+        'Необмежені хмарні S3 Snapshots',
+        'Власний MinIO / Cloudflare R2 ендпоінт',
+        'Мульти-адмін доступ',
+      ],
+      featuresEn: [
+        'Up to 1,000,000 XML catalog items',
+        '5,000 AI Credits per month',
+        'Unlimited S3 Cloud Snapshots',
+        'Custom MinIO / Cloudflare R2 endpoint',
+        'Multi-admin role management',
+      ],
+    },
+  });
+
+  // 2. Create Super Admin (admin@smartfeed.studio)
   const admin = await prisma.user.upsert({
     where: { email: 'admin@smartfeed.studio' },
     update: {
@@ -29,9 +215,12 @@ async function main() {
   // Assign ENTERPRISE license to Admin
   await prisma.license.upsert({
     where: { licenseKey: 'SF-ENTERPRISE-ADMIN-0001' },
-    update: {},
+    update: {
+      tariffPlanId: enterprisePlan.id,
+    },
     create: {
       userId: admin.id,
+      tariffPlanId: enterprisePlan.id,
       licenseKey: 'SF-ENTERPRISE-ADMIN-0001',
       planType: PlanType.ENTERPRISE,
       canCloudBackup: true,
@@ -42,7 +231,7 @@ async function main() {
     },
   });
 
-  // 2. Create Super Admin (admin@gmail.com / admin@gmail.com)
+  // 3. Create Super Admin (admin@gmail.com / admin@gmail.com)
   const gmailAdmin = await prisma.user.upsert({
     where: { email: 'admin@gmail.com' },
     update: {
@@ -59,9 +248,12 @@ async function main() {
 
   await prisma.license.upsert({
     where: { licenseKey: 'SF-ENTERPRISE-GMAIL-ADMIN' },
-    update: {},
+    update: {
+      tariffPlanId: enterprisePlan.id,
+    },
     create: {
       userId: gmailAdmin.id,
+      tariffPlanId: enterprisePlan.id,
       licenseKey: 'SF-ENTERPRISE-GMAIL-ADMIN',
       planType: PlanType.ENTERPRISE,
       canCloudBackup: true,
@@ -72,7 +264,7 @@ async function main() {
     },
   });
 
-  // 3. Create Demo User
+  // 4. Create Demo User
   const demoUser = await prisma.user.upsert({
     where: { email: 'demo@smartfeed.studio' },
     update: {
@@ -89,9 +281,12 @@ async function main() {
   // Assign PRO license to Demo User
   await prisma.license.upsert({
     where: { licenseKey: 'SF-PRO-DEMO-9900-1122' },
-    update: {},
+    update: {
+      tariffPlanId: proPlan.id,
+    },
     create: {
       userId: demoUser.id,
+      tariffPlanId: proPlan.id,
       licenseKey: 'SF-PRO-DEMO-9900-1122',
       planType: PlanType.PRO,
       canCloudBackup: true,
@@ -101,7 +296,7 @@ async function main() {
     },
   });
 
-  // 4. Seed Dynamic Navigation Items for Desktop & Admin
+  // 5. Seed Dynamic Navigation Items for Desktop & Admin
   const navigationItems = [
     {
       key: 'dashboard',
@@ -184,6 +379,7 @@ async function main() {
   }
 
   console.log('✅ Seeding completed:');
+  console.log(`   - Seeded ${[freePlan, proPlan, enterprisePlan].length} dynamic tariff plans`);
   console.log(`   - Super Admin: admin@gmail.com       (Password: admin@gmail.com)`);
   console.log(`   - Super Admin: admin@smartfeed.studio (Password: AdminPassword123!)`);
   console.log(`   - Demo User:   demo@smartfeed.studio  (Password: UserPassword123!)`);

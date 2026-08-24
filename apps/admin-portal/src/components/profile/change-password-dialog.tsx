@@ -55,8 +55,12 @@ export function ChangePasswordDialog({ open, onOpenChange }: ChangePasswordDialo
         setSuccess(false);
         onOpenChange(false);
       }, 1500);
-    } catch (err: any) {
-      setError(err?.message || 'Не вдалося оновити пароль. Перевірте поточний пароль.');
+    } catch (err: unknown) {
+      const msg =
+        err instanceof Error
+          ? err.message
+          : 'Не вдалося оновити пароль. Перевірте поточний пароль.';
+      setError(msg);
     } finally {
       setIsSubmitting(false);
     }

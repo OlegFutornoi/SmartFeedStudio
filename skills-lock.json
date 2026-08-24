@@ -187,6 +187,18 @@
       "skillPath": "skills/meta/writing-skills/SKILL.md",
       "computedHash": "37949349003b108dcff63c1df9f8b2f969cc718fa7506ed47648d40f2f39a4e5"
     },
+    "beautiful-desing": {
+      "source": "zay-m3/naturalsql",
+      "sourceType": "github",
+      "skillPath": "app/.agents/skills/beautiful-desing/SKILL.md",
+      "computedHash": "c9ed733231eb259eeff93a6fa6ce8b102221cc6dcf7713121365c99da0ecadd9"
+    },
+    "frontend-design": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "skillPath": "skills/frontend-design/SKILL.md",
+      "computedHash": "4eabc66183767153e404b39d1b839b1c37f2d82d86f0a0d7e880a579d8d62336"
+    },
     "frontend-desing": {
       "source": "kintsukuro1/aplicacion_colegio",
       "sourceType": "github",
@@ -224,7 +236,7 @@
       "computedHash": "004f340ae65811095d6a9bb0a759c87d0a8085c5e705dbb019b011626293d2e9"
     },
     "shadcn": {
-      "source": "shadcn-ui/ui",
+      "source": "shadcn/ui",
       "sourceType": "github",
       "skillPath": "skills/shadcn/SKILL.md",
       "computedHash": "c1a68ee06a668aced9ab2b5fbdea5f989864123794eb2e056b339a072dbb7f10"

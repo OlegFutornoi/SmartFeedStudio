@@ -41,23 +41,23 @@ export function DialogTrigger({
   children,
   className,
   ...props
-}: {
+}: React.ButtonHTMLAttributes<HTMLButtonElement> & {
   asChild?: boolean;
-  children: React.ReactNode;
-  className?: string;
-  [key: string]: any;
 }) {
   const context = React.useContext(DialogContext);
   if (!context) throw new Error('DialogTrigger must be used within Dialog');
 
-  const handleClick = (e: React.MouseEvent) => {
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     props.onClick?.(e);
     context.setOpen(true);
   };
 
-  if (asChild && React.isValidElement(children)) {
-    return React.cloneElement(children as any, {
-      onClick: handleClick,
+  if (asChild && React.isValidElement<React.HTMLAttributes<HTMLElement>>(children)) {
+    return React.cloneElement(children, {
+      onClick: (e: React.MouseEvent<HTMLElement>) => {
+        children.props.onClick?.(e);
+        context.setOpen(true);
+      },
     });
   }
 
@@ -72,11 +72,7 @@ export function DialogContent({
   className,
   children,
   ...props
-}: {
-  className?: string;
-  children: React.ReactNode;
-  [key: string]: any;
-}) {
+}: React.HTMLAttributes<HTMLDivElement>) {
   const context = React.useContext(DialogContext);
   if (!context) throw new Error('DialogContent must be used within Dialog');
 

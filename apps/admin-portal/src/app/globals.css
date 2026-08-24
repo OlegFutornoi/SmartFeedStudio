@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 @layer base {
-  /* Default Dark Mode (Matching Desktop App) */
+  /* Default Dark Mode: Monochrome Zinc */
   :root,
   .dark {
     --background: 240 10% 3.9%;
@@ -24,10 +24,10 @@
     --input: 240 3.7% 15.9%;
     --radius: 0.5rem;
 
-    /* Default Accent: Violet */
-    --primary: 250 84% 60%;
-    --primary-foreground: 0 0% 98%;
-    --ring: 250 84% 60%;
+    /* Default Accent: Monochrome Zinc */
+    --primary: 0 0% 98%;
+    --primary-foreground: 240 5.9% 10%;
+    --ring: 240 4.9% 83.9%;
   }
 
   /* Light Theme */
@@ -50,74 +50,16 @@
     --input: 240 5.9% 90%;
     --radius: 0.5rem;
 
-    /* Default Accent: Violet (Light) */
-    --primary: 250 84% 54%;
+    /* Default Accent: Monochrome Zinc (Light) */
+    --primary: 240 5.9% 10%;
     --primary-foreground: 0 0% 98%;
-    --ring: 250 84% 54%;
+    --ring: 240 5.9% 10%;
   }
 
-  /* Accent Color Variants */
-  [data-accent='violet'] {
-    --primary: 250 84% 60%;
-    --primary-foreground: 0 0% 98%;
-    --ring: 250 84% 60%;
-  }
-  .light[data-accent='violet'],
-  .light [data-accent='violet'] {
-    --primary: 250 84% 54%;
-    --primary-foreground: 0 0% 98%;
-    --ring: 250 84% 54%;
-  }
-
-  [data-accent='blue'] {
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --ring: 217.2 91.2% 59.8%;
-  }
-  .light[data-accent='blue'],
-  .light [data-accent='blue'] {
-    --primary: 221.2 83.2% 53.3%;
-    --primary-foreground: 210 40% 98%;
-    --ring: 221.2 83.2% 53.3%;
-  }
-
-  [data-accent='emerald'] {
-    --primary: 152 76% 46%;
-    --primary-foreground: 0 0% 98%;
-    --ring: 152 76% 46%;
-  }
-  .light[data-accent='emerald'],
-  .light [data-accent='emerald'] {
-    --primary: 142.1 76.2% 36.3%;
-    --primary-foreground: 355.7 100% 97.3%;
-    --ring: 142.1 76.2% 36.3%;
-  }
-
-  [data-accent='rose'] {
-    --primary: 346.8 77.2% 49.8%;
-    --primary-foreground: 355.7 100% 97.3%;
-    --ring: 346.8 77.2% 49.8%;
-  }
-  .light[data-accent='rose'],
-  .light [data-accent='rose'] {
-    --primary: 346.8 77.2% 49.8%;
-    --primary-foreground: 355.7 100% 97.3%;
-    --ring: 346.8 77.2% 49.8%;
-  }
-
-  [data-accent='amber'] {
-    --primary: 38 92% 50%;
-    --primary-foreground: 240 10% 3.9%;
-    --ring: 38 92% 50%;
-  }
-  .light[data-accent='amber'],
-  .light [data-accent='amber'] {
-    --primary: 38 92% 50%;
-    --primary-foreground: 240 10% 3.9%;
-    --ring: 38 92% 50%;
-  }
-
-  [data-accent='zinc'] {
+  /* 1. Monochrome Zinc (Default) */
+  [data-accent='zinc'],
+  :root,
+  .dark {
     --primary: 0 0% 98%;
     --primary-foreground: 240 5.9% 10%;
     --ring: 240 4.9% 83.9%;
@@ -127,6 +69,71 @@
     --primary: 240 5.9% 10%;
     --primary-foreground: 0 0% 98%;
     --ring: 240 5.9% 10%;
+  }
+
+  /* 2. Slate (Cool Steel Gray) */
+  [data-accent='slate'] {
+    --primary: 215 20.2% 65.1%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --ring: 215 20.2% 65.1%;
+  }
+  .light[data-accent='slate'],
+  .light [data-accent='slate'] {
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+    --ring: 222.2 84% 4.9%;
+  }
+
+  /* 3. Stone (Warm Stone Gray) */
+  [data-accent='stone'] {
+    --primary: 25 5.3% 83.5%;
+    --primary-foreground: 24 9.8% 10%;
+    --ring: 25 5.3% 83.5%;
+  }
+  .light[data-accent='stone'],
+  .light [data-accent='stone'] {
+    --primary: 24 9.8% 10%;
+    --primary-foreground: 60 9.1% 97.8%;
+    --ring: 24 9.8% 10%;
+  }
+
+  /* 4. Gray (Graphite Gray) */
+  [data-accent='gray'] {
+    --primary: 220 8.9% 70%;
+    --primary-foreground: 224 71.4% 4.1%;
+    --ring: 220 8.9% 70%;
+  }
+  .light[data-accent='gray'],
+  .light [data-accent='gray'] {
+    --primary: 220 8.9% 25%;
+    --primary-foreground: 0 0% 98%;
+    --ring: 220 8.9% 25%;
+  }
+
+  /* 5. Neutral (Minimal Neutral) */
+  [data-accent='neutral'] {
+    --primary: 0 0% 88%;
+    --primary-foreground: 0 0% 9%;
+    --ring: 0 0% 88%;
+  }
+  .light[data-accent='neutral'],
+  .light [data-accent='neutral'] {
+    --primary: 0 0% 9%;
+    --primary-foreground: 0 0% 98%;
+    --ring: 0 0% 9%;
+  }
+
+  /* 6. Bronze (Dark Bronze / Metallic Amber) */
+  [data-accent='bronze'] {
+    --primary: 32 65% 55%;
+    --primary-foreground: 24 10% 8%;
+    --ring: 32 65% 55%;
+  }
+  .light[data-accent='bronze'],
+  .light [data-accent='bronze'] {
+    --primary: 30 50% 28%;
+    --primary-foreground: 0 0% 98%;
+    --ring: 30 50% 28%;
   }
 }
 
