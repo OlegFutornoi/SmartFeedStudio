@@ -27,6 +27,8 @@ SmartFeed Studio (Monorepo root)
 │   ├── scripts/             # Auto-formatting and lifecycle scripts
 │   ├── hooks.json           # Antigravity lifecycle hooks (PostToolUse auto-format)
 │   └── mcp_config.json      # Workspace MCP server integrations (Playwright)
+├── .github/
+│   └── workflows/           # CI/CD pipelines (build.yml for Web, Backend & Tauri)
 ├── docker-compose.yml       # Local infrastructure: PostgreSQL 16, Redis 7, MinIO
 ├── pnpm-workspace.yaml      # Monorepo workspaces definition
 ├── turbo.json               # Turborepo task pipeline config

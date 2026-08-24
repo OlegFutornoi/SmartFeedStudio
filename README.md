@@ -71,6 +71,8 @@ graph TD
 │   ├── scripts/             # Lifecycle automation scripts
 │   ├── hooks.json           # Agent lifecycle hooks (auto-formatting)
 │   └── mcp_config.json      # Workspace MCP server integrations (Playwright)
+├── .github/
+│   └── workflows/           # CI/CD pipelines (build.yml for Web, Backend & Tauri)
 ├── docker-compose.yml       # Local infrastructure: PostgreSQL 16, Redis 7, MinIO
 ├── pnpm-workspace.yaml      # Monorepo workspaces definition
 ├── turbo.json               # Turborepo pipeline orchestration
