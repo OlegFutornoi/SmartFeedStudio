@@ -84,5 +84,8 @@ jobs:
       - name: Install Monorepo Dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Build Shared Package
+        run: pnpm build:shared
+
       - name: Verify Tauri Desktop Build
         run: pnpm --filter @smartfeed/desktop tauri:build
