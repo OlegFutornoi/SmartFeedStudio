@@ -1,0 +1,17 @@
+node_modules
+.pnpm-store
+dist
+build
+.next
+out
+.turbo
+target
+src-tauri/target
+.git
+.agents
+.husky
+coverage
+*.log
+.DS_Store
+.env*
+!*.example

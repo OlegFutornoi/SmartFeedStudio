@@ -1,0 +1,85 @@
+name: Continuous Integration
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  # ============================================================================
+  # 1. Build Web, Backend, and Shared Packages (via Turborepo)
+  # ============================================================================
+  build-web-and-backend:
+    name: Build Web & Backend (Node.js)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm package manager
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9
+
+      - name: Setup Node.js 20 with pnpm cache
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install Monorepo Dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run ESLint Code Quality Checks
+        run: pnpm lint
+
+      - name: Build Monorepo Workspaces (Turborepo)
+        run: pnpm build # Compiles @smartfeed/shared, backend-api, admin-portal, and desktop web assets
+
+  # ============================================================================
+  # 2. Build and Verify Tauri Desktop Application on Multiple Platforms (Rust)
+  # ============================================================================
+  build-desktop-tauri:
+    name: Build Desktop App (${{ matrix.os }})
+    needs: build-web-and-backend # Wait for web & backend validation to succeed first
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-22.04, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm package manager
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9
+
+      - name: Setup Node.js 20 with pnpm cache
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Setup Rust Toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache Rust Build Artifacts
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: apps/desktop/src-tauri -> target
+
+      # Install Linux system dependencies required by WebKitGTK and Tauri
+      - name: Install Linux System Dependencies
+        if: matrix.os == 'ubuntu-22.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev build-essential curl wget file libssl-dev libgtk-3-dev libayatana-appindicator3-dev librsvg2-dev
+
+      - name: Install Monorepo Dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Verify Tauri Desktop Build
+        run: pnpm --filter @smartfeed/desktop tauri:build
