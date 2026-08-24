@@ -14,6 +14,8 @@ export default tseslint.config(
       '**/src-tauri/target/**',
       '**/coverage/**',
       '**/*.d.ts',
+      '.agents/skills/**',
+      '.claude/**',
     ],
   },
   js.configs.recommended,
