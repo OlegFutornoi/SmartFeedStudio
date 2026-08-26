@@ -1,10 +1,11 @@
 export * from './enums';
-export { Role, PlanType, TargetApp } from './enums';
+export { Role, PlanType, TargetApp, MemberRole } from './enums';
 export * from './dtos/auth.dto';
 export * from './dtos/user.dto';
 export * from './dtos/license.dto';
 export * from './dtos/tariff-plan.dto';
 export * from './dtos/storage.dto';
 export * from './dtos/navigation.dto';
+export * from './dtos/organization.dto';
 export * from './contracts/cqrs';
 export * from './constants';

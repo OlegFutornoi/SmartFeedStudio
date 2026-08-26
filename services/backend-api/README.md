@@ -26,16 +26,17 @@ Central REST API for SmartFeed Studio built with **NestJS 11** + **CQRS** + **Pr
 > **Agent Rule:** Whenever a new `*.e2e-spec.ts` file is added to `services/backend-api/test/`,
 > update this table and the one in [AGENTS.md](./AGENTS.md).
 
-| Test File                                                                    | Endpoints Covered                                                                                                                                                       | Tests | Status  |
-| :--------------------------------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :---: | :-----: |
-| [`test/auth.e2e-spec.ts`](./test/auth.e2e-spec.ts)                           | `POST /api/auth/register`, `POST /api/auth/login`                                                                                                                       |  12   | ✅ PASS |
-| [`test/password-recovery.e2e-spec.ts`](./test/password-recovery.e2e-spec.ts) | `POST /api/auth/forgot-password`, `POST /api/auth/reset-password`                                                                                                       |   8   | ✅ PASS |
-| [`test/licenses.e2e-spec.ts`](./test/licenses.e2e-spec.ts)                   | `GET /api/licenses/my` (STARTER auto-provisioning, quota fields), `POST /api/licenses/select-plan` (4-tier), dynamic duration, expiration & `RequireActiveLicenseGuard` |   7   | ✅ PASS |
-| [`test/users.e2e-spec.ts`](./test/users.e2e-spec.ts)                         | `GET /api/users`, `GET /api/users/stats`, `POST /api/auth/change-password`                                                                                              |   7   | ✅ PASS |
-| [`test/navigation.e2e-spec.ts`](./test/navigation.e2e-spec.ts)               | `GET /api/navigation`, `GET /api/navigation/admin`, `POST /api/navigation`, `PATCH /api/navigation/:id`, `DELETE /api/navigation/:id`                                   |   8   | ✅ PASS |
-| [`test/plans.e2e-spec.ts`](./test/plans.e2e-spec.ts)                         | `GET /api/plans` (STARTER/GROWTH/PRO/ENTERPRISE), `GET /api/plans/admin`, `POST /api/plans`, `PATCH /api/plans/:id`, `DELETE /api/plans/:id`, `GET /api/licenses/admin` |  12   | ✅ PASS |
+| Test File                                                                    | Endpoints Covered                                                                                                                                                                                                                                    | Tests | Status  |
+| :--------------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :---: | :-----: |
+| [`test/auth.e2e-spec.ts`](./test/auth.e2e-spec.ts)                           | `POST /api/auth/register`, `POST /api/auth/login`                                                                                                                                                                                                    |  12   | ✅ PASS |
+| [`test/password-recovery.e2e-spec.ts`](./test/password-recovery.e2e-spec.ts) | `POST /api/auth/forgot-password`, `POST /api/auth/reset-password`                                                                                                                                                                                    |   8   | ✅ PASS |
+| [`test/licenses.e2e-spec.ts`](./test/licenses.e2e-spec.ts)                   | `GET /api/licenses/my` (STARTER auto-provisioning, quota fields), `POST /api/licenses/select-plan` (4-tier), dynamic duration, expiration & `RequireActiveLicenseGuard`                                                                              |   7   | ✅ PASS |
+| [`test/organizations.e2e-spec.ts`](./test/organizations.e2e-spec.ts)         | `GET /api/organizations`, `GET /api/organizations/:id`, `PATCH /api/organizations/:id`, `GET /api/organizations/:id/members`, `POST /api/organizations/:id/members` (`maxTeamSeats` quota checks), `DELETE /api/organizations/:id/members/:memberId` |   7   | ✅ PASS |
+| [`test/users.e2e-spec.ts`](./test/users.e2e-spec.ts)                         | `GET /api/users`, `GET /api/users/stats`, `POST /api/auth/change-password`                                                                                                                                                                           |   7   | ✅ PASS |
+| [`test/navigation.e2e-spec.ts`](./test/navigation.e2e-spec.ts)               | `GET /api/navigation`, `GET /api/navigation/admin`, `POST /api/navigation`, `PATCH /api/navigation/:id`, `DELETE /api/navigation/:id`                                                                                                                |   8   | ✅ PASS |
+| [`test/plans.e2e-spec.ts`](./test/plans.e2e-spec.ts)                         | `GET /api/plans` (STARTER/GROWTH/PRO/ENTERPRISE), `GET /api/plans/admin`, `POST /api/plans`, `PATCH /api/plans/:id`, `DELETE /api/plans/:id`, `GET /api/licenses/admin`                                                                              |  12   | ✅ PASS |
 
-**Total: 54 tests — 54 passing** (4-tier plan: STARTER → GROWTH → PRO → ENTERPRISE)
+**Total: 61 tests — 61 passing** (4-tier plan: STARTER → GROWTH → PRO → ENTERPRISE)
 
 > **🧹 Mandatory Data Teardown:** All E2E test suites cleanly wipe all test-generated users, licenses, tariff plans, and navigation items in `afterAll` to guarantee zero test leftovers or database pollution.
 
@@ -61,6 +62,17 @@ Central REST API for SmartFeed Studio built with **NestJS 11** + **CQRS** + **Pr
 | :----- | :----------------- | :------------------------------------------- | :------- |
 | `GET`  | `/api/users`       | Get all registered users with their licenses | `Bearer` |
 | `GET`  | `/api/users/stats` | Get total users and license statistics       | `Bearer` |
+
+### Organizations & Team Seats
+
+| Method   | Endpoint                             | Description                                                  | Auth     |
+| :------- | :----------------------------------- | :----------------------------------------------------------- | :------- |
+| `GET`    | `/api/organizations`                 | Get list of organizations current user belongs to            | `Bearer` |
+| `GET`    | `/api/organizations/:id`             | Get organization profile with quotas and member counts       | `Bearer` |
+| `PATCH`  | `/api/organizations/:id`             | Update organization name                                     | `Bearer` |
+| `GET`    | `/api/organizations/:id/members`     | Get list of organization members                             | `Bearer` |
+| `POST`   | `/api/organizations/:id/members`     | Invite/add team member (enforces `maxTeamSeats` quota limit) | `Bearer` |
+| `DELETE` | `/api/organizations/:id/members/:id` | Remove team member (liberates team seat)                     | `Bearer` |
 
 ### Licenses
 

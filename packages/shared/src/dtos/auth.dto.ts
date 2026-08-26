@@ -5,6 +5,7 @@ export const RegisterDtoSchema = z.object({
   email: z.string().email('Invalid email address format'),
   password: z.string().min(8, 'Password must be at least 8 characters'),
   fullName: z.string().min(2, 'Full name must be at least 2 characters').optional(),
+  companyName: z.string().min(2, 'Company name must be at least 2 characters').optional(),
   role: z.nativeEnum(Role).default(Role.USER).optional(),
 });
 

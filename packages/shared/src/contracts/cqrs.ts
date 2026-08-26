@@ -9,6 +9,7 @@ export interface CreateUserCommandPayload {
   passwordHash?: string; // or raw password for handler to hash
   password?: string;
   fullName?: string;
+  companyName?: string;
   role?: Role;
 }
 
@@ -39,6 +40,7 @@ export interface UserCreatedEventPayload {
   email: string;
   fullName: string | null;
   role: Role;
+  organizationId?: string | null;
   occurredOn: Date;
 }
 

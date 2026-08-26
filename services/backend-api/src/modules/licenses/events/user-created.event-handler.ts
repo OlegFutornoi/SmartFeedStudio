@@ -47,6 +47,7 @@ export class UserCreatedEventHandler implements IEventHandler<UserCreatedEvent> 
       const license = await this.prisma.license.create({
         data: {
           userId: event.userId,
+          organizationId: event.organizationId || null,
           licenseKey: formattedKey,
           planType: defaultPlan,
           tariffPlanId,

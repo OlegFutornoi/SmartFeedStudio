@@ -21,6 +21,7 @@ export class GlobalHttpExceptionFilter implements ExceptionFilter {
     let status = HttpStatus.INTERNAL_SERVER_ERROR;
     let message: string | string[] = 'Internal server error';
     let error = 'Internal Server Error';
+    let code: string | undefined = undefined;
 
     if (exception instanceof HttpException) {
       status = exception.getStatus();
@@ -33,6 +34,9 @@ export class GlobalHttpExceptionFilter implements ExceptionFilter {
         const resObj = res as Record<string, unknown>;
         message = (resObj.message as string | string[]) || exception.message;
         error = (resObj.error as string) || exception.name;
+        if (typeof resObj.code === 'string') {
+          code = resObj.code;
+        }
       }
     } else if (exception instanceof Prisma.PrismaClientKnownRequestError) {
       switch (exception.code) {
@@ -76,6 +80,7 @@ export class GlobalHttpExceptionFilter implements ExceptionFilter {
       statusCode: status,
       message,
       error,
+      ...(code ? { code } : {}),
       timestamp: new Date().toISOString(),
       path: request.url,
     });

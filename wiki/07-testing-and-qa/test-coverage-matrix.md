@@ -1,11 +1,11 @@
 # 📈 Матриця Покриття Тестами — SmartFeed Studio
 
-## 📊 Повний Звіт про Автоматизовані Тести (89 з 89 пройдено — 100% PASS)
+## 📊 Повний Звіт про Автоматизовані Тести (96 з 96 пройдено — 100% PASS)
 
 > [!NOTE]
-> Схему тарифів оновлено до 4-рівневої: **STARTER → GROWTH → PRO → ENTERPRISE**. Усі тести оновлені та пройдені.
+> Схему тарифів оновлено до 4-рівневої: **STARTER → GROWTH → PRO → ENTERPRISE**. Реалізовано архітектуру Організацій та командних місць. Усі тести оновлені та пройдені.
 
-### 1. Бекенд API (Jest E2E — 54 тести)
+### 1. Бекенд API (Jest E2E — 61 тест)
 
 > Команда запуску: `pnpm --filter @smartfeed/backend-api test:e2e`
 
@@ -14,11 +14,12 @@
 | `test/auth.e2e-spec.ts`              | `POST /auth/register`, `POST /auth/login`                                                                                                                      |    12     | ✅ PASS |
 | `test/password-recovery.e2e-spec.ts` | `POST /auth/forgot-password`, `POST /auth/reset-password`                                                                                                      |     8     | ✅ PASS |
 | `test/licenses.e2e-spec.ts`          | `GET /licenses/my` (STARTER auto-provisioning, quota fields), `POST /licenses/select-plan` (4-tier), dynamic duration, expiration, `RequireActiveLicenseGuard` |     7     | ✅ PASS |
+| `test/organizations.e2e-spec.ts`     | `GET /organizations`, `GET /organizations/:id`, `PATCH /organizations/:id`, `GET /members`, `POST /members` (`maxTeamSeats`), `DELETE /members/:id`            |     7     | ✅ PASS |
 | `test/users.e2e-spec.ts`             | `GET /users`, `GET /users/stats`, `POST /auth/change-password`                                                                                                 |     7     | ✅ PASS |
 | `test/navigation.e2e-spec.ts`        | `GET /navigation`, `GET /navigation/admin`, `POST /navigation`, `PATCH /navigation/:id`, `DELETE /navigation/:id`                                              |     8     | ✅ PASS |
 | `test/plans.e2e-spec.ts`             | `GET /plans`, `GET /plans/admin`, `POST /plans`, `PATCH /plans/:id`, `DELETE /plans/:id`, `GET /licenses/admin`                                                |    12     | ✅ PASS |
 
-**Разом по бекенду: 54 тести — 54 passing**
+**Разом по бекенду: 61 тест — 61 passing**
 
 ---
 
@@ -53,4 +54,4 @@
 
 ---
 
-## 🏆 Загальний Підсумок: 89 тестів — 100% зелені (Zero Regressions)
+## 🏆 Загальний Підсумок: 96 тестів — 100% зелені (Zero Regressions)

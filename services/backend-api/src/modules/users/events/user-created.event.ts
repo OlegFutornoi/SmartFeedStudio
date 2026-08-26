@@ -9,6 +9,7 @@ export class UserCreatedEvent implements IEvent, UserCreatedEventPayload {
     public readonly email: string,
     public readonly fullName: string | null,
     public readonly role: Role,
+    public readonly organizationId: string | null = null,
   ) {
     this.occurredOn = new Date();
   }

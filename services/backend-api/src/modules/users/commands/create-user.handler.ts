@@ -43,11 +43,31 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand, Use
       },
     });
 
-    this.logger.log(`User created: id=${user.id}, email=${user.email}, role=${user.role}`);
+    // Auto-create default Organization for the user
+    const defaultOrgName =
+      command.companyName?.trim() ||
+      (user.fullName ? `Компанія ${user.fullName}` : `Компанія ${normalizedEmail.split('@')[0]}`);
+
+    const organization = await this.prisma.organization.create({
+      data: {
+        name: defaultOrgName,
+        ownerId: user.id,
+        members: {
+          create: {
+            userId: user.id,
+            role: 'OWNER',
+          },
+        },
+      },
+    });
+
+    this.logger.log(
+      `User created: id=${user.id}, email=${user.email}, role=${user.role}, orgId=${organization.id}`,
+    );
 
     // Publish UserCreatedEvent to EventBus
     this.eventBus.publish(
-      new UserCreatedEvent(user.id, user.email, user.fullName, user.role as Role),
+      new UserCreatedEvent(user.id, user.email, user.fullName, user.role as Role, organization.id),
     );
 
     return {

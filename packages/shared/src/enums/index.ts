@@ -16,3 +16,9 @@ export enum TargetApp {
   ADMIN_PORTAL = 'ADMIN_PORTAL',
   ALL = 'ALL',
 }
+
+export enum MemberRole {
+  OWNER = 'OWNER',
+  ADMIN = 'ADMIN',
+  MEMBER = 'MEMBER',
+}

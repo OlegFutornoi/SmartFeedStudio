@@ -7,5 +7,6 @@ export class CreateUserCommand implements ICommand {
     public readonly password: string,
     public readonly fullName?: string,
     public readonly role: Role = Role.USER,
+    public readonly companyName?: string,
   ) {}
 }

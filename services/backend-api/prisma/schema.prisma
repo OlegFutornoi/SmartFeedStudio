@@ -29,6 +29,12 @@ enum TargetApp {
   ALL
 }
 
+enum MemberRole {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
 model User {
   id           String         @id @default(uuid())
   email        String         @unique
@@ -41,7 +47,40 @@ model User {
   snapshots    Snapshot[]
   images       ProductImage[]
 
+  ownedOrganizations      Organization[]       @relation("OrganizationOwner")
+  organizationMemberships OrganizationMember[]
+
   @@map("users")
+}
+
+model Organization {
+  id        String               @id @default(uuid())
+  name      String
+  slug      String?              @unique
+  ownerId   String
+  owner     User                 @relation("OrganizationOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  members   OrganizationMember[]
+  licenses  License[]
+  createdAt DateTime             @default(now())
+  updatedAt DateTime             @updatedAt
+
+  @@index([ownerId])
+  @@map("organizations")
+}
+
+model OrganizationMember {
+  id             String       @id @default(uuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  userId         String
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role           MemberRole   @default(MEMBER)
+  joinedAt       DateTime     @default(now())
+
+  @@unique([organizationId, userId])
+  @@index([organizationId])
+  @@index([userId])
+  @@map("organization_members")
 }
 
 model TariffPlan {
@@ -117,8 +156,12 @@ model License {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
   @@index([userId])
   @@index([tariffPlanId])
+  @@index([organizationId])
   @@map("licenses")
 }
 

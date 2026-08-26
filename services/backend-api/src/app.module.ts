@@ -5,6 +5,7 @@ import { BullModule } from '@nestjs/bullmq';
 import { PrismaModule } from './prisma/prisma.module';
 import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { OrganizationsModule } from './modules/organizations/organizations.module';
 import { LicensesModule } from './modules/licenses/licenses.module';
 import { PlansModule } from './modules/plans/plans.module';
 import { StorageModule } from './modules/storage/storage.module';
@@ -40,6 +41,7 @@ import { NavigationModule } from './modules/navigation/navigation.module';
     // Domain Modules
     UsersModule,
     AuthModule,
+    OrganizationsModule,
     LicensesModule,
     PlansModule,
     StorageModule,

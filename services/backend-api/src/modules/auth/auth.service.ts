@@ -43,7 +43,7 @@ export class AuthService {
 
     // Delegate creation & password hashing to UsersModule through CommandBus
     const user = await this.commandBus.execute<CreateUserCommand, UserProfile>(
-      new CreateUserCommand(dto.email, dto.password, dto.fullName, dto.role),
+      new CreateUserCommand(dto.email, dto.password, dto.fullName, dto.role, dto.companyName),
     );
 
     const tokens = await this.generateTokens(user);

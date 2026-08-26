@@ -19,6 +19,11 @@ export class RegisterDto {
   @IsOptional()
   fullName?: string;
 
+  @ApiPropertyOptional({ example: 'Acme Feeds Inc.', description: 'Company / Organization name' })
+  @IsString()
+  @IsOptional()
+  companyName?: string;
+
   @ApiPropertyOptional({ enum: Role, default: Role.USER, description: 'Assigned role' })
   @IsEnum(Role)
   @IsOptional()
