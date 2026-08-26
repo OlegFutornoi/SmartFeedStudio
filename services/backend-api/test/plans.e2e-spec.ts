@@ -95,18 +95,18 @@ describe('Tariff Plans & Licenses Management (E2E)', () => {
       expect(Array.isArray(res.body)).toBe(true);
       expect(res.body.length).toBeGreaterThanOrEqual(1);
 
-      const freePlan = (
+      const starterPlan = (
         res.body as Array<{
           code: string;
           nameUk: string;
           featuresUk: string[];
           maxXmlLimit: number;
         }>
-      ).find((p) => p.code === 'FREE');
-      expect(freePlan).toBeDefined();
-      expect(freePlan?.nameUk).toBeDefined();
-      expect(Array.isArray(freePlan?.featuresUk)).toBe(true);
-      expect(freePlan?.maxXmlLimit).toBeGreaterThan(0);
+      ).find((p) => p.code === 'STARTER');
+      expect(starterPlan).toBeDefined();
+      expect(starterPlan?.nameUk).toBeDefined();
+      expect(Array.isArray(starterPlan?.featuresUk)).toBe(true);
+      expect(starterPlan?.maxXmlLimit).toBeGreaterThan(0);
     });
   });
 

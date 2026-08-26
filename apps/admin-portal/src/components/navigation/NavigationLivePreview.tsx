@@ -9,9 +9,10 @@ import { useLanguage } from '../../contexts/LanguageContext';
 import { cn } from '../../lib/utils';
 
 const PLAN_HIERARCHY: Record<PlanType, number> = {
-  [PlanType.FREE]: 1,
-  [PlanType.PRO]: 2,
-  [PlanType.ENTERPRISE]: 3,
+  [PlanType.STARTER]: 1,
+  [PlanType.GROWTH]: 2,
+  [PlanType.PRO]: 3,
+  [PlanType.ENTERPRISE]: 4,
 };
 
 interface NavigationLivePreviewProps {
@@ -21,7 +22,7 @@ interface NavigationLivePreviewProps {
 export const NavigationLivePreview = React.memo(function NavigationLivePreview({
   items,
 }: NavigationLivePreviewProps) {
-  const [selectedPlan, setSelectedPlan] = useState<PlanType>(PlanType.FREE);
+  const [selectedPlan, setSelectedPlan] = useState<PlanType>(PlanType.STARTER);
   const { t, locale } = useLanguage();
 
   const desktopItems = items.filter((i) => i.targetApp === TargetApp.DESKTOP);
@@ -44,25 +45,29 @@ export const NavigationLivePreview = React.memo(function NavigationLivePreview({
         <CardDescription className="text-xs">{t('navigation', 'simulator_desc')}</CardDescription>
 
         {/* Plan Tiers Switcher */}
-        <div className="grid grid-cols-3 gap-1.5 p-1 bg-muted/60 rounded-xl border border-border/40 mt-2">
-          {([PlanType.FREE, PlanType.PRO, PlanType.ENTERPRISE] as const).map((plan) => (
-            <button
-              key={plan}
-              onClick={() => setSelectedPlan(plan)}
-              className={cn(
-                'py-1 text-xs rounded-lg font-medium transition-all text-center',
-                selectedPlan === plan
-                  ? 'bg-primary text-primary-foreground font-semibold shadow-sm'
-                  : 'text-muted-foreground hover:text-foreground',
-              )}
-            >
-              {plan === PlanType.FREE
-                ? 'Free Plan'
-                : plan === PlanType.PRO
-                  ? 'PRO Plan'
-                  : 'Enterprise'}
-            </button>
-          ))}
+        <div className="grid grid-cols-4 gap-1 p-1 bg-muted/60 rounded-xl border border-border/40 mt-2">
+          {([PlanType.STARTER, PlanType.GROWTH, PlanType.PRO, PlanType.ENTERPRISE] as const).map(
+            (plan) => (
+              <button
+                key={plan}
+                onClick={() => setSelectedPlan(plan)}
+                className={cn(
+                  'py-1 text-[11px] rounded-lg font-medium transition-all text-center truncate px-1',
+                  selectedPlan === plan
+                    ? 'bg-primary text-primary-foreground font-semibold shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground',
+                )}
+              >
+                {plan === PlanType.STARTER
+                  ? 'Starter'
+                  : plan === PlanType.GROWTH
+                    ? 'Growth'
+                    : plan === PlanType.PRO
+                      ? 'PRO'
+                      : 'Enterprise'}
+              </button>
+            ),
+          )}
         </div>
       </CardHeader>
 

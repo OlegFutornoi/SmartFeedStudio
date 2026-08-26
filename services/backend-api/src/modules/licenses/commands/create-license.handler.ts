@@ -13,22 +13,43 @@ export class CreateLicenseHandler implements ICommandHandler<CreateLicenseComman
   constructor(private readonly prisma: PrismaService) {}
 
   async execute(command: CreateLicenseCommand): Promise<LicenseEntity> {
-    const { userId, planType = PlanType.FREE, expiresAt } = command;
+    const { userId, planType = PlanType.STARTER, expiresAt } = command;
 
     // Fetch dynamic plan from database if present, otherwise fallback to static map
     const dbPlan = await this.prisma.tariffPlan.findUnique({
       where: { code: planType },
     });
 
-    const fallbackLimits = PLAN_LIMITS_MAP[planType] || PLAN_LIMITS_MAP[PlanType.FREE];
+    const fallbackLimits = PLAN_LIMITS_MAP[planType] || PLAN_LIMITS_MAP[PlanType.STARTER];
 
     const canCloudBackup = dbPlan ? dbPlan.canCloudBackup : fallbackLimits.canCloudBackup;
     const maxXmlLimit = dbPlan ? dbPlan.maxXmlLimit : fallbackLimits.maxXmlLimit;
     const aiCredits = dbPlan ? dbPlan.aiCredits : fallbackLimits.aiCredits;
+    const maxFeedsLimit = dbPlan ? dbPlan.maxFeedsLimit : fallbackLimits.maxFeedsLimit;
+    const maxChannelsLimit = dbPlan ? dbPlan.maxChannelsLimit : fallbackLimits.maxChannelsLimit;
+    const maxTeamSeats = dbPlan ? dbPlan.maxTeamSeats : fallbackLimits.maxTeamSeats;
+    const hasApiAccess = dbPlan ? dbPlan.hasApiAccess : fallbackLimits.hasApiAccess;
+    const hasFeedDiff = dbPlan ? dbPlan.hasFeedDiff : fallbackLimits.hasFeedDiff;
+    const hasWhiteLabel = dbPlan ? dbPlan.hasWhiteLabel : fallbackLimits.hasWhiteLabel;
+    const hasSso = dbPlan ? dbPlan.hasSso : fallbackLimits.hasSso;
+    const hasAuditLog = dbPlan ? dbPlan.hasAuditLog : fallbackLimits.hasAuditLog;
     const tariffPlanId = dbPlan ? dbPlan.id : null;
 
     const randomBytes = crypto.randomBytes(6).toString('hex').toUpperCase();
     const licenseKey = `SF-${planType}-${randomBytes.slice(0, 4)}-${randomBytes.slice(4, 8)}-${randomBytes.slice(8, 12)}`;
+
+    const finalExpiresAt =
+      expiresAt !== undefined
+        ? expiresAt
+        : dbPlan?.durationDays
+          ? new Date(Date.now() + dbPlan.durationDays * 24 * 60 * 60 * 1000)
+          : null;
+
+    // Deactivate previous active licenses for this user
+    await this.prisma.license.updateMany({
+      where: { userId, isActive: true },
+      data: { isActive: false },
+    });
 
     const license = await this.prisma.license.create({
       data: {
@@ -39,12 +60,28 @@ export class CreateLicenseHandler implements ICommandHandler<CreateLicenseComman
         canCloudBackup,
         maxXmlLimit,
         aiCredits,
+        maxFeedsLimit,
+        maxChannelsLimit,
+        maxTeamSeats,
+        hasApiAccess,
+        hasFeedDiff,
+        hasWhiteLabel,
+        hasSso,
+        hasAuditLog,
         isActive: true,
-        expiresAt: expiresAt || null,
+        expiresAt: finalExpiresAt,
       },
     });
 
     this.logger.log(`Created license ${license.licenseKey} for user ${userId}`);
+
+    const isExpired = Boolean(license.expiresAt && new Date(license.expiresAt) < new Date());
+    const daysRemaining = license.expiresAt
+      ? Math.max(
+          0,
+          Math.ceil((new Date(license.expiresAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24)),
+        )
+      : null;
 
     return {
       id: license.id,
@@ -54,8 +91,18 @@ export class CreateLicenseHandler implements ICommandHandler<CreateLicenseComman
       canCloudBackup: license.canCloudBackup,
       maxXmlLimit: license.maxXmlLimit,
       aiCredits: license.aiCredits,
+      maxFeedsLimit: license.maxFeedsLimit,
+      maxChannelsLimit: license.maxChannelsLimit,
+      maxTeamSeats: license.maxTeamSeats,
+      hasApiAccess: license.hasApiAccess,
+      hasFeedDiff: license.hasFeedDiff,
+      hasWhiteLabel: license.hasWhiteLabel,
+      hasSso: license.hasSso,
+      hasAuditLog: license.hasAuditLog,
       isActive: license.isActive,
       expiresAt: license.expiresAt,
+      isExpired,
+      daysRemaining,
       createdAt: license.createdAt,
       updatedAt: license.updatedAt,
     };

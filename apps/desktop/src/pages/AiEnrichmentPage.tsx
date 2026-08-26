@@ -1,15 +1,36 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Sparkles, Wand2, Bot, Zap, Sliders, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useTranslation } from '@/i18n';
+import { useAuth } from '@/contexts/AuthContext';
+import { getMyLicense } from '@/lib/api';
+import { ExpiredPlanBlocker } from '@/components/layout/ExpiredPlanBlocker';
 
 export function AiEnrichmentPage() {
   const { language } = useTranslation();
   const isUk = language === 'uk';
+  const { token } = useAuth();
+  const [isExpired, setIsExpired] = useState<boolean>(false);
+  const [aiCredits, setAiCredits] = useState(500);
 
-  const [aiCredits] = useState(500);
+  useEffect(() => {
+    if (token) {
+      getMyLicense(token)
+        .then((lic) => {
+          setIsExpired(Boolean(lic?.isExpired));
+          if (lic?.aiCredits !== undefined) {
+            setAiCredits(lic.aiCredits);
+          }
+        })
+        .catch(() => {});
+    }
+  }, [token]);
+
+  if (isExpired) {
+    return <ExpiredPlanBlocker featureName={isUk ? 'AI Збагачення' : 'AI Enrichment'} />;
+  }
 
   return (
     <div

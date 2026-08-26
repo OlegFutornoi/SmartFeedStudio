@@ -1,9 +1,12 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Layers, Plus, Upload, RefreshCw, CheckCircle2, FileText, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useTranslation } from '@/i18n';
+import { useAuth } from '@/contexts/AuthContext';
+import { getMyLicense } from '@/lib/api';
+import { ExpiredPlanBlocker } from '@/components/layout/ExpiredPlanBlocker';
 
 interface CatalogItem {
   id: string;
@@ -18,6 +21,16 @@ interface CatalogItem {
 export function CatalogsPage() {
   const { language } = useTranslation();
   const isUk = language === 'uk';
+  const { token } = useAuth();
+  const [isExpired, setIsExpired] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (token) {
+      getMyLicense(token)
+        .then((lic) => setIsExpired(Boolean(lic?.isExpired)))
+        .catch(() => {});
+    }
+  }, [token]);
 
   const [search, setSearch] = useState('');
   const [catalogs] = useState<CatalogItem[]>([
@@ -59,6 +72,10 @@ export function CatalogsPage() {
       ),
     [catalogs, search],
   );
+
+  if (isExpired) {
+    return <ExpiredPlanBlocker featureName={isUk ? 'Каталоги товарів' : 'Product Catalogs'} />;
+  }
 
   return (
     <div

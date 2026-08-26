@@ -107,6 +107,7 @@ export const NavigationItemRow = React.memo(function NavigationItemRow({
           className={cn(
             'text-[10px] font-mono px-2 py-0.5 gap-1',
             !item.requiredPlan && 'border-muted text-muted-foreground',
+            item.requiredPlan === PlanType.GROWTH && 'border-sky-500/40 text-sky-400 bg-sky-500/10',
             item.requiredPlan === PlanType.PRO &&
               'border-indigo-500/40 text-indigo-400 bg-indigo-500/10',
             item.requiredPlan === PlanType.ENTERPRISE &&
@@ -114,7 +115,7 @@ export const NavigationItemRow = React.memo(function NavigationItemRow({
           )}
         >
           {item.requiredPlan && <Crown className="h-2.5 w-2.5" />}
-          {item.requiredPlan ? `${item.requiredPlan}+` : 'FREE'}
+          {item.requiredPlan ? `${item.requiredPlan}+` : 'ALL'}
         </Badge>
 
         {/* Visibility Toggle */}

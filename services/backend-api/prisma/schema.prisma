@@ -17,7 +17,8 @@ enum Role {
 }
 
 enum PlanType {
-  FREE
+  STARTER
+  GROWTH
   PRO
   ENTERPRISE
 }
@@ -53,17 +54,38 @@ model TariffPlan {
   priceMonthly  Decimal   @default(0) @db.Decimal(10, 2)
   priceYearly   Decimal?  @db.Decimal(10, 2)
   currency      String    @default("USD")
-  maxXmlLimit   Int       @default(1000)
-  aiCredits     Int       @default(50)
-  canCloudBackup Boolean  @default(false)
-  isPopular     Boolean   @default(false)
-  isActive      Boolean   @default(true)
-  order         Int       @default(0)
-  featuresUk    String[]  @default([])
-  featuresEn    String[]  @default([])
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  licenses      License[]
+
+  // --- Quota Fields ---
+  maxXmlLimit         Int     @default(500)   // Max SKU count
+  aiCredits           Int     @default(0)     // AI credits per month
+  canCloudBackup      Boolean @default(false) // Cloud S3 backup access
+  maxFeedsLimit       Int     @default(1)     // Max active feeds
+  maxChannelsLimit    Int     @default(1)     // Max output channels
+  syncFrequencyHours  Int     @default(0)     // 0=manual, 24=daily, 4=6x/day, 1=hourly
+  maxStorageGb        Float   @default(0)     // Cloud storage GB (0=disabled)
+  maxTeamSeats        Int     @default(1)     // Team member seats
+
+  // --- Feature Flags ---
+  hasApiAccess     Boolean  @default(false)  // REST API access
+  hasWebhooks      Boolean  @default(false)  // Webhook push on feed update
+  hasFeedDiff      Boolean  @default(false)  // Feed version comparison (diff)
+  hasWhiteLabel    Boolean  @default(false)  // White-label PDF reports
+  hasSso           Boolean  @default(false)  // SSO / SAML login
+  hasAuditLog      Boolean  @default(false)  // Full audit trail
+  hasCustomS3      Boolean  @default(false)  // Custom S3/MinIO endpoint
+  hasPriorityAi    Boolean  @default(false)  // Priority AI queue
+  slaUptimePercent Float?                    // null=no SLA, 99.9=Enterprise
+
+  // --- Display Fields ---
+  isPopular    Boolean   @default(false)
+  isActive     Boolean   @default(true)
+  order        Int       @default(0)
+  durationDays Int?      @default(7)         // Subscription cycle length in days
+  featuresUk   String[]  @default([])
+  featuresEn   String[]  @default([])
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  licenses     License[]
 
   @@map("tariff_plans")
 }
@@ -75,14 +97,25 @@ model License {
   tariffPlanId   String?
   tariffPlan     TariffPlan? @relation(fields: [tariffPlanId], references: [id], onDelete: SetNull)
   licenseKey     String      @unique
-  planType       PlanType    @default(FREE)
+  planType       PlanType    @default(STARTER)
   canCloudBackup Boolean     @default(false)
-  maxXmlLimit    Int         @default(1000)
-  aiCredits      Int         @default(50)
+  maxXmlLimit    Int         @default(500)
+  aiCredits      Int         @default(0)
   isActive       Boolean     @default(true)
   expiresAt      DateTime?
-  createdAt      DateTime    @default(now())
-  updatedAt      DateTime    @updatedAt
+
+  // Snapshot of quota at time of license creation
+  maxFeedsLimit      Int     @default(1)
+  maxChannelsLimit   Int     @default(1)
+  maxTeamSeats       Int     @default(1)
+  hasApiAccess       Boolean @default(false)
+  hasFeedDiff        Boolean @default(false)
+  hasWhiteLabel      Boolean @default(false)
+  hasSso             Boolean @default(false)
+  hasAuditLog        Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([userId])
   @@index([tariffPlanId])

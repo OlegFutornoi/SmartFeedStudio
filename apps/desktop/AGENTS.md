@@ -100,10 +100,11 @@ pnpm --filter @smartfeed/desktop test:e2e:ui
 | :------------------------------ | :---------------------------------------------------------------------------------------------------------------------------------------------------------- | :---: | :-----: |
 | `e2e/auth.spec.ts`              | Route protection, localized 401 error alert (`UA` / `EN`), successful login redirect, registration flow, multilingual switching (`UA` / `EN`), theme toggle |   6   | ✅ PASS |
 | `e2e/password-recovery.spec.ts` | Forgot password navigation, reset request validation, token generation, short password & mismatch checks, credential rotation, login, i18n & theme toggles  |   7   | ✅ PASS |
+| `e2e/plans.spec.ts`             | Dynamic tariff plans, trial countdown, PRO activation, expired plan locking (`ExpiredPlanBlocker`), access unlocking, and bilingual i18n (`UA` ⇄ `EN`)      |   4   | ✅ PASS |
 | `e2e/navigation.spec.ts`        | Dynamic sidebar navigation, RBAC item filtering, collapse/expand states, active route indicator                                                             |   2   | ✅ PASS |
 | `e2e/theme.spec.ts`             | shadcn theme palettes (Zinc, Slate, Stone, Bronze), Dark/Light/Dark switching, persistence                                                                  |   3   | ✅ PASS |
 
-**Total: 18 tests — 18 passing**
+**Total: 22 tests — 22 passing**
 
 ---
 

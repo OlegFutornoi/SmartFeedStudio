@@ -2,6 +2,7 @@ import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CommandBus } from '@nestjs/cqrs';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RequireActiveLicenseGuard } from '../licenses/guards/require-active-license.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { GeneratePresignedUploadUrlCommand } from './commands/generate-presigned-url.command';
 import { PresignedUploadUrlResult } from '@smartfeed/shared';
@@ -27,7 +28,7 @@ export class StorageController {
   constructor(private readonly commandBus: CommandBus) {}
 
   @Post('presigned-url')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RequireActiveLicenseGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Generate S3/MinIO presigned upload URL for direct client upload' })
   @ApiResponse({ status: 201, description: 'Presigned URL generated successfully' })

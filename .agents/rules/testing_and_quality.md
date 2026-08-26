@@ -45,7 +45,16 @@ description: Quality assurance, documentation synchronization, git commit policy
   - **Component Size Limit & Single Responsibility**: React components must remain compact, clean, and modular (recommended max ~250–300 lines). Monolithic components (e.g. 700–1000+ lines) are **strictly prohibited**. Always decompose complex views into dedicated subcomponents (`*Dialog.tsx`, `*List.tsx`, `*Row.tsx`, `*Header.tsx`, `*Preview.tsx`, custom hooks).
   - **Zero Unused Imports & Dead Code**: Eliminate all unreferenced imports (e.g. from `lucide-react`, DTOs, or React hooks), unused variables, types, and unreachable code. Actively inspect IDE diagnostics and fix all unused items immediately.
   - **Architectural Integrity & Zero Gaps**: Strictly adhere to CQRS module boundaries, minimal React re-renders (`vercel-react-best-practices`), proper design token usage (`shadcn`), bundle efficiency, accessibility, type safety, and test isolation.
-- **Rule (Step 3 — Error, Lint & Type Checking)**: Check for syntax errors, compile errors, linting warnings (`pnpm lint` / `pnpm lint:fix`), and run relevant automated tests (`pnpm --filter @smartfeed/backend-api test:e2e` for backend, `pnpm test:desktop` for desktop, `pnpm test:admin` for admin portal). Guard against dev-cache overlap collisions (never run `next build` while `next dev` is running without proper cleanup).
+- **Rule (Step 3 — Mandatory Typecheck, Diagnostics & Immediate Error Fixes)**:
+  - Immediately after writing or modifying code in ANY package (`services/backend-api`, `packages/shared`, `apps/desktop`, `apps/admin-portal`), the agent **MUST ALWAYS** execute static typechecking (`tsc --noEmit`, `pnpm build:shared`, `prisma generate` when schema changes).
+  - **Zero Error Tolerance & Immediate Fixes**: If `tsc --noEmit` or IDE diagnostics report ANY errors (type mismatches, missing DTO fields, outdated Prisma types, enum conflicts, unhandled properties), the agent **MUST NOT leave them or report completion to the user**. The agent **MUST IMMEDIATELY investigate and fix every single error** until all packages compile with exit code 0.
+  - **Mandatory Verification Commands**:
+    - Backend API: `pnpm --filter @smartfeed/backend-api exec tsc --noEmit`
+    - Shared contracts: `pnpm --filter @smartfeed/shared build`
+    - Prisma schema changes: `pnpm --filter @smartfeed/backend-api exec prisma generate`
+    - Desktop App: `pnpm --filter @smartfeed/desktop exec tsc --noEmit`
+    - Admin Web Portal: `pnpm --filter admin-portal exec tsc --noEmit`
+  - **Automated Tests**: Run relevant tests (`pnpm --filter @smartfeed/backend-api test:e2e` for backend, `pnpm test:desktop` for desktop, `pnpm test:admin` for admin portal). Guard against dev-cache overlap collisions (never run `next build` while `next dev` is running without proper cleanup).
 - **Rule (Step 4 — Mandatory Auto-Formatting)**: The agent must **ALWAYS** execute `pnpm format` (Prettier) to verify that no formatting errors or style inconsistencies exist.
 
 ---
@@ -72,3 +81,11 @@ description: Quality assurance, documentation synchronization, git commit policy
 - **Rule**: Every rule file in `.agents/rules/*.md` **MUST NEVER exceed 12,000 characters** (Antigravity IDE hard limit).
 - Whenever any rule file reaches ~10,000–11,000 characters, the agent **MUST** split the rules or create a new dedicated `.md` file in `.agents/rules/` with `trigger: always_on` (e.g. `testing_and_quality.md`, `commands.md`, etc.).
 - The agent **MUST ALWAYS** discover, read, and strictly follow all rule files located in `.agents/rules/` without exception.
+
+---
+
+## 10. Mandatory Plan Review & Explicit User Command Before Execution Policy
+
+- **Rule (Plans Location)**: Whenever a new feature plan, architectural strategy, pricing matrix, or roadmap is requested or developed, the agent **MUST ALWAYS** save the full document in the repository folder `plans/<feature_name>.md` and register it in `plans/README.md`.
+- **Rule (Strict Prohibition of Premature Execution)**: The agent **MUST NEVER** automatically start modifying code, altering database schemas (`schema.prisma`), running seeders, or implementing features immediately after creating a plan.
+- **Rule (Explicit User Trigger Only)**: The agent **MUST STOP, present the plan path to the user, and WAIT** for the user to read, review, and issue an explicit command to begin implementation (e.g., "виконуй", "починай", "реалізуй план", "роби"). Any unauthorized, premature code execution without this trigger is strictly prohibited.

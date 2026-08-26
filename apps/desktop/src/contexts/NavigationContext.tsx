@@ -56,6 +56,19 @@ const DEFAULT_NAVIGATION_ITEMS: NavigationItemDto[] = [
     requiredPlan: null,
     targetApp: TargetApp.DESKTOP,
   },
+  {
+    id: 'default-plans',
+    key: 'plans',
+    labelUk: 'Тарифи',
+    labelEn: 'Plans & Pricing',
+    path: '/plans',
+    icon: 'CreditCard',
+    order: 5,
+    isVisible: true,
+    requiredRoles: [Role.USER, Role.ADMIN, Role.SUPER_ADMIN],
+    requiredPlan: null,
+    targetApp: TargetApp.DESKTOP,
+  },
 ];
 
 interface NavigationContextType {

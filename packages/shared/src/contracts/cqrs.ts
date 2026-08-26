@@ -63,8 +63,20 @@ export interface LicenseEntity {
   canCloudBackup: boolean;
   maxXmlLimit: number;
   aiCredits: number;
+  // Extended quota fields
+  maxFeedsLimit: number;
+  maxChannelsLimit: number;
+  maxTeamSeats: number;
+  hasApiAccess: boolean;
+  hasFeedDiff: boolean;
+  hasWhiteLabel: boolean;
+  hasSso: boolean;
+  hasAuditLog: boolean;
   isActive: boolean;
   expiresAt: Date | null;
+  isExpired?: boolean;
+  daysRemaining?: number | null;
+  tariffPlan?: any;
   createdAt: Date;
   updatedAt: Date;
 }

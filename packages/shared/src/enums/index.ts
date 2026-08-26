@@ -5,7 +5,8 @@ export enum Role {
 }
 
 export enum PlanType {
-  FREE = 'FREE',
+  STARTER = 'STARTER',
+  GROWTH = 'GROWTH',
   PRO = 'PRO',
   ENTERPRISE = 'ENTERPRISE',
 }

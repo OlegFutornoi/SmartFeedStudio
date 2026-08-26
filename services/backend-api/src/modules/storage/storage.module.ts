@@ -3,11 +3,12 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { ConfigModule } from '@nestjs/config';
 import { GeneratePresignedUploadUrlHandler } from './commands/generate-presigned-url.handler';
 import { StorageController } from './storage.controller';
+import { LicensesModule } from '../licenses/licenses.module';
 
 export const CommandHandlers = [GeneratePresignedUploadUrlHandler];
 
 @Module({
-  imports: [CqrsModule, ConfigModule],
+  imports: [CqrsModule, ConfigModule, LicensesModule],
   controllers: [StorageController],
   providers: [...CommandHandlers],
   exports: [...CommandHandlers],

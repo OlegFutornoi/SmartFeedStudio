@@ -3,6 +3,7 @@ import { Injectable, Logger, NotFoundException, ConflictException } from '@nestj
 import { TariffPlanDto } from '@smartfeed/shared';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { UpdateTariffPlanCommand } from './update-tariff-plan.command';
+import { mapTariffPlanToDto } from '../utils/map-tariff-plan-to-dto';
 
 @Injectable()
 @CommandHandler(UpdateTariffPlanCommand)
@@ -50,9 +51,24 @@ export class UpdateTariffPlanHandler implements ICommandHandler<
         maxXmlLimit: dto.maxXmlLimit,
         aiCredits: dto.aiCredits,
         canCloudBackup: dto.canCloudBackup,
+        maxFeedsLimit: dto.maxFeedsLimit,
+        maxChannelsLimit: dto.maxChannelsLimit,
+        syncFrequencyHours: dto.syncFrequencyHours,
+        maxStorageGb: dto.maxStorageGb,
+        maxTeamSeats: dto.maxTeamSeats,
+        hasApiAccess: dto.hasApiAccess,
+        hasWebhooks: dto.hasWebhooks,
+        hasFeedDiff: dto.hasFeedDiff,
+        hasWhiteLabel: dto.hasWhiteLabel,
+        hasSso: dto.hasSso,
+        hasAuditLog: dto.hasAuditLog,
+        hasCustomS3: dto.hasCustomS3,
+        hasPriorityAi: dto.hasPriorityAi,
+        slaUptimePercent: dto.slaUptimePercent,
         isPopular: dto.isPopular,
         isActive: dto.isActive,
         order: dto.order,
+        durationDays: dto.durationDays !== undefined ? dto.durationDays : undefined,
         featuresUk: dto.featuresUk,
         featuresEn: dto.featuresEn,
       },
@@ -60,26 +76,6 @@ export class UpdateTariffPlanHandler implements ICommandHandler<
 
     this.logger.log(`Updated tariff plan id=${id}, code=${updated.code}`);
 
-    return {
-      id: updated.id,
-      code: updated.code,
-      nameUk: updated.nameUk,
-      nameEn: updated.nameEn,
-      descriptionUk: updated.descriptionUk,
-      descriptionEn: updated.descriptionEn,
-      priceMonthly: Number(updated.priceMonthly),
-      priceYearly: updated.priceYearly ? Number(updated.priceYearly) : null,
-      currency: updated.currency,
-      maxXmlLimit: updated.maxXmlLimit,
-      aiCredits: updated.aiCredits,
-      canCloudBackup: updated.canCloudBackup,
-      isPopular: updated.isPopular,
-      isActive: updated.isActive,
-      order: updated.order,
-      featuresUk: updated.featuresUk,
-      featuresEn: updated.featuresEn,
-      createdAt: updated.createdAt,
-      updatedAt: updated.updatedAt,
-    };
+    return mapTariffPlanToDto(updated);
   }
 }

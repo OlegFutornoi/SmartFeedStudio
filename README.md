@@ -4,6 +4,23 @@ Enterprise-grade architecture for **SmartFeed Studio** built with `pnpm workspac
 
 ---
 
+## 📚 Project Knowledge Base & Documentation (WIKI)
+
+> **Complete architectural knowledge base, database schemas, CQRS diagrams, UI flows, and FAQs:**  
+> 👉 **[Explore the SmartFeed Studio WIKI](./wiki/README.md)**
+
+- [🎯 01. Overview & Vision](./wiki/01-overview/product-vision.md)
+- [🛠 02. Technology Stack Matrix](./wiki/02-tech-stack/stack-matrix.md)
+- [🗄 03. Database Schema & Prisma Models](./wiki/03-database-schema/prisma-models.md)
+- [⏱ 03. Dynamic Durations & Expiration Blocking](./wiki/03-database-schema/dynamic-durations-policy.md)
+- [⚙️ 04. NestJS CQRS Architecture](./wiki/04-backend-cqrs/cqrs-architecture.md)
+- [🦀 05. Tauri v2 Desktop Client (Rust + Keychain)](./wiki/05-desktop-client/tauri-architecture.md)
+- [🏢 06. Admin Web Portal](./wiki/06-admin-portal/admin-features.md)
+- [📈 07. Test Coverage Matrix (89 Tests — 100% PASS)](./wiki/07-testing-and-qa/test-coverage-matrix.md)
+- [❓ 08. User FAQ & Troubleshooting Guide](./wiki/08-user-faq/user-guide-faq.md)
+
+---
+
 ## 🏛 Architecture Overview
 
 ```mermaid

@@ -4,9 +4,10 @@ import { GetAccessibleNavigationQuery } from './get-accessible-navigation.query'
 import { PrismaService } from '../../../prisma/prisma.service';
 
 const PLAN_HIERARCHY: Record<PlanType, number> = {
-  [PlanType.FREE]: 1,
-  [PlanType.PRO]: 2,
-  [PlanType.ENTERPRISE]: 3,
+  [PlanType.STARTER]: 1,
+  [PlanType.GROWTH]: 2,
+  [PlanType.PRO]: 3,
+  [PlanType.ENTERPRISE]: 4,
 };
 
 @QueryHandler(GetAccessibleNavigationQuery)

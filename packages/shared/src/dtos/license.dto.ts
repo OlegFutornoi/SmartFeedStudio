@@ -11,6 +11,9 @@ export const LicenseDtoSchema = z.object({
   aiCredits: z.number().int().nonnegative(),
   isActive: z.boolean(),
   expiresAt: z.date().nullable().optional(),
+  isExpired: z.boolean().optional(),
+  daysRemaining: z.number().nullable().optional(),
+  tariffPlan: z.any().nullable().optional(),
   createdAt: z.date(),
   updatedAt: z.date(),
 });
@@ -25,9 +28,23 @@ export const UpgradeLicenseDtoSchema = z.object({
 
 export type UpgradeLicenseDto = z.infer<typeof UpgradeLicenseDtoSchema>;
 
+export const SelectTariffPlanDtoSchema = z.object({
+  planCode: z.string().min(1, 'Plan code is required'),
+});
+
+export type SelectTariffPlanDto = z.infer<typeof SelectTariffPlanDtoSchema>;
+
 export interface PlanLimits {
   planType: PlanType;
   maxXmlLimit: number;
   aiCredits: number;
   canCloudBackup: boolean;
+  maxFeedsLimit: number;
+  maxChannelsLimit: number;
+  maxTeamSeats: number;
+  hasApiAccess: boolean;
+  hasFeedDiff: boolean;
+  hasWhiteLabel: boolean;
+  hasSso: boolean;
+  hasAuditLog: boolean;
 }

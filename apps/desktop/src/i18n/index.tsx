@@ -13,6 +13,7 @@ const localeModules: Record<Language, Record<Namespace, () => Promise<Translatio
       import('./locales/uk/common.json').then((m) => (m.default || m) as TranslationDict),
     auth: () => import('./locales/uk/auth.json').then((m) => (m.default || m) as TranslationDict),
     home: () => import('./locales/uk/home.json').then((m) => (m.default || m) as TranslationDict),
+    plans: () => import('./locales/uk/plans.json').then((m) => (m.default || m) as TranslationDict),
     errors: () =>
       import('./locales/uk/errors.json').then((m) => (m.default || m) as TranslationDict),
   },
@@ -21,6 +22,7 @@ const localeModules: Record<Language, Record<Namespace, () => Promise<Translatio
       import('./locales/en/common.json').then((m) => (m.default || m) as TranslationDict),
     auth: () => import('./locales/en/auth.json').then((m) => (m.default || m) as TranslationDict),
     home: () => import('./locales/en/home.json').then((m) => (m.default || m) as TranslationDict),
+    plans: () => import('./locales/en/plans.json').then((m) => (m.default || m) as TranslationDict),
     errors: () =>
       import('./locales/en/errors.json').then((m) => (m.default || m) as TranslationDict),
   },
@@ -251,6 +253,10 @@ export function getErrorMessage(error: unknown, t: (key: string) => string): str
     rawMessage.includes('invalidResetToken')
   ) {
     return t('errors.invalidResetToken');
+  }
+
+  if (rawMessage.includes('LICENSE_EXPIRED') || rawMessage.includes('tariff plan has expired')) {
+    return t('plans.licenseExpiredDesc');
   }
 
   // Try direct key lookup in errors namespace

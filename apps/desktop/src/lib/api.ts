@@ -149,3 +149,57 @@ export async function resetPassword(
 
   return data;
 }
+
+export async function getMyLicense(token: string): Promise<any> {
+  const response = await fetch(`${API_BASE_URL}/licenses/my`, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  const data = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    const message = data.message || 'Не вдалося завантажити статус ліцензії';
+    throw new ApiError(message, response.status, data);
+  }
+
+  return data;
+}
+
+export async function getTariffPlans(): Promise<any[]> {
+  const response = await fetch(`${API_BASE_URL}/plans`, {
+    method: 'GET',
+  });
+
+  const data = await response.json().catch(() => []);
+
+  if (!response.ok) {
+    return [];
+  }
+
+  return data;
+}
+
+export async function selectTariffPlan(token: string, planCode: string): Promise<any> {
+  const response = await fetch(`${API_BASE_URL}/licenses/select-plan`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ planCode }),
+  });
+
+  const data = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    const message = Array.isArray(data.message)
+      ? data.message.join(', ')
+      : data.message || 'Не вдалося обрати тарифний план';
+    throw new ApiError(message, response.status, data);
+  }
+
+  return data;
+}

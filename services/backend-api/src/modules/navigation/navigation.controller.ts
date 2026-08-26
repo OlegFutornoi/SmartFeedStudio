@@ -50,7 +50,7 @@ export class NavigationController {
     @Query('app') app?: TargetApp,
   ) {
     const license = await this.queryBus.execute(new GetLicenseByUserIdQuery(user.id));
-    const userPlan = (license?.planType as PlanType) || PlanType.FREE;
+    const userPlan = (license?.planType as PlanType) || PlanType.STARTER;
     const targetApp = app || TargetApp.DESKTOP;
 
     return this.queryBus.execute(new GetAccessibleNavigationQuery(user.role, userPlan, targetApp));

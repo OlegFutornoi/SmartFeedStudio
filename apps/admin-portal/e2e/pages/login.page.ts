@@ -28,6 +28,7 @@ export class LoginPage extends BasePage {
 
   async goto(): Promise<void> {
     await this.page.goto('/login');
+    await this.titleHeading.waitFor({ state: 'visible' });
   }
 
   async login(email: string, password: string): Promise<void> {

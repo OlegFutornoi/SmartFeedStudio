@@ -9,6 +9,7 @@ import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { GetLicenseByUserIdQuery } from './queries/get-license-by-user-id.query';
 import { GetAdminLicensesQuery } from './queries/get-admin-licenses.query';
 import { CreateLicenseCommand } from './commands/create-license.command';
+import { SelectTariffPlanCommand } from './commands/select-tariff-plan.command';
 
 class UpgradeLicenseDto {
   planType: PlanType;
@@ -59,6 +60,18 @@ export class LicensesController {
     return this.queryBus.execute(
       new GetAdminLicensesQuery(search, limit ? Number(limit) : 50, offset ? Number(offset) : 0),
     );
+  }
+
+  @Post('select-plan')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Select or renew tariff plan for current user' })
+  @ApiResponse({ status: 200, description: 'Plan selected and license updated' })
+  async selectPlan(
+    @CurrentUser('id') userId: string,
+    @Body() dto: { planCode: string },
+  ): Promise<LicenseEntity> {
+    return this.commandBus.execute(new SelectTariffPlanCommand(userId, dto.planCode));
   }
 
   @Post('upgrade')

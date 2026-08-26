@@ -3,22 +3,26 @@ import { PlanType } from '@smartfeed/shared';
 
 export class NavigationSimulatorComponent {
   readonly container: Locator;
-  readonly freePlanBtn: Locator;
+  readonly starterPlanBtn: Locator;
+  readonly growthPlanBtn: Locator;
   readonly proPlanBtn: Locator;
   readonly enterprisePlanBtn: Locator;
   readonly menuItemsContainer: Locator;
 
   constructor(page: Page) {
     this.container = page.getByTestId('navigation-simulator-card');
-    this.freePlanBtn = this.container.getByRole('button', { name: 'Free Plan' });
-    this.proPlanBtn = this.container.getByRole('button', { name: 'PRO Plan' });
+    this.starterPlanBtn = this.container.getByRole('button', { name: 'Starter' });
+    this.growthPlanBtn = this.container.getByRole('button', { name: 'Growth' });
+    this.proPlanBtn = this.container.getByRole('button', { name: 'PRO' });
     this.enterprisePlanBtn = this.container.getByRole('button', { name: 'Enterprise' });
     this.menuItemsContainer = this.container.locator('text=МЕНЮ КОРИСТУВАЧА').locator('..');
   }
 
   async selectPlan(plan: PlanType): Promise<void> {
-    if (plan === PlanType.FREE) {
-      await this.freePlanBtn.click();
+    if (plan === PlanType.STARTER) {
+      await this.starterPlanBtn.click();
+    } else if (plan === PlanType.GROWTH) {
+      await this.growthPlanBtn.click();
     } else if (plan === PlanType.PRO) {
       await this.proPlanBtn.click();
     } else if (plan === PlanType.ENTERPRISE) {

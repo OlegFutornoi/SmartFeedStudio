@@ -1,12 +1,30 @@
+import { useState, useEffect } from 'react';
 import { Cloud, HardDrive, ShieldCheck, ArrowUpCircle, History } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useTranslation } from '@/i18n';
+import { useAuth } from '@/contexts/AuthContext';
+import { getMyLicense } from '@/lib/api';
+import { ExpiredPlanBlocker } from '@/components/layout/ExpiredPlanBlocker';
 
 export function CloudSyncPage() {
   const { language } = useTranslation();
   const isUk = language === 'uk';
+  const { token } = useAuth();
+  const [isExpired, setIsExpired] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (token) {
+      getMyLicense(token)
+        .then((lic) => setIsExpired(Boolean(lic?.isExpired)))
+        .catch(() => {});
+    }
+  }, [token]);
+
+  if (isExpired) {
+    return <ExpiredPlanBlocker featureName={isUk ? 'Хмарна синхронізація' : 'Cloud Sync'} />;
+  }
 
   return (
     <div
