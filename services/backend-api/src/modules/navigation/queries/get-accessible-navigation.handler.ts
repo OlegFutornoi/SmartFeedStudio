@@ -1,5 +1,5 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
-import { Role, PlanType } from '@smartfeed/shared';
+import { Role, PlanType, TargetApp } from '@smartfeed/shared';
 import { GetAccessibleNavigationQuery } from './get-accessible-navigation.query';
 import { PrismaService } from '../../../prisma/prisma.service';
 
@@ -20,7 +20,7 @@ export class GetAccessibleNavigationHandler implements IQueryHandler<GetAccessib
     const items = await this.prisma.navigationItem.findMany({
       where: {
         isVisible: true,
-        OR: [{ targetApp: targetApp as any }, { targetApp: 'ALL' as any }],
+        OR: [{ targetApp }, { targetApp: TargetApp.ALL }],
       },
       orderBy: { order: 'asc' },
     });
@@ -32,7 +32,7 @@ export class GetAccessibleNavigationHandler implements IQueryHandler<GetAccessib
     return items.filter((item) => {
       // Role-based check
       if (item.requiredRoles && item.requiredRoles.length > 0) {
-        if (!item.requiredRoles.includes(userRole as any)) {
+        if (!item.requiredRoles.includes(userRole)) {
           return false;
         }
       }
@@ -44,7 +44,7 @@ export class GetAccessibleNavigationHandler implements IQueryHandler<GetAccessib
 
       // Plan-based check
       if (item.requiredPlan) {
-        const requiredLevel = PLAN_HIERARCHY[item.requiredPlan as PlanType] ?? 1;
+        const requiredLevel = PLAN_HIERARCHY[item.requiredPlan] ?? 1;
         if (userPlanLevel < requiredLevel) {
           return false;
         }

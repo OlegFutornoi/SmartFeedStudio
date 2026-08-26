@@ -97,7 +97,7 @@ describe('Navigation & Dynamic Access Control (E2E)', () => {
         .expect(200);
 
       expect(Array.isArray(res.body)).toBe(true);
-      const keys = res.body.map((i: any) => i.key);
+      const keys = (res.body as Array<{ key: string }>).map((i) => i.key);
       expect(keys).toContain('dashboard');
       expect(keys).toContain('catalogs');
       // AI enrichment requires PRO, so FREE user shouldn't receive it in accessible navigation
@@ -111,7 +111,7 @@ describe('Navigation & Dynamic Access Control (E2E)', () => {
         .expect(200);
 
       expect(Array.isArray(res.body)).toBe(true);
-      const keys = res.body.map((i: any) => i.key);
+      const keys = (res.body as Array<{ key: string }>).map((i) => i.key);
       expect(keys).toContain('dashboard');
       expect(keys).toContain('ai_enrichment');
       expect(keys).toContain('cloud_sync');

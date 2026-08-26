@@ -9,5 +9,8 @@
   "serverError": "Server error. Please try again later",
   "networkError": "Network error. Unable to connect to server",
   "unknownError": "An unexpected error occurred",
-  "invalidToken": "Invalid authorization token"
+  "invalidToken": "Invalid authorization token",
+  "userNotFound": "User with this email address was not found",
+  "invalidResetToken": "Invalid or expired reset token",
+  "passwordResetFailed": "Failed to reset password. Please try again"
 }

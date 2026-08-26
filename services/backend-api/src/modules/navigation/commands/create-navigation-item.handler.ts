@@ -27,9 +27,9 @@ export class CreateNavigationItemHandler implements ICommandHandler<CreateNaviga
         icon: dto.icon || 'LayoutDashboard',
         order: dto.order ?? 0,
         isVisible: dto.isVisible ?? true,
-        requiredRoles: dto.requiredRoles as any,
-        requiredPlan: dto.requiredPlan as any,
-        targetApp: dto.targetApp as any,
+        requiredRoles: dto.requiredRoles,
+        requiredPlan: dto.requiredPlan,
+        targetApp: dto.targetApp,
       },
     });
   }

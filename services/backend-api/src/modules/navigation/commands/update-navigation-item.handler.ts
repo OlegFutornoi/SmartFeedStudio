@@ -37,9 +37,9 @@ export class UpdateNavigationItemHandler implements ICommandHandler<UpdateNaviga
         ...(dto.icon !== undefined && { icon: dto.icon }),
         ...(dto.order !== undefined && { order: dto.order }),
         ...(dto.isVisible !== undefined && { isVisible: dto.isVisible }),
-        ...(dto.requiredRoles !== undefined && { requiredRoles: dto.requiredRoles as any }),
-        ...(dto.requiredPlan !== undefined && { requiredPlan: dto.requiredPlan as any }),
-        ...(dto.targetApp !== undefined && { targetApp: dto.targetApp as any }),
+        ...(dto.requiredRoles !== undefined && { requiredRoles: dto.requiredRoles }),
+        ...(dto.requiredPlan !== undefined && { requiredPlan: dto.requiredPlan }),
+        ...(dto.targetApp !== undefined && { targetApp: dto.targetApp }),
       },
     });
   }

@@ -4,12 +4,19 @@ import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { CurrentUser } from './decorators/current-user.decorator';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { GetUserByIdQuery } from '../users/queries/get-user-by-id.query';
 import { ChangePasswordCommand } from '../users/commands/change-password.command';
-import { ChangePasswordDto, UserProfile } from '@smartfeed/shared';
+import {
+  ChangePasswordDto,
+  ForgotPasswordResponseDto,
+  ResetPasswordResponseDto,
+  UserProfile,
+} from '@smartfeed/shared';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -54,6 +61,27 @@ export class AuthController {
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async getProfile(@CurrentUser('id') userId: string): Promise<UserProfile> {
     return this.queryBus.execute(new GetUserByIdQuery(userId));
+  }
+
+  @Post('forgot-password')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Request password reset instructions and token' })
+  @ApiResponse({
+    status: 200,
+    description: 'Password reset instructions dispatched if email exists',
+  })
+  @ApiResponse({ status: 400, description: 'Invalid email format' })
+  async forgotPassword(@Body() dto: ForgotPasswordDto): Promise<ForgotPasswordResponseDto> {
+    return this.authService.forgotPassword(dto);
+  }
+
+  @Post('reset-password')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Reset user password using reset token' })
+  @ApiResponse({ status: 200, description: 'Password reset successfully' })
+  @ApiResponse({ status: 400, description: 'Invalid or expired reset token, or weak password' })
+  async resetPassword(@Body() dto: ResetPasswordDto): Promise<ResetPasswordResponseDto> {
+    return this.authService.resetPassword(dto);
   }
 
   @Post('change-password')

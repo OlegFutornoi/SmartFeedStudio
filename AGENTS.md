@@ -95,12 +95,24 @@ SmartFeed Studio (Monorepo root)
    - **Backend Database Teardown**: In all `*.e2e-spec.ts` files, `afterAll` (and `afterEach` where applicable) hooks must explicitly delete all created entities using stored IDs, created emails, and scoped wildcard matching (e.g. `e2e.test+*`, `admintest-*`, `analytics_*`, `nav.admin+*`, `nav.user+*`). Never leave orphaned rows in PostgreSQL or Redis.
    - **Frontend Test Isolation**: In Playwright E2E tests (`*.spec.ts`), always clear browser `localStorage`, `sessionStorage`, cookies, and route mocks before and after each test case to prevent state leakage and test cross-contamination.
 
+8. **Mandatory 100% Internationalization (i18n) & Dedicated UI Localization Tests Policy**:
+   - **Zero Hardcoded Strings & Zero Untranslated Backend Errors**: Whenever any new feature, UI screen, dialog, form, button, label, alert, placeholder, toast, or backend error message is created or modified:
+     - **All user-facing text MUST be translated immediately**: Define all keys in both `uk` (Ukrainian) and `en` (English) locale dictionaries (`locales/uk/*.json`, `locales/en/*.json`).
+     - **Backend Error Localization**: All error responses from the API must be intercepted, mapped, and translated via `getErrorMessage` or localized error helpers so that no raw English backend strings leak into the Ukrainian UI.
+   - **Mandatory UI Localization Tests**: Every new or updated frontend feature/view **MUST** include dedicated Playwright UI tests explicitly asserting that all interactive elements, titles, descriptions, placeholders, and error/success alerts dynamically update and correctly translate when switching languages (`UA` ⇄ `EN`).
+
+9. **Rule Files Size Limit & Continuous Modularization Policy (Max 12,000 Chars)**:
+   - Every rule file in `.agents/rules/*.md` **MUST NEVER exceed 12,000 characters** (Antigravity IDE hard limit).
+   - Whenever any rule file reaches ~10,000–11,000 characters, the agent **MUST** split the rules or create a new dedicated `.md` file in `.agents/rules/` with `trigger: always_on` (e.g. `testing_and_quality.md`, `commands.md`, etc.).
+   - The agent **MUST ALWAYS** discover, read, and strictly follow all rule files located in `.agents/rules/` without exception.
+
 ---
 
 ## ⚡ Essential Commands Cheat Sheet
 
 | Task                            | Command                                                    |
 | :------------------------------ | :--------------------------------------------------------- |
+| **Start All (Docker + Apps)**   | `pnpm dev:all` _(або `pnpm start:dev`)_                    |
 | **Start Docker Infrastructure** | `pnpm docker:up`                                           |
 | **Stop Docker Infrastructure**  | `pnpm docker:down`                                         |
 | **Run All Apps (Dev)**          | `pnpm dev`                                                 |

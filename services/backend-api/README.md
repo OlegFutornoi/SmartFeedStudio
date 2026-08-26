@@ -26,14 +26,15 @@ Central REST API for SmartFeed Studio built with **NestJS 11** + **CQRS** + **Pr
 > **Agent Rule:** Whenever a new `*.e2e-spec.ts` file is added to `services/backend-api/test/`,
 > update this table and the one in [AGENTS.md](./AGENTS.md).
 
-| Test File                                                      | Endpoints Covered                                                                                                                       | Tests | Status  |
-| :------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------- | :---: | :-----: |
-| [`test/auth.e2e-spec.ts`](./test/auth.e2e-spec.ts)             | `POST /api/auth/register`, `POST /api/auth/login`                                                                                       |  12   | ✅ PASS |
-| [`test/users.e2e-spec.ts`](./test/users.e2e-spec.ts)           | `GET /api/users`, `GET /api/users/stats`, `POST /api/auth/change-password`                                                              |   7   | ✅ PASS |
-| [`test/navigation.e2e-spec.ts`](./test/navigation.e2e-spec.ts) | `GET /api/navigation`, `GET /api/navigation/admin`, `POST /api/navigation`, `PATCH /api/navigation/:id`, `DELETE /api/navigation/:id`   |   8   | ✅ PASS |
-| [`test/plans.e2e-spec.ts`](./test/plans.e2e-spec.ts)           | `GET /api/plans`, `GET /api/plans/admin`, `POST /api/plans`, `PATCH /api/plans/:id`, `DELETE /api/plans/:id`, `GET /api/licenses/admin` |  12   | ✅ PASS |
+| Test File                                                                    | Endpoints Covered                                                                                                                       | Tests | Status  |
+| :--------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------- | :---: | :-----: |
+| [`test/auth.e2e-spec.ts`](./test/auth.e2e-spec.ts)                           | `POST /api/auth/register`, `POST /api/auth/login`                                                                                       |  12   | ✅ PASS |
+| [`test/password-recovery.e2e-spec.ts`](./test/password-recovery.e2e-spec.ts) | `POST /api/auth/forgot-password`, `POST /api/auth/reset-password`                                                                       |   8   | ✅ PASS |
+| [`test/users.e2e-spec.ts`](./test/users.e2e-spec.ts)                         | `GET /api/users`, `GET /api/users/stats`, `POST /api/auth/change-password`                                                              |   7   | ✅ PASS |
+| [`test/navigation.e2e-spec.ts`](./test/navigation.e2e-spec.ts)               | `GET /api/navigation`, `GET /api/navigation/admin`, `POST /api/navigation`, `PATCH /api/navigation/:id`, `DELETE /api/navigation/:id`   |   8   | ✅ PASS |
+| [`test/plans.e2e-spec.ts`](./test/plans.e2e-spec.ts)                         | `GET /api/plans`, `GET /api/plans/admin`, `POST /api/plans`, `PATCH /api/plans/:id`, `DELETE /api/plans/:id`, `GET /api/licenses/admin` |  12   | ✅ PASS |
 
-**Total: 39 tests — 39 passing**
+**Total: 47 tests — 47 passing**
 
 > **🧹 Mandatory Data Teardown:** All E2E test suites cleanly wipe all test-generated users, licenses, tariff plans, and navigation items in `afterAll` to guarantee zero test leftovers or database pollution.
 
@@ -48,6 +49,8 @@ Central REST API for SmartFeed Studio built with **NestJS 11** + **CQRS** + **Pr
 | `POST` | `/api/auth/register`        | Register new user → returns JWT tokens           | —        |
 | `POST` | `/api/auth/login`           | Login with email + password → returns JWT tokens | —        |
 | `POST` | `/api/auth/refresh`         | Refresh access token using refresh token         | —        |
+| `POST` | `/api/auth/forgot-password` | Request password reset token / instructions      | —        |
+| `POST` | `/api/auth/reset-password`  | Reset user password using reset token            | —        |
 | `GET`  | `/api/auth/me`              | Get current user profile                         | `Bearer` |
 | `POST` | `/api/auth/change-password` | Change authenticated user password               | `Bearer` |
 

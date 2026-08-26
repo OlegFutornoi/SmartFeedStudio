@@ -1,6 +1,7 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { Injectable } from '@nestjs/common';
 import { AdminLicenseItemDto } from '@smartfeed/shared';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { GetAdminLicensesQuery } from './get-admin-licenses.query';
 
@@ -15,7 +16,7 @@ export class GetAdminLicensesHandler implements IQueryHandler<
   async execute(query: GetAdminLicensesQuery): Promise<AdminLicenseItemDto[]> {
     const { search, limit = 50, offset = 0 } = query;
 
-    const where: any = {};
+    const where: Prisma.LicenseWhereInput = {};
     if (search) {
       where.OR = [
         { licenseKey: { contains: search, mode: 'insensitive' } },

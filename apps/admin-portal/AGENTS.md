@@ -84,6 +84,9 @@ apps/admin-portal/
    - Import DTOs, Enums (`Role`, `PlanType`), and response contracts directly from `@smartfeed/shared`.
 5. **Documentation Synchronization**:
    - When introducing new routes, layout patterns, UI modules, or shared dependencies, keep this [AGENTS.md](file:///Users/oleg/AQA/SmartFeedStudio/apps/admin-portal/AGENTS.md), root [AGENTS.md](file:///Users/oleg/AQA/SmartFeedStudio/AGENTS.md), [.agents/rules/rules.md](file:///Users/oleg/AQA/SmartFeedStudio/.agents/rules/rules.md), and root [README.md](file:///Users/oleg/AQA/SmartFeedStudio/README.md) synchronized.
+6. **Mandatory 100% i18n & UI Localization Testing Policy**:
+   - Every user-facing UI feature, form, modal, label, and API error response must be 100% translated into both Ukrainian (`uk`) and English (`en`).
+   - Every frontend spec must include explicit tests for dynamic language switching (`UA` ⇄ `EN`).
 
 ---
 

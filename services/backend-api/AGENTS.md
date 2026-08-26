@@ -138,11 +138,12 @@ pnpm --filter @smartfeed/backend-api test:e2e
 ```
 
 | `test/auth.e2e-spec.ts` | `POST /api/auth/register`, `POST /api/auth/login` | 12 | ✅ PASS |
+| `test/password-recovery.e2e-spec.ts` | `POST /api/auth/forgot-password`, `POST /api/auth/reset-password` | 8 | ✅ PASS |
 | `test/users.e2e-spec.ts` | `GET /api/users`, `GET /api/users/stats`, `POST /api/auth/change-password` | 7 | ✅ PASS |
 | `test/navigation.e2e-spec.ts` | `GET /api/navigation`, `GET /api/navigation/admin`, `POST /api/navigation`, `PATCH /api/navigation/:id`, `DELETE /api/navigation/:id` | 8 | ✅ PASS |
 | `test/plans.e2e-spec.ts` | `GET /api/plans`, `GET /api/plans/admin`, `POST /api/plans`, `PATCH /api/plans/:id`, `DELETE /api/plans/:id`, `GET /api/licenses/admin` | 12 | ✅ PASS |
 
-**Total: 39 tests — 39 passing**
+**Total: 47 tests — 47 passing**
 
 ### 🧹 Mandatory Test Data Teardown
 

@@ -117,7 +117,11 @@ docker compose ps
 ### 2. ⚡ Розробка та запуск (Dev Servers)
 
 ```bash
-# Запустити всі застосунки паралельно через Turborepo
+# 🚀 Все-в-одному: автоматичний запуск Docker (DB/Redis/MinIO), збірка shared, Prisma та запуск усіх серверів
+pnpm dev:all
+# або: pnpm start:dev (або ./.agents/scripts/start-dev.sh)
+
+# Запустити всі застосунки паралельно через Turborepo (якщо Docker вже піднятий)
 pnpm dev
 
 # Запустити тільки бекенд API (NestJS на http://localhost:4000)

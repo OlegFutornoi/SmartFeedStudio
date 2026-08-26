@@ -236,6 +236,23 @@ export function getErrorMessage(error: unknown, t: (key: string) => string): str
     return t('errors.serverError');
   }
 
+  if (
+    rawMessage.includes('password reset instructions') ||
+    rawMessage.includes('not found') ||
+    rawMessage.includes('User not found') ||
+    rawMessage.includes('userNotFound')
+  ) {
+    return t('errors.userNotFound');
+  }
+
+  if (
+    rawMessage.includes('Invalid or expired reset token') ||
+    rawMessage.includes('reset token') ||
+    rawMessage.includes('invalidResetToken')
+  ) {
+    return t('errors.invalidResetToken');
+  }
+
   // Try direct key lookup in errors namespace
   const translated = t(`errors.${rawMessage}`);
   if (translated !== `errors.${rawMessage}`) {

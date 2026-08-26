@@ -26,7 +26,10 @@ The **Desktop Client** is a high-performance native desktop application designed
 ```text
 apps/desktop/
 ├── e2e/                       # Playwright E2E Test Suite
-│   └── auth.spec.ts           # Login, registration, i18n, and home page E2E tests
+│   ├── auth.spec.ts           # Login, registration, i18n, and home page E2E tests
+│   ├── password-recovery.spec.ts # Forgot/Reset password flows, validation, i18n, themes
+│   ├── navigation.spec.ts     # Dynamic navigation & sidebar tests
+│   └── theme.spec.ts          # shadcn/ui Theme palette & Dark/Light mode tests
 ├── src-tauri/                 # Rust Native Core
 │   ├── src/
 │   │   ├── main.rs            # Entry point for Tauri binary
@@ -36,31 +39,35 @@ apps/desktop/
 ├── src/                       # React / Vite Frontend
 │   ├── i18n/                  # Page-based Multilingual Translation Engine
 │   │   ├── locales/           # UK / EN JSON translation dictionaries
-│   │   │   ├── uk/            # common.json, auth.json, home.json
-│   │   │   └── en/            # common.json, auth.json, home.json
+│   │   │   ├── uk/            # common.json, auth.json, home.json, errors.json
+│   │   │   └── en/            # common.json, auth.json, home.json, errors.json
 │   │   ├── types.ts           # Language & Namespace type definitions
 │   │   └── index.tsx          # I18nProvider & useTranslation hook with lazy loading
 │   ├── components/
 │   │   ├── ui/                # Reusable shadcn/ui components (button, input, label, card, alert, badge, theme-toggle, language-toggle)
 │   │   ├── login-form.tsx     # Official shadcn login-01 block component
 │   │   ├── signup-form.tsx    # Official shadcn signup-01 block component
+│   │   ├── forgot-password-form.tsx # Forgot password reset request form
+│   │   ├── reset-password-form.tsx  # New password setup form with token validation
 │   │   └── PrivateRoute.tsx   # Protected route guard
 │   ├── contexts/
 │   │   ├── AuthContext.tsx    # Auth state & token persistence
 │   │   └── ThemeContext.tsx   # Light / Dark / System theme management
 │   ├── pages/
 │   │   ├── auth/
-│   │   │   ├── LoginPage.tsx  # /auth/login (login-01, i18n, theme-toggle, data-testid)
-│   │   │   └── RegisterPage.tsx # /auth/register (signup-01, i18n, theme-toggle, data-testid)
+│   │   │   ├── LoginPage.tsx          # /auth/login (login-01, i18n, theme-toggle, data-testid)
+│   │   │   ├── RegisterPage.tsx       # /auth/register (signup-01, i18n, theme-toggle, data-testid)
+│   │   │   ├── ForgotPasswordPage.tsx # /auth/forgot-password (request reset, i18n, theme-toggle)
+│   │   │   └── ResetPasswordPage.tsx  # /auth/reset-password (set new password, token verification)
 │   │   └── HomePage.tsx       # / (Protected home page: greeting, meetings counter, top 3 meetings, logout)
 │   ├── lib/
-│   │   ├── api.ts             # REST client for backend auth endpoints
+│   │   ├── api.ts             # REST client for backend auth & password recovery endpoints
 │   │   └── utils.ts           # cn() styling utility
 │   ├── services/
 │   │   ├── keychain.ts        # OS Keychain invoke wrapper (falls back gracefully in browser dev)
 │   │   ├── storage.ts         # Direct S3 Presigned URL uploader with progress tracking
 │   │   └── sqlite.ts          # Local SQLite / cache database interface
-│   ├── App.tsx                # Route definitions (/auth/login, /auth/register, /)
+│   ├── App.tsx                # Route definitions (/auth/login, /auth/register, /auth/forgot-password, /auth/reset-password, /)
 │   ├── main.tsx               # BrowserRouter + I18nProvider + ThemeProvider + AuthProvider
 │   ├── index.css              # Light & Dark theme HSL CSS variables (Zinc palette)
 │   └── vite-env.d.ts          # Vite client types
@@ -89,11 +96,24 @@ pnpm --filter @smartfeed/desktop test:e2e:headed
 pnpm --filter @smartfeed/desktop test:e2e:ui
 ```
 
-| Test File          | Scenarios Covered                                                                                                                                           | Tests | Status  |
-| :----------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------- | :---: | :-----: |
-| `e2e/auth.spec.ts` | Route protection, localized 401 error alert (`UA` / `EN`), successful login redirect, registration flow, multilingual switching (`UA` / `EN`), theme toggle |   6   | ✅ PASS |
+| Test File                       | Scenarios Covered                                                                                                                                           | Tests | Status  |
+| :------------------------------ | :---------------------------------------------------------------------------------------------------------------------------------------------------------- | :---: | :-----: |
+| `e2e/auth.spec.ts`              | Route protection, localized 401 error alert (`UA` / `EN`), successful login redirect, registration flow, multilingual switching (`UA` / `EN`), theme toggle |   6   | ✅ PASS |
+| `e2e/password-recovery.spec.ts` | Forgot password navigation, reset request validation, token generation, short password & mismatch checks, credential rotation, login, i18n & theme toggles  |   7   | ✅ PASS |
+| `e2e/navigation.spec.ts`        | Dynamic sidebar navigation, RBAC item filtering, collapse/expand states, active route indicator                                                             |   2   | ✅ PASS |
+| `e2e/theme.spec.ts`             | shadcn theme palettes (Zinc, Slate, Stone, Bronze), Dark/Light/Dark switching, persistence                                                                  |   3   | ✅ PASS |
 
-**Total: 6 tests — 6 passing**
+**Total: 18 tests — 18 passing**
+
+---
+
+## 🌐 Mandatory 100% i18n & UI Localization Testing Policy
+
+1. **Zero Hardcoded Strings & Zero Untranslated Backend Errors**:
+   - Whenever any new UI component, page, form, label, button, placeholder, or alert is created or modified, all user-facing strings **MUST** be defined in both `src/i18n/locales/uk/` and `src/i18n/locales/en/`.
+   - All backend errors must be mapped and translated via `getErrorMessage` to prevent raw English strings from appearing in the Ukrainian UI.
+2. **Mandatory UI Localization Tests**:
+   - Every frontend test suite (`*.spec.ts`) **MUST** explicitly verify dynamic bilingual translations (`UA` ⇄ `EN`) for all interactive elements, forms, and validation alerts.
 
 ---
 

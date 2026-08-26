@@ -45,14 +45,15 @@ export class NavigationController {
   @ApiOperation({ summary: 'Get accessible navigation items for the authenticated user' })
   @ApiQuery({ name: 'app', enum: TargetApp, required: false })
   @ApiResponse({ status: 200, description: 'List of accessible navigation items' })
-  async getAccessibleNavigation(@CurrentUser() user: any, @Query('app') app?: TargetApp) {
+  async getAccessibleNavigation(
+    @CurrentUser() user: { id: string; role: Role },
+    @Query('app') app?: TargetApp,
+  ) {
     const license = await this.queryBus.execute(new GetLicenseByUserIdQuery(user.id));
     const userPlan = (license?.planType as PlanType) || PlanType.FREE;
     const targetApp = app || TargetApp.DESKTOP;
 
-    return this.queryBus.execute(
-      new GetAccessibleNavigationQuery(user.role as Role, userPlan, targetApp),
-    );
+    return this.queryBus.execute(new GetAccessibleNavigationQuery(user.role, userPlan, targetApp));
   }
 
   @Get('admin')
@@ -61,7 +62,7 @@ export class NavigationController {
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get all navigation items for management (Admin only)' })
   @ApiQuery({ name: 'app', enum: TargetApp, required: false })
-  async getAllForAdmin(@CurrentUser() _user: any, @Query('app') app?: TargetApp) {
+  async getAllForAdmin(@Query('app') app?: TargetApp) {
     return this.queryBus.execute(new GetAllNavigationItemsQuery(app));
   }
 
@@ -70,7 +71,7 @@ export class NavigationController {
   @Roles(Role.SUPER_ADMIN, Role.ADMIN)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Create a new navigation item (Admin only)' })
-  async createItem(@CurrentUser() _user: any, @Body() dto: CreateNavigationItemDto) {
+  async createItem(@Body() dto: CreateNavigationItemDto) {
     return this.commandBus.execute(new CreateNavigationItemCommand(dto));
   }
 
@@ -79,7 +80,7 @@ export class NavigationController {
   @Roles(Role.SUPER_ADMIN, Role.ADMIN)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Reorder navigation items (Admin only)' })
-  async reorderItems(@CurrentUser() _user: any, @Body() dto: ReorderNavigationItemsDto) {
+  async reorderItems(@Body() dto: ReorderNavigationItemsDto) {
     return this.commandBus.execute(new ReorderNavigationItemsCommand(dto));
   }
 
@@ -88,11 +89,7 @@ export class NavigationController {
   @Roles(Role.SUPER_ADMIN, Role.ADMIN)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Update a navigation item (Admin only)' })
-  async updateItem(
-    @CurrentUser() _user: any,
-    @Param('id') id: string,
-    @Body() dto: UpdateNavigationItemDto,
-  ) {
+  async updateItem(@Param('id') id: string, @Body() dto: UpdateNavigationItemDto) {
     return this.commandBus.execute(new UpdateNavigationItemCommand(id, dto));
   }
 
@@ -101,7 +98,7 @@ export class NavigationController {
   @Roles(Role.SUPER_ADMIN, Role.ADMIN)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Delete a navigation item (Admin only)' })
-  async deleteItem(@CurrentUser() _user: any, @Param('id') id: string) {
+  async deleteItem(@Param('id') id: string) {
     return this.commandBus.execute(new DeleteNavigationItemCommand(id));
   }
 }

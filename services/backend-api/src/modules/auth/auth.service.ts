@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException, Logger } from '@nestjs/common';
+import { Injectable, UnauthorizedException, BadRequestException, Logger } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
@@ -6,7 +6,9 @@ import * as bcrypt from 'bcrypt';
 import {
   AuthResponseDto,
   AuthTokens,
+  ForgotPasswordResponseDto,
   JwtPayload,
+  ResetPasswordResponseDto,
   Role,
   UserEntity,
   UserProfile,
@@ -15,7 +17,10 @@ import type { SignOptions } from 'jsonwebtoken';
 
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 import { CreateUserCommand } from '../users/commands/create-user.command';
+import { ResetPasswordCommand } from '../users/commands/reset-password.command';
 import { GetUserByEmailQuery } from '../users/queries/get-user-by-email.query';
 import { GetUserByIdQuery } from '../users/queries/get-user-by-id.query';
 
@@ -112,6 +117,85 @@ export class AuthService {
       };
     } catch {
       throw new UnauthorizedException('Invalid or expired refresh token');
+    }
+  }
+
+  /**
+   * Request password reset token for given email.
+   */
+  async forgotPassword(dto: ForgotPasswordDto): Promise<ForgotPasswordResponseDto> {
+    this.logger.log(`Password reset requested for email: ${dto.email}`);
+
+    // Query user strictly through QueryBus
+    const user = await this.queryBus.execute<GetUserByEmailQuery, UserEntity | null>(
+      new GetUserByEmailQuery(dto.email),
+    );
+
+    if (!user) {
+      // Return success without token to prevent email enumeration
+      return {
+        success: true,
+        message: 'If this email is registered, password reset instructions have been sent.',
+      };
+    }
+
+    const resetSecret =
+      this.configService.get<string>('JWT_RESET_SECRET') ||
+      this.configService.get<string>('JWT_ACCESS_SECRET') ||
+      'super-secret-reset-token-key-change-in-production';
+
+    const resetToken = await this.jwtService.signAsync(
+      {
+        sub: user.id,
+        email: user.email,
+        purpose: 'reset-password',
+      },
+      {
+        secret: resetSecret,
+        expiresIn: '1h',
+      },
+    );
+
+    return {
+      success: true,
+      message: 'If this email is registered, password reset instructions have been sent.',
+      resetToken,
+    };
+  }
+
+  /**
+   * Reset user password using verified reset token.
+   */
+  async resetPassword(dto: ResetPasswordDto): Promise<ResetPasswordResponseDto> {
+    try {
+      const resetSecret =
+        this.configService.get<string>('JWT_RESET_SECRET') ||
+        this.configService.get<string>('JWT_ACCESS_SECRET') ||
+        'super-secret-reset-token-key-change-in-production';
+
+      const payload = await this.jwtService.verifyAsync<{
+        sub: string;
+        email: string;
+        purpose?: string;
+      }>(dto.token, {
+        secret: resetSecret,
+      });
+
+      if (payload.purpose !== 'reset-password') {
+        throw new BadRequestException('Invalid reset token purpose');
+      }
+
+      await this.commandBus.execute(new ResetPasswordCommand(payload.sub, dto.newPassword));
+
+      return {
+        success: true,
+        message: 'Password has been reset successfully',
+      };
+    } catch (err) {
+      if (err instanceof BadRequestException) {
+        throw err;
+      }
+      throw new BadRequestException('Invalid or expired reset token');
     }
   }
 

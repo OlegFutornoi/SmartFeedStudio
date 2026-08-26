@@ -72,10 +72,12 @@ describe('Users & Admin Endpoints (E2E)', () => {
       expect(Array.isArray(res.body)).toBe(true);
       expect(res.body.length).toBeGreaterThanOrEqual(1);
 
-      const found = res.body.find((u: any) => u.email === testUser.email);
+      const found = (
+        res.body as Array<{ email: string; fullName: string; license?: unknown }>
+      ).find((u) => u.email === testUser.email);
       expect(found).toBeDefined();
-      expect(found.fullName).toBe(testUser.fullName);
-      expect(found.license).toBeDefined();
+      expect(found?.fullName).toBe(testUser.fullName);
+      expect(found?.license).toBeDefined();
     });
 
     it('filters users by search query', async () => {

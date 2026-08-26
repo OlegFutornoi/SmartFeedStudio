@@ -1,22 +1,20 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, ArrowLeft, KeyRound, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useAuth } from '@/contexts/AuthContext';
 import { useTranslation, getErrorMessage } from '@/i18n';
+import { requestPasswordReset } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
-export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) {
+export function ForgotPasswordForm({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) {
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [errorRaw, setErrorRaw] = useState<unknown | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const { login } = useAuth();
   const { t } = useTranslation(['auth', 'common', 'errors']);
   const navigate = useNavigate();
 
@@ -24,7 +22,7 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
     e.preventDefault();
     setErrorRaw(null);
 
-    if (!email.trim() || !password) {
+    if (!email.trim()) {
       setErrorRaw('fillAllFields');
       return;
     }
@@ -32,8 +30,13 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
     setIsLoading(true);
 
     try {
-      await login({ email: email.trim(), password });
-      navigate('/', { replace: true });
+      const response = await requestPasswordReset(email.trim());
+      if (response.resetToken) {
+        // Automatically transition directly to the new password setup step
+        navigate(`/auth/reset-password?token=${encodeURIComponent(response.resetToken)}`);
+      } else {
+        setErrorRaw('userNotFound');
+      }
     } catch (err: unknown) {
       setErrorRaw(err);
     } finally {
@@ -44,15 +47,24 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
   const errorMessage = errorRaw ? getErrorMessage(errorRaw, t) : null;
 
   return (
-    <div data-testid="login-card" className={cn('flex flex-col gap-6', className)} {...props}>
+    <div
+      data-testid="forgot-password-card"
+      className={cn('flex flex-col gap-6', className)}
+      {...props}
+    >
       <Card>
         <CardHeader>
-          <CardTitle className="text-2xl">{t('loginTitle')}</CardTitle>
-          <CardDescription>{t('loginDescription')}</CardDescription>
+          <div className="flex items-center gap-2 mb-1">
+            <div className="p-2 rounded-lg bg-primary/10 text-primary">
+              <KeyRound className="h-5 w-5" />
+            </div>
+            <CardTitle className="text-2xl">{t('forgotPasswordTitle')}</CardTitle>
+          </div>
+          <CardDescription>{t('forgotPasswordDescription')}</CardDescription>
         </CardHeader>
         <CardContent>
-          <form data-testid="login-form" onSubmit={handleSubmit}>
-            <div className="flex flex-col gap-6">
+          <form data-testid="forgot-password-form" onSubmit={handleSubmit}>
+            <div className="flex flex-col gap-5">
               {errorMessage && (
                 <Alert variant="destructive" data-testid="error-alert" className="py-2.5">
                   <AlertCircle className="h-4 w-4" />
@@ -75,46 +87,30 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
                 />
               </div>
 
-              <div className="grid gap-2">
-                <div className="flex items-center">
-                  <Label htmlFor="password">{t('passwordLabel')}</Label>
-                  <Link
-                    to="/auth/forgot-password"
-                    data-testid="forgot-password-link"
-                    className="ml-auto inline-block text-sm underline-offset-4 hover:underline text-muted-foreground hover:text-primary transition-colors"
-                  >
-                    {t('forgotPassword')}
-                  </Link>
-                </div>
-                <Input
-                  id="password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  data-testid="password-input"
-                  required
-                  autoComplete="current-password"
-                  disabled={isLoading}
-                />
-              </div>
-
               <Button
                 type="submit"
                 disabled={isLoading}
-                data-testid="login-button"
+                data-testid="send-reset-button"
                 className="w-full"
               >
-                {isLoading ? t('loggingIn') : t('loginButton')}
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    {t('sendingResetLink')}
+                  </>
+                ) : (
+                  t('sendResetLink')
+                )}
               </Button>
 
               <div className="text-center text-sm text-muted-foreground">
-                {t('noAccount')}{' '}
                 <Link
-                  to="/auth/register"
-                  data-testid="register-link"
-                  className="underline underline-offset-4 text-foreground font-medium hover:text-primary"
+                  to="/auth/login"
+                  data-testid="back-to-login-link"
+                  className="inline-flex items-center gap-1.5 underline underline-offset-4 text-foreground font-medium hover:text-primary transition-colors"
                 >
-                  {t('signUpLink')}
+                  <ArrowLeft className="h-3.5 w-3.5" />
+                  {t('backToLogin')}
                 </Link>
               </div>
             </div>

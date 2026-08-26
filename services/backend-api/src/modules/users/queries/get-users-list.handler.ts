@@ -1,17 +1,18 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
+import { Prisma, Role as PrismaRole } from '@prisma/client';
 import { GetUsersListQuery } from './get-users-list.query';
 import { PrismaService } from '../../../prisma/prisma.service';
-import { UserListItemDto } from '@smartfeed/shared';
+import { UserListItemDto, Role as SharedRole, PlanType as SharedPlanType } from '@smartfeed/shared';
 
 @QueryHandler(GetUsersListQuery)
 export class GetUsersListHandler implements IQueryHandler<GetUsersListQuery> {
   constructor(private readonly prisma: PrismaService) {}
 
   async execute(query: GetUsersListQuery): Promise<UserListItemDto[]> {
-    const where: any = {};
+    const where: Prisma.UserWhereInput = {};
 
     if (query.role) {
-      where.role = query.role;
+      where.role = query.role as PrismaRole;
     }
 
     if (query.search && query.search.trim() !== '') {
@@ -40,13 +41,13 @@ export class GetUsersListHandler implements IQueryHandler<GetUsersListQuery> {
       id: u.id,
       email: u.email,
       fullName: u.fullName,
-      role: u.role as any,
+      role: u.role as unknown as SharedRole,
       createdAt: u.createdAt,
       updatedAt: u.updatedAt,
       license: u.licenses[0]
         ? {
             licenseKey: u.licenses[0].licenseKey,
-            planType: u.licenses[0].planType as any,
+            planType: u.licenses[0].planType as unknown as SharedPlanType,
             isActive: u.licenses[0].isActive,
             maxXmlLimit: u.licenses[0].maxXmlLimit,
             aiCredits: u.licenses[0].aiCredits,
