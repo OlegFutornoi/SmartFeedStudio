@@ -10,7 +10,7 @@ The **Backend API** is the central REST service for SmartFeed Studio, built on a
 
 - **Framework**: NestJS 11
 - **Architecture Pattern**: `@nestjs/cqrs` (CommandBus, QueryBus, EventBus)
-- **Database & ORM**: PostgreSQL 16 + Prisma ORM (v6)
+- **Database & ORM**: PostgreSQL 16 + Prisma ORM (v7) with PG Driver Adapter
 - **Background Jobs / Queues**: BullMQ + Redis 7 (`@nestjs/bullmq`)
 - **Authentication**: `@nestjs/jwt`, `@nestjs/passport`, `passport-jwt`, `bcrypt`
 - **Cloud Storage**: `@aws-sdk/client-s3`, `@aws-sdk/s3-request-presigner`

@@ -9,6 +9,7 @@ build/
 out/
 .turbo/
 *.tsbuildinfo
+services/backend-api/src/generated/
 
 # Rust / Tauri
 src-tauri/target/

@@ -1,5 +1,5 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
-import { Prisma, Role as PrismaRole } from '@prisma/client';
+import { Prisma, Role as PrismaRole } from '../../../generated/prisma/client';
 import { GetUsersListQuery } from './get-users-list.query';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { UserListItemDto, Role as SharedRole, PlanType as SharedPlanType } from '@smartfeed/shared';
