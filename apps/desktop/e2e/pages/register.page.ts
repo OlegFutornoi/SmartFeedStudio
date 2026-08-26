@@ -4,6 +4,7 @@ export class DesktopRegisterPage {
   readonly page: Page;
   readonly container: Locator;
   readonly fullNameInput: Locator;
+  readonly companyNameInput: Locator;
   readonly emailInput: Locator;
   readonly passwordInput: Locator;
   readonly confirmPasswordInput: Locator;
@@ -16,6 +17,7 @@ export class DesktopRegisterPage {
     this.page = page;
     this.container = page.getByTestId('register-page');
     this.fullNameInput = page.getByTestId('fullname-input');
+    this.companyNameInput = page.getByTestId('company-name-input');
     this.emailInput = page.getByTestId('email-input');
     this.passwordInput = page.getByTestId('password-input');
     this.confirmPasswordInput = page.getByTestId('confirm-password-input');
@@ -31,11 +33,15 @@ export class DesktopRegisterPage {
 
   async register(data: {
     fullName: string;
+    companyName?: string;
     email: string;
     password: string;
     confirmPassword?: string;
   }): Promise<void> {
     await this.fullNameInput.fill(data.fullName);
+    if (data.companyName) {
+      await this.companyNameInput.fill(data.companyName);
+    }
     await this.emailInput.fill(data.email);
     await this.passwordInput.fill(data.password);
     await this.confirmPasswordInput.fill(data.confirmPassword ?? data.password);

@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
+import * as bcrypt from 'bcrypt';
 import { AppModule } from '../src/app.module';
 import { PrismaService } from '../src/prisma/prisma.service';
 import { GlobalHttpExceptionFilter } from '../src/common/filters/http-exception.filter';
@@ -221,6 +222,7 @@ describe('Organizations & Team Seats Quota Policy (E2E)', () => {
         data: {
           planType: 'PRO',
           maxTeamSeats: 3,
+          maxSuppliersLimit: 15,
         },
       });
     });
@@ -316,6 +318,45 @@ describe('Organizations & Team Seats Quota Policy (E2E)', () => {
         .expect(200);
 
       expect(updated.body.name).toBe('Rozetka Enterprise Hub');
+    });
+  });
+
+  describe('5. Corporate License Inheritance for Team Members', () => {
+    it('should allow invited colleague to inherit organization corporate license and quotas', async () => {
+      // Set known password for colleague 3
+      const knownPassword = 'InvitedMemberPassword123!';
+      const hash = await bcrypt.hash(knownPassword, 10);
+      await prisma.user.update({
+        where: { email: colleague3Email },
+        data: { passwordHash: hash },
+      });
+
+      // Log in as colleague 3
+      const loginRes = await request(app.getHttpServer())
+        .post('/api/auth/login')
+        .send({
+          email: colleague3Email,
+          password: knownPassword,
+        })
+        .expect(200);
+
+      const colleagueToken = loginRes.body.tokens.accessToken;
+      expect(loginRes.body.user.organization).toBeDefined();
+      expect(loginRes.body.user.organization.name).toBe('Rozetka Enterprise Hub');
+      expect(loginRes.body.user.organization.role).toBe('MEMBER');
+
+      // Query colleague's active license via GET /api/licenses/my
+      const licenseRes = await request(app.getHttpServer())
+        .get('/api/licenses/my')
+        .set('Authorization', `Bearer ${colleagueToken}`)
+        .expect(200);
+
+      // Verify colleague inherited company's PRO license
+      expect(licenseRes.body.planType).toBe('PRO');
+      expect(licenseRes.body.organizationName).toBe('Rozetka Enterprise Hub');
+      expect(licenseRes.body.maxTeamSeats).toBe(3);
+      expect(licenseRes.body.maxSuppliersLimit).toBe(15);
+      expect(licenseRes.body.isActive).toBe(true);
     });
   });
 });

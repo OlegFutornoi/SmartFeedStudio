@@ -256,14 +256,68 @@ export function getErrorMessage(error: unknown, t: (key: string) => string): str
   }
 
   if (rawMessage.includes('LICENSE_EXPIRED') || rawMessage.includes('tariff plan has expired')) {
-    return t('plans.licenseExpiredDesc');
+    return t('errors.licenseExpired');
+  }
+
+  if (
+    rawMessage.includes('TEAM_SEATS_LIMIT_EXCEEDED') ||
+    rawMessage.includes('Team seats limit') ||
+    rawMessage.includes('ліміт місць у команді')
+  ) {
+    return t('errors.teamSeatsLimitExceeded');
+  }
+
+  if (
+    rawMessage.includes('SUPPLIERS_LIMIT_EXCEEDED') ||
+    rawMessage.includes('Suppliers limit') ||
+    rawMessage.includes('ліміт підключених постачальників')
+  ) {
+    return t('errors.suppliersLimitExceeded');
+  }
+
+  if (rawMessage.includes('FEEDS_LIMIT_EXCEEDED') || rawMessage.includes('Feeds limit')) {
+    return t('errors.feedsLimitExceeded');
+  }
+
+  if (rawMessage.includes('CHANNELS_LIMIT_EXCEEDED') || rawMessage.includes('Channels limit')) {
+    return t('errors.channelsLimitExceeded');
+  }
+
+  if (rawMessage.includes('PLAN_NOT_FOUND') || rawMessage.includes('Tariff plan with code')) {
+    return t('errors.planNotFound');
+  }
+
+  if (rawMessage.includes('NO_ACTIVE_LICENSE') || rawMessage.includes('No active license')) {
+    return t('errors.noActiveLicense');
+  }
+
+  if (rawMessage.includes('Organization not found')) {
+    return t('errors.organizationNotFound');
+  }
+
+  if (rawMessage.includes('already a member')) {
+    return t('errors.memberAlreadyExists');
+  }
+
+  if (rawMessage.includes('Cannot remove owner') || rawMessage.includes('cannot remove')) {
+    return t('errors.cannotRemoveOwner');
+  }
+
+  if (rawMessage.includes('Forbidden') || rawMessage.includes('403')) {
+    return t('errors.forbidden');
   }
 
   // Try direct key lookup in errors namespace
-  const translated = t(`errors.${rawMessage}`);
-  if (translated !== `errors.${rawMessage}`) {
-    return translated;
+  const translatedInErrors = t(`errors.${rawMessage}`);
+  if (translatedInErrors !== `errors.${rawMessage}`) {
+    return translatedInErrors;
   }
 
-  return rawMessage;
+  const directTranslated = t(rawMessage);
+  if (directTranslated !== rawMessage) {
+    return directTranslated;
+  }
+
+  // Default fallback to prevent leaking unrendered technical/English errors into the UI
+  return t('errors.unknownError');
 }

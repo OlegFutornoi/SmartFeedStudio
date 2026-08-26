@@ -28,6 +28,7 @@ export class CreateLicenseHandler implements ICommandHandler<CreateLicenseComman
     const maxFeedsLimit = dbPlan ? dbPlan.maxFeedsLimit : fallbackLimits.maxFeedsLimit;
     const maxChannelsLimit = dbPlan ? dbPlan.maxChannelsLimit : fallbackLimits.maxChannelsLimit;
     const maxTeamSeats = dbPlan ? dbPlan.maxTeamSeats : fallbackLimits.maxTeamSeats;
+    const maxSuppliersLimit = dbPlan ? dbPlan.maxSuppliersLimit : fallbackLimits.maxSuppliersLimit;
     const hasApiAccess = dbPlan ? dbPlan.hasApiAccess : fallbackLimits.hasApiAccess;
     const hasFeedDiff = dbPlan ? dbPlan.hasFeedDiff : fallbackLimits.hasFeedDiff;
     const hasWhiteLabel = dbPlan ? dbPlan.hasWhiteLabel : fallbackLimits.hasWhiteLabel;
@@ -63,6 +64,7 @@ export class CreateLicenseHandler implements ICommandHandler<CreateLicenseComman
         maxFeedsLimit,
         maxChannelsLimit,
         maxTeamSeats,
+        maxSuppliersLimit,
         hasApiAccess,
         hasFeedDiff,
         hasWhiteLabel,
@@ -94,6 +96,7 @@ export class CreateLicenseHandler implements ICommandHandler<CreateLicenseComman
       maxFeedsLimit: license.maxFeedsLimit,
       maxChannelsLimit: license.maxChannelsLimit,
       maxTeamSeats: license.maxTeamSeats,
+      maxSuppliersLimit: license.maxSuppliersLimit,
       hasApiAccess: license.hasApiAccess,
       hasFeedDiff: license.hasFeedDiff,
       hasWhiteLabel: license.hasWhiteLabel,

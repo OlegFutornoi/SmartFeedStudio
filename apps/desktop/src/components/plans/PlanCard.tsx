@@ -25,6 +25,7 @@ export interface PlanItem {
   maxXmlLimit: number;
   aiCredits: number;
   canCloudBackup: boolean;
+  maxSuppliersLimit?: number;
   isPopular: boolean;
   durationDays?: number | null;
   featuresUk?: string[];

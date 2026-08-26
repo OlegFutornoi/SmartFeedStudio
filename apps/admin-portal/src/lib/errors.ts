@@ -59,10 +59,33 @@ export function translateError(error: unknown, locale: Locale = 'uk'): string {
     return ERROR_MAP[locale].network_error;
   }
 
+  if (
+    lower.includes('already exists') &&
+    (lower.includes('code') || lower.includes('tariff') || lower.includes('plan'))
+  ) {
+    return ERROR_MAP[locale].plan_already_exists;
+  }
+
+  if (lower.includes('tariff plan') && lower.includes('not found')) {
+    return ERROR_MAP[locale].plan_not_found;
+  }
+
+  if (lower.includes('team seats') || lower.includes('team_seats')) {
+    return ERROR_MAP[locale].team_seats_limit;
+  }
+
+  if (lower.includes('supplier') || lower.includes('suppliers')) {
+    return ERROR_MAP[locale].suppliers_limit;
+  }
+
+  if (lower.includes('internal server error') || lower.includes('500')) {
+    return ERROR_MAP[locale].server_error;
+  }
+
   // If already mapped directly to a key in dictionary
   if (ERROR_MAP[locale][rawMessage]) {
     return ERROR_MAP[locale][rawMessage];
   }
 
-  return rawMessage || ERROR_MAP[locale].unknown_error;
+  return ERROR_MAP[locale].unknown_error;
 }

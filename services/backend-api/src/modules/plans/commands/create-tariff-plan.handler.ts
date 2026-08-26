@@ -45,6 +45,7 @@ export class CreateTariffPlanHandler implements ICommandHandler<
         syncFrequencyHours: dto.syncFrequencyHours ?? 0,
         maxStorageGb: dto.maxStorageGb ?? 0,
         maxTeamSeats: dto.maxTeamSeats ?? 1,
+        maxSuppliersLimit: dto.maxSuppliersLimit ?? 1,
         hasApiAccess: dto.hasApiAccess ?? false,
         hasWebhooks: dto.hasWebhooks ?? false,
         hasFeedDiff: dto.hasFeedDiff ?? false,

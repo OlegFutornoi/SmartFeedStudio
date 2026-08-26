@@ -74,14 +74,9 @@ export class AuthService {
       throw new UnauthorizedException('Invalid email or password');
     }
 
-    const userProfile: UserProfile = {
-      id: user.id,
-      email: user.email,
-      fullName: user.fullName,
-      role: user.role,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt,
-    };
+    const userProfile = await this.queryBus.execute<GetUserByIdQuery, UserProfile>(
+      new GetUserByIdQuery(user.id),
+    );
 
     const tokens = await this.generateTokens(userProfile);
 

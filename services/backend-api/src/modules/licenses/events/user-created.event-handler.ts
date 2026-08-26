@@ -33,6 +33,7 @@ export class UserCreatedEventHandler implements IEventHandler<UserCreatedEvent> 
       const maxFeedsLimit = dbPlan ? dbPlan.maxFeedsLimit : limits.maxFeedsLimit;
       const maxChannelsLimit = dbPlan ? dbPlan.maxChannelsLimit : limits.maxChannelsLimit;
       const maxTeamSeats = dbPlan ? dbPlan.maxTeamSeats : limits.maxTeamSeats;
+      const maxSuppliersLimit = dbPlan ? dbPlan.maxSuppliersLimit : limits.maxSuppliersLimit;
       const hasApiAccess = dbPlan ? dbPlan.hasApiAccess : limits.hasApiAccess;
       const hasFeedDiff = dbPlan ? dbPlan.hasFeedDiff : limits.hasFeedDiff;
       const hasWhiteLabel = dbPlan ? dbPlan.hasWhiteLabel : limits.hasWhiteLabel;
@@ -57,6 +58,7 @@ export class UserCreatedEventHandler implements IEventHandler<UserCreatedEvent> 
           maxFeedsLimit,
           maxChannelsLimit,
           maxTeamSeats,
+          maxSuppliersLimit,
           hasApiAccess,
           hasFeedDiff,
           hasWhiteLabel,

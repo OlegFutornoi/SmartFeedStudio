@@ -104,6 +104,12 @@ export class CreateTariffPlanDto {
   @IsOptional()
   maxTeamSeats?: number;
 
+  @ApiPropertyOptional({ example: 5, default: 1 })
+  @IsNumber()
+  @Min(1)
+  @IsOptional()
+  maxSuppliersLimit?: number;
+
   @ApiPropertyOptional({ example: true, default: false })
   @IsBoolean()
   @IsOptional()

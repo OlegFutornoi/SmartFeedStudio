@@ -89,6 +89,7 @@ model TariffPlan {
   syncFrequencyHours  Int     @default(0)     // 0=manual, 24=daily, 4=6x/day, 1=hourly
   maxStorageGb        Float   @default(0)     // Cloud storage GB
   maxTeamSeats        Int     @default(1)     // Team member seats
+  maxSuppliersLimit   Int     @default(1)     // Connected product suppliers
 
   // --- Feature Flags ---
   hasApiAccess     Boolean  @default(false)  // REST API access
@@ -138,6 +139,7 @@ model License {
   maxFeedsLimit      Int     @default(1)
   maxChannelsLimit   Int     @default(1)
   maxTeamSeats       Int     @default(1)
+  maxSuppliersLimit  Int     @default(1)
   hasApiAccess       Boolean @default(false)
   hasFeedDiff        Boolean @default(false)
   hasWhiteLabel      Boolean @default(false)

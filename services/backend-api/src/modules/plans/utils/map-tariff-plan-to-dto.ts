@@ -19,6 +19,7 @@ export function mapTariffPlanToDto(plan: any): TariffPlanDto {
     syncFrequencyHours: plan.syncFrequencyHours ?? 0,
     maxStorageGb: plan.maxStorageGb ? Number(plan.maxStorageGb) : 0,
     maxTeamSeats: plan.maxTeamSeats ?? 1,
+    maxSuppliersLimit: plan.maxSuppliersLimit ?? 1,
     hasApiAccess: plan.hasApiAccess ?? false,
     hasWebhooks: plan.hasWebhooks ?? false,
     hasFeedDiff: plan.hasFeedDiff ?? false,

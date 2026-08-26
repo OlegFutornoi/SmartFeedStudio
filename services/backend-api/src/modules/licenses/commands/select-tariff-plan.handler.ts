@@ -43,6 +43,7 @@ export class SelectTariffPlanHandler implements ICommandHandler<
     const maxFeedsLimit = dbPlan.maxFeedsLimit ?? fallbackLimits.maxFeedsLimit;
     const maxChannelsLimit = dbPlan.maxChannelsLimit ?? fallbackLimits.maxChannelsLimit;
     const maxTeamSeats = dbPlan.maxTeamSeats ?? fallbackLimits.maxTeamSeats;
+    const maxSuppliersLimit = dbPlan.maxSuppliersLimit ?? fallbackLimits.maxSuppliersLimit;
     const hasApiAccess = dbPlan.hasApiAccess ?? fallbackLimits.hasApiAccess;
     const hasFeedDiff = dbPlan.hasFeedDiff ?? fallbackLimits.hasFeedDiff;
     const hasWhiteLabel = dbPlan.hasWhiteLabel ?? fallbackLimits.hasWhiteLabel;
@@ -75,6 +76,7 @@ export class SelectTariffPlanHandler implements ICommandHandler<
         maxFeedsLimit,
         maxChannelsLimit,
         maxTeamSeats,
+        maxSuppliersLimit,
         hasApiAccess,
         hasFeedDiff,
         hasWhiteLabel,
@@ -110,6 +112,7 @@ export class SelectTariffPlanHandler implements ICommandHandler<
       maxFeedsLimit: license.maxFeedsLimit,
       maxChannelsLimit: license.maxChannelsLimit,
       maxTeamSeats: license.maxTeamSeats,
+      maxSuppliersLimit: license.maxSuppliersLimit,
       hasApiAccess: license.hasApiAccess,
       hasFeedDiff: license.hasFeedDiff,
       hasWhiteLabel: license.hasWhiteLabel,
@@ -135,6 +138,7 @@ export class SelectTariffPlanHandler implements ICommandHandler<
         maxFeedsLimit: dbPlan.maxFeedsLimit,
         maxChannelsLimit: dbPlan.maxChannelsLimit,
         maxTeamSeats: dbPlan.maxTeamSeats,
+        maxSuppliersLimit: dbPlan.maxSuppliersLimit,
         hasApiAccess: dbPlan.hasApiAccess,
         hasFeedDiff: dbPlan.hasFeedDiff,
         isPopular: dbPlan.isPopular,

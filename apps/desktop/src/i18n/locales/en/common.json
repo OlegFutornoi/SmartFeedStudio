@@ -8,5 +8,6 @@
   "errorTitle": "Error",
   "success": "Success",
   "cancel": "Cancel",
-  "save": "Save"
+  "save": "Save",
+  "refresh": "Refresh"
 }

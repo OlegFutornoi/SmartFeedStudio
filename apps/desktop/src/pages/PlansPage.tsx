@@ -71,13 +71,15 @@ export const PlansPage: React.FC = () => {
 
         <Button
           variant="outline"
-          size="sm"
+          size="icon"
+          data-testid="refresh-plans-button"
           onClick={loadData}
           disabled={isLoading}
-          className="gap-2 self-start md:self-auto"
+          className="h-9 w-9 self-start md:self-auto shrink-0"
+          title={t('common.refresh')}
+          aria-label={t('common.refresh')}
         >
           <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
-          <span>{t('common.refresh')}</span>
         </Button>
       </div>
 

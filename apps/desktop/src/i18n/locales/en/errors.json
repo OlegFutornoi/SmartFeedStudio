@@ -12,5 +12,16 @@
   "invalidToken": "Invalid authorization token",
   "userNotFound": "User with this email address was not found",
   "invalidResetToken": "Invalid or expired reset token",
-  "passwordResetFailed": "Failed to reset password. Please try again"
+  "passwordResetFailed": "Failed to reset password. Please try again",
+  "teamSeatsLimitExceeded": "Team seats limit reached for your tariff plan. Upgrade your plan to invite more members",
+  "suppliersLimitExceeded": "Suppliers limit reached for your tariff plan. Upgrade your plan to connect more suppliers",
+  "feedsLimitExceeded": "Active feeds limit reached for your tariff plan",
+  "channelsLimitExceeded": "Output channels limit reached for your tariff plan",
+  "licenseExpired": "Your tariff plan has expired. Access is restricted",
+  "noActiveLicense": "No active license found. Please select a tariff plan",
+  "planNotFound": "The specified tariff plan was not found or is inactive",
+  "forbidden": "Access denied. You do not have sufficient permissions",
+  "organizationNotFound": "Organization not found",
+  "memberAlreadyExists": "This user is already a member of your organization",
+  "cannotRemoveOwner": "Cannot remove the owner of the organization"
 }

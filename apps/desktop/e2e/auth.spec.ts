@@ -123,12 +123,19 @@ test.describe('Desktop App — Авторизація, Реєстрація, М�
     await expect(page.getByTestId('login-page')).toBeVisible();
   });
 
-  test('перехід на сторінку реєстрації та успішна реєстрація нового акаунту', async ({ page }) => {
+  test('перехід на сторінку реєстрації та успішна реєстрація нового акаунту з назвою компанії', async ({
+    page,
+  }) => {
     const newUser = {
       id: 'usr-new-200',
       email: 'newuser@smartfeed.studio',
       fullName: 'Новий Користувач',
       role: 'USER',
+      organization: {
+        id: 'org-new-200',
+        name: 'Rozetka Sellers Pro',
+        role: 'OWNER',
+      },
     };
 
     // Mock register API endpoint
@@ -164,9 +171,11 @@ test.describe('Desktop App — Авторизація, Реєстрація, М�
     // Verify registration page is displayed
     await expect(page.getByTestId('register-page')).toBeVisible();
     await expect(page.getByTestId('signup-card')).toBeVisible();
+    await expect(page.getByTestId('company-name-input')).toBeVisible();
 
-    // Fill registration form using data-testid locators
+    // Fill registration form using data-testid locators including companyName
     await page.getByTestId('name-input').fill('Новий Користувач');
+    await page.getByTestId('company-name-input').fill('Rozetka Sellers Pro');
     await page.getByTestId('email-input').fill('newuser@smartfeed.studio');
     await page.getByTestId('password-input').fill('SecurePassword123!');
     await page.getByTestId('confirm-password-input').fill('SecurePassword123!');
@@ -175,6 +184,9 @@ test.describe('Desktop App — Авторизація, Реєстрація, М�
     // Verify successful registration redirects to home page
     await expect(page.getByTestId('home-page')).toBeVisible();
     await expect(page.getByTestId('user-email')).toContainText('newuser@smartfeed.studio');
+    await expect(page.getByTestId('sidebar-user-organization')).toContainText(
+      'Rozetka Sellers Pro',
+    );
   });
 
   test('мультимовність: динамічне перемикання між українською (UA) та англійською (EN) мовами', async ({

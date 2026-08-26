@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { Role } from '../enums/index.js';
+import { Role, MemberRole } from '../enums/index.js';
 
 export const RegisterDtoSchema = z.object({
   email: z.string().email('Invalid email address format'),
@@ -62,11 +62,18 @@ export interface AuthTokens {
   expiresIn: number;
 }
 
+export interface UserOrganizationInfo {
+  id: string;
+  name: string;
+  role: MemberRole;
+}
+
 export interface UserProfile {
   id: string;
   email: string;
   fullName: string | null;
   role: Role;
+  organization?: UserOrganizationInfo | null;
   createdAt: Date | string;
   updatedAt?: Date | string;
 }

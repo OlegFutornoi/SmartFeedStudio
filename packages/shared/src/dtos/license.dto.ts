@@ -42,6 +42,7 @@ export interface PlanLimits {
   maxFeedsLimit: number;
   maxChannelsLimit: number;
   maxTeamSeats: number;
+  maxSuppliersLimit: number;
   hasApiAccess: boolean;
   hasFeedDiff: boolean;
   hasWhiteLabel: boolean;

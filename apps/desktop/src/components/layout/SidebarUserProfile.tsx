@@ -43,6 +43,14 @@ export const SidebarUserProfile = React.memo(function SidebarUserProfile({
               >
                 {user?.fullName || 'User'}
               </p>
+              {user?.organization && (
+                <p
+                  data-testid="sidebar-user-organization"
+                  className="text-[10px] text-primary/90 font-medium truncate flex items-center gap-1"
+                >
+                  <span className="truncate">🏢 {user.organization.name}</span>
+                </p>
+              )}
               <p
                 data-testid="sidebar-user-email"
                 className="text-[10px] text-muted-foreground truncate font-mono"

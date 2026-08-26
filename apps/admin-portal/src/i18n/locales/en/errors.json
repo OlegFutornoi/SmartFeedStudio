@@ -9,5 +9,10 @@
   "load_items_failed": "Failed to load navigation items.",
   "save_item_failed": "Failed to save navigation item.",
   "delete_item_failed": "Failed to delete navigation item.",
-  "reorder_failed": "Failed to reorder navigation items."
+  "reorder_failed": "Failed to reorder navigation items.",
+  "plan_already_exists": "Tariff plan with this code already exists.",
+  "plan_not_found": "Tariff plan not found.",
+  "team_seats_limit": "Team seats limit reached.",
+  "suppliers_limit": "Suppliers limit reached.",
+  "server_error": "Internal server error. Please try again later."
 }

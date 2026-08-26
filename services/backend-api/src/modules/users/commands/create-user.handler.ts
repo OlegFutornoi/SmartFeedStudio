@@ -1,7 +1,7 @@
 import { CommandHandler, EventBus, ICommandHandler } from '@nestjs/cqrs';
 import { ConflictException, Injectable, Logger } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
-import { Role, UserProfile } from '@smartfeed/shared';
+import { Role, UserProfile, MemberRole } from '@smartfeed/shared';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { CreateUserCommand } from './create-user.command';
 import { UserCreatedEvent } from '../events/user-created.event';
@@ -75,6 +75,11 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand, Use
       email: user.email,
       fullName: user.fullName,
       role: user.role as Role,
+      organization: {
+        id: organization.id,
+        name: organization.name,
+        role: MemberRole.OWNER,
+      },
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
     };

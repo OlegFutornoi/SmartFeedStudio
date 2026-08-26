@@ -42,6 +42,7 @@ async function main() {
       syncFrequencyHours: 0,
       maxStorageGb: 0,
       maxTeamSeats: 1,
+      maxSuppliersLimit: 1,
       // Feature flags
       hasApiAccess: false,
       hasWebhooks: false,
@@ -59,6 +60,7 @@ async function main() {
       durationDays: 7,
       featuresUk: [
         'До 500 SKU товарів',
+        '1 постачальник товарів (без мульти-складу)',
         '1 активний XML/CSV фід',
         '1 канал виводу (Rozetka або файл)',
         'Ручне оновлення фіду',
@@ -67,6 +69,7 @@ async function main() {
       ],
       featuresEn: [
         'Up to 500 product SKUs',
+        '1 product supplier (single source)',
         '1 active XML/CSV feed',
         '1 output channel (Rozetka or file)',
         'Manual feed updates only',
@@ -91,6 +94,7 @@ async function main() {
       syncFrequencyHours: 0,
       maxStorageGb: 0,
       maxTeamSeats: 1,
+      maxSuppliersLimit: 1,
       hasApiAccess: false,
       hasWebhooks: false,
       hasFeedDiff: false,
@@ -106,6 +110,7 @@ async function main() {
       durationDays: 7,
       featuresUk: [
         'До 500 SKU товарів',
+        '1 постачальник товарів (без мульти-складу)',
         '1 активний XML/CSV фід',
         '1 канал виводу (Rozetka або файл)',
         'Ручне оновлення фіду',
@@ -114,6 +119,7 @@ async function main() {
       ],
       featuresEn: [
         'Up to 500 product SKUs',
+        '1 product supplier (single source)',
         '1 active XML/CSV feed',
         '1 output channel (Rozetka or file)',
         'Manual feed updates only',
@@ -141,6 +147,7 @@ async function main() {
       syncFrequencyHours: 24,
       maxStorageGb: 1,
       maxTeamSeats: 1,
+      maxSuppliersLimit: 3,
       hasApiAccess: false,
       hasWebhooks: false,
       hasFeedDiff: false,
@@ -156,6 +163,7 @@ async function main() {
       durationDays: 30,
       featuresUk: [
         'До 10,000 SKU товарів',
+        'До 3 постачальників (зіставлення прайсів)',
         '5 активних фідів',
         '3 канали виводу (Rozetka, Prom.ua, Google Shopping)',
         'Авто-оновлення 1 раз на добу',
@@ -166,6 +174,7 @@ async function main() {
       ],
       featuresEn: [
         'Up to 10,000 product SKUs',
+        'Up to 3 suppliers (price comparison)',
         '5 active feeds',
         '3 output channels (Rozetka, Prom.ua, Google Shopping)',
         'Auto-sync once per day',
@@ -192,6 +201,7 @@ async function main() {
       syncFrequencyHours: 24,
       maxStorageGb: 1,
       maxTeamSeats: 1,
+      maxSuppliersLimit: 3,
       hasApiAccess: false,
       hasWebhooks: false,
       hasFeedDiff: false,
@@ -207,6 +217,7 @@ async function main() {
       durationDays: 30,
       featuresUk: [
         'До 10,000 SKU товарів',
+        'До 3 постачальників (зіставлення прайсів)',
         '5 активних фідів',
         '3 канали виводу (Rozetka, Prom.ua, Google Shopping)',
         'Авто-оновлення 1 раз на добу',
@@ -217,6 +228,7 @@ async function main() {
       ],
       featuresEn: [
         'Up to 10,000 product SKUs',
+        'Up to 3 suppliers (price comparison)',
         '5 active feeds',
         '3 output channels (Rozetka, Prom.ua, Google Shopping)',
         'Auto-sync once per day',
@@ -246,6 +258,7 @@ async function main() {
       syncFrequencyHours: 4,
       maxStorageGb: 10,
       maxTeamSeats: 3,
+      maxSuppliersLimit: 15,
       hasApiAccess: true,
       hasWebhooks: false,
       hasFeedDiff: true,
@@ -261,6 +274,7 @@ async function main() {
       durationDays: 30,
       featuresUk: [
         'До 100,000 SKU товарів',
+        'До 15 постачальників (авто-зіставлення за EAN/артикулом)',
         'Необмежена кількість фідів',
         '15 каналів виводу (Hotline, Prom.ua, Facebook Catalog і ін.)',
         'Авто-оновлення кожні 4 години',
@@ -274,6 +288,7 @@ async function main() {
       ],
       featuresEn: [
         'Up to 100,000 product SKUs',
+        'Up to 15 suppliers (auto-matching by EAN/SKU)',
         'Unlimited feeds',
         '15 output channels (Hotline, Prom.ua, Facebook Catalog, etc.)',
         'Auto-sync every 4 hours',
@@ -303,6 +318,7 @@ async function main() {
       syncFrequencyHours: 4,
       maxStorageGb: 10,
       maxTeamSeats: 3,
+      maxSuppliersLimit: 15,
       hasApiAccess: true,
       hasWebhooks: false,
       hasFeedDiff: true,
@@ -318,6 +334,7 @@ async function main() {
       durationDays: 30,
       featuresUk: [
         'До 100,000 SKU товарів',
+        'До 15 постачальників (авто-зіставлення за EAN/артикулом)',
         'Необмежена кількість фідів',
         '15 каналів виводу (Hotline, Prom.ua, Facebook Catalog і ін.)',
         'Авто-оновлення кожні 4 години',
@@ -331,6 +348,7 @@ async function main() {
       ],
       featuresEn: [
         'Up to 100,000 product SKUs',
+        'Up to 15 suppliers (auto-matching by EAN/SKU)',
         'Unlimited feeds',
         '15 output channels (Hotline, Prom.ua, Facebook Catalog, etc.)',
         'Auto-sync every 4 hours',
@@ -364,6 +382,7 @@ async function main() {
       syncFrequencyHours: 1,
       maxStorageGb: 999999,
       maxTeamSeats: 999999,
+      maxSuppliersLimit: 999999,
       hasApiAccess: true,
       hasWebhooks: true,
       hasFeedDiff: true,
@@ -379,6 +398,7 @@ async function main() {
       durationDays: 365,
       featuresUk: [
         'Необмежена кількість SKU товарів',
+        'Необмежена кількість постачальників (+ API дилерів)',
         'Необмежені фіди та канали виводу',
         'Реальний час оновлення (кожну годину)',
         '5,000 AI Кредитів/місяць + пріоритетна черга',
@@ -394,6 +414,7 @@ async function main() {
       ],
       featuresEn: [
         'Unlimited product SKUs',
+        'Unlimited suppliers (+ direct API)',
         'Unlimited feeds and output channels',
         'Near-realtime sync (every hour)',
         '5,000 AI Credits/month + priority queue',
@@ -426,6 +447,7 @@ async function main() {
       syncFrequencyHours: 1,
       maxStorageGb: 999999,
       maxTeamSeats: 999999,
+      maxSuppliersLimit: 999999,
       hasApiAccess: true,
       hasWebhooks: true,
       hasFeedDiff: true,
@@ -441,6 +463,7 @@ async function main() {
       durationDays: 365,
       featuresUk: [
         'Необмежена кількість SKU товарів',
+        'Необмежена кількість постачальників (+ API дилерів)',
         'Необмежені фіди та канали виводу',
         'Реальний час оновлення (кожну годину)',
         '5,000 AI Кредитів/місяць + пріоритетна черга',
@@ -456,6 +479,7 @@ async function main() {
       ],
       featuresEn: [
         'Unlimited product SKUs',
+        'Unlimited suppliers (+ direct API)',
         'Unlimited feeds and output channels',
         'Near-realtime sync (every hour)',
         '5,000 AI Credits/month + priority queue',
@@ -473,45 +497,7 @@ async function main() {
   });
 
   // ============================================================
-  // 2. Create Super Admin (admin@smartfeed.studio)
-  // ============================================================
-  const admin = await prisma.user.upsert({
-    where: { email: 'admin@smartfeed.studio' },
-    update: { passwordHash: adminPasswordHash },
-    create: {
-      email: 'admin@smartfeed.studio',
-      passwordHash: adminPasswordHash,
-      fullName: 'Super Administrator',
-      role: Role.SUPER_ADMIN,
-    },
-  });
-
-  await prisma.license.upsert({
-    where: { licenseKey: 'SF-ENTERPRISE-ADMIN-0001' },
-    update: { tariffPlanId: enterprisePlan.id },
-    create: {
-      userId: admin.id,
-      tariffPlanId: enterprisePlan.id,
-      licenseKey: 'SF-ENTERPRISE-ADMIN-0001',
-      planType: PlanType.ENTERPRISE,
-      canCloudBackup: true,
-      maxXmlLimit: 999999999,
-      aiCredits: 5000,
-      maxFeedsLimit: 999999,
-      maxChannelsLimit: 999999,
-      maxTeamSeats: 999999,
-      hasApiAccess: true,
-      hasFeedDiff: true,
-      hasWhiteLabel: true,
-      hasSso: true,
-      hasAuditLog: true,
-      isActive: true,
-      expiresAt: null,
-    },
-  });
-
-  // ============================================================
-  // 3. Create Super Admin (admin@gmail.com)
+  // 2. Create Super Admin (admin@gmail.com) & Default Organization
   // ============================================================
   const gmailAdmin = await prisma.user.upsert({
     where: { email: 'admin@gmail.com' },
@@ -524,11 +510,53 @@ async function main() {
     },
   });
 
+  // Ensure default organization exists for admin@gmail.com
+  const adminOrg = await prisma.organization.upsert({
+    where: { id: '00000000-0000-0000-0000-000000000001' },
+    update: {
+      name: 'SmartFeed Studio HQ',
+      ownerId: gmailAdmin.id,
+    },
+    create: {
+      id: '00000000-0000-0000-0000-000000000001',
+      name: 'SmartFeed Studio HQ',
+      ownerId: gmailAdmin.id,
+      members: {
+        create: {
+          userId: gmailAdmin.id,
+          role: 'OWNER',
+        },
+      },
+    },
+  });
+
+  // Ensure membership exists
+  await prisma.organizationMember.upsert({
+    where: {
+      organizationId_userId: {
+        organizationId: adminOrg.id,
+        userId: gmailAdmin.id,
+      },
+    },
+    update: { role: 'OWNER' },
+    create: {
+      organizationId: adminOrg.id,
+      userId: gmailAdmin.id,
+      role: 'OWNER',
+    },
+  });
+
   await prisma.license.upsert({
     where: { licenseKey: 'SF-ENTERPRISE-GMAIL-ADMIN' },
-    update: { tariffPlanId: enterprisePlan.id },
+    update: {
+      userId: gmailAdmin.id,
+      organizationId: adminOrg.id,
+      tariffPlanId: enterprisePlan.id,
+      maxSuppliersLimit: 999999,
+    },
     create: {
       userId: gmailAdmin.id,
+      organizationId: adminOrg.id,
       tariffPlanId: enterprisePlan.id,
       licenseKey: 'SF-ENTERPRISE-GMAIL-ADMIN',
       planType: PlanType.ENTERPRISE,
@@ -538,6 +566,7 @@ async function main() {
       maxFeedsLimit: 999999,
       maxChannelsLimit: 999999,
       maxTeamSeats: 999999,
+      maxSuppliersLimit: 999999,
       hasApiAccess: true,
       hasFeedDiff: true,
       hasWhiteLabel: true,
@@ -545,43 +574,6 @@ async function main() {
       hasAuditLog: true,
       isActive: true,
       expiresAt: null,
-    },
-  });
-
-  // ============================================================
-  // 4. Create Demo User (PRO plan)
-  // ============================================================
-  const demoUser = await prisma.user.upsert({
-    where: { email: 'demo@smartfeed.studio' },
-    update: { passwordHash: userPasswordHash },
-    create: {
-      email: 'demo@smartfeed.studio',
-      passwordHash: userPasswordHash,
-      fullName: 'Demo Store Manager',
-      role: Role.USER,
-    },
-  });
-
-  await prisma.license.upsert({
-    where: { licenseKey: 'SF-PRO-DEMO-9900-1122' },
-    update: { tariffPlanId: proPlan.id },
-    create: {
-      userId: demoUser.id,
-      tariffPlanId: proPlan.id,
-      licenseKey: 'SF-PRO-DEMO-9900-1122',
-      planType: PlanType.PRO,
-      canCloudBackup: true,
-      maxXmlLimit: 100000,
-      aiCredits: 500,
-      maxFeedsLimit: 999999,
-      maxChannelsLimit: 15,
-      maxTeamSeats: 3,
-      hasApiAccess: true,
-      hasFeedDiff: true,
-      hasWhiteLabel: false,
-      hasSso: false,
-      hasAuditLog: false,
-      isActive: true,
     },
   });
 
@@ -686,8 +678,6 @@ async function main() {
     `   - Seeded 4 tariff plans: STARTER ($0), GROWTH ($29), PRO ($79), ENTERPRISE ($249)`,
   );
   console.log(`   - Super Admin: admin@gmail.com       (Password: admin@gmail.com)`);
-  console.log(`   - Super Admin: admin@smartfeed.studio (Password: AdminPassword123!)`);
-  console.log(`   - Demo User:   demo@smartfeed.studio  (Password: UserPassword123!)`);
   console.log(`   - Seeded ${navigationItems.length} dynamic navigation items`);
   void starterPlan;
   void growthPlan;

@@ -63,6 +63,7 @@ export class GetAdminLicensesHandler implements IQueryHandler<
       maxFeedsLimit: lic.maxFeedsLimit,
       maxChannelsLimit: lic.maxChannelsLimit,
       maxTeamSeats: lic.maxTeamSeats,
+      maxSuppliersLimit: lic.maxSuppliersLimit ?? 1,
       hasApiAccess: lic.hasApiAccess,
       hasFeedDiff: lic.hasFeedDiff,
       hasWhiteLabel: lic.hasWhiteLabel,

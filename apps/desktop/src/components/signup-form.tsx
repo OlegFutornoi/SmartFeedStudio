@@ -12,6 +12,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 
 export function SignupForm({ className, ...props }: React.ComponentPropsWithoutRef<typeof Card>) {
   const [fullName, setFullName] = useState('');
+  const [companyName, setCompanyName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -48,6 +49,7 @@ export function SignupForm({ className, ...props }: React.ComponentPropsWithoutR
         email: email.trim(),
         password,
         fullName: fullName.trim() || undefined,
+        companyName: companyName.trim() || undefined,
       });
       navigate('/', { replace: true });
     } catch (err: unknown) {
@@ -87,6 +89,21 @@ export function SignupForm({ className, ...props }: React.ComponentPropsWithoutR
                 autoComplete="name"
                 disabled={isLoading}
               />
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="company-name">{t('companyNameLabel')}</Label>
+              <Input
+                id="company-name"
+                type="text"
+                placeholder={t('companyNamePlaceholder')}
+                value={companyName}
+                onChange={(e) => setCompanyName(e.target.value)}
+                data-testid="company-name-input"
+                autoComplete="organization"
+                disabled={isLoading}
+              />
+              <p className="text-[0.8rem] text-muted-foreground">{t('companyNameNote')}</p>
             </div>
 
             <div className="grid gap-2">

@@ -50,6 +50,20 @@ describe('Licenses & Tariff Plan Expiration Policy (E2E)', () => {
     await app.init();
     prisma = app.get<PrismaService>(PrismaService);
 
+    // Ensure clean state before tests run
+    const testEmails = [
+      testAdmin.email,
+      testUser.email,
+      expiredUser.email,
+      'duration.test@smartfeed.studio',
+    ];
+    await prisma.license.deleteMany({
+      where: { user: { email: { in: testEmails } } },
+    });
+    await prisma.user.deleteMany({
+      where: { email: { in: testEmails } },
+    });
+
     // 1. Register Super Admin
     await request(app.getHttpServer()).post('/api/auth/register').send(testAdmin);
     await prisma.user.update({
@@ -126,6 +140,7 @@ describe('Licenses & Tariff Plan Expiration Policy (E2E)', () => {
       // New quota fields
       expect(res.body.maxFeedsLimit).toBe(1);
       expect(res.body.maxChannelsLimit).toBe(1);
+      expect(res.body.maxSuppliersLimit).toBe(1);
       expect(res.body.hasApiAccess).toBe(false);
     });
 

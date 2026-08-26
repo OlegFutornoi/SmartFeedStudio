@@ -60,6 +60,8 @@ export interface GetLicenseByUserIdQueryPayload {
 export interface LicenseEntity {
   id: string;
   userId: string;
+  organizationId?: string | null;
+  organizationName?: string | null;
   licenseKey: string;
   planType: PlanType;
   canCloudBackup: boolean;
@@ -69,6 +71,7 @@ export interface LicenseEntity {
   maxFeedsLimit: number;
   maxChannelsLimit: number;
   maxTeamSeats: number;
+  maxSuppliersLimit: number;
   hasApiAccess: boolean;
   hasFeedDiff: boolean;
   hasWhiteLabel: boolean;

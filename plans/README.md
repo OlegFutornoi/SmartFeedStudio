@@ -14,8 +14,9 @@
 
 ## 📂 Реєстр Планів
 
-| Файл                                                                                                              | Опис                                                                                                            | Статус           |
-| :---------------------------------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------- | :--------------- |
-| [`tariff_strategy.md`](file:///Users/oleg/AQA/SmartFeedStudio/plans/tariff_strategy.md)                           | 4-рівнева комерційна стратегія тарифів (Starter, Growth, Pro, Enterprise), аналіз ринку, квоти, дорожня карта   | ✅ Документовано |
-| [`organizations_and_team_seats.md`](file:///Users/oleg/AQA/SmartFeedStudio/plans/organizations_and_team_seats.md) | Архітектура Організацій, поле `companyName`, командні місця (`maxTeamSeats`), інвайти та TDD тести              | ✅ Реалізовано   |
-| [`prisma_7_upgrade_migration.md`](file:///Users/oleg/AQA/SmartFeedStudio/plans/prisma_7_upgrade_migration.md)     | Оновлення до Prisma 7 (`7.10.0`), Driver Adapters (`@prisma/adapter-pg`), WebAssembly рушій, `prisma.config.ts` | ✅ Реалізовано   |
+| Файл                                                                                                                              | Опис                                                                                                            | Статус           |
+| :-------------------------------------------------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------- | :--------------- |
+| [`tariff_strategy.md`](file:///Users/oleg/AQA/SmartFeedStudio/plans/tariff_strategy.md)                                           | 4-рівнева комерційна стратегія тарифів (Starter, Growth, Pro, Enterprise), аналіз ринку, квоти, дорожня карта   | ✅ Документовано |
+| [`organizations_and_team_seats.md`](file:///Users/oleg/AQA/SmartFeedStudio/plans/organizations_and_team_seats.md)                 | Архітектура Організацій, поле `companyName`, командні місця (`maxTeamSeats`), інвайти та TDD тести              | ✅ Реалізовано   |
+| [`prisma_7_upgrade_migration.md`](file:///Users/oleg/AQA/SmartFeedStudio/plans/prisma_7_upgrade_migration.md)                     | Оновлення до Prisma 7 (`7.10.0`), Driver Adapters (`@prisma/adapter-pg`), WebAssembly рушій, `prisma.config.ts` | ✅ Реалізовано   |
+| [`company_registration_and_team_access.md`](file:///Users/oleg/AQA/SmartFeedStudio/plans/company_registration_and_team_access.md) | Реєстрація компанії на фронтенді, корпоративна ліцензія, роздача доступів команді та контроль квот              | ✅ Реалізовано   |

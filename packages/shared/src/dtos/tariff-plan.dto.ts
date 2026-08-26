@@ -20,6 +20,7 @@ export const TariffPlanDtoSchema = z.object({
   syncFrequencyHours: z.number().int().nonnegative().default(0),
   maxStorageGb: z.number().nonnegative().default(0),
   maxTeamSeats: z.number().int().positive().default(1),
+  maxSuppliersLimit: z.number().int().positive().default(1),
 
   // Feature flags
   hasApiAccess: z.boolean().default(false),
@@ -70,6 +71,7 @@ export const CreateTariffPlanDtoSchema = z.object({
   syncFrequencyHours: z.number().int().nonnegative().default(0),
   maxStorageGb: z.number().nonnegative().default(0),
   maxTeamSeats: z.number().int().positive().default(1),
+  maxSuppliersLimit: z.number().int().positive().default(1),
 
   // Feature flags
   hasApiAccess: z.boolean().default(false),
@@ -111,6 +113,7 @@ export interface AdminLicenseItemDto {
   maxFeedsLimit: number;
   maxChannelsLimit: number;
   maxTeamSeats: number;
+  maxSuppliersLimit: number;
   hasApiAccess: boolean;
   hasFeedDiff: boolean;
   hasWhiteLabel: boolean;

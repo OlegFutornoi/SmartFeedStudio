@@ -56,6 +56,7 @@ export class UpdateTariffPlanHandler implements ICommandHandler<
         syncFrequencyHours: dto.syncFrequencyHours,
         maxStorageGb: dto.maxStorageGb,
         maxTeamSeats: dto.maxTeamSeats,
+        maxSuppliersLimit: dto.maxSuppliersLimit,
         hasApiAccess: dto.hasApiAccess,
         hasWebhooks: dto.hasWebhooks,
         hasFeedDiff: dto.hasFeedDiff,

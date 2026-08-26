@@ -14,13 +14,41 @@ export class GetLicenseByUserIdHandler implements IQueryHandler<
 
   async execute(query: GetLicenseByUserIdQuery): Promise<LicenseEntity | null> {
     const { userId } = query;
-    const license = await this.prisma.license.findFirst({
+    let license = await this.prisma.license.findFirst({
       where: { userId, isActive: true },
       include: {
         tariffPlan: true,
+        organization: true,
       },
       orderBy: { createdAt: 'desc' },
     });
+
+    if (!license) {
+      // Check if user is a member of an organization with an active corporate license
+      const membership = await this.prisma.organizationMember.findFirst({
+        where: { userId },
+        include: {
+          organization: {
+            include: {
+              licenses: {
+                where: { isActive: true },
+                include: { tariffPlan: true },
+                orderBy: { createdAt: 'desc' },
+                take: 1,
+              },
+            },
+          },
+        },
+      });
+
+      if (membership?.organization?.licenses?.[0]) {
+        const orgLicense = membership.organization.licenses[0];
+        license = {
+          ...orgLicense,
+          organization: membership.organization,
+        } as typeof license;
+      }
+    }
 
     if (!license) {
       return null;
@@ -37,6 +65,8 @@ export class GetLicenseByUserIdHandler implements IQueryHandler<
     return {
       id: license.id,
       userId: license.userId,
+      organizationId: license.organizationId || (license as any).organization?.id || null,
+      organizationName: (license as any).organization?.name || null,
       licenseKey: license.licenseKey,
       planType: license.planType as PlanType,
       canCloudBackup: license.canCloudBackup,
@@ -45,6 +75,7 @@ export class GetLicenseByUserIdHandler implements IQueryHandler<
       maxFeedsLimit: license.maxFeedsLimit,
       maxChannelsLimit: license.maxChannelsLimit,
       maxTeamSeats: license.maxTeamSeats,
+      maxSuppliersLimit: license.maxSuppliersLimit ?? 1,
       hasApiAccess: license.hasApiAccess,
       hasFeedDiff: license.hasFeedDiff,
       hasWhiteLabel: license.hasWhiteLabel,
@@ -73,6 +104,7 @@ export class GetLicenseByUserIdHandler implements IQueryHandler<
             maxFeedsLimit: license.tariffPlan.maxFeedsLimit,
             maxChannelsLimit: license.tariffPlan.maxChannelsLimit,
             maxTeamSeats: license.tariffPlan.maxTeamSeats,
+            maxSuppliersLimit: license.tariffPlan.maxSuppliersLimit ?? 1,
             hasApiAccess: license.tariffPlan.hasApiAccess,
             hasFeedDiff: license.tariffPlan.hasFeedDiff,
             isPopular: license.tariffPlan.isPopular,
