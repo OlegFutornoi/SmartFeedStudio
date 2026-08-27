@@ -413,7 +413,7 @@ test.describe('Admin Portal — Керування Користувачами т
     // Перевіряємо текст тулбара
     const toolbarText = await page.getByTestId('users-table-toolbar').innerText();
     // Regex перевіряє типові системні емодзі (👑, 👥, 👤, тощо)
-    const emojiRegex = /\p{Extended_Pictographic}/u;
+    const emojiRegex = /[\uD800-\uDBFF][\uDC00-\uDFFF]/;
     expect(emojiRegex.test(toolbarText)).toBe(false);
 
     // Відкриваємо дропдаун ролей та перевіряємо переклад варіантів
