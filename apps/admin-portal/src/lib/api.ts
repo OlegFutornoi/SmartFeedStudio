@@ -50,12 +50,21 @@ class ApiClient {
     });
 
     if (!response.ok) {
-      let errorMessage = 'Щось пішло не так';
+      if (response.status === 401 && typeof window !== 'undefined' && endpoint !== '/auth/login') {
+        localStorage.removeItem('smartfeed_admin_token');
+        window.dispatchEvent(new CustomEvent('smartfeed_auth_unauthorized'));
+      }
+
+      const isEn =
+        typeof window !== 'undefined' && localStorage.getItem('smartfeed_admin_lang') === 'en';
+      let errorMessage = isEn
+        ? 'Something went wrong. Please try again.'
+        : 'Щось пішло не так. Спробуйте знову.';
       try {
         const errorData = await response.json();
         errorMessage = errorData.message || errorMessage;
       } catch {
-        errorMessage = response.statusText;
+        errorMessage = response.statusText || errorMessage;
       }
       throw new Error(errorMessage);
     }

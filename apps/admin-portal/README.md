@@ -34,7 +34,7 @@ pnpm dev:admin
    - Dynamic plan tier cards (STARTER, GROWTH, PRO, ENTERPRISE).
    - Dialog for plan creation, editing, supplier limits (`maxSuppliersLimit`), pricing, and duration (`durationDays`).
 5. **Customer Licenses Registry (`/licenses`)**:
-   - Dedicated active license registry table with search, validity period, and plan tier tracking.
+   - Dedicated active license registry table with shadcn faceted filters (Plan Tier, Active/Expired/Lifetime status, S3 Cloud Backup), instant search, sorting, and active filter pills.
 6. **Dynamic Navigation Management (`/navigation`)**:
    - Visual catalog of menu items with live access control simulator.
 7. **Admin Settings Submenu (`/settings`)**:

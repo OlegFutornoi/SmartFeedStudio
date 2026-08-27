@@ -10,6 +10,7 @@ export function LanguageToggle() {
 
   return (
     <Button
+      data-testid="language-toggle-btn"
       variant="outline"
       size="sm"
       onClick={() => setLocale(locale === 'uk' ? 'en' : 'uk')}

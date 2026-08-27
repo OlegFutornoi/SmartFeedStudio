@@ -54,7 +54,10 @@ export default function DashboardOverviewPage() {
   }, []);
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-300">
+    <div
+      data-testid="dashboard-overview-page"
+      className="space-y-8 animate-in fade-in duration-300"
+    >
       {/* Welcome Banner */}
       <DashboardWelcomeBanner user={user} onOpenPasswordDialog={handleOpenPasswordDialog} />
 

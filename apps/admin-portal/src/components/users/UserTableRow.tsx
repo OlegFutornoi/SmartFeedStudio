@@ -5,14 +5,20 @@ import { KeyRound } from 'lucide-react';
 import { UserListItemDto } from '@smartfeed/shared';
 import { TableRow, TableCell } from '../ui/table';
 import { Badge } from '../ui/badge';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 interface UserTableRowProps {
   user: UserListItemDto;
 }
 
 export const UserTableRow = React.memo(function UserTableRow({ user }: UserTableRowProps) {
+  const { t, locale } = useLanguage();
+
   return (
-    <TableRow className="hover:bg-muted/40 transition-colors">
+    <TableRow
+      data-testid={`user-table-row-${user.id}`}
+      className="hover:bg-muted/40 transition-colors"
+    >
       {/* User Info */}
       <TableCell>
         <div className="flex items-center space-x-3">
@@ -22,10 +28,18 @@ export const UserTableRow = React.memo(function UserTableRow({ user }: UserTable
               : user.email.slice(0, 2).toUpperCase()}
           </div>
           <div className="min-w-0">
-            <div className="font-semibold text-foreground truncate text-sm">
-              {user.fullName || 'Без імені'}
+            <div
+              data-testid="user-row-name"
+              className="font-semibold text-foreground truncate text-sm"
+            >
+              {user.fullName || t('users', 'unnamed_user')}
             </div>
-            <div className="text-xs text-muted-foreground font-mono truncate">{user.email}</div>
+            <div
+              data-testid="user-row-email"
+              className="text-xs text-muted-foreground font-mono truncate"
+            >
+              {user.email}
+            </div>
           </div>
         </div>
       </TableCell>
@@ -33,6 +47,7 @@ export const UserTableRow = React.memo(function UserTableRow({ user }: UserTable
       {/* Role */}
       <TableCell>
         <Badge
+          data-testid="user-row-role"
           variant="outline"
           className={
             user.role === 'SUPER_ADMIN'
@@ -51,6 +66,7 @@ export const UserTableRow = React.memo(function UserTableRow({ user }: UserTable
         {user.license ? (
           <div className="flex items-center space-x-1.5">
             <Badge
+              data-testid="user-row-plan"
               variant="outline"
               className={
                 user.license.planType === 'ENTERPRISE'
@@ -65,7 +81,9 @@ export const UserTableRow = React.memo(function UserTableRow({ user }: UserTable
             </Badge>
           </div>
         ) : (
-          <span className="text-xs text-muted-foreground">Немає ліцензії</span>
+          <span data-testid="user-row-plan-none" className="text-xs text-muted-foreground">
+            {t('users', 'no_license')}
+          </span>
         )}
       </TableCell>
 
@@ -82,7 +100,7 @@ export const UserTableRow = React.memo(function UserTableRow({ user }: UserTable
             <div>
               AI:{' '}
               <span className="font-medium text-foreground">
-                {user.license.aiCredits.toLocaleString()} кр.
+                {user.license.aiCredits.toLocaleString()} {t('users', 'credits_abbr')}
               </span>
             </div>
           </div>
@@ -95,13 +113,13 @@ export const UserTableRow = React.memo(function UserTableRow({ user }: UserTable
       <TableCell>
         <div className="flex items-center space-x-1.5 text-xs text-emerald-400 font-medium">
           <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-          <span>Активний</span>
+          <span data-testid="user-row-status">{t('users', 'status_active')}</span>
         </div>
       </TableCell>
 
       {/* Created Date */}
       <TableCell className="text-right text-xs text-muted-foreground font-mono">
-        {new Date(user.createdAt).toLocaleString('uk-UA', {
+        {new Date(user.createdAt).toLocaleString(locale === 'uk' ? 'uk-UA' : 'en-US', {
           day: '2-digit',
           month: '2-digit',
           year: 'numeric',

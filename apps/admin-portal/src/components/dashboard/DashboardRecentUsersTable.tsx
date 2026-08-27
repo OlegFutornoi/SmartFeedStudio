@@ -8,6 +8,7 @@ import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
 import { UserListItemDto } from '@smartfeed/shared';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 interface DashboardRecentUsersTableProps {
   users: UserListItemDto[];
@@ -20,20 +21,30 @@ export const DashboardRecentUsersTable = React.memo(function DashboardRecentUser
   totalUsers,
   isLoading,
 }: DashboardRecentUsersTableProps) {
+  const { t, locale } = useLanguage();
+
   return (
-    <Card className="md:col-span-5 border-border/80 bg-card/60 backdrop-blur-sm shadow-md">
+    <Card
+      data-testid="dashboard-recent-users-card"
+      className="md:col-span-5 border-border/80 bg-card/60 backdrop-blur-sm shadow-md"
+    >
       <CardHeader className="flex flex-row items-center justify-between">
         <div>
-          <CardTitle className="text-lg font-semibold">Останні зареєстровані користувачі</CardTitle>
-          <CardDescription>Список облікових записів у базі даних SmartFeed Studio</CardDescription>
+          <CardTitle data-testid="recent-users-title" className="text-lg font-semibold">
+            {t('dashboard', 'recent_users_title')}
+          </CardTitle>
+          <CardDescription data-testid="recent-users-subtitle">
+            {t('dashboard', 'recent_users_subtitle')}
+          </CardDescription>
         </div>
         <Link href="/users">
           <Button
+            data-testid="view-all-users-btn"
             variant="ghost"
             size="sm"
             className="text-xs gap-1 text-primary hover:text-primary"
           >
-            <span>Всі користувачі ({totalUsers})</span>
+            <span>{t('dashboard', 'all_users_link', { count: totalUsers })}</span>
             <ExternalLink className="h-3.5 w-3.5" />
           </Button>
         </Link>
@@ -41,28 +52,40 @@ export const DashboardRecentUsersTable = React.memo(function DashboardRecentUser
 
       <CardContent>
         {isLoading ? (
-          <div className="py-12 text-center text-sm text-muted-foreground animate-pulse">
-            Завантаження списку користувачів...
+          <div
+            data-testid="recent-users-loading"
+            className="py-12 text-center text-sm text-muted-foreground animate-pulse"
+          >
+            {t('users', 'loading_users')}
           </div>
         ) : users.length === 0 ? (
-          <div className="py-12 text-center text-sm text-muted-foreground">
-            Користувачів поки що немає.
+          <div
+            data-testid="recent-users-empty"
+            className="py-12 text-center text-sm text-muted-foreground"
+          >
+            {t('dashboard', 'no_recent_users')}
           </div>
         ) : (
-          <Table>
+          <Table data-testid="recent-users-table">
             <TableHeader>
               <TableRow>
-                <TableHead>Користувач</TableHead>
-                <TableHead>Роль</TableHead>
-                <TableHead>Ліцензія</TableHead>
-                <TableHead className="text-right">Дата реєстрації</TableHead>
+                <TableHead data-testid="th-recent-user">{t('dashboard', 'col_user')}</TableHead>
+                <TableHead data-testid="th-recent-role">{t('dashboard', 'col_role')}</TableHead>
+                <TableHead data-testid="th-recent-license">
+                  {t('dashboard', 'col_license')}
+                </TableHead>
+                <TableHead data-testid="th-recent-registered" className="text-right">
+                  {t('dashboard', 'col_registered')}
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {users.map((u) => (
-                <TableRow key={u.id}>
+                <TableRow key={u.id} data-testid={`recent-user-row-${u.id}`}>
                   <TableCell>
-                    <div className="font-medium text-foreground">{u.fullName || 'Без імені'}</div>
+                    <div className="font-medium text-foreground">
+                      {u.fullName || t('dashboard', 'unnamed_user')}
+                    </div>
                     <div className="text-xs text-muted-foreground font-mono">{u.email}</div>
                   </TableCell>
                   <TableCell>
@@ -92,7 +115,7 @@ export const DashboardRecentUsersTable = React.memo(function DashboardRecentUser
                     )}
                   </TableCell>
                   <TableCell className="text-right text-xs text-muted-foreground">
-                    {new Date(u.createdAt).toLocaleDateString('uk-UA', {
+                    {new Date(u.createdAt).toLocaleDateString(locale === 'uk' ? 'uk-UA' : 'en-US', {
                       day: '2-digit',
                       month: 'short',
                       year: 'numeric',

@@ -9,6 +9,7 @@ import ukNav from '../i18n/locales/uk/navigation.json';
 import ukUsers from '../i18n/locales/uk/users.json';
 import ukLicenses from '../i18n/locales/uk/licenses.json';
 import ukSettings from '../i18n/locales/uk/settings.json';
+import ukDashboard from '../i18n/locales/uk/dashboard.json';
 import ukErrors from '../i18n/locales/uk/errors.json';
 
 import enCommon from '../i18n/locales/en/common.json';
@@ -17,6 +18,7 @@ import enNav from '../i18n/locales/en/navigation.json';
 import enUsers from '../i18n/locales/en/users.json';
 import enLicenses from '../i18n/locales/en/licenses.json';
 import enSettings from '../i18n/locales/en/settings.json';
+import enDashboard from '../i18n/locales/en/dashboard.json';
 import enErrors from '../i18n/locales/en/errors.json';
 
 const TRANSLATIONS: Record<Locale, Record<TranslationNamespace, Record<string, string>>> = {
@@ -27,6 +29,7 @@ const TRANSLATIONS: Record<Locale, Record<TranslationNamespace, Record<string, s
     users: ukUsers,
     licenses: ukLicenses,
     settings: ukSettings,
+    dashboard: ukDashboard,
     errors: ukErrors,
   },
   en: {
@@ -36,6 +39,7 @@ const TRANSLATIONS: Record<Locale, Record<TranslationNamespace, Record<string, s
     users: enUsers,
     licenses: enLicenses,
     settings: enSettings,
+    dashboard: enDashboard,
     errors: enErrors,
   },
 };

@@ -13,6 +13,7 @@ import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Button } from '../ui/button';
 import { useAuth } from '../../contexts/AuthContext';
+import { useLanguage } from '../../contexts/LanguageContext';
 import { KeyRound, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
 
 interface ChangePasswordDialogProps {
@@ -22,6 +23,8 @@ interface ChangePasswordDialogProps {
 
 export function ChangePasswordDialog({ open, onOpenChange }: ChangePasswordDialogProps) {
   const { changePassword } = useAuth();
+  const { t } = useLanguage();
+
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -35,12 +38,12 @@ export function ChangePasswordDialog({ open, onOpenChange }: ChangePasswordDialo
     setSuccess(false);
 
     if (newPassword.length < 8) {
-      setError('Новий пароль повинен містити щонайменше 8 символів');
+      setError(t('settings', 'err_password_min'));
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      setError('Паролі не співпадають');
+      setError(t('settings', 'err_password_mismatch'));
       return;
     }
 
@@ -56,10 +59,7 @@ export function ChangePasswordDialog({ open, onOpenChange }: ChangePasswordDialo
         onOpenChange(false);
       }, 1500);
     } catch (err: unknown) {
-      const msg =
-        err instanceof Error
-          ? err.message
-          : 'Не вдалося оновити пароль. Перевірте поточний пароль.';
+      const msg = err instanceof Error ? err.message : t('settings', 'err_password_failed');
       setError(msg);
     } finally {
       setIsSubmitting(false);
@@ -68,40 +68,45 @@ export function ChangePasswordDialog({ open, onOpenChange }: ChangePasswordDialo
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent data-testid="change-password-modal" className="sm:max-w-md">
         <DialogHeader>
           <div className="flex items-center space-x-2">
             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
               <KeyRound className="h-5 w-5" />
             </div>
             <div>
-              <DialogTitle>Зміна паролю адміністратора</DialogTitle>
-              <DialogDescription>
-                Введіть поточний та новий пароль для захисту вашого акаунту
-              </DialogDescription>
+              <DialogTitle>{t('settings', 'change_password_title')}</DialogTitle>
+              <DialogDescription>{t('settings', 'change_password_desc')}</DialogDescription>
             </div>
           </div>
         </DialogHeader>
 
         {error && (
-          <div className="flex items-center space-x-2 rounded-lg bg-destructive/15 p-3 text-sm text-destructive border border-destructive/30">
+          <div
+            data-testid="modal-password-error"
+            className="flex items-center space-x-2 rounded-lg bg-destructive/15 p-3 text-sm text-destructive border border-destructive/30"
+          >
             <AlertCircle className="h-4 w-4 shrink-0" />
             <span>{error}</span>
           </div>
         )}
 
         {success && (
-          <div className="flex items-center space-x-2 rounded-lg bg-emerald-500/15 p-3 text-sm text-emerald-400 border border-emerald-500/30">
+          <div
+            data-testid="modal-password-success"
+            className="flex items-center space-x-2 rounded-lg bg-emerald-500/15 p-3 text-sm text-emerald-400 border border-emerald-500/30"
+          >
             <CheckCircle2 className="h-4 w-4 shrink-0" />
-            <span>Пароль успішно змінено!</span>
+            <span>{t('settings', 'password_updated')}</span>
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4 py-2">
           <div className="space-y-1.5">
-            <Label htmlFor="current-password">Поточний пароль</Label>
+            <Label htmlFor="modal-current-password">{t('settings', 'current_password')}</Label>
             <Input
-              id="current-password"
+              id="modal-current-password"
+              data-testid="modal-current-password"
               type="password"
               placeholder="••••••••••••"
               value={currentPassword}
@@ -112,9 +117,10 @@ export function ChangePasswordDialog({ open, onOpenChange }: ChangePasswordDialo
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="new-password">Новий пароль (мін. 8 символів)</Label>
+            <Label htmlFor="modal-new-password">{t('settings', 'new_password')}</Label>
             <Input
-              id="new-password"
+              id="modal-new-password"
+              data-testid="modal-new-password"
               type="password"
               placeholder="••••••••••••"
               value={newPassword}
@@ -125,9 +131,10 @@ export function ChangePasswordDialog({ open, onOpenChange }: ChangePasswordDialo
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="confirm-password">Підтвердження нового паролю</Label>
+            <Label htmlFor="modal-confirm-password">{t('settings', 'confirm_password')}</Label>
             <Input
-              id="confirm-password"
+              id="modal-confirm-password"
+              data-testid="modal-confirm-password"
               type="password"
               placeholder="••••••••••••"
               value={confirmPassword}
@@ -144,16 +151,20 @@ export function ChangePasswordDialog({ open, onOpenChange }: ChangePasswordDialo
               onClick={() => onOpenChange(false)}
               disabled={isSubmitting}
             >
-              Скасувати
+              {t('common', 'cancel')}
             </Button>
-            <Button type="submit" disabled={isSubmitting || success}>
+            <Button
+              type="submit"
+              data-testid="modal-submit-password-btn"
+              disabled={isSubmitting || success}
+            >
               {isSubmitting ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Збереження...
+                  {t('common', 'saving')}
                 </>
               ) : (
-                'Оновити пароль'
+                t('settings', 'save_password')
               )}
             </Button>
           </DialogFooter>

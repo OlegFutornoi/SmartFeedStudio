@@ -89,3 +89,9 @@ description: Quality assurance, documentation synchronization, git commit policy
 - **Rule (Plans Location)**: Whenever a new feature plan, architectural strategy, pricing matrix, or roadmap is requested or developed, the agent **MUST ALWAYS** save the full document in the repository folder `plans/<feature_name>.md` and register it in `plans/README.md`.
 - **Rule (Strict Prohibition of Premature Execution)**: The agent **MUST NEVER** automatically start modifying code, altering database schemas (`schema.prisma`), running seeders, or implementing features immediately after creating a plan.
 - **Rule (Explicit User Trigger Only)**: The agent **MUST STOP, present the plan path to the user, and WAIT** for the user to read, review, and issue an explicit command to begin implementation (e.g., "виконуй", "починай", "реалізуй план", "роби"). Any unauthorized, premature code execution without this trigger is strictly prohibited.
+- **Rule (Mandatory Plan Completion Marking)**: Immediately upon completing implementation, verification, and passing 100% of automated tests for a plan, the agent **MUST ALWAYS** update the plan file `plans/<feature_name>.md` by adding at the very top:
+  ```markdown
+  > **Статус:** ✅ **Реалізовано та протестовано (100% тестів пройдено)**  
+  > **Дата виконання:** DD.MM.YYYY
+  ```
+  and synchronize the registry status in `plans/README.md` to `✅ Реалізовано`.
