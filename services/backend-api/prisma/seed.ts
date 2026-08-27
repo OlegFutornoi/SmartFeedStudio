@@ -15,9 +15,7 @@ async function main() {
   console.log('🌱 Starting database seeding for SmartFeed Studio...');
 
   const saltRounds = 10;
-  const adminPasswordHash = await bcrypt.hash('AdminPassword123!', saltRounds);
-  const gmailAdminPasswordHash = await bcrypt.hash('admin@gmail.com', saltRounds);
-  const userPasswordHash = await bcrypt.hash('UserPassword123!', saltRounds);
+  const ownerPasswordHash = await bcrypt.hash('adminadmin', saltRounds);
 
   // ============================================================
   // 1. Seed Dynamic Tariff Plans (STARTER, GROWTH, PRO, ENTERPRISE)
@@ -240,7 +238,7 @@ async function main() {
     },
   });
 
-  const proPlan = await prisma.tariffPlan.upsert({
+  await prisma.tariffPlan.upsert({
     where: { code: 'PRO' },
     update: {
       nameUk: 'Про',
@@ -363,7 +361,7 @@ async function main() {
     },
   });
 
-  const enterprisePlan = await prisma.tariffPlan.upsert({
+  await prisma.tariffPlan.upsert({
     where: { code: 'ENTERPRISE' },
     update: {
       nameUk: 'Корпоратив',
@@ -497,84 +495,53 @@ async function main() {
   });
 
   // ============================================================
-  // 2. Create Super Admin (admin@gmail.com) & Default Organization
+  // 2. Create Single Super Admin (Owner — No customer licenses needed)
   // ============================================================
-  const gmailAdmin = await prisma.user.upsert({
-    where: { email: 'admin@gmail.com' },
-    update: { passwordHash: gmailAdminPasswordHash, role: Role.SUPER_ADMIN },
+  const superAdmin = await prisma.user.upsert({
+    where: { email: 'admin@admin.com' },
+    update: {
+      passwordHash: ownerPasswordHash,
+      role: Role.SUPER_ADMIN,
+      fullName: 'Super Administrator',
+    },
     create: {
-      email: 'admin@gmail.com',
-      passwordHash: gmailAdminPasswordHash,
-      fullName: 'Admin User',
+      email: 'admin@admin.com',
+      passwordHash: ownerPasswordHash,
+      fullName: 'Super Administrator',
       role: Role.SUPER_ADMIN,
     },
   });
 
-  // Ensure default organization exists for admin@gmail.com
-  const adminOrg = await prisma.organization.upsert({
-    where: { id: '00000000-0000-0000-0000-000000000001' },
-    update: {
-      name: 'SmartFeed Studio HQ',
-      ownerId: gmailAdmin.id,
-    },
-    create: {
-      id: '00000000-0000-0000-0000-000000000001',
-      name: 'SmartFeed Studio HQ',
-      ownerId: gmailAdmin.id,
-      members: {
-        create: {
-          userId: gmailAdmin.id,
-          role: 'OWNER',
-        },
-      },
-    },
-  });
-
-  // Ensure membership exists
-  await prisma.organizationMember.upsert({
+  // Remove any legacy mock admins or dummy licenses
+  await prisma.license.deleteMany({
     where: {
-      organizationId_userId: {
-        organizationId: adminOrg.id,
-        userId: gmailAdmin.id,
-      },
-    },
-    update: { role: 'OWNER' },
-    create: {
-      organizationId: adminOrg.id,
-      userId: gmailAdmin.id,
-      role: 'OWNER',
+      user: { email: { in: ['admin@gmail.com', 'admin@smartfeed.studio'] } },
     },
   });
-
-  await prisma.license.upsert({
-    where: { licenseKey: 'SF-ENTERPRISE-GMAIL-ADMIN' },
-    update: {
-      userId: gmailAdmin.id,
-      organizationId: adminOrg.id,
-      tariffPlanId: enterprisePlan.id,
-      maxSuppliersLimit: 999999,
+  await prisma.organizationMember.deleteMany({
+    where: {
+      user: { email: { in: ['admin@gmail.com', 'admin@smartfeed.studio'] } },
     },
-    create: {
-      userId: gmailAdmin.id,
-      organizationId: adminOrg.id,
-      tariffPlanId: enterprisePlan.id,
-      licenseKey: 'SF-ENTERPRISE-GMAIL-ADMIN',
-      planType: PlanType.ENTERPRISE,
-      canCloudBackup: true,
-      maxXmlLimit: 999999999,
-      aiCredits: 5000,
-      maxFeedsLimit: 999999,
-      maxChannelsLimit: 999999,
-      maxTeamSeats: 999999,
-      maxSuppliersLimit: 999999,
-      hasApiAccess: true,
-      hasFeedDiff: true,
-      hasWhiteLabel: true,
-      hasSso: true,
-      hasAuditLog: true,
-      isActive: true,
-      expiresAt: null,
+  });
+  await prisma.organization.deleteMany({
+    where: {
+      id: {
+        in: [
+          '00000000-0000-0000-0000-000000000000',
+          '00000000-0000-0000-0000-000000000001',
+          '00000000-0000-0000-0000-000000000002',
+        ],
+      },
     },
+  });
+  await prisma.user.deleteMany({
+    where: {
+      email: { in: ['admin@gmail.com', 'admin@smartfeed.studio'] },
+    },
+  });
+  // Super Admin is platform host, delete any customer licenses
+  await prisma.license.deleteMany({
+    where: { userId: superAdmin.id },
   });
 
   // ============================================================
@@ -642,12 +609,24 @@ async function main() {
       targetApp: TargetApp.DESKTOP,
     },
     {
+      key: 'team',
+      labelUk: 'Команда',
+      labelEn: 'Team',
+      path: '/team',
+      icon: 'Users',
+      order: 6,
+      isVisible: true,
+      requiredRoles: [Role.USER, Role.ADMIN, Role.SUPER_ADMIN],
+      requiredPlan: null,
+      targetApp: TargetApp.DESKTOP,
+    },
+    {
       key: 'settings',
       labelUk: 'Налаштування',
       labelEn: 'Settings',
       path: '/settings',
       icon: 'Settings',
-      order: 6,
+      order: 7,
       isVisible: true,
       requiredRoles: [Role.USER, Role.ADMIN, Role.SUPER_ADMIN],
       requiredPlan: null,
@@ -677,7 +656,7 @@ async function main() {
   console.log(
     `   - Seeded 4 tariff plans: STARTER ($0), GROWTH ($29), PRO ($79), ENTERPRISE ($249)`,
   );
-  console.log(`   - Super Admin: admin@gmail.com       (Password: admin@gmail.com)`);
+  console.log(`   - Super Admin: admin@admin.com       (Role: SUPER_ADMIN)`);
   console.log(`   - Seeded ${navigationItems.length} dynamic navigation items`);
   void starterPlan;
   void growthPlan;

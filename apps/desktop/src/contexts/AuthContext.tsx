@@ -71,12 +71,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [logout]);
 
   useEffect(() => {
-    if (token) {
+    const activeToken = localStorage.getItem(TOKEN_KEY);
+    if (activeToken) {
       refreshProfile();
     } else {
       setIsLoading(false);
     }
-  }, [token, refreshProfile]);
+  }, [refreshProfile]);
 
   const login = useCallback(async (credentials: LoginCredentials) => {
     setIsLoading(true);

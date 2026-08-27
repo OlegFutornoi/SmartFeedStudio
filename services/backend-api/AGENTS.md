@@ -141,11 +141,11 @@ pnpm --filter @smartfeed/backend-api test:e2e
 | `test/password-recovery.e2e-spec.ts` | `POST /api/auth/forgot-password`, `POST /api/auth/reset-password` | 8 | ✅ PASS |
 | `test/licenses.e2e-spec.ts` | `GET /api/licenses/my`, `POST /api/licenses/select-plan`, dynamic duration, expiration checks & `RequireActiveLicenseGuard` | 7 | ✅ PASS |
 | `test/organizations.e2e-spec.ts` | `GET /api/organizations`, `GET /api/organizations/:id`, `PATCH /api/organizations/:id`, `GET /api/organizations/:id/members`, `POST /api/organizations/:id/members` (Team Seats quota checks), `DELETE /api/organizations/:id/members/:memberId`, corporate license upgrade, inheritance for existing users, corporate expiration access blocks, and renewal | 13 | ✅ PASS |
-| `test/users.e2e-spec.ts` | `GET /api/users`, `GET /api/users/stats`, `POST /api/auth/change-password` | 7 | ✅ PASS |
+| `test/users.e2e-spec.ts` | `GET /api/users`, `GET /api/users/stats` (with RBAC 403 Forbidden checks for regular USER), `POST /api/auth/change-password` | 9 | ✅ PASS |
 | `test/navigation.e2e-spec.ts` | `GET /api/navigation`, `GET /api/navigation/admin`, `POST /api/navigation`, `PATCH /api/navigation/:id`, `DELETE /api/navigation/:id` | 8 | ✅ PASS |
 | `test/plans.e2e-spec.ts` | `GET /api/plans`, `GET /api/plans/admin`, `POST /api/plans`, `PATCH /api/plans/:id`, `DELETE /api/plans/:id`, `GET /api/licenses/admin` | 12 | ✅ PASS |
 
-**Total: 67 tests — 67 passing**
+**Total: 69 tests — 69 passing**
 
 ### 🧹 Mandatory Test Data Teardown
 

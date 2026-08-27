@@ -5,7 +5,7 @@
 **Admin Web Portal** (`apps/admin-portal`) — це веб-додаток на **Next.js 14 (App Router)** для суперадміністраторів та операторів платформи SmartFeed Studio.
 
 - **URL входу**: `http://localhost:3000/login`
-- **Облікові дані за замовчуванням**: `admin@smartfeed.studio` / `AdminPassword123!`
+- **Облікові дані адміністратора**: Створюються командою `pnpm admin:set` (змінні `ADMIN_EMAIL` / `ADMIN_PASSWORD` в `.env`)
 
 ---
 

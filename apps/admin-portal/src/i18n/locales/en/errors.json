@@ -14,5 +14,6 @@
   "plan_not_found": "Tariff plan not found.",
   "team_seats_limit": "Team seats limit reached.",
   "suppliers_limit": "Suppliers limit reached.",
+  "access_denied_admin_only": "Access denied. Restricted to system administrators only.",
   "server_error": "Internal server error. Please try again later."
 }

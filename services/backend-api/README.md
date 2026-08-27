@@ -58,10 +58,10 @@ Central REST API for SmartFeed Studio built with **NestJS 11** + **CQRS** + **Pr
 
 ### Users
 
-| Method | Endpoint           | Description                                  | Auth     |
-| :----- | :----------------- | :------------------------------------------- | :------- |
-| `GET`  | `/api/users`       | Get all registered users with their licenses | `Bearer` |
-| `GET`  | `/api/users/stats` | Get total users and license statistics       | `Bearer` |
+| Method | Endpoint           | Description                                  | Auth             |
+| :----- | :----------------- | :------------------------------------------- | :--------------- |
+| `GET`  | `/api/users`       | Get all registered users with their licenses | `Bearer (Admin)` |
+| `GET`  | `/api/users/stats` | Get total users and license statistics       | `Bearer (Admin)` |
 
 ### Organizations & Team Seats
 

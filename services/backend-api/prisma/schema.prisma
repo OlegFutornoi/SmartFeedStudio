@@ -2,13 +2,15 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider     = "prisma-client"
-  output       = "../src/generated/prisma"
-  moduleFormat = "cjs"
+  provider        = "prisma-client"
+  output          = "../src/generated/prisma"
+  moduleFormat    = "cjs"
+  previewFeatures = ["postgresqlExtensions"]
 }
 
 datasource db {
-  provider = "postgresql"
+  provider   = "postgresql"
+  extensions = [pg_trgm]
 }
 
 enum Role {
@@ -37,7 +39,7 @@ enum MemberRole {
 }
 
 model User {
-  id           String         @id @default(uuid())
+  id           String         @id @default(cuid())
   email        String         @unique
   passwordHash String
   fullName     String?
@@ -51,11 +53,15 @@ model User {
   ownedOrganizations      Organization[]       @relation("OrganizationOwner")
   organizationMemberships OrganizationMember[]
 
+  @@index([role])
+  @@index([createdAt])
+  @@index([email(ops: raw("gin_trgm_ops"))], type: Gin)
+  @@index([fullName(ops: raw("gin_trgm_ops"))], type: Gin)
   @@map("users")
 }
 
 model Organization {
-  id        String               @id @default(uuid())
+  id        String               @id @default(cuid())
   name      String
   slug      String?              @unique
   ownerId   String
@@ -66,11 +72,12 @@ model Organization {
   updatedAt DateTime             @updatedAt
 
   @@index([ownerId])
+  @@index([createdAt])
   @@map("organizations")
 }
 
 model OrganizationMember {
-  id             String       @id @default(uuid())
+  id             String       @id @default(cuid())
   organizationId String
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   userId         String
@@ -81,11 +88,12 @@ model OrganizationMember {
   @@unique([organizationId, userId])
   @@index([organizationId])
   @@index([userId])
+  @@index([joinedAt])
   @@map("organization_members")
 }
 
 model TariffPlan {
-  id            String    @id @default(uuid())
+  id            String    @id @default(cuid())
   code          String    @unique
   nameUk        String
   nameEn        String
@@ -128,11 +136,13 @@ model TariffPlan {
   updatedAt    DateTime  @updatedAt
   licenses     License[]
 
+  @@index([isActive, order])
+  @@index([createdAt])
   @@map("tariff_plans")
 }
 
 model License {
-  id             String      @id @default(uuid())
+  id             String      @id @default(cuid())
   userId         String
   user           User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   tariffPlanId   String?
@@ -163,13 +173,16 @@ model License {
   organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   @@index([userId])
+  @@index([userId, isActive])
   @@index([tariffPlanId])
   @@index([organizationId])
+  @@index([isActive])
+  @@index([createdAt])
   @@map("licenses")
 }
 
 model Snapshot {
-  id           String   @id @default(uuid())
+  id           String   @id @default(cuid())
   userId       String
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   snapshotName String
@@ -178,11 +191,12 @@ model Snapshot {
   createdAt    DateTime @default(now())
 
   @@index([userId])
+  @@index([createdAt])
   @@map("snapshots")
 }
 
 model ProductImage {
-  id          String   @id @default(uuid())
+  id          String   @id @default(cuid())
   userId      String
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   originalUrl String
@@ -191,11 +205,12 @@ model ProductImage {
   createdAt   DateTime @default(now())
 
   @@index([userId])
+  @@index([createdAt])
   @@map("product_images")
 }
 
 model NavigationItem {
-  id            String    @id @default(uuid())
+  id            String    @id @default(cuid())
   key           String    @unique
   labelUk       String
   labelEn       String
@@ -209,5 +224,6 @@ model NavigationItem {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
+  @@index([targetApp, isVisible, order])
   @@map("navigation_items")
 }

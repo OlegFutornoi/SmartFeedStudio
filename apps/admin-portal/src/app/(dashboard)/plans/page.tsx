@@ -28,17 +28,12 @@ export default function PlansPage() {
       const plansData = await api.getAdminTariffPlans().catch(() => api.getTariffPlans());
       setPlans(plansData);
     } catch (err: unknown) {
-      const msg =
-        err instanceof Error
-          ? err.message
-          : isUk
-            ? 'Не вдалося завантажити тарифні плани'
-            : 'Failed to load tariff plans';
+      const msg = err instanceof Error ? err.message : 'Не вдалося завантажити тарифні плани';
       setError(msg);
     } finally {
       setIsLoading(false);
     }
-  }, [isUk]);
+  }, []);
 
   useEffect(() => {
     fetchPlans();

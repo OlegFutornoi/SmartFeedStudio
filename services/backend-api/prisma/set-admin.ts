@@ -12,49 +12,65 @@ const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 
 async function setAdmin() {
-  const email = 'admin@gmail.com';
-  const password = 'admin@gmail.com';
+  const email = process.env.ADMIN_EMAIL || 'admin@admin.com';
+  const password = process.env.ADMIN_PASSWORD || 'adminadmin';
+  const fullName = process.env.ADMIN_NAME || 'Super Administrator';
+
   const saltRounds = 10;
   const passwordHash = await bcrypt.hash(password, saltRounds);
 
-  console.log(`🔐 Setting up admin: ${email}...`);
+  console.log(`🔐 Setting up Super Admin (${email})...`);
 
-  // Upsert the user with email admin@gmail.com
+  // Remove any legacy mock admin users if present
+  await prisma.license.deleteMany({
+    where: {
+      user: {
+        email: { in: ['admin@gmail.com', 'admin@smartfeed.studio'] },
+      },
+    },
+  });
+  await prisma.organizationMember.deleteMany({
+    where: {
+      user: {
+        email: { in: ['admin@gmail.com', 'admin@smartfeed.studio'] },
+      },
+    },
+  });
+  await prisma.organization.deleteMany({
+    where: {
+      id: { in: ['00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000002'] },
+    },
+  });
+  await prisma.user.deleteMany({
+    where: {
+      email: { in: ['admin@gmail.com', 'admin@smartfeed.studio'] },
+    },
+  });
+
+  // Upsert the single Super Admin
   const user = await prisma.user.upsert({
     where: { email },
     update: {
       passwordHash,
       role: 'SUPER_ADMIN',
+      fullName,
     },
     create: {
       email,
       passwordHash,
-      fullName: 'Administrator',
+      fullName,
       role: 'SUPER_ADMIN',
     },
   });
 
-  // Ensure license exists
-  await prisma.license.upsert({
-    where: { licenseKey: 'SF-ENTERPRISE-GMAIL-ADMIN' },
-    update: {
-      userId: user.id,
-      isActive: true,
-    },
-    create: {
-      userId: user.id,
-      licenseKey: 'SF-ENTERPRISE-GMAIL-ADMIN',
-      planType: 'ENTERPRISE',
-      canCloudBackup: true,
-      maxXmlLimit: 1000000,
-      aiCredits: 5000,
-      isActive: true,
-    },
+  // Super Admin is the platform owner — they do not require customer licenses
+  await prisma.license.deleteMany({
+    where: { userId: user.id },
   });
 
-  console.log('✅ Admin credentials successfully configured:');
+  console.log('✅ Super Admin successfully configured:');
   console.log(`   Email:    ${email}`);
-  console.log(`   Password: ${password}`);
+  console.log(`   Role:     SUPER_ADMIN`);
 }
 
 setAdmin()

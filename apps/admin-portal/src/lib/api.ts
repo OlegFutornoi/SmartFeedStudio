@@ -161,7 +161,7 @@ class ApiClient {
   }
 
   async getAdminTariffPlans(): Promise<TariffPlanDto[]> {
-    return this.request<TariffPlanDto[]>('/plans/admin/all');
+    return this.request<TariffPlanDto[]>('/plans/admin');
   }
 
   async createTariffPlan(dto: CreateTariffPlanDto): Promise<TariffPlanDto> {

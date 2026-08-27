@@ -14,6 +14,7 @@ const localeModules: Record<Language, Record<Namespace, () => Promise<Translatio
     auth: () => import('./locales/uk/auth.json').then((m) => (m.default || m) as TranslationDict),
     home: () => import('./locales/uk/home.json').then((m) => (m.default || m) as TranslationDict),
     plans: () => import('./locales/uk/plans.json').then((m) => (m.default || m) as TranslationDict),
+    team: () => import('./locales/uk/team.json').then((m) => (m.default || m) as TranslationDict),
     errors: () =>
       import('./locales/uk/errors.json').then((m) => (m.default || m) as TranslationDict),
   },
@@ -23,6 +24,7 @@ const localeModules: Record<Language, Record<Namespace, () => Promise<Translatio
     auth: () => import('./locales/en/auth.json').then((m) => (m.default || m) as TranslationDict),
     home: () => import('./locales/en/home.json').then((m) => (m.default || m) as TranslationDict),
     plans: () => import('./locales/en/plans.json').then((m) => (m.default || m) as TranslationDict),
+    team: () => import('./locales/en/team.json').then((m) => (m.default || m) as TranslationDict),
     errors: () =>
       import('./locales/en/errors.json').then((m) => (m.default || m) as TranslationDict),
   },

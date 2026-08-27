@@ -33,25 +33,67 @@ describe('Users & Admin Endpoints (E2E)', () => {
     await app.init();
     prisma = app.get(PrismaService);
 
-    // Register user to get auth token
+    // Register regular user to get normal user auth token
     const regRes = await request(app.getHttpServer())
       .post('/api/auth/register')
       .send(testUser)
       .expect(201);
 
-    authToken = regRes.body.tokens.accessToken;
     testUserId = regRes.body.user.id;
+
+    // Register a second regular user to test role isolation
+    const regularUser = {
+      email: `regularuser-${Date.now()}@smartfeed.studio`,
+      password: 'RegularPassword123!',
+      fullName: 'Regular Client User',
+    };
+    const regUserRes = await request(app.getHttpServer())
+      .post('/api/auth/register')
+      .send(regularUser)
+      .expect(201);
+    const regularUserToken = regUserRes.body.tokens.accessToken;
+
+    // Promote testUser to ADMIN in DB to test admin-only endpoints
+    await prisma.user.update({
+      where: { id: testUserId },
+      data: { role: 'ADMIN' },
+    });
+
+    // Re-login as ADMIN to get token with ADMIN role
+    const loginRes = await request(app.getHttpServer())
+      .post('/api/auth/login')
+      .send({
+        email: testUser.email,
+        password: testUser.password,
+      })
+      .expect(200);
+
+    authToken = loginRes.body.tokens.accessToken;
+
+    (global as any).regularUserToken = regularUserToken;
+    (global as any).regularUserId = regUserRes.body.user.id;
   });
 
   afterAll(async () => {
     // ── MANDATORY TEST DATA TEARDOWN ──────────────────────────────────────────
     // Cleanup created test user and any lingering test users
     if (testUserId) {
+      await prisma.organizationMember.deleteMany({ where: { userId: testUserId } });
+      await prisma.organization.deleteMany({ where: { ownerId: testUserId } });
       await prisma.license.deleteMany({ where: { userId: testUserId } });
       await prisma.user.deleteMany({ where: { id: testUserId } });
     }
+    const regularUserId = (global as any).regularUserId;
+    if (regularUserId) {
+      await prisma.organizationMember.deleteMany({ where: { userId: regularUserId } });
+      await prisma.organization.deleteMany({ where: { ownerId: regularUserId } });
+      await prisma.license.deleteMany({ where: { userId: regularUserId } });
+      await prisma.user.deleteMany({ where: { id: regularUserId } });
+    }
     await prisma.user.deleteMany({
-      where: { email: { startsWith: 'admintest-' } },
+      where: {
+        OR: [{ email: { startsWith: 'admintest-' } }, { email: { startsWith: 'regularuser-' } }],
+      },
     });
     // ─────────────────────────────────────────────────────────────────────────
 
@@ -61,6 +103,14 @@ describe('Users & Admin Endpoints (E2E)', () => {
   describe('GET /api/users', () => {
     it('returns 401 Unauthorized when request lacks Bearer token', async () => {
       await request(app.getHttpServer()).get('/api/users').expect(401);
+    });
+
+    it('returns 403 Forbidden when accessed by a regular USER', async () => {
+      const regularUserToken = (global as any).regularUserToken;
+      await request(app.getHttpServer())
+        .get('/api/users')
+        .set('Authorization', `Bearer ${regularUserToken}`)
+        .expect(403);
     });
 
     it('returns list of users with licenses for authenticated admin', async () => {
@@ -97,7 +147,15 @@ describe('Users & Admin Endpoints (E2E)', () => {
       await request(app.getHttpServer()).get('/api/users/stats').expect(401);
     });
 
-    it('returns valid users and licenses statistics', async () => {
+    it('returns 403 Forbidden when accessed by a regular USER', async () => {
+      const regularUserToken = (global as any).regularUserToken;
+      await request(app.getHttpServer())
+        .get('/api/users/stats')
+        .set('Authorization', `Bearer ${regularUserToken}`)
+        .expect(403);
+    });
+
+    it('returns valid users and licenses statistics for authenticated admin', async () => {
       const res = await request(app.getHttpServer())
         .get('/api/users/stats')
         .set('Authorization', `Bearer ${authToken}`)

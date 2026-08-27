@@ -30,6 +30,7 @@ const SettingsPage = lazy(() =>
   import('@/pages/SettingsPage').then((m) => ({ default: m.SettingsPage })),
 );
 const PlansPage = lazy(() => import('@/pages/PlansPage').then((m) => ({ default: m.PlansPage })));
+const TeamPage = lazy(() => import('@/pages/TeamPage').then((m) => ({ default: m.TeamPage })));
 
 function PageLoader() {
   return (
@@ -62,6 +63,7 @@ export default function App() {
           <Route path="/ai-enrichment" element={<AiEnrichmentPage />} />
           <Route path="/cloud-sync" element={<CloudSyncPage />} />
           <Route path="/plans" element={<PlansPage />} />
+          <Route path="/team" element={<TeamPage />} />
           <Route path="/settings" element={<SettingsPage />} />
         </Route>
 

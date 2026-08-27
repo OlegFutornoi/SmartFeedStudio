@@ -39,6 +39,14 @@ export function translateError(error: unknown, locale: Locale = 'uk'): string {
     return ERROR_MAP[locale].unauthorized;
   }
 
+  if (
+    lower.includes('access_denied_admin_only') ||
+    lower.includes('access is restricted to administrators') ||
+    lower.includes('лише адміністратор')
+  ) {
+    return ERROR_MAP[locale].access_denied_admin_only;
+  }
+
   if (lower.includes('forbidden') || lower.includes('insufficient permissions')) {
     return ERROR_MAP[locale].forbidden;
   }

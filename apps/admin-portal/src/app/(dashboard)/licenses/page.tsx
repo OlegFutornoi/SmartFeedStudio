@@ -24,17 +24,12 @@ export default function LicensesPage() {
       const licensesData = await api.getAdminLicenses().catch(() => []);
       setLicenses(licensesData);
     } catch (err: unknown) {
-      const msg =
-        err instanceof Error
-          ? err.message
-          : isUk
-            ? 'Не вдалося завантажити ліцензії'
-            : 'Failed to load licenses';
+      const msg = err instanceof Error ? err.message : 'Не вдалося завантажити ліцензії';
       setError(msg);
     } finally {
       setIsLoading(false);
     }
-  }, [isUk]);
+  }, []);
 
   useEffect(() => {
     fetchLicenses();

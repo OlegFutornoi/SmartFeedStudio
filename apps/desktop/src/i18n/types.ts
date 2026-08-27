@@ -1,6 +1,6 @@
 export type Language = 'uk' | 'en';
 
-export type Namespace = 'common' | 'auth' | 'home' | 'errors' | 'plans';
+export type Namespace = 'common' | 'auth' | 'home' | 'errors' | 'plans' | 'team';
 
 export type TranslationDict = Record<string, string>;
 

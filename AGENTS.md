@@ -118,16 +118,22 @@ SmartFeed Studio (Monorepo root)
    - The agent **MUST ALWAYS** discover, read, and strictly follow all rule files located in `.agents/rules/` without exception.
 
 10. **Mandatory Plan Review, Explicit User Command & Plan Completion Marking Policy**:
+    - **Plans Location**: Whenever a new feature plan, architectural strategy, pricing matrix, or roadmap is requested or developed, the agent **MUST ALWAYS** save the full document in the repository folder `plans/<feature_name>.md` and register it in `plans/README.md`.
+    - **Strict Prohibition of Premature Execution**: The agent **MUST NEVER** automatically start modifying code, altering database schemas (`schema.prisma`), running seeders, or implementing features immediately after creating a plan.
+    - **Explicit User Trigger Only**: The agent **MUST STOP, present the plan path to the user, and WAIT** for the user to read, review, and issue an explicit command to begin implementation (e.g., "виконуй", "починай", "реалізуй план", "роби"). Any unauthorized, premature code execution without this trigger is strictly prohibited.
+    - **Mandatory Plan Completion Marking**: Immediately upon completing implementation, verification, and passing 100% of automated tests for a plan, the agent **MUST ALWAYS** update the plan file `plans/<feature_name>.md` by adding at the very top:
+      ```markdown
+      > **Статус:** ✅ **Реалізовано та протестовано (100% тестів пройдено)**  
+      > **Дата виконання:** DD.MM.YYYY
+      ```
+      and synchronize the registry status in `plans/README.md` to `✅ Реалізовано`.
 
-- **Plans Location**: Whenever a new feature plan, architectural strategy, pricing matrix, or roadmap is requested or developed, the agent **MUST ALWAYS** save the full document in the repository folder `plans/<feature_name>.md` and register it in `plans/README.md`.
-- **Strict Prohibition of Premature Execution**: The agent **MUST NEVER** automatically start modifying code, altering database schemas (`schema.prisma`), running seeders, or implementing features immediately after creating a plan.
-- **Explicit User Trigger Only**: The agent **MUST STOP, present the plan path to the user, and WAIT** for the user to read, review, and issue an explicit command to begin implementation (e.g., "виконуй", "починай", "реалізуй план", "роби"). Any unauthorized, premature code execution without this trigger is strictly prohibited.
-- **Mandatory Plan Completion Marking**: Immediately upon completing implementation, verification, and passing 100% of automated tests for a plan, the agent **MUST ALWAYS** update the plan file `plans/<feature_name>.md` by adding at the very top:
-  ```markdown
-  > **Статус:** ✅ **Реалізовано та протестовано (100% тестів пройдено)**  
-  > **Дата виконання:** DD.MM.YYYY
-  ```
-  and synchronize the registry status in `plans/README.md` to `✅ Реалізовано`.
+11. **Mandatory Zero-Duplicate API Requests Policy**:
+    - **No `React.StrictMode` Double-Mounts**: Omit `React.StrictMode` wrapper in desktop `main.tsx` and keep `reactStrictMode: false` in `next.config.mjs`.
+    - **In-Flight Request Guarding (`useRef`)**: All React context providers and data-fetching hooks must track `isFetchingRef` and `lastFetchedTokenRef` to prevent duplicate parallel requests.
+    - **No Cascading `/auth/me`**: `login()` and `register()` payloads already contain the user profile; `refreshProfile()` must only run once on initial mount if a token is recovered from `localStorage`.
+    - **Lean Dependencies**: Never place UI-only state (`isUk`, `theme`) in data-fetching `useCallback` dependency arrays.
+    - **Single-Request Performance Tests**: Every major view must include automated Playwright tests asserting that endpoints are called strictly 1 time upon page load.
 
 ---
 
@@ -152,6 +158,7 @@ SmartFeed Studio (Monorepo root)
 | **Run Admin Tests (UI Mode)**   | `pnpm test:admin:ui`                                       |
 | **Sync Database Schema**        | `pnpm --filter @smartfeed/backend-api exec prisma db push` |
 | **Run Database Seeder**         | `pnpm prisma:seed`                                         |
+| **Create/Reset Super Admin**    | `pnpm admin:set`                                           |
 | **Open Prisma Studio**          | `pnpm prisma:studio`                                       |
 | **Lint & Fix**                  | `pnpm lint:fix`                                            |
 | **Format Code**                 | `pnpm format`                                              |
@@ -167,4 +174,4 @@ SmartFeed Studio (Monorepo root)
 - **Redis**: `localhost:6379`
 - **MinIO Console**: `http://localhost:9001` (User: `minioadmin`, Pass: `minioadminpassword`)
 - **MinIO API**: `http://localhost:9000` (Bucket: `smartfeed-storage`)
-- **Default Super Admin**: `admin@smartfeed.studio` / `AdminPassword123!`
+- **Super Admin**: Initialized via `pnpm admin:set` (or configured via `ADMIN_EMAIL` / `ADMIN_PASSWORD` in `.env`)

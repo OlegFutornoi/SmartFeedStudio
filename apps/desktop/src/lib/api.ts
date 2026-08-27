@@ -204,3 +204,125 @@ export async function selectTariffPlan(token: string, planCode: string): Promise
 
   return data;
 }
+
+// ==========================================
+// Organization & Team Management API
+// ==========================================
+
+export async function getUserOrganizations(token: string): Promise<any[]> {
+  const response = await fetch(`${API_BASE_URL}/organizations`, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  const data = await response.json().catch(() => []);
+  if (!response.ok) {
+    return [];
+  }
+  return data;
+}
+
+export async function getOrganizationById(token: string, id: string): Promise<any> {
+  const response = await fetch(`${API_BASE_URL}/organizations/${id}`, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    const message = Array.isArray(data.message)
+      ? data.message.join(', ')
+      : data.message || 'Не вдалося отримати дані організації';
+    throw new ApiError(message, response.status, data);
+  }
+  return data;
+}
+
+export async function getOrganizationMembers(token: string, id: string): Promise<any[]> {
+  const response = await fetch(`${API_BASE_URL}/organizations/${id}/members`, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  const data = await response.json().catch(() => []);
+  if (!response.ok) {
+    return [];
+  }
+  return data;
+}
+
+export async function inviteOrganizationMember(
+  token: string,
+  id: string,
+  payload: { email: string; role?: string },
+): Promise<any> {
+  const response = await fetch(`${API_BASE_URL}/organizations/${id}/members`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(payload),
+  });
+
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    const message = Array.isArray(data.message)
+      ? data.message.join(', ')
+      : data.message || 'Не вдалося запросити учасника';
+    throw new ApiError(message, response.status, data);
+  }
+  return data;
+}
+
+export async function removeOrganizationMember(
+  token: string,
+  id: string,
+  memberId: string,
+): Promise<any> {
+  const response = await fetch(`${API_BASE_URL}/organizations/${id}/members/${memberId}`, {
+    method: 'DELETE',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    const message = Array.isArray(data.message)
+      ? data.message.join(', ')
+      : data.message || 'Не вдалося видалити учасника';
+    throw new ApiError(message, response.status, data);
+  }
+  return data;
+}
+
+export async function updateOrganization(
+  token: string,
+  id: string,
+  payload: { name: string },
+): Promise<any> {
+  const response = await fetch(`${API_BASE_URL}/organizations/${id}`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(payload),
+  });
+
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    const message = Array.isArray(data.message)
+      ? data.message.join(', ')
+      : data.message || 'Не вдалося оновити організацію';
+    throw new ApiError(message, response.status, data);
+  }
+  return data;
+}

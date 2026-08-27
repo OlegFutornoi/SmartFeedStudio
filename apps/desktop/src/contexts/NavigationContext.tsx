@@ -69,6 +69,19 @@ const DEFAULT_NAVIGATION_ITEMS: NavigationItemDto[] = [
     requiredPlan: null,
     targetApp: TargetApp.DESKTOP,
   },
+  {
+    id: 'default-team',
+    key: 'team',
+    labelUk: 'Команда',
+    labelEn: 'Team',
+    path: '/team',
+    icon: 'Users',
+    order: 6,
+    isVisible: true,
+    requiredRoles: [Role.USER, Role.ADMIN, Role.SUPER_ADMIN],
+    requiredPlan: null,
+    targetApp: TargetApp.DESKTOP,
+  },
 ];
 
 interface NavigationContextType {
@@ -83,27 +96,44 @@ export function NavigationProvider({ children }: { children: React.ReactNode }) 
   const { token, isAuthenticated } = useAuth();
   const [items, setItems] = useState<NavigationItemDto[]>(DEFAULT_NAVIGATION_ITEMS);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const lastFetchedTokenRef = React.useRef<string | null>(null);
+  const isFetchingRef = React.useRef<boolean>(false);
 
-  const fetchNavigation = useCallback(async () => {
-    if (!token || !isAuthenticated) {
-      setItems(DEFAULT_NAVIGATION_ITEMS);
-      return;
-    }
-
-    try {
-      setIsLoading(true);
-      const data = await getDesktopNavigation(token);
-      if (Array.isArray(data) && data.length > 0) {
-        setItems(data);
-      } else {
+  const fetchNavigation = useCallback(
+    async (force = false) => {
+      if (!token || !isAuthenticated) {
+        lastFetchedTokenRef.current = null;
         setItems(DEFAULT_NAVIGATION_ITEMS);
+        return;
       }
-    } catch {
-      setItems(DEFAULT_NAVIGATION_ITEMS);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [token, isAuthenticated]);
+
+      if (!force && lastFetchedTokenRef.current === token) {
+        return;
+      }
+
+      if (isFetchingRef.current) {
+        return;
+      }
+
+      try {
+        isFetchingRef.current = true;
+        setIsLoading(true);
+        const data = await getDesktopNavigation(token);
+        lastFetchedTokenRef.current = token;
+        if (Array.isArray(data) && data.length > 0) {
+          setItems(data);
+        } else {
+          setItems(DEFAULT_NAVIGATION_ITEMS);
+        }
+      } catch {
+        setItems(DEFAULT_NAVIGATION_ITEMS);
+      } finally {
+        isFetchingRef.current = false;
+        setIsLoading(false);
+      }
+    },
+    [token, isAuthenticated],
+  );
 
   useEffect(() => {
     fetchNavigation();
@@ -113,7 +143,7 @@ export function NavigationProvider({ children }: { children: React.ReactNode }) 
     () => ({
       items,
       isLoading,
-      refreshNavigation: fetchNavigation,
+      refreshNavigation: () => fetchNavigation(true),
     }),
     [items, isLoading, fetchNavigation],
   );

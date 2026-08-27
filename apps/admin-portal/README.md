@@ -12,7 +12,7 @@ pnpm dev:admin
 ```
 
 - **URL**: `http://localhost:3000`
-- **Default Super Admin**: `admin@smartfeed.studio` / `AdminPassword123!`
+- **Super Admin**: Initialized via `pnpm admin:set` (configurable via `ADMIN_EMAIL` / `ADMIN_PASSWORD`)
 
 ---
 

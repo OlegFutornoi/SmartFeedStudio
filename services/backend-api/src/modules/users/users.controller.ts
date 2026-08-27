@@ -11,11 +11,13 @@ import {
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../auth/decorators/roles.decorator';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { GetUsersListQuery } from './queries/get-users-list.query';
 import { GetUsersStatsQuery } from './queries/get-users-stats.query';
 import { ChangePasswordCommand } from './commands/change-password.command';
-import { ChangePasswordDto, UserListItemDto, UsersStatsDto } from '@smartfeed/shared';
+import { ChangePasswordDto, Role, UserListItemDto, UsersStatsDto } from '@smartfeed/shared';
 
 @ApiTags('Users')
 @Controller('users')
@@ -28,8 +30,11 @@ export class UsersController {
   ) {}
 
   @Get()
+  @UseGuards(RolesGuard)
+  @Roles(Role.SUPER_ADMIN, Role.ADMIN)
   @ApiOperation({ summary: 'Get list of users with their licenses' })
   @ApiResponse({ status: 200, description: 'List of users returned' })
+  @ApiResponse({ status: 403, description: 'Forbidden: Admin access required' })
   async getUsers(
     @Query('search') search?: string,
     @Query('role') role?: string,
@@ -42,8 +47,11 @@ export class UsersController {
   }
 
   @Get('stats')
+  @UseGuards(RolesGuard)
+  @Roles(Role.SUPER_ADMIN, Role.ADMIN)
   @ApiOperation({ summary: 'Get user statistics for admin dashboard' })
   @ApiResponse({ status: 200, description: 'User statistics returned' })
+  @ApiResponse({ status: 403, description: 'Forbidden: Admin access required' })
   async getStats(): Promise<UsersStatsDto> {
     return this.queryBus.execute(new GetUsersStatsQuery());
   }

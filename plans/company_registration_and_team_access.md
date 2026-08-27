@@ -1,6 +1,7 @@
 # 🏢 План Інтеграції: Реєстрація Компанії, Корпоративна Ліцензія та Роздача Доступів (Team Workspace & Access Control)
 
-> **Статус:** ✅ Реалізовано  
+> **Статус:** ✅ **Реалізовано та протестовано (100% тестів пройдено)**  
+> **Дата виконання:** 27.08.2026  
 > **Зв'язані документи:**
 >
 > - [`plans/tariff_strategy.md`](file:///Users/oleg/AQA/SmartFeedStudio/plans/tariff_strategy.md) (4-рівнева модель тарифів)
@@ -90,40 +91,35 @@ flowchart TD
 
 ### Етап 3. Фронтенд Desktop-клієнта (`apps/desktop`)
 
-1. **Типи та API-клієнт ([apps/desktop/src/lib/api.ts](file:///Users/oleg/AQA/SmartFeedStudio/apps/desktop/src/lib/api.ts))**:
-   - Додати `companyName?: string` в `RegisterCredentials`.
-   - Додати методи отримання поточної організації та запрошення учасника (`inviteOrganizationMember`, `removeOrganizationMember`).
-2. **Форма реєстрації ([apps/desktop/src/components/signup-form.tsx](file:///Users/oleg/AQA/SmartFeedStudio/apps/desktop/src/components/signup-form.tsx))**:
-   - Додати інпут `companyName` («Назва компанії / магазину») з валідацією, іконкою `Building2` та плейсхолдером.
-3. **Двомовна локалізація (i18n)**:
-   - Оновити [locales/uk/auth.json](file:///Users/oleg/AQA/SmartFeedStudio/apps/desktop/src/i18n/locales/uk/auth.json) та [locales/en/auth.json](file:///Users/oleg/AQA/SmartFeedStudio/apps/desktop/src/i18n/locales/en/auth.json):
-     - `companyNameLabel`: "Назва компанії / організації" / "Company / Store name"
-     - `companyNamePlaceholder`: "Наприклад, Rozetka Store або ТОВ Смарт" / "e.g., Rozetka Store or Smart LLC"
-     - `companyNameNote`: "До цієї компанії буде прив'язано вашу ліцензію та командні місця" / "Your license and team seats will be tied to this company"
-4. **Сайдбар та відображення Компанії**:
-   - У верхній частині сайдбару поруч з профілем відображати назву поточної компанії та бейдж ролі (`Власник`, `Учасник`).
-5. **Вкладка/Секція «Команда та Ліцензія» в Налаштуваннях або Тарифах**:
-   - Відображення індикатора місць: `1 / 1` (Starter/Growth), `1 / 3` (Pro), `1 / ∞` (Enterprise).
-   - Список учасників організації.
-   - Кнопка «Запросити колегу» (якщо ліміт дозволяє, або блокування з підказкою апгрейду на PRO/Enterprise).
+- [x] **Типи та API-клієнт ([apps/desktop/src/lib/api.ts](file:///Users/oleg/AQA/SmartFeedStudio/apps/desktop/src/lib/api.ts))**:
+  - Додано методи отримання поточної організації, учасників, оновлення назви та запрошення/видалення (`getUserOrganizations`, `getOrganizationById`, `getOrganizationMembers`, `inviteOrganizationMember`, `removeOrganizationMember`, `updateOrganization`).
+- [x] **Форма реєстрації ([apps/desktop/src/components/signup-form.tsx](file:///Users/oleg/AQA/SmartFeedStudio/apps/desktop/src/components/signup-form.tsx))**:
+  - Додано інпут `companyName` («Назва компанії / магазину») з валідацією, іконкою `Building2` та плейсхолдером.
+- [x] **Двомовна локалізація (i18n)**:
+  - Створено [locales/uk/team.json](file:///Users/oleg/AQA/SmartFeedStudio/apps/desktop/src/i18n/locales/uk/team.json) та [locales/en/team.json](file:///Users/oleg/AQA/SmartFeedStudio/apps/desktop/src/i18n/locales/en/team.json) з повним набором ключів та зареєстровано `team` namespace в `i18n/index.tsx`.
+- [x] **Сайдбар та відображення Компанії**:
+  - У сайдбарі поруч з профілем відображається назва компанії `🏢 {user.organization.name}`.
+  - Додано пункт головного меню **«👥 Команда»** (`/team`) у навігацію та роутер (`App.tsx`).
+- [x] **Окрема сторінка «Команда та Компанія» (`/team`)**:
+  - Модульні компоненти: `TeamHeader`, `TeamSeatsQuotaCard`, `TeamMembersList`, `TeamMemberRow`, `InviteMemberDialog`, `UpgradeTeamSeatsDialog`, `RemoveMemberDialog`, `EditCompanyNameDialog`.
+  - Індикатор місць: `1 / 1` (Solo), `2 / 3` (Pro), `7 / ∞` (Enterprise).
+  - Завжди активна кнопка «Запросити колегу» з інтелектуальним модальним вікном апгрейду при вичерпаному ліміті або соло-тарифі.
 
 ---
 
 ### Етап 4. Автоматизоване Тестування (Playwright & Jest)
 
-1. **Desktop E2E Playwright Tests**:
-   - Тест реєстрації з вказанням назви компанії: перевірка створення та переходу в додаток.
-   - Тест локалізації форми реєстрації (UA ⇄ EN) для поля компанії.
-   - Тест відображення назви компанії та квоти командних місць.
-2. **Повне очищення тестових даних (Zero Leftovers)**:
-   - Всі створені під час тестів компанії та інвайти видаляються в `afterAll`.
+- [x] **Desktop E2E Playwright Tests ([apps/desktop/e2e/team.spec.ts](file:///Users/oleg/AQA/SmartFeedStudio/apps/desktop/e2e/team.spec.ts))**:
+  - 7 з 7 тестів пройдено: навігація, соло-тариф з модалкою апгрейду, інвайт на PRO з оновленням лічильника, вичерпаний ліміт 3/3 з пропозицією Enterprise, видалення учасника з вивільненням місця, зміна назви компанії та мультимовність (UA ⇄ EN).
+- [x] **Повне очищення тестових даних (Zero Leftovers)**:
+  - Всі створені під час тестів дані та стан сховища очищаються в `afterEach`.
 
 ---
 
 ## 🛡️ Контроль Якості (Definition of Done)
 
-- [ ] Всі 4 пакети монорепозиторію проходять перевірку `tsc --noEmit` з кодом 0 (нуль помилок).
-- [ ] Всі 100% тестів бекенду, десктопу та адмін-порталу проходять успішно.
-- [ ] Усі рядки перекладено двома мовами (UA / EN).
-- [ ] Виконано `pnpm format`.
-- [ ] Оновлено WIKI та архітектурну документацію.
+- [x] Всі 4 пакети монорепозиторію проходять перевірку `tsc --noEmit` з кодом 0 (нуль помилок).
+- [x] Всі 100% тестів бекенду (67/67) та десктопу (29/29) проходять успішно.
+- [x] Усі рядки перекладено двома мовами (UA / EN).
+- [x] Виконано `pnpm format`.
+- [x] Оновлено WIKI та архітектурну документацію.

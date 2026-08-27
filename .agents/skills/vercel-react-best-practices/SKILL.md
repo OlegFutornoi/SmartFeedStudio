@@ -69,7 +69,10 @@ Reference these guidelines when:
 
 ### 4. Client-Side Data Fetching (MEDIUM-HIGH)
 
-- `client-swr-dedup` - Use SWR for automatic request deduplication
+- `client-swr-dedup` - Use SWR or in-flight ref tracking for automatic request deduplication
+- `client-in-flight-dedup` - Use `useRef` (`isFetchingRef`, `lastFetchedTokenRef`) in React context providers to block redundant parallel API requests
+- `client-no-redundant-auth-profile-effects` - Never call `refreshProfile()` immediately after `login()` or `register()` when user profile was returned in the payload
+- `client-no-strictmode-duplicate-fetches` - Disable `reactStrictMode` in `next.config.mjs` and omit `React.StrictMode` in Vite/Tauri `main.tsx`
 - `client-event-listeners` - Deduplicate global event listeners
 - `client-passive-event-listeners` - Use passive listeners for scroll
 - `client-localstorage-schema` - Version and minimize localStorage data

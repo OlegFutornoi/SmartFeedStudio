@@ -45,4 +45,35 @@ test.describe('Admin Portal — Authentication & Localization (POM)', () => {
     await loginPage.login('wrong@admin.com', 'WrongPassword123!');
     await loginPage.expectLoginError('Невірний email або пароль');
   });
+
+  test('should reject login for regular USER role with access denied alert', async ({
+    loginPage,
+    page,
+  }) => {
+    await page.route('**/api/auth/login*', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          tokens: {
+            accessToken: 'mock-user-token',
+            refreshToken: 'mock-user-refresh',
+          },
+          user: {
+            id: 'user-123',
+            email: 'client@company.com',
+            fullName: 'Regular Client',
+            role: 'USER',
+          },
+        }),
+      });
+    });
+
+    await loginPage.goto();
+    await loginPage.login('client@company.com', 'ClientPassword123!');
+    await loginPage.expectLoginError(
+      'Доступ заборонено. Вхід дозволено лише адміністраторам системи.',
+    );
+    expect(page.url()).toContain('/login');
+  });
 });

@@ -95,6 +95,39 @@ apps/admin-portal/
 6. **Mandatory 100% i18n & UI Localization Testing Policy**:
    - Every user-facing UI feature, form, modal, label, and API error response must be 100% translated into both Ukrainian (`uk`) and English (`en`).
    - Every frontend spec must include explicit tests for dynamic language switching (`UA` ⇄ `EN`).
+7. **Mandatory Zero-Duplicate API Calls Policy**:
+   - Keep `reactStrictMode: false` in `next.config.mjs`.
+   - Never put UI-only state (`isUk`, `theme`) into data-fetching `useCallback` dependency arrays.
+   - Run `api-contracts.spec.ts` to assert that endpoints are called strictly 1 time upon page load.
+
+---
+
+## 🧪 Testing Policy & Coverage (Playwright)
+
+```bash
+# Run Admin Portal Playwright E2E tests (Headless)
+pnpm test:admin
+
+# Run Admin Portal Playwright E2E tests in visible browser (Headed)
+pnpm test:admin:headed
+
+# Run Playwright UI Mode
+pnpm test:admin:ui
+```
+
+| Test File                   | Scenarios Covered                                                                    | Tests | Status  |
+| :-------------------------- | :----------------------------------------------------------------------------------- | :---: | :-----: |
+| `e2e/auth.spec.ts`          | Login, validation, invalid credentials, USER role rejection, i18n & theme            |   4   | ✅ PASS |
+| `e2e/dashboard.spec.ts`     | Widgets, metrics, latest users, language toggle, change password dialog              |   4   | ✅ PASS |
+| `e2e/licenses.spec.ts`      | Registry, search, plan/status/S3 filters, reset, empty state                         |   7   | ✅ PASS |
+| `e2e/navigation.spec.ts`    | Items list, target app filter, plan simulator, i18n, error translation, menu routing |   7   | ✅ PASS |
+| `e2e/plans.spec.ts`         | Plan list, creation dialog, editing, delete confirmation dialog                      |   4   | ✅ PASS |
+| `e2e/settings.spec.ts`      | Profile, infra cards, password validation, i18n translations                         |   3   | ✅ PASS |
+| `e2e/theme.spec.ts`         | Default Zinc dark theme, palette dropdown (Slate, Stone, Bronze)                     |   2   | ✅ PASS |
+| `e2e/users.spec.ts`         | User table, count, search, role filtering, i18n, empty states                        |   5   | ✅ PASS |
+| `e2e/api-contracts.spec.ts` | Contract URLs, Zero 404/500 stability, single-request performance tests              |  10   | ✅ PASS |
+
+**Total: 46 tests — 46 passing (100%)**
 
 ---
 
@@ -103,6 +136,9 @@ apps/admin-portal/
 ```bash
 # Run Admin Portal dev server (Port 3000)
 pnpm dev:admin
+
+# Run Playwright E2E tests
+pnpm test:admin
 
 # Build Admin Portal production bundle
 pnpm build:admin

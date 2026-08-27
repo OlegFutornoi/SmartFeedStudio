@@ -34,6 +34,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
       setToken(storedToken);
       const profile = await api.getMe();
+      if (profile.role !== 'ADMIN' && profile.role !== 'SUPER_ADMIN') {
+        localStorage.removeItem('smartfeed_admin_token');
+        api.setToken(null);
+        setUser(null);
+        setToken(null);
+        return;
+      }
       setUser(profile);
     } catch {
       localStorage.removeItem('smartfeed_admin_token');
@@ -53,6 +60,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setError(null);
     try {
       const res = await api.login(dto);
+      if (res.user.role !== 'ADMIN' && res.user.role !== 'SUPER_ADMIN') {
+        localStorage.removeItem('smartfeed_admin_token');
+        api.setToken(null);
+        setUser(null);
+        setToken(null);
+        throw new Error('access_denied_admin_only');
+      }
       setUser(res.user);
       setToken(res.tokens.accessToken);
       router.push('/');

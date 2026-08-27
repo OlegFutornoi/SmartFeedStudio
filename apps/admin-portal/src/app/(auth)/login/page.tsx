@@ -17,7 +17,7 @@ import {
   CardHeader,
   CardTitle,
 } from '../../../components/ui/card';
-import { Layers, ShieldCheck, Lock, Mail, AlertCircle, Loader2, KeyRound } from 'lucide-react';
+import { Layers, ShieldCheck, Lock, Mail, AlertCircle, Loader2 } from 'lucide-react';
 
 export default function AdminLoginPage() {
   const { login, user, isLoading } = useAuth();
@@ -46,11 +46,6 @@ export default function AdminLoginPage() {
     } finally {
       setIsSubmitting(false);
     }
-  };
-
-  const fillDefaultCredentials = () => {
-    setEmail('admin@smartfeed.studio');
-    setPassword('AdminPassword123!');
   };
 
   return (
@@ -181,18 +176,6 @@ export default function AdminLoginPage() {
                   t('auth', 'submit_button')
                 )}
               </Button>
-
-              {/* Quick default credential helper */}
-              <div className="w-full pt-3 border-t border-border/50 text-center">
-                <button
-                  type="button"
-                  onClick={fillDefaultCredentials}
-                  className="group inline-flex items-center justify-center text-xs text-muted-foreground hover:text-foreground bg-muted/30 hover:bg-muted/60 border border-border/40 hover:border-primary/40 px-3 py-1.5 rounded-lg transition-all space-x-1.5 mx-auto"
-                >
-                  <KeyRound className="h-3.5 w-3.5 text-primary group-hover:scale-110 transition-transform" />
-                  <span>{t('auth', 'quick_fill')}</span>
-                </button>
-              </div>
             </CardFooter>
           </form>
         </Card>
