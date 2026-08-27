@@ -30,13 +30,17 @@ pnpm dev:admin
    - Live debounced search by name and email.
    - Filtering by roles (`SUPER_ADMIN`, `ADMIN`, `USER`).
    - Plan quotas display (XML Limit, AI Credits).
-4. **License Management (`/licenses`)**:
-   - Plan tier cards (FREE, PRO, ENTERPRISE).
-   - Active license directory.
-5. **Admin Settings & Security (`/settings`)**:
-   - Profile summary.
-   - Direct password change form with validation.
-   - Sidebar-07 profile menu with quick password change modal.
+4. **Tariff Plans Management (`/plans`)**:
+   - Dynamic plan tier cards (STARTER, GROWTH, PRO, ENTERPRISE).
+   - Dialog for plan creation, editing, supplier limits (`maxSuppliersLimit`), pricing, and duration (`durationDays`).
+5. **Customer Licenses Registry (`/licenses`)**:
+   - Dedicated active license registry table with search, validity period, and plan tier tracking.
+6. **Dynamic Navigation Management (`/navigation`)**:
+   - Visual catalog of menu items with live access control simulator.
+7. **Admin Settings Submenu (`/settings`)**:
+   - Profile summary and direct password change form.
+   - Payment Gateways preview (`/settings/payments`).
+   - AI Provider settings preview (`/settings/ai`).
 
 ---
 

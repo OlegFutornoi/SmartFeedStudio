@@ -3,6 +3,7 @@ import { LoginPage } from '../pages/login.page';
 import { NavigationPage } from '../pages/navigation.page';
 import { AdminSettingsPage } from '../pages/settings.page';
 import { AdminLicensesPage } from '../pages/licenses.page';
+import { AdminPlansPage } from '../pages/plans.page';
 import { mockAdminUser } from './test-data';
 
 type AdminPortalFixtures = {
@@ -10,6 +11,7 @@ type AdminPortalFixtures = {
   navigationPage: NavigationPage;
   settingsPage: AdminSettingsPage;
   licensesPage: AdminLicensesPage;
+  plansPage: AdminPlansPage;
   mockAuth: void;
 };
 
@@ -48,6 +50,10 @@ export const test = base.extend<AdminPortalFixtures>({
 
   licensesPage: async ({ page }, use) => {
     await use(new AdminLicensesPage(page));
+  },
+
+  plansPage: async ({ page }, use) => {
+    await use(new AdminPlansPage(page));
   },
 });
 

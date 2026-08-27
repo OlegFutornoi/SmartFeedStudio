@@ -12,6 +12,11 @@ import {
   ShieldCheck,
   Compass,
   PanelLeftClose,
+  ChevronDown,
+  User,
+  Layers,
+  WalletCards,
+  Sparkles,
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { useAuth } from '../../contexts/AuthContext';
@@ -36,21 +41,84 @@ export function Sidebar() {
   const { user, logout } = useAuth();
   const { isCollapsed, toggleSidebar, isMobileOpen, closeMobileSidebar } = useSidebar();
   const { locale } = useLanguage();
-  const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
+  const isUk = locale === 'uk';
 
-  const navigation = useMemo(
+  const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(true);
+
+  // Main navigation (Top section)
+  const mainNavigation = useMemo(
     () => [
-      { name: locale === 'uk' ? 'Дашборд' : 'Dashboard', href: '/', icon: LayoutDashboard },
-      { name: locale === 'uk' ? 'Користувачі' : 'Users', href: '/users', icon: Users },
-      { name: locale === 'uk' ? 'Ліцензії' : 'Licenses', href: '/licenses', icon: KeyRound },
       {
-        name: locale === 'uk' ? 'Навігація меню' : 'Navigation Menu',
+        name: isUk ? 'Дашборд' : 'Dashboard',
+        href: '/',
+        icon: LayoutDashboard,
+        testId: 'nav-item-dashboard',
+      },
+      {
+        name: isUk ? 'Користувачі' : 'Users',
+        href: '/users',
+        icon: Users,
+        testId: 'nav-item-users',
+      },
+      {
+        name: isUk ? 'Тарифи' : 'Tariff Plans',
+        href: '/plans',
+        icon: Layers,
+        testId: 'nav-item-plans',
+      },
+      {
+        name: isUk ? 'Ліцензії' : 'Licenses',
+        href: '/licenses',
+        icon: KeyRound,
+        testId: 'nav-item-licenses',
+      },
+      {
+        name: isUk ? 'Навігація меню' : 'Navigation Menu',
         href: '/navigation',
         icon: Compass,
+        testId: 'nav-item-navigation',
       },
-      { name: locale === 'uk' ? 'Налаштування' : 'Settings', href: '/settings', icon: Settings },
     ],
-    [locale],
+    [isUk],
+  );
+
+  // Settings sub-navigation (Bottom section)
+  const settingsNavigation = useMemo(
+    () => [
+      {
+        name: isUk ? 'Профіль' : 'Profile',
+        href: '/settings',
+        icon: User,
+        testId: 'nav-item-settings-profile',
+      },
+      {
+        name: isUk ? 'Тарифи' : 'Tariff Plans',
+        href: '/plans',
+        icon: Layers,
+        testId: 'nav-item-settings-plans',
+      },
+      {
+        name: isUk ? 'Платіжні системи' : 'Payment Gateways',
+        href: '/settings/payments',
+        icon: WalletCards,
+        badge: isUk ? 'Скоро' : 'Soon',
+        testId: 'nav-item-settings-payments',
+      },
+      {
+        name: isUk ? 'Налаштування AI' : 'AI Settings',
+        href: '/settings/ai',
+        icon: Sparkles,
+        badge: isUk ? 'Скоро' : 'Soon',
+        testId: 'nav-item-settings-ai',
+      },
+    ],
+    [isUk],
+  );
+
+  const isSettingsActive = useMemo(
+    () => pathname.startsWith('/settings') || pathname.startsWith('/plans'),
+    [pathname],
   );
 
   const handleOpenPasswordDialog = useCallback(() => {
@@ -101,15 +169,16 @@ export function Sidebar() {
           </div>
         </div>
 
-        {/* Navigation links */}
-        <div className="flex-1 px-3 py-2 overflow-hidden flex flex-col">
-          <nav className="space-y-1.5 flex-1 overflow-y-auto overflow-x-hidden py-2">
+        {/* Scrollable Navigation Area */}
+        <div className="flex-1 px-3 py-2 overflow-y-auto overflow-x-hidden flex flex-col justify-between">
+          {/* Main Top Navigation */}
+          <nav className="space-y-1 py-1">
             {!isCollapsed && (
               <div className="px-3 pb-2 text-[11px] font-semibold text-muted-foreground tracking-wider uppercase">
-                {locale === 'uk' ? 'Головне меню' : 'Main Menu'}
+                {isUk ? 'Головне меню' : 'Main Menu'}
               </div>
             )}
-            {navigation.map((item) => {
+            {mainNavigation.map((item) => {
               const isActive =
                 item.href === '/' ? pathname === '/' : pathname.startsWith(item.href);
               return (
@@ -120,11 +189,91 @@ export function Sidebar() {
                   icon={item.icon}
                   isActive={isActive}
                   isCollapsed={isCollapsed}
+                  dataTestId={item.testId}
                   onClick={closeMobileSidebar}
                 />
               );
             })}
           </nav>
+
+          {/* Bottom Settings Submenu Navigation */}
+          <div className="mt-auto pt-3 border-t border-border/50">
+            {isCollapsed ? (
+              // Collapsed mode: display settings icons directly
+              <div className="space-y-1">
+                {settingsNavigation.map((subItem) => {
+                  const isSubActive =
+                    subItem.href === '/settings'
+                      ? pathname === '/settings'
+                      : pathname.startsWith(subItem.href);
+                  return (
+                    <SidebarNavItem
+                      key={subItem.href}
+                      name={subItem.name}
+                      href={subItem.href}
+                      icon={subItem.icon}
+                      isActive={isSubActive}
+                      isCollapsed={true}
+                      badge={subItem.badge}
+                      dataTestId={subItem.testId}
+                      onClick={closeMobileSidebar}
+                    />
+                  );
+                })}
+              </div>
+            ) : (
+              // Expanded mode: collapsible Settings group with styled submenu
+              <div className="space-y-1">
+                <button
+                  type="button"
+                  data-testid="nav-group-settings-toggle"
+                  onClick={() => setSettingsOpen(!settingsOpen)}
+                  className={cn(
+                    'w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold tracking-wider uppercase transition-colors',
+                    isSettingsActive
+                      ? 'text-foreground bg-muted/40 font-bold'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-muted/30',
+                  )}
+                >
+                  <div className="flex items-center gap-2">
+                    <Settings className="h-3.5 w-3.5 text-primary" />
+                    <span>{isUk ? 'Налаштування' : 'Settings'}</span>
+                  </div>
+                  <ChevronDown
+                    className={cn(
+                      'h-3.5 w-3.5 transition-transform duration-200 text-muted-foreground',
+                      settingsOpen && 'rotate-180',
+                    )}
+                  />
+                </button>
+
+                {settingsOpen && (
+                  <div className="space-y-1 pt-1 pb-1 animate-in fade-in-50 duration-200">
+                    {settingsNavigation.map((subItem) => {
+                      const isSubActive =
+                        subItem.href === '/settings'
+                          ? pathname === '/settings'
+                          : pathname.startsWith(subItem.href);
+                      return (
+                        <SidebarNavItem
+                          key={subItem.href}
+                          name={subItem.name}
+                          href={subItem.href}
+                          icon={subItem.icon}
+                          isActive={isSubActive}
+                          isCollapsed={false}
+                          isSubItem={true}
+                          badge={subItem.badge}
+                          dataTestId={subItem.testId}
+                          onClick={closeMobileSidebar}
+                        />
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Footer profile & actions */}
@@ -140,7 +289,8 @@ export function Sidebar() {
       {/* Mobile Drawer Sidebar */}
       <SidebarMobileDrawer
         isOpen={isMobileOpen}
-        navigation={navigation}
+        mainNavigation={mainNavigation}
+        settingsNavigation={settingsNavigation}
         pathname={pathname}
         user={user}
         onClose={closeMobileSidebar}
@@ -148,7 +298,7 @@ export function Sidebar() {
         onLogout={logout}
       />
 
-      {/* Profile Change Password Dialog */}
+      {/* Password change dialog */}
       <ChangePasswordDialog open={passwordDialogOpen} onOpenChange={setPasswordDialogOpen} />
     </>
   );

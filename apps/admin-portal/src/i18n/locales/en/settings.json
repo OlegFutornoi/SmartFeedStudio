@@ -8,5 +8,10 @@
   "theme_light": "Light",
   "theme_system": "System",
   "language_title": "Interface Language",
-  "security_title": "Account Security"
+  "security_title": "Account Security",
+  "profile": "Profile",
+  "plans": "Tariff Plans",
+  "payments": "Payment Gateways",
+  "ai_settings": "AI Settings",
+  "soon": "Soon"
 }

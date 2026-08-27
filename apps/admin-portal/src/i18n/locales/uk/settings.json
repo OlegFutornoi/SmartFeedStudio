@@ -8,5 +8,10 @@
   "theme_light": "Світла",
   "theme_system": "Системна",
   "language_title": "Мова інтерфейсу",
-  "security_title": "Безпека облікового запису"
+  "security_title": "Безпека облікового запису",
+  "profile": "Профіль",
+  "plans": "Тарифи",
+  "payments": "Платіжні системи",
+  "ai_settings": "Налаштування AI",
+  "soon": "Скоро"
 }

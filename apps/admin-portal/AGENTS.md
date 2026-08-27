@@ -31,10 +31,18 @@ apps/admin-portal/
 │   │   │   ├── page.tsx            # Dashboard Overview (dashboard-01 style, Total Users metric)
 │   │   │   ├── users/
 │   │   │   │   └── page.tsx        # Users Directory & Live Search/Filtering
+│   │   │   ├── plans/
+│   │   │   │   └── page.tsx        # Dedicated Tariff Plans CRUD, Pricing & Quotas
 │   │   │   ├── licenses/
-│   │   │   │   └── page.tsx        # Subscription Tiers & License Keys table
+│   │   │   │   └── page.tsx        # Customer Issued Licenses registry table
+│   │   │   ├── navigation/
+│   │   │   │   └── page.tsx        # Dynamic navigation items & live permission simulator
 │   │   │   └── settings/
-│   │   │       └── page.tsx        # Admin Profile & Password Change Form
+│   │   │       ├── page.tsx        # Admin Profile & Password Change Form
+│   │   │       ├── payments/
+│   │   │       │   └── page.tsx    # Payment Gateways integration
+│   │   │       └── ai/
+│   │   │           └── page.tsx    # AI Provider configuration
 │   │   ├── globals.css             # Tailwind directives & CSS variable tokens
 │   │   └── layout.tsx              # Root layout with AuthProvider & dark theme
 │   ├── components/

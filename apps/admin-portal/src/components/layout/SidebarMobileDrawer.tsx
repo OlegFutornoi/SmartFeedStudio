@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { LucideIcon, ShieldCheck, X, KeyRound, LogOut } from 'lucide-react';
+import { LucideIcon, ShieldCheck, X, KeyRound, LogOut, Settings } from 'lucide-react';
 import { UserProfile } from '@smartfeed/shared';
 import { Avatar, AvatarFallback } from '../ui/avatar';
 import { Button } from '../ui/button';
@@ -12,11 +12,14 @@ interface NavItem {
   name: string;
   href: string;
   icon: LucideIcon;
+  badge?: string;
+  testId?: string;
 }
 
 interface SidebarMobileDrawerProps {
   isOpen: boolean;
-  navigation: NavItem[];
+  mainNavigation: NavItem[];
+  settingsNavigation: NavItem[];
   pathname: string;
   user: UserProfile | null;
   onClose: () => void;
@@ -26,7 +29,8 @@ interface SidebarMobileDrawerProps {
 
 export const SidebarMobileDrawer = React.memo(function SidebarMobileDrawer({
   isOpen,
-  navigation,
+  mainNavigation,
+  settingsNavigation,
   pathname,
   user,
   onClose,
@@ -34,6 +38,7 @@ export const SidebarMobileDrawer = React.memo(function SidebarMobileDrawer({
   onLogout,
 }: SidebarMobileDrawerProps) {
   const { locale, t } = useLanguage();
+  const isUk = locale === 'uk';
 
   if (!isOpen) return null;
 
@@ -76,26 +81,61 @@ export const SidebarMobileDrawer = React.memo(function SidebarMobileDrawer({
           </Button>
         </div>
 
-        <nav className="flex-1 py-4 overflow-y-auto space-y-1.5">
-          <div className="px-3 pb-2 text-[11px] font-semibold text-muted-foreground tracking-wider uppercase">
-            {locale === 'uk' ? 'Головне меню' : 'Main Menu'}
-          </div>
-          {navigation.map((item) => {
-            const isActive = item.href === '/' ? pathname === '/' : pathname.startsWith(item.href);
-            return (
-              <SidebarNavItem
-                key={item.href}
-                name={item.name}
-                href={item.href}
-                icon={item.icon}
-                isActive={isActive}
-                isCollapsed={false}
-                onClick={onClose}
-              />
-            );
-          })}
-        </nav>
+        {/* Scrollable Navigation */}
+        <div className="flex-1 py-4 overflow-y-auto space-y-4">
+          {/* Main menu */}
+          <nav className="space-y-1.5">
+            <div className="px-3 pb-1 text-[11px] font-semibold text-muted-foreground tracking-wider uppercase">
+              {isUk ? 'Головне меню' : 'Main Menu'}
+            </div>
+            {mainNavigation.map((item) => {
+              const isActive =
+                item.href === '/' ? pathname === '/' : pathname.startsWith(item.href);
+              return (
+                <SidebarNavItem
+                  key={item.href}
+                  name={item.name}
+                  href={item.href}
+                  icon={item.icon}
+                  isActive={isActive}
+                  isCollapsed={false}
+                  dataTestId={item.testId}
+                  onClick={onClose}
+                />
+              );
+            })}
+          </nav>
 
+          {/* Settings submenu */}
+          <nav className="space-y-1.5 pt-3 border-t border-border/50">
+            <div className="px-3 pb-1 text-[11px] font-semibold text-muted-foreground tracking-wider uppercase flex items-center gap-1.5">
+              <Settings className="h-3 w-3 text-primary" />
+              <span>{isUk ? 'Налаштування' : 'Settings'}</span>
+            </div>
+            {settingsNavigation.map((subItem) => {
+              const isActive =
+                subItem.href === '/settings'
+                  ? pathname === '/settings'
+                  : pathname.startsWith(subItem.href);
+              return (
+                <SidebarNavItem
+                  key={subItem.href}
+                  name={subItem.name}
+                  href={subItem.href}
+                  icon={subItem.icon}
+                  isActive={isActive}
+                  isCollapsed={false}
+                  isSubItem={true}
+                  badge={subItem.badge}
+                  dataTestId={subItem.testId}
+                  onClick={onClose}
+                />
+              );
+            })}
+          </nav>
+        </div>
+
+        {/* Footer */}
         <div className="pt-4 border-t border-border flex items-center justify-between gap-2">
           <div className="flex items-center space-x-2.5 min-w-0 flex-1">
             <Avatar className="h-9 w-9 border border-border shrink-0">

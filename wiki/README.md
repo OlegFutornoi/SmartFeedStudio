@@ -43,7 +43,7 @@
 ### 🧪 [07. Тестування та Контроль Якості (QA & Testing)](./07-testing-and-qa/)
 
 - [🔬 Стратегія тестування (TDD, Jest E2E, Playwright POM)](./07-testing-and-qa/testing-strategy.md)
-- [📈 Матриця покриття автоматизованими тестами (89 тестів — 100% PASS)](./07-testing-and-qa/test-coverage-matrix.md)
+- [📈 Матриця покриття автоматизованими тестами (101 тест — 100% PASS)](./07-testing-and-qa/test-coverage-matrix.md)
 - [🧹 Політика нульових залишків та ізоляції тестових даних (Zero Leftovers)](./07-testing-and-qa/teardown-policy.md)
 
 ### 💡 [08. Посібник Користувача та FAQ (User Guide & FAQ)](./08-user-faq/)

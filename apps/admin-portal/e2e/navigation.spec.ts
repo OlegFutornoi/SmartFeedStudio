@@ -128,4 +128,59 @@ test.describe('Admin Portal — Navigation & Access Control (POM)', () => {
     // Verify translated localized message
     await navigationPage.expectErrorAlert('Сесія застаріла або токен авторизації недійсний');
   });
+
+  test('should navigate via main menu to separated Plans and Licenses pages', async ({ page }) => {
+    await page.goto('/');
+    await expect(page.locator('h1')).toBeVisible();
+
+    // 1. Verify and click Тарифи in Main Menu
+    const mainPlansNav = page.getByTestId('nav-item-plans');
+    await expect(mainPlansNav).toBeVisible();
+    await expect(mainPlansNav).toContainText('Тарифи');
+    await mainPlansNav.click();
+    await expect(page).toHaveURL('/plans');
+    await expect(page.getByTestId('plans-header-title')).toBeVisible();
+
+    // 2. Verify and click Ліцензії in Main Menu
+    const mainLicensesNav = page.getByTestId('nav-item-licenses');
+    await expect(mainLicensesNav).toBeVisible();
+    await expect(mainLicensesNav).toContainText('Ліцензії');
+    await mainLicensesNav.click();
+    await expect(page).toHaveURL('/licenses');
+    await expect(page.getByTestId('licenses-header-title')).toBeVisible();
+  });
+
+  test('should navigate via bottom Settings submenu to Profile, Plans, Payments, and AI', async ({
+    page,
+  }) => {
+    await page.goto('/');
+    await expect(page.locator('h1')).toBeVisible();
+
+    // 1. Click Тарифи in settings submenu
+    const settingsPlansNav = page.getByTestId('nav-item-settings-plans');
+    await expect(settingsPlansNav).toBeVisible();
+    await settingsPlansNav.click();
+    await expect(page).toHaveURL('/plans');
+    await expect(page.getByTestId('plans-header-title')).toBeVisible();
+
+    // 2. Click Платіжні системи in settings submenu
+    const paymentsNav = page.getByTestId('nav-item-settings-payments');
+    await expect(paymentsNav).toBeVisible();
+    await paymentsNav.click();
+    await expect(page).toHaveURL('/settings/payments');
+    await expect(page.getByTestId('payments-header-title')).toBeVisible();
+
+    // 3. Click Налаштування AI in settings submenu
+    const aiNav = page.getByTestId('nav-item-settings-ai');
+    await expect(aiNav).toBeVisible();
+    await aiNav.click();
+    await expect(page).toHaveURL('/settings/ai');
+    await expect(page.getByTestId('ai-header-title')).toBeVisible();
+
+    // 4. Click Профіль in settings submenu
+    const profileNav = page.getByTestId('nav-item-settings-profile');
+    await expect(profileNav).toBeVisible();
+    await profileNav.click();
+    await expect(page).toHaveURL('/settings');
+  });
 });
