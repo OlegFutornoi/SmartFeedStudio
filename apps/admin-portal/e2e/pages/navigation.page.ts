@@ -14,7 +14,6 @@ export class NavigationPage extends BasePage {
   readonly itemsListCard: Locator;
   readonly filterDesktopBtn: Locator;
   readonly filterAdminBtn: Locator;
-  readonly filterAllBtn: Locator;
 
   constructor(page: Page) {
     super(page);
@@ -26,7 +25,6 @@ export class NavigationPage extends BasePage {
     this.itemsListCard = page.getByTestId('navigation-items-card');
     this.filterDesktopBtn = this.itemsListCard.getByRole('button', { name: /Desktop/i });
     this.filterAdminBtn = this.itemsListCard.getByRole('button', { name: /Admin/i });
-    this.filterAllBtn = this.itemsListCard.getByRole('button', { name: /Всі|All/i });
   }
 
   async goto(): Promise<void> {
@@ -40,13 +38,11 @@ export class NavigationPage extends BasePage {
     return this.dialog;
   }
 
-  async filterByApp(app: TargetApp | 'ALL'): Promise<void> {
+  async filterByApp(app: TargetApp): Promise<void> {
     if (app === TargetApp.DESKTOP) {
       await this.filterDesktopBtn.click();
-    } else if (app === TargetApp.ADMIN_PORTAL) {
-      await this.filterAdminBtn.click();
     } else {
-      await this.filterAllBtn.click();
+      await this.filterAdminBtn.click();
     }
   }
 

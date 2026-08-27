@@ -84,11 +84,19 @@ SmartFeed Studio (Monorepo root)
    - You MUST wait for the USER's explicit command (e.g., `/git-commit`, `/commit`, "вивантаж", "закоміть") before staging, committing, or pushing to remote repositories.
 
 6. **Mandatory Post-Code-Writing Protocol (Self-Review, Error Checks, Skills & Formatting)**:
-   - **Step 1 — Mandatory Domain Skills**: When writing or refactoring code, **ALWAYS** actively apply relevant best-practice skills (`vercel-react-best-practices` for React/Next.js, `nestjs-best-practices` for NestJS CQRS, `shadcn` for UI design systems, `playwright-best-practices` for E2E tests, `frontend-desing` for visual identity, `prisma-postgres` for database queries, `systematic-debugging` when resolving issues).
-   - **Step 2 — Immediate Self-Code Review, Dead Code Elimination & Component Modularity**: Immediately after writing or modifying code, **automatically perform a rigorous architectural self-code review** validating:
+   - **Step 1 — Mandatory Domain Skills**: When writing, refactoring, or reviewing code, **ALWAYS** actively apply the specialized skills matrix ([.agents/rules/code_review_and_skills.md](file:///Users/oleg/AQA/SmartFeedStudio/.agents/rules/code_review_and_skills.md)):
+     - **Backend**: `nestjs-best-practices`, `backend-development`, `backend-patterns`, `sentry-backend-bugs`, `defense-in-depth-validation`, `prisma-postgres`, `prisma-client-api`, `supabase-postgres-best-practices`, `subscription-lifecycle`, `systematic-debugging`, `root-cause-tracing`.
+     - **Frontend**: `ui-ux-pro-max`, `vercel-react-best-practices`, `frontend-design`, `beautiful-desing`, `shadcn`, `integrate-backend`.
+     - **Testing & QA**: `playwright-best-practices`, `test-driven-development-tdd`, `testing-anti-patterns`, `condition-based-waiting`, `verification-before-completion`.
+     - **Review & Execution**: `requesting-code-review`, `code-review-reception`, `writing-plans`, `executing-plans`, `subagent-driven-development`.
+   - **Step 2 — Immediate Self-Code Review, Dead Code Elimination, `ui-ux-pro-max` & Visual Testing DoD**: Immediately after writing or modifying code, **automatically perform a rigorous architectural self-code review** validating:
+     - **Visual Testing & `ui-ux-pro-max` DoD**: For any UI modification, the task **cannot be marked completed** without visual testing in browser/Playwright and verifying full compliance with all `ui-ux-pro-max` design, micro-interaction, contrast, and layout criteria.
      - **Component Size Limit & Single Responsibility**: React components must remain compact, clean, and modular (recommended max ~250–300 lines). Monolithic components (e.g. 700–1000+ lines) are **strictly prohibited**. Always decompose complex views into dedicated subcomponents (`*Dialog.tsx`, `*List.tsx`, `*Row.tsx`, `*Header.tsx`, `*Preview.tsx`, custom hooks).
      - **Zero Unused Imports & Dead Code**: Eliminate all unreferenced imports (e.g. from `lucide-react`, DTOs, or React hooks), unused variables, types, and unreachable code. Actively inspect IDE diagnostics and fix all unused items immediately.
+     - **Defense-in-Depth Validation**: Validate inputs at every layer (DTO boundary, service/domain rules, license/role guards, DB constraints).
+
      - **Architectural Integrity & Zero Gaps**: Strictly adhere to CQRS module boundaries, minimal React re-renders (`vercel-react-best-practices`), proper design token usage (`shadcn`), bundle efficiency, accessibility, type safety, and test isolation.
+
    - **Step 3 — Mandatory Typecheck, Diagnostics & Immediate Error Fixes**:
      - Immediately after writing or modifying code in ANY package (`services/backend-api`, `packages/shared`, `apps/desktop`, `apps/admin-portal`), the agent **MUST ALWAYS** execute static typechecking (`tsc --noEmit`, `pnpm build:shared`, `prisma generate` when schema changes).
      - **Zero Error Tolerance & Immediate Fixes**: If `tsc --noEmit` or IDE diagnostics report ANY errors (type mismatches, missing DTO fields, outdated Prisma types, enum conflicts, unhandled properties), the agent **MUST NOT leave them or report completion to the user**. The agent **MUST IMMEDIATELY investigate and fix every single error** until all packages compile with exit code 0.
@@ -102,8 +110,8 @@ SmartFeed Studio (Monorepo root)
    - **Step 4 — Mandatory Auto-Formatting**: **ALWAYS** execute `pnpm format` (Prettier) on all affected files to ensure zero formatting errors or style drift across the codebase.
 
 7. **Mandatory Test Isolation & Complete Data Cleanup Policy (Zero Leftovers)**:
-   - **Zero Test Data Leftovers**: Every automated test (Backend Jest E2E, Integration, Desktop/Admin Playwright E2E) that creates, modifies, or stores records (database users, licenses, navigation items, snapshots, files in object storage, localStorage, cookies) **MUST** guarantee 100% complete deletion and teardown of all test-generated data.
-   - **Backend Database Teardown**: In all `*.e2e-spec.ts` files, `afterAll` (and `afterEach` where applicable) hooks must explicitly delete all created entities using stored IDs, created emails, and scoped wildcard matching (e.g. `e2e.test+*`, `admintest-*`, `analytics_*`, `nav.admin+*`, `nav.user+*`). Never leave orphaned rows in PostgreSQL or Redis.
+   - **Zero Test Data Leftovers**: Every automated test (Backend Jest E2E, Integration, Desktop/Admin Playwright E2E) that creates, modifies, or stores records (database users, licenses, organizations, members, invitations, navigation items, snapshots, product images, future product/feed catalogs, files in object storage, localStorage, cookies) **MUST** guarantee 100% complete deletion and teardown of all test-generated data.
+   - **Backend Database Teardown**: In all `*.e2e-spec.ts` files, tests **MUST** use the centralized `cleanDatabase` helper (`test/utils/teardown.helper.ts`) in both `beforeAll` (pre-clean) and `afterAll` (post-clean). The deletion strictly follows the FK-safe hierarchy: `Snapshot` & `ProductImage` → `OrganizationInvitation` → `OrganizationMember` → `License` → `Organization` → `User` → `TariffPlan` & `NavigationItem` (and future `Product`/`Feed` catalogs). Never leave orphaned rows in PostgreSQL or Redis.
    - **Frontend Test Isolation**: In Playwright E2E tests (`*.spec.ts`), always clear browser `localStorage`, `sessionStorage`, cookies, and route mocks before and after each test case to prevent state leakage and test cross-contamination.
 
 8. **Mandatory 100% Internationalization (i18n) & Dedicated UI Localization Tests Policy**:
@@ -160,6 +168,8 @@ SmartFeed Studio (Monorepo root)
 | **Run Database Seeder**         | `pnpm prisma:seed`                                         |
 | **Create/Reset Super Admin**    | `pnpm admin:set`                                           |
 | **Open Prisma Studio**          | `pnpm prisma:studio`                                       |
+| **Open Mailpit Email UI**       | `pnpm mail:open` _(`http://localhost:8025`)_               |
+| **View Mailpit Logs**           | `pnpm mail:logs`                                           |
 | **Lint & Fix**                  | `pnpm lint:fix`                                            |
 | **Format Code**                 | `pnpm format`                                              |
 
@@ -170,6 +180,8 @@ SmartFeed Studio (Monorepo root)
 - **Backend API**: `http://localhost:4000/api` (Swagger: `http://localhost:4000/api/docs`)
 - **Admin Portal**: `http://localhost:3000`
 - **Desktop UI**: `http://localhost:1420`
+- **Prisma Studio**: `http://localhost:5555`
+- **Mailpit Email Web UI**: `http://localhost:8025` (Перегляд надісланих листів та інвайтів, SMTP: `localhost:1025`)
 - **PostgreSQL**: `localhost:5432` (DB: `smartfeed_db`, User: `postgres`, Pass: `postgrespassword`)
 - **Redis**: `localhost:6379`
 - **MinIO Console**: `http://localhost:9001` (User: `minioadmin`, Pass: `minioadminpassword`)

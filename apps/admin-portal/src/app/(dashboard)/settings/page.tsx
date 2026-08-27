@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { Settings } from 'lucide-react';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useLanguage } from '../../../contexts/LanguageContext';
 import { ThemeCustomizer } from '../../../components/theme/theme-customizer';
@@ -17,15 +18,16 @@ export default function SettingsPage() {
       data-testid="settings-page"
       className="space-y-8 max-w-4xl animate-in fade-in duration-300"
     >
-      {/* Header */}
+      {/* Sleek Minimalist Page Header */}
       <div>
         <h1
           data-testid="settings-header-title"
-          className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl"
+          className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl flex items-center gap-2.5"
         >
-          {t('settings', 'title')}
+          <Settings className="size-6 text-primary shrink-0" />
+          <span>{t('settings', 'title')}</span>
         </h1>
-        <p data-testid="settings-header-subtitle" className="text-sm text-muted-foreground mt-1">
+        <p data-testid="settings-header-subtitle" className="text-sm text-muted-foreground mt-0.5">
           {t('settings', 'subtitle')}
         </p>
       </div>

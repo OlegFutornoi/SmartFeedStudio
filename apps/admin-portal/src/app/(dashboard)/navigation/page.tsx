@@ -12,6 +12,7 @@ import {
 import { api } from '../../../lib/api';
 import { translateError } from '../../../lib/errors';
 import { useLanguage } from '../../../contexts/LanguageContext';
+import { useNavigation } from '../../../contexts/NavigationContext';
 import { NavigationHeader } from '../../../components/navigation/NavigationHeader';
 import { NavigationItemList } from '../../../components/navigation/NavigationItemList';
 import { NavigationLivePreview } from '../../../components/navigation/NavigationLivePreview';
@@ -39,8 +40,9 @@ const INITIAL_FORM_DATA: NavigationFormData = {
 };
 
 export default function NavigationManagementPage() {
+  const { refreshNavigation } = useNavigation();
   const [items, setItems] = useState<NavigationItemDto[]>([]);
-  const [filterApp, setFilterApp] = useState<TargetApp | 'ALL'>('ALL');
+  const [filterApp, setFilterApp] = useState<TargetApp>(TargetApp.DESKTOP);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -96,7 +98,7 @@ export default function NavigationManagementPage() {
     setIsDialogOpen(true);
   }, []);
 
-  const handleSave = async () => {
+  const handleSave = useCallback(async () => {
     try {
       setIsSaving(true);
       setError(null);
@@ -132,58 +134,84 @@ export default function NavigationManagementPage() {
 
       setIsDialogOpen(false);
       await loadItems();
+      await refreshNavigation();
     } catch (err: unknown) {
       setError(translateError(err, locale));
     } finally {
       setIsSaving(false);
     }
-  };
+  }, [editingItem, formData, items.length, locale, loadItems, refreshNavigation, showSuccess, t]);
 
-  const handleToggleActive = async (item: NavigationItemDto) => {
-    try {
-      await api.updateNavigationItem(item.id, { isVisible: !item.isVisible });
-      setItems((prev) =>
-        prev.map((i) => (i.id === item.id ? { ...i, isVisible: !i.isVisible } : i)),
-      );
-    } catch (err: unknown) {
-      setError(translateError(err, locale));
-    }
-  };
+  const handleToggleActive = useCallback(
+    async (item: NavigationItemDto) => {
+      try {
+        await api.updateNavigationItem(item.id, { isVisible: !item.isVisible });
+        setItems((prev) =>
+          prev.map((i) => (i.id === item.id ? { ...i, isVisible: !i.isVisible } : i)),
+        );
+        await refreshNavigation();
+      } catch (err: unknown) {
+        setError(translateError(err, locale));
+      }
+    },
+    [locale, refreshNavigation],
+  );
 
-  const handleDelete = async (item: NavigationItemDto) => {
-    if (!confirm(t('common', 'confirm_delete'))) return;
-    try {
-      await api.deleteNavigationItem(item.id);
-      showSuccess(t('navigation', 'success_deleted'));
-      await loadItems();
-    } catch (err: unknown) {
-      setError(translateError(err, locale));
-    }
-  };
+  const handleDelete = useCallback(
+    async (item: NavigationItemDto) => {
+      if (!confirm(t('common', 'confirm_delete'))) return;
+      try {
+        await api.deleteNavigationItem(item.id);
+        showSuccess(t('navigation', 'success_deleted'));
+        await loadItems();
+        await refreshNavigation();
+      } catch (err: unknown) {
+        setError(translateError(err, locale));
+      }
+    },
+    [locale, loadItems, refreshNavigation, showSuccess, t],
+  );
 
   const handleMove = useCallback(
-    async (index: number, direction: 'UP' | 'DOWN') => {
-      const newItems = [...items];
+    async (index: number, direction: 'UP' | 'DOWN', currentFilteredList: NavigationItemDto[]) => {
       const targetIndex = direction === 'UP' ? index - 1 : index + 1;
-      if (targetIndex < 0 || targetIndex >= newItems.length) return;
+      if (targetIndex < 0 || targetIndex >= currentFilteredList.length) return;
 
-      const [moved] = newItems.splice(index, 1);
-      newItems.splice(targetIndex, 0, moved);
-      setItems(newItems);
+      const reorderedFiltered = [...currentFilteredList];
+      const [moved] = reorderedFiltered.splice(index, 1);
+      reorderedFiltered.splice(targetIndex, 0, moved);
+
+      const itemOrders = reorderedFiltered.map((item, idx) => ({ id: item.id, order: idx + 1 }));
+
+      setItems((prevItems) => {
+        const orderMap = new Map(itemOrders.map((o) => [o.id, o.order]));
+        return prevItems
+          .map((prev) => {
+            const newOrder = orderMap.get(prev.id);
+            return newOrder !== undefined ? { ...prev, order: newOrder } : prev;
+          })
+          .sort((a, b) => a.order - b.order);
+      });
 
       try {
-        const itemOrders = newItems.map((item, idx) => ({ id: item.id, order: idx + 1 }));
         await api.reorderNavigationItems({ items: itemOrders });
+        await refreshNavigation();
       } catch (err: unknown) {
         setError(translateError(err, locale));
         await loadItems();
       }
     },
-    [items, locale, loadItems],
+    [locale, loadItems, refreshNavigation],
   );
 
-  const handleMoveUp = useCallback((idx: number) => handleMove(idx, 'UP'), [handleMove]);
-  const handleMoveDown = useCallback((idx: number) => handleMove(idx, 'DOWN'), [handleMove]);
+  const handleMoveUp = useCallback(
+    (idx: number, filteredList: NavigationItemDto[]) => handleMove(idx, 'UP', filteredList),
+    [handleMove],
+  );
+  const handleMoveDown = useCallback(
+    (idx: number, filteredList: NavigationItemDto[]) => handleMove(idx, 'DOWN', filteredList),
+    [handleMove],
+  );
   const handleCloseDialog = useCallback(() => setIsDialogOpen(false), []);
 
   return (

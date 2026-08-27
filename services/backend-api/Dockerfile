@@ -1,7 +1,7 @@
 # ==============================================================================
 # Stage 1: Build stage
 # ==============================================================================
-FROM node:20-alpine AS builder
+FROM node:22-alpine AS builder
 
 WORKDIR /app
 
@@ -25,6 +25,9 @@ RUN pnpm install --frozen-lockfile
 COPY packages/shared/ ./packages/shared/
 COPY services/backend-api/ ./services/backend-api/
 
+# Safe placeholder DATABASE_URL so Prisma Client can be generated at build-time without live DB
+ENV DATABASE_URL="postgresql://postgres:postgrespassword@localhost:5432/smartfeed_db?schema=public"
+
 # Generate Prisma Client & Build TypeScript code
 RUN pnpm --filter @smartfeed/backend-api prisma:generate
 RUN pnpm --filter @smartfeed/shared build
@@ -33,7 +36,7 @@ RUN pnpm --filter @smartfeed/backend-api build
 # ==============================================================================
 # Stage 2: Production runner
 # ==============================================================================
-FROM node:20-alpine AS runner
+FROM node:22-alpine AS runner
 
 WORKDIR /app
 

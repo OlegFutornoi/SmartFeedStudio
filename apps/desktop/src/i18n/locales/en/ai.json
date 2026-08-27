@@ -1,0 +1,16 @@
+{
+  "title": "AI Content Enrichment",
+  "description": "Automated generation of SEO descriptions, specifications, and translations",
+  "creditsRemaining": "AI Credits remaining",
+  "creditsBadge": "AI Credits",
+  "startBatch": "Start AI Enrichment",
+  "generationSettings": "Generation Settings",
+  "seoTitle": "SEO Titles & Descriptions Generation",
+  "seoDesc": "Generate unique, search-optimized descriptions based on product characteristics",
+  "specsTitle": "Specification Normalization",
+  "specsDesc": "Automatic attribute mapping to marketplace standards (Rozetka, Prom)",
+  "translateTitle": "Multilingual Translation (UA ⇄ EN)",
+  "translateDesc": "Accurate translation of product titles, descriptions, and attributes",
+  "customPrompt": "Custom System Prompt",
+  "customPromptDesc": "Fine-tune AI prompts tailored to your specific industry and brand voice"
+}

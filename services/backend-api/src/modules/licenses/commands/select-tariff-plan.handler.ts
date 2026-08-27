@@ -1,5 +1,5 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { LicenseEntity, PlanType, PLAN_LIMITS_MAP } from '@smartfeed/shared';
 import * as crypto from 'crypto';
 import { PrismaService } from '../../../prisma/prisma.service';
@@ -54,17 +54,29 @@ export class SelectTariffPlanHandler implements ICommandHandler<
       ? new Date(Date.now() + dbPlan.durationDays * 24 * 60 * 60 * 1000)
       : null;
 
-    // 2. Find user's primary organization (where they are OWNER or member)
-    const orgMembership =
-      (await this.prisma.organizationMember.findFirst({
-        where: { userId, role: 'OWNER' },
-        include: { organization: true },
-      })) ||
-      (await this.prisma.organizationMember.findFirst({
-        where: { userId },
-        include: { organization: true },
-      }));
+    // 2. Check user's organization roles
+    const ownedOrgMembership = await this.prisma.organizationMember.findFirst({
+      where: { userId, role: 'OWNER' },
+      include: { organization: true },
+    });
 
+    const anyMembership = await this.prisma.organizationMember.findFirst({
+      where: { userId },
+      include: { organization: true },
+    });
+
+    if (!ownedOrgMembership && anyMembership && anyMembership.role !== 'OWNER') {
+      throw new ForbiddenException({
+        statusCode: 403,
+        error: 'Forbidden',
+        code: 'ONLY_OWNER_CAN_CHANGE_PLAN',
+        message: 'Тільки власник організації має право змінювати або оплачувати тарифний план',
+        details:
+          'You are an invited member of this workspace. Plan selection is managed by the organization owner.',
+      });
+    }
+
+    const orgMembership = ownedOrgMembership || anyMembership;
     const organizationId = orgMembership?.organizationId || null;
     const organizationName = orgMembership?.organization?.name || null;
 

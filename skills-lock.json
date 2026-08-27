@@ -187,6 +187,18 @@
       "skillPath": "skills/meta/writing-skills/SKILL.md",
       "computedHash": "37949349003b108dcff63c1df9f8b2f969cc718fa7506ed47648d40f2f39a4e5"
     },
+    "backend-development": {
+      "source": "mrgoonie/claudekit-skills",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/backend-development/SKILL.md",
+      "computedHash": "19a6a72ddb96062c3edef801451bd721726dd571f7db221f0b4d83ad70aad114"
+    },
+    "backend-patterns": {
+      "source": "affaan-m/ecc",
+      "sourceType": "github",
+      "skillPath": "skills/backend-patterns/SKILL.md",
+      "computedHash": "45bf0c6abd0549b56142690f49437bc59c7b4f55b62dc7717ef295ec6ed6617f"
+    },
     "beautiful-desing": {
       "source": "zay-m3/naturalsql",
       "sourceType": "github",
@@ -210,6 +222,12 @@
       "sourceType": "github",
       "skillPath": "skills/git-commit/SKILL.md",
       "computedHash": "2607fc60629b82b257136dd2a7a373f0a4466c0b49df7746d845d59313c99b21"
+    },
+    "integrate-backend": {
+      "source": "microsoft/power-platform-skills",
+      "sourceType": "github",
+      "skillPath": "plugins/power-pages/skills/integrate-backend/SKILL.md",
+      "computedHash": "b3a37ea27f061f50141aa1d603516b579cb99462d573bd2c392a9bc3f9b7b637"
     },
     "nestjs-best-practices": {
       "source": "kadajett/agent-nestjs-skills",
@@ -259,17 +277,35 @@
       "skillPath": "skills/requesting-code-review/SKILL.md",
       "computedHash": "004f340ae65811095d6a9bb0a759c87d0a8085c5e705dbb019b011626293d2e9"
     },
+    "sentry-backend-bugs": {
+      "source": "getsentry/sentry",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/sentry-backend-bugs/SKILL.md",
+      "computedHash": "eb7668a2b46817e72ba945003ab844a0d5191a0a2301e9808f831f1e280bdfc1"
+    },
     "shadcn": {
       "source": "shadcn/ui",
       "sourceType": "github",
       "skillPath": "skills/shadcn/SKILL.md",
       "computedHash": "c1a68ee06a668aced9ab2b5fbdea5f989864123794eb2e056b339a072dbb7f10"
     },
+    "subscription-lifecycle": {
+      "source": "eronred/aso-skills",
+      "sourceType": "github",
+      "skillPath": "skills/subscription-lifecycle/SKILL.md",
+      "computedHash": "c37ae50bd23c541fddee4ed232d56c2aefcad267dd3a98a4f0b136078570d2ee"
+    },
     "supabase-postgres-best-practices": {
       "source": "supabase/agent-skills",
       "sourceType": "github",
       "skillPath": "skills/supabase-postgres-best-practices/SKILL.md",
       "computedHash": "e14e276241805c97dbcfe40dcbea1a3035269cc7293cac4b1832dda41a835e60"
+    },
+    "ui-ux-pro-max": {
+      "source": "nextlevelbuilder/ui-ux-pro-max-skill",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/ui-ux-pro-max/SKILL.md",
+      "computedHash": "523b8063c07eedd2b8a1ca94d7a0be9ad340026bd9f21a1eda0b6be2a855298f"
     },
     "vercel-react-best-practices": {
       "source": "vercel-labs/agent-skills",

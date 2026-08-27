@@ -1,0 +1,12 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "🔍 [Pre-Push] Перевірка цілісності збірки перед відправкою (pnpm verify:build)..."
+pnpm verify:build
+
+if [ $? -ne 0 ]; then
+  echo "❌ [Pre-Push] Збірка завершилась з помилкою! Push заблоковано для запобігання зламаних білдів."
+  exit 1
+fi
+
+echo "✅ [Pre-Push] Збірка успішна! Дозвіл на push надано."

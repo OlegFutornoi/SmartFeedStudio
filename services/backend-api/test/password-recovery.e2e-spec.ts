@@ -3,8 +3,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { PrismaService } from '../src/prisma/prisma.service';
+import { cleanDatabase } from './utils/teardown.helper';
 
 /**
+
  * E2E Tests: Auth — Password Recovery Flow (Forgot Password & Reset Password)
  *
  * TDD: tests written to cover the full recovery lifecycle.
@@ -48,25 +50,20 @@ describe('Auth — Password Recovery (E2E)', () => {
 
     await app.init();
 
+    await cleanDatabase(prisma, {
+      emailPrefixes: ['pwreset-', 'pw-recovery+', 'pw-reset+'],
+    });
+
     // Register primary test user
     createdEmails.push(testUser.email);
     await request(app.getHttpServer()).post('/api/auth/register').send(testUser).expect(201);
   });
 
   afterAll(async () => {
-    // ── MANDATORY TEST DATA TEARDOWN ──────────────────────────────────────────
-    if (createdEmails.length > 0) {
-      await prisma.license.deleteMany({
-        where: { user: { email: { in: createdEmails } } },
-      });
-      await prisma.user.deleteMany({
-        where: { email: { in: createdEmails } },
-      });
-    }
-    await prisma.user.deleteMany({
-      where: {
-        OR: [{ email: { startsWith: 'pw-recovery+' } }, { email: { startsWith: 'pw-reset+' } }],
-      },
+    // ── MANDATORY 100% TEST DATA TEARDOWN ─────────────────────────────────────
+    await cleanDatabase(prisma, {
+      userEmails: createdEmails,
+      emailPrefixes: ['pwreset-', 'pw-recovery+', 'pw-reset+'],
     });
     // ─────────────────────────────────────────────────────────────────────────
 

@@ -9,6 +9,7 @@ import { useLanguage } from '../../../contexts/LanguageContext';
 import { TariffPlanDto, CreateTariffPlanDto, UpdateTariffPlanDto } from '@smartfeed/shared';
 import { PlanCard } from '../../../components/plans/PlanCard';
 import { PlanDialog } from '../../../components/plans/PlanDialog';
+import { PlanDeleteDialog } from '../../../components/plans/PlanDeleteDialog';
 
 export default function PlansPage() {
   const { locale } = useLanguage();
@@ -18,8 +19,13 @@ export default function PlansPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Edit/Create dialog
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingPlan, setEditingPlan] = useState<TariffPlanDto | null>(null);
+
+  // Delete dialog
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; code: string } | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const fetchPlans = useCallback(async () => {
     setIsLoading(true);
@@ -39,29 +45,26 @@ export default function PlansPage() {
     fetchPlans();
   }, [fetchPlans]);
 
-  const handleOpenCreate = () => {
+  const handleOpenCreate = useCallback(() => {
     setEditingPlan(null);
     setIsDialogOpen(true);
-  };
+  }, []);
 
-  const handleOpenEdit = (plan: TariffPlanDto) => {
+  const handleOpenEdit = useCallback((plan: TariffPlanDto) => {
     setEditingPlan(plan);
     setIsDialogOpen(true);
-  };
+  }, []);
 
-  const handleDeletePlan = async (id: string, code: string) => {
-    if (
-      !confirm(
-        isUk
-          ? `Ви впевнені, що хочете видалити тарифний план "${code}"?`
-          : `Are you sure you want to delete tariff plan "${code}"?`,
-      )
-    ) {
-      return;
-    }
+  const handleRequestDelete = useCallback((id: string, code: string) => {
+    setDeleteTarget({ id, code });
+  }, []);
 
+  const handleDeleteConfirm = useCallback(async () => {
+    if (!deleteTarget) return;
+    setIsDeleting(true);
     try {
-      await api.deleteTariffPlan(id);
+      await api.deleteTariffPlan(deleteTarget.id);
+      setDeleteTarget(null);
       await fetchPlans();
     } catch (err: unknown) {
       const msg =
@@ -70,45 +73,47 @@ export default function PlansPage() {
           : isUk
             ? 'Помилка видалення тарифного плану'
             : 'Failed to delete tariff plan';
-      alert(msg);
+      setError(msg);
+    } finally {
+      setIsDeleting(false);
     }
-  };
+  }, [deleteTarget, fetchPlans, isUk]);
 
-  const handleSavePlan = async (
-    dto: CreateTariffPlanDto | UpdateTariffPlanDto,
-    isEdit: boolean,
-  ) => {
-    if (isEdit && editingPlan) {
-      await api.updateTariffPlan(editingPlan.id, dto as UpdateTariffPlanDto);
-    } else {
-      await api.createTariffPlan(dto as CreateTariffPlanDto);
-    }
-    await fetchPlans();
-  };
+  const handleSavePlan = useCallback(
+    async (dto: CreateTariffPlanDto | UpdateTariffPlanDto, isEdit: boolean) => {
+      if (isEdit && editingPlan) {
+        await api.updateTariffPlan(editingPlan.id, dto as UpdateTariffPlanDto);
+      } else {
+        await api.createTariffPlan(dto as CreateTariffPlanDto);
+      }
+      await fetchPlans();
+    },
+    [editingPlan, fetchPlans],
+  );
 
   return (
     <div
       data-testid="plans-management-page"
-      className="flex flex-col gap-8 animate-in fade-in duration-300"
+      className="flex flex-col space-y-6 animate-in fade-in duration-300"
     >
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-border">
+      {/* Sleek Minimalist Page Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1
             data-testid="plans-header-title"
-            className="text-2xl font-semibold tracking-tight text-foreground flex items-center gap-2.5"
+            className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl flex items-center gap-2.5"
           >
-            <Layers className="size-6 text-primary" />
+            <Layers className="size-6 text-primary shrink-0" />
             <span>{isUk ? 'Тарифні плани' : 'Tariff Plans'}</span>
           </h1>
-          <p className="text-xs text-muted-foreground mt-1">
+          <p data-testid="plans-header-subtitle" className="text-sm text-muted-foreground mt-0.5">
             {isUk
               ? 'Керування квотами, ціноутворенням, кількістю постачальників та перевагами планів'
               : 'Manage dynamic quotas, pricing tiers, suppliers limits, and plan features'}
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 shrink-0">
           <Link
             href="/licenses"
             data-testid="go-to-licenses-btn"
@@ -181,7 +186,7 @@ export default function PlansPage() {
                 plan={plan}
                 isUk={isUk}
                 onEdit={handleOpenEdit}
-                onDelete={handleDeletePlan}
+                onDelete={handleRequestDelete}
               />
             ))}
           </div>
@@ -195,6 +200,16 @@ export default function PlansPage() {
         onSubmit={handleSavePlan}
         initialData={editingPlan}
         isUk={isUk}
+      />
+
+      {/* Plan Delete Confirmation Dialog */}
+      <PlanDeleteDialog
+        open={Boolean(deleteTarget)}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+        planCode={deleteTarget?.code ?? null}
+        isUk={isUk}
+        onConfirm={handleDeleteConfirm}
+        isDeleting={isDeleting}
       />
     </div>
   );

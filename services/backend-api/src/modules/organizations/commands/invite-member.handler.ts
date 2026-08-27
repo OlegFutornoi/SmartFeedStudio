@@ -6,10 +6,11 @@ import {
   NotFoundException,
   Logger,
 } from '@nestjs/common';
-import * as bcrypt from 'bcrypt';
+import { ConfigService } from '@nestjs/config';
 import * as crypto from 'crypto';
-import { MemberRole, Role } from '@smartfeed/shared';
+import { MemberRole } from '@smartfeed/shared';
 import { PrismaService } from '../../../prisma/prisma.service';
+import { MailService } from '../../mail/mail.service';
 import { InviteMemberCommand } from './invite-member.command';
 
 @Injectable()
@@ -17,7 +18,11 @@ import { InviteMemberCommand } from './invite-member.command';
 export class InviteMemberHandler implements ICommandHandler<InviteMemberCommand> {
   private readonly logger = new Logger(InviteMemberHandler.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly configService: ConfigService,
+    private readonly mailService: MailService,
+  ) {}
 
   async execute(command: InviteMemberCommand) {
     const { organizationId, requesterUserId, email, role } = command;
@@ -40,6 +45,14 @@ export class InviteMemberHandler implements ICommandHandler<InviteMemberCommand>
           userId: requesterUserId,
         },
       },
+      include: {
+        user: {
+          select: {
+            fullName: true,
+            email: true,
+          },
+        },
+      },
     });
 
     if (
@@ -49,41 +62,23 @@ export class InviteMemberHandler implements ICommandHandler<InviteMemberCommand>
       throw new ForbiddenException('Only organization owners or admins can invite team members');
     }
 
-    // 3. Find or auto-create target user
-    let targetUser = await this.prisma.user.findUnique({
-      where: { email: normalizedEmail },
-    });
-
-    if (!targetUser) {
-      const tempPassword = crypto.randomBytes(16).toString('hex') + 'A1!';
-      const passwordHash = await bcrypt.hash(tempPassword, 10);
-      targetUser = await this.prisma.user.create({
-        data: {
-          email: normalizedEmail,
-          passwordHash,
-          role: Role.USER,
-        },
-      });
-      this.logger.log(`Created new user account for invited email: ${normalizedEmail}`);
-    }
-
-    // 4. Check if user is already a member
-    const existingMembership = await this.prisma.organizationMember.findUnique({
+    // 3. Check if user with this email is already an active member of this organization
+    const existingMember = await this.prisma.organizationMember.findFirst({
       where: {
-        organizationId_userId: {
-          organizationId,
-          userId: targetUser.id,
+        organizationId,
+        user: {
+          email: normalizedEmail,
         },
       },
     });
 
-    if (existingMembership) {
+    if (existingMember) {
       throw new ConflictException(
-        `User "${normalizedEmail}" is already a member of this organization`,
+        `User "${normalizedEmail}" is already an active member of this organization`,
       );
     }
 
-    // 5. Team Seats Quota Check
+    // 4. Team Seats Quota Check
     const currentMembersCount = await this.prisma.organizationMember.count({
       where: { organizationId },
     });
@@ -115,37 +110,80 @@ export class InviteMemberHandler implements ICommandHandler<InviteMemberCommand>
       });
     }
 
-    // 6. Create organization member
+    // 5. Generate secure token & expiration (7 days)
+    const token = `SF-INV-${crypto.randomBytes(24).toString('hex')}`;
+    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
     const memberRole = (role || MemberRole.MEMBER) as any;
-    const member = await this.prisma.organizationMember.create({
-      data: {
+
+    // Check if there is already a PENDING invitation for this email
+    const existingInvitation = await this.prisma.organizationInvitation.findFirst({
+      where: {
         organizationId,
-        userId: targetUser.id,
-        role: memberRole,
-      },
-      include: {
-        user: {
-          select: {
-            id: true,
-            email: true,
-            fullName: true,
-          },
-        },
+        email: normalizedEmail,
+        status: 'PENDING',
       },
     });
 
-    this.logger.log(
-      `Member added to organization "${organizationId}": user=${targetUser.id}, email=${targetUser.email}, role=${member.role}`,
-    );
+    let invitation;
+    if (existingInvitation) {
+      invitation = await this.prisma.organizationInvitation.update({
+        where: { id: existingInvitation.id },
+        data: {
+          token,
+          role: memberRole,
+          expiresAt,
+          invitedById: requesterUserId,
+        },
+      });
+      this.logger.log(`Refreshed existing invitation for ${normalizedEmail} (token renewed)`);
+    } else {
+      invitation = await this.prisma.organizationInvitation.create({
+        data: {
+          organizationId,
+          email: normalizedEmail,
+          role: memberRole,
+          token,
+          expiresAt,
+          invitedById: requesterUserId,
+        },
+      });
+      this.logger.log(`Created new invitation for ${normalizedEmail} to org ${organization.name}`);
+    }
+
+    // 6. Form invite URL
+    const appUrl = this.configService.get<string>('APP_URL', 'http://localhost:1420');
+    const inviteUrl = `${appUrl}/invite?token=${token}`;
+
+    // 7. Send notification email via MailService (asynchronously, with fallback)
+    const inviterName =
+      requesterMember.user?.fullName || requesterMember.user?.email || 'Адміністратор';
+
+    this.mailService
+      .sendInvitationEmail({
+        to: normalizedEmail,
+        inviterName,
+        organizationName: organization.name,
+        role: memberRole,
+        token,
+        inviteUrl,
+        expiresAt,
+      })
+      .catch((err) => {
+        this.logger.warn(`Non-blocking email sending error: ${err?.message}`);
+      });
 
     return {
-      id: member.id,
-      organizationId: member.organizationId,
-      userId: member.userId,
-      userEmail: member.user.email,
-      userFullName: member.user.fullName,
-      role: member.role,
-      joinedAt: member.joinedAt,
+      id: invitation.id,
+      organizationId: invitation.organizationId,
+      organizationName: organization.name,
+      email: invitation.email,
+      role: invitation.role,
+      token: invitation.token,
+      inviteUrl,
+      status: invitation.status,
+      invitedById: invitation.invitedById,
+      expiresAt: invitation.expiresAt,
+      createdAt: invitation.createdAt,
     };
   }
 }

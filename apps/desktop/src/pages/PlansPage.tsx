@@ -1,39 +1,62 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { CreditCard, AlertTriangle, CheckCircle2, RefreshCw, Loader2 } from 'lucide-react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
+import {
+  CreditCard,
+  AlertTriangle,
+  CheckCircle2,
+  RefreshCw,
+  Loader2,
+  Building2,
+  ShieldCheck,
+} from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigation } from '@/contexts/NavigationContext';
 import { useTranslation, getErrorMessage } from '@/i18n';
 import { getMyLicense, getTariffPlans, selectTariffPlan } from '@/lib/api';
 import { PlanCard, PlanItem } from '@/components/plans/PlanCard';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+
+import type { LicenseEntity } from '@smartfeed/shared';
 
 export const PlansPage: React.FC = () => {
-  const { token } = useAuth();
+  const { token, user } = useAuth();
   const { refreshNavigation } = useNavigation();
   const { t } = useTranslation(['plans', 'common', 'errors']);
 
   const [plans, setPlans] = useState<PlanItem[]>([]);
-  const [currentLicense, setCurrentLicense] = useState<any>(null);
+  const [currentLicense, setCurrentLicense] = useState<LicenseEntity | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isSubmitting, setIsSubmitting] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [rawError, setRawError] = useState<unknown>(null);
+  const errorMessage = useMemo(
+    () => (rawError ? getErrorMessage(rawError, t) : null),
+    [rawError, t],
+  );
+
+  const isInvitedMember = Boolean(user?.organization && user.organization.role !== 'OWNER');
 
   const loadData = useCallback(async () => {
-    if (!token) return;
+    if (!token) {
+      setIsLoading(false);
+      return;
+    }
     setIsLoading(true);
-    setErrorMessage(null);
+    setRawError(null);
 
     try {
-      const [plansData, licenseData] = await Promise.all([getTariffPlans(), getMyLicense(token)]);
-      setPlans(plansData);
+      const [plansData, licenseData] = await Promise.all([
+        getTariffPlans(),
+        getMyLicense(token).catch(() => null),
+      ]);
+      setPlans(plansData || []);
       setCurrentLicense(licenseData);
     } catch (err) {
-      setErrorMessage(getErrorMessage(err, t));
+      setRawError(err);
     } finally {
       setIsLoading(false);
     }
-  }, [token, t]);
+  }, [token]);
 
   useEffect(() => {
     loadData();
@@ -42,7 +65,7 @@ export const PlansPage: React.FC = () => {
   const handleSelectPlan = async (planCode: string) => {
     if (!token) return;
     setIsSubmitting(planCode);
-    setErrorMessage(null);
+    setRawError(null);
     setSuccessMessage(null);
 
     try {
@@ -51,7 +74,7 @@ export const PlansPage: React.FC = () => {
       setSuccessMessage(t('plans.planSwitchedSuccess'));
       await refreshNavigation();
     } catch (err) {
-      setErrorMessage(getErrorMessage(err, t));
+      setRawError(err);
     } finally {
       setIsSubmitting(null);
     }
@@ -116,8 +139,61 @@ export const PlansPage: React.FC = () => {
         </div>
       )}
 
-      {/* Plan Cards Grid */}
-      {isLoading ? (
+      {/* Invited Member Corporate Info Card */}
+      {isInvitedMember ? (
+        <div
+          data-testid="invited-member-plan-card"
+          className="rounded-2xl border border-border/80 bg-card/60 backdrop-blur-sm p-6 md:p-8 space-y-6 shadow-sm"
+        >
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border/50 pb-4">
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
+                <Building2 className="h-5 w-5" />
+              </div>
+              <div>
+                <h2 className="text-lg font-bold text-foreground">
+                  {user?.organization?.name || 'Корпоративний воркспейс'}
+                </h2>
+                <p className="text-xs text-muted-foreground">{t('plans.corporateLicenseNotice')}</p>
+              </div>
+            </div>
+            <Badge
+              variant="outline"
+              className="bg-primary/10 text-primary border-primary/30 self-start sm:self-auto"
+            >
+              <ShieldCheck className="h-3.5 w-3.5 mr-1" />
+              {currentLicense?.planType || 'PRO'}
+            </Badge>
+          </div>
+
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            {t('plans.managedByOwnerDesc')}
+          </p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+            <div className="p-4 rounded-xl bg-muted/40 border border-border/50">
+              <div className="text-xs text-muted-foreground">{t('plans.xmlQuota')}</div>
+              <div className="text-lg font-bold text-foreground mt-0.5">
+                {currentLicense?.maxXmlLimit
+                  ? currentLicense.maxXmlLimit.toLocaleString()
+                  : '50,000'}
+              </div>
+            </div>
+            <div className="p-4 rounded-xl bg-muted/40 border border-border/50">
+              <div className="text-xs text-muted-foreground">{t('plans.aiCreditsQuota')}</div>
+              <div className="text-lg font-bold text-foreground mt-0.5">
+                {currentLicense?.aiCredits ? currentLicense.aiCredits.toLocaleString() : '2,000'}
+              </div>
+            </div>
+            <div className="p-4 rounded-xl bg-muted/40 border border-border/50">
+              <div className="text-xs text-muted-foreground">{t('plans.cloudBackup')}</div>
+              <div className="text-lg font-bold text-emerald-500 mt-0.5">
+                {currentLicense?.canCloudBackup ? 'S3 MinIO / AWS' : 'Ні'}
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : isLoading ? (
         <div className="flex h-64 w-full items-center justify-center">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>

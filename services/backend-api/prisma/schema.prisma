@@ -38,22 +38,33 @@ enum MemberRole {
   MEMBER
 }
 
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  EXPIRED
+  REVOKED
+}
+
 model User {
   id           String         @id @default(cuid())
   email        String         @unique
   passwordHash String
   fullName     String?
   role         Role           @default(USER)
+  isActive     Boolean        @default(true) @map("is_active")
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
   licenses     License[]
   snapshots    Snapshot[]
   images       ProductImage[]
 
-  ownedOrganizations      Organization[]       @relation("OrganizationOwner")
+  ownedOrganizations      Organization[]           @relation("OrganizationOwner")
   organizationMemberships OrganizationMember[]
+  sentInvitations         OrganizationInvitation[] @relation("InvitationSender")
 
   @@index([role])
+  @@index([role, isActive])
   @@index([createdAt])
   @@index([email(ops: raw("gin_trgm_ops"))], type: Gin)
   @@index([fullName(ops: raw("gin_trgm_ops"))], type: Gin)
@@ -61,15 +72,16 @@ model User {
 }
 
 model Organization {
-  id        String               @id @default(cuid())
-  name      String
-  slug      String?              @unique
-  ownerId   String
-  owner     User                 @relation("OrganizationOwner", fields: [ownerId], references: [id], onDelete: Cascade)
-  members   OrganizationMember[]
-  licenses  License[]
-  createdAt DateTime             @default(now())
-  updatedAt DateTime             @updatedAt
+  id          String                   @id @default(cuid())
+  name        String
+  slug        String?                  @unique
+  ownerId     String
+  owner       User                     @relation("OrganizationOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  members     OrganizationMember[]
+  invitations OrganizationInvitation[]
+  licenses    License[]
+  createdAt   DateTime                 @default(now())
+  updatedAt   DateTime                 @updatedAt
 
   @@index([ownerId])
   @@index([createdAt])
@@ -91,6 +103,30 @@ model OrganizationMember {
   @@index([joinedAt])
   @@map("organization_members")
 }
+
+model OrganizationInvitation {
+  id             String           @id @default(cuid())
+  organizationId String
+  organization   Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  email          String
+  role           MemberRole       @default(MEMBER)
+  token          String           @unique
+  status         InvitationStatus @default(PENDING)
+  invitedById    String
+  invitedBy      User             @relation("InvitationSender", fields: [invitedById], references: [id], onDelete: Cascade)
+  expiresAt      DateTime
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  @@index([organizationId])
+  @@index([invitedById])
+  @@index([email])
+  @@index([token])
+  @@index([status])
+  @@index([expiresAt])
+  @@map("organization_invitations")
+}
+
 
 model TariffPlan {
   id            String    @id @default(cuid())

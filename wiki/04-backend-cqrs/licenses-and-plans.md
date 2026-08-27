@@ -44,6 +44,8 @@ SmartFeed Studio використовує **4-тарифну систему** з
 - `GET /api/licenses/my`: Отримання поточної ліцензії, залишку днів (`daysRemaining`), статусу (`isExpired`) та пов'язаного плану з усіма quota-полями (`Bearer`).
 - `POST /api/licenses/select-plan`: Вибір нового тарифу або поновлення (`Bearer`).
 - `GET /api/licenses/admin`: Перегляд усіх виданих ліцензій (`Bearer Admin`).
+- `PATCH /api/licenses/:id/status`: Призупинення / відновлення ліцензії (`{ isActive: boolean }`, `Bearer Admin`).
+- `DELETE /api/licenses/:id`: Видалення ліцензії (`Bearer Admin`).
 
 ---
 

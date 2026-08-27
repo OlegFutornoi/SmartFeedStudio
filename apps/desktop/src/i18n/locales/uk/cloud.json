@@ -1,0 +1,17 @@
+{
+  "title": "Хмарна синхронізація & Бекап",
+  "description": "Пряме шифроване збереження знімків каталогів у сховище S3 / MinIO",
+  "createSnapshot": "Створити знімок зараз",
+  "storageUsage": "Використання хмарного сховища",
+  "snapshotsCount": "Збережених знімків",
+  "lastBackup": "Останній бекап",
+  "encryptionStatus": "Шифрування",
+  "encryptionDesc": "AES-256 та захист ключів через OS Keychain",
+  "storageQuota": "Хмарний ліміт",
+  "snapshotsHistory": "Історія знімків каталогів",
+  "downloadSnapshot": "Завантажити",
+  "restoreSnapshot": "Відновити знімок",
+  "deleteSnapshot": "Видалити",
+  "emptySnapshots": "Знімків ще не створено",
+  "emptySnapshotsDesc": "Натисніть «Створити знімок зараз», щоб зберегти резервну копію у хмарі"
+}

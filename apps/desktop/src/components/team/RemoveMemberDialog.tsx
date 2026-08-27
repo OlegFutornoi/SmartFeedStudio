@@ -3,9 +3,11 @@ import { AlertTriangle, Trash2, X, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from '@/i18n';
 
+import type { OrganizationMemberDto } from '@smartfeed/shared';
+
 interface RemoveMemberDialogProps {
   isOpen: boolean;
-  member: { id: string; email: string; fullName?: string | null } | null;
+  member: OrganizationMemberDto | null;
   onClose: () => void;
   onConfirm: (memberId: string) => Promise<void>;
 }
@@ -31,7 +33,9 @@ export const RemoveMemberDialog: React.FC<RemoveMemberDialogProps> = ({
     }
   };
 
-  const displayName = member.fullName ? `${member.fullName} (${member.email})` : member.email;
+  const userEmail = member.userEmail || (member as any).email || '';
+  const userFullName = member.userFullName || (member as any).fullName || '';
+  const displayName = userFullName ? `${userFullName} (${userEmail})` : userEmail;
 
   return (
     <div
@@ -59,7 +63,7 @@ export const RemoveMemberDialog: React.FC<RemoveMemberDialogProps> = ({
           </div>
           <h2 className="text-base font-bold text-foreground">{t('team.removeModalTitle')}</h2>
           <p className="text-xs text-muted-foreground mt-2 leading-relaxed">
-            {t('team.removeModalDesc', { name: displayName, email: member.email })}
+            {t('team.removeModalDesc', { name: displayName, email: userEmail })}
           </p>
         </div>
 

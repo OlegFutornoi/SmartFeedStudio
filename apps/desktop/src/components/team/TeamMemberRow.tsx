@@ -4,18 +4,13 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from '@/i18n';
 
+import type { OrganizationMemberDto } from '@smartfeed/shared';
+
 interface TeamMemberRowProps {
-  member: {
-    id: string;
-    userId: string;
-    email: string;
-    fullName?: string | null;
-    role: string;
-    joinedAt: string | Date;
-  };
+  member: OrganizationMemberDto;
   currentUserId?: string;
   isCurrentUserOwnerOrAdmin: boolean;
-  onRemove: (member: any) => void;
+  onRemove: (member: OrganizationMemberDto) => void;
 }
 
 export const TeamMemberRow: React.FC<TeamMemberRowProps> = ({
@@ -71,6 +66,9 @@ export const TeamMemberRow: React.FC<TeamMemberRowProps> = ({
     year: 'numeric',
   });
 
+  const memberEmail = member.userEmail || (member as any).email || '';
+  const memberFullName = member.userFullName || (member as any).fullName || '';
+
   return (
     <div
       className="flex items-center justify-between gap-3 p-3.5 rounded-xl border border-border/80 bg-muted/10 hover:bg-muted/30 transition-colors"
@@ -78,12 +76,12 @@ export const TeamMemberRow: React.FC<TeamMemberRowProps> = ({
     >
       <div className="flex items-center gap-3 min-w-0 flex-1">
         <div className="h-9 w-9 rounded-full bg-primary/20 flex items-center justify-center text-primary text-xs font-bold border border-primary/30 shrink-0">
-          {getInitials(member.fullName, member.email)}
+          {getInitials(memberFullName, memberEmail)}
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
             <span className="text-xs font-semibold text-foreground truncate">
-              {member.fullName || member.email.split('@')[0]}
+              {memberFullName || memberEmail.split('@')[0]}
             </span>
             {isYou && (
               <Badge
@@ -99,7 +97,7 @@ export const TeamMemberRow: React.FC<TeamMemberRowProps> = ({
             className="text-[11px] text-muted-foreground font-mono truncate mt-0.5"
             data-testid="member-email"
           >
-            {member.email}
+            {memberEmail}
           </p>
         </div>
       </div>

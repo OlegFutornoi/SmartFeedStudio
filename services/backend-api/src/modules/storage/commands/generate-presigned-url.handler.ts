@@ -40,9 +40,17 @@ export class GeneratePresignedUploadUrlHandler implements ICommandHandler<
   async execute(command: GeneratePresignedUploadUrlCommand): Promise<PresignedUploadUrlResult> {
     const { userId, fileName, contentType, folder } = command;
 
-    const sanitizedFileName = fileName.replace(/[^a-zA-Z0-9._-]/g, '_');
+    const ALLOWED_FOLDERS = new Set(['images', 'snapshots', 'catalogs', 'exports']);
+    const targetFolder =
+      folder && ALLOWED_FOLDERS.has(folder.toLowerCase().trim())
+        ? folder.toLowerCase().trim()
+        : 'images';
+
+    // Path traversal defense: strip any path separators and keep only safe basename
+    const baseFileName = fileName.split(/[/\\]/).pop() || 'upload';
+    const sanitizedFileName = baseFileName.replace(/[^a-zA-Z0-9._-]/g, '_').slice(0, 100);
     const uniqueSuffix = crypto.randomBytes(4).toString('hex');
-    const s3Key = `${folder}/${userId}/${Date.now()}-${uniqueSuffix}-${sanitizedFileName}`;
+    const s3Key = `${targetFolder}/${userId}/${Date.now()}-${uniqueSuffix}-${sanitizedFileName}`;
 
     const expiresInSeconds = 60 * 15; // 15 minutes validity
 

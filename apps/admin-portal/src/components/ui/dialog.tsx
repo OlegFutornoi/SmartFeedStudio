@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
@@ -76,19 +77,24 @@ export function DialogContent({
   const context = React.useContext(DialogContext);
   if (!context) throw new Error('DialogContent must be used within Dialog');
 
-  if (!context.open) return null;
+  const [mounted, setMounted] = React.useState(false);
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+  if (!context.open || !mounted) return null;
+
+  return createPortal(
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/70 backdrop-blur-sm animate-in fade-in"
+        className="fixed inset-0 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200"
         onClick={() => context.setOpen(false)}
       />
       {/* Content */}
       <div
         className={cn(
-          'relative z-50 w-full max-w-lg rounded-xl border border-border bg-card p-6 shadow-2xl animate-in zoom-in-95 duration-200',
+          'relative z-50 w-full max-w-lg rounded-xl border border-border bg-card text-card-foreground p-6 shadow-2xl animate-in zoom-in-95 duration-200 backdrop-blur-none',
           className,
         )}
         {...props}
@@ -103,7 +109,8 @@ export function DialogContent({
           <span className="sr-only">Close</span>
         </button>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
 

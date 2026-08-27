@@ -22,3 +22,11 @@ export enum MemberRole {
   ADMIN = 'ADMIN',
   MEMBER = 'MEMBER',
 }
+
+export enum InvitationStatus {
+  PENDING = 'PENDING',
+  ACCEPTED = 'ACCEPTED',
+  DECLINED = 'DECLINED',
+  EXPIRED = 'EXPIRED',
+  REVOKED = 'REVOKED',
+}

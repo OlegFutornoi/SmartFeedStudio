@@ -11,11 +11,13 @@ import {
   Users,
   Shield,
   Bell,
+  Compass,
+  LucideIcon,
 } from 'lucide-react';
 
 export interface IconOption {
   name: string;
-  icon: React.ComponentType<{ className?: string }>;
+  icon: LucideIcon;
   label: string;
 }
 
@@ -31,13 +33,15 @@ export const AVAILABLE_ICONS: IconOption[] = [
   { name: 'Users', icon: Users, label: 'Користувачі / Users' },
   { name: 'Shield', icon: Shield, label: 'Безпека / Security' },
   { name: 'Bell', icon: Bell, label: 'Сповіщення / Notifications' },
+  { name: 'Compass', icon: Compass, label: 'Навігація / Navigation' },
 ];
 
-export function getIconComponent(iconName: string): React.ReactElement {
+export function getLucideIcon(iconName: string): LucideIcon {
   const found = AVAILABLE_ICONS.find((i) => i.name === iconName);
-  if (found) {
-    const Icon = found.icon;
-    return <Icon className="h-4 w-4" />;
-  }
-  return <LayoutDashboard className="h-4 w-4" />;
+  return found ? found.icon : LayoutDashboard;
+}
+
+export function getIconComponent(iconName: string): React.ReactElement {
+  const Icon = getLucideIcon(iconName);
+  return <Icon className="h-4 w-4" />;
 }

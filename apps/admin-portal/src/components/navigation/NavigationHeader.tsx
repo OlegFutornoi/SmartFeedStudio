@@ -17,11 +17,11 @@ export const NavigationHeader = React.memo(function NavigationHeader({
   return (
     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-2">
-          <Compass className="h-6 w-6 text-primary" />
-          {t('navigation', 'title')}
+        <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl flex items-center gap-2.5">
+          <Compass className="size-6 text-primary shrink-0" />
+          <span>{t('navigation', 'title')}</span>
         </h1>
-        <p className="text-sm text-muted-foreground mt-1">{t('navigation', 'subtitle')}</p>
+        <p className="text-sm text-muted-foreground mt-0.5">{t('navigation', 'subtitle')}</p>
       </div>
 
       <Button

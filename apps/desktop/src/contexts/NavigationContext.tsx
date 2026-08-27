@@ -93,8 +93,9 @@ interface NavigationContextType {
 const NavigationContext = createContext<NavigationContextType | undefined>(undefined);
 
 export function NavigationProvider({ children }: { children: React.ReactNode }) {
-  const { token, isAuthenticated } = useAuth();
+  const { token, isAuthenticated, user } = useAuth();
   const [items, setItems] = useState<NavigationItemDto[]>(DEFAULT_NAVIGATION_ITEMS);
+
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const lastFetchedTokenRef = React.useRef<string | null>(null);
   const isFetchingRef = React.useRef<boolean>(false);
@@ -139,13 +140,21 @@ export function NavigationProvider({ children }: { children: React.ReactNode }) 
     fetchNavigation();
   }, [fetchNavigation]);
 
+  const visibleItems = useMemo(() => {
+    const isInvitedMember = Boolean(user?.organization && user.organization.role !== 'OWNER');
+    if (isInvitedMember) {
+      return items.filter((item) => item.key !== 'plans' && item.path !== '/plans');
+    }
+    return items;
+  }, [items, user?.organization]);
+
   const value: NavigationContextType = useMemo(
     () => ({
-      items,
+      items: visibleItems,
       isLoading,
       refreshNavigation: () => fetchNavigation(true),
     }),
-    [items, isLoading, fetchNavigation],
+    [visibleItems, isLoading, fetchNavigation],
   );
 
   return <NavigationContext.Provider value={value}>{children}</NavigationContext.Provider>;

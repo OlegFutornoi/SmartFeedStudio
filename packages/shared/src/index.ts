@@ -1,5 +1,6 @@
 export * from './enums';
 export { Role, PlanType, TargetApp, MemberRole } from './enums';
+export { AccountType, CreateUserByAdminDtoSchema } from './dtos/user.dto';
 export * from './dtos/auth.dto';
 export * from './dtos/user.dto';
 export * from './dtos/license.dto';

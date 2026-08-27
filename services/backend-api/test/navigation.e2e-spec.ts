@@ -4,6 +4,7 @@ import * as request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { PrismaService } from '../src/prisma/prisma.service';
 import { Role, PlanType, TargetApp } from '@smartfeed/shared';
+import { cleanDatabase } from './utils/teardown.helper';
 
 describe('Navigation & Dynamic Access Control (E2E)', () => {
   let app: INestApplication;
@@ -38,6 +39,10 @@ describe('Navigation & Dynamic Access Control (E2E)', () => {
 
     await app.init();
 
+    await cleanDatabase(prisma, {
+      emailPrefixes: ['nav.admin+', 'nav.user+'],
+    });
+
     // Register test admin user
     const adminEmail = `nav.admin+${timestamp}@smartfeed.local`;
     createdEmails.push(adminEmail);
@@ -63,22 +68,10 @@ describe('Navigation & Dynamic Access Control (E2E)', () => {
 
   afterAll(async () => {
     // ── MANDATORY TEST DATA TEARDOWN ──────────────────────────────────────────
-    // 1. Delete all navigation items created during tests
-    if (createdItemId) {
-      await prisma.navigationItem.deleteMany({ where: { id: createdItemId } });
-    }
-    await prisma.navigationItem.deleteMany({
-      where: { key: { startsWith: 'analytics_' } },
-    });
-
-    // 2. Delete all test users and cascaded licenses created during tests
-    if (createdEmails.length > 0) {
-      await prisma.user.deleteMany({ where: { email: { in: createdEmails } } });
-    }
-    await prisma.user.deleteMany({
-      where: {
-        OR: [{ email: { startsWith: 'nav.admin+' } }, { email: { startsWith: 'nav.user+' } }],
-      },
+    await cleanDatabase(prisma, {
+      userEmails: createdEmails,
+      emailPrefixes: ['nav.admin+', 'nav.user+'],
+      navigationKeys: createdItemId ? [createdItemId] : [],
     });
     // ─────────────────────────────────────────────────────────────────────────
 

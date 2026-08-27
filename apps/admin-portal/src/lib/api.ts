@@ -1,6 +1,7 @@
 import {
   AuthResponseDto,
   ChangePasswordDto,
+  CreateUserByAdminDto,
   LoginDto,
   UserListItemDto,
   UserProfile,
@@ -104,12 +105,15 @@ class ApiClient {
   async getUsers(params?: {
     search?: string;
     role?: string;
+    orgRoleFilter?: 'ALL' | 'OWNERS' | 'MEMBERS';
     limit?: number;
     offset?: number;
   }): Promise<UserListItemDto[]> {
     const query = new URLSearchParams();
     if (params?.search) query.set('search', params.search);
     if (params?.role) query.set('role', params.role);
+    if (params?.orgRoleFilter && params.orgRoleFilter !== 'ALL')
+      query.set('orgRoleFilter', params.orgRoleFilter);
     if (params?.limit) query.set('limit', params.limit.toString());
     if (params?.offset) query.set('offset', params.offset.toString());
 
@@ -121,7 +125,32 @@ class ApiClient {
     return this.request<UsersStatsDto>('/users/stats');
   }
 
+  async createUser(dto: CreateUserByAdminDto): Promise<UserListItemDto> {
+    return this.request<UserListItemDto>('/users', {
+      method: 'POST',
+      body: JSON.stringify(dto),
+    });
+  }
+
+  async updateUserStatus(userId: string, isActive: boolean): Promise<UserListItemDto> {
+    return this.request<UserListItemDto>(`/users/${userId}/status`, {
+      method: 'PATCH',
+      body: JSON.stringify({ isActive }),
+    });
+  }
+
+  async deleteUser(userId: string): Promise<{ success: boolean }> {
+    return this.request<{ success: boolean }>(`/users/${userId}`, {
+      method: 'DELETE',
+    });
+  }
+
   // Navigation Endpoints
+  async getNavigation(app?: TargetApp): Promise<NavigationItemDto[]> {
+    const qs = app ? `?app=${app}` : '';
+    return this.request<NavigationItemDto[]>(`/navigation${qs}`);
+  }
+
   async getAdminNavigationItems(app?: TargetApp): Promise<NavigationItemDto[]> {
     const qs = app ? `?app=${app}` : '';
     return this.request<NavigationItemDto[]>(`/navigation/admin${qs}`);
@@ -187,6 +216,19 @@ class ApiClient {
   // Licenses Endpoints
   async getAdminLicenses(): Promise<AdminLicenseItemDto[]> {
     return this.request<AdminLicenseItemDto[]>('/licenses/admin');
+  }
+
+  async updateLicenseStatus(id: string, isActive: boolean): Promise<AdminLicenseItemDto> {
+    return this.request<AdminLicenseItemDto>(`/licenses/${id}/status`, {
+      method: 'PATCH',
+      body: JSON.stringify({ isActive }),
+    });
+  }
+
+  async deleteLicense(id: string): Promise<{ success: boolean }> {
+    return this.request<{ success: boolean }>(`/licenses/${id}`, {
+      method: 'DELETE',
+    });
   }
 }
 

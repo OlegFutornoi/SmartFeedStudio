@@ -1,29 +1,17 @@
-import { useState, useEffect } from 'react';
 import { Cloud, HardDrive, ShieldCheck, ArrowUpCircle, History } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useTranslation } from '@/i18n';
-import { useAuth } from '@/contexts/AuthContext';
-import { getMyLicense } from '@/lib/api';
+import { useLicense } from '@/hooks/useLicense';
 import { ExpiredPlanBlocker } from '@/components/layout/ExpiredPlanBlocker';
 
 export function CloudSyncPage() {
-  const { language } = useTranslation();
-  const isUk = language === 'uk';
-  const { token } = useAuth();
-  const [isExpired, setIsExpired] = useState<boolean>(false);
-
-  useEffect(() => {
-    if (token) {
-      getMyLicense(token)
-        .then((lic) => setIsExpired(Boolean(lic?.isExpired)))
-        .catch(() => {});
-    }
-  }, [token]);
+  const { t } = useTranslation(['cloud', 'common']);
+  const { isExpired } = useLicense();
 
   if (isExpired) {
-    return <ExpiredPlanBlocker featureName={isUk ? 'Хмарна синхронізація' : 'Cloud Sync'} />;
+    return <ExpiredPlanBlocker featureName={t('cloud:title')} />;
   }
 
   return (
@@ -40,20 +28,16 @@ export function CloudSyncPage() {
             </div>
             <div>
               <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-                {isUk ? 'Хмарна синхронізація & Бекап' : 'Cloud Sync & Backups'}
+                {t('cloud:title')}
               </h1>
-              <p className="text-sm text-muted-foreground">
-                {isUk
-                  ? 'Пряме шифроване збереження знімків каталогів у сховище S3 / MinIO'
-                  : 'Encrypted cloud backup snapshots to S3 / MinIO storage'}
-              </p>
+              <p className="text-sm text-muted-foreground">{t('cloud:description')}</p>
             </div>
           </div>
         </div>
 
         <Button className="gap-2 text-xs h-9 shadow-md shadow-primary/25 self-start sm:self-auto">
           <ArrowUpCircle className="h-4 w-4" />
-          <span>{isUk ? 'Створити знімок зараз' : 'Create Snapshot Now'}</span>
+          <span>{t('cloud:createSnapshot')}</span>
         </Button>
       </div>
 
@@ -61,9 +45,7 @@ export function CloudSyncPage() {
       <div className="grid gap-4 sm:grid-cols-3">
         <Card className="border-border/80 bg-card/60 backdrop-blur-md">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              {isUk ? 'Хмарне сховище' : 'Cloud Storage'}
-            </CardTitle>
+            <CardTitle className="text-sm font-medium">{t('cloud:storageUsage')}</CardTitle>
             <HardDrive className="size-4 text-blue-400" />
           </CardHeader>
           <CardContent>
@@ -74,9 +56,7 @@ export function CloudSyncPage() {
 
         <Card className="border-border/80 bg-card/60 backdrop-blur-md">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              {isUk ? 'Безпека передачі' : 'Security Mode'}
-            </CardTitle>
+            <CardTitle className="text-sm font-medium">{t('cloud:encryptionStatus')}</CardTitle>
             <ShieldCheck className="size-4 text-emerald-400" />
           </CardHeader>
           <CardContent>
@@ -89,24 +69,18 @@ export function CloudSyncPage() {
                 Active
               </Badge>
             </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              {isUk ? 'Presigned S3 Direct Upload' : 'Presigned S3 Direct Upload'}
-            </p>
+            <p className="text-xs text-muted-foreground mt-1">{t('cloud:encryptionDesc')}</p>
           </CardContent>
         </Card>
 
         <Card className="border-border/80 bg-card/60 backdrop-blur-md">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              {isUk ? 'Останній бекап' : 'Last Snapshot'}
-            </CardTitle>
+            <CardTitle className="text-sm font-medium">{t('cloud:lastBackup')}</CardTitle>
             <History className="size-4 text-primary" />
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-foreground">18:30</div>
-            <p className="text-xs text-muted-foreground mt-1">
-              {isUk ? 'Автоматичний щоденний зріз' : 'Automated daily snapshot'}
-            </p>
+            <p className="text-xs text-muted-foreground mt-1">Daily Automated Snapshot</p>
           </CardContent>
         </Card>
       </div>

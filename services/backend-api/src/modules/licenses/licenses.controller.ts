@@ -1,4 +1,15 @@
-import { Controller, Get, Post, Body, Query, UseGuards, NotFoundException } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Patch,
+  Delete,
+  Body,
+  Param,
+  Query,
+  UseGuards,
+  NotFoundException,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags, ApiQuery } from '@nestjs/swagger';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { AdminLicenseItemDto, LicenseEntity, PlanType, Role } from '@smartfeed/shared';
@@ -10,6 +21,9 @@ import { GetLicenseByUserIdQuery } from './queries/get-license-by-user-id.query'
 import { GetAdminLicensesQuery } from './queries/get-admin-licenses.query';
 import { CreateLicenseCommand } from './commands/create-license.command';
 import { SelectTariffPlanCommand } from './commands/select-tariff-plan.command';
+import { UpdateLicenseStatusCommand } from './commands/update-license-status.command';
+import { DeleteLicenseCommand } from './commands/delete-license.command';
+import { IsBoolean } from 'class-validator';
 
 class UpgradeLicenseDto {
   planType: PlanType;
@@ -18,6 +32,11 @@ class UpgradeLicenseDto {
 class AssignLicenseDto {
   userId: string;
   planType: PlanType;
+}
+
+class UpdateLicenseStatusDto {
+  @IsBoolean()
+  isActive: boolean;
 }
 
 @ApiTags('Licenses')
@@ -92,5 +111,30 @@ export class LicensesController {
   @ApiOperation({ summary: 'Assign a license/plan to a specific user (Admin only)' })
   async assignLicense(@Body() dto: AssignLicenseDto): Promise<LicenseEntity> {
     return this.commandBus.execute(new CreateLicenseCommand(dto.userId, dto.planType));
+  }
+
+  @Patch(':id/status')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.SUPER_ADMIN, Role.ADMIN)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Update license active/suspended status (Admin only)' })
+  @ApiResponse({ status: 200, description: 'License status updated' })
+  @ApiResponse({ status: 404, description: 'License not found' })
+  async updateStatus(
+    @Param('id') id: string,
+    @Body() dto: UpdateLicenseStatusDto,
+  ): Promise<LicenseEntity> {
+    return this.commandBus.execute(new UpdateLicenseStatusCommand(id, dto.isActive));
+  }
+
+  @Delete(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.SUPER_ADMIN, Role.ADMIN)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Delete a license by ID (Admin only)' })
+  @ApiResponse({ status: 200, description: 'License deleted' })
+  @ApiResponse({ status: 404, description: 'License not found' })
+  async deleteLicense(@Param('id') id: string): Promise<{ success: boolean }> {
+    return this.commandBus.execute(new DeleteLicenseCommand(id));
   }
 }

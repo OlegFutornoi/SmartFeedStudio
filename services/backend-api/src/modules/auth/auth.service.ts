@@ -208,6 +208,14 @@ export class AuthService {
       role: user.role,
     };
 
+    const isAdmin = user.role === Role.ADMIN || user.role === Role.SUPER_ADMIN;
+    const accessExpiration = isAdmin
+      ? ((this.configService.get<string>('JWT_ADMIN_ACCESS_EXPIRATION') ||
+          '1h') as SignOptions['expiresIn'])
+      : ((this.configService.get<string>('JWT_ACCESS_EXPIRATION') ||
+          '15m') as SignOptions['expiresIn']);
+    const expiresInSeconds = isAdmin ? 60 * 60 : 15 * 60; // 1 hour for admins, 15m for regular users
+
     const accessSecret =
       this.configService.get<string>('JWT_ACCESS_SECRET') ||
       'super-secret-access-token-key-change-in-production';
@@ -218,8 +226,7 @@ export class AuthService {
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(payload, {
         secret: accessSecret,
-        expiresIn: (this.configService.get<string>('JWT_ACCESS_EXPIRATION') ||
-          '15m') as SignOptions['expiresIn'],
+        expiresIn: accessExpiration,
       }),
       this.jwtService.signAsync(payload, {
         secret: refreshSecret,
@@ -232,7 +239,7 @@ export class AuthService {
       accessToken,
       refreshToken,
       tokenType: 'Bearer',
-      expiresIn: 15 * 60, // 15 minutes in seconds
+      expiresIn: expiresInSeconds,
     };
   }
 }

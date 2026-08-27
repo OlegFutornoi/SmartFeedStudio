@@ -137,21 +137,30 @@ All E2E tests live in `services/backend-api/test/` as `*.e2e-spec.ts` files.
 pnpm --filter @smartfeed/backend-api test:e2e
 ```
 
-| `test/auth.e2e-spec.ts` | `POST /api/auth/register`, `POST /api/auth/login` | 12 | ✅ PASS |
-| `test/password-recovery.e2e-spec.ts` | `POST /api/auth/forgot-password`, `POST /api/auth/reset-password` | 8 | ✅ PASS |
-| `test/licenses.e2e-spec.ts` | `GET /api/licenses/my`, `POST /api/licenses/select-plan`, dynamic duration, expiration checks & `RequireActiveLicenseGuard` | 7 | ✅ PASS |
-| `test/organizations.e2e-spec.ts` | `GET /api/organizations`, `GET /api/organizations/:id`, `PATCH /api/organizations/:id`, `GET /api/organizations/:id/members`, `POST /api/organizations/:id/members` (Team Seats quota checks), `DELETE /api/organizations/:id/members/:memberId`, corporate license upgrade, inheritance for existing users, corporate expiration access blocks, and renewal | 13 | ✅ PASS |
-| `test/users.e2e-spec.ts` | `GET /api/users`, `GET /api/users/stats` (with RBAC 403 Forbidden checks for regular USER), `POST /api/auth/change-password` | 9 | ✅ PASS |
-| `test/navigation.e2e-spec.ts` | `GET /api/navigation`, `GET /api/navigation/admin`, `POST /api/navigation`, `PATCH /api/navigation/:id`, `DELETE /api/navigation/:id` | 8 | ✅ PASS |
-| `test/plans.e2e-spec.ts` | `GET /api/plans`, `GET /api/plans/admin`, `POST /api/plans`, `PATCH /api/plans/:id`, `DELETE /api/plans/:id`, `GET /api/licenses/admin` | 12 | ✅ PASS |
+| Test File                                  | Endpoints Tested                                                                                                                                                                                                                                                                                                                                             | Tests Count | Status  |
+| :----------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :---------- | :------ |
+| `test/auth.e2e-spec.ts`                    | `POST /api/auth/register`, `POST /api/auth/login`                                                                                                                                                                                                                                                                                                            | 12          | ✅ PASS |
+| `test/password-recovery.e2e-spec.ts`       | `POST /api/auth/forgot-password`, `POST /api/auth/reset-password`                                                                                                                                                                                                                                                                                            | 8           | ✅ PASS |
+| `test/licenses.e2e-spec.ts`                | `GET /api/licenses/my`, `POST /api/licenses/select-plan`, dynamic duration, expiration checks & `RequireActiveLicenseGuard`, `PATCH /api/licenses/:id/status` (Suspend/Resume), `DELETE /api/licenses/:id`                                                                                                                                                   | 14          | ✅ PASS |
+| `test/organizations.e2e-spec.ts`           | `GET /api/organizations`, `GET /api/organizations/:id`, `PATCH /api/organizations/:id`, `GET /api/organizations/:id/members`, `POST /api/organizations/:id/members` (Team Seats quota checks), `DELETE /api/organizations/:id/members/:memberId`, corporate license upgrade, inheritance for existing users, corporate expiration access blocks, and renewal | 13          | ✅ PASS |
+| `test/team-invitations.e2e-spec.ts`        | `POST /api/organizations/:id/invitations` (Token link + Mailer), `GET /api/organizations/:id/invitations`, `DELETE /api/organizations/:id/invitations/:invitationId`, `GET /api/invitations/:token`, `POST /api/invitations/accept`, 403 guard for MEMBER, Mailpit delivery                                                                                  | 11          | ✅ PASS |
+| `test/users.e2e-spec.ts`                   | `GET /api/users`, `GET /api/users/stats` (with RBAC 403 Forbidden checks for regular USER), `POST /api/users` (create user by admin), `PATCH /api/users/:id/status` (Suspend/Resume), `DELETE /api/users/:id`, `SUPER_ADMIN` exclusion, `orgRoleFilter` (`OWNERS`, `MEMBERS`), `POST /api/auth/change-password`                                              | 18          | ✅ PASS |
+| `test/security-access-control.e2e-spec.ts` | RBAC admin endpoint protection, multi-tenant ABAC organization isolation, invited member plan modification guards (`ONLY_OWNER_CAN_CHANGE_PLAN`), password validation on invite accept, and S3 Presigned URL user scoping                                                                                                                                    | 17          | ✅ PASS |
+| `test/navigation.e2e-spec.ts`              | `GET /api/navigation`, `GET /api/navigation/admin`, `POST /api/navigation`, `PATCH /api/navigation/:id`, `DELETE /api/navigation/:id`                                                                                                                                                                                                                        | 8           | ✅ PASS |
+| `test/plans.e2e-spec.ts`                   | `GET /api/plans`, `GET /api/plans/admin`, `POST /api/plans`, `PATCH /api/plans/:id`, `DELETE /api/plans/:id`, `GET /api/licenses/admin`                                                                                                                                                                                                                      | 12          | ✅ PASS |
 
-**Total: 69 tests — 69 passing**
+**Total: 9 suites — 114 tests — 114 passing (100%)**
 
 ### 🧹 Mandatory Test Data Teardown
 
-Every `*.e2e-spec.ts` suite **MUST** implement complete database teardown in `afterAll`:
+Every `*.e2e-spec.ts` suite **MUST** implement complete, multi-layered database teardown in both `beforeAll` (pre-clean) and `afterAll` (post-clean) using the standardized helper `cleanDatabase` (`test/utils/teardown.helper.ts`):
 
-- Delete created users by IDs and created emails array
-- Cascade deletes to related `License`, `Snapshot`, and `ProductImage` records
-- Delete test navigation items (e.g. `analytics_*`)
-- Never leave dirty records or side effects in the test database
+- **Strict FK Deletion Hierarchy**:
+  1. `Snapshot` & `ProductImage` (catalogs, XML snapshots, product images, future product/SKU entities)
+  2. `OrganizationInvitation` (invitation tokens, emails)
+  3. `OrganizationMember` (team member associations)
+  4. `License` (all provisioned user and organization licenses)
+  5. `Organization` (test companies)
+  6. `User` (test users by IDs, emails, and wildcards)
+  7. `TariffPlan` & `NavigationItem` (test-created plans and navigation items)
+- **Zero Database Pollution**: Every test run leaves the database 100% clean with zero leftover records.

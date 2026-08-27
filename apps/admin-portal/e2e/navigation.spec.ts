@@ -3,18 +3,54 @@ import { mockNavigationItems } from './fixtures/test-data';
 import { TargetApp, PlanType } from '@smartfeed/shared';
 
 test.describe('Admin Portal — Navigation & Access Control (POM)', () => {
-  test('should render navigation page with header, items list, and live simulator', async ({
-    navigationPage,
-    page,
-  }) => {
+  test.beforeEach(async ({ page }) => {
     await page.route('**/api/navigation/admin*', async (route) => {
+      const url = route.request().url();
+      if (url.includes('app=ADMIN_PORTAL')) {
+        const adminItems = mockNavigationItems.filter(
+          (i) => i.targetApp === TargetApp.ADMIN_PORTAL,
+        );
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify(adminItems),
+        });
+      } else if (url.includes('app=DESKTOP')) {
+        const desktopItems = mockNavigationItems.filter((i) => i.targetApp === TargetApp.DESKTOP);
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify(desktopItems),
+        });
+      } else {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify(mockNavigationItems),
+        });
+      }
+    });
+
+    await page.route('**/api/plans/admin*', async (route) => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify(mockNavigationItems),
+        body: JSON.stringify([]),
       });
     });
 
+    await page.route('**/api/licenses/admin*', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify([]),
+      });
+    });
+  });
+
+  test('should render navigation page with header, items list, and live simulator', async ({
+    navigationPage,
+  }) => {
     await navigationPage.goto();
 
     // Verify main page title
@@ -28,20 +64,16 @@ test.describe('Admin Portal — Navigation & Access Control (POM)', () => {
     // Verify live simulator
     await expect(navigationPage.simulator.container).toBeVisible();
     await navigationPage.simulator.expectItemVisible('Дашборд');
+
+    await navigationPage.page.screenshot({
+      path: 'test-results/navigation-page-clean.png',
+      fullPage: true,
+    });
   });
 
   test('should switch plan tiers in simulator and dynamically filter items', async ({
     navigationPage,
-    page,
   }) => {
-    await page.route('**/api/navigation/admin*', async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify(mockNavigationItems),
-      });
-    });
-
     await navigationPage.goto();
 
     // Default Free plan: PRO items should not be visible in simulator
@@ -80,6 +112,49 @@ test.describe('Admin Portal — Navigation & Access Control (POM)', () => {
     await navigationPage.filterByApp(TargetApp.ADMIN_PORTAL);
     await navigationPage.expectItemInList('Користувачі');
     await navigationPage.expectItemNotInList('Каталоги товарів');
+  });
+
+  test('should display and reorder admin navigation items when filtering by Admin', async ({
+    navigationPage,
+    page,
+  }) => {
+    let reorderPayload: any = null;
+    await page.route('**/api/navigation/reorder*', async (route) => {
+      reorderPayload = route.request().postDataJSON();
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ success: true }),
+      });
+    });
+
+    await navigationPage.goto();
+
+    // Filter by Admin
+    await navigationPage.filterByApp(TargetApp.ADMIN_PORTAL);
+
+    // All 5 admin items should be visible
+    await navigationPage.expectItemInList('Дашборд');
+    await navigationPage.expectItemInList('Користувачі');
+    await navigationPage.expectItemInList('Тарифи');
+    await navigationPage.expectItemInList('Ліцензії');
+    await navigationPage.expectItemInList('Навігація меню');
+
+    // Click move-down on admin_dashboard
+    const moveDownDashboardBtn = page.getByTestId('move-down-admin_dashboard');
+    await expect(moveDownDashboardBtn).toBeVisible();
+    await moveDownDashboardBtn.click();
+
+    // Verify reorder API was called with correct items
+    expect(reorderPayload).not.toBeNull();
+    expect(reorderPayload.items).toHaveLength(5);
+    expect(reorderPayload.items[0].id).toBe('b0000000-0000-0000-0000-000000000006'); // admin_users
+    expect(reorderPayload.items[1].id).toBe('b0000000-0000-0000-0000-000000000005'); // admin_dashboard
+
+    await page.screenshot({
+      path: 'test-results/admin-navigation-reordered.png',
+      fullPage: true,
+    });
   });
 
   test('should toggle interface language between Ukrainian and English', async ({
@@ -134,19 +209,19 @@ test.describe('Admin Portal — Navigation & Access Control (POM)', () => {
     await expect(page.locator('h1')).toBeVisible();
 
     // 1. Verify and click Тарифи in Main Menu
-    const mainPlansNav = page.getByTestId('nav-item-plans');
+    const mainPlansNav = page.locator('aside').getByTestId('nav-item-plans');
     await expect(mainPlansNav).toBeVisible();
     await expect(mainPlansNav).toContainText('Тарифи');
     await mainPlansNav.click();
-    await expect(page).toHaveURL('/plans', { timeout: 15000 });
+    await expect(page).toHaveURL(/.*\/plans/);
     await expect(page.getByTestId('plans-header-title')).toBeVisible();
 
     // 2. Verify and click Ліцензії in Main Menu
-    const mainLicensesNav = page.getByTestId('nav-item-licenses');
+    const mainLicensesNav = page.locator('aside').getByTestId('nav-item-licenses');
     await expect(mainLicensesNav).toBeVisible();
     await expect(mainLicensesNav).toContainText('Ліцензії');
     await mainLicensesNav.click();
-    await expect(page).toHaveURL('/licenses', { timeout: 15000 });
+    await expect(page).toHaveURL(/.*\/licenses/);
     await expect(page.getByTestId('licenses-header-title')).toBeVisible();
   });
 
@@ -157,30 +232,26 @@ test.describe('Admin Portal — Navigation & Access Control (POM)', () => {
     await expect(page.locator('h1')).toBeVisible();
 
     // 1. Click Тарифи in settings submenu
-    const settingsPlansNav = page.getByTestId('nav-item-settings-plans');
+    const settingsPlansNav = page.locator('aside').getByTestId('nav-item-settings-plans');
     await expect(settingsPlansNav).toBeVisible();
-    await settingsPlansNav.click();
-    await expect(page).toHaveURL('/plans', { timeout: 15000 });
+    await Promise.all([page.waitForURL('**/plans'), settingsPlansNav.click()]);
     await expect(page.getByTestId('plans-header-title')).toBeVisible();
 
     // 2. Click Платіжні системи in settings submenu
-    const paymentsNav = page.getByTestId('nav-item-settings-payments');
+    const paymentsNav = page.locator('aside').getByTestId('nav-item-settings-payments');
     await expect(paymentsNav).toBeVisible();
-    await paymentsNav.click();
-    await expect(page).toHaveURL('/settings/payments', { timeout: 15000 });
+    await Promise.all([page.waitForURL('**/settings/payments'), paymentsNav.click()]);
     await expect(page.getByTestId('payments-header-title')).toBeVisible();
 
     // 3. Click Налаштування AI in settings submenu
-    const aiNav = page.getByTestId('nav-item-settings-ai');
+    const aiNav = page.locator('aside').getByTestId('nav-item-settings-ai');
     await expect(aiNav).toBeVisible();
-    await aiNav.click();
-    await expect(page).toHaveURL('/settings/ai', { timeout: 15000 });
+    await Promise.all([page.waitForURL('**/settings/ai'), aiNav.click()]);
     await expect(page.getByTestId('ai-header-title')).toBeVisible();
 
     // 4. Click Профіль in settings submenu
-    const profileNav = page.getByTestId('nav-item-settings-profile');
+    const profileNav = page.locator('aside').getByTestId('nav-item-settings-profile');
     await expect(profileNav).toBeVisible();
-    await profileNav.click();
-    await expect(page).toHaveURL('/settings', { timeout: 15000 });
+    await Promise.all([page.waitForURL('**/settings'), profileNav.click()]);
   });
 });

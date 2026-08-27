@@ -73,4 +73,33 @@ export class AdminLicensesPage extends BasePage {
     const row = this.page.getByTestId(`license-row-${licenseKey}`);
     await expect(row).not.toBeVisible();
   }
+
+  async openActionsMenu(licenseKey: string): Promise<void> {
+    const btn = this.page.getByTestId(`license-actions-btn-${licenseKey}`);
+    await btn.click();
+    const menu = this.page.getByTestId(`license-actions-menu-${licenseKey}`);
+    await expect(menu).toBeVisible();
+  }
+
+  async toggleLicenseStatus(licenseKey: string): Promise<void> {
+    await this.openActionsMenu(licenseKey);
+    const toggleBtn = this.page.getByTestId(`license-action-toggle-${licenseKey}`);
+    await toggleBtn.click();
+  }
+
+  async clickDeleteLicense(licenseKey: string): Promise<void> {
+    await this.openActionsMenu(licenseKey);
+    const deleteBtn = this.page.getByTestId(`license-action-delete-${licenseKey}`);
+    await deleteBtn.click();
+  }
+
+  async confirmDeleteLicense(licenseKey: string): Promise<void> {
+    const confirmBtn = this.page.getByTestId('license-delete-confirm-btn');
+    await confirmBtn.click();
+  }
+
+  async cancelDeleteLicense(licenseKey: string): Promise<void> {
+    const cancelBtn = this.page.getByTestId('license-delete-cancel-btn');
+    await cancelBtn.click();
+  }
 }

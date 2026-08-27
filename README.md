@@ -270,6 +270,8 @@ pnpm --filter @smartfeed/desktop tauri:build
 | **Swagger Docs**         | `http://localhost:4000/api/docs` | —                                                                    | Інтерактивна OpenAPI документація             |
 | **Next.js Admin Portal** | `http://localhost:3000`          | —                                                                    | Панель управління користувачами та ліцензіями |
 | **Desktop Vite Client**  | `http://localhost:1420`          | —                                                                    | Веб-інтерфейс десктоп-клієнта                 |
+| **Prisma Studio (GUI)**  | `http://localhost:5555`          | —                                                                    | Візуальний перегляд та редагування таблиць БД |
+| **Mailpit Web UI**       | `http://localhost:8025`          | —                                                                    | Перегляд надісланих email-листів та інвайтів  |
 | **PostgreSQL 16**        | `localhost:5432`                 | DB: `smartfeed_db`<br/>User: `postgres`<br/>Pass: `postgrespassword` | Основна реляційна база даних                  |
 | **Redis 7**              | `localhost:6379`                 | Без пароля                                                           | Черги фонових задач BullMQ                    |
 | **MinIO S3 API**         | `http://localhost:9000`          | Key: `minioadmin`<br/>Secret: `minioadminpassword`                   | S3-сумісне об'єктне сховище                   |

@@ -17,8 +17,9 @@
 ## 🔑 Токени та Безпека
 
 1. **Access Token**:
-   - Час життя: **15 хвилин** (`900 секунд`).
-   - Підписаний алгоритмом HS256 (`JWT_SECRET`).
+   - Час життя для Адміністраторів (`ADMIN`, `SUPER_ADMIN`): **1 година** (`3600 секунд` / `JWT_ADMIN_ACCESS_EXPIRATION="1h"`).
+   - Час життя для Звичайних користувачів (`USER`): **15 хвилин** (`900 секунд` / `JWT_ACCESS_EXPIRATION="15m"`).
+   - Підписаний алгоритмом HS256 (`JWT_ACCESS_SECRET`).
    - Містить payload: `{ sub: userId, email: user.email, role: user.role }`.
 
 2. **Refresh Token**:

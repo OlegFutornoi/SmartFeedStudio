@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { UserProfile, LoginDto, ChangePasswordDto } from '@smartfeed/shared';
 import { api } from '../lib/api';
@@ -25,7 +25,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
+  const isFetchingRef = useRef(false);
+
   const fetchCurrentUser = useCallback(async () => {
+    if (isFetchingRef.current) return;
+    isFetchingRef.current = true;
     try {
       const storedToken = localStorage.getItem('smartfeed_admin_token');
       if (!storedToken) {
@@ -47,6 +51,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(null);
       setToken(null);
     } finally {
+      isFetchingRef.current = false;
       setIsLoading(false);
     }
   }, []);

@@ -2,8 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
-import { RefreshCw, KeyRound, Layers } from 'lucide-react';
-import { Button } from '../../../components/ui/button';
+import { KeyRound, Layers } from 'lucide-react';
 import { api } from '../../../lib/api';
 import { useLanguage } from '../../../contexts/LanguageContext';
 import { AdminLicenseItemDto } from '@smartfeed/shared';
@@ -38,26 +37,29 @@ export default function LicensesPage() {
   return (
     <div
       data-testid="licenses-page"
-      className="flex flex-col gap-8 animate-in fade-in duration-300"
+      className="flex flex-col space-y-4 animate-in fade-in duration-300 flex-1 min-h-[calc(100vh-8rem)]"
     >
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-border">
+      {/* Sleek Minimalist Page Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1
             data-testid="licenses-header-title"
-            className="text-2xl font-semibold tracking-tight text-foreground flex items-center gap-2.5"
+            className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl flex items-center gap-2.5"
           >
-            <KeyRound className="size-6 text-primary" />
+            <KeyRound className="size-6 text-primary shrink-0" />
             <span>{isUk ? 'Видані ліцензії' : 'Issued Customer Licenses'}</span>
           </h1>
-          <p className="text-xs text-muted-foreground mt-1">
+          <p
+            data-testid="licenses-header-subtitle"
+            className="text-sm text-muted-foreground mt-0.5"
+          >
             {isUk
               ? 'Моніторинг активних підписок, квот, термінів дії та тарифів зареєстрованих клієнтів'
               : 'Monitor active customer subscriptions, quotas, validity periods, and assigned plan tiers'}
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 shrink-0">
           <Link
             href="/plans"
             data-testid="go-to-plans-btn"
@@ -66,18 +68,6 @@ export default function LicensesPage() {
             <Layers className="size-3.5 text-primary" />
             <span>{isUk ? 'Тарифи' : 'Tariff Plans'}</span>
           </Link>
-          <Button
-            variant="outline"
-            size="sm"
-            data-testid="refresh-licenses-btn"
-            onClick={fetchLicenses}
-            disabled={isLoading}
-            className="h-8 w-8 p-0"
-            title={isUk ? 'Оновити' : 'Refresh'}
-            aria-label={isUk ? 'Оновити' : 'Refresh'}
-          >
-            <RefreshCw className={`size-3.5 ${isLoading ? 'animate-spin' : ''}`} />
-          </Button>
         </div>
       </div>
 
@@ -91,7 +81,12 @@ export default function LicensesPage() {
       )}
 
       {/* Active Issued Licenses Table */}
-      <LicensesTable licenses={licenses} isUk={isUk} />
+      <LicensesTable
+        licenses={licenses}
+        isUk={isUk}
+        onRefresh={fetchLicenses}
+        isLoading={isLoading}
+      />
     </div>
   );
 }

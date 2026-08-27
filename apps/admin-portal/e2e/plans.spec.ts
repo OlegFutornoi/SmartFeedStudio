@@ -241,16 +241,16 @@ test.describe('Admin Portal — Тарифні плани (POM E2E)', () => {
   });
 
   test('видалення тарифного плану з діалоговим підтвердженням', async ({ plansPage, page }) => {
-    // Handle browser confirm dialog automatically
-    page.on('dialog', async (dialog) => {
-      await dialog.accept();
-    });
-
     await plansPage.goto();
     await plansPage.expectPlanCardVisible('FREE');
 
     const deleteBtn = page.getByTestId('plan-delete-btn-free');
     await deleteBtn.click();
+
+    // Confirm in PlanDeleteDialog
+    const confirmBtn = page.getByTestId('plan-delete-confirm-btn');
+    await confirmBtn.waitFor({ state: 'visible' });
+    await confirmBtn.click();
 
     // Verify FREE card is removed from grid
     await expect(page.getByTestId('plan-card-free')).toBeHidden();

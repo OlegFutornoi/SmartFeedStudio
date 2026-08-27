@@ -23,5 +23,10 @@
   "goToPlans": "Choose Plan",
   "unlimited": "Unlimited",
   "itemsLimit": "Up to {{count}} items",
-  "aiCreditsLimit": "{{count}} AI credits"
+  "aiCreditsLimit": "{{count}} AI credits",
+  "corporateLicenseNotice": "You are using the shared company license",
+  "managedByOwnerDesc": "Tariff plan management, billing, and quota expansion are handled exclusively by the organization owner. Your account automatically inherits all corporate tier features.",
+  "xmlQuota": "XML Limit",
+  "aiCreditsQuota": "AI Credits",
+  "cloudBackup": "Cloud Backup"
 }

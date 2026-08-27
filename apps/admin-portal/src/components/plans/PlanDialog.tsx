@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import {
   Dialog,
   DialogContent,
@@ -12,14 +12,10 @@ import {
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
-import {
-  TariffPlanDto,
-  CreateTariffPlanDto,
-  UpdateTariffPlanDto,
-  CreateTariffPlanDtoSchema,
-} from '@smartfeed/shared';
+import { TariffPlanDto, CreateTariffPlanDto, UpdateTariffPlanDto } from '@smartfeed/shared';
 import { Layers } from 'lucide-react';
 import { PlanFeatureList } from './PlanFeatureList';
+import { usePlanForm } from './usePlanForm';
 
 interface PlanDialogProps {
   isOpen: boolean;
@@ -30,122 +26,42 @@ interface PlanDialogProps {
 }
 
 export function PlanDialog({ isOpen, onClose, onSubmit, initialData, isUk }: PlanDialogProps) {
-  const isEdit = !!initialData;
-
-  const [code, setCode] = useState('');
-  const [nameUk, setNameUk] = useState('');
-  const [nameEn, setNameEn] = useState('');
-  const [descriptionUk, setDescriptionUk] = useState('');
-  const [descriptionEn, setDescriptionEn] = useState('');
-  const [priceMonthly, setPriceMonthly] = useState('0');
-  const [priceYearly, setPriceYearly] = useState('');
-  const [maxXmlLimit, setMaxXmlLimit] = useState('1000');
-  const [aiCredits, setAiCredits] = useState('50');
-  const [canCloudBackup, setCanCloudBackup] = useState(false);
-  const [isPopular, setIsPopular] = useState(false);
-  const [featuresUk, setFeaturesUk] = useState<string[]>([]);
-  const [featuresEn, setFeaturesEn] = useState<string[]>([]);
-
-  const [newFeatureUk, setNewFeatureUk] = useState('');
-  const [newFeatureEn, setNewFeatureEn] = useState('');
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (initialData) {
-      setCode(initialData.code);
-      setNameUk(initialData.nameUk);
-      setNameEn(initialData.nameEn);
-      setDescriptionUk(initialData.descriptionUk || '');
-      setDescriptionEn(initialData.descriptionEn || '');
-      setPriceMonthly(initialData.priceMonthly.toString());
-      setPriceYearly(initialData.priceYearly ? initialData.priceYearly.toString() : '');
-      setMaxXmlLimit(initialData.maxXmlLimit.toString());
-      setAiCredits(initialData.aiCredits.toString());
-      setCanCloudBackup(initialData.canCloudBackup);
-      setIsPopular(initialData.isPopular);
-      setFeaturesUk(initialData.featuresUk || []);
-      setFeaturesEn(initialData.featuresEn || []);
-    } else {
-      setCode('');
-      setNameUk('');
-      setNameEn('');
-      setDescriptionUk('');
-      setDescriptionEn('');
-      setPriceMonthly('0');
-      setPriceYearly('');
-      setMaxXmlLimit('1000');
-      setAiCredits('50');
-      setCanCloudBackup(false);
-      setIsPopular(false);
-      setFeaturesUk([]);
-      setFeaturesEn([]);
-    }
-    setError(null);
-  }, [initialData, isOpen]);
-
-  const handleAddFeature = () => {
-    if (newFeatureUk.trim()) {
-      setFeaturesUk([...featuresUk, newFeatureUk.trim()]);
-      setNewFeatureUk('');
-    }
-    if (newFeatureEn.trim()) {
-      setFeaturesEn([...featuresEn, newFeatureEn.trim()]);
-      setNewFeatureEn('');
-    }
-  };
-
-  const handleRemoveFeature = (index: number) => {
-    setFeaturesUk(featuresUk.filter((_, i) => i !== index));
-    setFeaturesEn(featuresEn.filter((_, i) => i !== index));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-
-    const payload = {
-      code: code.trim().toUpperCase(),
-      nameUk: nameUk.trim(),
-      nameEn: nameEn.trim(),
-      descriptionUk: descriptionUk.trim() || undefined,
-      descriptionEn: descriptionEn.trim() || undefined,
-      priceMonthly: parseFloat(priceMonthly) || 0,
-      priceYearly: priceYearly.trim() ? parseFloat(priceYearly) : undefined,
-      currency: 'USD',
-      maxXmlLimit: parseInt(maxXmlLimit, 10) || 1000,
-      aiCredits: parseInt(aiCredits, 10) || 0,
-      canCloudBackup,
-      isPopular,
-      isActive: true,
-      order: initialData?.order ?? 0,
-      featuresUk,
-      featuresEn,
-    };
-
-    let submitPayload: CreateTariffPlanDto | UpdateTariffPlanDto = payload;
-
-    if (!isEdit) {
-      const validation = CreateTariffPlanDtoSchema.safeParse(payload);
-      if (!validation.success) {
-        setError(validation.error.issues[0]?.message || 'Перевірте правильність заповнення полів');
-        return;
-      }
-      submitPayload = validation.data;
-    }
-
-    setIsSubmitting(true);
-    try {
-      await onSubmit(submitPayload, isEdit);
-      onClose();
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Помилка збереження тарифного плану';
-      setError(msg);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+  const {
+    isEdit,
+    code,
+    setCode,
+    nameUk,
+    setNameUk,
+    nameEn,
+    setNameEn,
+    descriptionUk,
+    setDescriptionUk,
+    descriptionEn,
+    setDescriptionEn,
+    priceMonthly,
+    setPriceMonthly,
+    priceYearly,
+    setPriceYearly,
+    maxXmlLimit,
+    setMaxXmlLimit,
+    aiCredits,
+    setAiCredits,
+    canCloudBackup,
+    setCanCloudBackup,
+    isPopular,
+    setIsPopular,
+    featuresUk,
+    featuresEn,
+    newFeatureUk,
+    setNewFeatureUk,
+    newFeatureEn,
+    setNewFeatureEn,
+    isSubmitting,
+    error,
+    handleAddFeature,
+    handleRemoveFeature,
+    handleSubmit,
+  } = usePlanForm({ initialData, isOpen, onSubmit, onClose });
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>

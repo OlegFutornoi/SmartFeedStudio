@@ -45,6 +45,7 @@ export const NavigationItemRow = React.memo(function NavigationItemRow({
             size="sm"
             disabled={index === 0}
             onClick={() => onMoveUp(index)}
+            data-testid={`move-up-${item.key}`}
             className="h-5 w-5 p-0 text-muted-foreground hover:text-foreground disabled:opacity-20"
             title="Move up"
           >
@@ -55,6 +56,7 @@ export const NavigationItemRow = React.memo(function NavigationItemRow({
             size="sm"
             disabled={index === totalCount - 1}
             onClick={() => onMoveDown(index)}
+            data-testid={`move-down-${item.key}`}
             className="h-5 w-5 p-0 text-muted-foreground hover:text-foreground disabled:opacity-20"
             title="Move down"
           >

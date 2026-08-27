@@ -22,6 +22,8 @@ import { cn } from '../../lib/utils';
 import { useAuth } from '../../contexts/AuthContext';
 import { useSidebar } from '../../contexts/SidebarContext';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { useNavigation } from '../../contexts/NavigationContext';
+import { getLucideIcon } from '../navigation/constants';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { SidebarNavItem } from './SidebarNavItem';
@@ -41,47 +43,64 @@ export function Sidebar() {
   const { user, logout } = useAuth();
   const { isCollapsed, toggleSidebar, isMobileOpen, closeMobileSidebar } = useSidebar();
   const { locale } = useLanguage();
+  const { items: dynamicNavItems } = useNavigation();
   const isUk = locale === 'uk';
 
   const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(true);
 
-  // Main navigation (Top section)
-  const mainNavigation = useMemo(
-    () => [
-      {
-        name: isUk ? 'Дашборд' : 'Dashboard',
-        href: '/',
-        icon: LayoutDashboard,
-        testId: 'nav-item-dashboard',
-      },
-      {
-        name: isUk ? 'Користувачі' : 'Users',
-        href: '/users',
-        icon: Users,
-        testId: 'nav-item-users',
-      },
-      {
-        name: isUk ? 'Тарифи' : 'Tariff Plans',
-        href: '/plans',
-        icon: Layers,
-        testId: 'nav-item-plans',
-      },
-      {
-        name: isUk ? 'Ліцензії' : 'Licenses',
-        href: '/licenses',
-        icon: KeyRound,
-        testId: 'nav-item-licenses',
-      },
-      {
-        name: isUk ? 'Навігація меню' : 'Navigation Menu',
-        href: '/navigation',
-        icon: Compass,
-        testId: 'nav-item-navigation',
-      },
-    ],
-    [isUk],
-  );
+  const TEST_ID_MAP: Record<string, string> = {
+    admin_dashboard: 'nav-item-dashboard',
+    admin_users: 'nav-item-users',
+    admin_plans: 'nav-item-plans',
+    admin_licenses: 'nav-item-licenses',
+    admin_navigation: 'nav-item-navigation',
+  };
+
+  const DEFAULT_MAIN_NAV = [
+    {
+      key: 'admin_dashboard',
+      labelUk: 'Дашборд',
+      labelEn: 'Dashboard',
+      path: '/',
+      icon: 'LayoutDashboard',
+    },
+    { key: 'admin_users', labelUk: 'Користувачі', labelEn: 'Users', path: '/users', icon: 'Users' },
+    {
+      key: 'admin_plans',
+      labelUk: 'Тарифи',
+      labelEn: 'Tariff Plans',
+      path: '/plans',
+      icon: 'Layers',
+    },
+    {
+      key: 'admin_licenses',
+      labelUk: 'Ліцензії',
+      labelEn: 'Licenses',
+      path: '/licenses',
+      icon: 'KeyRound',
+    },
+    {
+      key: 'admin_navigation',
+      labelUk: 'Навігація меню',
+      labelEn: 'Navigation Menu',
+      path: '/navigation',
+      icon: 'Compass',
+    },
+  ];
+
+  const mainNavigation = useMemo(() => {
+    const sourceItems =
+      !dynamicNavItems || dynamicNavItems.length === 0 ? DEFAULT_MAIN_NAV : dynamicNavItems;
+
+    return sourceItems.map((item) => ({
+      key: item.key,
+      name: isUk ? item.labelUk : item.labelEn,
+      href: item.path,
+      icon: getLucideIcon(item.icon),
+      testId: TEST_ID_MAP[item.key] ?? `nav-item-${item.key.replace(/^admin_/, '')}`,
+    }));
+  }, [dynamicNavItems, isUk]);
 
   // Settings sub-navigation (Bottom section)
   const settingsNavigation = useMemo(
@@ -183,7 +202,7 @@ export function Sidebar() {
                 item.href === '/' ? pathname === '/' : pathname.startsWith(item.href);
               return (
                 <SidebarNavItem
-                  key={item.href}
+                  key={item.key || item.href}
                   name={item.name}
                   href={item.href}
                   icon={item.icon}

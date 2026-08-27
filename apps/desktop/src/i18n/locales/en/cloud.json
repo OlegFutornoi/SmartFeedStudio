@@ -1,0 +1,17 @@
+{
+  "title": "Cloud Sync & Backups",
+  "description": "Encrypted cloud backup snapshots to S3 / MinIO storage",
+  "createSnapshot": "Create Snapshot Now",
+  "storageUsage": "Cloud Storage Usage",
+  "snapshotsCount": "Saved Snapshots",
+  "lastBackup": "Last Backup",
+  "encryptionStatus": "Encryption",
+  "encryptionDesc": "AES-256 and OS Keychain secured API keys",
+  "storageQuota": "Storage Quota",
+  "snapshotsHistory": "Catalog Snapshots History",
+  "downloadSnapshot": "Download",
+  "restoreSnapshot": "Restore Snapshot",
+  "deleteSnapshot": "Delete",
+  "emptySnapshots": "No snapshots created yet",
+  "emptySnapshotsDesc": "Click «Create Snapshot Now» to save a cloud backup of your catalogs"
+}

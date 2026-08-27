@@ -15,10 +15,11 @@ export class AdminUsersPage extends BasePage {
 
   readonly thUser: Locator;
   readonly thRole: Locator;
+  readonly thTeam: Locator;
   readonly thPlan: Locator;
-  readonly thQuotas: Locator;
   readonly thStatus: Locator;
   readonly thCreated: Locator;
+  readonly thActions: Locator;
 
   constructor(page: Page) {
     super(page);
@@ -35,10 +36,11 @@ export class AdminUsersPage extends BasePage {
 
     this.thUser = page.getByTestId('th-user');
     this.thRole = page.getByTestId('th-role');
+    this.thTeam = page.getByTestId('th-team');
     this.thPlan = page.getByTestId('th-plan');
-    this.thQuotas = page.getByTestId('th-quotas');
     this.thStatus = page.getByTestId('th-status');
     this.thCreated = page.getByTestId('th-created');
+    this.thActions = page.getByTestId('th-actions');
   }
 
   async goto(): Promise<void> {
@@ -52,7 +54,17 @@ export class AdminUsersPage extends BasePage {
   }
 
   async selectRole(role: 'all' | 'super_admin' | 'admin' | 'user'): Promise<void> {
-    await this.page.getByTestId(`user-role-filter-${role}`).click();
+    await this.page.getByTestId('users-filter-role').click();
+    await this.page.getByTestId(`users-filter-role-option-${role}`).click();
+  }
+
+  async selectTeamRole(role: 'all' | 'owners' | 'members'): Promise<void> {
+    await this.page.getByTestId('users-filter-team').click();
+    await this.page.getByTestId(`users-filter-team-option-${role}`).click();
+  }
+
+  async resetFilters(): Promise<void> {
+    await this.page.getByTestId('users-reset-filters-btn').click();
   }
 
   async toggleLanguage(): Promise<void> {

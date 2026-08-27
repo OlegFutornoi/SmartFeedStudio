@@ -34,6 +34,8 @@ test.describe('Desktop App — Команда, Компанія та Коман�
     ],
   };
 
+  let mockInvitationsState: any[] = [];
+
   let mockLicenseState = {
     id: 'lic-org-1',
     userId: mockUser.id,
@@ -61,6 +63,7 @@ test.describe('Desktop App — Команда, Компанія та Коман�
       window.localStorage.setItem('smartfeed_language', 'uk');
     }, mockUser);
 
+    mockInvitationsState = [];
     mockOrganizationState = {
       id: 'org-rozetka-1',
       name: 'Rozetka Top Sellers LLC',
@@ -115,7 +118,7 @@ test.describe('Desktop App — Команда, Компанія та Коман�
       });
     });
 
-    await page.route('**/api/organizations', async (route) => {
+    await page.route(/\/api\/organizations$/, async (route) => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -123,7 +126,7 @@ test.describe('Desktop App — Команда, Компанія та Коман�
       });
     });
 
-    await page.route('**/api/organizations/org-rozetka-1', async (route) => {
+    await page.route(/\/api\/organizations\/org-rozetka-1$/, async (route) => {
       if (route.request().method() === 'PATCH') {
         const payload = JSON.parse(route.request().postData() || '{}');
         mockOrganizationState.name = payload.name;
@@ -141,24 +144,69 @@ test.describe('Desktop App — Команда, Компанія та Коман�
       }
     });
 
-    await page.route('**/api/organizations/org-rozetka-1/members', async (route) => {
+    await page.route(/\/api\/organizations\/org-rozetka-1\/invitations$/, async (route) => {
       if (route.request().method() === 'POST') {
         const payload = JSON.parse(route.request().postData() || '{}');
-        const newMember = {
-          id: `mem-${Date.now()}`,
+        const token = `SF-INV-mock-${Date.now()}`;
+        const newInv = {
+          id: `inv-${Date.now()}`,
           organizationId: 'org-rozetka-1',
-          userId: `usr-${Date.now()}`,
           email: payload.email,
-          fullName: payload.email.split('@')[0],
           role: payload.role || 'MEMBER',
-          joinedAt: new Date().toISOString(),
+          token,
+          inviteUrl: `http://localhost:1420/invite?token=${token}`,
+          status: 'PENDING',
+          expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+          createdAt: new Date().toISOString(),
         };
-        mockOrganizationState.members.push(newMember);
-        mockOrganizationState.usedTeamSeats = mockOrganizationState.members.length;
+        mockInvitationsState.push(newInv);
         await route.fulfill({
           status: 201,
           contentType: 'application/json',
-          body: JSON.stringify(newMember),
+          body: JSON.stringify(newInv),
+        });
+      } else {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify(mockInvitationsState),
+        });
+      }
+    });
+
+    await page.route(/\/api\/organizations\/org-rozetka-1\/invitations\/[^/]+$/, async (route) => {
+      if (route.request().method() === 'DELETE') {
+        const urlParts = route.request().url().split('/');
+        const invId = urlParts[urlParts.length - 1];
+        mockInvitationsState = mockInvitationsState.filter((i) => i.id !== invId);
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({ success: true }),
+        });
+      }
+    });
+
+    await page.route(/\/api\/organizations\/org-rozetka-1\/members$/, async (route) => {
+      if (route.request().method() === 'POST') {
+        const payload = JSON.parse(route.request().postData() || '{}');
+        const token = `SF-INV-mock-${Date.now()}`;
+        const newInv = {
+          id: `inv-${Date.now()}`,
+          organizationId: 'org-rozetka-1',
+          email: payload.email,
+          role: payload.role || 'MEMBER',
+          token,
+          inviteUrl: `http://localhost:1420/invite?token=${token}`,
+          status: 'PENDING',
+          expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+          createdAt: new Date().toISOString(),
+        };
+        mockInvitationsState.push(newInv);
+        await route.fulfill({
+          status: 201,
+          contentType: 'application/json',
+          body: JSON.stringify(newInv),
         });
       } else {
         await route.fulfill({
@@ -169,7 +217,7 @@ test.describe('Desktop App — Команда, Компанія та Коман�
       }
     });
 
-    await page.route('**/api/organizations/org-rozetka-1/members/*', async (route) => {
+    await page.route(/\/api\/organizations\/org-rozetka-1\/members\/[^/]+$/, async (route) => {
       if (route.request().method() === 'DELETE') {
         const urlParts = route.request().url().split('/');
         const memberId = urlParts[urlParts.length - 1];
@@ -181,6 +229,51 @@ test.describe('Desktop App — Команда, Компанія та Коман�
           status: 200,
           contentType: 'application/json',
           body: JSON.stringify({ success: true }),
+        });
+      }
+    });
+
+    await page.route(/\/api\/invitations\/[^/]+$/, async (route) => {
+      const url = route.request().url();
+      if (url.includes('/accept')) {
+        const payload = JSON.parse(route.request().postData() || '{}');
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            user: {
+              id: 'usr-invited-1',
+              email: 'maria@rozetka.ua',
+              fullName: payload.fullName || 'Maria',
+              role: 'USER',
+              organization: {
+                id: 'org-rozetka-1',
+                name: 'Rozetka Top Sellers LLC',
+                role: 'MEMBER',
+              },
+            },
+            tokens: {
+              accessToken: 'mock-invited-token',
+              refreshToken: 'mock-invited-refresh',
+              tokenType: 'Bearer',
+              expiresIn: 900,
+            },
+          }),
+        });
+      } else {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            token: 'SF-INV-valid-token-123',
+            email: 'maria@rozetka.ua',
+            role: 'MEMBER',
+            organizationName: 'Rozetka Top Sellers LLC',
+            inviterName: 'Alex Shevchenko',
+            isExistingUser: false,
+            isValid: true,
+            expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+          }),
         });
       }
     });
@@ -240,7 +333,7 @@ test.describe('Desktop App — Команда, Компанія та Коман�
     await expect(page).toHaveURL(/.*\/plans/);
   });
 
-  test('3. PRO план: дозволяє запросити співробітника та збільшує лічильник місць', async ({
+  test('3. PRO план: генерує інвайт-лінк, показує екран копіювання та додає в список очікуючих', async ({
     page,
   }) => {
     // Встановлюємо стан PRO з 3 місцями
@@ -251,9 +344,6 @@ test.describe('Desktop App — Команда, Компанія та Коман�
 
     await page.goto('/team');
     await expect(page.locator('[data-testid="team-page"]')).toBeVisible();
-
-    // Квота 1/3
-    await expect(page.locator('[data-testid="seats-count-label"]')).toContainText('1 / 3');
 
     // Клік на Запросити колегу
     await page.locator('[data-testid="invite-member-btn"]').click();
@@ -268,14 +358,19 @@ test.describe('Desktop App — Команда, Компанія та Коман�
     await page.locator('[data-testid="role-admin-btn"]').click();
     await page.locator('[data-testid="submit-invite-btn"]').click();
 
-    // Перевіряємо повідомлення успіху
-    await expect(page.locator('[data-testid="team-success-alert"]')).toBeVisible();
+    // Перевіряємо екран згенерованого посилання
+    await expect(page.locator('[data-testid="copy-invite-link-btn"]')).toBeVisible();
+    await expect(page.locator('[data-testid="generated-invite-link-input"]')).toHaveValue(
+      /.*\/invite\?token=SF-INV-.*/,
+    );
 
-    // Лічильник став 2 / 3
-    await expect(page.locator('[data-testid="seats-count-label"]')).toContainText('2 / 3');
+    // Клік на Готово
+    await page.locator('[data-testid="done-invite-btn"]').click();
+    await expect(inviteDialog).not.toBeVisible();
 
-    // Список містить нового співробітника
-    await expect(page.locator('[data-testid="team-members-list"]')).toContainText(
+    // Перевіряємо блок "Очікують прийняття"
+    await expect(page.locator('[data-testid="pending-invitations-card"]')).toBeVisible();
+    await expect(page.locator('[data-testid="pending-invitations-card"]')).toContainText(
       'maria@rozetka.ua',
     );
   });
@@ -352,8 +447,8 @@ test.describe('Desktop App — Команда, Компанія та Коман�
         id: 'mem-2',
         organizationId: 'org-rozetka-1',
         userId: 'usr-2',
-        email: 'colleague@rozetka.ua',
-        fullName: 'Colleague Dev',
+        email: 'maria@rozetka.ua',
+        fullName: 'Maria',
         role: 'MEMBER',
         joinedAt: new Date().toISOString(),
       },
@@ -363,76 +458,119 @@ test.describe('Desktop App — Команда, Компанія та Коман�
     await expect(page.locator('[data-testid="team-page"]')).toBeVisible();
     await expect(page.locator('[data-testid="seats-count-label"]')).toContainText('2 / 3');
 
-    // Клік на кнопку видалення другого учасника
+    // Клік на кнопку видалення для maria@rozetka.ua
     const removeBtn = page.locator('[data-testid="remove-member-btn-mem-2"]');
-    await expect(removeBtn).toBeVisible();
     await removeBtn.click();
 
-    // Діалог підтвердження
+    // Модальне вікно підтвердження
     const removeDialog = page.locator('[data-testid="remove-member-dialog"]');
     await expect(removeDialog).toBeVisible();
-    await expect(removeDialog).toContainText('colleague@rozetka.ua');
+    await expect(removeDialog).toContainText('maria@rozetka.ua');
 
-    // Підтвердження видалення
+    // Підтверджуємо видалення
     await page.locator('[data-testid="confirm-remove-member-btn"]').click();
 
-    // Повідомлення про вивільнення місця
+    // Перевіряємо повідомлення успіху
     await expect(page.locator('[data-testid="team-success-alert"]')).toBeVisible();
 
     // Лічильник зменшився до 1 / 3
     await expect(page.locator('[data-testid="seats-count-label"]')).toContainText('1 / 3');
   });
 
-  test('6. Зміна назви компанії через діалог оновлення', async ({ page }) => {
+  test('6. Зміна назви компанії через діалог оновлює заголовок', async ({ page }) => {
     await page.goto('/team');
     await expect(page.locator('[data-testid="team-page"]')).toBeVisible();
 
-    // Клік на іконку редагування
+    // Відкриваємо діалог зміни назви
     await page.locator('[data-testid="edit-company-name-btn"]').click();
 
     const editDialog = page.locator('[data-testid="edit-company-dialog"]');
     await expect(editDialog).toBeVisible();
 
-    const input = page.locator('[data-testid="edit-company-name-input"]');
-    await input.fill('Rozetka Enterprise LLC');
+    // Вводимо нову назву
+    const nameInput = page.locator('[data-testid="edit-company-name-input"]');
+    await nameInput.fill('Rozetka Global Supermarket');
     await page.locator('[data-testid="save-company-name-btn"]').click();
 
-    // Успіх та оновлений заголовок
+    // Перевіряємо оновлення заголовку
     await expect(page.locator('[data-testid="team-success-alert"]')).toBeVisible();
     await expect(page.locator('[data-testid="company-title"]')).toHaveText(
-      'Rozetka Enterprise LLC',
+      'Rozetka Global Supermarket',
     );
   });
 
-  test('7. Локалізація (UA ⇄ EN): всі елементи команди та діалоги перекладаються миттєво', async ({
-    page,
-  }) => {
+  test('7. Прийняття інвайту (/invite?token=...) новим користувачем', async ({ page }) => {
+    await page.goto('/invite?token=SF-INV-valid-token-123');
+
+    // Перевіряємо інформацію про компанію
+    await expect(page.locator('h1')).toHaveText('Rozetka Top Sellers LLC');
+
+    // Заповнюємо ім'я та пароль
+    await page.locator('[data-testid="invite-fullname-input"]').fill('Maria Polishchuk');
+    await page.locator('[data-testid="invite-password-input"]').fill('StrongPassword123!');
+    await page.locator('[data-testid="submit-accept-invite-btn"]').click();
+
+    // Перенаправлення на /team
+    await expect(page).toHaveURL(/.*\/team/);
+  });
+
+  test('8. Двомовність UI (UA ⇄ EN) для розділу Команда', async ({ page }) => {
     await page.goto('/team');
     await expect(page.locator('[data-testid="team-page"]')).toBeVisible();
 
-    // Перевірка UA тексту
-    await expect(page.locator('[data-testid="team-seats-quota-card"]')).toContainText(
-      'Командні місця',
-    );
+    // Перевіряємо український текст
     await expect(page.locator('[data-testid="invite-member-btn"]')).toContainText(
       'Запросити колегу',
     );
+    await expect(page.locator('[data-testid="team-members-list"]')).toContainText(
+      'Учасники команди',
+    );
 
-    // Перемикання мови на EN
-    const langToggle = page.locator('[data-testid="language-toggle"]');
-    if (await langToggle.isVisible()) {
-      await langToggle.click();
-    } else {
-      await page.evaluate(() => {
-        window.localStorage.setItem('smartfeed_language', 'en');
-        window.location.reload();
-      });
-    }
+    // Перемикаємо мову на EN
+    await page.getByTestId('language-toggle').click();
 
-    // Перевірка EN тексту
-    await expect(page.locator('[data-testid="team-seats-quota-card"]')).toContainText('Team Seats');
+    // Перевіряємо англійський текст
     await expect(page.locator('[data-testid="invite-member-btn"]')).toContainText(
       'Invite Colleague',
     );
+    await expect(page.locator('[data-testid="team-members-list"]')).toContainText('Team Members');
+  });
+
+  test('9. Запрошений учасник (MEMBER) не бачить меню Тарифи та отримує readonly режим на /plans', async ({
+    page,
+  }) => {
+    const invitedUser = {
+      id: 'usr-member-1',
+      email: 'member@rozetka.ua',
+      fullName: 'Taras Petrenko',
+      role: 'USER',
+      organization: {
+        id: 'org-rozetka-1',
+        name: 'Rozetka Top Sellers LLC',
+        role: 'MEMBER',
+      },
+    };
+
+    await page.route('**/api/auth/me', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(invitedUser),
+      });
+    });
+
+    await page.addInitScript((user) => {
+      window.localStorage.setItem('smartfeed_user_profile', JSON.stringify(user));
+    }, invitedUser);
+
+    await page.goto('/');
+    await expect(page.locator('[data-testid="desktop-sidebar"]')).toBeVisible();
+
+    // Перевіряємо, що пункт "Тарифи" (/plans) відсутній у сайдбарі
+    await expect(page.locator('[data-testid="nav-link-plans"]')).toHaveCount(0);
+
+    // Прямий перехід на /plans показує корпоративну картку без кнопок зміни тарифу
+    await page.goto('/plans');
+    await expect(page.locator('[data-testid="invited-member-plan-card"]')).toBeVisible();
   });
 });

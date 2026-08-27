@@ -1,0 +1,15 @@
+{
+  "title": "Settings",
+  "description": "Manage user profile, security, appearance, and synchronization preferences",
+  "profile": "User Profile",
+  "fullName": "Full Name",
+  "email": "Email Address",
+  "role": "System Role",
+  "organization": "Company / Organization",
+  "appearance": "Appearance & Theme",
+  "theme": "Color Theme",
+  "language": "Interface Language",
+  "security": "Account Security",
+  "changePassword": "Change Password",
+  "saveChanges": "Save Changes"
+}

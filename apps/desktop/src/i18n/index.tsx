@@ -1,32 +1,57 @@
 import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
 import type { Language, Namespace, TranslationDict, I18nContextType } from './types';
 
+import ukCommon from './locales/uk/common.json';
+import ukAuth from './locales/uk/auth.json';
+import ukHome from './locales/uk/home.json';
+import ukPlans from './locales/uk/plans.json';
+import ukTeam from './locales/uk/team.json';
+import ukCatalogs from './locales/uk/catalogs.json';
+import ukAi from './locales/uk/ai.json';
+import ukCloud from './locales/uk/cloud.json';
+import ukSettings from './locales/uk/settings.json';
+import ukErrors from './locales/uk/errors.json';
+
+import enCommon from './locales/en/common.json';
+import enAuth from './locales/en/auth.json';
+import enHome from './locales/en/home.json';
+import enPlans from './locales/en/plans.json';
+import enTeam from './locales/en/team.json';
+import enCatalogs from './locales/en/catalogs.json';
+import enAi from './locales/en/ai.json';
+import enCloud from './locales/en/cloud.json';
+import enSettings from './locales/en/settings.json';
+import enErrors from './locales/en/errors.json';
+
 export * from './types';
 
 const STORAGE_KEY = 'smartfeed_language';
 const DEFAULT_LANGUAGE: Language = 'uk';
 
-// Dynamic code-split loaders for each namespace and language
-const localeModules: Record<Language, Record<Namespace, () => Promise<TranslationDict>>> = {
+const STATIC_TRANSLATIONS: Record<Language, Record<Namespace, TranslationDict>> = {
   uk: {
-    common: () =>
-      import('./locales/uk/common.json').then((m) => (m.default || m) as TranslationDict),
-    auth: () => import('./locales/uk/auth.json').then((m) => (m.default || m) as TranslationDict),
-    home: () => import('./locales/uk/home.json').then((m) => (m.default || m) as TranslationDict),
-    plans: () => import('./locales/uk/plans.json').then((m) => (m.default || m) as TranslationDict),
-    team: () => import('./locales/uk/team.json').then((m) => (m.default || m) as TranslationDict),
-    errors: () =>
-      import('./locales/uk/errors.json').then((m) => (m.default || m) as TranslationDict),
+    common: ukCommon as TranslationDict,
+    auth: ukAuth as TranslationDict,
+    home: ukHome as TranslationDict,
+    plans: ukPlans as TranslationDict,
+    team: ukTeam as TranslationDict,
+    catalogs: ukCatalogs as TranslationDict,
+    ai: ukAi as TranslationDict,
+    cloud: ukCloud as TranslationDict,
+    settings: ukSettings as TranslationDict,
+    errors: ukErrors as TranslationDict,
   },
   en: {
-    common: () =>
-      import('./locales/en/common.json').then((m) => (m.default || m) as TranslationDict),
-    auth: () => import('./locales/en/auth.json').then((m) => (m.default || m) as TranslationDict),
-    home: () => import('./locales/en/home.json').then((m) => (m.default || m) as TranslationDict),
-    plans: () => import('./locales/en/plans.json').then((m) => (m.default || m) as TranslationDict),
-    team: () => import('./locales/en/team.json').then((m) => (m.default || m) as TranslationDict),
-    errors: () =>
-      import('./locales/en/errors.json').then((m) => (m.default || m) as TranslationDict),
+    common: enCommon as TranslationDict,
+    auth: enAuth as TranslationDict,
+    home: enHome as TranslationDict,
+    plans: enPlans as TranslationDict,
+    team: enTeam as TranslationDict,
+    catalogs: enCatalogs as TranslationDict,
+    ai: enAi as TranslationDict,
+    cloud: enCloud as TranslationDict,
+    settings: enSettings as TranslationDict,
+    errors: enErrors as TranslationDict,
   },
 };
 
@@ -38,103 +63,102 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
     return saved === 'uk' || saved === 'en' ? saved : DEFAULT_LANGUAGE;
   });
 
-  const [cache, setCache] = useState<Record<string, TranslationDict>>({});
-  const [loadedNamespaces, setLoadedNamespaces] = useState<Set<string>>(new Set());
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [cache, setCache] = useState<Record<string, TranslationDict>>(() => {
+    const initial: Record<string, TranslationDict> = {};
+    (['uk', 'en'] as Language[]).forEach((lang) => {
+      Object.entries(STATIC_TRANSLATIONS[lang]).forEach(([ns, dict]) => {
+        initial[`${lang}:${ns}`] = dict;
+      });
+    });
+    return initial;
+  });
 
-  // Active namespaces registered by mounted components
-  const activeNamespacesRef = useRef<Set<Namespace>>(new Set(['common', 'errors']));
+  const [loadedNamespaces, setLoadedNamespaces] = useState<Set<string>>(
+    () =>
+      new Set(
+        (['uk', 'en'] as Language[]).flatMap((lang) =>
+          Object.keys(STATIC_TRANSLATIONS[lang]).map((ns) => `${lang}:${ns}`),
+        ),
+      ),
+  );
+  const [isLoading] = useState<boolean>(false);
+
+  const activeNamespacesRef = useRef<Set<Namespace>>(
+    new Set([
+      'common',
+      'errors',
+      'auth',
+      'home',
+      'plans',
+      'team',
+      'catalogs',
+      'ai',
+      'cloud',
+      'settings',
+    ]),
+  );
 
   const loadNamespace = useCallback(
     async (ns: Namespace, lang = language) => {
       const cacheKey = `${lang}:${ns}`;
       activeNamespacesRef.current.add(ns);
 
-      if (cache[cacheKey]) {
-        return;
-      }
-
-      try {
-        const loader = localeModules[lang]?.[ns];
-        if (!loader) return;
-
-        const dict = await loader();
-        setCache((prev) => ({ ...prev, [cacheKey]: dict }));
+      if (!cache[cacheKey] && STATIC_TRANSLATIONS[lang]?.[ns]) {
+        setCache((prev) => ({ ...prev, [cacheKey]: STATIC_TRANSLATIONS[lang][ns] }));
         setLoadedNamespaces((prev) => new Set([...prev, cacheKey]));
-      } catch (err) {
-        console.error(`[i18n] Failed to load namespace ${ns} for language ${lang}:`, err);
       }
     },
     [language, cache],
   );
 
-  // When language changes, reload all currently active namespaces in parallel
-  const setLanguage = useCallback(
-    async (newLang: Language) => {
-      localStorage.setItem(STORAGE_KEY, newLang);
-      setIsLoading(true);
+  const setLanguage = useCallback((newLang: Language) => {
+    localStorage.setItem(STORAGE_KEY, newLang);
+    setLanguageState(newLang);
+  }, []);
 
-      const activeList = Array.from(activeNamespacesRef.current);
-      const promises = activeList.map(async (ns) => {
-        const cacheKey = `${newLang}:${ns}`;
-        if (!cache[cacheKey]) {
-          const loader = localeModules[newLang]?.[ns];
-          if (loader) {
-            const dict = await loader();
-            return { cacheKey, dict };
-          }
-        }
-        return null;
-      });
-
-      const results = await Promise.all(promises);
-      const newEntries: Record<string, TranslationDict> = {};
-      const newLoadedKeys: string[] = [];
-
-      results.forEach((res) => {
-        if (res) {
-          newEntries[res.cacheKey] = res.dict;
-          newLoadedKeys.push(res.cacheKey);
-        }
-      });
-
-      if (Object.keys(newEntries).length > 0) {
-        setCache((prev) => ({ ...prev, ...newEntries }));
-        setLoadedNamespaces((prev) => new Set([...prev, ...newLoadedKeys]));
-      }
-
-      setLanguageState(newLang);
-      setIsLoading(false);
-    },
-    [cache],
-  );
-
-  // Initial load of 'common' and 'errors' namespaces
-  useEffect(() => {
-    loadNamespace('common', language);
-    loadNamespace('errors', language);
-  }, [language, loadNamespace]);
-
-  // Translation lookup function
+  // Translation lookup function supporting "ns:key", "ns.key", and direct "key"
   const t = useCallback(
     (key: string, params?: Record<string, string | number>): string => {
-      // Search in all loaded namespaces for current language
       let foundText: string | undefined;
 
-      // Check if key is prefixed with namespace like "errors.invalidCredentials" or direct "invalidCredentials"
-      const parts = key.split('.');
-      if (parts.length === 2) {
-        const [ns, k] = parts;
-        const dict = cache[`${language}:${ns}`];
-        if (dict && dict[k] !== undefined) {
-          foundText = dict[k];
+      let nsPrefix: string | undefined;
+      let leafKey = key;
+
+      if (key.includes(':')) {
+        const colonIdx = key.indexOf(':');
+        nsPrefix = key.slice(0, colonIdx);
+        leafKey = key.slice(colonIdx + 1);
+      } else if (key.includes('.')) {
+        const dotIdx = key.indexOf('.');
+        nsPrefix = key.slice(0, dotIdx);
+        leafKey = key.slice(dotIdx + 1);
+      }
+
+      if (nsPrefix) {
+        const dict =
+          cache[`${language}:${nsPrefix}`] ||
+          STATIC_TRANSLATIONS[language]?.[nsPrefix as Namespace];
+        if (dict && dict[leafKey] !== undefined) {
+          foundText = dict[leafKey];
         }
       }
 
       if (foundText === undefined) {
-        // Look through loaded active namespaces
-        for (const ns of activeNamespacesRef.current) {
-          const dict = cache[`${language}:${ns}`];
+        // Search all active namespaces in priority order
+        const searchList: Namespace[] = [
+          'common',
+          'catalogs',
+          'ai',
+          'cloud',
+          'team',
+          'plans',
+          'auth',
+          'home',
+          'settings',
+          'errors',
+        ];
+        for (const ns of searchList) {
+          const dict = cache[`${language}:${ns}`] || STATIC_TRANSLATIONS[language]?.[ns];
           if (dict && dict[key] !== undefined) {
             foundText = dict[key];
             break;
@@ -146,10 +170,12 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
         return key; // Fallback to raw key
       }
 
-      // Interpolate dynamic parameters like {{name}}, {{count}}
+      // Interpolate dynamic parameters like {{name}}, {{count}}, {name}, {count}
       if (params) {
         return Object.entries(params).reduce((str, [paramKey, paramVal]) => {
-          return str.replace(new RegExp(`{{\\s*${paramKey}\\s*}}`, 'g'), String(paramVal));
+          const doubleBrace = new RegExp(`{{\\s*${paramKey}\\s*}}`, 'g');
+          const singleBrace = new RegExp(`{\\s*${paramKey}\\s*}`, 'g');
+          return str.replace(doubleBrace, String(paramVal)).replace(singleBrace, String(paramVal));
         }, foundText);
       }
 
@@ -170,26 +196,49 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
   return <I18nContext.Provider value={value}>{children}</I18nContext.Provider>;
 }
 
-/**
- * Custom hook for consuming translations in pages and components.
- * Automatically triggers on-demand lazy loading of specified namespaces.
- */
 export function useTranslation(requiredNamespaces?: Namespace | Namespace[]) {
   const context = useContext(I18nContext);
   if (!context) {
     throw new Error('useTranslation must be used within an I18nProvider');
   }
 
-  const { loadNamespace, t, language, setLanguage, isLoading } = context;
+  const { loadNamespace, t: baseT, language, setLanguage, isLoading } = context;
 
   useEffect(() => {
     if (!requiredNamespaces) return;
-
     const nsList = Array.isArray(requiredNamespaces) ? requiredNamespaces : [requiredNamespaces];
     nsList.forEach((ns) => {
       loadNamespace(ns);
     });
   }, [requiredNamespaces, loadNamespace, language]);
+
+  const t = useCallback(
+    (key: string, params?: Record<string, string | number>): string => {
+      if (requiredNamespaces && !key.includes(':') && !key.includes('.')) {
+        const nsList = Array.isArray(requiredNamespaces)
+          ? requiredNamespaces
+          : [requiredNamespaces];
+        for (const ns of nsList) {
+          const dict = STATIC_TRANSLATIONS[language]?.[ns];
+          if (dict && dict[key] !== undefined) {
+            const foundText = dict[key];
+            if (params) {
+              return Object.entries(params).reduce((str, [paramKey, paramVal]) => {
+                const doubleBrace = new RegExp(`{{\\s*${paramKey}\\s*}}`, 'g');
+                const singleBrace = new RegExp(`{\\s*${paramKey}\\s*}`, 'g');
+                return str
+                  .replace(doubleBrace, String(paramVal))
+                  .replace(singleBrace, String(paramVal));
+              }, foundText);
+            }
+            return foundText;
+          }
+        }
+      }
+      return baseT(key, params);
+    },
+    [baseT, language, requiredNamespaces],
+  );
 
   return {
     t,
@@ -199,15 +248,21 @@ export function useTranslation(requiredNamespaces?: Namespace | Namespace[]) {
   };
 }
 
-/**
- * Utility helper to map any error (ApiError, Error, string) to localized text.
- */
 export function getErrorMessage(error: unknown, t: (key: string) => string): string {
   if (!error) return '';
 
   const rawMessage = error instanceof Error ? error.message : String(error);
 
-  // Common backend error message mappings
+  const direct = t(`errors.${rawMessage}`);
+  if (direct && direct !== `errors.${rawMessage}` && direct !== rawMessage) {
+    return direct;
+  }
+
+  const directNoNs = t(rawMessage);
+  if (directNoNs && directNoNs !== rawMessage && directNoNs !== `errors.${rawMessage}`) {
+    return directNoNs;
+  }
+
   if (
     rawMessage.includes('Invalid email or password') ||
     rawMessage.includes('Unauthorized') ||
@@ -249,77 +304,5 @@ export function getErrorMessage(error: unknown, t: (key: string) => string): str
     return t('errors.userNotFound');
   }
 
-  if (
-    rawMessage.includes('Invalid or expired reset token') ||
-    rawMessage.includes('reset token') ||
-    rawMessage.includes('invalidResetToken')
-  ) {
-    return t('errors.invalidResetToken');
-  }
-
-  if (rawMessage.includes('LICENSE_EXPIRED') || rawMessage.includes('tariff plan has expired')) {
-    return t('errors.licenseExpired');
-  }
-
-  if (
-    rawMessage.includes('TEAM_SEATS_LIMIT_EXCEEDED') ||
-    rawMessage.includes('Team seats limit') ||
-    rawMessage.includes('ліміт місць у команді')
-  ) {
-    return t('errors.teamSeatsLimitExceeded');
-  }
-
-  if (
-    rawMessage.includes('SUPPLIERS_LIMIT_EXCEEDED') ||
-    rawMessage.includes('Suppliers limit') ||
-    rawMessage.includes('ліміт підключених постачальників')
-  ) {
-    return t('errors.suppliersLimitExceeded');
-  }
-
-  if (rawMessage.includes('FEEDS_LIMIT_EXCEEDED') || rawMessage.includes('Feeds limit')) {
-    return t('errors.feedsLimitExceeded');
-  }
-
-  if (rawMessage.includes('CHANNELS_LIMIT_EXCEEDED') || rawMessage.includes('Channels limit')) {
-    return t('errors.channelsLimitExceeded');
-  }
-
-  if (rawMessage.includes('PLAN_NOT_FOUND') || rawMessage.includes('Tariff plan with code')) {
-    return t('errors.planNotFound');
-  }
-
-  if (rawMessage.includes('NO_ACTIVE_LICENSE') || rawMessage.includes('No active license')) {
-    return t('errors.noActiveLicense');
-  }
-
-  if (rawMessage.includes('Organization not found')) {
-    return t('errors.organizationNotFound');
-  }
-
-  if (rawMessage.includes('already a member')) {
-    return t('errors.memberAlreadyExists');
-  }
-
-  if (rawMessage.includes('Cannot remove owner') || rawMessage.includes('cannot remove')) {
-    return t('errors.cannotRemoveOwner');
-  }
-
-  if (rawMessage.includes('Forbidden') || rawMessage.includes('403')) {
-    return t('errors.forbidden');
-  }
-
-  // Try direct key lookup in errors namespace
-  const translatedInErrors = t(`errors.${rawMessage}`);
-  if (translatedInErrors !== `errors.${rawMessage}`) {
-    return translatedInErrors;
-  }
-
-  const directTranslated = t(rawMessage);
-  if (directTranslated !== rawMessage) {
-    return directTranslated;
-  }
-
-  // Default fallback to prevent leaking unrendered technical/English errors into the UI
-  return t('errors.unknownError');
+  return rawMessage;
 }

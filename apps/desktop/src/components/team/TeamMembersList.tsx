@@ -5,11 +5,13 @@ import { Badge } from '@/components/ui/badge';
 import { useTranslation } from '@/i18n';
 import { TeamMemberRow } from './TeamMemberRow';
 
+import type { OrganizationMemberDto } from '@smartfeed/shared';
+
 interface TeamMembersListProps {
-  members: any[];
+  members: OrganizationMemberDto[];
   currentUserId?: string;
   isCurrentUserOwnerOrAdmin: boolean;
-  onRemove: (member: any) => void;
+  onRemove: (member: OrganizationMemberDto) => void;
   isLoading?: boolean;
 }
 

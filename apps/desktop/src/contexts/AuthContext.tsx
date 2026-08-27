@@ -18,6 +18,7 @@ interface AuthContextType {
   isLoading: boolean;
   login: (credentials: LoginCredentials) => Promise<void>;
   register: (credentials: RegisterCredentials) => Promise<void>;
+  setAuthSession: (authResponse: { tokens: { accessToken: string }; user: UserProfile }) => void;
   logout: () => void;
   refreshProfile: () => Promise<void>;
 }
@@ -79,6 +80,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [refreshProfile]);
 
+  const setAuthSession = useCallback(
+    (authResponse: { tokens: { accessToken: string }; user: UserProfile }) => {
+      const accessToken = authResponse.tokens.accessToken;
+      const userProfile = authResponse.user;
+
+      localStorage.setItem(TOKEN_KEY, accessToken);
+      localStorage.setItem(USER_KEY, JSON.stringify(userProfile));
+
+      setToken(accessToken);
+      setUser(userProfile);
+    },
+    [],
+  );
+
   const login = useCallback(async (credentials: LoginCredentials) => {
     setIsLoading(true);
     try {
@@ -121,10 +136,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       isLoading,
       login,
       register,
+      setAuthSession,
       logout,
       refreshProfile,
     }),
-    [user, token, isLoading, login, register, logout, refreshProfile],
+    [user, token, isLoading, login, register, setAuthSession, logout, refreshProfile],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

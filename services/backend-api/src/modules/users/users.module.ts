@@ -1,6 +1,9 @@
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 import { CreateUserHandler } from './commands/create-user.handler';
+import { CreateUserByAdminHandler } from './commands/create-user-by-admin.handler';
+import { UpdateUserStatusHandler } from './commands/update-user-status.handler';
+import { DeleteUserHandler } from './commands/delete-user.handler';
 import { ChangePasswordHandler } from './commands/change-password.handler';
 import { ResetPasswordHandler } from './commands/reset-password.handler';
 import { GetUserByEmailHandler } from './queries/get-user-by-email.handler';
@@ -9,7 +12,14 @@ import { GetUsersListHandler } from './queries/get-users-list.handler';
 import { GetUsersStatsHandler } from './queries/get-users-stats.handler';
 import { UsersController } from './users.controller';
 
-export const CommandHandlers = [CreateUserHandler, ChangePasswordHandler, ResetPasswordHandler];
+export const CommandHandlers = [
+  CreateUserHandler,
+  CreateUserByAdminHandler,
+  UpdateUserStatusHandler,
+  DeleteUserHandler,
+  ChangePasswordHandler,
+  ResetPasswordHandler,
+];
 export const QueryHandlers = [
   GetUserByEmailHandler,
   GetUserByIdHandler,

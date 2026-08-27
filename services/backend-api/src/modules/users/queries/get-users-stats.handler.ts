@@ -9,9 +9,9 @@ export class GetUsersStatsHandler implements IQueryHandler<GetUsersStatsQuery> {
 
   async execute(): Promise<UsersStatsDto> {
     const [totalUsers, activeLicenses, superAdminsCount, standardUsersCount] = await Promise.all([
-      this.prisma.user.count(),
+      this.prisma.user.count({ where: { role: { not: 'SUPER_ADMIN' } } }),
       this.prisma.license.count({ where: { isActive: true } }),
-      this.prisma.user.count({ where: { role: 'SUPER_ADMIN' } }),
+      this.prisma.user.count({ where: { role: 'ADMIN' } }),
       this.prisma.user.count({ where: { role: 'USER' } }),
     ]);
 

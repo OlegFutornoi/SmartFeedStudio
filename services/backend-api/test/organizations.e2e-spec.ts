@@ -1,17 +1,16 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
-import * as bcrypt from 'bcrypt';
 import { AppModule } from '../src/app.module';
 import { PrismaService } from '../src/prisma/prisma.service';
 import { GlobalHttpExceptionFilter } from '../src/common/filters/http-exception.filter';
+import { cleanDatabase } from './utils/teardown.helper';
 
 describe('Organizations & Team Seats Quota Policy (E2E)', () => {
   let app: INestApplication;
   let prisma: PrismaService;
 
   let ownerToken: string;
-  let ownerUserId: string;
   let orgId: string;
 
   let soloUserToken: string;
@@ -68,78 +67,102 @@ describe('Organizations & Team Seats Quota Policy (E2E)', () => {
     prisma = app.get<PrismaService>(PrismaService);
 
     // 1. Clean any leftover test data
-    await prisma.organizationMember.deleteMany({
-      where: {
-        user: {
-          email: { in: allTestEmails },
-        },
+    await cleanDatabase(prisma, {
+      userEmails: allTestEmails,
+      emailPrefixes: ['org.test+', 'solo.user+', 'existing.user+'],
+      organizationNames: [
+        testOwner.companyName,
+        'Rozetka Enterprise Hub',
+        `Компанія ${soloUser.fullName}`,
+        `Компанія ${existingUser.fullName}`,
+      ],
+    });
+
+    // 2. Ensure Tariff Plans exist
+    await prisma.tariffPlan.upsert({
+      where: { code: 'STARTER' },
+      update: {},
+      create: {
+        code: 'STARTER',
+        nameUk: 'Стартовий',
+        nameEn: 'Starter',
+        priceMonthly: 0,
+        maxXmlLimit: 500,
+        aiCredits: 0,
+        canCloudBackup: false,
+        maxTeamSeats: 1,
+        maxSuppliersLimit: 1,
+        maxFeedsLimit: 1,
+        maxChannelsLimit: 1,
+        isActive: true,
+        order: 1,
+        durationDays: 7,
       },
     });
-    await prisma.organization.deleteMany({
-      where: {
-        name: {
-          in: [
-            testOwner.companyName,
-            'Rozetka Enterprise Hub',
-            `Компанія ${soloUser.fullName}`,
-            `Компанія ${existingUser.fullName}`,
-          ],
-        },
+
+    await prisma.tariffPlan.upsert({
+      where: { code: 'PRO' },
+      update: {},
+      create: {
+        code: 'PRO',
+        nameUk: 'Професійний',
+        nameEn: 'Professional',
+        priceMonthly: 49,
+        maxXmlLimit: 100000,
+        aiCredits: 1000,
+        canCloudBackup: true,
+        maxTeamSeats: 3,
+        maxSuppliersLimit: 15,
+        maxFeedsLimit: 10,
+        maxChannelsLimit: 5,
+        isActive: true,
+        order: 3,
+        durationDays: 30,
       },
     });
-    await prisma.license.deleteMany({
-      where: {
-        user: {
-          email: { in: allTestEmails },
-        },
-      },
-    });
-    await prisma.user.deleteMany({
-      where: {
-        email: { in: allTestEmails },
+
+    await prisma.tariffPlan.upsert({
+      where: { code: 'ENTERPRISE' },
+      update: {},
+      create: {
+        code: 'ENTERPRISE',
+        nameUk: 'Корпоративний',
+        nameEn: 'Enterprise',
+        priceMonthly: 199,
+        maxXmlLimit: 1000000,
+        aiCredits: 10000,
+        canCloudBackup: true,
+        maxTeamSeats: 100,
+        maxSuppliersLimit: 100,
+        maxFeedsLimit: 50,
+        maxChannelsLimit: 20,
+        hasWhiteLabel: true,
+        hasSso: true,
+        isActive: true,
+        order: 4,
+        durationDays: 365,
       },
     });
   });
 
   afterAll(async () => {
-    // Zero Test Data Leftovers Teardown
-    await prisma.organizationMember.deleteMany({
-      where: {
-        user: {
-          email: { in: allTestEmails },
-        },
-      },
-    });
-    await prisma.organization.deleteMany({
-      where: {
-        name: {
-          in: [
-            testOwner.companyName,
-            'Rozetka Enterprise Hub',
-            `Компанія ${soloUser.fullName}`,
-            `Компанія ${existingUser.fullName}`,
-          ],
-        },
-      },
-    });
-    await prisma.license.deleteMany({
-      where: {
-        user: {
-          email: { in: allTestEmails },
-        },
-      },
-    });
-    await prisma.user.deleteMany({
-      where: {
-        email: { in: allTestEmails },
-      },
+    // Teardown with 100% complete data isolation
+    await cleanDatabase(prisma, {
+      userEmails: allTestEmails,
+      emailPrefixes: ['org.test+', 'solo.user+', 'existing.user+'],
+      organizationNames: [
+        testOwner.companyName,
+        'Rozetka Enterprise Hub',
+        `Компанія ${soloUser.fullName}`,
+        `Компанія ${existingUser.fullName}`,
+      ],
     });
 
     await app.close();
   });
 
-  describe('1. Registration with companyName', () => {
-    it('should register user and automatically create Organization with companyName as OWNER', async () => {
+  describe('1. Organization Creation on User Registration', () => {
+    it('should create an Organization with companyName, set user as OWNER, and auto-provision Starter License', async () => {
       const res = await request(app.getHttpServer())
         .post('/api/auth/register')
         .send(testOwner)
@@ -153,7 +176,6 @@ describe('Organizations & Team Seats Quota Policy (E2E)', () => {
       expect(res.body.tokens.accessToken).toBeDefined();
 
       ownerToken = res.body.tokens.accessToken;
-      ownerUserId = res.body.user.id;
 
       // Verify organization created
       const orgsRes = await request(app.getHttpServer())
@@ -233,7 +255,7 @@ describe('Organizations & Team Seats Quota Policy (E2E)', () => {
   describe('4. Team Seats Allocation under PRO plan (maxTeamSeats = 3)', () => {
     let colleague1MemberId: string;
 
-    it('should successfully invite 2nd and 3rd members under PRO plan', async () => {
+    it('should successfully create invitations and allow acceptance under PRO plan', async () => {
       // Invite Colleague 1
       const res1 = await request(app.getHttpServer())
         .post(`/api/organizations/${orgId}/members`)
@@ -244,9 +266,31 @@ describe('Organizations & Team Seats Quota Policy (E2E)', () => {
         })
         .expect(201);
 
-      expect(res1.body.userEmail).toBe(colleague1Email);
+      expect(res1.body.email).toBe(colleague1Email);
       expect(res1.body.role).toBe('MEMBER');
-      colleague1MemberId = res1.body.id;
+      expect(res1.body.token).toMatch(/^SF-INV-/);
+      expect(res1.body.inviteUrl).toBeDefined();
+
+      // Colleague 1 accepts invitation
+      const accept1 = await request(app.getHttpServer())
+        .post('/api/invitations/accept')
+        .send({
+          token: res1.body.token,
+          fullName: 'Colleague One',
+          password: 'ColleaguePassword123!',
+        })
+        .expect(200);
+
+      expect(accept1.body.user.email).toBe(colleague1Email);
+      expect(accept1.body.user.organization.id).toBe(orgId);
+
+      // Find colleague 1 member ID
+      const membersAfter1 = await request(app.getHttpServer())
+        .get(`/api/organizations/${orgId}/members`)
+        .set('Authorization', `Bearer ${ownerToken}`)
+        .expect(200);
+      const m1 = membersAfter1.body.find((m: any) => m.userEmail === colleague1Email);
+      colleague1MemberId = m1.id;
 
       // Invite Colleague 2
       const res2 = await request(app.getHttpServer())
@@ -258,8 +302,18 @@ describe('Organizations & Team Seats Quota Policy (E2E)', () => {
         })
         .expect(201);
 
-      expect(res2.body.userEmail).toBe(colleague2Email);
+      expect(res2.body.email).toBe(colleague2Email);
       expect(res2.body.role).toBe('ADMIN');
+
+      // Colleague 2 accepts invitation
+      await request(app.getHttpServer())
+        .post('/api/invitations/accept')
+        .send({
+          token: res2.body.token,
+          fullName: 'Colleague Two',
+          password: 'ColleaguePassword123!',
+        })
+        .expect(200);
 
       // Verify organization now has 3 used seats out of 3
       const orgDetails = await request(app.getHttpServer())
@@ -286,7 +340,7 @@ describe('Organizations & Team Seats Quota Policy (E2E)', () => {
       expect(res.body.message).toContain('3 місць у команді');
     });
 
-    it('should liberate a seat when a member is removed, allowing a new member to be invited', async () => {
+    it('should liberate a seat when a member is removed, allowing a new member to be invited and accepted', async () => {
       // Remove colleague 1
       await request(app.getHttpServer())
         .delete(`/api/organizations/${orgId}/members/${colleague1MemberId}`)
@@ -303,7 +357,17 @@ describe('Organizations & Team Seats Quota Policy (E2E)', () => {
         })
         .expect(201);
 
-      expect(res.body.userEmail).toBe(colleague3Email);
+      expect(res.body.email).toBe(colleague3Email);
+
+      // Colleague 3 accepts
+      await request(app.getHttpServer())
+        .post('/api/invitations/accept')
+        .send({
+          token: res.body.token,
+          fullName: 'Colleague Three',
+          password: 'InvitedMemberPassword123!',
+        })
+        .expect(200);
 
       // Verify total members count is again 3
       const membersList = await request(app.getHttpServer())
@@ -331,20 +395,12 @@ describe('Organizations & Team Seats Quota Policy (E2E)', () => {
     let colleague3Token: string;
 
     beforeAll(async () => {
-      // Set known password for colleague 3
-      const knownPassword = 'InvitedMemberPassword123!';
-      const hash = await bcrypt.hash(knownPassword, 10);
-      await prisma.user.update({
-        where: { email: colleague3Email },
-        data: { passwordHash: hash },
-      });
-
       // Log in as colleague 3
       const loginRes = await request(app.getHttpServer())
         .post('/api/auth/login')
         .send({
           email: colleague3Email,
-          password: knownPassword,
+          password: 'InvitedMemberPassword123!',
         })
         .expect(200);
 
@@ -415,7 +471,7 @@ describe('Organizations & Team Seats Quota Policy (E2E)', () => {
       }
 
       // 3. Invite existing user into Rozetka Enterprise Hub
-      await request(app.getHttpServer())
+      const invRes = await request(app.getHttpServer())
         .post(`/api/organizations/${orgId}/members`)
         .set('Authorization', `Bearer ${ownerToken}`)
         .send({
@@ -423,6 +479,14 @@ describe('Organizations & Team Seats Quota Policy (E2E)', () => {
           role: 'MEMBER',
         })
         .expect(201);
+
+      // Accept invitation as existing user
+      await request(app.getHttpServer())
+        .post('/api/invitations/accept')
+        .send({
+          token: invRes.body.token,
+        })
+        .expect(200);
 
       // 4. Now existing user calls GET /api/licenses/my -> should inherit corporate PRO license!
       const inheritedLicRes = await request(app.getHttpServer())

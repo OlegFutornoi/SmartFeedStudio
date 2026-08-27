@@ -3,6 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { PrismaService } from '../src/prisma/prisma.service';
+import { cleanDatabase } from './utils/teardown.helper';
 
 /**
  * E2E Tests: Auth — Registration & Login
@@ -63,25 +64,16 @@ describe('Auth — Registration & Login (E2E)', () => {
     );
 
     await app.init();
+    await cleanDatabase(prisma, {
+      emailPrefixes: ['e2e.test+', 'short-pw+', 'no-pw+'],
+    });
   });
 
   afterAll(async () => {
-    // ── MANDATORY TEST DATA TEARDOWN ──────────────────────────────────────────
-    // Delete all users created during this test run.
-    // Prisma cascade will also remove related License records automatically.
-    if (createdEmails.length > 0) {
-      await prisma.user.deleteMany({
-        where: { email: { in: createdEmails } },
-      });
-    }
-    await prisma.user.deleteMany({
-      where: {
-        OR: [
-          { email: { startsWith: 'e2e.test+' } },
-          { email: { startsWith: 'short-pw+' } },
-          { email: { startsWith: 'no-pw+' } },
-        ],
-      },
+    // ── MANDATORY 100% TEST DATA TEARDOWN ─────────────────────────────────────
+    await cleanDatabase(prisma, {
+      userEmails: createdEmails,
+      emailPrefixes: ['e2e.test+', 'short-pw+', 'no-pw+'],
     });
     // ─────────────────────────────────────────────────────────────────────────
 

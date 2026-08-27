@@ -1,9 +1,12 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
+  Param,
+  Patch,
   Post,
   Query,
   UseGuards,
@@ -17,7 +20,19 @@ import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { GetUsersListQuery } from './queries/get-users-list.query';
 import { GetUsersStatsQuery } from './queries/get-users-stats.query';
 import { ChangePasswordCommand } from './commands/change-password.command';
-import { ChangePasswordDto, Role, UserListItemDto, UsersStatsDto } from '@smartfeed/shared';
+import {
+  ChangePasswordDto,
+  CreateUserByAdminDto,
+  CreateUserByAdminDtoSchema,
+  Role,
+  UpdateUserStatusDto,
+  UpdateUserStatusDtoSchema,
+  UserListItemDto,
+  UsersStatsDto,
+} from '@smartfeed/shared';
+import { CreateUserByAdminCommand } from './commands/create-user-by-admin.command';
+import { UpdateUserStatusCommand } from './commands/update-user-status.command';
+import { DeleteUserCommand } from './commands/delete-user.command';
 
 @ApiTags('Users')
 @Controller('users')
@@ -38,11 +53,18 @@ export class UsersController {
   async getUsers(
     @Query('search') search?: string,
     @Query('role') role?: string,
+    @Query('orgRoleFilter') orgRoleFilter?: 'ALL' | 'OWNERS' | 'MEMBERS',
     @Query('limit') limit?: number,
     @Query('offset') offset?: number,
   ): Promise<UserListItemDto[]> {
     return this.queryBus.execute(
-      new GetUsersListQuery(search, role, limit ? Number(limit) : 50, offset ? Number(offset) : 0),
+      new GetUsersListQuery(
+        search,
+        role,
+        orgRoleFilter,
+        limit ? Number(limit) : 50,
+        offset ? Number(offset) : 0,
+      ),
     );
   }
 
@@ -54,6 +76,52 @@ export class UsersController {
   @ApiResponse({ status: 403, description: 'Forbidden: Admin access required' })
   async getStats(): Promise<UsersStatsDto> {
     return this.queryBus.execute(new GetUsersStatsQuery());
+  }
+
+  @Post()
+  @UseGuards(RolesGuard)
+  @Roles(Role.SUPER_ADMIN, Role.ADMIN)
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Create a new user (Admin Portal)' })
+  @ApiResponse({ status: 201, description: 'User created successfully' })
+  @ApiResponse({ status: 400, description: 'Validation failed' })
+  @ApiResponse({ status: 409, description: 'Email already exists' })
+  async createUserByAdmin(@Body() body: unknown): Promise<UserListItemDto> {
+    const dto: CreateUserByAdminDto = CreateUserByAdminDtoSchema.parse(body);
+    return this.commandBus.execute(new CreateUserByAdminCommand(dto));
+  }
+
+  @Patch(':id/status')
+  @UseGuards(RolesGuard)
+  @Roles(Role.SUPER_ADMIN, Role.ADMIN)
+  @ApiOperation({ summary: 'Update user active/suspended status' })
+  @ApiResponse({ status: 200, description: 'User status updated successfully' })
+  @ApiResponse({ status: 400, description: 'Cannot suspend own account' })
+  @ApiResponse({ status: 403, description: 'Cannot suspend super admin' })
+  @ApiResponse({ status: 404, description: 'User not found' })
+  async updateUserStatus(
+    @Param('id') userId: string,
+    @Body() body: unknown,
+    @CurrentUser('id') requesterId: string,
+  ): Promise<UserListItemDto> {
+    const dto: UpdateUserStatusDto = UpdateUserStatusDtoSchema.parse(body);
+    return this.commandBus.execute(new UpdateUserStatusCommand(userId, dto.isActive, requesterId));
+  }
+
+  @Delete(':id')
+  @UseGuards(RolesGuard)
+  @Roles(Role.SUPER_ADMIN, Role.ADMIN)
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Delete user account (Admin Portal)' })
+  @ApiResponse({ status: 200, description: 'User deleted successfully' })
+  @ApiResponse({ status: 400, description: 'Cannot delete own account' })
+  @ApiResponse({ status: 403, description: 'Cannot delete super admin' })
+  @ApiResponse({ status: 404, description: 'User not found' })
+  async deleteUser(
+    @Param('id') userId: string,
+    @CurrentUser('id') requesterId: string,
+  ): Promise<{ success: boolean }> {
+    return this.commandBus.execute(new DeleteUserCommand(userId, requesterId));
   }
 
   @Post('change-password')

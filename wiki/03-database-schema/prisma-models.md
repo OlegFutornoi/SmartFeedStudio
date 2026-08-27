@@ -78,21 +78,22 @@ model User {
 }
 ```
 
-### 🏢 `Organization` & `OrganizationMember`
+### 🏢 `Organization`, `OrganizationMember` & `OrganizationInvitation`
 
-Організації для багатокористувацького командного доступу (`Multi-Tenant Organizations`):
+Організації для багатокористувацького командного доступу (`Multi-Tenant Organizations`) та двоканальні запрошення:
 
 ```prisma
 model Organization {
-  id        String               @id @default(cuid())
-  name      String
-  slug      String?              @unique
-  ownerId   String
-  owner     User                 @relation("OrganizationOwner", fields: [ownerId], references: [id], onDelete: Cascade)
-  members   OrganizationMember[]
-  licenses  License[]
-  createdAt DateTime             @default(now())
-  updatedAt DateTime             @updatedAt
+  id          String                   @id @default(cuid())
+  name        String
+  slug        String?                  @unique
+  ownerId     String
+  owner       User                     @relation("OrganizationOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  members     OrganizationMember[]
+  invitations OrganizationInvitation[]
+  licenses    License[]
+  createdAt   DateTime                 @default(now())
+  updatedAt   DateTime                 @updatedAt
 
   @@index([ownerId])
   @@index([createdAt])
@@ -113,6 +114,28 @@ model OrganizationMember {
   @@index([userId])
   @@index([joinedAt])
   @@map("organization_members")
+}
+
+model OrganizationInvitation {
+  id             String           @id @default(cuid())
+  organizationId String
+  organization   Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  invitedById    String
+  invitedBy      User             @relation("UserSentInvitations", fields: [invitedById], references: [id], onDelete: Cascade)
+  email          String
+  role           MemberRole       @default(MEMBER)
+  token          String           @unique
+  status         InvitationStatus @default(PENDING)
+  expiresAt      DateTime
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  @@index([organizationId])
+  @@index([invitedById])
+  @@index([email])
+  @@index([token])
+  @@index([status])
+  @@map("organization_invitations")
 }
 ```
 

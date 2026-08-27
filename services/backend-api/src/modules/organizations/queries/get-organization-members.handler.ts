@@ -44,7 +44,9 @@ export class GetOrganizationMembersHandler implements IQueryHandler<GetOrganizat
       organizationId: m.organizationId,
       userId: m.userId,
       email: m.user.email,
+      userEmail: m.user.email,
       fullName: m.user.fullName,
+      userFullName: m.user.fullName,
       role: m.role,
       joinedAt: m.joinedAt,
     }));

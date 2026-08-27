@@ -40,11 +40,17 @@ description: Quality assurance, documentation synchronization, git commit policy
 
 ## 6. Mandatory Post-Code-Writing Protocol (Self-Review, Error Checks, Skills & Formatting)
 
-- **Rule (Step 1 — Mandatory Domain Skills)**: When writing or refactoring code, the agent must **ALWAYS** actively apply relevant best-practice skills (`vercel-react-best-practices` for React/Next.js, `nestjs-best-practices` for NestJS CQRS, `shadcn` for UI design systems, `playwright-best-practices` for E2E tests, `frontend-desing` for visual standards, `prisma-postgres` for database operations, `systematic-debugging` for debugging).
+- **Rule (Step 1 — Mandatory Domain Skills)**: When writing, refactoring, or reviewing code, the agent must **ALWAYS** actively apply the specialized skills matrix ([.agents/rules/code_review_and_skills.md](file:///Users/oleg/AQA/SmartFeedStudio/.agents/rules/code_review_and_skills.md)):
+  - **Backend**: `nestjs-best-practices`, `backend-development`, `backend-patterns`, `sentry-backend-bugs`, `defense-in-depth-validation`, `prisma-postgres`, `prisma-client-api`, `supabase-postgres-best-practices`, `subscription-lifecycle`, `systematic-debugging`, `root-cause-tracing`.
+  - **Frontend**: `vercel-react-best-practices`, `frontend-design`, `beautiful-desing`, `shadcn`, `integrate-backend`.
+  - **Testing & QA**: `playwright-best-practices`, `test-driven-development-tdd`, `testing-anti-patterns`, `condition-based-waiting`, `verification-before-completion`.
+  - **Review & Execution**: `requesting-code-review`, `code-review-reception`, `writing-plans`, `executing-plans`, `subagent-driven-development`.
 - **Rule (Step 2 — Immediate Self-Code Review, Dead Code Elimination & Component Modularity)**: Immediately after writing or modifying code, the agent must **automatically perform a rigorous architectural self-code review** against these best practices:
   - **Component Size Limit & Single Responsibility**: React components must remain compact, clean, and modular (recommended max ~250–300 lines). Monolithic components (e.g. 700–1000+ lines) are **strictly prohibited**. Always decompose complex views into dedicated subcomponents (`*Dialog.tsx`, `*List.tsx`, `*Row.tsx`, `*Header.tsx`, `*Preview.tsx`, custom hooks).
   - **Zero Unused Imports & Dead Code**: Eliminate all unreferenced imports (e.g. from `lucide-react`, DTOs, or React hooks), unused variables, types, and unreachable code. Actively inspect IDE diagnostics and fix all unused items immediately.
+  - **Defense-in-Depth Validation**: Validate inputs at every layer (DTO boundary, service/domain rules, license/role guards, DB constraints).
   - **Architectural Integrity & Zero Gaps**: Strictly adhere to CQRS module boundaries, minimal React re-renders (`vercel-react-best-practices`), proper design token usage (`shadcn`), bundle efficiency, accessibility, type safety, and test isolation.
+
 - **Rule (Step 3 — Mandatory Typecheck, Diagnostics & Immediate Error Fixes)**:
   - Immediately after writing or modifying code in ANY package (`services/backend-api`, `packages/shared`, `apps/desktop`, `apps/admin-portal`), the agent **MUST ALWAYS** execute static typechecking (`tsc --noEmit`, `pnpm build:shared`, `prisma generate` when schema changes).
   - **Zero Error Tolerance & Immediate Fixes**: If `tsc --noEmit` or IDE diagnostics report ANY errors (type mismatches, missing DTO fields, outdated Prisma types, enum conflicts, unhandled properties), the agent **MUST NOT leave them or report completion to the user**. The agent **MUST IMMEDIATELY investigate and fix every single error** until all packages compile with exit code 0.
@@ -61,8 +67,16 @@ description: Quality assurance, documentation synchronization, git commit policy
 
 ## 7. Mandatory Test Isolation & Complete Data Cleanup Policy (Zero Leftovers)
 
-- **Rule**: Every automated test (Backend Jest E2E, Integration, Desktop/Admin Playwright E2E) that creates, modifies, or stores records (database users, licenses, navigation items, snapshots, files in object storage, localStorage, cookies) **MUST** guarantee 100% complete deletion and teardown of all test-generated data:
-  - **Backend Database Teardown**: In all `*.e2e-spec.ts` files, `afterAll` (and `afterEach` where applicable) hooks must explicitly delete all created entities using stored IDs, created emails, and scoped wildcard matching (e.g. `e2e.test+*`, `admintest-*`, `analytics_*`, `nav.admin+*`, `nav.user+*`). Never leave orphaned rows in PostgreSQL or Redis.
+- **Rule**: Every automated test (Backend Jest E2E, Integration, Desktop/Admin Playwright E2E) that creates, modifies, or stores records (database users, licenses, organizations, members, invitations, navigation items, snapshots, product images, future product/feed catalogs, files in object storage, localStorage, cookies) **MUST** guarantee 100% complete deletion and teardown of all test-generated data:
+  - **Backend Database Teardown**: In all `*.e2e-spec.ts` files, tests **MUST** use the centralized `cleanDatabase` helper (`test/utils/teardown.helper.ts`) in both `beforeAll` (pre-clean) and `afterAll` (post-clean). The deletion strictly follows the FK-safe hierarchy:
+    1. `Snapshot` & `ProductImage` (catalogs, XML feeds, media, future `Product` / `Feed` entities)
+    2. `OrganizationInvitation` (invitation tokens, emails)
+    3. `OrganizationMember` (team memberships)
+    4. `License` (all user and organization licenses)
+    5. `Organization` (test companies)
+    6. `User` (test users by IDs, emails, wildcard prefixes)
+    7. `TariffPlan` & `NavigationItem` (test-created plans and navigation items)
+       Never leave orphaned rows in PostgreSQL or Redis.
   - **Frontend Test Isolation**: In Playwright E2E tests (`*.spec.ts`), always clear browser `localStorage`, `sessionStorage`, cookies, and route mocks before and after each test case to prevent state leakage and test cross-contamination.
 
 ---

@@ -4,6 +4,7 @@ import * as request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { PrismaService } from '../src/prisma/prisma.service';
 import { Role } from '@smartfeed/shared';
+import { cleanDatabase } from './utils/teardown.helper';
 
 describe('Tariff Plans & Licenses Management (E2E)', () => {
   let app: INestApplication;
@@ -39,6 +40,10 @@ describe('Tariff Plans & Licenses Management (E2E)', () => {
 
     await app.init();
 
+    await cleanDatabase(prisma, {
+      emailPrefixes: ['plans.admin+', 'plans.user+'],
+    });
+
     // Register test super admin user
     const adminEmail = `plans.admin+${timestamp}@smartfeed.local`;
     createdEmails.push(adminEmail);
@@ -63,27 +68,12 @@ describe('Tariff Plans & Licenses Management (E2E)', () => {
   });
 
   afterAll(async () => {
-    // Teardown created plans
-    if (createdPlanCodes.length > 0) {
-      await prisma.tariffPlan.deleteMany({
-        where: {
-          OR: [{ code: { in: createdPlanCodes } }, { code: { startsWith: 'TEST_' } }],
-        },
-      });
-    }
-
-    // Teardown created users & licenses
-    if (createdEmails.length > 0) {
-      await prisma.user.deleteMany({
-        where: {
-          OR: [
-            { email: { in: createdEmails } },
-            { email: { contains: 'plans.admin+' } },
-            { email: { contains: 'plans.user+' } },
-          ],
-        },
-      });
-    }
+    // 100% complete data isolation teardown
+    await cleanDatabase(prisma, {
+      userEmails: createdEmails,
+      emailPrefixes: ['plans.admin+', 'plans.user+'],
+      planCodes: createdPlanCodes,
+    });
 
     await app.close();
   });

@@ -9,7 +9,7 @@ import { LanguageToggle } from '@/components/ui/language-toggle';
 
 export const Header = React.memo(function Header() {
   const { user } = useAuth();
-  const { toggleSidebar, toggleMobileSidebar, isCollapsed } = useSidebar();
+  const { toggleSidebar, toggleMobileSidebar } = useSidebar();
 
   return (
     <header
@@ -22,9 +22,10 @@ export const Header = React.memo(function Header() {
         <Button
           variant="ghost"
           size="sm"
+          data-testid="header-toggle-sidebar-button"
           className="hidden md:flex h-9 w-9 p-0 text-muted-foreground hover:text-foreground hover:bg-muted/80 rounded-xl"
           onClick={toggleSidebar}
-          title={isCollapsed ? 'Розгорнути меню' : 'Згорнути меню'}
+          title="Перемкнути бічну панель"
         >
           <PanelLeft className="h-5 w-5 text-foreground" />
         </Button>

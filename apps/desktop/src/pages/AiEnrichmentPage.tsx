@@ -1,35 +1,17 @@
-import { useState, useEffect } from 'react';
 import { Sparkles, Wand2, Bot, Zap, Sliders, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useTranslation } from '@/i18n';
-import { useAuth } from '@/contexts/AuthContext';
-import { getMyLicense } from '@/lib/api';
+import { useLicense } from '@/hooks/useLicense';
 import { ExpiredPlanBlocker } from '@/components/layout/ExpiredPlanBlocker';
 
 export function AiEnrichmentPage() {
-  const { language } = useTranslation();
-  const isUk = language === 'uk';
-  const { token } = useAuth();
-  const [isExpired, setIsExpired] = useState<boolean>(false);
-  const [aiCredits, setAiCredits] = useState(500);
-
-  useEffect(() => {
-    if (token) {
-      getMyLicense(token)
-        .then((lic) => {
-          setIsExpired(Boolean(lic?.isExpired));
-          if (lic?.aiCredits !== undefined) {
-            setAiCredits(lic.aiCredits);
-          }
-        })
-        .catch(() => {});
-    }
-  }, [token]);
+  const { t } = useTranslation(['ai', 'common']);
+  const { isExpired, aiCredits } = useLicense();
 
   if (isExpired) {
-    return <ExpiredPlanBlocker featureName={isUk ? 'AI Збагачення' : 'AI Enrichment'} />;
+    return <ExpiredPlanBlocker featureName={t('ai:title')} />;
   }
 
   return (
@@ -46,13 +28,9 @@ export function AiEnrichmentPage() {
             </div>
             <div>
               <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-                {isUk ? 'AI Збагачення контенту' : 'AI Content Enrichment'}
+                {t('ai:title')}
               </h1>
-              <p className="text-sm text-muted-foreground">
-                {isUk
-                  ? 'Автоматична генерація SEO-описів, характеристик та перекладів карток товарів'
-                  : 'Automated generation of SEO descriptions, specifications, and translations'}
-              </p>
+              <p className="text-sm text-muted-foreground">{t('ai:description')}</p>
             </div>
           </div>
         </div>
@@ -63,7 +41,7 @@ export function AiEnrichmentPage() {
         >
           <Zap className="h-3.5 w-3.5" />
           <span>
-            {aiCredits} {isUk ? 'AI Кредитів доступно' : 'AI Credits available'}
+            {aiCredits} {t('ai:creditsRemaining')}
           </span>
         </Badge>
       </div>
@@ -75,18 +53,12 @@ export function AiEnrichmentPage() {
             <div className="p-2.5 w-fit rounded-xl bg-purple-500/10 text-purple-400 mb-2">
               <Wand2 className="h-5 w-5" />
             </div>
-            <CardTitle className="text-base">
-              {isUk ? 'Генератор описів' : 'Description Generator'}
-            </CardTitle>
-            <CardDescription className="text-xs">
-              {isUk
-                ? 'Створення унікальних продаючих описів товарів за шаблонами маркетплейсів'
-                : 'Create engaging e-commerce product copy optimized for conversion'}
-            </CardDescription>
+            <CardTitle className="text-base">{t('ai:seoTitle')}</CardTitle>
+            <CardDescription className="text-xs">{t('ai:seoDesc')}</CardDescription>
           </CardHeader>
           <CardContent>
             <Button className="w-full text-xs gap-1.5 bg-purple-600 hover:bg-purple-700 text-white shadow-md shadow-purple-600/25">
-              <span>{isUk ? 'Запустити пакетну обробку' : 'Start Batch Run'}</span>
+              <span>{t('ai:startBatch')}</span>
               <ArrowRight className="h-3.5 w-3.5" />
             </Button>
           </CardContent>
@@ -97,18 +69,12 @@ export function AiEnrichmentPage() {
             <div className="p-2.5 w-fit rounded-xl bg-blue-500/10 text-blue-400 mb-2">
               <Sliders className="h-5 w-5" />
             </div>
-            <CardTitle className="text-base">
-              {isUk ? 'Нормалізація параметрів' : 'Attribute Normalization'}
-            </CardTitle>
-            <CardDescription className="text-xs">
-              {isUk
-                ? 'Приведення характеристик та категорій до єдиного стандарту Rozetka/Prom'
-                : 'Normalize technical attributes and categories across multiple marketplaces'}
-            </CardDescription>
+            <CardTitle className="text-base">{t('ai:specsTitle')}</CardTitle>
+            <CardDescription className="text-xs">{t('ai:specsDesc')}</CardDescription>
           </CardHeader>
           <CardContent>
             <Button variant="outline" className="w-full text-xs gap-1.5">
-              <span>{isUk ? 'Налаштувати правила' : 'Configure Rules'}</span>
+              <span>{t('ai:generationSettings')}</span>
               <ArrowRight className="h-3.5 w-3.5" />
             </Button>
           </CardContent>
@@ -119,18 +85,12 @@ export function AiEnrichmentPage() {
             <div className="p-2.5 w-fit rounded-xl bg-emerald-500/10 text-emerald-400 mb-2">
               <Bot className="h-5 w-5" />
             </div>
-            <CardTitle className="text-base">
-              {isUk ? 'SEO & Ключові слова' : 'SEO Keywords AI'}
-            </CardTitle>
-            <CardDescription className="text-xs">
-              {isUk
-                ? 'Підбір пошукових тегів, Meta Title та Meta Description для Google Shopping'
-                : 'Extract high-ranking keywords, Meta Titles, and Descriptions for Google Ads'}
-            </CardDescription>
+            <CardTitle className="text-base">{t('ai:translateTitle')}</CardTitle>
+            <CardDescription className="text-xs">{t('ai:translateDesc')}</CardDescription>
           </CardHeader>
           <CardContent>
             <Button variant="outline" className="w-full text-xs gap-1.5">
-              <span>{isUk ? 'Оптимізувати теги' : 'Optimize Tags'}</span>
+              <span>{t('ai:customPrompt')}</span>
               <ArrowRight className="h-3.5 w-3.5" />
             </Button>
           </CardContent>

@@ -326,3 +326,87 @@ export async function updateOrganization(
   }
   return data;
 }
+
+export async function getOrganizationInvitations(token: string, id: string): Promise<any[]> {
+  const response = await fetch(`${API_BASE_URL}/organizations/${id}/invitations`, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  const data = await response.json().catch(() => []);
+  if (!response.ok) {
+    return [];
+  }
+  return data;
+}
+
+export async function revokeOrganizationInvitation(
+  token: string,
+  id: string,
+  invitationId: string,
+): Promise<any> {
+  const response = await fetch(`${API_BASE_URL}/organizations/${id}/invitations/${invitationId}`, {
+    method: 'DELETE',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    const message = Array.isArray(data.message)
+      ? data.message.join(', ')
+      : data.message || 'Не вдалося скасувати запрошення';
+    throw new ApiError(message, response.status, data);
+  }
+  return data;
+}
+
+export interface InvitationDetails {
+  organizationName: string;
+  email: string;
+  role: string;
+  expiresAt: string;
+  isExistingUser?: boolean;
+  inviterName?: string | null;
+}
+
+export async function getInvitationDetails(token: string): Promise<InvitationDetails> {
+  const response = await fetch(`${API_BASE_URL}/invitations/${token}`, {
+    method: 'GET',
+  });
+
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    const message = Array.isArray(data.message)
+      ? data.message.join(', ')
+      : data.message || 'Запрошення не знайдено або термін його дії закінчився';
+    throw new ApiError(message, response.status, data);
+  }
+  return data as InvitationDetails;
+}
+
+export async function acceptInvitation(payload: {
+  token: string;
+  fullName?: string;
+  password?: string;
+}): Promise<AuthResponseDto> {
+  const response = await fetch(`${API_BASE_URL}/invitations/accept`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(payload),
+  });
+
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    const message = Array.isArray(data.message)
+      ? data.message.join(', ')
+      : data.message || 'Не вдалося прийняти запрошення';
+    throw new ApiError(message, response.status, data);
+  }
+  return data as AuthResponseDto;
+}

@@ -9,12 +9,43 @@ permissions:
   contents: read
   packages: write # Required for publishing container images to GitHub Container Registry (GHCR)
 
+env:
+  ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: 'true'
+
 jobs:
+  # ============================================================================
+  # 0. Pre-Flight Verification: Guarantee that code compiles before building images
+  # ============================================================================
+  verify-release:
+    name: Verify Release Integrity
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm package manager
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9
+
+      - name: Setup Node.js 22 LTS with pnpm cache
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+
+      - name: Install Monorepo Dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Verify Monorepo Build Integrity
+        run: pnpm verify:build
+
   # ============================================================================
   # 1. Build and Publish NestJS Backend API Container Image
   # ============================================================================
   publish-backend-api:
     name: Build & Push Backend API
+    needs: verify-release
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -57,6 +88,7 @@ jobs:
   # ============================================================================
   publish-admin-portal:
     name: Build & Push Admin Portal
+    needs: verify-release
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository

@@ -7,6 +7,13 @@ erDiagram
     User ||--o{ License : "має (1 до N, активна 1)"
     User ||--o{ Snapshot : "володіє бекапами"
     User ||--o{ ProductImage : "зберігає зображення"
+    User ||--o{ Organization : "є власником (owner)"
+    User ||--o{ OrganizationMember : "членство в компаніях"
+    User ||--o{ OrganizationInvitation : "створені інвайти"
+
+    Organization ||--o{ OrganizationMember : "має співробітників"
+    Organization ||--o{ OrganizationInvitation : "має відкриті інвайти"
+    Organization ||--o{ License : "корпоративна ліцензія"
 
     TariffPlan ||--o{ License : "задає квоти та тривалість"
 
@@ -21,6 +28,34 @@ erDiagram
         datetime createdAt
     }
 
+    Organization {
+        string id PK
+        string name
+        string slug UK
+        string ownerId FK
+        datetime createdAt
+    }
+
+    OrganizationMember {
+        string id PK
+        string organizationId FK
+        string userId FK
+        MemberRole role
+        datetime joinedAt
+    }
+
+    OrganizationInvitation {
+        string id PK
+        string organizationId FK
+        string invitedById FK
+        string email
+        MemberRole role
+        string token UK
+        InvitationStatus status
+        datetime expiresAt
+        datetime createdAt
+    }
+
     TariffPlan {
         string id PK
         string code UK
@@ -29,6 +64,7 @@ erDiagram
         float priceMonthly
         int maxXmlLimit
         int aiCredits
+        int maxTeamSeats
         boolean canCloudBackup
         int durationDays
         string[] featuresUk
@@ -37,12 +73,14 @@ erDiagram
     License {
         string id PK
         string userId FK
+        string organizationId FK
         string tariffPlanId FK
         string licenseKey UK
         PlanType planType
         boolean canCloudBackup
         int maxXmlLimit
         int aiCredits
+        int maxTeamSeats
         boolean isActive
         datetime expiresAt
     }

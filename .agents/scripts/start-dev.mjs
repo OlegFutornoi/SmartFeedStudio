@@ -60,17 +60,17 @@ ${colors.bgBlue}${colors.bright}             🚀 SMARTFEED STUDIO DEV ENVIRONME
 ${colors.cyan}${colors.bright}================================================================${colors.reset}
   `);
 
-  // 1. Docker Infrastructure (PostgreSQL, Redis, MinIO)
-  logStep('1/5', 'Starting Docker infrastructure (PostgreSQL, Redis, MinIO)...');
+  // 1. Docker Infrastructure (PostgreSQL, Redis, MinIO, Mailpit)
+  logStep('1/5', 'Starting Docker infrastructure (PostgreSQL, Redis, MinIO, Mailpit)...');
   try {
     execSync('docker info', { stdio: 'ignore' });
     const dockerUp = runSync('docker compose up -d', 'Docker compose up');
     if (dockerUp) {
-      logSuccess('Docker containers are up and running (PostgreSQL 16, Redis 7, MinIO).');
+      logSuccess('Docker containers are up and running (PostgreSQL 16, Redis 7, MinIO, Mailpit).');
     }
   } catch {
     logWarning('Docker daemon is not running or not installed. Skipping container startup.');
-    logWarning('Make sure PostgreSQL (5432) and Redis (6379) are accessible locally.');
+    logWarning('Make sure PostgreSQL (5432), Redis (6379), and Mailpit (1025/8025) are accessible locally.');
   }
 
   // 2. Build Shared Contracts (@smartfeed/shared)
@@ -128,10 +128,12 @@ ${colors.magenta}${colors.bright}-----------------------------------------------
   • ${colors.bright}Admin Web Portal (Next.js):${colors.reset}  ${colors.cyan}http://localhost:3000${colors.reset}
   • ${colors.bright}Desktop Client (Vite Dev):${colors.reset}   ${colors.cyan}http://localhost:1420${colors.reset}
   • ${colors.bright}Prisma Studio (GUI):${colors.reset}         ${colors.green}${colors.bright}http://localhost:5555${colors.reset} ${colors.dim}(Running in background)${colors.reset}
+  • ${colors.bright}Mailpit Email Web UI:${colors.reset}        ${colors.green}${colors.bright}http://localhost:8025${colors.reset} ${colors.dim}(SMTP: 1025 — перегляд листів та інвайтів)${colors.reset}
   • ${colors.bright}MinIO S3 Web Console:${colors.reset}        ${colors.cyan}http://localhost:9001${colors.reset} ${colors.dim}(minioadmin / minioadminpassword)${colors.reset}
   • ${colors.bright}Super Admin User:${colors.reset}            ${colors.yellow}admin@smartfeed.studio${colors.reset} / ${colors.yellow}AdminPassword123!${colors.reset}
 ${colors.magenta}${colors.bright}----------------------------------------------------------------${colors.reset}
   `);
+
 
   // 6. Start Turbo Dev Servers in Parallel
   logStep('5/5', 'Launching dev servers (Backend, Admin Portal, Desktop Vite, Shared Watcher)...');

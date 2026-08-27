@@ -19,9 +19,11 @@ import { UpdateOrganizationDto } from './dto/update-organization.dto';
 import { InviteMemberCommand } from './commands/invite-member.command';
 import { RemoveMemberCommand } from './commands/remove-member.command';
 import { UpdateOrganizationCommand } from './commands/update-organization.command';
+import { RevokeInvitationCommand } from './commands/revoke-invitation.command';
 import { GetUserOrganizationsQuery } from './queries/get-user-organizations.query';
 import { GetOrganizationByIdQuery } from './queries/get-organization-by-id.query';
 import { GetOrganizationMembersQuery } from './queries/get-organization-members.query';
+import { GetOrganizationInvitationsQuery } from './queries/get-organization-invitations.query';
 
 @ApiTags('Organizations')
 @ApiBearerAuth()
@@ -67,11 +69,41 @@ export class OrganizationsController {
 
   @Post(':id/members')
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Invite or add a team member (checks maxTeamSeats quota)' })
-  @ApiResponse({ status: 201, description: 'Member added successfully' })
+  @ApiOperation({ summary: 'Invite a team member (checks maxTeamSeats quota)' })
+  @ApiResponse({ status: 201, description: 'Invitation created and link generated' })
   @ApiResponse({ status: 403, description: 'TEAM_SEATS_LIMIT_EXCEEDED when quota is exhausted' })
   async inviteMember(@Param('id') id: string, @Body() dto: InviteMemberDto, @Request() req: any) {
     return this.commandBus.execute(new InviteMemberCommand(id, req.user.id, dto.email, dto.role));
+  }
+
+  @Get(':id/invitations')
+  @ApiOperation({ summary: 'Get pending invitations list for organization' })
+  @ApiResponse({ status: 200, description: 'List of pending invitations' })
+  async getOrganizationInvitations(@Param('id') id: string, @Request() req: any) {
+    return this.queryBus.execute(new GetOrganizationInvitationsQuery(id, req.user.id));
+  }
+
+  @Post(':id/invitations')
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Create an invitation for team member' })
+  @ApiResponse({ status: 201, description: 'Invitation created and link generated' })
+  async createInvitation(
+    @Param('id') id: string,
+    @Body() dto: InviteMemberDto,
+    @Request() req: any,
+  ) {
+    return this.commandBus.execute(new InviteMemberCommand(id, req.user.id, dto.email, dto.role));
+  }
+
+  @Delete(':id/invitations/:invitationId')
+  @ApiOperation({ summary: 'Revoke/cancel a pending invitation' })
+  @ApiResponse({ status: 200, description: 'Invitation revoked successfully' })
+  async revokeInvitation(
+    @Param('id') id: string,
+    @Param('invitationId') invitationId: string,
+    @Request() req: any,
+  ) {
+    return this.commandBus.execute(new RevokeInvitationCommand(id, req.user.id, invitationId));
   }
 
   @Delete(':id/members/:memberId')

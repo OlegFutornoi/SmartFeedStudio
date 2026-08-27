@@ -14,7 +14,7 @@
 ### 🛠 [02. Технологічний Стек (Tech Stack)](./02-tech-stack/)
 
 - [📊 Матриця технологій та інструментів за шарами](./02-tech-stack/stack-matrix.md)
-- [🐳 Локальна інфраструктура Docker Compose (Postgres, Redis, MinIO)](./02-tech-stack/infrastructure-docker.md)
+- [🐳 Локальна інфраструктура Docker Compose (Postgres, Redis, MinIO, Mailpit)](./02-tech-stack/infrastructure-docker.md)
 
 ### 🗄 [03. Схема Бази Даних (Database Schema)](./03-database-schema/)
 
@@ -29,6 +29,7 @@
 - [💳 Модуль тарифів, ліцензій та RequireActiveLicenseGuard](./04-backend-cqrs/licenses-and-plans.md)
 - [☁️ Storage модуль: пряме завантаження в S3 через Presigned URLs](./04-backend-cqrs/storage-s3.md)
 - [🧭 Динамічна навігація та симулятор прав доступу](./04-backend-cqrs/navigation-module.md)
+- [✉️ Запрошення в команду та поштовий сервіс (Nodemailer & Mailpit)](./04-backend-cqrs/team-invitations-and-mail.md)
 
 ### 🖥 [05. Десктопний Клієнт (Desktop Client — Tauri v2)](./05-desktop-client/)
 

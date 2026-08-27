@@ -71,9 +71,11 @@ export class GlobalHttpExceptionFilter implements ExceptionFilter {
         `Unhandled Exception on ${request.method} ${request.url}: ${exception.message}`,
         exception.stack,
       );
-      message = exception.message;
+      const isProd = process.env.NODE_ENV === 'production';
+      message = isProd ? 'Internal server error' : exception.message;
     } else {
       this.logger.error(`Unknown Exception on ${request.method} ${request.url}`, String(exception));
+      message = 'Internal server error';
     }
 
     response.status(status).json({

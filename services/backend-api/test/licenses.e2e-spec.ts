@@ -4,6 +4,7 @@ import * as request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { PrismaService } from '../src/prisma/prisma.service';
 import { GlobalHttpExceptionFilter } from '../src/common/filters/http-exception.filter';
+import { cleanDatabase } from './utils/teardown.helper';
 
 describe('Licenses & Tariff Plan Expiration Policy (E2E)', () => {
   let app: INestApplication;
@@ -57,11 +58,15 @@ describe('Licenses & Tariff Plan Expiration Policy (E2E)', () => {
       expiredUser.email,
       'duration.test@smartfeed.studio',
     ];
-    await prisma.license.deleteMany({
-      where: { user: { email: { in: testEmails } } },
-    });
-    await prisma.user.deleteMany({
-      where: { email: { in: testEmails } },
+    await cleanDatabase(prisma, {
+      userEmails: testEmails,
+      emailPrefixes: [
+        'admin.lic.test',
+        'user.lic.test',
+        'expired.lic.test',
+        'duration.test',
+        'lic-delete-test',
+      ],
     });
 
     // 1. Register Super Admin
@@ -106,11 +111,15 @@ describe('Licenses & Tariff Plan Expiration Policy (E2E)', () => {
       expiredUser.email,
       'duration.test@smartfeed.studio',
     ];
-    await prisma.license.deleteMany({
-      where: { user: { email: { in: testEmails } } },
-    });
-    await prisma.user.deleteMany({
-      where: { email: { in: testEmails } },
+    await cleanDatabase(prisma, {
+      userEmails: testEmails,
+      emailPrefixes: [
+        'admin.lic.test',
+        'user.lic.test',
+        'expired.lic.test',
+        'duration.test',
+        'lic-delete-test',
+      ],
     });
 
     // Reset STARTER plan duration back to 7 days
@@ -269,6 +278,116 @@ describe('Licenses & Tariff Plan Expiration Policy (E2E)', () => {
 
       expect(storageRes.body.uploadUrl).toBeDefined();
       expect(storageRes.body.s3Key).toBeDefined();
+    });
+  });
+
+  describe('PATCH /api/licenses/:id/status (Admin License Suspend & Resume)', () => {
+    let targetLicenseId: string;
+
+    beforeAll(async () => {
+      const myLicRes = await request(app.getHttpServer())
+        .get('/api/licenses/my')
+        .set('Authorization', `Bearer ${userToken}`)
+        .expect(200);
+      targetLicenseId = myLicRes.body.id;
+    });
+
+    it('should allow admin to suspend an active license (isActive: false)', async () => {
+      const res = await request(app.getHttpServer())
+        .patch(`/api/licenses/${targetLicenseId}/status`)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({ isActive: false })
+        .expect(200);
+
+      expect(res.body.id).toBe(targetLicenseId);
+      expect(res.body.isActive).toBe(false);
+    });
+
+    it('should allow admin to resume a suspended license (isActive: true)', async () => {
+      const res = await request(app.getHttpServer())
+        .patch(`/api/licenses/${targetLicenseId}/status`)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({ isActive: true })
+        .expect(200);
+
+      expect(res.body.id).toBe(targetLicenseId);
+      expect(res.body.isActive).toBe(true);
+    });
+
+    it('should reject non-admin users with 403 Forbidden', async () => {
+      await request(app.getHttpServer())
+        .patch(`/api/licenses/${targetLicenseId}/status`)
+        .set('Authorization', `Bearer ${userToken}`)
+        .send({ isActive: false })
+        .expect(403);
+    });
+
+    it('should return 404 for non-existent license ID', async () => {
+      await request(app.getHttpServer())
+        .patch('/api/licenses/non-existent-license-id/status')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({ isActive: false })
+        .expect(404);
+    });
+  });
+
+  describe('DELETE /api/licenses/:id (Admin License Deletion)', () => {
+    let licenseToDeleteId: string;
+    let tempEmail: string;
+
+    beforeAll(async () => {
+      // Create a temporary user with a license to delete
+      tempEmail = `lic-delete-test-${Date.now()}@smartfeed.studio`;
+      const regRes = await request(app.getHttpServer()).post('/api/auth/register').send({
+        email: tempEmail,
+        password: 'Password123!',
+        fullName: 'Delete License Target',
+      });
+      await new Promise((resolve) => setTimeout(resolve, 200));
+
+      const licRes = await request(app.getHttpServer())
+        .get('/api/licenses/my')
+        .set('Authorization', `Bearer ${regRes.body.tokens.accessToken}`)
+        .expect(200);
+      licenseToDeleteId = licRes.body.id;
+    });
+
+    afterAll(async () => {
+      if (tempEmail) {
+        await cleanDatabase(prisma, {
+          userEmails: [tempEmail],
+          emailPrefixes: ['lic-delete-test'],
+        });
+      }
+    });
+
+    it('should reject non-admin users with 403 Forbidden', async () => {
+      await request(app.getHttpServer())
+        .delete(`/api/licenses/${licenseToDeleteId}`)
+        .set('Authorization', `Bearer ${userToken}`)
+        .expect(403);
+    });
+
+    it('should return 404 for non-existent license ID', async () => {
+      await request(app.getHttpServer())
+        .delete('/api/licenses/non-existent-license-id')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .expect(404);
+    });
+
+    it('should allow admin to delete a license by ID', async () => {
+      const res = await request(app.getHttpServer())
+        .delete(`/api/licenses/${licenseToDeleteId}`)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .expect(200);
+
+      expect(res.body.success).toBe(true);
+
+      // Verify license is deleted from DB
+      const checkLic = await prisma.license.findUnique({
+        where: { id: licenseToDeleteId },
+      });
+      expect(checkLic).toBeNull();
     });
   });
 });
