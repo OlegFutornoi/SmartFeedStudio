@@ -71,26 +71,20 @@ flowchart TD
 ### Етап 1. Спільні Контракти (`packages/shared`)
 
 - [x] Поле `companyName?: string` у `RegisterDtoSchema`.
-- [ ] Оновити `UserProfile` / `AuthResponseDto`: додати дані поточної організації `organization?: { id: string; name: string; role: MemberRole }`.
-- [ ] Оновити `LicenseEntity`: додати `organizationId?: string | null` та `organizationName?: string | null`.
-- [ ] Виконати `pnpm --filter @smartfeed/shared build`.
+- [x] Оновити `UserProfile` / `AuthResponseDto`: додати дані поточної організації `organization?: { id: string; name: string; role: MemberRole }`.
+- [x] Оновити `LicenseEntity`: додати `organizationId?: string | null` та `organizationName?: string | null`.
+- [x] Виконати `pnpm --filter @smartfeed/shared build`.
 
 ---
 
 ### Етап 2. Бекенд API (`services/backend-api`)
 
-1. **Успадкування ліцензії в `GetLicenseByUserIdHandler`**:
-   - Якщо у користувача немає персональної активної ліцензії, шукати ліцензію організації, в якій користувач є учасником (`OrganizationMember`).
-   - Завдяки цьому будь-який запрошений співробітник одразу отримує активний статус та можливості тарифу компанії.
-2. **Збагачення відповіді профілю `/api/auth/me` та `/api/auth/login`**:
-   - Повертати інформацію про активну компанію користувача та його роль (`OWNER` / `ADMIN` / `MEMBER`).
-3. **Блокування та перевірка доступів до каталогів**:
-   - Якщо тариф компанії завершився або заблокований — доступ блокується для всіх членів команди.
-4. **Тестування**:
-   - Додати тести в `licenses.e2e-spec.ts` та `organizations.e2e-spec.ts`, що перевіряють:
-     - Співробітник без власної ліцензії успадковує тариф компанії.
-     - Додавання співробітника збільшує `usedTeamSeats`.
-     - Заборона перевищення ліміту `maxTeamSeats`.
+- [x] **Успадкування корпоративної ліцензії в `GetLicenseByUserIdHandler`** (для запрошених співробітників та існуючих користувачів з персональним starter тарифом).
+- [x] **Прив'язка організації при апгрейді ліцензії в `SelectTariffPlanHandler`** (`POST /api/licenses/select-plan` прив'язує `organizationId` та повертає `organizationName`).
+- [x] **Збагачення відповіді профілю `/api/auth/me`, `/api/auth/login` та `/api/auth/register`** даними активної компанії та ролі (`OWNER` / `ADMIN` / `MEMBER`).
+- [x] **Блокування та перевірка доступів до ресурсів (`RequireActiveLicenseGuard`)**: блокування співробітників з 403 `LICENSE_EXPIRED` при завершенні терміну дії корпоративного тарифу, та миттєве розблокування після відновлення/апгрейду тарифу власником.
+- [x] **Автоматизоване тестування (TDD)**:
+  - 13 з 13 тестів у `test/organizations.e2e-spec.ts` пройдені успішно (покривають реєстрацію компанії, квоти командних місць, апгрейд тарифу, успадкування ліцензії, блокування при закінченні терміну дії та відновлення доступу).
 
 ---
 

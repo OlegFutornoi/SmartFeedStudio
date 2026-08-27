@@ -14,7 +14,41 @@ export class GetLicenseByUserIdHandler implements IQueryHandler<
 
   async execute(query: GetLicenseByUserIdQuery): Promise<LicenseEntity | null> {
     const { userId } = query;
-    let license = await this.prisma.license.findFirst({
+
+    // 1. Fetch all user's organization memberships with their latest license
+    const memberships = await this.prisma.organizationMember.findMany({
+      where: { userId },
+      include: {
+        organization: {
+          include: {
+            licenses: {
+              include: { tariffPlan: true },
+              orderBy: { createdAt: 'desc' },
+              take: 1,
+            },
+          },
+        },
+      },
+      orderBy: { joinedAt: 'desc' },
+    });
+
+    // Find the best corporate membership:
+    // Priority:
+    // 1. Membership with an active/higher-tier plan (PRO, ENTERPRISE)
+    // 2. Membership where user was invited (role !== 'OWNER')
+    // 3. Fall back to first membership
+    const corporateMembership =
+      memberships.find(
+        (m) =>
+          m.organization?.licenses?.[0] && m.organization.licenses[0].planType !== PlanType.STARTER,
+      ) ||
+      memberships.find((m) => m.role !== 'OWNER' && m.organization?.licenses?.[0]) ||
+      memberships[0];
+
+    const corporateLicense = corporateMembership?.organization?.licenses?.[0];
+
+    // 2. Fetch personal active license
+    const personalLicense = await this.prisma.license.findFirst({
       where: { userId, isActive: true },
       include: {
         tariffPlan: true,
@@ -23,31 +57,34 @@ export class GetLicenseByUserIdHandler implements IQueryHandler<
       orderBy: { createdAt: 'desc' },
     });
 
-    if (!license) {
-      // Check if user is a member of an organization with an active corporate license
-      const membership = await this.prisma.organizationMember.findFirst({
-        where: { userId },
-        include: {
-          organization: {
-            include: {
-              licenses: {
-                where: { isActive: true },
-                include: { tariffPlan: true },
-                orderBy: { createdAt: 'desc' },
-                take: 1,
-              },
-            },
-          },
-        },
-      });
+    let license: any = null;
 
-      if (membership?.organization?.licenses?.[0]) {
-        const orgLicense = membership.organization.licenses[0];
+    if (corporateLicense) {
+      if (corporateMembership?.role !== 'OWNER') {
+        // Team member always uses organization's corporate license
         license = {
-          ...orgLicense,
-          organization: membership.organization,
-        } as typeof license;
+          ...corporateLicense,
+          organization: corporateMembership.organization,
+        };
+      } else if (
+        personalLicense &&
+        personalLicense.organizationId === corporateMembership.organization.id
+      ) {
+        license = personalLicense;
+      } else if (
+        !personalLicense ||
+        (personalLicense.planType === PlanType.STARTER &&
+          corporateLicense.planType !== PlanType.STARTER)
+      ) {
+        license = {
+          ...corporateLicense,
+          organization: corporateMembership.organization,
+        };
+      } else {
+        license = personalLicense;
       }
+    } else {
+      license = personalLicense;
     }
 
     if (!license) {

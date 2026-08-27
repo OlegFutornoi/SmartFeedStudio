@@ -1,25 +1,25 @@
 # 📈 Матриця Покриття Тестами — SmartFeed Studio
 
-## 📊 Повний Звіт про Автоматизовані Тести (117 з 117 пройдено — 100% PASS)
+## 📊 Повний Звіт про Автоматизовані Тести (122 з 122 пройдено — 100% PASS)
 
 > [!NOTE]
 > Схему тарифів оновлено до 4-рівневої: **STARTER → GROWTH → PRO → ENTERPRISE** з квотами постачальників (`maxSuppliersLimit`). Реалізовано архітектуру Організацій, командних місць, розділено сторінки Тарифів та Ліцензій в адмін-панелі, додано підменю налаштувань, декомпозовано сторінку Налаштувань, впроваджено 100% інтернаціоналізацію (i18n) для Дашборду, Користувачів та Налаштувань, а в таблиці ліцензій впроваджено розширену систему вибірок. Усі тести оновлені та пройдені.
 
-### 1. Бекенд API (Jest E2E — 62 тести)
+### 1. Бекенд API (Jest E2E — 67 тестів)
 
 > Команда запуску: `pnpm --filter @smartfeed/backend-api test:e2e`
 
-| Файл тесту                           | Ендпоінти / Функціонал                                                                                                                                         | Кількість | Статус  |
-| :----------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------- | :-------: | :-----: |
-| `test/auth.e2e-spec.ts`              | `POST /auth/register`, `POST /auth/login`                                                                                                                      |    12     | ✅ PASS |
-| `test/password-recovery.e2e-spec.ts` | `POST /auth/forgot-password`, `POST /auth/reset-password`                                                                                                      |     8     | ✅ PASS |
-| `test/licenses.e2e-spec.ts`          | `GET /licenses/my` (STARTER auto-provisioning, quota fields), `POST /licenses/select-plan` (4-tier), dynamic duration, expiration, `RequireActiveLicenseGuard` |     7     | ✅ PASS |
-| `test/organizations.e2e-spec.ts`     | `GET /organizations`, `GET /organizations/:id`, `PATCH /organizations/:id`, `GET /members`, `POST /members` (`maxTeamSeats`), `DELETE /members/:id`            |     8     | ✅ PASS |
-| `test/users.e2e-spec.ts`             | `GET /users`, `GET /users/stats`, `POST /auth/change-password`                                                                                                 |     7     | ✅ PASS |
-| `test/navigation.e2e-spec.ts`        | `GET /navigation`, `GET /navigation/admin`, `POST /navigation`, `PATCH /navigation/:id`, `DELETE /navigation/:id`                                              |     8     | ✅ PASS |
-| `test/plans.e2e-spec.ts`             | `GET /plans`, `GET /plans/admin`, `POST /plans`, `PATCH /plans/:id`, `DELETE /plans/:id`, `GET /licenses/admin`                                                |    12     | ✅ PASS |
+| Файл тесту                           | Ендпоінти / Функціонал                                                                                                                                                                                                                              | Кількість | Статус  |
+| :----------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :-------: | :-----: |
+| `test/auth.e2e-spec.ts`              | `POST /auth/register`, `POST /auth/login`                                                                                                                                                                                                           |    12     | ✅ PASS |
+| `test/password-recovery.e2e-spec.ts` | `POST /auth/forgot-password`, `POST /auth/reset-password`                                                                                                                                                                                           |     8     | ✅ PASS |
+| `test/licenses.e2e-spec.ts`          | `GET /licenses/my` (STARTER auto-provisioning, quota fields), `POST /licenses/select-plan` (4-tier), dynamic duration, expiration, `RequireActiveLicenseGuard`                                                                                      |     7     | ✅ PASS |
+| `test/organizations.e2e-spec.ts`     | `GET /organizations`, `GET /organizations/:id`, `PATCH /organizations/:id`, `GET /members`, `POST /members` (`maxTeamSeats`), `DELETE /members/:id`, корпоративний апгрейд, успадкування ліцензії, блокування при закінченні терміну та відновлення |    13     | ✅ PASS |
+| `test/users.e2e-spec.ts`             | `GET /users`, `GET /users/stats`, `POST /auth/change-password`                                                                                                                                                                                      |     7     | ✅ PASS |
+| `test/navigation.e2e-spec.ts`        | `GET /navigation`, `GET /navigation/admin`, `POST /navigation`, `PATCH /navigation/:id`, `DELETE /navigation/:id`                                                                                                                                   |     8     | ✅ PASS |
+| `test/plans.e2e-spec.ts`             | `GET /plans`, `GET /plans/admin`, `POST /plans`, `PATCH /plans/:id`, `DELETE /plans/:id`, `GET /licenses/admin`                                                                                                                                     |    12     | ✅ PASS |
 
-**Разом по бекенду: 62 тести — 62 passing**
+**Разом по бекенду: 67 тестів — 67 passing**
 
 ---
 

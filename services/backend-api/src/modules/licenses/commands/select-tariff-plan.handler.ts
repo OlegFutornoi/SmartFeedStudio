@@ -54,19 +54,39 @@ export class SelectTariffPlanHandler implements ICommandHandler<
       ? new Date(Date.now() + dbPlan.durationDays * 24 * 60 * 60 * 1000)
       : null;
 
-    // 2. Deactivate previous active licenses
+    // 2. Find user's primary organization (where they are OWNER or member)
+    const orgMembership =
+      (await this.prisma.organizationMember.findFirst({
+        where: { userId, role: 'OWNER' },
+        include: { organization: true },
+      })) ||
+      (await this.prisma.organizationMember.findFirst({
+        where: { userId },
+        include: { organization: true },
+      }));
+
+    const organizationId = orgMembership?.organizationId || null;
+    const organizationName = orgMembership?.organization?.name || null;
+
+    // 3. Deactivate previous active licenses for this user and this organization
     await this.prisma.license.updateMany({
-      where: { userId, isActive: true },
+      where: {
+        OR: [
+          { userId, isActive: true },
+          ...(organizationId ? [{ organizationId, isActive: true }] : []),
+        ],
+      },
       data: { isActive: false },
     });
 
-    // 3. Create fresh active license with full quota snapshot
+    // 4. Create fresh active license with full quota snapshot
     const randomBytes = crypto.randomBytes(6).toString('hex').toUpperCase();
     const licenseKey = `SF-${normalizedCode}-${randomBytes.slice(0, 4)}-${randomBytes.slice(4, 8)}-${randomBytes.slice(8, 12)}`;
 
     const license = await this.prisma.license.create({
       data: {
         userId,
+        organizationId,
         licenseKey,
         planType: planTypeEnum,
         tariffPlanId: dbPlan.id,
@@ -87,11 +107,12 @@ export class SelectTariffPlanHandler implements ICommandHandler<
       },
       include: {
         tariffPlan: true,
+        organization: true,
       },
     });
 
     this.logger.log(
-      `User ${userId} selected plan ${normalizedCode} (expiresAt: ${expiresAt?.toISOString() || 'never'})`,
+      `User ${userId} selected plan ${normalizedCode} for org ${organizationId || 'none'} (expiresAt: ${expiresAt?.toISOString() || 'never'})`,
     );
 
     const daysRemaining = license.expiresAt
@@ -104,6 +125,8 @@ export class SelectTariffPlanHandler implements ICommandHandler<
     return {
       id: license.id,
       userId: license.userId,
+      organizationId: license.organizationId || organizationId,
+      organizationName: license.organization?.name || organizationName,
       licenseKey: license.licenseKey,
       planType: license.planType as PlanType,
       canCloudBackup: license.canCloudBackup,
