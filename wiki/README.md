@@ -27,6 +27,7 @@
 - [🔄 Принципи CQRS: CommandBus, QueryBus, EventBus](./04-backend-cqrs/cqrs-architecture.md)
 - [🔐 Модуль авторизації, JWT токени та відновлення паролів](./04-backend-cqrs/auth-module.md)
 - [💳 Модуль тарифів, ліцензій та RequireActiveLicenseGuard](./04-backend-cqrs/licenses-and-plans.md)
+- [💳 Модуль платежів WayForPay, інвойси, вебхуки та облік транзакцій](./04-backend-cqrs/payments-module.md)
 - [☁️ Storage модуль: пряме завантаження в S3 через Presigned URLs](./04-backend-cqrs/storage-s3.md)
 - [🧭 Динамічна навігація та симулятор прав доступу](./04-backend-cqrs/navigation-module.md)
 - [✉️ Запрошення в команду та поштовий сервіс (Nodemailer & Mailpit)](./04-backend-cqrs/team-invitations-and-mail.md)

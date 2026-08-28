@@ -1,4 +1,12 @@
 export type Locale = 'uk' | 'en';
 
 export type TranslationNamespace =
-  'common' | 'auth' | 'navigation' | 'users' | 'licenses' | 'settings' | 'dashboard' | 'errors';
+  | 'common'
+  | 'auth'
+  | 'navigation'
+  | 'users'
+  | 'licenses'
+  | 'plans'
+  | 'settings'
+  | 'dashboard'
+  | 'errors';

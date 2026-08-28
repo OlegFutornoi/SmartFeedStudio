@@ -12,6 +12,8 @@ import {
   Shield,
   Bell,
   Compass,
+  Receipt,
+  CreditCard,
   LucideIcon,
 } from 'lucide-react';
 
@@ -31,6 +33,8 @@ export const AVAILABLE_ICONS: IconOption[] = [
   { name: 'Database', icon: Database, label: 'База даних / Database' },
   { name: 'KeyRound', icon: KeyRound, label: 'Ліцензії / Licenses' },
   { name: 'Users', icon: Users, label: 'Користувачі / Users' },
+  { name: 'Receipt', icon: Receipt, label: 'Транзакції / Transactions' },
+  { name: 'CreditCard', icon: CreditCard, label: 'Платіжні системи / Payments' },
   { name: 'Shield', icon: Shield, label: 'Безпека / Security' },
   { name: 'Bell', icon: Bell, label: 'Сповіщення / Notifications' },
   { name: 'Compass', icon: Compass, label: 'Навігація / Navigation' },

@@ -15,6 +15,10 @@ import {
   CreateTariffPlanDto,
   UpdateTariffPlanDto,
   AdminLicenseItemDto,
+  PaymentTransactionDto,
+  PaymentSettingDto,
+  UpdatePaymentSettingDto,
+  PaymentStatsDto,
 } from '@smartfeed/shared';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
@@ -228,6 +232,47 @@ class ApiClient {
   async deleteLicense(id: string): Promise<{ success: boolean }> {
     return this.request<{ success: boolean }>(`/licenses/${id}`, {
       method: 'DELETE',
+    });
+  }
+
+  // Payment Gateways & Transactions Endpoints
+  async getPaymentTransactions(
+    params: {
+      status?: string;
+      provider?: string;
+      search?: string;
+      limit?: number;
+      offset?: number;
+    } = {},
+  ): Promise<{ transactions: PaymentTransactionDto[]; total: number }> {
+    const searchParams = new URLSearchParams();
+    if (params.status) searchParams.set('status', params.status);
+    if (params.provider) searchParams.set('provider', params.provider);
+    if (params.search) searchParams.set('search', params.search);
+    if (params.limit) searchParams.set('limit', String(params.limit));
+    if (params.offset) searchParams.set('offset', String(params.offset));
+
+    const qs = searchParams.toString();
+    return this.request<{ transactions: PaymentTransactionDto[]; total: number }>(
+      `/payments/transactions${qs ? `?${qs}` : ''}`,
+    );
+  }
+
+  async getPaymentStats(): Promise<PaymentStatsDto> {
+    return this.request<PaymentStatsDto>('/payments/stats');
+  }
+
+  async getPaymentSettings(): Promise<PaymentSettingDto[]> {
+    return this.request<PaymentSettingDto[]>('/payments/settings');
+  }
+
+  async updatePaymentSetting(
+    provider: string,
+    dto: UpdatePaymentSettingDto,
+  ): Promise<PaymentSettingDto> {
+    return this.request<PaymentSettingDto>(`/payments/settings/${provider}`, {
+      method: 'PATCH',
+      body: JSON.stringify(dto),
     });
   }
 }

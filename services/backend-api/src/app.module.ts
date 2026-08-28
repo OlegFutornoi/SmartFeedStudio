@@ -13,6 +13,7 @@ import { PlansModule } from './modules/plans/plans.module';
 import { StorageModule } from './modules/storage/storage.module';
 import { NavigationModule } from './modules/navigation/navigation.module';
 import { MailModule } from './modules/mail/mail.module';
+import { PaymentsModule } from './modules/payments/payments.module';
 
 @Module({
   imports: [
@@ -69,6 +70,7 @@ import { MailModule } from './modules/mail/mail.module';
     PlansModule,
     StorageModule,
     NavigationModule,
+    PaymentsModule,
   ],
   providers: [
     {

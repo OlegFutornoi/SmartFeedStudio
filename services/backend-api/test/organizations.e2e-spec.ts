@@ -87,8 +87,8 @@ describe('Organizations & Team Seats Quota Policy (E2E)', () => {
         nameUk: 'Стартовий',
         nameEn: 'Starter',
         priceMonthly: 0,
-        maxXmlLimit: 500,
-        aiCredits: 0,
+        maxXmlLimit: 1000,
+        aiCredits: 50,
         canCloudBackup: false,
         maxTeamSeats: 1,
         maxSuppliersLimit: 1,
@@ -453,7 +453,7 @@ describe('Organizations & Team Seats Quota Policy (E2E)', () => {
         .set('Authorization', `Bearer ${existingUserToken}`)
         .expect(200);
       expect(initLicRes.body.planType).toBe('STARTER');
-      expect(initLicRes.body.maxXmlLimit).toBe(500);
+      expect(initLicRes.body.maxXmlLimit).toBe(1000);
 
       // 2. Liberate a seat by removing colleague 2
       const membersList = await request(app.getHttpServer())

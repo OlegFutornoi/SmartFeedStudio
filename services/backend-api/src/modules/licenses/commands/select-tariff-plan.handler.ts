@@ -16,7 +16,7 @@ export class SelectTariffPlanHandler implements ICommandHandler<
   constructor(private readonly prisma: PrismaService) {}
 
   async execute(command: SelectTariffPlanCommand): Promise<LicenseEntity> {
-    const { userId, planCode } = command;
+    const { userId, planCode, billingInterval = 'monthly' } = command;
     const normalizedCode = planCode.toUpperCase().trim();
 
     // 1. Fetch requested tariff plan
@@ -50,8 +50,13 @@ export class SelectTariffPlanHandler implements ICommandHandler<
     const hasSso = dbPlan.hasSso ?? fallbackLimits.hasSso;
     const hasAuditLog = dbPlan.hasAuditLog ?? fallbackLimits.hasAuditLog;
 
-    const expiresAt = dbPlan.durationDays
-      ? new Date(Date.now() + dbPlan.durationDays * 24 * 60 * 60 * 1000)
+    const durationDays =
+      billingInterval === 'yearly' && Number(dbPlan.priceYearly || 0) > 0
+        ? 365
+        : (dbPlan.durationDays ?? 30);
+
+    const expiresAt = durationDays
+      ? new Date(Date.now() + durationDays * 24 * 60 * 60 * 1000)
       : null;
 
     // 2. Check user's organization roles

@@ -30,3 +30,22 @@ export enum InvitationStatus {
   EXPIRED = 'EXPIRED',
   REVOKED = 'REVOKED',
 }
+
+export enum PaymentStatus {
+  PENDING = 'PENDING',
+  APPROVED = 'APPROVED',
+  DECLINED = 'DECLINED',
+  REFUNDED = 'REFUNDED',
+  EXPIRED = 'EXPIRED',
+}
+
+export enum PaymentProvider {
+  WAYFORPAY = 'WAYFORPAY',
+  STRIPE = 'STRIPE',
+  MANUAL = 'MANUAL',
+}
+
+export enum PaymentInterval {
+  MONTHLY = 'MONTHLY',
+  YEARLY = 'YEARLY',
+}

@@ -30,6 +30,7 @@ export type UpgradeLicenseDto = z.infer<typeof UpgradeLicenseDtoSchema>;
 
 export const SelectTariffPlanDtoSchema = z.object({
   planCode: z.string().min(1, 'Plan code is required'),
+  billingInterval: z.enum(['monthly', 'yearly']).optional().default('monthly'),
 });
 
 export type SelectTariffPlanDto = z.infer<typeof SelectTariffPlanDtoSchema>;

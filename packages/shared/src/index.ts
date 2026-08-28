@@ -8,5 +8,6 @@ export * from './dtos/tariff-plan.dto';
 export * from './dtos/storage.dto';
 export * from './dtos/navigation.dto';
 export * from './dtos/organization.dto';
+export * from './dtos/payment.dto';
 export * from './contracts/cqrs';
 export * from './constants';

@@ -16,7 +16,7 @@ Enterprise-grade architecture for **SmartFeed Studio** built with `pnpm workspac
 - [⚙️ 04. NestJS CQRS Architecture](./wiki/04-backend-cqrs/cqrs-architecture.md)
 - [🦀 05. Tauri v2 Desktop Client (Rust + Keychain)](./wiki/05-desktop-client/tauri-architecture.md)
 - [🏢 06. Admin Web Portal](./wiki/06-admin-portal/admin-features.md)
-- [📈 07. Test Coverage Matrix (89 Tests — 100% PASS)](./wiki/07-testing-and-qa/test-coverage-matrix.md)
+- [📈 07. Test Coverage Matrix (230 Tests — 100% PASS)](./wiki/07-testing-and-qa/test-coverage-matrix.md)
 - [❓ 08. User FAQ & Troubleshooting Guide](./wiki/08-user-faq/user-guide-faq.md)
 
 ---
@@ -46,6 +46,7 @@ graph TD
     UsersMod["UsersModule (Prisma Data Layer)"]
     PlansMod["PlansModule (Dynamic Tariff Plans)"]
     LicMod["LicensesModule (Plan Quotas)"]
+    PaymentsMod["PaymentsModule (WayForPay / Webhooks / Invoices)"]
     NavMod["NavigationModule (Access Control)"]
     StorageMod["StorageModule (S3 Presigned URLs)"]
     CommandBus((CommandBus))
@@ -55,6 +56,7 @@ graph TD
     AuthMod -- "CreateUserCommand" --> CommandBus --> UsersMod
     AuthMod -- "GetUserByEmailQuery" --> QueryBus --> UsersMod
     UsersMod -- "UserCreatedEvent" --> EventBus --> LicMod
+    PaymentsMod -- "SelectTariffPlanCommand" --> CommandBus --> LicMod
   end
 
   subgraph "Infrastructure (Docker Compose)"

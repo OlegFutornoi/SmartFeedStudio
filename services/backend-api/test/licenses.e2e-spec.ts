@@ -218,7 +218,7 @@ describe('Licenses & Tariff Plan Expiration Policy (E2E)', () => {
       expect(res.body.planType).toBe('PRO');
       expect(res.body.licenseKey).toMatch(/^SF-PRO-/);
       expect(res.body.maxXmlLimit).toBe(100000); // Updated Pro limit: 100k SKU
-      expect(res.body.aiCredits).toBe(500);
+      expect(res.body.aiCredits).toBe(2500); // Approved Pro AI credits
       expect(res.body.canCloudBackup).toBe(true);
       expect(res.body.maxFeedsLimit).toBeGreaterThan(1);
       expect(res.body.hasApiAccess).toBe(true);

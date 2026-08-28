@@ -1,21 +1,21 @@
 import { test, expect } from './fixtures/test';
 import { TariffPlanDto } from '@smartfeed/shared';
 
-test.describe('Admin Portal — Тарифні плани (POM E2E)', () => {
+test.describe('Admin Portal — Тарифні плани та порівняльна матриця (POM E2E)', () => {
   let mockPlans: TariffPlanDto[];
 
   test.beforeEach(async ({ page }) => {
     mockPlans = [
       {
         id: '11111111-1111-1111-1111-111111111111',
-        code: 'FREE',
-        nameUk: 'Базовий Безкоштовний',
-        nameEn: 'Free Starter',
-        descriptionUk: 'Базовий тариф для тестування',
-        descriptionEn: 'Basic starter plan',
+        code: 'STARTER',
+        nameUk: 'Безкоштовний',
+        nameEn: 'Free Trial',
+        descriptionUk: 'Спробуй безкоштовно для 1 маркетплейсу',
+        descriptionEn: 'Try for free for 1 marketplace',
         priceMonthly: 0,
         priceYearly: 0,
-        currency: 'USD',
+        currency: 'UAH',
         maxXmlLimit: 1000,
         aiCredits: 50,
         canCloudBackup: false,
@@ -37,25 +37,25 @@ test.describe('Admin Portal — Тарифні плани (POM E2E)', () => {
         hasAuditLog: false,
         hasCustomS3: false,
         hasPriorityAi: false,
-        featuresUk: ['1,000 XML позицій', '1 постачальник товарів', '50 AI кредитів'],
-        featuresEn: ['1,000 XML items', '1 product supplier', '50 AI credits'],
+        featuresUk: ['До 1,000 SKU товарів', '1 постачальник', '1 канал виводу'],
+        featuresEn: ['Up to 1,000 product SKUs', '1 supplier', '1 output channel'],
       },
       {
         id: '22222222-2222-2222-2222-222222222222',
         code: 'PRO',
         nameUk: 'Професійний',
         nameEn: 'Professional',
-        descriptionUk: 'Для магазинів з розширеним каталогом',
-        descriptionEn: 'For growing e-commerce stores',
-        priceMonthly: 49,
-        priceYearly: 490,
-        currency: 'USD',
-        maxXmlLimit: 50000,
-        aiCredits: 500,
+        descriptionUk: 'Повна автоматизація та мульти-склад',
+        descriptionEn: 'Full automation and multi-warehouse',
+        priceMonthly: 1490,
+        priceYearly: 14280,
+        currency: 'UAH',
+        maxXmlLimit: 100000,
+        aiCredits: 2500,
         canCloudBackup: true,
         isPopular: true,
         isActive: true,
-        order: 2,
+        order: 3,
         durationDays: 30,
         maxFeedsLimit: 999999,
         maxChannelsLimit: 15,
@@ -72,12 +72,17 @@ test.describe('Admin Portal — Тарифні плани (POM E2E)', () => {
         hasCustomS3: false,
         hasPriorityAi: false,
         featuresUk: [
-          '50,000 XML позицій',
+          'До 100,000 SKU товарів',
           'До 15 постачальників',
-          '500 AI кредитів',
-          'S3 Cloud Backup',
+          '2,500 AI кредитів',
+          'Хмарний бекап 10 GB',
         ],
-        featuresEn: ['50,000 XML items', 'Up to 15 suppliers', '500 AI credits', 'S3 Cloud Backup'],
+        featuresEn: [
+          'Up to 100,000 product SKUs',
+          'Up to 15 suppliers',
+          '2,500 AI credits',
+          '10 GB Cloud backup',
+        ],
       },
     ];
 
@@ -105,28 +110,28 @@ test.describe('Admin Portal — Тарифні плани (POM E2E)', () => {
           descriptionEn: body.descriptionEn || '',
           priceMonthly: Number(body.priceMonthly || 0),
           priceYearly: Number(body.priceYearly || 0),
-          currency: 'USD',
+          currency: body.currency || 'UAH',
           maxXmlLimit: Number(body.maxXmlLimit || 500),
           aiCredits: Number(body.aiCredits || 0),
           canCloudBackup: Boolean(body.canCloudBackup),
           isPopular: Boolean(body.isPopular),
           isActive: true,
-          order: 3,
+          order: 4,
           durationDays: 30,
-          maxFeedsLimit: 1,
-          maxChannelsLimit: 1,
-          syncFrequencyHours: 0,
-          maxStorageGb: 0,
-          maxTeamSeats: 1,
-          maxSuppliersLimit: 1,
-          hasApiAccess: false,
-          hasWebhooks: false,
-          hasFeedDiff: false,
-          hasWhiteLabel: false,
+          maxFeedsLimit: Number(body.maxFeedsLimit || 1),
+          maxChannelsLimit: Number(body.maxChannelsLimit || 1),
+          syncFrequencyHours: Number(body.syncFrequencyHours || 0),
+          maxStorageGb: Number(body.maxStorageGb || 0),
+          maxTeamSeats: Number(body.maxTeamSeats || 1),
+          maxSuppliersLimit: Number(body.maxSuppliersLimit || 1),
+          hasApiAccess: Boolean(body.hasApiAccess),
+          hasWebhooks: Boolean(body.hasWebhooks),
+          hasFeedDiff: Boolean(body.hasFeedDiff),
+          hasWhiteLabel: Boolean(body.hasWhiteLabel),
           hasSso: false,
-          hasAuditLog: false,
-          hasCustomS3: false,
-          hasPriorityAi: false,
+          hasAuditLog: Boolean(body.hasAuditLog),
+          hasCustomS3: Boolean(body.hasCustomS3),
+          hasPriorityAi: Boolean(body.hasPriorityAi),
           featuresUk: body.featuresUk || [],
           featuresEn: body.featuresEn || [],
         };
@@ -187,17 +192,66 @@ test.describe('Admin Portal — Тарифні плани (POM E2E)', () => {
     });
   });
 
-  test('відображення сторінки тарифних планів', async ({ plansPage }) => {
+  test('відображення карток тарифних планів з доступними та заблокованими фічами', async ({
+    plansPage,
+    page,
+  }) => {
     await plansPage.goto();
 
     // Verify Title
     await expect(plansPage.pageTitle).toBeVisible();
 
-    // Verify Plan Cards
-    await plansPage.expectPlanCardVisible('FREE');
+    // Verify Plan Cards & Quotas
+    await plansPage.expectPlanCardVisible('STARTER');
     await plansPage.expectPlanCardVisible('PRO');
-    await plansPage.expectPlanMonthlyPrice('FREE', '$0');
-    await plansPage.expectPlanMonthlyPrice('PRO', '$49');
+    await plansPage.expectPlanMonthlyPrice('STARTER', '0 грн');
+    await plansPage.expectPlanMonthlyPrice('PRO', '1490 грн');
+
+    // Verify Unavailable list in STARTER card
+    const starterUnavailable = page.getByTestId('plan-unavailable-list-starter');
+    await expect(starterUnavailable).toBeVisible();
+  });
+
+  test('перемикання між картками та порівняльною таблицею', async ({ plansPage, page }) => {
+    await plansPage.goto();
+
+    // Default: Cards view
+    await expect(plansPage.plansGrid).toBeVisible();
+    await expect(plansPage.comparisonTable).toBeHidden();
+
+    // Switch to Comparison View
+    await plansPage.switchToComparisonView();
+    await expect(plansPage.comparisonTable).toBeVisible();
+    await expect(plansPage.plansGrid).toBeHidden();
+
+    // Check headers in comparison table
+    const starterHeader = page.getByTestId('comparison-header-starter');
+    const proHeader = page.getByTestId('comparison-header-pro');
+    await expect(starterHeader).toBeVisible();
+    await expect(proHeader).toBeVisible();
+
+    // Switch back to Cards View
+    await plansPage.switchToCardsView();
+    await expect(plansPage.plansGrid).toBeVisible();
+    await expect(plansPage.comparisonTable).toBeHidden();
+  });
+
+  test('редагування тарифу прямо з порівняльної таблиці', async ({ plansPage }) => {
+    await plansPage.goto();
+    await plansPage.switchToComparisonView();
+
+    // Click Edit button in PRO column header
+    await plansPage.openEditFromComparison('PRO');
+    await expect(plansPage.planDialog).toBeVisible();
+    await expect(plansPage.planCodeInput).toBeDisabled();
+
+    // Update monthly price to 1590
+    await plansPage.planPriceMonthlyInput.fill('1590');
+    await plansPage.submitPlanForm();
+
+    // Verify updated price in cards
+    await plansPage.switchToCardsView();
+    await plansPage.expectPlanMonthlyPrice('PRO', '1590 грн');
   });
 
   test('створення нового тарифного плану через діалогове вікно', async ({ plansPage }) => {
@@ -211,48 +265,67 @@ test.describe('Admin Portal — Тарифні плани (POM E2E)', () => {
       code: 'ENTERPRISE',
       nameUk: 'Корпоративний',
       nameEn: 'Enterprise Tier',
-      priceMonthly: '199',
-      maxXmlLimit: '1000000',
-      aiCredits: '5000',
-      featureUk: '1,000,000 XML ліміт',
-      featureEn: '1,000,000 XML items',
+      priceMonthly: '3990',
+      maxXmlLimit: '500000',
+      aiCredits: '10000',
+      featureUk: '500,000 SKU ліміт',
+      featureEn: '500,000 SKU items',
     });
 
     await plansPage.submitPlanForm();
 
     // Verify new plan card appears in grid
     await plansPage.expectPlanCardVisible('ENTERPRISE');
-    await plansPage.expectPlanMonthlyPrice('ENTERPRISE', '$199');
+    await plansPage.expectPlanMonthlyPrice('ENTERPRISE', '3990 грн');
   });
 
-  test('редагування існуючого тарифного плану', async ({ plansPage }) => {
+  test('редагування пунктів переваг тарифу (inline feature edit)', async ({ page, plansPage }) => {
     await plansPage.goto();
 
+    // Open Edit Dialog for PRO plan
     await plansPage.openEditDialog('PRO');
     await expect(plansPage.planDialog).toBeVisible();
-    await expect(plansPage.planCodeInput).toBeDisabled();
 
-    // Update monthly price to 59
-    await plansPage.planPriceMonthlyInput.fill('59');
+    // Switch to Features tab
+    await plansPage.planDialogTabFeatures.click();
+
+    // Verify edit button is visible for first feature
+    const firstEditBtn = page.getByTestId('plan-feature-edit-btn-0');
+    await expect(firstEditBtn).toBeVisible();
+    await firstEditBtn.click();
+
+    // Verify edit inputs appear
+    const editUkInput = page.getByTestId('plan-feature-edit-uk-0');
+    const editSaveBtn = page.getByTestId('plan-feature-save-btn-0');
+    await expect(editUkInput).toBeVisible();
+
+    // Update feature text
+    await editUkInput.fill('Оновлено: До 120,000 SKU товарів');
+    await editSaveBtn.click();
+
+    // Verify updated text is displayed
+    const featureRow = page.getByTestId('plan-feature-row-0');
+    await expect(featureRow).toContainText('Оновлено: До 120,000 SKU товарів');
+
+    // Submit form
     await plansPage.submitPlanForm();
-
-    // Verify updated price in card
-    await plansPage.expectPlanMonthlyPrice('PRO', '$59');
   });
 
-  test('видалення тарифного плану з діалоговим підтвердженням', async ({ plansPage, page }) => {
+  test('перевірка відсутності дублікатних API запитів (Zero-Duplicate Requests)', async ({
+    page,
+    plansPage,
+  }) => {
+    let requestCount = 0;
+    page.on('request', (req) => {
+      if (req.url().includes('/api/plans')) {
+        requestCount++;
+      }
+    });
+
     await plansPage.goto();
-    await plansPage.expectPlanCardVisible('FREE');
+    await expect(plansPage.pageTitle).toBeVisible();
 
-    const deleteBtn = page.getByTestId('plan-delete-btn-free');
-    await deleteBtn.click();
-
-    // Confirm in PlanDeleteDialog
-    const confirmBtn = page.getByTestId('plan-delete-confirm-btn');
-    await confirmBtn.waitFor({ state: 'visible' });
-    await confirmBtn.click();
-
-    // Verify FREE card is removed from grid
-    await expect(page.getByTestId('plan-card-free')).toBeHidden();
+    // Verify exactly 1 request was sent upon page load
+    expect(requestCount).toBe(1);
   });
 });

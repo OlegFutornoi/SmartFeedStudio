@@ -93,6 +93,9 @@ export function DialogContent({
       />
       {/* Content */}
       <div
+        role="dialog"
+        aria-modal="true"
+        data-testid="dialog-content"
         className={cn(
           'relative z-50 w-full max-w-lg rounded-xl border border-border bg-card text-card-foreground p-6 shadow-2xl animate-in zoom-in-95 duration-200 backdrop-blur-none',
           className,

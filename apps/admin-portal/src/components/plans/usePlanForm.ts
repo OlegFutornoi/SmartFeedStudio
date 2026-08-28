@@ -16,6 +16,7 @@ interface UsePlanFormProps {
 export function usePlanForm({ initialData, isOpen, onSubmit, onClose }: UsePlanFormProps) {
   const isEdit = !!initialData;
 
+  // Basic Info
   const [code, setCode] = useState('');
   const [nameUk, setNameUk] = useState('');
   const [nameEn, setNameEn] = useState('');
@@ -23,13 +24,35 @@ export function usePlanForm({ initialData, isOpen, onSubmit, onClose }: UsePlanF
   const [descriptionEn, setDescriptionEn] = useState('');
   const [priceMonthly, setPriceMonthly] = useState('0');
   const [priceYearly, setPriceYearly] = useState('');
-  const [maxXmlLimit, setMaxXmlLimit] = useState('1000');
-  const [aiCredits, setAiCredits] = useState('50');
-  const [canCloudBackup, setCanCloudBackup] = useState(false);
+  const [currency, setCurrency] = useState('UAH');
   const [isPopular, setIsPopular] = useState(false);
+  const [isActive, setIsActive] = useState(true);
+  const [order, setOrder] = useState('1');
+
+  // Quotas
+  const [maxXmlLimit, setMaxXmlLimit] = useState('1000');
+  const [maxSuppliersLimit, setMaxSuppliersLimit] = useState('1');
+  const [maxFeedsLimit, setMaxFeedsLimit] = useState('1');
+  const [maxChannelsLimit, setMaxChannelsLimit] = useState('1');
+  const [maxTeamSeats, setMaxTeamSeats] = useState('1');
+  const [maxStorageGb, setMaxStorageGb] = useState('0');
+  const [aiCredits, setAiCredits] = useState('50');
+  const [syncFrequencyHours, setSyncFrequencyHours] = useState('0');
+
+  // Feature Flags
+  const [canCloudBackup, setCanCloudBackup] = useState(false);
+  const [hasApiAccess, setHasApiAccess] = useState(false);
+  const [hasFeedDiff, setHasFeedDiff] = useState(false);
+  const [hasWebhooks, setHasWebhooks] = useState(false);
+  const [hasCustomS3, setHasCustomS3] = useState(false);
+  const [hasAuditLog, setHasAuditLog] = useState(false);
+  const [hasWhiteLabel, setHasWhiteLabel] = useState(false);
+  const [hasPriorityAi, setHasPriorityAi] = useState(false);
+  const [slaUptimePercent, setSlaUptimePercent] = useState('');
+
+  // Bullet Features
   const [featuresUk, setFeaturesUk] = useState<string[]>([]);
   const [featuresEn, setFeaturesEn] = useState<string[]>([]);
-
   const [newFeatureUk, setNewFeatureUk] = useState('');
   const [newFeatureEn, setNewFeatureEn] = useState('');
 
@@ -45,10 +68,32 @@ export function usePlanForm({ initialData, isOpen, onSubmit, onClose }: UsePlanF
       setDescriptionEn(initialData.descriptionEn || '');
       setPriceMonthly(initialData.priceMonthly.toString());
       setPriceYearly(initialData.priceYearly ? initialData.priceYearly.toString() : '');
-      setMaxXmlLimit(initialData.maxXmlLimit.toString());
-      setAiCredits(initialData.aiCredits.toString());
-      setCanCloudBackup(initialData.canCloudBackup);
+      setCurrency(initialData.currency || 'UAH');
       setIsPopular(initialData.isPopular);
+      setIsActive(initialData.isActive);
+      setOrder(initialData.order.toString());
+
+      setMaxXmlLimit(initialData.maxXmlLimit.toString());
+      setMaxSuppliersLimit(initialData.maxSuppliersLimit.toString());
+      setMaxFeedsLimit(initialData.maxFeedsLimit.toString());
+      setMaxChannelsLimit(initialData.maxChannelsLimit.toString());
+      setMaxTeamSeats(initialData.maxTeamSeats.toString());
+      setMaxStorageGb(initialData.maxStorageGb.toString());
+      setAiCredits(initialData.aiCredits.toString());
+      setSyncFrequencyHours(initialData.syncFrequencyHours.toString());
+
+      setCanCloudBackup(initialData.canCloudBackup);
+      setHasApiAccess(initialData.hasApiAccess);
+      setHasFeedDiff(initialData.hasFeedDiff);
+      setHasWebhooks(initialData.hasWebhooks);
+      setHasCustomS3(initialData.hasCustomS3);
+      setHasAuditLog(initialData.hasAuditLog);
+      setHasWhiteLabel(initialData.hasWhiteLabel);
+      setHasPriorityAi(initialData.hasPriorityAi);
+      setSlaUptimePercent(
+        initialData.slaUptimePercent ? initialData.slaUptimePercent.toString() : '',
+      );
+
       setFeaturesUk(initialData.featuresUk || []);
       setFeaturesEn(initialData.featuresEn || []);
     } else {
@@ -59,10 +104,30 @@ export function usePlanForm({ initialData, isOpen, onSubmit, onClose }: UsePlanF
       setDescriptionEn('');
       setPriceMonthly('0');
       setPriceYearly('');
-      setMaxXmlLimit('1000');
-      setAiCredits('50');
-      setCanCloudBackup(false);
+      setCurrency('UAH');
       setIsPopular(false);
+      setIsActive(true);
+      setOrder('1');
+
+      setMaxXmlLimit('1000');
+      setMaxSuppliersLimit('1');
+      setMaxFeedsLimit('1');
+      setMaxChannelsLimit('1');
+      setMaxTeamSeats('1');
+      setMaxStorageGb('0');
+      setAiCredits('50');
+      setSyncFrequencyHours('0');
+
+      setCanCloudBackup(false);
+      setHasApiAccess(false);
+      setHasFeedDiff(false);
+      setHasWebhooks(false);
+      setHasCustomS3(false);
+      setHasAuditLog(false);
+      setHasWhiteLabel(false);
+      setHasPriorityAi(false);
+      setSlaUptimePercent('');
+
       setFeaturesUk([]);
       setFeaturesEn([]);
     }
@@ -70,12 +135,12 @@ export function usePlanForm({ initialData, isOpen, onSubmit, onClose }: UsePlanF
   }, [initialData, isOpen]);
 
   const handleAddFeature = useCallback(() => {
-    if (newFeatureUk.trim()) {
-      setFeaturesUk((prev) => [...prev, newFeatureUk.trim()]);
+    if (newFeatureUk.trim() || newFeatureEn.trim()) {
+      const ukText = newFeatureUk.trim() || newFeatureEn.trim();
+      const enText = newFeatureEn.trim() || newFeatureUk.trim();
+      setFeaturesUk((prev) => [...prev, ukText]);
+      setFeaturesEn((prev) => [...prev, enText]);
       setNewFeatureUk('');
-    }
-    if (newFeatureEn.trim()) {
-      setFeaturesEn((prev) => [...prev, newFeatureEn.trim()]);
       setNewFeatureEn('');
     }
   }, [newFeatureUk, newFeatureEn]);
@@ -83,6 +148,19 @@ export function usePlanForm({ initialData, isOpen, onSubmit, onClose }: UsePlanF
   const handleRemoveFeature = useCallback((index: number) => {
     setFeaturesUk((prev) => prev.filter((_, i) => i !== index));
     setFeaturesEn((prev) => prev.filter((_, i) => i !== index));
+  }, []);
+
+  const handleUpdateFeature = useCallback((index: number, ukText: string, enText: string) => {
+    setFeaturesUk((prev) => {
+      const next = [...prev];
+      next[index] = ukText;
+      return next;
+    });
+    setFeaturesEn((prev) => {
+      const next = [...prev];
+      next[index] = enText;
+      return next;
+    });
   }, []);
 
   const handleSubmit = useCallback(
@@ -98,13 +176,30 @@ export function usePlanForm({ initialData, isOpen, onSubmit, onClose }: UsePlanF
         descriptionEn: descriptionEn.trim() || undefined,
         priceMonthly: parseFloat(priceMonthly) || 0,
         priceYearly: priceYearly.trim() ? parseFloat(priceYearly) : undefined,
-        currency: 'USD',
-        maxXmlLimit: parseInt(maxXmlLimit, 10) || 1000,
-        aiCredits: parseInt(aiCredits, 10) || 0,
-        canCloudBackup,
+        currency: currency.trim().toUpperCase() || 'UAH',
         isPopular,
-        isActive: true,
-        order: initialData?.order ?? 0,
+        isActive,
+        order: parseInt(order, 10) || 0,
+
+        maxXmlLimit: parseInt(maxXmlLimit, 10) || 1000,
+        maxSuppliersLimit: parseInt(maxSuppliersLimit, 10) || 1,
+        maxFeedsLimit: parseInt(maxFeedsLimit, 10) || 1,
+        maxChannelsLimit: parseInt(maxChannelsLimit, 10) || 1,
+        maxTeamSeats: parseInt(maxTeamSeats, 10) || 1,
+        maxStorageGb: parseInt(maxStorageGb, 10) || 0,
+        aiCredits: parseInt(aiCredits, 10) || 0,
+        syncFrequencyHours: parseInt(syncFrequencyHours, 10) || 0,
+
+        canCloudBackup,
+        hasApiAccess,
+        hasFeedDiff,
+        hasWebhooks,
+        hasCustomS3,
+        hasAuditLog,
+        hasWhiteLabel,
+        hasPriorityAi,
+        slaUptimePercent: slaUptimePercent.trim() ? parseFloat(slaUptimePercent) : undefined,
+
         featuresUk,
         featuresEn,
       };
@@ -141,11 +236,27 @@ export function usePlanForm({ initialData, isOpen, onSubmit, onClose }: UsePlanF
       descriptionEn,
       priceMonthly,
       priceYearly,
-      maxXmlLimit,
-      aiCredits,
-      canCloudBackup,
+      currency,
       isPopular,
-      initialData?.order,
+      isActive,
+      order,
+      maxXmlLimit,
+      maxSuppliersLimit,
+      maxFeedsLimit,
+      maxChannelsLimit,
+      maxTeamSeats,
+      maxStorageGb,
+      aiCredits,
+      syncFrequencyHours,
+      canCloudBackup,
+      hasApiAccess,
+      hasFeedDiff,
+      hasWebhooks,
+      hasCustomS3,
+      hasAuditLog,
+      hasWhiteLabel,
+      hasPriorityAi,
+      slaUptimePercent,
       featuresUk,
       featuresEn,
       isEdit,
@@ -156,6 +267,7 @@ export function usePlanForm({ initialData, isOpen, onSubmit, onClose }: UsePlanF
 
   return {
     isEdit,
+    // Basic
     code,
     setCode,
     nameUk,
@@ -170,23 +282,62 @@ export function usePlanForm({ initialData, isOpen, onSubmit, onClose }: UsePlanF
     setPriceMonthly,
     priceYearly,
     setPriceYearly,
-    maxXmlLimit,
-    setMaxXmlLimit,
-    aiCredits,
-    setAiCredits,
-    canCloudBackup,
-    setCanCloudBackup,
+    currency,
+    setCurrency,
     isPopular,
     setIsPopular,
+    isActive,
+    setIsActive,
+    order,
+    setOrder,
+    // Quotas
+    maxXmlLimit,
+    setMaxXmlLimit,
+    maxSuppliersLimit,
+    setMaxSuppliersLimit,
+    maxFeedsLimit,
+    setMaxFeedsLimit,
+    maxChannelsLimit,
+    setMaxChannelsLimit,
+    maxTeamSeats,
+    setMaxTeamSeats,
+    maxStorageGb,
+    setMaxStorageGb,
+    aiCredits,
+    setAiCredits,
+    syncFrequencyHours,
+    setSyncFrequencyHours,
+    // Feature flags
+    canCloudBackup,
+    setCanCloudBackup,
+    hasApiAccess,
+    setHasApiAccess,
+    hasFeedDiff,
+    setHasFeedDiff,
+    hasWebhooks,
+    setHasWebhooks,
+    hasCustomS3,
+    setHasCustomS3,
+    hasAuditLog,
+    setHasAuditLog,
+    hasWhiteLabel,
+    setHasWhiteLabel,
+    hasPriorityAi,
+    setHasPriorityAi,
+    slaUptimePercent,
+    setSlaUptimePercent,
+    // Bullets
     featuresUk,
     featuresEn,
     newFeatureUk,
     setNewFeatureUk,
     newFeatureEn,
     setNewFeatureEn,
+    // Status
     isSubmitting,
     error,
     handleAddFeature,
+    handleUpdateFeature,
     handleRemoveFeature,
     handleSubmit,
   };

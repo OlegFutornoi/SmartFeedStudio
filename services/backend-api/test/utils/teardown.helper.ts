@@ -104,7 +104,18 @@ export async function cleanDatabase(
       await prisma.productImage.deleteMany({
         where: { userId: { in: allUserIds } },
       });
+      await prisma.paymentTransaction.deleteMany({
+        where: { userId: { in: allUserIds } },
+      });
     }
+    await prisma.paymentTransaction.deleteMany({
+      where: {
+        OR: [
+          { orderReference: { startsWith: 'SF-INV-TEST-' } },
+          { orderReference: { startsWith: 'SF-TEST-' } },
+        ],
+      },
+    });
 
     // 3. Cleanup Organization Invitations
     await prisma.organizationInvitation.deleteMany({

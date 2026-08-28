@@ -4,8 +4,8 @@ import { PlanLimits } from '../dtos/license.dto.js';
 export const PLAN_LIMITS_MAP: Record<PlanType, PlanLimits> = {
   [PlanType.STARTER]: {
     planType: PlanType.STARTER,
-    maxXmlLimit: 500,
-    aiCredits: 0,
+    maxXmlLimit: 1000,
+    aiCredits: 50,
     canCloudBackup: false,
     maxFeedsLimit: 1,
     maxChannelsLimit: 1,
@@ -19,8 +19,8 @@ export const PLAN_LIMITS_MAP: Record<PlanType, PlanLimits> = {
   },
   [PlanType.GROWTH]: {
     planType: PlanType.GROWTH,
-    maxXmlLimit: 10000,
-    aiCredits: 50,
+    maxXmlLimit: 20000,
+    aiCredits: 500,
     canCloudBackup: true,
     maxFeedsLimit: 5,
     maxChannelsLimit: 3,
@@ -35,7 +35,7 @@ export const PLAN_LIMITS_MAP: Record<PlanType, PlanLimits> = {
   [PlanType.PRO]: {
     planType: PlanType.PRO,
     maxXmlLimit: 100000,
-    aiCredits: 500,
+    aiCredits: 2500,
     canCloudBackup: true,
     maxFeedsLimit: 999999,
     maxChannelsLimit: 15,
@@ -49,12 +49,12 @@ export const PLAN_LIMITS_MAP: Record<PlanType, PlanLimits> = {
   },
   [PlanType.ENTERPRISE]: {
     planType: PlanType.ENTERPRISE,
-    maxXmlLimit: 999999999,
-    aiCredits: 5000,
+    maxXmlLimit: 500000,
+    aiCredits: 10000,
     canCloudBackup: true,
     maxFeedsLimit: 999999,
     maxChannelsLimit: 999999,
-    maxTeamSeats: 999999,
+    maxTeamSeats: 10,
     maxSuppliersLimit: 999999,
     hasApiAccess: true,
     hasFeedDiff: true,

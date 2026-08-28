@@ -1,23 +1,30 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
-import { Plus, RefreshCw, Layers, KeyRound } from 'lucide-react';
+import { Plus, RefreshCw, Layers, KeyRound, LayoutGrid, TableProperties } from 'lucide-react';
 import { Button } from '../../../components/ui/button';
 import { api } from '../../../lib/api';
 import { useLanguage } from '../../../contexts/LanguageContext';
 import { TariffPlanDto, CreateTariffPlanDto, UpdateTariffPlanDto } from '@smartfeed/shared';
 import { PlanCard } from '../../../components/plans/PlanCard';
+import { PlanComparisonTable } from '../../../components/plans/PlanComparisonTable';
 import { PlanDialog } from '../../../components/plans/PlanDialog';
 import { PlanDeleteDialog } from '../../../components/plans/PlanDeleteDialog';
 
+type ViewMode = 'cards' | 'comparison';
+
 export default function PlansPage() {
-  const { locale } = useLanguage();
+  const { locale, t } = useLanguage();
   const isUk = locale === 'uk';
 
+  const [viewMode, setViewMode] = useState<ViewMode>('cards');
   const [plans, setPlans] = useState<TariffPlanDto[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // In-flight deduplication ref
+  const isFetchingRef = useRef<boolean>(false);
 
   // Edit/Create dialog
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -28,9 +35,11 @@ export default function PlansPage() {
   const [isDeleting, setIsDeleting] = useState(false);
 
   const fetchPlans = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
+    if (isFetchingRef.current) return;
     try {
+      isFetchingRef.current = true;
+      setIsLoading(true);
+      setError(null);
       const plansData = await api.getAdminTariffPlans().catch(() => api.getTariffPlans());
       setPlans(plansData);
     } catch (err: unknown) {
@@ -38,6 +47,7 @@ export default function PlansPage() {
       setError(msg);
     } finally {
       setIsLoading(false);
+      isFetchingRef.current = false;
     }
   }, []);
 
@@ -104,24 +114,59 @@ export default function PlansPage() {
             className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl flex items-center gap-2.5"
           >
             <Layers className="size-6 text-primary shrink-0" />
-            <span>{isUk ? 'Тарифні плани' : 'Tariff Plans'}</span>
+            <span>{t('plans', 'title')}</span>
           </h1>
           <p data-testid="plans-header-subtitle" className="text-sm text-muted-foreground mt-0.5">
-            {isUk
-              ? 'Керування квотами, ціноутворенням, кількістю постачальників та перевагами планів'
-              : 'Manage dynamic quotas, pricing tiers, suppliers limits, and plan features'}
+            {t('plans', 'subtitle')}
           </p>
         </div>
 
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex flex-wrap items-center gap-2 shrink-0">
+          {/* Segmented View Switcher */}
+          <div
+            data-testid="plans-view-switcher"
+            className="flex items-center p-0.5 rounded-lg border border-border bg-secondary/50"
+          >
+            <button
+              type="button"
+              data-testid="plans-view-cards-btn"
+              onClick={() => setViewMode('cards')}
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium transition-all ${
+                viewMode === 'cards'
+                  ? 'bg-card text-foreground shadow-xs'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+              title={t('plans', 'cardsView')}
+            >
+              <LayoutGrid className="size-3.5" />
+              <span>{t('plans', 'cardsView')}</span>
+            </button>
+
+            <button
+              type="button"
+              data-testid="plans-view-comparison-btn"
+              onClick={() => setViewMode('comparison')}
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium transition-all ${
+                viewMode === 'comparison'
+                  ? 'bg-card text-foreground shadow-xs'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+              title={t('plans', 'comparisonView')}
+            >
+              <TableProperties className="size-3.5" />
+              <span>{t('plans', 'comparisonView')}</span>
+            </button>
+          </div>
+
           <Link
             href="/licenses"
             data-testid="go-to-licenses-btn"
             className="inline-flex items-center justify-center rounded-md font-medium transition-colors border border-border bg-transparent hover:bg-secondary text-foreground h-8 px-3 text-xs gap-1.5"
           >
             <KeyRound className="size-3.5 text-primary" />
-            <span>{isUk ? 'Ліцензії' : 'Licenses'}</span>
+            <span>{t('navigation', 'licenses') || (isUk ? 'Ліцензії' : 'Licenses')}</span>
           </Link>
+
           <Button
             variant="outline"
             size="sm"
@@ -129,11 +174,12 @@ export default function PlansPage() {
             onClick={fetchPlans}
             disabled={isLoading}
             className="h-8 w-8 p-0"
-            title={isUk ? 'Оновити' : 'Refresh'}
-            aria-label={isUk ? 'Оновити' : 'Refresh'}
+            title={t('plans', 'refresh')}
+            aria-label={t('plans', 'refresh')}
           >
             <RefreshCw className={`size-3.5 ${isLoading ? 'animate-spin' : ''}`} />
           </Button>
+
           <Button
             size="sm"
             data-testid="create-plan-btn"
@@ -141,7 +187,7 @@ export default function PlansPage() {
             className="h-8 text-xs gap-1.5"
           >
             <Plus className="size-3.5" />
-            <span>{isUk ? 'Створити тариф' : 'New Plan Tier'}</span>
+            <span>{t('plans', 'newPlan')}</span>
           </Button>
         </div>
       </div>
@@ -155,17 +201,17 @@ export default function PlansPage() {
         </div>
       )}
 
-      {/* Plans Section */}
+      {/* Main Content Area */}
       <div className="flex flex-col gap-4">
         {isLoading && plans.length === 0 ? (
           <div
             data-testid="plans-loading-skeleton"
-            className="grid grid-cols-1 md:grid-cols-3 gap-6"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
           >
-            {[1, 2, 3].map((i) => (
+            {[1, 2, 3, 4].map((i) => (
               <div
                 key={i}
-                className="h-64 rounded-xl border border-border bg-card/40 animate-pulse"
+                className="h-96 rounded-xl border border-border bg-card/40 animate-pulse"
               />
             ))}
           </div>
@@ -178,8 +224,12 @@ export default function PlansPage() {
               ? 'Тарифні плани не знайдено. Створіть перший план через кнопку вище.'
               : 'No tariff plans found. Create your first plan above.'}
           </div>
-        ) : (
-          <div data-testid="plans-grid" className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        ) : viewMode === 'cards' ? (
+          /* Cards View Grid (4 columns on lg screens) */
+          <div
+            data-testid="plans-grid"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5"
+          >
             {plans.map((plan) => (
               <PlanCard
                 key={plan.id}
@@ -190,6 +240,9 @@ export default function PlansPage() {
               />
             ))}
           </div>
+        ) : (
+          /* Feature Comparison Matrix View */
+          <PlanComparisonTable plans={plans} isUk={isUk} onEdit={handleOpenEdit} />
         )}
       </div>
 

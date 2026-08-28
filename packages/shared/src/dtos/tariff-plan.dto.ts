@@ -96,8 +96,9 @@ export const CreateTariffPlanDtoSchema = z.object({
 export type CreateTariffPlanDto = z.infer<typeof CreateTariffPlanDtoSchema>;
 
 export const UpdateTariffPlanDtoSchema = CreateTariffPlanDtoSchema.partial();
-
 export type UpdateTariffPlanDto = z.infer<typeof UpdateTariffPlanDtoSchema>;
+
+export type BillingInterval = 'monthly' | 'yearly';
 
 export interface AdminLicenseItemDto {
   id: string;

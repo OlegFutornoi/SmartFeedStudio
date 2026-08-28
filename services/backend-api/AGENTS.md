@@ -148,8 +148,9 @@ pnpm --filter @smartfeed/backend-api test:e2e
 | `test/security-access-control.e2e-spec.ts` | RBAC admin endpoint protection, multi-tenant ABAC organization isolation, invited member plan modification guards (`ONLY_OWNER_CAN_CHANGE_PLAN`), password validation on invite accept, and S3 Presigned URL user scoping                                                                                                                                    | 17          | ✅ PASS |
 | `test/navigation.e2e-spec.ts`              | `GET /api/navigation`, `GET /api/navigation/admin`, `POST /api/navigation`, `PATCH /api/navigation/:id`, `DELETE /api/navigation/:id`                                                                                                                                                                                                                        | 8           | ✅ PASS |
 | `test/plans.e2e-spec.ts`                   | `GET /api/plans`, `GET /api/plans/admin`, `POST /api/plans`, `PATCH /api/plans/:id`, `DELETE /api/plans/:id`, `GET /api/licenses/admin`                                                                                                                                                                                                                      | 12          | ✅ PASS |
+| `test/payments.e2e-spec.ts`                | `POST /api/payments/checkout` (Monthly & Yearly), `POST /api/payments/wayforpay/webhook` (MD5 signature verification, Approved & Declined, automatic license activation), `GET /api/payments/transactions`, `GET /api/payments/my-transactions`, `GET /api/payments/stats`, `GET & PATCH /api/payments/settings`                                             | 12          | ✅ PASS |
 
-**Total: 9 suites — 114 tests — 114 passing (100%)**
+**Total: 10 suites — 126 tests — 126 passing (100%)**
 
 ### 🧹 Mandatory Test Data Teardown
 

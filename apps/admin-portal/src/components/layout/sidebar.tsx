@@ -54,6 +54,8 @@ export function Sidebar() {
     admin_users: 'nav-item-users',
     admin_plans: 'nav-item-plans',
     admin_licenses: 'nav-item-licenses',
+    admin_transactions: 'nav-item-transactions',
+    admin_payment_settings: 'nav-item-payments',
     admin_navigation: 'nav-item-navigation',
   };
 
@@ -79,6 +81,20 @@ export function Sidebar() {
       labelEn: 'Licenses',
       path: '/licenses',
       icon: 'KeyRound',
+    },
+    {
+      key: 'admin_transactions',
+      labelUk: 'Транзакції',
+      labelEn: 'Transactions',
+      path: '/transactions',
+      icon: 'Receipt',
+    },
+    {
+      key: 'admin_payment_settings',
+      labelUk: 'Платіжні системи',
+      labelEn: 'Payment Gateways',
+      path: '/settings/payments',
+      icon: 'CreditCard',
     },
     {
       key: 'admin_navigation',

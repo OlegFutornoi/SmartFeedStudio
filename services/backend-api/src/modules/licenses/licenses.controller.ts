@@ -88,9 +88,11 @@ export class LicensesController {
   @ApiResponse({ status: 200, description: 'Plan selected and license updated' })
   async selectPlan(
     @CurrentUser('id') userId: string,
-    @Body() dto: { planCode: string },
+    @Body() dto: { planCode: string; billingInterval?: 'monthly' | 'yearly' },
   ): Promise<LicenseEntity> {
-    return this.commandBus.execute(new SelectTariffPlanCommand(userId, dto.planCode));
+    return this.commandBus.execute(
+      new SelectTariffPlanCommand(userId, dto.planCode, dto.billingInterval || 'monthly'),
+    );
   }
 
   @Post('upgrade')

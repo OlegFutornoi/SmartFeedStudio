@@ -46,6 +46,25 @@ enum InvitationStatus {
   REVOKED
 }
 
+enum PaymentStatus {
+  PENDING
+  APPROVED
+  DECLINED
+  REFUNDED
+  EXPIRED
+}
+
+enum PaymentProvider {
+  WAYFORPAY
+  STRIPE
+  MANUAL
+}
+
+enum PaymentInterval {
+  MONTHLY
+  YEARLY
+}
+
 model User {
   id           String         @id @default(cuid())
   email        String         @unique
@@ -58,6 +77,7 @@ model User {
   licenses     License[]
   snapshots    Snapshot[]
   images       ProductImage[]
+  paymentTransactions PaymentTransaction[]
 
   ownedOrganizations      Organization[]           @relation("OrganizationOwner")
   organizationMemberships OrganizationMember[]
@@ -263,3 +283,50 @@ model NavigationItem {
   @@index([targetApp, isVisible, order])
   @@map("navigation_items")
 }
+
+model PaymentTransaction {
+  id                String          @id @default(cuid())
+  orderReference    String          @unique @map("order_reference")
+  userId            String          @map("user_id")
+  user              User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  planCode          String          @map("plan_code")
+  billingInterval   PaymentInterval @default(MONTHLY) @map("billing_interval")
+  amount            Decimal         @db.Decimal(10, 2)
+  currency          String          @default("UAH")
+  status            PaymentStatus   @default(PENDING)
+  provider          PaymentProvider @default(WAYFORPAY)
+  providerPaymentId String?         @map("provider_payment_id")
+  cardPan           String?         @map("card_pan")
+  cardType          String?         @map("card_type")
+  issuerBank        String?         @map("issuer_bank")
+  failureReason     String?         @map("failure_reason")
+  paymentMethod     String?         @map("payment_method")
+  signature         String?
+  metadata          Json?
+  createdAt         DateTime        @default(now()) @map("created_at")
+  updatedAt         DateTime        @updatedAt @map("updated_at")
+
+  @@index([userId])
+  @@index([status])
+  @@index([provider])
+  @@index([createdAt])
+  @@index([orderReference])
+  @@map("payment_transactions")
+}
+
+model PaymentSetting {
+  id                 String          @id @default(cuid())
+  provider           PaymentProvider @unique
+  isEnabled          Boolean         @default(true) @map("is_enabled")
+  isTestMode         Boolean         @default(true) @map("is_test_mode")
+  merchantAccount    String?         @map("merchant_account")
+  merchantSecretKey  String?         @map("merchant_secret_key")
+  merchantDomain     String?         @map("merchant_domain")
+  serviceUrl         String?         @map("service_url")
+  returnUrl          String?         @map("return_url")
+  createdAt          DateTime        @default(now()) @map("created_at")
+  updatedAt          DateTime        @updatedAt @map("updated_at")
+
+  @@map("payment_settings")
+}
+
