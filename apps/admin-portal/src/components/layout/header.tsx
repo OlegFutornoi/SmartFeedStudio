@@ -15,7 +15,7 @@ export function Header() {
   const { user } = useAuth();
   const { setThemeMode, resolvedMode } = useTheme();
   const { toggleSidebar, toggleMobileSidebar, isCollapsed } = useSidebar();
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
 
   const toggleTheme = () => {
     setThemeMode(resolvedMode === 'dark' ? 'light' : 'dark');
@@ -50,14 +50,19 @@ export function Header() {
         <div className="h-4 w-px bg-border hidden sm:block" />
 
         <div className="flex items-center space-x-2">
-          <span className="text-sm font-semibold text-foreground hidden sm:inline">
-            SmartFeed Studio
-          </span>
+          <Badge
+            variant="secondary"
+            className="text-xs font-semibold px-2.5 py-0.5 flex items-center gap-1.5 bg-primary/10 text-primary border border-primary/20"
+          >
+            <ShieldCheck className="size-3.5" />
+            <span>{locale === 'uk' ? 'Панель Адміністратора' : 'Admin Console'}</span>
+          </Badge>
+
           <Badge
             variant="outline"
-            className="text-[11px] bg-emerald-500/10 text-emerald-400 border-emerald-500/30 flex items-center gap-1"
+            className="text-[11px] bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30 flex items-center gap-1 px-2 py-0.5"
           >
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
             <span>{t('common', 'system_online')}</span>
           </Badge>
         </div>

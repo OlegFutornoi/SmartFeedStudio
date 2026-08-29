@@ -1,14 +1,14 @@
 import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Layers, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
+import { Layers, PanelLeftOpen } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSidebar } from '@/contexts/SidebarContext';
 import { useNavigation } from '@/contexts/NavigationContext';
 import { useTranslation } from '@/i18n';
 import { useLicense } from '@/hooks/useLicense';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { SidebarNavItem } from './SidebarNavItem';
 import { SidebarUserProfile } from './SidebarUserProfile';
 import { SidebarMobileDrawer } from './SidebarMobileDrawer';
@@ -42,44 +42,33 @@ export function Sidebar() {
           {/* Brand Header */}
           <div
             className={cn(
-              'flex items-center mb-6 pb-2 border-b border-border/40',
-              isCollapsed ? 'justify-center pt-2' : 'justify-between px-2 pt-2',
+              'flex items-center mb-6 pb-3 border-b border-border/40',
+              isCollapsed ? 'justify-center pt-2' : 'px-2 pt-2',
             )}
           >
-            <div className="flex items-center space-x-3 overflow-hidden">
+            <div className="flex items-center space-x-3 w-full overflow-hidden">
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-md shadow-primary/25">
                 <Layers className="h-5 w-5" />
               </div>
               {!isCollapsed && (
-                <div className="min-w-0">
+                <div className="min-w-0 flex-1">
                   <div className="flex items-center space-x-1.5">
-                    <span className="font-bold text-foreground tracking-tight text-base truncate">
+                    <span className="font-bold text-foreground tracking-tight text-base whitespace-nowrap">
                       SmartFeed
                     </span>
                     <Badge
                       variant="outline"
-                      className="text-[10px] px-1.5 py-0 border-primary/40 text-primary"
+                      className="text-[10px] px-1.5 py-0 border-primary/40 text-primary font-semibold"
                     >
                       Studio
                     </Badge>
                   </div>
-                  <p className="text-[11px] text-muted-foreground truncate">Catalog Manager</p>
+                  <p className="text-[11px] text-muted-foreground truncate font-normal">
+                    Catalog Manager
+                  </p>
                 </div>
               )}
             </div>
-
-            {!isCollapsed && (
-              <Button
-                variant="ghost"
-                size="sm"
-                data-testid="toggle-sidebar-button"
-                className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground hover:bg-muted/80 rounded-lg"
-                onClick={toggleSidebar}
-                title="Згорнути меню"
-              >
-                <PanelLeftClose className="h-4 w-4" />
-              </Button>
-            )}
           </div>
 
           {/* Navigation Links */}
@@ -110,10 +99,10 @@ export function Sidebar() {
             <Button
               variant="ghost"
               size="sm"
-              data-testid="toggle-sidebar-button"
+              data-testid="expand-sidebar-button"
               className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground hover:bg-muted/80 rounded-lg"
               onClick={toggleSidebar}
-              title="Розгорнути меню"
+              title={currentLang === 'uk' ? 'Розгорнути меню' : 'Expand menu'}
             >
               <PanelLeftOpen className="h-4 w-4 text-primary" />
             </Button>

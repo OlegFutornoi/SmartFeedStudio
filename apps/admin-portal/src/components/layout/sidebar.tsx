@@ -171,36 +171,28 @@ export function Sidebar() {
       >
         {/* Top brand header */}
         <div className="p-4 border-b border-border/60">
-          <div className="flex items-center justify-between">
-            <Link href="/" className="flex items-center space-x-3 overflow-hidden group">
+          <div className="flex items-center">
+            <Link href="/" className="flex items-center space-x-3 w-full overflow-hidden group">
               <div className="h-9 w-9 rounded-xl bg-primary/20 border border-primary/40 flex items-center justify-center text-primary group-hover:scale-105 transition-transform shrink-0 shadow-sm shadow-primary/20">
                 <ShieldCheck className="h-5 w-5" />
               </div>
               {!isCollapsed && (
-                <div className="truncate">
-                  <div className="font-bold text-sm text-foreground flex items-center gap-1.5">
+                <div className="min-w-0 flex-1">
+                  <div className="font-bold text-sm text-foreground flex items-center gap-1.5 whitespace-nowrap">
                     <span>SmartFeed</span>
-                    <Badge variant="outline" className="text-[10px] px-1 py-0 h-4 uppercase">
+                    <Badge
+                      variant="outline"
+                      className="text-[10px] px-1 py-0 h-4 uppercase font-semibold text-primary border-primary/40"
+                    >
                       Admin
                     </Badge>
                   </div>
-                  <div className="text-[11px] text-muted-foreground truncate">Management</div>
+                  <div className="text-[11px] text-muted-foreground truncate font-normal">
+                    Management Console
+                  </div>
                 </div>
               )}
             </Link>
-
-            {/* Sidebar toggle button in header */}
-            {!isCollapsed && (
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground rounded-lg"
-                onClick={toggleSidebar}
-                title="Collapse sidebar"
-              >
-                <PanelLeftClose className="h-4 w-4" />
-              </Button>
-            )}
           </div>
         </div>
 
