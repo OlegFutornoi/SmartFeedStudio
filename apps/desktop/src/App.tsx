@@ -23,6 +23,9 @@ const HomePage = lazy(() => import('@/pages/HomePage').then((m) => ({ default: m
 const CatalogsPage = lazy(() =>
   import('@/pages/CatalogsPage').then((m) => ({ default: m.CatalogsPage })),
 );
+const SuppliersPage = lazy(() =>
+  import('@/pages/SuppliersPage').then((m) => ({ default: m.SuppliersPage })),
+);
 const AiEnrichmentPage = lazy(() =>
   import('@/pages/AiEnrichmentPage').then((m) => ({ default: m.AiEnrichmentPage })),
 );
@@ -68,6 +71,7 @@ export default function App() {
           >
             <Route path="/" element={<HomePage />} />
             <Route path="/catalogs" element={<CatalogsPage />} />
+            <Route path="/suppliers" element={<SuppliersPage />} />
             <Route path="/ai-enrichment" element={<AiEnrichmentPage />} />
             <Route path="/cloud-sync" element={<CloudSyncPage />} />
             <Route path="/plans" element={<PlansPage />} />

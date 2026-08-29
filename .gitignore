@@ -49,6 +49,7 @@ coverage/
 test-results/
 playwright-report/
 blob-report/
+.playwright-mcp/
 
 # Sentry Config File
 .env.sentry-build-plugin

@@ -1,4 +1,4 @@
-import { Sparkles } from 'lucide-react';
+import { Sparkles, CheckCircle2, XCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface SandboxSimulationBlockProps {
@@ -47,8 +47,9 @@ export function SandboxSimulationBlock({
           data-testid={successTestId}
           onClick={() => onSimulate('Approved')}
           disabled={isDisabled}
-          className="flex-1 h-auto min-h-[38px] py-1.5 px-2.5 text-xs leading-snug text-center whitespace-normal break-words border-emerald-500/40 bg-emerald-500/10 text-emerald-400 dark:text-emerald-400 hover:bg-emerald-500/20 hover:text-emerald-300 font-medium transition-colors cursor-pointer"
+          className="flex-1 h-auto min-h-[38px] py-1.5 px-2.5 text-xs leading-snug text-center whitespace-normal break-words border-emerald-500/40 bg-emerald-500/10 text-emerald-400 dark:text-emerald-400 hover:bg-emerald-500/20 hover:text-emerald-300 font-medium transition-colors cursor-pointer flex items-center justify-center gap-1.5"
         >
+          <CheckCircle2 className="size-3.5 shrink-0" />
           <span>{t('plans.simulateSuccessBtn')}</span>
         </Button>
 
@@ -59,8 +60,9 @@ export function SandboxSimulationBlock({
           data-testid={declineTestId}
           onClick={() => onSimulate('Declined')}
           disabled={isDisabled}
-          className="flex-1 h-auto min-h-[38px] py-1.5 px-2.5 text-xs leading-snug text-center whitespace-normal break-words border-red-500/40 bg-red-500/10 text-red-400 dark:text-red-400 hover:bg-red-500/20 hover:text-red-300 font-medium transition-colors cursor-pointer"
+          className="flex-1 h-auto min-h-[38px] py-1.5 px-2.5 text-xs leading-snug text-center whitespace-normal break-words border-red-500/40 bg-red-500/10 text-red-400 dark:text-red-400 hover:bg-red-500/20 hover:text-red-300 font-medium transition-colors cursor-pointer flex items-center justify-center gap-1.5"
         >
+          <XCircle className="size-3.5 shrink-0" />
           <span>{t('plans.simulateDeclineBtn')}</span>
         </Button>
       </div>

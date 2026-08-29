@@ -115,16 +115,30 @@ erDiagram
         string cloudUrl
         string s3Key
     }
+
+    User ||--o{ Supplier : "створює постачальників"
+    User ||--o{ Product : "володіє товарами каталогу"
+    Supplier ||--o{ FeedSource : "підключені фіди (URL/файл)"
+    FeedSource ||--o{ Product : "ізоляція товарів за фідом (feedSourceId)"
+    Supplier ||--o{ Product : "прямий зв'язок постачальника"
 ```
 
 ---
 
 ## 🛡 Каскадні Правила та Цілісність Даних
 
-1. **Видалення Користувача (`User` -> `License`, `Snapshot`, `ProductImage`)**:
-   - `onDelete: Cascade` налаштовано для сутностей `License`, `Snapshot`, та `ProductImage`.
-   - При видаленні користувача (чи в робочому процесі, чи під час очистки тестів `afterAll`), всі пов'язані з ним ліцензії, бекапи та зображення **автоматично видаляються з PostgreSQL**, запобігаючи накопиченню осиротілих записів.
+1. **Видалення Користувача (`User` -> `License`, `Snapshot`, `ProductImage`, `Supplier`, `Product`)**:
+   - `onDelete: Cascade` налаштовано для сутностей `License`, `Snapshot`, `ProductImage`, `Supplier`, `Product`.
+   - При видаленні користувача всі пов'язані з ним ліцензії, бекапи, постачальники, фіди та товари **автоматично видаляються з PostgreSQL**.
 
-2. **Видалення Тарифного Плану (`TariffPlan` -> `License`)**:
+2. **Ізоляція та Видалення Фіду (`FeedSource` -> `Product`)**:
+   - `feedSourceId` у моделі `Product` посилається на конкретний `FeedSource` з індексом `@@index([feedSourceId])`.
+   - При видаленні фіду бекенд видаляє виключно товари цього конкретного джерела (`where: { feedSourceId }`), зберігаючи всі товари з інших фідів того ж постачальника.
+
+3. **Видалення Тарифного Плану (`TariffPlan` -> `License`)**:
    - `onDelete: SetNull` налаштовано для зв'язку `tariffPlanId` у моделі `License`.
    - Якщо адміністратор видаляє кастомний тарифний план, вже видані користувачам ліцензії **не втрачають працездатності** — їхній `tariffPlanId` встановлюється в `null`, але квоти (`maxXmlLimit`, `aiCredits`) та термін дії (`expiresAt`) зберігаються без змін.
+
+```
+
+```

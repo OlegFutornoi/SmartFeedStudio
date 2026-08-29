@@ -53,9 +53,9 @@ export function TransactionsFilterToolbar({
             className="h-9 px-3 pr-8 rounded-md border border-input bg-background text-xs text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring cursor-pointer appearance-none"
           >
             <option value="ALL">{isUk ? 'Всі статуси' : 'All statuses'}</option>
-            <option value="APPROVED">{isUk ? '✅ Успішні (Approved)' : '✅ Approved'}</option>
-            <option value="PENDING">{isUk ? '⏳ Очікують (Pending)' : '⏳ Pending'}</option>
-            <option value="DECLINED">{isUk ? '❌ Відхилені (Declined)' : '❌ Declined'}</option>
+            <option value="APPROVED">{isUk ? 'Успішні (Approved)' : 'Approved'}</option>
+            <option value="PENDING">{isUk ? 'Очікують (Pending)' : 'Pending'}</option>
+            <option value="DECLINED">{isUk ? 'Відхилені (Declined)' : 'Declined'}</option>
           </select>
           <Filter className="size-3 text-muted-foreground absolute right-2.5 top-3 pointer-events-none" />
         </div>

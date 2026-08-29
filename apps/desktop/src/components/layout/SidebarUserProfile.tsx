@@ -1,5 +1,5 @@
 import React from 'react';
-import { LogOut } from 'lucide-react';
+import { LogOut, Building2 } from 'lucide-react';
 import { UserProfile } from '@smartfeed/shared';
 import { Button } from '@/components/ui/button';
 
@@ -48,7 +48,8 @@ export const SidebarUserProfile = React.memo(function SidebarUserProfile({
                   data-testid="sidebar-user-organization"
                   className="text-[10px] text-primary/90 font-medium truncate flex items-center gap-1"
                 >
-                  <span className="truncate">🏢 {user.organization.name}</span>
+                  <Building2 className="size-2.5 shrink-0" />
+                  <span className="truncate">{user.organization.name}</span>
                 </p>
               )}
               <p

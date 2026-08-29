@@ -7,6 +7,8 @@ import ukHome from './locales/uk/home.json';
 import ukPlans from './locales/uk/plans.json';
 import ukTeam from './locales/uk/team.json';
 import ukCatalogs from './locales/uk/catalogs.json';
+import ukSuppliers from './locales/uk/suppliers.json';
+import ukProducts from './locales/uk/products.json';
 import ukAi from './locales/uk/ai.json';
 import ukCloud from './locales/uk/cloud.json';
 import ukSettings from './locales/uk/settings.json';
@@ -18,6 +20,8 @@ import enHome from './locales/en/home.json';
 import enPlans from './locales/en/plans.json';
 import enTeam from './locales/en/team.json';
 import enCatalogs from './locales/en/catalogs.json';
+import enSuppliers from './locales/en/suppliers.json';
+import enProducts from './locales/en/products.json';
 import enAi from './locales/en/ai.json';
 import enCloud from './locales/en/cloud.json';
 import enSettings from './locales/en/settings.json';
@@ -36,6 +40,8 @@ const STATIC_TRANSLATIONS: Record<Language, Record<Namespace, TranslationDict>> 
     plans: ukPlans as TranslationDict,
     team: ukTeam as TranslationDict,
     catalogs: ukCatalogs as TranslationDict,
+    suppliers: ukSuppliers as TranslationDict,
+    products: ukProducts as TranslationDict,
     ai: ukAi as TranslationDict,
     cloud: ukCloud as TranslationDict,
     settings: ukSettings as TranslationDict,
@@ -48,6 +54,8 @@ const STATIC_TRANSLATIONS: Record<Language, Record<Namespace, TranslationDict>> 
     plans: enPlans as TranslationDict,
     team: enTeam as TranslationDict,
     catalogs: enCatalogs as TranslationDict,
+    suppliers: enSuppliers as TranslationDict,
+    products: enProducts as TranslationDict,
     ai: enAi as TranslationDict,
     cloud: enCloud as TranslationDict,
     settings: enSettings as TranslationDict,

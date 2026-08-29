@@ -14,6 +14,9 @@ import { StorageModule } from './modules/storage/storage.module';
 import { NavigationModule } from './modules/navigation/navigation.module';
 import { MailModule } from './modules/mail/mail.module';
 import { PaymentsModule } from './modules/payments/payments.module';
+import { SuppliersModule } from './modules/suppliers/suppliers.module';
+import { ProductsModule } from './modules/products/products.module';
+import { FeedsModule } from './modules/feeds/feeds.module';
 
 @Module({
   imports: [
@@ -71,6 +74,9 @@ import { PaymentsModule } from './modules/payments/payments.module';
     StorageModule,
     NavigationModule,
     PaymentsModule,
+    SuppliersModule,
+    ProductsModule,
+    FeedsModule,
   ],
   providers: [
     {

@@ -12,13 +12,20 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags, ApiQuery } from '@nestjs/swagger';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
-import { AdminLicenseItemDto, LicenseEntity, PlanType, Role } from '@smartfeed/shared';
+import {
+  AdminLicenseItemDto,
+  LicenseEntity,
+  PlanType,
+  Role,
+  UserQuotasDto,
+} from '@smartfeed/shared';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { GetLicenseByUserIdQuery } from './queries/get-license-by-user-id.query';
 import { GetAdminLicensesQuery } from './queries/get-admin-licenses.query';
+import { GetUsageQuotasQuery } from './queries/get-usage-quotas.query';
 import { CreateLicenseCommand } from './commands/create-license.command';
 import { SelectTariffPlanCommand } from './commands/select-tariff-plan.command';
 import { UpdateLicenseStatusCommand } from './commands/update-license-status.command';
@@ -61,6 +68,15 @@ export class LicensesController {
     return license;
   }
 
+  @Get('quotas')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get current user real-time usage quotas and plan limits' })
+  @ApiResponse({ status: 200, description: 'User quotas and usage counters returned' })
+  async getQuotas(@CurrentUser('id') userId: string): Promise<UserQuotasDto> {
+    return this.queryBus.execute(new GetUsageQuotasQuery(userId));
+  }
+
   @Get('admin')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.SUPER_ADMIN, Role.ADMIN)
@@ -85,7 +101,7 @@ export class LicensesController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Select or renew tariff plan for current user' })
-  @ApiResponse({ status: 200, description: 'Plan selected and license updated' })
+  @ApiResponse({ status: 201, description: 'Plan selected and license updated' })
   async selectPlan(
     @CurrentUser('id') userId: string,
     @Body() dto: { planCode: string; billingInterval?: 'monthly' | 'yearly' },

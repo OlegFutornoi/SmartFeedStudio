@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLicense } from '@/contexts/LicenseContext';
 import { useNavigation } from '@/contexts/NavigationContext';
+import { useQuotas } from '@/contexts/QuotasContext';
 import { useTranslation, getErrorMessage } from '@/i18n';
 import { getMyLicense, getTariffPlans, selectTariffPlan } from '@/lib/api';
 import type { LicenseEntity, TariffPlanDto, BillingInterval } from '@smartfeed/shared';
@@ -10,6 +11,7 @@ export function usePlansPageData() {
   const { token, user } = useAuth();
   const { refreshLicense } = useLicense();
   const { refreshNavigation } = useNavigation();
+  const { refreshQuotas } = useQuotas();
   const { t } = useTranslation(['plans', 'common', 'errors']);
 
   const [plans, setPlans] = useState<TariffPlanDto[]>([]);
@@ -104,13 +106,17 @@ export function usePlansPageData() {
         setSuccessMessage(t('plans.planSwitchedSuccess'));
         await refreshLicense();
         await refreshNavigation();
+        await refreshQuotas(true);
+        window.dispatchEvent(
+          new CustomEvent('smartfeed:quota-update', { detail: { force: true } }),
+        );
       } catch (err) {
         setRawError(err);
       } finally {
         setIsSubmitting(null);
       }
     },
-    [token, plans, billingInterval, refreshLicense, refreshNavigation, t],
+    [token, plans, billingInterval, refreshLicense, refreshNavigation, refreshQuotas, t],
   );
 
   const handleCheckoutSuccess = useCallback(async () => {
@@ -121,10 +127,12 @@ export function usePlansPageData() {
       setSuccessMessage(t('plans.planSwitchedSuccess'));
       await refreshLicense();
       await refreshNavigation();
+      await refreshQuotas(true);
+      window.dispatchEvent(new CustomEvent('smartfeed:quota-update', { detail: { force: true } }));
     } catch (err) {
       console.error('Failed to reload license after payment', err);
     }
-  }, [token, refreshLicense, refreshNavigation, t]);
+  }, [token, refreshLicense, refreshNavigation, refreshQuotas, t]);
 
   return {
     plans,

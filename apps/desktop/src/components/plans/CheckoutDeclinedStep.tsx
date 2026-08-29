@@ -1,4 +1,4 @@
-import { XCircle, RefreshCw } from 'lucide-react';
+import { XCircle, RefreshCw, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface CheckoutDeclinedStepProps {
@@ -34,10 +34,13 @@ export function CheckoutDeclinedStep({
         </p>
       </div>
 
-      <div className="w-full rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-xs text-red-400 dark:text-red-300 text-center font-medium">
-        {isUk
-          ? '⚠️ Доступ до операцій з каталогами залишається заблокованим.'
-          : '⚠️ Access to catalog operations remains locked.'}
+      <div className="w-full rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-xs text-red-400 dark:text-red-300 text-center font-medium flex items-center justify-center gap-1.5">
+        <AlertTriangle className="size-3.5 shrink-0" />
+        <span>
+          {isUk
+            ? 'Доступ до операцій з каталогами залишається заблокованим.'
+            : 'Access to catalog operations remains locked.'}
+        </span>
       </div>
 
       <div className="grid grid-cols-2 gap-3 w-full pt-2">

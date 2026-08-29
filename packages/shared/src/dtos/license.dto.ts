@@ -50,3 +50,34 @@ export interface PlanLimits {
   hasSso: boolean;
   hasAuditLog: boolean;
 }
+
+export const QuotaItemDtoSchema = z.object({
+  used: z.number().int().nonnegative(),
+  max: z.number().int().nonnegative(),
+  isUnlimited: z.boolean(),
+  percentUsed: z.number().nonnegative(),
+  isExceeded: z.boolean(),
+  remaining: z.number().int().nonnegative(),
+});
+
+export type QuotaItemDto = z.infer<typeof QuotaItemDtoSchema>;
+
+export const UserQuotasDtoSchema = z.object({
+  planCode: z.string(),
+  planNameUk: z.string(),
+  planNameEn: z.string(),
+  isExpired: z.boolean(),
+  suppliers: QuotaItemDtoSchema,
+  products: QuotaItemDtoSchema,
+  feeds: QuotaItemDtoSchema,
+  channels: QuotaItemDtoSchema,
+  teamSeats: QuotaItemDtoSchema,
+  aiCredits: QuotaItemDtoSchema,
+  storage: QuotaItemDtoSchema.extend({
+    usedBytes: z.number().nonnegative(),
+    maxBytes: z.number().nonnegative(),
+    canCloudBackup: z.boolean(),
+  }),
+});
+
+export type UserQuotasDto = z.infer<typeof UserQuotasDtoSchema>;

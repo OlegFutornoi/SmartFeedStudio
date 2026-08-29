@@ -8,6 +8,8 @@ export type Namespace =
   | 'plans'
   | 'team'
   | 'catalogs'
+  | 'suppliers'
+  | 'products'
   | 'ai'
   | 'cloud'
   | 'settings';

@@ -65,6 +65,36 @@ enum PaymentInterval {
   YEARLY
 }
 
+enum FeedSourceType {
+  URL
+  FILE
+}
+
+enum FeedFormat {
+  XML_ROZETKA
+  YML_PROM
+  XML_GOOGLE
+  XML_GENERIC
+  CSV
+  XLSX
+}
+
+enum ProductStatus {
+  ACTIVE
+  DRAFT
+  ARCHIVED
+}
+
+enum ImportJobStatus {
+  PENDING
+  DOWNLOADING
+  PARSING
+  MAPPING
+  SAVING
+  COMPLETED
+  FAILED
+}
+
 model User {
   id           String         @id @default(cuid())
   email        String         @unique
@@ -78,6 +108,9 @@ model User {
   snapshots    Snapshot[]
   images       ProductImage[]
   paymentTransactions PaymentTransaction[]
+  suppliers    Supplier[]
+  productCatalogs ProductCatalog[]
+  importJobs   ImportJob[]
 
   ownedOrganizations      Organization[]           @relation("OrganizationOwner")
   organizationMemberships OrganizationMember[]
@@ -92,16 +125,18 @@ model User {
 }
 
 model Organization {
-  id          String                   @id @default(cuid())
-  name        String
-  slug        String?                  @unique
-  ownerId     String
-  owner       User                     @relation("OrganizationOwner", fields: [ownerId], references: [id], onDelete: Cascade)
-  members     OrganizationMember[]
-  invitations OrganizationInvitation[]
-  licenses    License[]
-  createdAt   DateTime                 @default(now())
-  updatedAt   DateTime                 @updatedAt
+  id              String                   @id @default(cuid())
+  name            String
+  slug            String?                  @unique
+  ownerId         String
+  owner           User                     @relation("OrganizationOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  members         OrganizationMember[]
+  invitations     OrganizationInvitation[]
+  licenses        License[]
+  suppliers       Supplier[]
+  productCatalogs ProductCatalog[]
+  createdAt       DateTime                 @default(now())
+  updatedAt       DateTime                 @updatedAt
 
   @@index([ownerId])
   @@index([createdAt])
@@ -251,18 +286,219 @@ model Snapshot {
   @@map("snapshots")
 }
 
+model Supplier {
+  id                     String         @id @default(cuid())
+  organizationId         String?        @map("organization_id")
+  organization           Organization?  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  userId                 String         @map("user_id")
+  user                   User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name                   String
+  code                   String         @map("code") // Supplier code (e.g. "SUP-01")
+  contactPhone           String?        @map("contact_phone")
+  contactEmail           String?        @map("contact_email")
+  website                String?        @map("website")
+  notes                  String?        @map("notes")
+  defaultMarginPercent   Decimal        @default(0) @db.Decimal(5, 2) @map("default_margin_percent")
+  defaultFixedMarkup     Decimal        @default(0) @db.Decimal(10, 2) @map("default_fixed_markup")
+  isActive               Boolean        @default(true) @map("is_active")
+  createdAt              DateTime       @default(now()) @map("created_at")
+  updatedAt              DateTime       @updatedAt @map("updated_at")
+
+  feedSources            FeedSource[]
+  products               Product[]
+
+  @@unique([userId, code])
+  @@index([organizationId])
+  @@index([userId])
+  @@index([isActive])
+  @@index([name(ops: raw("gin_trgm_ops"))], type: Gin)
+  @@map("suppliers")
+}
+
+model FeedSource {
+  id                     String         @id @default(cuid())
+  supplierId             String         @map("supplier_id")
+  supplier               Supplier       @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+  name                   String
+  sourceType             FeedSourceType @default(URL) @map("source_type")
+  fileFormat             FeedFormat     @default(XML_ROZETKA) @map("file_format")
+  sourceUrl              String?        @map("source_url")
+  s3FileKey              String?        @map("s3_file_key")
+  authHeaderName         String?        @map("auth_header_name")
+  authHeaderValue        String?        @map("auth_header_value")
+  syncIntervalHours      Int            @default(0) @map("sync_interval_hours")
+  autoUpdatePrices       Boolean        @default(true) @map("auto_update_prices")
+  autoUpdateStocks       Boolean        @default(true) @map("auto_update_stocks")
+  autoCreateNewProducts  Boolean        @default(true) @map("auto_create_new_products")
+  mappingRules           Json?          @map("mapping_rules")
+  lastSyncedAt           DateTime?      @map("last_synced_at")
+  lastSyncStatus         String?        @map("last_sync_status")
+  createdAt              DateTime       @default(now()) @map("created_at")
+  updatedAt              DateTime       @updatedAt @map("updated_at")
+
+  importJobs             ImportJob[]
+  products               Product[]
+
+  @@index([supplierId])
+  @@index([sourceType])
+  @@map("feed_sources")
+}
+
+model ProductCatalog {
+  id             String            @id @default(cuid())
+  organizationId String?           @map("organization_id")
+  organization   Organization?     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  userId         String            @map("user_id")
+  user           User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name           String
+  description    String?
+  isDefault      Boolean           @default(false) @map("is_default")
+  createdAt      DateTime          @default(now()) @map("created_at")
+  updatedAt      DateTime          @updatedAt @map("updated_at")
+
+  products       Product[]
+  categories     ProductCategory[]
+
+  @@index([organizationId])
+  @@index([userId])
+  @@map("product_catalogs")
+}
+
+model ProductCategory {
+  id             String            @id @default(cuid())
+  catalogId      String            @map("catalog_id")
+  catalog        ProductCatalog    @relation(fields: [catalogId], references: [id], onDelete: Cascade)
+  externalId     String?           @map("external_id")
+  parentId       String?           @map("parent_id")
+  parent         ProductCategory?  @relation("CategoryHierarchy", fields: [parentId], references: [id], onDelete: SetNull)
+  children       ProductCategory[] @relation("CategoryHierarchy")
+  nameUk         String            @map("name_uk")
+  nameEn         String?           @map("name_en")
+  order          Int               @default(0)
+  createdAt      DateTime          @default(now()) @map("created_at")
+  updatedAt      DateTime          @updatedAt @map("updated_at")
+
+  products       Product[]
+
+  @@index([catalogId])
+  @@index([parentId])
+  @@index([nameUk(ops: raw("gin_trgm_ops"))], type: Gin)
+  @@map("product_categories")
+}
+
+model Product {
+  id             String            @id @default(cuid())
+  catalogId      String            @map("catalog_id")
+  catalog        ProductCatalog    @relation(fields: [catalogId], references: [id], onDelete: Cascade)
+  supplierId     String            @map("supplier_id")
+  supplier       Supplier          @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+  feedSourceId   String?           @map("feed_source_id")
+  feedSource     FeedSource?       @relation(fields: [feedSourceId], references: [id], onDelete: SetNull)
+  categoryId     String?           @map("category_id")
+  category       ProductCategory?  @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  
+  sku            String            @map("sku")
+  externalId     String?           @map("external_id")
+  barcode        String?           @map("barcode")
+  vendorCode     String?           @map("vendor_code")
+  
+  titleUk        String            @map("title_uk")
+  titleEn        String?           @map("title_en")
+  descriptionUk  String?           @db.Text @map("description_uk")
+  descriptionEn  String?           @db.Text @map("description_en")
+  vendor         String?           @map("vendor")
+  
+  costPrice      Decimal           @default(0) @db.Decimal(12, 2) @map("cost_price")
+  price          Decimal           @default(0) @db.Decimal(12, 2) @map("price")
+  oldPrice       Decimal?          @db.Decimal(12, 2) @map("old_price")
+  currency       String            @default("UAH") @map("currency")
+  
+  stockQuantity  Int               @default(0) @map("stock_quantity")
+  inStock        Boolean           @default(true) @map("in_stock")
+  status         ProductStatus     @default(ACTIVE) @map("status")
+  
+  rawPayload     Json?             @map("raw_payload")
+  createdAt      DateTime          @default(now()) @map("created_at")
+  updatedAt      DateTime          @updatedAt @map("updated_at")
+
+  images         ProductImage[]
+  attributes     ProductAttribute[]
+
+  @@unique([catalogId, supplierId, sku])
+  @@index([catalogId])
+  @@index([supplierId])
+  @@index([feedSourceId])
+  @@index([categoryId])
+  @@index([sku], map: "products_sku_btree_idx")
+  @@index([barcode])
+  @@index([inStock, status])
+  @@index([price])
+  @@index([createdAt])
+  @@index([titleUk(ops: raw("gin_trgm_ops"))], type: Gin, map: "products_title_uk_trgm_gin_idx")
+  @@index([sku(ops: raw("gin_trgm_ops"))], type: Gin, map: "products_sku_trgm_gin_idx")
+  @@map("products")
+}
+
 model ProductImage {
-  id          String   @id @default(cuid())
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  originalUrl String
-  cloudUrl    String
-  s3Key       String
-  createdAt   DateTime @default(now())
+  id           String    @id @default(cuid())
+  userId       String    @map("user_id")
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId    String?   @map("product_id")
+  product      Product?  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  originalUrl  String    @map("original_url")
+  cloudUrl     String?   @map("cloud_url")
+  s3Key        String?   @map("s3_key")
+  thumbnailUrl String?   @map("thumbnail_url")
+  order        Int       @default(0) @map("order")
+  isMain       Boolean   @default(false) @map("is_main")
+  createdAt    DateTime  @default(now()) @map("created_at")
 
   @@index([userId])
+  @@index([productId])
+  @@index([isMain])
   @@index([createdAt])
   @@map("product_images")
+}
+
+model ProductAttribute {
+  id             String         @id @default(cuid())
+  productId      String         @map("product_id")
+  product        Product        @relation(fields: [productId], references: [id], onDelete: Cascade)
+  nameUk         String         @map("name_uk")
+  nameEn         String?        @map("name_en")
+  valueUk        String         @map("value_uk")
+  valueEn        String?        @map("value_en")
+  unit           String?        @map("unit")
+  order          Int            @default(0) @map("order")
+
+  @@index([productId])
+  @@index([nameUk])
+  @@map("product_attributes")
+}
+
+model ImportJob {
+  id                 String          @id @default(cuid())
+  feedSourceId       String          @map("feed_source_id")
+  feedSource         FeedSource      @relation(fields: [feedSourceId], references: [id], onDelete: Cascade)
+  userId             String          @map("user_id")
+  user               User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status             ImportJobStatus @default(PENDING) @map("status")
+  totalItems         Int             @default(0) @map("total_items")
+  processedItems     Int             @default(0) @map("processed_items")
+  createdItems       Int             @default(0) @map("created_items")
+  updatedItems       Int             @default(0) @map("updated_items")
+  failedItems        Int             @default(0) @map("failed_items")
+  selectedCategories Json?           @map("selected_categories")
+  errorLogs          Json?           @map("error_logs")
+  startedAt          DateTime?       @map("started_at")
+  completedAt        DateTime?       @map("completed_at")
+  createdAt          DateTime        @default(now()) @map("created_at")
+
+  @@index([feedSourceId])
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("import_jobs")
 }
 
 model NavigationItem {

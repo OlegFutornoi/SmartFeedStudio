@@ -49,3 +49,33 @@ export enum PaymentInterval {
   MONTHLY = 'MONTHLY',
   YEARLY = 'YEARLY',
 }
+
+export enum FeedSourceType {
+  URL = 'URL',
+  FILE = 'FILE',
+}
+
+export enum FeedFormat {
+  XML_ROZETKA = 'XML_ROZETKA',
+  YML_PROM = 'YML_PROM',
+  XML_GOOGLE = 'XML_GOOGLE',
+  XML_GENERIC = 'XML_GENERIC',
+  CSV = 'CSV',
+  XLSX = 'XLSX',
+}
+
+export enum ProductStatus {
+  ACTIVE = 'ACTIVE',
+  DRAFT = 'DRAFT',
+  ARCHIVED = 'ARCHIVED',
+}
+
+export enum ImportJobStatus {
+  PENDING = 'PENDING',
+  DOWNLOADING = 'DOWNLOADING',
+  PARSING = 'PARSING',
+  MAPPING = 'MAPPING',
+  SAVING = 'SAVING',
+  COMPLETED = 'COMPLETED',
+  FAILED = 'FAILED',
+}

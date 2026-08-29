@@ -205,6 +205,12 @@
       "skillPath": "app/.agents/skills/beautiful-desing/SKILL.md",
       "computedHash": "c9ed733231eb259eeff93a6fa6ce8b102221cc6dcf7713121365c99da0ecadd9"
     },
+    "firecrawl-parse": {
+      "source": "firecrawl/cli",
+      "sourceType": "github",
+      "skillPath": "skills/firecrawl-parse/SKILL.md",
+      "computedHash": "99dcb9e05f86323fe4601c02a234372ef07815b2d332e941967027a8877a993c"
+    },
     "frontend-design": {
       "source": "anthropics/skills",
       "sourceType": "github",

@@ -14,6 +14,7 @@ import {
   Bell,
   CreditCard,
   Lock,
+  Building2,
 } from 'lucide-react';
 import { NavigationItemDto } from '@smartfeed/shared';
 import { cn } from '@/lib/utils';
@@ -32,6 +33,7 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   Shield,
   Bell,
   CreditCard,
+  Building2,
 };
 
 function renderItemIcon(iconName: string, className?: string) {

@@ -91,10 +91,10 @@ SmartFeed Studio (Monorepo root)
      - **Review & Execution**: `requesting-code-review`, `code-review-reception`, `writing-plans`, `executing-plans`, `subagent-driven-development`.
    - **Step 2 — Immediate Self-Code Review, Dead Code Elimination, `ui-ux-pro-max` & Visual Testing DoD**: Immediately after writing or modifying code, **automatically perform a rigorous architectural self-code review** validating:
      - **Visual Testing & `ui-ux-pro-max` DoD**: For any UI modification, the task **cannot be marked completed** without visual testing in browser/Playwright and verifying full compliance with all `ui-ux-pro-max` design, micro-interaction, contrast, and layout criteria.
+     - **100% Solid Sticky Headers & Dialogs**: Sticky table headers (`thead.sticky.top-0`), modal dialog headers/footers, and floating bars **MUST ALWAYS have 100% solid, opaque backgrounds** (`bg-card`, `bg-muted`, `bg-secondary`, `bg-background` with `z-10` and solid borders). Semi-transparent backgrounds (`bg-*/40`, `bg-*/50`) on sticky headers are **STRICTLY PROHIBITED** to prevent scrolled text overlap.
      - **Component Size Limit & Single Responsibility**: React components must remain compact, clean, and modular (recommended max ~250–300 lines). Monolithic components (e.g. 700–1000+ lines) are **strictly prohibited**. Always decompose complex views into dedicated subcomponents (`*Dialog.tsx`, `*List.tsx`, `*Row.tsx`, `*Header.tsx`, `*Preview.tsx`, custom hooks).
      - **Zero Unused Imports & Dead Code**: Eliminate all unreferenced imports (e.g. from `lucide-react`, DTOs, or React hooks), unused variables, types, and unreachable code. Actively inspect IDE diagnostics and fix all unused items immediately.
      - **Defense-in-Depth Validation**: Validate inputs at every layer (DTO boundary, service/domain rules, license/role guards, DB constraints).
-
      - **Architectural Integrity & Zero Gaps**: Strictly adhere to CQRS module boundaries, minimal React re-renders (`vercel-react-best-practices`), proper design token usage (`shadcn`), bundle efficiency, accessibility, type safety, and test isolation.
 
    - **Step 3 — Mandatory Typecheck, Diagnostics & Immediate Error Fixes**:
@@ -115,8 +115,8 @@ SmartFeed Studio (Monorepo root)
    - **Frontend Test Isolation**: In Playwright E2E tests (`*.spec.ts`), always clear browser `localStorage`, `sessionStorage`, cookies, and route mocks before and after each test case to prevent state leakage and test cross-contamination.
 
 8. **Mandatory 100% Internationalization (i18n) & Dedicated UI Localization Tests Policy**:
-   - **Zero Hardcoded Strings & Zero Untranslated Backend Errors**: Whenever any new feature, UI screen, dialog, form, button, label, alert, placeholder, toast, or backend error message is created or modified:
-     - **All user-facing text MUST be translated immediately**: Define all keys in both `uk` (Ukrainian) and `en` (English) locale dictionaries (`locales/uk/*.json`, `locales/en/*.json`).
+   - **Zero Hardcoded Strings, Zero Missing Keys & Zero Untranslated Backend Errors**: Whenever any new feature, UI screen, dialog, form, button, label, alert, placeholder, toast, tooltip, HTML title (`title={t('...')}`), or backend error message is created or modified:
+     - **All user-facing text & keys MUST be defined immediately**: Define all keys in both `uk` (Ukrainian) and `en` (English) locale dictionaries (`locales/uk/*.json`, `locales/en/*.json`). Always verify that every `t('namespace:key')` or `t('key')` has a valid matching entry in JSON files so that raw keys (e.g. `common:edit`) NEVER appear in the UI.
      - **Backend Error Localization**: All error responses from the API must be intercepted, mapped, and translated via `getErrorMessage` or localized error helpers so that no raw English backend strings leak into the Ukrainian UI.
    - **Mandatory UI Localization Tests**: Every new or updated frontend feature/view **MUST** include dedicated Playwright UI tests explicitly asserting that all interactive elements, titles, descriptions, placeholders, and error/success alerts dynamically update and correctly translate when switching languages (`UA` ⇄ `EN`).
 

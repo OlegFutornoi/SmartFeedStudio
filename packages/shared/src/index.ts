@@ -9,5 +9,8 @@ export * from './dtos/storage.dto';
 export * from './dtos/navigation.dto';
 export * from './dtos/organization.dto';
 export * from './dtos/payment.dto';
+export * from './dtos/supplier.dto';
+export * from './dtos/product.dto';
+export * from './dtos/feed.dto';
 export * from './contracts/cqrs';
 export * from './constants';

@@ -83,8 +83,8 @@ description: Quality assurance, documentation synchronization, git commit policy
 
 ## 8. Mandatory 100% Internationalization (i18n) & Dedicated UI Localization Tests Policy
 
-- **Rule (Zero Untranslated Strings & Errors)**: Whenever any new feature, UI screen, dialog, form, button, label, alert, placeholder, toast, or backend error message is created or modified:
-  - **Immediate Bilingual Translation**: Define all keys in both `uk` (Ukrainian) and `en` (English) locale dictionaries (`locales/uk/*.json`, `locales/en/*.json`).
+- **Rule (Zero Untranslated Strings, Keys & Errors)**: Whenever any new feature, UI screen, dialog, form, button, label, alert, placeholder, toast, tooltip, HTML title (`title={t('...')}`), or backend error message is created or modified:
+  - **Immediate Bilingual Translation & Key Presence**: Define all keys in both `uk` (Ukrainian) and `en` (English) locale dictionaries (`locales/uk/*.json`, `locales/en/*.json`). Always verify that every `t('namespace:key')` or `t('key')` has an existing entry in the JSON dictionary so that raw keys (e.g. `common:edit`) NEVER leak into the UI.
   - **Backend Error Mapping**: All error responses from the API must be intercepted, mapped, and translated via `getErrorMessage` or localized error helpers so that no raw English backend strings leak into the Ukrainian UI.
 - **Rule (Mandatory UI Localization Tests)**: Every new or updated frontend feature/view **MUST** include dedicated Playwright UI tests explicitly asserting that all interactive elements, titles, descriptions, placeholders, and error/success alerts dynamically update and correctly translate when switching languages (`UA` ⇄ `EN`).
 

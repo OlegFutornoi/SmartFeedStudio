@@ -1,0 +1,120 @@
+import React from 'react';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { QuotaItemDto } from '@smartfeed/shared';
+import { ArrowUpRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
+
+interface QuotaMetricCardProps {
+  title: string;
+  icon: React.ComponentType<{ className?: string }>;
+  quota?: QuotaItemDto | null;
+  unit?: string;
+  testId?: string;
+}
+
+export function QuotaMetricCard({ title, icon: Icon, quota, unit, testId }: QuotaMetricCardProps) {
+  if (!quota) {
+    return (
+      <Card data-testid={testId} className="border-border/80 bg-card/60 backdrop-blur-md">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">{title}</CardTitle>
+          <Icon className="size-4 text-primary" />
+        </CardHeader>
+        <CardContent>
+          <div className="text-3xl font-bold text-foreground">...</div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const isUnlimited = quota.isUnlimited;
+  const isCritical = quota.percentUsed >= 100 || quota.isExceeded;
+  const isWarning = quota.percentUsed >= 80 && !isCritical;
+
+  let progressColor = 'bg-primary';
+  let badgeColor = 'text-muted-foreground';
+
+  if (isCritical) {
+    progressColor = 'bg-rose-500';
+    badgeColor = 'text-rose-400 font-semibold';
+  } else if (isWarning) {
+    progressColor = 'bg-amber-500';
+    badgeColor = 'text-amber-400 font-semibold';
+  } else if (!isUnlimited) {
+    progressColor = 'bg-emerald-500';
+  }
+
+  return (
+    <Card
+      data-testid={testId}
+      className={`border-border/80 bg-card/60 backdrop-blur-md transition-all duration-200 ${
+        isCritical ? 'border-rose-500/40 shadow-sm shadow-rose-500/10' : ''
+      }`}
+    >
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <CardTitle className="text-sm font-medium text-foreground">{title}</CardTitle>
+        <Icon className={`size-4 ${isCritical ? 'text-rose-400' : 'text-primary'}`} />
+      </CardHeader>
+
+      <CardContent className="space-y-2.5">
+        <div className="flex items-baseline justify-between">
+          <div className="flex items-baseline gap-1.5 font-mono">
+            <span className="text-3xl font-bold text-foreground">
+              {quota.used.toLocaleString()}
+            </span>
+            <span className="text-sm text-muted-foreground font-medium">
+              / {isUnlimited ? '∞' : quota.max.toLocaleString()} {unit}
+            </span>
+          </div>
+
+          {!isUnlimited && (
+            <span className={`text-xs font-mono ${badgeColor}`}>{quota.percentUsed}%</span>
+          )}
+        </div>
+
+        {/* Animated Progress Bar */}
+        {!isUnlimited && (
+          <div className="w-full bg-secondary/50 rounded-full h-1.5 overflow-hidden">
+            <div
+              className={`h-full rounded-full transition-all duration-500 ${progressColor}`}
+              style={{ width: `${Math.min(100, quota.percentUsed)}%` }}
+            />
+          </div>
+        )}
+
+        {/* Footer Subtext or Upgrade Prompt */}
+        <div className="flex items-center justify-between text-xs pt-0.5">
+          {isUnlimited ? (
+            <span className="text-emerald-400 text-[11px] font-medium">Безлімітний тариф</span>
+          ) : isCritical ? (
+            <div className="flex items-center justify-between w-full">
+              <span className="text-rose-400 text-[11px] font-medium">Ліміт вичерпано</span>
+              <Link
+                to="/plans"
+                className="text-[11px] text-primary hover:underline flex items-center gap-0.5 font-medium"
+              >
+                <span>Збільшити квоту</span>
+                <ArrowUpRight className="size-3" />
+              </Link>
+            </div>
+          ) : isWarning ? (
+            <div className="flex items-center justify-between w-full">
+              <span className="text-amber-400 text-[11px]">Залишилось: {quota.remaining}</span>
+              <Link
+                to="/plans"
+                className="text-[11px] text-primary hover:underline flex items-center gap-0.5"
+              >
+                <span>Апгрейд</span>
+                <ArrowUpRight className="size-3" />
+              </Link>
+            </div>
+          ) : (
+            <span className="text-muted-foreground text-[11px]">
+              Доступно ще: <strong className="text-foreground">{quota.remaining}</strong>
+            </span>
+          )}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}

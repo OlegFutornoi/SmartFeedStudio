@@ -337,4 +337,24 @@ test.describe('Admin Portal — Платіжні системи та Журна�
     await expect(page.getByTestId('transaction-row-SF-INV-20260828-025')).toBeVisible();
     await expect(page.getByTestId('transaction-row-SF-INV-20260828-001')).not.toBeVisible();
   });
+
+  test('відсутність кольорових емодзі у фільтрі статусів транзакцій', async ({ page }) => {
+    await page.goto('/transactions');
+    await expect(page.getByTestId('transactions-page')).toBeVisible();
+
+    const selectOptions = await page
+      .getByTestId('transactions-status-select')
+      .locator('option')
+      .allInnerTexts();
+
+    // Regex перевіряє типові кольорові емодзі (✅, ⏳, ❌, 👑, 👥 тощо)
+    const emojiRegex = /[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/u;
+
+    for (const optionText of selectOptions) {
+      expect(
+        emojiRegex.test(optionText),
+        `Option '${optionText}' should not contain colored emojis`,
+      ).toBe(false);
+    }
+  });
 });

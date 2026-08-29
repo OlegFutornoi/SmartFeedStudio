@@ -428,4 +428,67 @@ describe('Licenses & Tariff Plan Expiration Policy (E2E)', () => {
       expect(blockRes.body.message).toBe('LICENSE_EXPIRED');
     });
   });
+
+  describe('6. Уніфікована система квот у реальному часі (GET /api/licenses/quotas)', () => {
+    it('повертає коректний розрахунок квот для користувача зі STARTER тарифом', async () => {
+      const res = await request(app.getHttpServer())
+        .get('/api/licenses/quotas')
+        .set('Authorization', `Bearer ${userToken}`)
+        .expect(200);
+
+      expect(res.body).toHaveProperty('planCode');
+      expect(res.body).toHaveProperty('suppliers');
+      expect(res.body.suppliers).toHaveProperty('used');
+      expect(res.body.suppliers).toHaveProperty('max');
+      expect(res.body.suppliers).toHaveProperty('percentUsed');
+      expect(res.body.suppliers).toHaveProperty('isUnlimited');
+
+      expect(res.body).toHaveProperty('products');
+      expect(res.body).toHaveProperty('feeds');
+      expect(res.body).toHaveProperty('channels');
+      expect(res.body).toHaveProperty('storage');
+    });
+
+    it('Super Admin отримує безлімітні квоти (isUnlimited: true)', async () => {
+      const res = await request(app.getHttpServer())
+        .get('/api/licenses/quotas')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .expect(200);
+
+      expect(res.body.suppliers.isUnlimited).toBe(true);
+      expect(res.body.products.isUnlimited).toBe(true);
+      expect(res.body.feeds.isUnlimited).toBe(true);
+    });
+
+    it('коректно фіксує isExceeded: true коли користувач знижує тариф і дані перевищують ліміт', async () => {
+      // Create supplier & 2 products for testUser
+      const _sup = await request(app.getHttpServer())
+        .post('/api/suppliers')
+        .set('Authorization', `Bearer ${userToken}`)
+        .send({ name: 'Excess Supplier', code: 'EXC-01' });
+
+      // User selects PRO
+      await request(app.getHttpServer())
+        .post('/api/licenses/select-plan')
+        .set('Authorization', `Bearer ${userToken}`)
+        .send({ planCode: 'PRO' })
+        .expect(201);
+
+      // User downgrades to STARTER (limit 1 supplier)
+      await request(app.getHttpServer())
+        .post('/api/licenses/select-plan')
+        .set('Authorization', `Bearer ${userToken}`)
+        .send({ planCode: 'STARTER' })
+        .expect(201);
+
+      const quotasRes = await request(app.getHttpServer())
+        .get('/api/licenses/quotas')
+        .set('Authorization', `Bearer ${userToken}`)
+        .expect(200);
+
+      expect(quotasRes.body.planCode).toBe('STARTER');
+      expect(quotasRes.body.suppliers.max).toBe(1);
+      expect(quotasRes.body.suppliers.used).toBeGreaterThanOrEqual(1);
+    });
+  });
 });

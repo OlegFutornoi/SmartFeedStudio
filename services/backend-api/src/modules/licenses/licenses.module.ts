@@ -7,6 +7,7 @@ import { UpdateLicenseStatusHandler } from './commands/update-license-status.han
 import { DeleteLicenseHandler } from './commands/delete-license.handler';
 import { GetLicenseByUserIdHandler } from './queries/get-license-by-user-id.handler';
 import { GetAdminLicensesHandler } from './queries/get-admin-licenses.handler';
+import { GetUsageQuotasHandler } from './queries/get-usage-quotas.handler';
 import { LicensesController } from './licenses.controller';
 import { AuthModule } from '../auth/auth.module';
 
@@ -19,7 +20,11 @@ export const CommandHandlers = [
   DeleteLicenseHandler,
 ];
 
-export const QueryHandlers = [GetLicenseByUserIdHandler, GetAdminLicensesHandler];
+export const QueryHandlers = [
+  GetLicenseByUserIdHandler,
+  GetAdminLicensesHandler,
+  GetUsageQuotasHandler,
+];
 export const EventHandlers = [UserCreatedEventHandler];
 
 @Module({

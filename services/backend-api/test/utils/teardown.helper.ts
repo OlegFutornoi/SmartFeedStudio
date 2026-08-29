@@ -96,18 +96,56 @@ export async function cleanDatabase(
 
     const allUserIds = Array.from(new Set([...userIds, ...matchedUsers.map((u) => u.id)]));
 
-    // 2. Cascade cleanup: Snapshots (XML catalogs/snapshots) & Product Images
+    // 2. Cascade cleanup: Products, Feeds, Suppliers, Snapshots & Product Images
     if (allUserIds.length > 0) {
-      await prisma.snapshot.deleteMany({
-        where: { userId: { in: allUserIds } },
+      await prisma.productAttribute.deleteMany({
+        where: { product: { catalog: { userId: { in: allUserIds } } } },
       });
       await prisma.productImage.deleteMany({
+        where: {
+          OR: [
+            { userId: { in: allUserIds } },
+            { product: { catalog: { userId: { in: allUserIds } } } },
+          ],
+        },
+      });
+      await prisma.product.deleteMany({
+        where: { catalog: { userId: { in: allUserIds } } },
+      });
+      await prisma.productCategory.deleteMany({
+        where: { catalog: { userId: { in: allUserIds } } },
+      });
+      await prisma.productCatalog.deleteMany({
+        where: { userId: { in: allUserIds } },
+      });
+      await prisma.importJob.deleteMany({
+        where: { feedSource: { supplier: { userId: { in: allUserIds } } } },
+      });
+      await prisma.feedSource.deleteMany({
+        where: { supplier: { userId: { in: allUserIds } } },
+      });
+      await prisma.supplier.deleteMany({
+        where: { userId: { in: allUserIds } },
+      });
+      await prisma.snapshot.deleteMany({
         where: { userId: { in: allUserIds } },
       });
       await prisma.paymentTransaction.deleteMany({
         where: { userId: { in: allUserIds } },
       });
     }
+
+    // Cleanup any orphaned test suppliers/feeds/products by prefix
+    await prisma.supplier.deleteMany({
+      where: {
+        OR: [
+          { code: { startsWith: 'TEST_' } },
+          { code: { startsWith: 'SUP_TEST_' } },
+          { name: { startsWith: 'Test Supplier' } },
+        ],
+      },
+    });
+
     await prisma.paymentTransaction.deleteMany({
       where: {
         OR: [

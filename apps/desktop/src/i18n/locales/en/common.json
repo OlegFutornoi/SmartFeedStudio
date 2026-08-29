@@ -9,5 +9,15 @@
   "success": "Success",
   "cancel": "Cancel",
   "save": "Save",
-  "refresh": "Refresh"
+  "edit": "Edit",
+  "delete": "Delete",
+  "back": "Back",
+  "done": "Done",
+  "close": "Close",
+  "refresh": "Refresh",
+  "add": "Add",
+  "search": "Search",
+  "actions": "Actions",
+  "filter": "Filter",
+  "all": "All"
 }

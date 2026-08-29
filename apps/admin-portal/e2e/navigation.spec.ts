@@ -229,12 +229,15 @@ test.describe('Admin Portal — Navigation & Access Control (POM)', () => {
     page,
   }) => {
     await page.goto('/');
+    await page.waitForLoadState('networkidle');
     await expect(page.locator('h1')).toBeVisible();
 
     // Click Налаштування in bottom sidebar
     const profileNav = page.locator('aside').getByTestId('nav-item-settings-profile');
     await expect(profileNav).toBeVisible();
-    await Promise.all([page.waitForURL('**/settings'), profileNav.click()]);
-    await expect(page.getByTestId('profile-info-card')).toBeVisible();
+    await profileNav.click();
+    await page.waitForURL('**/settings');
+    await expect(page).toHaveURL(/.*\/settings/);
+    await expect(page.getByTestId('settings-header-title')).toBeVisible();
   });
 });
