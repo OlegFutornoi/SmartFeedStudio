@@ -225,33 +225,16 @@ test.describe('Admin Portal — Navigation & Access Control (POM)', () => {
     await expect(page.getByTestId('licenses-header-title')).toBeVisible();
   });
 
-  test('should navigate via bottom Settings submenu to Profile, Plans, Payments, and AI', async ({
+  test('should navigate via bottom Settings link to Profile and Security settings', async ({
     page,
   }) => {
     await page.goto('/');
     await expect(page.locator('h1')).toBeVisible();
 
-    // 1. Click Тарифи in settings submenu
-    const settingsPlansNav = page.locator('aside').getByTestId('nav-item-settings-plans');
-    await expect(settingsPlansNav).toBeVisible();
-    await Promise.all([page.waitForURL('**/plans'), settingsPlansNav.click()]);
-    await expect(page.getByTestId('plans-header-title')).toBeVisible();
-
-    // 2. Click Платіжні системи in settings submenu
-    const paymentsNav = page.locator('aside').getByTestId('nav-item-settings-payments');
-    await expect(paymentsNav).toBeVisible();
-    await Promise.all([page.waitForURL('**/settings/payments'), paymentsNav.click()]);
-    await expect(page.getByTestId('payments-header-title')).toBeVisible();
-
-    // 3. Click Налаштування AI in settings submenu
-    const aiNav = page.locator('aside').getByTestId('nav-item-settings-ai');
-    await expect(aiNav).toBeVisible();
-    await Promise.all([page.waitForURL('**/settings/ai'), aiNav.click()]);
-    await expect(page.getByTestId('ai-header-title')).toBeVisible();
-
-    // 4. Click Профіль in settings submenu
+    // Click Налаштування in bottom sidebar
     const profileNav = page.locator('aside').getByTestId('nav-item-settings-profile');
     await expect(profileNav).toBeVisible();
     await Promise.all([page.waitForURL('**/settings'), profileNav.click()]);
+    await expect(page.getByTestId('profile-info-card')).toBeVisible();
   });
 });

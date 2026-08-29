@@ -106,12 +106,8 @@ export const SidebarMobileDrawer = React.memo(function SidebarMobileDrawer({
             })}
           </nav>
 
-          {/* Settings submenu */}
+          {/* Settings navigation */}
           <nav className="space-y-1.5 pt-3 border-t border-border/50">
-            <div className="px-3 pb-1 text-[11px] font-semibold text-muted-foreground tracking-wider uppercase flex items-center gap-1.5">
-              <Settings className="h-3 w-3 text-primary" />
-              <span>{isUk ? 'Налаштування' : 'Settings'}</span>
-            </div>
             {settingsNavigation.map((subItem) => {
               const isActive =
                 subItem.href === '/settings'
@@ -125,7 +121,6 @@ export const SidebarMobileDrawer = React.memo(function SidebarMobileDrawer({
                   icon={subItem.icon}
                   isActive={isActive}
                   isCollapsed={false}
-                  isSubItem={true}
                   badge={subItem.badge}
                   dataTestId={subItem.testId}
                   onClick={onClose}

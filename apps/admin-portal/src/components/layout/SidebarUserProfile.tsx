@@ -12,7 +12,6 @@ interface SidebarUserProfileProps {
   isCollapsed: boolean;
   onOpenPasswordDialog: () => void;
   onLogout: () => void;
-  onToggleSidebar?: () => void;
 }
 
 export const SidebarUserProfile = React.memo(function SidebarUserProfile({
@@ -20,7 +19,6 @@ export const SidebarUserProfile = React.memo(function SidebarUserProfile({
   isCollapsed,
   onOpenPasswordDialog,
   onLogout,
-  onToggleSidebar,
 }: SidebarUserProfileProps) {
   const { locale, t } = useLanguage();
 
@@ -97,17 +95,6 @@ export const SidebarUserProfile = React.memo(function SidebarUserProfile({
           >
             <LogOut className="h-4 w-4" />
           </Button>
-          {onToggleSidebar && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onToggleSidebar}
-              className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground"
-              title="Expand sidebar"
-            >
-              <PanelLeftOpen className="h-4 w-4" />
-            </Button>
-          )}
         </div>
       )}
     </div>

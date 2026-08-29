@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Layers, PanelLeftOpen } from 'lucide-react';
+import { Layers } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSidebar } from '@/contexts/SidebarContext';
@@ -8,7 +8,6 @@ import { useNavigation } from '@/contexts/NavigationContext';
 import { useTranslation } from '@/i18n';
 import { useLicense } from '@/hooks/useLicense';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { SidebarNavItem } from './SidebarNavItem';
 import { SidebarUserProfile } from './SidebarUserProfile';
 import { SidebarMobileDrawer } from './SidebarMobileDrawer';
@@ -16,58 +15,58 @@ import { SidebarMobileDrawer } from './SidebarMobileDrawer';
 export function Sidebar() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
-  const { isCollapsed, toggleSidebar, isMobileOpen, closeMobileSidebar } = useSidebar();
+  const { isCollapsed, isMobileOpen, closeMobileSidebar } = useSidebar();
   const { items } = useNavigation();
   const { language } = useTranslation();
   const { isExpired } = useLicense();
 
   const currentLang = language || 'uk';
 
-  const handleLogout = useCallback(() => {
-    logout();
-    navigate('/auth/login', { replace: true });
+  const handleLogout = useCallback(async () => {
+    await logout();
+    navigate('/auth/login');
   }, [logout, navigate]);
 
   return (
     <>
-      {/* Desktop Collapsible Sidebar */}
+      {/* Desktop Persistent Sidebar */}
       <aside
         data-testid="desktop-sidebar"
         className={cn(
-          'hidden md:flex flex-col justify-between h-screen sticky top-0 border-r border-border bg-card/50 backdrop-blur-xl transition-all duration-300 z-20 select-none',
+          'hidden md:flex flex-col justify-between h-screen sticky top-0 border-r border-border bg-card/60 backdrop-blur-xl transition-all duration-300 z-20 select-none shadow-xs',
           isCollapsed ? 'w-[72px]' : 'w-64',
         )}
       >
-        <div className="p-3 flex flex-col flex-1 min-h-0">
-          {/* Brand Header */}
-          <div
-            className={cn(
-              'flex items-center mb-6 pb-3 border-b border-border/40',
-              isCollapsed ? 'justify-center pt-2' : 'px-2 pt-2',
-            )}
-          >
-            <div className="flex items-center space-x-3 w-full overflow-hidden">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-md shadow-primary/25">
-                <Layers className="h-5 w-5" />
-              </div>
-              {!isCollapsed && (
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center space-x-1.5">
-                    <span className="font-bold text-foreground tracking-tight text-base whitespace-nowrap">
-                      SmartFeed
-                    </span>
-                    <Badge
-                      variant="outline"
-                      className="text-[10px] px-1.5 py-0 border-primary/40 text-primary font-semibold"
-                    >
-                      Studio
-                    </Badge>
-                  </div>
-                  <p className="text-[11px] text-muted-foreground truncate font-normal">
-                    Catalog Manager
-                  </p>
+        <div className="flex flex-col flex-1 min-h-0">
+          {/* Top Brand Header */}
+          <div className="p-4 border-b border-border/80">
+            <div className="flex items-center">
+              <button
+                type="button"
+                data-testid="sidebar-brand-button"
+                onClick={() => navigate('/')}
+                className="flex items-center space-x-3 w-full overflow-hidden text-left group cursor-pointer"
+              >
+                <div className="h-9 w-9 rounded-xl bg-primary/20 border border-primary/40 flex items-center justify-center text-primary group-hover:scale-105 transition-transform shrink-0 shadow-xs">
+                  <Layers className="h-5 w-5" />
                 </div>
-              )}
+                {!isCollapsed && (
+                  <div className="min-w-0 flex-1">
+                    <div className="font-bold text-sm text-foreground flex items-center gap-1.5 whitespace-nowrap">
+                      <span>SmartFeed</span>
+                      <Badge
+                        variant="secondary"
+                        className="text-[10px] px-1 py-0 h-4 uppercase font-semibold text-primary bg-primary/10 border-primary/20"
+                      >
+                        Studio
+                      </Badge>
+                    </div>
+                    <div className="text-[11px] text-muted-foreground truncate font-normal">
+                      Catalog Manager
+                    </div>
+                  </div>
+                )}
+              </button>
             </div>
           </div>
 
@@ -92,22 +91,6 @@ export function Sidebar() {
             ))}
           </nav>
         </div>
-
-        {/* Collapsed Rail Toggle Button */}
-        {isCollapsed && (
-          <div className="p-2 border-t border-border/40 flex justify-center">
-            <Button
-              variant="ghost"
-              size="sm"
-              data-testid="expand-sidebar-button"
-              className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground hover:bg-muted/80 rounded-lg"
-              onClick={toggleSidebar}
-              title={currentLang === 'uk' ? 'Розгорнути меню' : 'Expand menu'}
-            >
-              <PanelLeftOpen className="h-4 w-4 text-primary" />
-            </Button>
-          </div>
-        )}
 
         {/* User Footer Profile Card */}
         <SidebarUserProfile
