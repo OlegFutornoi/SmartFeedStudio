@@ -1,3 +1,4 @@
+import { createPortal } from 'react-dom';
 import { AlertCircle, Sparkles, ArrowRight, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
@@ -30,9 +31,9 @@ export function QuotaExceededDialog({
     navigate('/plans');
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-      <div className="w-full max-w-md bg-card border border-rose-500/30 rounded-2xl shadow-2xl overflow-hidden p-6 space-y-5 text-center relative">
+  return createPortal(
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+      <div className="w-full max-w-md bg-card border border-rose-500/30 rounded-2xl shadow-2xl overflow-hidden p-6 space-y-5 text-center relative animate-in zoom-in-95 duration-200">
         <button
           onClick={onClose}
           className="absolute right-4 top-4 text-muted-foreground hover:text-foreground transition-colors"
@@ -79,6 +80,7 @@ export function QuotaExceededDialog({
           </Button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

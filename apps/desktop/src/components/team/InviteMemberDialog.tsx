@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { UserPlus, Mail, Shield, User, X, Loader2, AlertCircle, Check, Copy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -79,9 +80,9 @@ export const InviteMemberDialog: React.FC<InviteMemberDialogProps> = ({
 
   const errorMessage = errorRaw ? getErrorMessage(errorRaw, t) : null;
 
-  return (
+  return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm animate-in fade-in-0"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in-0 duration-200"
       data-testid="invite-member-dialog"
       onClick={handleClose}
     >
@@ -280,6 +281,7 @@ export const InviteMemberDialog: React.FC<InviteMemberDialogProps> = ({
           </>
         )}
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 };

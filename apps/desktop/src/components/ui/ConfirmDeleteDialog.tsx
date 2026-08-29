@@ -1,4 +1,5 @@
 import React from 'react';
+import { createPortal } from 'react-dom';
 import { Trash2, AlertTriangle, Loader2, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -27,11 +28,11 @@ export const ConfirmDeleteDialog: React.FC<ConfirmDeleteDialogProps> = ({
 }) => {
   if (!isOpen) return null;
 
-  return (
+  return createPortal(
     <div
       role="dialog"
       aria-modal="true"
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm animate-in fade-in-0"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in-0 duration-200"
       data-testid="confirm-dialog"
       onClick={isLoading ? undefined : onClose}
     >
@@ -105,6 +106,7 @@ export const ConfirmDeleteDialog: React.FC<ConfirmDeleteDialogProps> = ({
           </Button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 };

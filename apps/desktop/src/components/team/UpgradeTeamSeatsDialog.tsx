@@ -1,4 +1,5 @@
 import React from 'react';
+import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { Sparkles, Users, Crown, ArrowRight, X, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -28,9 +29,9 @@ export const UpgradeTeamSeatsDialog: React.FC<UpgradeTeamSeatsDialogProps> = ({
     navigate('/plans');
   };
 
-  return (
+  return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm animate-in fade-in-0"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in-0 duration-200"
       data-testid="upgrade-team-dialog"
       onClick={onClose}
     >
@@ -162,6 +163,7 @@ export const UpgradeTeamSeatsDialog: React.FC<UpgradeTeamSeatsDialogProps> = ({
           </Button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 };

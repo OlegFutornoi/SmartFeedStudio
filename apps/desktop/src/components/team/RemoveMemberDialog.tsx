@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { AlertTriangle, Trash2, X, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from '@/i18n';
@@ -37,9 +38,9 @@ export const RemoveMemberDialog: React.FC<RemoveMemberDialogProps> = ({
   const userFullName = member.userFullName || (member as any).fullName || '';
   const displayName = userFullName ? `${userFullName} (${userEmail})` : userEmail;
 
-  return (
+  return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm animate-in fade-in-0"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in-0 duration-200"
       data-testid="remove-member-dialog"
       onClick={onClose}
     >
@@ -96,6 +97,7 @@ export const RemoveMemberDialog: React.FC<RemoveMemberDialogProps> = ({
           </Button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 };

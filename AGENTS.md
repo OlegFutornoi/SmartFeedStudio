@@ -146,6 +146,13 @@ SmartFeed Studio (Monorepo root)
     - **Lean Dependencies**: Never place UI-only state (`isUk`, `theme`) in data-fetching `useCallback` dependency arrays.
     - **Single-Request Performance Tests**: Every major view must include automated Playwright tests asserting that endpoints are called strictly 1 time upon page load.
 
+12. **Mandatory Browser Automation & Playwright MCP Policy (Zero Token Waste)**:
+    - **Strict Prohibition of `browser_subagent`**: **NEVER** call `browser_subagent` or `open_browser_url`. The built-in subagent unconditionally fails with `404 Not Found from https://playwright.azureedge.net/builds/driver/playwright-1.57.0-mac-arm64.zip` on macOS Apple Silicon (ARM64). Calling `browser_subagent` is **STRICTLY PROHIBITED** as it wastes tokens, time, and fails every time.
+    - **Mandatory Playwright MCP Server or Direct Test Suites**: For all browser inspections and visual tests, **ALWAYS** use:
+      - **Playwright MCP Server**: Call lazy-loaded MCP tools via `call_mcp_tool` (`ServerName: "playwright"`, `ToolName: "browser_navigate"`, `"browser_snapshot"`, `"browser_take_screenshot"`, etc.).
+      - **Direct Automated Test Suites**: Run `pnpm test:desktop` or `pnpm test:admin` (or headed versions `pnpm test:desktop:headed` / `pnpm test:admin:headed`).
+    - **No Guessing Loops & Instant Credential Requests**: Never enter guessing, retry, or looping attempts if login credentials, passwords, or tokens are missing. Use default known credentials (`admin@smartfeed.studio` / `AdminPassword123!`), or immediately ask the user without burning tokens.
+
 ---
 
 ## ⚡ Essential Commands Cheat Sheet

@@ -31,5 +31,21 @@
 - **PostgreSQL**: `localhost:5432` (DB: `smartfeed_db`, User: `postgres`, Pass: `postgrespassword`)
 - **Redis**: `localhost:6379`
 - **MinIO Console**: `http://localhost:9001` (User: `minioadmin`, Pass: `minioadminpassword`)
-- **MinIO API**: `http://localhost:9000` (Bucket: `smartfeed-storage`)
 - **Default Super Admin**: `admin@smartfeed.studio` / `AdminPassword123!`
+
+---
+
+## 🚫 Mandatory Browser Automation & Playwright MCP Policy (Zero Token Waste)
+
+1. **Strict Prohibition of `browser_subagent`**:
+   - **NEVER** call `browser_subagent` or `open_browser_url`. The built-in subagent unconditionally fails with `404 Not Found from https://playwright.azureedge.net/builds/driver/playwright-1.57.0-mac-arm64.zip` on macOS Apple Silicon (ARM64).
+   - Calling `browser_subagent` is **STRICTLY PROHIBITED** as it wastes user tokens and fails every time.
+
+2. **Mandatory Direct Playwright MCP Server or Playwright Test Runners**:
+   - For all browser inspections and automation, **ALWAYS** use:
+     - **Playwright MCP Server**: Call lazy-loaded MCP tools via `call_mcp_tool` with `ServerName: "playwright"` (`browser_navigate`, `browser_snapshot`, `browser_take_screenshot`, `browser_click`, etc.).
+     - **Direct Automated Test Suites**: Run `pnpm test:desktop` or `pnpm test:admin` (or headed versions `pnpm test:desktop:headed` / `pnpm test:admin:headed`) using the pre-installed local browser binaries.
+
+3. **No Guessing Loops & Instant Credential Requests**:
+   - Never enter guessing, retry, or looping attempts if login credentials, passwords, or tokens are missing.
+   - Use default known test credentials (`admin@smartfeed.studio` / `AdminPassword123!`), or immediately ask the user without wasting tokens.

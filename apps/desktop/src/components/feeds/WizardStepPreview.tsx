@@ -21,6 +21,7 @@ interface WizardStepPreviewProps {
   selectedCategoryIds: string[];
   setSelectedCategoryIds: (ids: string[]) => void;
   remainingQuota: number;
+  isUnlimited?: boolean;
 }
 
 export function WizardStepPreview({
@@ -28,6 +29,7 @@ export function WizardStepPreview({
   selectedCategoryIds,
   setSelectedCategoryIds,
   remainingQuota,
+  isUnlimited = false,
 }: WizardStepPreviewProps) {
   const { t } = useTranslation(['suppliers', 'common']);
   const [categorySearch, setCategorySearch] = useState('');
@@ -49,7 +51,7 @@ export function WizardStepPreview({
       .reduce((sum, c) => sum + (c.productCount || 0), 0);
   }, [categories, selectedCategoryIds, analysis.totalDetected]);
 
-  const isQuotaExceeded = totalSelectedSkus > remainingQuota;
+  const isQuotaExceeded = !isUnlimited && totalSelectedSkus > remainingQuota;
 
   const handleSelectAll = () => {
     setSelectedCategoryIds(categories.map((c) => c.id));
@@ -100,6 +102,27 @@ export function WizardStepPreview({
           </div>
         </div>
       </div>
+
+      {/* Quota Exceeded High-Contrast Alert Banner */}
+      {isQuotaExceeded && (
+        <div className="p-3.5 rounded-xl bg-destructive/15 border border-destructive/40 text-destructive flex items-start gap-3 shadow-sm animate-in fade-in duration-200">
+          <AlertTriangle className="size-5 shrink-0 mt-0.5 text-destructive" />
+          <div className="space-y-1 text-xs">
+            <p className="font-bold text-[13px]">
+              {t('suppliers:quotaExceededTitle', {
+                defaultValue: 'Перевищено ліміт товарів тарифу',
+              })}
+            </p>
+            <p className="text-destructive/90 leading-relaxed">
+              {t('suppliers:quotaExceededWarning', {
+                selected: totalSelectedSkus.toLocaleString('uk-UA'),
+                remaining: remainingQuota.toLocaleString('uk-UA'),
+                defaultValue: `Обрано ${totalSelectedSkus.toLocaleString('uk-UA')} SKU, проте за вашим тарифом доступно лише ${remainingQuota.toLocaleString('uk-UA')} SKU. Зніміть виділення з зайвих категорій, щоб продовжити.`,
+              })}
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Category Selection Checklist with Quota Control */}
       {categories.length > 0 && (
@@ -159,8 +182,8 @@ export function WizardStepPreview({
             </div>
           )}
 
-          {/* Categories Grid */}
-          <div className="max-h-36 overflow-y-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-1.5 p-1 bg-secondary/20 rounded-lg border border-border/50">
+          {/* Categories Grid (Expanded Height) */}
+          <div className="max-h-56 overflow-y-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-1.5 p-1.5 bg-secondary/20 rounded-lg border border-border/50">
             {filteredCategories.map((cat) => {
               const isSelected = selectedCategoryIds.includes(cat.id);
               return (
@@ -199,31 +222,45 @@ export function WizardStepPreview({
 
           {/* Live Quota Bar */}
           <div
-            className={`p-2.5 rounded-lg border text-xs flex items-center justify-between gap-2 flex-wrap ${
+            className={`p-2.5 rounded-lg border text-xs flex items-center justify-between gap-2 flex-wrap transition-colors ${
               isQuotaExceeded
                 ? 'bg-destructive/10 border-destructive/30 text-destructive'
-                : 'bg-secondary/40 border-border/60 text-foreground'
+                : selectedCategoryIds.length === 0
+                  ? 'bg-amber-500/10 border-amber-500/30 text-amber-400'
+                  : 'bg-secondary/40 border-border/60 text-foreground'
             }`}
           >
             <div className="flex items-center gap-2">
               {isQuotaExceeded ? (
                 <AlertTriangle className="size-4 text-destructive shrink-0" />
+              ) : selectedCategoryIds.length === 0 ? (
+                <AlertTriangle className="size-4 text-amber-400 shrink-0" />
               ) : (
                 <CheckCircle2 className="size-4 text-emerald-400 shrink-0" />
               )}
               <span>
-                {t('suppliers:selectedToImport', { defaultValue: 'Обрано до імпорту:' })}{' '}
-                <strong className="font-mono">
-                  {totalSelectedSkus.toLocaleString('uk-UA')} SKU
-                </strong>{' '}
-                ({selectedCategoryIds.length} з {categories.length} категорій)
+                {selectedCategoryIds.length === 0 ? (
+                  t('suppliers:noCategoriesSelected', {
+                    defaultValue: 'Оберіть хоча б одну категорію для імпорту',
+                  })
+                ) : (
+                  <>
+                    {t('suppliers:selectedToImport', { defaultValue: 'Обрано до імпорту:' })}{' '}
+                    <strong className="font-mono">
+                      {totalSelectedSkus.toLocaleString('uk-UA')} SKU
+                    </strong>{' '}
+                    ({selectedCategoryIds.length} з {categories.length} категорій)
+                  </>
+                )}
               </span>
             </div>
 
             <div className="text-[11px] font-mono text-muted-foreground">
               {t('suppliers:quotaLimitAvailable', { defaultValue: 'Доступно за лімітом:' })}{' '}
-              <strong className={isQuotaExceeded ? 'text-destructive' : 'text-foreground'}>
-                {remainingQuota.toLocaleString('uk-UA')} SKU
+              <strong
+                className={isQuotaExceeded ? 'text-destructive font-bold' : 'text-foreground'}
+              >
+                {isUnlimited ? '∞' : `${remainingQuota.toLocaleString('uk-UA')} SKU`}
               </strong>
             </div>
           </div>
@@ -245,7 +282,7 @@ export function WizardStepPreview({
         </div>
 
         <div className="rounded-xl border border-border overflow-hidden bg-card shadow-sm">
-          <div className="max-h-60 overflow-y-auto">
+          <div className="max-h-72 overflow-y-auto">
             <table className="w-full text-left text-xs border-collapse">
               <thead className="bg-muted sticky top-0 z-10 border-b border-border shadow-xs">
                 <tr className="text-foreground text-[11px] font-semibold uppercase tracking-wider">

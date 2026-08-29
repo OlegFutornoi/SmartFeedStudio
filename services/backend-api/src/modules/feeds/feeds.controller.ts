@@ -513,7 +513,7 @@ export class FeedsController {
     }
 
     let deletedProductsCount = 0;
-    if (deleteProducts === 'true' || deleteProducts === '1') {
+    if (deleteProducts !== 'false') {
       const deleteResult = await this.prisma.product.deleteMany({
         where: { feedSourceId: feedSource.id },
       });

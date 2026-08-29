@@ -1,4 +1,5 @@
 import React from 'react';
+import { createPortal } from 'react-dom';
 import { Layers, X, LogOut } from 'lucide-react';
 import { NavigationItemDto, UserProfile } from '@smartfeed/shared';
 import { Button } from '@/components/ui/button';
@@ -35,9 +36,9 @@ export const SidebarMobileDrawer = React.memo(function SidebarMobileDrawer({
     return 'US';
   };
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 z-50 md:hidden flex animate-in fade-in duration-200">
-      <div className="fixed inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
+      <div className="fixed inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
       <div className="relative flex flex-col justify-between w-72 max-w-[85vw] h-full bg-card border-r border-border p-4 shadow-2xl z-50 animate-in slide-in-from-left duration-300">
         <div>
           <div className="flex items-center justify-between pb-4 border-b border-border mb-4">
@@ -90,6 +91,7 @@ export const SidebarMobileDrawer = React.memo(function SidebarMobileDrawer({
           </Button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 });

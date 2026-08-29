@@ -393,7 +393,7 @@ model Product {
   supplierId     String            @map("supplier_id")
   supplier       Supplier          @relation(fields: [supplierId], references: [id], onDelete: Cascade)
   feedSourceId   String?           @map("feed_source_id")
-  feedSource     FeedSource?       @relation(fields: [feedSourceId], references: [id], onDelete: SetNull)
+  feedSource     FeedSource?       @relation(fields: [feedSourceId], references: [id], onDelete: Cascade)
   categoryId     String?           @map("category_id")
   category       ProductCategory?  @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   

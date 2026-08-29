@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import { SupplierDto } from '@smartfeed/shared';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from '@/i18n';
@@ -61,9 +62,23 @@ export function ImportFeedWizardDialog({
   const [importResult, setImportResult] = useState<ImportFeedResultDto | null>(null);
   const [importError, setImportError] = useState<string | null>(null);
 
-  // Quota calculation
+  // Quota & Selected SKUs calculation
   const productQuota = quotas?.products;
+  const isUnlimited = productQuota?.isUnlimited ?? false;
   const remainingQuota = productQuota ? Math.max(0, productQuota.max - productQuota.used) : 10000;
+
+  const totalSelectedSkus = useMemo(() => {
+    if (!analysis) return 0;
+    const cats = analysis.categories || [];
+    if (cats.length === 0) return analysis.totalDetected;
+    if (selectedCategoryIds.length === 0) return 0;
+    const selectedSet = new Set(selectedCategoryIds);
+    return cats
+      .filter((c) => selectedSet.has(c.id))
+      .reduce((sum, c) => sum + (c.productCount || 0), 0);
+  }, [analysis, selectedCategoryIds]);
+
+  const isQuotaExceeded = !isUnlimited && totalSelectedSkus > remainingQuota;
 
   // Sync initialSupplierId when dialog opens
   useEffect(() => {
@@ -191,9 +206,9 @@ export function ImportFeedWizardDialog({
     }
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md p-4 animate-in fade-in duration-200">
-      <div className="w-full max-w-4xl bg-card border border-border rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+  return createPortal(
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+      <div className="w-[95vw] max-w-6xl bg-card border border-border/80 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh] h-[92vh] animate-in zoom-in-95 duration-200">
         {/* Header (100% solid background) */}
         <div className="p-5 border-b border-border bg-card flex items-center justify-between shrink-0">
           <div className="flex items-center gap-2.5">
@@ -277,6 +292,7 @@ export function ImportFeedWizardDialog({
               selectedCategoryIds={selectedCategoryIds}
               setSelectedCategoryIds={setSelectedCategoryIds}
               remainingQuota={remainingQuota}
+              isUnlimited={isUnlimited}
             />
           )}
 
@@ -346,7 +362,25 @@ export function ImportFeedWizardDialog({
                 <Button
                   size="sm"
                   onClick={handleStartImport}
-                  className="text-xs bg-emerald-600 hover:bg-emerald-500 text-white flex items-center gap-1.5 shadow-sm"
+                  disabled={isQuotaExceeded || totalSelectedSkus === 0 || isImporting}
+                  title={
+                    isQuotaExceeded
+                      ? t('suppliers:quotaExceededBtnTooltip', {
+                          selected: totalSelectedSkus.toLocaleString('uk-UA'),
+                          remaining: remainingQuota.toLocaleString('uk-UA'),
+                          defaultValue: `Перевищено ліміт: обрано ${totalSelectedSkus} з ${remainingQuota} доступних SKU. Зніміть зайві категорії.`,
+                        })
+                      : totalSelectedSkus === 0
+                        ? t('suppliers:noCategoriesSelectedBtnTooltip', {
+                            defaultValue: 'Оберіть хоча б одну категорію для продовження',
+                          })
+                        : undefined
+                  }
+                  className={`text-xs flex items-center gap-1.5 shadow-sm transition-all ${
+                    isQuotaExceeded || totalSelectedSkus === 0
+                      ? 'bg-muted text-muted-foreground border border-border cursor-not-allowed opacity-60'
+                      : 'bg-emerald-600 hover:bg-emerald-500 text-white'
+                  }`}
                 >
                   <Check className="size-3.5" />
                   {t('suppliers:startImport', { defaultValue: 'Розпочати імпорт' })}
@@ -373,6 +407,7 @@ export function ImportFeedWizardDialog({
           )}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

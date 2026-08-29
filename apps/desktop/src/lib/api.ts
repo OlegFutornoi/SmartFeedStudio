@@ -971,7 +971,7 @@ export async function deleteSupplierFeedSource(
   supplierId: string,
   sourceId: string,
   token?: string,
-  deleteProducts = false,
+  deleteProducts = true,
 ): Promise<{ success: boolean; deletedProductsCount?: number }> {
   const query = deleteProducts ? '?deleteProducts=true' : '';
   const response = await fetchWithAuth(

@@ -1,4 +1,5 @@
 import React from 'react';
+import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 import { useTranslation } from '@/i18n';
 import type { TariffPlanDto, BillingInterval } from '@smartfeed/shared';
@@ -49,9 +50,9 @@ export const PaymentCheckoutModal: React.FC<PaymentCheckoutModalProps> = ({
 
   if (!isOpen || !plan) return null;
 
-  return (
+  return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm animate-in fade-in-0"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in-0 duration-200"
       data-testid="payment-checkout-modal"
       onClick={handleClose}
     >
@@ -120,6 +121,7 @@ export const PaymentCheckoutModal: React.FC<PaymentCheckoutModalProps> = ({
           />
         )}
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 };

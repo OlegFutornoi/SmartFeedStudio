@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { SupplierDto } from '@smartfeed/shared';
 import {
   getSupplierFeedSources,
@@ -113,9 +114,9 @@ export function SupplierFeedsModal({
     }
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md p-4 animate-in fade-in duration-200">
-      <div className="w-full max-w-3xl bg-card border border-border rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh]">
+  return createPortal(
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+      <div className="w-full max-w-3xl bg-card border border-border/80 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh] animate-in zoom-in-95 duration-200">
         {/* Modal Header */}
         <div className="p-5 border-b border-border bg-card flex items-center justify-between shrink-0">
           <div className="flex items-center gap-2.5">
@@ -394,6 +395,7 @@ export function SupplierFeedsModal({
         confirmLabel={isUk ? 'Видалити фід' : 'Delete feed'}
         cancelLabel={isUk ? 'Скасувати' : 'Cancel'}
       />
-    </div>
+    </div>,
+    document.body,
   );
 }

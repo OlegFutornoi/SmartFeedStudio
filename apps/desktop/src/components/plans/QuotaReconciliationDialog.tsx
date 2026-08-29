@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import {
   X,
   AlertTriangle,
@@ -316,9 +317,9 @@ export const QuotaReconciliationDialog: React.FC<QuotaReconciliationDialogProps>
 
   const currentPlanName = isUk ? quotas?.planNameUk || 'Старт' : quotas?.planNameEn || 'Starter';
 
-  return (
+  return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm animate-in fade-in-0"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in-0 duration-200"
       data-testid="quota-reconciliation-dialog"
       onClick={onClose}
     >
@@ -566,6 +567,7 @@ export const QuotaReconciliationDialog: React.FC<QuotaReconciliationDialogProps>
           </Button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 };

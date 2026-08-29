@@ -113,5 +113,10 @@
   "statusError": "Error",
   "statusPending": "Pending",
   "updateFile": "Update file",
-  "fileFeedSyncTooltip": "File catalogs are updated by uploading an updated file"
+  "fileFeedSyncTooltip": "File catalogs are updated by uploading an updated file",
+  "quotaExceededTitle": "Plan Product Limit Exceeded",
+  "quotaExceededWarning": "Selected {{selected}} SKU, but only {{remaining}} SKU are available on your plan. Deselect extra categories to proceed.",
+  "quotaExceededBtnTooltip": "Limit exceeded: selected {{selected}} of {{remaining}} available SKU. Deselect extra categories.",
+  "noCategoriesSelected": "Select at least one category to import",
+  "noCategoriesSelectedBtnTooltip": "Select at least one category to proceed"
 }

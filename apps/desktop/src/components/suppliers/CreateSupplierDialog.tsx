@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Building2, Percent, X, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { SupplierDto, CreateSupplierDto } from '@smartfeed/shared';
@@ -92,9 +93,9 @@ export function CreateSupplierDialog({
     }
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-      <div className="w-full max-w-lg bg-card border border-border/80 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+  return createPortal(
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+      <div className="w-full max-w-lg bg-card border border-border/80 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-200">
         {/* Header */}
         <div className="flex items-center justify-between p-5 border-b border-border/60">
           <div className="flex items-center gap-2.5">
@@ -272,6 +273,7 @@ export function CreateSupplierDialog({
           </div>
         </form>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

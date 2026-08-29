@@ -113,5 +113,10 @@
   "statusError": "Помилка",
   "statusPending": "Очікує",
   "updateFile": "Оновити файл",
-  "fileFeedSyncTooltip": "Файлові каталоги оновлюються шляхом завантаження оновленого файлу"
+  "fileFeedSyncTooltip": "Файлові каталоги оновлюються шляхом завантаження оновленого файлу",
+  "quotaExceededTitle": "Перевищено ліміт товарів тарифу",
+  "quotaExceededWarning": "Обрано {{selected}} SKU, проте за вашим тарифом доступно лише {{remaining}} SKU. Зніміть виділення з зайвих категорій, щоб продовжити.",
+  "quotaExceededBtnTooltip": "Перевищено ліміт: обрано {{selected}} з {{remaining}} доступних SKU. Зніміть зайві категорії.",
+  "noCategoriesSelected": "Оберіть хоча б одну категорію для імпорту",
+  "noCategoriesSelectedBtnTooltip": "Оберіть хоча б одну категорію для продовження"
 }

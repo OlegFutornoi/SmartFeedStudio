@@ -285,6 +285,113 @@ test.describe('Desktop App — Постачальники, Майстер Фід
     await page.getByRole('button', { name: 'Продовжити роботу (закрити вікно)' }).click();
   });
 
+  test('блокування кнопки імпорту у майстрі фідів при перевищенні ліміту SKU та динамічне розблокування при знятті категорій', async ({
+    page,
+  }) => {
+    // Quota where user has only 40 SKU remaining
+    const constrainedQuotas = {
+      ...mockQuotas,
+      products: {
+        used: 60,
+        max: 100,
+        isUnlimited: false,
+        percentUsed: 60,
+        isExceeded: false,
+        remaining: 40,
+      },
+    };
+
+    const feedAnalysis = {
+      format: 'XML_ROZETKA',
+      totalDetected: 55,
+      categoriesCount: 2,
+      categories: [
+        { id: 'cat_1', name: 'Сенсорні вимикачі', productCount: 30 },
+        { id: 'cat_2', name: 'Розумні розетки', productCount: 25 },
+      ],
+      sampleProducts: [
+        {
+          sku: 'VL-C701-11',
+          titleUk: 'Сенсорний вимикач 1-клавішний білий',
+          price: 900,
+          costPrice: 650,
+          inStock: true,
+          images: [],
+        },
+      ],
+    };
+
+    await page.route('**/api/licenses/quotas', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(constrainedQuotas),
+      });
+    });
+
+    await page.route('**/api/feeds/analyze-url', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(feedAnalysis),
+      });
+    });
+
+    let importPayload: any = null;
+    await page.route('**/api/feeds/import-async', async (route) => {
+      importPayload = JSON.parse(route.request().postData() || '{}');
+      await route.fulfill({
+        status: 202,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          success: true,
+          jobId: 'job_constrained_123',
+          feedSourceId: 'src_feed_1',
+          status: 'PENDING',
+        }),
+      });
+    });
+
+    await page.goto('/suppliers');
+
+    // Open import wizard for supplier 1
+    await page.getByTestId('supplier-card-import-btn-sup_test_1').click();
+
+    // Step 1: fill url & next
+    await page
+      .getByPlaceholder('https://supplier.com/products_feed.xml')
+      .fill('https://example.com/feed.xml');
+    await page.getByRole('button', { name: 'Далі до постачальника' }).click();
+
+    // Step 2: next to preview
+    await page.getByRole('button', { name: 'Переглянути товари' }).click();
+
+    // Step 3: PREVIEW with 55 SKU total vs 40 available
+    await expect(page.getByText('Перевищено ліміт товарів тарифу')).toBeVisible();
+    await expect(page.getByText('55 SKU').first()).toBeVisible();
+
+    // Assert that the start import button is DISABLED
+    const startImportBtn = page.getByRole('button', { name: 'Розпочати імпорт' });
+    await expect(startImportBtn).toBeDisabled();
+
+    // Deselect category "Розумні розетки" (25 SKU) -> leaving 30 SKU <= 40 available
+    await page.locator('button').filter({ hasText: 'Розумні розетки' }).click();
+
+    // Assert that quota warning disappeared and button is now ENABLED
+    await expect(page.getByText('Перевищено ліміт товарів тарифу')).not.toBeVisible();
+    await expect(startImportBtn).toBeEnabled();
+
+    // Click start import
+    await startImportBtn.click();
+
+    // Verify import payload sent only selected category 'cat_1'
+    expect(importPayload).not.toBeNull();
+    expect(importPayload.selectedCategoryIds).toEqual(['cat_1']);
+
+    // Reached step 4
+    await expect(page.getByText('Імпорт виконується у фоновому режимі (BullMQ)')).toBeVisible();
+  });
+
   test('блокування кнопок додавання постачальника та підключення фідів при вичерпанні лімітів тарифу (з підказками)', async ({
     page,
   }) => {
