@@ -4,9 +4,14 @@ import type {
   Role,
   NavigationItemDto,
   CheckoutResponseDto,
+  OrganizationMemberDto,
 } from '@smartfeed/shared';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
+
+export const TOKEN_KEY = 'smartfeed_access_token';
+export const REFRESH_TOKEN_KEY = 'smartfeed_refresh_token';
+export const USER_KEY = 'smartfeed_user_profile';
 
 export interface LoginCredentials {
   email: string;
@@ -33,6 +38,100 @@ export class ApiError extends Error {
   }
 }
 
+// Global Refresh Lock to prevent duplicate concurrent refresh requests
+let isRefreshing = false;
+let refreshPromise: Promise<string | null> | null = null;
+
+/**
+ * Transparently refresh the active authentication session using stored Refresh Token.
+ */
+export async function refreshAuthSession(): Promise<string | null> {
+  const refreshToken = localStorage.getItem(REFRESH_TOKEN_KEY);
+  if (!refreshToken) {
+    return null;
+  }
+
+  if (isRefreshing && refreshPromise) {
+    return refreshPromise;
+  }
+
+  isRefreshing = true;
+  refreshPromise = (async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth/refresh`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ refreshToken }),
+      });
+
+      if (!response.ok) {
+        // If refresh token is truly expired or invalid, clear stored session
+        localStorage.removeItem(TOKEN_KEY);
+        localStorage.removeItem(REFRESH_TOKEN_KEY);
+        localStorage.removeItem(USER_KEY);
+        return null;
+      }
+
+      const data: AuthResponseDto = await response.json();
+      if (data.tokens?.accessToken) {
+        localStorage.setItem(TOKEN_KEY, data.tokens.accessToken);
+        if (data.tokens.refreshToken) {
+          localStorage.setItem(REFRESH_TOKEN_KEY, data.tokens.refreshToken);
+        }
+        if (data.user) {
+          localStorage.setItem(USER_KEY, JSON.stringify(data.user));
+        }
+        return data.tokens.accessToken;
+      }
+      return null;
+    } catch {
+      return null;
+    } finally {
+      isRefreshing = false;
+      refreshPromise = null;
+    }
+  })();
+
+  return refreshPromise;
+}
+
+/**
+ * Authenticated Fetch wrapper with automatic silent 401 token refresh & request retry.
+ */
+export async function fetchWithAuth(
+  endpoint: string,
+  options: RequestInit = {},
+  tokenOverride?: string,
+): Promise<Response> {
+  const token = tokenOverride || localStorage.getItem(TOKEN_KEY);
+  const headers = new Headers(options.headers || {});
+  if (token) {
+    headers.set('Authorization', `Bearer ${token}`);
+  }
+
+  let response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    ...options,
+    headers,
+  });
+
+  // If 401 Unauthorized, transparently refresh session and retry request
+  if (response.status === 401) {
+    const newToken = await refreshAuthSession();
+    if (newToken) {
+      const retryHeaders = new Headers(options.headers || {});
+      retryHeaders.set('Authorization', `Bearer ${newToken}`);
+      response = await fetch(`${API_BASE_URL}${endpoint}`, {
+        ...options,
+        headers: retryHeaders,
+      });
+    }
+  }
+
+  return response;
+}
+
 export async function loginUser(credentials: LoginCredentials): Promise<AuthResponseDto> {
   const response = await fetch(`${API_BASE_URL}/auth/login`, {
     method: 'POST',
@@ -51,7 +150,18 @@ export async function loginUser(credentials: LoginCredentials): Promise<AuthResp
     throw new ApiError(message, response.status, data);
   }
 
-  return data as AuthResponseDto;
+  const authData = data as AuthResponseDto;
+  if (authData.tokens?.accessToken) {
+    localStorage.setItem(TOKEN_KEY, authData.tokens.accessToken);
+    if (authData.tokens.refreshToken) {
+      localStorage.setItem(REFRESH_TOKEN_KEY, authData.tokens.refreshToken);
+    }
+    if (authData.user) {
+      localStorage.setItem(USER_KEY, JSON.stringify(authData.user));
+    }
+  }
+
+  return authData;
 }
 
 export async function registerUser(credentials: RegisterCredentials): Promise<AuthResponseDto> {
@@ -72,16 +182,22 @@ export async function registerUser(credentials: RegisterCredentials): Promise<Au
     throw new ApiError(message, response.status, data);
   }
 
-  return data as AuthResponseDto;
+  const authData = data as AuthResponseDto;
+  if (authData.tokens?.accessToken) {
+    localStorage.setItem(TOKEN_KEY, authData.tokens.accessToken);
+    if (authData.tokens.refreshToken) {
+      localStorage.setItem(REFRESH_TOKEN_KEY, authData.tokens.refreshToken);
+    }
+    if (authData.user) {
+      localStorage.setItem(USER_KEY, JSON.stringify(authData.user));
+    }
+  }
+
+  return authData;
 }
 
-export async function getCurrentUser(token: string): Promise<UserProfile> {
-  const response = await fetch(`${API_BASE_URL}/auth/me`, {
-    method: 'GET',
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+export async function getCurrentUser(token?: string): Promise<UserProfile> {
+  const response = await fetchWithAuth('/auth/me', { method: 'GET' }, token);
 
   const data = await response.json().catch(() => ({}));
 
@@ -93,13 +209,8 @@ export async function getCurrentUser(token: string): Promise<UserProfile> {
   return data as UserProfile;
 }
 
-export async function getDesktopNavigation(token: string): Promise<NavigationItemDto[]> {
-  const response = await fetch(`${API_BASE_URL}/navigation?app=DESKTOP`, {
-    method: 'GET',
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+export async function getDesktopNavigation(token?: string): Promise<NavigationItemDto[]> {
+  const response = await fetchWithAuth('/navigation?app=DESKTOP', { method: 'GET' }, token);
 
   const data = await response.json().catch(() => []);
 
@@ -157,13 +268,8 @@ export async function resetPassword(
   return data;
 }
 
-export async function getMyLicense(token: string): Promise<any> {
-  const response = await fetch(`${API_BASE_URL}/licenses/my`, {
-    method: 'GET',
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+export async function getMyLicense(token?: string): Promise<any> {
+  const response = await fetchWithAuth('/licenses/my', { method: 'GET' }, token);
 
   const data = await response.json().catch(() => ({}));
 
@@ -206,14 +312,17 @@ export async function selectTariffPlan(
   planCode: string,
   billingInterval: 'monthly' | 'yearly' = 'monthly',
 ): Promise<any> {
-  const response = await fetch(`${API_BASE_URL}/licenses/select-plan`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
+  const response = await fetchWithAuth(
+    '/licenses/select-plan',
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ planCode, billingInterval }),
     },
-    body: JSON.stringify({ planCode, billingInterval }),
-  });
+    token,
+  );
 
   const data = await response.json().catch(() => ({}));
 
@@ -232,14 +341,17 @@ export async function createPaymentCheckout(
   planCode: string,
   billingInterval: 'monthly' | 'yearly' = 'monthly',
 ): Promise<CheckoutResponseDto> {
-  const response = await fetch(`${API_BASE_URL}/payments/checkout`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
+  const response = await fetchWithAuth(
+    '/payments/checkout',
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ planCode, billingInterval }),
     },
-    body: JSON.stringify({ planCode, billingInterval }),
-  });
+    token,
+  );
 
   const data = await response.json().catch(() => ({}));
 
@@ -260,21 +372,24 @@ export async function simulateSandboxPayment(
   reason?: string,
   cardDetails?: { cardPan?: string; cardType?: string; issuerBank?: string },
 ): Promise<any> {
-  const response = await fetch(`${API_BASE_URL}/payments/simulate-sandbox-webhook`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
+  const response = await fetchWithAuth(
+    '/payments/simulate-sandbox-webhook',
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        orderReference,
+        status,
+        reason,
+        cardPan: cardDetails?.cardPan,
+        cardType: cardDetails?.cardType,
+        issuerBank: cardDetails?.issuerBank,
+      }),
     },
-    body: JSON.stringify({
-      orderReference,
-      status,
-      reason,
-      cardPan: cardDetails?.cardPan,
-      cardType: cardDetails?.cardType,
-      issuerBank: cardDetails?.issuerBank,
-    }),
-  });
+    token,
+  );
 
   const data = await response.json().catch(() => ({}));
   if (!response.ok) {
@@ -290,13 +405,8 @@ export async function simulateSandboxPayment(
 // Organization & Team Management API
 // ==========================================
 
-export async function getUserOrganizations(token: string): Promise<any[]> {
-  const response = await fetch(`${API_BASE_URL}/organizations`, {
-    method: 'GET',
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+export async function getUserOrganizations(token?: string): Promise<any[]> {
+  const response = await fetchWithAuth('/organizations', { method: 'GET' }, token);
 
   const data = await response.json().catch(() => []);
   if (!response.ok) {
@@ -306,12 +416,7 @@ export async function getUserOrganizations(token: string): Promise<any[]> {
 }
 
 export async function getOrganizationById(token: string, id: string): Promise<any> {
-  const response = await fetch(`${API_BASE_URL}/organizations/${id}`, {
-    method: 'GET',
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const response = await fetchWithAuth(`/organizations/${id}`, { method: 'GET' }, token);
 
   const data = await response.json().catch(() => ({}));
   if (!response.ok) {
@@ -323,19 +428,17 @@ export async function getOrganizationById(token: string, id: string): Promise<an
   return data;
 }
 
-export async function getOrganizationMembers(token: string, id: string): Promise<any[]> {
-  const response = await fetch(`${API_BASE_URL}/organizations/${id}/members`, {
-    method: 'GET',
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+export async function getOrganizationMembers(
+  token: string,
+  id: string,
+): Promise<OrganizationMemberDto[]> {
+  const response = await fetchWithAuth(`/organizations/${id}/members`, { method: 'GET' }, token);
 
   const data = await response.json().catch(() => []);
   if (!response.ok) {
     return [];
   }
-  return data;
+  return data as OrganizationMemberDto[];
 }
 
 export async function inviteOrganizationMember(
@@ -343,14 +446,17 @@ export async function inviteOrganizationMember(
   id: string,
   payload: { email: string; role?: string },
 ): Promise<any> {
-  const response = await fetch(`${API_BASE_URL}/organizations/${id}/members`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
+  const response = await fetchWithAuth(
+    `/organizations/${id}/members`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
     },
-    body: JSON.stringify(payload),
-  });
+    token,
+  );
 
   const data = await response.json().catch(() => ({}));
   if (!response.ok) {
@@ -367,12 +473,13 @@ export async function removeOrganizationMember(
   id: string,
   memberId: string,
 ): Promise<any> {
-  const response = await fetch(`${API_BASE_URL}/organizations/${id}/members/${memberId}`, {
-    method: 'DELETE',
-    headers: {
-      Authorization: `Bearer ${token}`,
+  const response = await fetchWithAuth(
+    `/organizations/${id}/members/${memberId}`,
+    {
+      method: 'DELETE',
     },
-  });
+    token,
+  );
 
   const data = await response.json().catch(() => ({}));
   if (!response.ok) {
@@ -389,14 +496,17 @@ export async function updateOrganization(
   id: string,
   payload: { name: string },
 ): Promise<any> {
-  const response = await fetch(`${API_BASE_URL}/organizations/${id}`, {
-    method: 'PATCH',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
+  const response = await fetchWithAuth(
+    `/organizations/${id}`,
+    {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
     },
-    body: JSON.stringify(payload),
-  });
+    token,
+  );
 
   const data = await response.json().catch(() => ({}));
   if (!response.ok) {
@@ -409,12 +519,11 @@ export async function updateOrganization(
 }
 
 export async function getOrganizationInvitations(token: string, id: string): Promise<any[]> {
-  const response = await fetch(`${API_BASE_URL}/organizations/${id}/invitations`, {
-    method: 'GET',
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const response = await fetchWithAuth(
+    `/organizations/${id}/invitations`,
+    { method: 'GET' },
+    token,
+  );
 
   const data = await response.json().catch(() => []);
   if (!response.ok) {
@@ -428,12 +537,13 @@ export async function revokeOrganizationInvitation(
   id: string,
   invitationId: string,
 ): Promise<any> {
-  const response = await fetch(`${API_BASE_URL}/organizations/${id}/invitations/${invitationId}`, {
-    method: 'DELETE',
-    headers: {
-      Authorization: `Bearer ${token}`,
+  const response = await fetchWithAuth(
+    `/organizations/${id}/invitations/${invitationId}`,
+    {
+      method: 'DELETE',
     },
-  });
+    token,
+  );
 
   const data = await response.json().catch(() => ({}));
   if (!response.ok) {
@@ -489,5 +599,17 @@ export async function acceptInvitation(payload: {
       : data.message || 'Не вдалося прийняти запрошення';
     throw new ApiError(message, response.status, data);
   }
-  return data as AuthResponseDto;
+
+  const authData = data as AuthResponseDto;
+  if (authData.tokens?.accessToken) {
+    localStorage.setItem(TOKEN_KEY, authData.tokens.accessToken);
+    if (authData.tokens.refreshToken) {
+      localStorage.setItem(REFRESH_TOKEN_KEY, authData.tokens.refreshToken);
+    }
+    if (authData.user) {
+      localStorage.setItem(USER_KEY, JSON.stringify(authData.user));
+    }
+  }
+
+  return authData;
 }

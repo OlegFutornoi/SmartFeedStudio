@@ -50,8 +50,15 @@ export class HandleWayForPayWebhookHandler implements ICommandHandler<HandleWayF
       throw new NotFoundException(`Transaction '${payload.orderReference}' not found`);
     }
 
-    // 4. Process Status
+    // 4. Process Status with Idempotency Guard
     const isApproved = payload.transactionStatus === 'Approved';
+
+    if (transaction.status === 'APPROVED' && isApproved) {
+      this.logger.log(
+        `Transaction ${payload.orderReference} is already APPROVED. Returning idempotent accept response.`,
+      );
+      return this.wayforpayService.generateAcceptResponse(payload.orderReference, secretKey);
+    }
 
     if (isApproved) {
       await this.prisma.paymentTransaction.update({

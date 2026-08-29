@@ -1,5 +1,11 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { ForbiddenException, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  BadRequestException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { LicenseEntity, PlanType, PLAN_LIMITS_MAP } from '@smartfeed/shared';
 import * as crypto from 'crypto';
 import { PrismaService } from '../../../prisma/prisma.service';
@@ -85,47 +91,48 @@ export class SelectTariffPlanHandler implements ICommandHandler<
     const organizationId = orgMembership?.organizationId || null;
     const organizationName = orgMembership?.organization?.name || null;
 
-    // 3. Deactivate previous active licenses for this user and this organization
-    await this.prisma.license.updateMany({
-      where: {
-        OR: [
-          { userId, isActive: true },
-          ...(organizationId ? [{ organizationId, isActive: true }] : []),
-        ],
-      },
-      data: { isActive: false },
-    });
-
-    // 4. Create fresh active license with full quota snapshot
+    // 3. Deactivate previous active licenses and create fresh active license inside an atomic transaction
     const randomBytes = crypto.randomBytes(6).toString('hex').toUpperCase();
     const licenseKey = `SF-${normalizedCode}-${randomBytes.slice(0, 4)}-${randomBytes.slice(4, 8)}-${randomBytes.slice(8, 12)}`;
 
-    const license = await this.prisma.license.create({
-      data: {
-        userId,
-        organizationId,
-        licenseKey,
-        planType: planTypeEnum,
-        tariffPlanId: dbPlan.id,
-        canCloudBackup,
-        maxXmlLimit,
-        aiCredits,
-        maxFeedsLimit,
-        maxChannelsLimit,
-        maxTeamSeats,
-        maxSuppliersLimit,
-        hasApiAccess,
-        hasFeedDiff,
-        hasWhiteLabel,
-        hasSso,
-        hasAuditLog,
-        isActive: true,
-        expiresAt,
-      },
-      include: {
-        tariffPlan: true,
-        organization: true,
-      },
+    const license = await this.prisma.$transaction(async (tx) => {
+      await tx.license.updateMany({
+        where: {
+          OR: [
+            { userId, isActive: true },
+            ...(organizationId ? [{ organizationId, isActive: true }] : []),
+          ],
+        },
+        data: { isActive: false },
+      });
+
+      return tx.license.create({
+        data: {
+          userId,
+          organizationId,
+          licenseKey,
+          planType: planTypeEnum,
+          tariffPlanId: dbPlan.id,
+          canCloudBackup,
+          maxXmlLimit,
+          aiCredits,
+          maxFeedsLimit,
+          maxChannelsLimit,
+          maxTeamSeats,
+          maxSuppliersLimit,
+          hasApiAccess,
+          hasFeedDiff,
+          hasWhiteLabel,
+          hasSso,
+          hasAuditLog,
+          isActive: true,
+          expiresAt,
+        },
+        include: {
+          tariffPlan: true,
+          organization: true,
+        },
+      });
     });
 
     this.logger.log(

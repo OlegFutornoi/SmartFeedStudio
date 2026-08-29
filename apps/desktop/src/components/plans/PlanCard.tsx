@@ -162,24 +162,26 @@ export const PlanCard: React.FC<PlanCardProps> = ({
               {description}
             </CardDescription>
           )}
-        </CardHeader>
-
-        <CardContent className="flex flex-col gap-4">
           {/* Price Header with Dynamic Intervals */}
-          <div className="flex flex-col gap-0.5">
+          <div className="flex flex-col gap-0.5 mt-2">
             <div className="flex items-baseline gap-1.5">
               <span
                 data-testid={`plan-price-monthly-${codeKey}`}
                 className="text-2xl font-bold tracking-tight text-foreground"
               >
-                {displayMonthlyPrice === 0
-                  ? isUk
-                    ? '0 грн'
-                    : 'Free'
-                  : `${displayMonthlyPrice} ${currencySymbol}`}
+                {displayMonthlyPrice} {currencySymbol}
               </span>
               <span className="text-xs text-muted-foreground">{isUk ? '/міс' : '/mo'}</span>
             </div>
+
+            {/* Trial badge for STARTER */}
+            {plan.code === 'STARTER' && (
+              <div className="mt-0.5">
+                <span className="text-[10px] font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded">
+                  {isUk ? '7 днів тріалу при реєстрації' : '7-day trial on signup'}
+                </span>
+              </div>
+            )}
 
             {/* Dynamic Billing Subtitle & Badges */}
             {isYearly && hasYearlyOption ? (
@@ -218,84 +220,55 @@ export const PlanCard: React.FC<PlanCardProps> = ({
               </div>
             )}
           </div>
+        </CardHeader>
 
-          <div className="h-[1px] w-full bg-border/60" />
-
-          {/* 4 Essential Quotas Grid */}
-          <div className="grid grid-cols-2 gap-2 text-xs">
-            {/* SKU Limit */}
-            <div className="flex items-center gap-2 p-2 rounded-md bg-secondary/30 border border-border/40">
+        <CardContent className="flex flex-col gap-4">
+          {/* Key Quotas Grid */}
+          <div
+            data-testid={`plan-quotas-${codeKey}`}
+            className="grid grid-cols-2 gap-2 text-xs text-muted-foreground bg-muted/30 p-2.5 rounded-lg border border-border/40"
+          >
+            <div className="flex items-center gap-1.5 min-w-0">
               <Box className="size-3.5 text-primary shrink-0" />
-              <div className="flex flex-col truncate">
-                <span className="text-[10px] text-muted-foreground">{isUk ? 'Товари' : 'SKU'}</span>
-                <span className="font-semibold text-foreground truncate">
-                  {plan.maxXmlLimit >= 500000
-                    ? isUk
-                      ? '500k+ (Безліміт)'
-                      : '500k+ (Unlimited)'
-                    : `${(plan.maxXmlLimit / 1000).toFixed(0)}k SKU`}
-                </span>
+              <div className="truncate">
+                <span className="font-semibold text-foreground">
+                  {plan.maxXmlLimit.toLocaleString()}
+                </span>{' '}
+                <span>SKU</span>
               </div>
             </div>
-
-            {/* Suppliers Limit */}
-            <div className="flex items-center gap-2 p-2 rounded-md bg-secondary/30 border border-border/40">
+            <div className="flex items-center gap-1.5 min-w-0">
               <Users className="size-3.5 text-primary shrink-0" />
-              <div className="flex flex-col truncate">
-                <span className="text-[10px] text-muted-foreground">
-                  {isUk ? 'Постачальники' : 'Suppliers'}
-                </span>
-                <span className="font-semibold text-foreground truncate">
-                  {plan.maxSuppliersLimit >= 999999
+              <div className="truncate">
+                <span className="font-semibold text-foreground">
+                  {plan.maxTeamSeats === 1
                     ? isUk
-                      ? 'Безліміт'
-                      : 'Unlimited'
-                    : isUk
-                      ? `До ${plan.maxSuppliersLimit}`
-                      : `Up to ${plan.maxSuppliersLimit}`}
+                      ? 'Соло (1)'
+                      : 'Solo (1)'
+                    : `${plan.maxTeamSeats} ${isUk ? 'місць' : 'seats'}`}
                 </span>
               </div>
             </div>
-
-            {/* Channels Limit */}
-            <div className="flex items-center gap-2 p-2 rounded-md bg-secondary/30 border border-border/40">
+            <div className="flex items-center gap-1.5 min-w-0">
               <Share2 className="size-3.5 text-primary shrink-0" />
-              <div className="flex flex-col truncate">
-                <span className="text-[10px] text-muted-foreground">
-                  {isUk ? 'Канали' : 'Channels'}
-                </span>
-                <span className="font-semibold text-foreground truncate">
-                  {plan.maxChannelsLimit >= 999999
-                    ? isUk
-                      ? 'Безліміт'
-                      : 'Unlimited'
-                    : isUk
-                      ? `${plan.maxChannelsLimit} канал(ів)`
-                      : `${plan.maxChannelsLimit} channels`}
-                </span>
+              <div className="truncate">
+                <span className="font-semibold text-foreground">{plan.maxChannelsLimit}</span>{' '}
+                <span>{isUk ? 'каналів' : 'channels'}</span>
               </div>
             </div>
-
-            {/* AI Credits */}
-            <div className="flex items-center gap-2 p-2 rounded-md bg-secondary/30 border border-border/40">
+            <div className="flex items-center gap-1.5 min-w-0">
               <Bot className="size-3.5 text-primary shrink-0" />
-              <div className="flex flex-col truncate">
-                <span className="text-[10px] text-muted-foreground">
-                  {isUk ? 'AI Кредити' : 'AI Credits'}
-                </span>
-                <span className="font-semibold text-foreground truncate">
-                  {plan.aiCredits.toLocaleString()}
-                </span>
+              <div className="truncate">
+                <span className="font-semibold text-foreground">{plan.aiCredits}</span>{' '}
+                <span>AI</span>
               </div>
             </div>
           </div>
 
-          <div className="h-[1px] w-full bg-border/60" />
-
           {/* Section 1: Included Features (✅) */}
           <div className="flex flex-col gap-2">
             <span className="text-[11px] font-semibold tracking-wider text-muted-foreground uppercase">
-              {t('plans.availableFeatures')}
+              {t('plans.featuresTitle')}
             </span>
             <ul
               data-testid={`plan-features-${codeKey}`}
@@ -349,7 +322,13 @@ export const PlanCard: React.FC<PlanCardProps> = ({
             className="w-full h-8 text-xs border-emerald-500/50 text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 font-semibold cursor-default"
           >
             <Check className="size-3.5 mr-1.5" />
-            <span>{t('plans.currentPlan')}</span>
+            <span>
+              {daysRemaining && daysRemaining <= 7 && plan.code === 'STARTER'
+                ? isUk
+                  ? 'Активний пробний період'
+                  : 'Active Trial Period'
+                : t('plans.currentPlan')}
+            </span>
           </Button>
         ) : isCurrent && isExpired ? (
           <Button
@@ -382,13 +361,7 @@ export const PlanCard: React.FC<PlanCardProps> = ({
             ) : (
               <Zap className="size-3.5" />
             )}
-            <span>
-              {plan.priceMonthly === 0
-                ? t('plans.selectPlan')
-                : isYearly
-                  ? t('plans.selectYearlyPlan')
-                  : t('plans.selectMonthlyPlan')}
-            </span>
+            <span>{isYearly ? t('plans.selectYearlyPlan') : t('plans.selectMonthlyPlan')}</span>
           </Button>
         )}
       </CardFooter>

@@ -10,6 +10,8 @@ import { LicensesTableToolbar } from './LicensesTableToolbar';
 import { LicensesTableRow } from './LicensesTableRow';
 import { LicenseDeleteDialog } from './LicenseDeleteDialog';
 import { useLicensesFilter, LicensesFilterState } from './useLicensesFilter';
+import { TablePagination } from '../ui/table-pagination';
+import { usePagination } from '../../hooks/usePagination';
 import { api } from '../../lib/api';
 
 interface LicensesTableProps {
@@ -38,6 +40,12 @@ export function LicensesTable({ licenses, isUk, onRefresh, isLoading }: Licenses
 
   const { filteredLicenses, isFiltered, tierOptions, statusOptions, cloudOptions, sortOptions } =
     useLicensesFilter(licenses, filter, isUk);
+
+  const { currentPage, pageSize, totalPages, totalItems, paginatedItems, setPage, setPageSize } =
+    usePagination(filteredLicenses, {
+      initialPageSize: 10,
+      resetDeps: [filter],
+    });
 
   const handleResetFilters = useCallback(() => {
     setFilter({
@@ -153,7 +161,7 @@ export function LicensesTable({ licenses, isUk, onRefresh, isLoading }: Licenses
                 </TableCell>
               </TableRow>
             ) : (
-              filteredLicenses.map((lic) => (
+              paginatedItems.map((lic) => (
                 <LicensesTableRow
                   key={lic.id}
                   license={lic}
@@ -167,6 +175,19 @@ export function LicensesTable({ licenses, isUk, onRefresh, isLoading }: Licenses
           </TableBody>
         </Table>
       </CardContent>
+
+      {/* Pagination Footer */}
+      <TablePagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        pageSize={pageSize}
+        totalItems={totalItems}
+        onPageChange={setPage}
+        onPageSizeChange={setPageSize}
+        pageSizeOptions={[10, 25, 50, 100]}
+        isUk={isUk}
+        testIdPrefix="licenses-pagination"
+      />
 
       <LicenseDeleteDialog
         open={Boolean(licenseToDelete)}

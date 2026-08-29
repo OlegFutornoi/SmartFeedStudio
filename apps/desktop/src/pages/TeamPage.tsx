@@ -71,8 +71,7 @@ export const TeamPage: React.FC = () => {
           setInvitations(invs);
         }
       } catch (err: unknown) {
-        const msg = err instanceof Error ? err.message : 'Failed to load organization data';
-        setErrorMessage(msg);
+        setErrorMessage(getErrorMessage(err, t));
       } finally {
         if (isInitial) setIsLoading(false);
       }

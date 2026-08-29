@@ -30,12 +30,13 @@ async function main() {
   const starterPlan = await prisma.tariffPlan.upsert({
     where: { code: 'STARTER' },
     update: {
-      nameUk: 'Безкоштовний',
-      nameEn: 'Free Trial',
-      descriptionUk: 'Спробуй безкоштовно для 1 маркетплейсу. Відчуй швидкість десктопного рушія.',
-      descriptionEn: 'Try for free for 1 marketplace of your choice. Feel the speed.',
-      priceMonthly: 0,
-      priceYearly: 0,
+      nameUk: 'Старт',
+      nameEn: 'Starter',
+      descriptionUk:
+        '7 днів безкоштовно при реєстрації. Ідеально для швидкого старту та 1 маркетплейсу.',
+      descriptionEn: '7-day free trial on signup. Perfect for a quick start on 1 marketplace.',
+      priceMonthly: 299,
+      priceYearly: 2999,
       currency: 'UAH',
       // Quotas
       maxXmlLimit: 1000,
@@ -61,8 +62,9 @@ async function main() {
       isPopular: false,
       isActive: true,
       order: 1,
-      durationDays: 7,
+      durationDays: 30,
       featuresUk: [
+        '7 днів безкоштовного пробного періоду при реєстрації',
         'До 1,000 SKU товарів',
         '1 постачальник (базовий прайс)',
         '1 активний фід',
@@ -72,6 +74,7 @@ async function main() {
         'Ручне оновлення',
       ],
       featuresEn: [
+        '7-day free trial upon registration',
         'Up to 1,000 product SKUs',
         '1 product supplier (single price)',
         '1 active feed',
@@ -83,12 +86,13 @@ async function main() {
     },
     create: {
       code: 'STARTER',
-      nameUk: 'Безкоштовний',
-      nameEn: 'Free Trial',
-      descriptionUk: 'Спробуй безкоштовно для 1 маркетплейсу. Відчуй швидкість десктопного рушія.',
-      descriptionEn: 'Try for free for 1 marketplace of your choice. Feel the speed.',
-      priceMonthly: 0,
-      priceYearly: 0,
+      nameUk: 'Старт',
+      nameEn: 'Starter',
+      descriptionUk:
+        '7 днів безкоштовно при реєстрації. Ідеально для швидкого старту та 1 маркетплейсу.',
+      descriptionEn: '7-day free trial on signup. Perfect for a quick start on 1 marketplace.',
+      priceMonthly: 299,
+      priceYearly: 2999,
       currency: 'UAH',
       maxXmlLimit: 1000,
       aiCredits: 50,
@@ -111,8 +115,9 @@ async function main() {
       isPopular: false,
       isActive: true,
       order: 1,
-      durationDays: 7,
+      durationDays: 30,
       featuresUk: [
+        '7 днів безкоштовного пробного періоду при реєстрації',
         'До 1,000 SKU товарів',
         '1 постачальник (базовий прайс)',
         '1 активний фід',
@@ -122,6 +127,7 @@ async function main() {
         'Ручне оновлення',
       ],
       featuresEn: [
+        '7-day free trial upon registration',
         'Up to 1,000 product SKUs',
         '1 product supplier (single price)',
         '1 active feed',

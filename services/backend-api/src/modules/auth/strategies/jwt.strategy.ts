@@ -2,11 +2,16 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { ConfigService } from '@nestjs/config';
-import { JwtPayload } from '@smartfeed/shared';
+import { QueryBus } from '@nestjs/cqrs';
+import { JwtPayload, UserProfile } from '@smartfeed/shared';
+import { GetUserByIdQuery } from '../../users/queries/get-user-by-id.query';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
-  constructor(configService: ConfigService) {
+  constructor(
+    configService: ConfigService,
+    private readonly queryBus: QueryBus,
+  ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
@@ -20,10 +25,26 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     if (!payload.sub || !payload.email) {
       throw new UnauthorizedException('Invalid token payload');
     }
-    return {
-      id: payload.sub,
-      email: payload.email,
-      role: payload.role,
-    };
+
+    try {
+      const user = await this.queryBus.execute<GetUserByIdQuery, UserProfile>(
+        new GetUserByIdQuery(payload.sub),
+      );
+
+      if (!user || user.isActive === false) {
+        throw new UnauthorizedException('User account is deactivated or no longer exists');
+      }
+
+      return {
+        id: user.id,
+        email: user.email,
+        role: user.role,
+      };
+    } catch (err: unknown) {
+      if (err instanceof UnauthorizedException) {
+        throw err;
+      }
+      throw new UnauthorizedException('Authentication token is missing or invalid');
+    }
   }
 }

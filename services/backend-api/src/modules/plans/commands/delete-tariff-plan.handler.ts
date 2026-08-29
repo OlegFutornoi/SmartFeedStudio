@@ -1,5 +1,5 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { DeleteTariffPlanCommand } from './delete-tariff-plan.command';
 
@@ -22,6 +22,13 @@ export class DeleteTariffPlanHandler implements ICommandHandler<
 
     if (!existing) {
       throw new NotFoundException(`Tariff plan with ID "${id}" not found`);
+    }
+
+    const PROTECTED_SYSTEM_CODES = new Set(['STARTER', 'GROWTH', 'PRO', 'ENTERPRISE']);
+    if (PROTECTED_SYSTEM_CODES.has(existing.code.toUpperCase().trim())) {
+      throw new BadRequestException(
+        `Cannot delete core system tariff plan "${existing.code}". You can deactivate it by setting isActive: false instead.`,
+      );
     }
 
     await this.prisma.tariffPlan.delete({

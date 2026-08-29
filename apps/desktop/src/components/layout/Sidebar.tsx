@@ -6,6 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useSidebar } from '@/contexts/SidebarContext';
 import { useNavigation } from '@/contexts/NavigationContext';
 import { useTranslation } from '@/i18n';
+import { useLicense } from '@/hooks/useLicense';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { SidebarNavItem } from './SidebarNavItem';
@@ -18,6 +19,7 @@ export function Sidebar() {
   const { isCollapsed, toggleSidebar, isMobileOpen, closeMobileSidebar } = useSidebar();
   const { items } = useNavigation();
   const { language } = useTranslation();
+  const { isExpired } = useLicense();
 
   const currentLang = language || 'uk';
 
@@ -96,6 +98,7 @@ export function Sidebar() {
                 item={item}
                 isCollapsed={isCollapsed}
                 currentLang={currentLang}
+                isExpired={isExpired}
               />
             ))}
           </nav>

@@ -263,43 +263,56 @@ export function getErrorMessage(error: unknown, t: (key: string) => string): str
     return directNoNs;
   }
 
+  const lower = rawMessage.toLowerCase();
+
   if (
-    rawMessage.includes('Invalid email or password') ||
-    rawMessage.includes('Unauthorized') ||
-    rawMessage.includes('401')
+    lower.includes('authentication token is missing or invalid') ||
+    lower.includes('jwt expired') ||
+    lower.includes('token expired') ||
+    lower.includes('invalid token') ||
+    lower.includes('unauthorized') ||
+    lower.includes('401')
+  ) {
+    return t('errors.unauthorized');
+  }
+
+  if (
+    lower.includes('invalid email or password') ||
+    lower.includes('invalid credentials') ||
+    lower.includes('wrong password')
   ) {
     return t('errors.invalidCredentials');
   }
 
-  if (rawMessage.includes('already exists') || rawMessage.includes('409')) {
+  if (lower.includes('already exists') || lower.includes('409')) {
     return t('errors.userAlreadyExists');
   }
 
-  if (rawMessage.includes('email must be an email') || rawMessage.includes('invalid email')) {
+  if (lower.includes('email must be an email') || lower.includes('invalid email')) {
     return t('errors.invalidEmail');
   }
 
-  if (rawMessage.includes('password must be longer') || rawMessage.includes('at least 8')) {
+  if (lower.includes('password must be longer') || lower.includes('at least 8')) {
     return t('errors.passwordTooShort');
   }
 
   if (
-    rawMessage.includes('Failed to fetch') ||
-    rawMessage.includes('NetworkError') ||
-    rawMessage.includes('ECONNREFUSED')
+    lower.includes('failed to fetch') ||
+    lower.includes('networkerror') ||
+    lower.includes('econnrefused')
   ) {
     return t('errors.networkError');
   }
 
-  if (rawMessage.includes('500') || rawMessage.includes('Internal server error')) {
+  if (lower.includes('500') || lower.includes('internal server error')) {
     return t('errors.serverError');
   }
 
   if (
-    rawMessage.includes('password reset instructions') ||
-    rawMessage.includes('not found') ||
-    rawMessage.includes('User not found') ||
-    rawMessage.includes('userNotFound')
+    lower.includes('password reset instructions') ||
+    lower.includes('not found') ||
+    lower.includes('user not found') ||
+    lower.includes('usernotfound')
   ) {
     return t('errors.userNotFound');
   }

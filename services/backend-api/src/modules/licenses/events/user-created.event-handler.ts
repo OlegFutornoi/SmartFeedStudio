@@ -41,9 +41,10 @@ export class UserCreatedEventHandler implements IEventHandler<UserCreatedEvent> 
       const hasAuditLog = dbPlan ? dbPlan.hasAuditLog : limits.hasAuditLog;
       const tariffPlanId = dbPlan ? dbPlan.id : null;
 
-      const expiresAt = dbPlan?.durationDays
-        ? new Date(Date.now() + dbPlan.durationDays * 24 * 60 * 60 * 1000)
-        : null;
+      // Trial duration for new registrations: 7 days default (or dbPlan.durationDays if customized by admin)
+      const trialDays =
+        dbPlan?.durationDays && dbPlan.durationDays !== 30 ? dbPlan.durationDays : 7;
+      const expiresAt = new Date(Date.now() + trialDays * 24 * 60 * 60 * 1000);
 
       const license = await this.prisma.license.create({
         data: {

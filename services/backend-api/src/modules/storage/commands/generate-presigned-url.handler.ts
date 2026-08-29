@@ -1,5 +1,5 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
@@ -45,6 +45,26 @@ export class GeneratePresignedUploadUrlHandler implements ICommandHandler<
       folder && ALLOWED_FOLDERS.has(folder.toLowerCase().trim())
         ? folder.toLowerCase().trim()
         : 'images';
+
+    const ALLOWED_MIME_TYPES = new Set([
+      'image/jpeg',
+      'image/png',
+      'image/webp',
+      'image/gif',
+      'application/xml',
+      'text/xml',
+      'text/csv',
+      'application/json',
+      'application/zip',
+      'application/octet-stream',
+    ]);
+
+    const normalizedContentType = (contentType || '').toLowerCase().trim();
+    if (!ALLOWED_MIME_TYPES.has(normalizedContentType)) {
+      throw new BadRequestException(
+        `Unsupported or unsafe Content-Type: "${contentType}". Allowed types: JPEG, PNG, WEBP, GIF, XML, CSV, JSON, ZIP.`,
+      );
+    }
 
     // Path traversal defense: strip any path separators and keep only safe basename
     const baseFileName = fileName.split(/[/\\]/).pop() || 'upload';

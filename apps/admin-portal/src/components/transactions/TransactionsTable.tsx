@@ -4,7 +4,9 @@ import React from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
 import { Badge } from '../ui/badge';
 import { PaymentTransactionDto } from '@smartfeed/shared';
-import { CheckCircle2, Clock, XCircle, CreditCard, User, Calendar } from 'lucide-react';
+import { CheckCircle2, Clock, XCircle, CreditCard } from 'lucide-react';
+import { TablePagination } from '../ui/table-pagination';
+import { usePagination } from '../../hooks/usePagination';
 
 interface TransactionsTableProps {
   transactions: PaymentTransactionDto[];
@@ -13,6 +15,12 @@ interface TransactionsTableProps {
 }
 
 export function TransactionsTable({ transactions, isLoading, isUk }: TransactionsTableProps) {
+  const { currentPage, pageSize, totalPages, totalItems, paginatedItems, setPage, setPageSize } =
+    usePagination(transactions, {
+      initialPageSize: 10,
+      resetDeps: [transactions],
+    });
+
   if (isLoading) {
     return (
       <div className="flex flex-col items-center justify-center p-12 text-muted-foreground">
@@ -96,7 +104,7 @@ export function TransactionsTable({ transactions, isLoading, isUk }: Transaction
   };
 
   return (
-    <div className="rounded-xl border border-border bg-card overflow-hidden">
+    <div className="rounded-xl border border-border bg-card overflow-hidden flex flex-col shadow-sm">
       <Table>
         <TableHeader className="bg-muted/40">
           <TableRow className="text-xs">
@@ -112,7 +120,7 @@ export function TransactionsTable({ transactions, isLoading, isUk }: Transaction
         </TableHeader>
 
         <TableBody>
-          {transactions.map((tx) => {
+          {paginatedItems.map((tx) => {
             const formattedDate = new Date(tx.createdAt).toLocaleDateString(
               isUk ? 'uk-UA' : 'en-US',
               {
@@ -199,6 +207,19 @@ export function TransactionsTable({ transactions, isLoading, isUk }: Transaction
           })}
         </TableBody>
       </Table>
+
+      {/* Pagination footer */}
+      <TablePagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        pageSize={pageSize}
+        totalItems={totalItems}
+        onPageChange={setPage}
+        onPageSizeChange={setPageSize}
+        pageSizeOptions={[10, 25, 50, 100]}
+        isUk={isUk}
+        testIdPrefix="transactions-pagination"
+      />
     </div>
   );
 }

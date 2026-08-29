@@ -8,6 +8,8 @@ import { Table, TableBody, TableHead, TableHeader, TableRow } from '../ui/table'
 import { UserTableRow } from './UserTableRow';
 import { UserTeamSubRows } from './UserTeamSubRows';
 import { UsersTableToolbar } from './UsersTableToolbar';
+import { TablePagination } from '../ui/table-pagination';
+import { usePagination } from '../../hooks/usePagination';
 import { useLanguage } from '../../contexts/LanguageContext';
 
 interface UsersTableProps {
@@ -47,13 +49,20 @@ export const UsersTable = React.memo(function UsersTable({
   onOpenDelete,
   onOpenTeam,
 }: UsersTableProps) {
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
+  const isUk = locale === 'uk';
   const [expandedUserIds, setExpandedUserIds] = useState<Set<string>>(new Set());
+
+  const { currentPage, pageSize, totalPages, totalItems, paginatedItems, setPage, setPageSize } =
+    usePagination(users, {
+      initialPageSize: 10,
+      resetDeps: [users],
+    });
 
   // Reset expanded accordion rows whenever search or filters change
   React.useEffect(() => {
     setExpandedUserIds(new Set());
-  }, [search, selectedRole, selectedOrgRole]);
+  }, [search, selectedRole, selectedOrgRole, currentPage]);
 
   const totalUsersCount = React.useMemo(() => {
     return users.reduce((acc, u) => acc + 1 + (u.teamMembers ? u.teamMembers.length : 0), 0);
@@ -125,7 +134,7 @@ export const UsersTable = React.memo(function UsersTable({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {users.map((u) => {
+              {paginatedItems.map((u) => {
                 const isExpanded = expandedUserIds.has(u.id);
                 return (
                   <React.Fragment key={u.id}>
@@ -151,6 +160,21 @@ export const UsersTable = React.memo(function UsersTable({
           </Table>
         )}
       </CardContent>
+
+      {/* Pagination Footer */}
+      {!isLoading && users.length > 0 && (
+        <TablePagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          pageSize={pageSize}
+          totalItems={totalItems}
+          onPageChange={setPage}
+          onPageSizeChange={setPageSize}
+          pageSizeOptions={[10, 25, 50, 100]}
+          isUk={isUk}
+          testIdPrefix="users-pagination"
+        />
+      )}
     </Card>
   );
 });

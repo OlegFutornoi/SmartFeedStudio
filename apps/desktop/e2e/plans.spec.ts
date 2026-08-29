@@ -12,12 +12,12 @@ test.describe('Desktop App — Тарифні плани, білінгові п�
     {
       id: 'plan-starter',
       code: 'STARTER',
-      nameUk: 'Безкоштовний',
-      nameEn: 'Free Trial',
-      descriptionUk: 'Для ознайомлення та тестування 1 маркетплейсу',
-      descriptionEn: 'For exploration and testing 1 marketplace',
-      priceMonthly: 0,
-      priceYearly: 0,
+      nameUk: 'Старт',
+      nameEn: 'Starter',
+      descriptionUk: '7 днів безкоштовно при реєстрації. Ідеально для швидкого старту',
+      descriptionEn: '7-day free trial on signup. Perfect for a quick start',
+      priceMonthly: 299,
+      priceYearly: 2999,
       currency: 'UAH',
       maxXmlLimit: 1000,
       maxSuppliersLimit: 1,
@@ -38,8 +38,9 @@ test.describe('Desktop App — Тарифні плани, білінгові п�
       isPopular: false,
       isActive: true,
       order: 1,
-      durationDays: 7,
+      durationDays: 30,
       featuresUk: [
+        '7 днів безкоштовного пробного періоду при реєстрації',
         'До 1,000 SKU товарів',
         '1 постачальник',
         '1 активний фід',
@@ -47,6 +48,7 @@ test.describe('Desktop App — Тарифні плани, білінгові п�
         '50 AI Кредитів на тест',
       ],
       featuresEn: [
+        '7-day free trial on signup',
         'Up to 1,000 product SKUs',
         '1 product supplier',
         '1 active feed',
@@ -440,6 +442,11 @@ test.describe('Desktop App — Тарифні плани, білінгові п�
     await expect(page.getByTestId('checkout-total-amount')).toContainText('14,280 грн');
     await expect(page.getByTestId('pay-wayforpay-btn')).toBeVisible();
 
+    await page.screenshot({
+      path: '/Users/oleg/.gemini/antigravity-ide/brain/d7eed6c3-a334-4c29-a82d-93b7ad73f29a/desktop-payment-modal-fixed-buttons.png',
+      fullPage: true,
+    });
+
     // 5. Натискаємо кнопку симуляції успішної оплати
     await page.getByTestId('simulate-payment-success-btn').click();
 
@@ -478,7 +485,9 @@ test.describe('Desktop App — Тарифні плани, білінгові п�
     // Відображається блокувальник ExpiredPlanBlocker
     const blocker = page.getByTestId('expired-plan-blocker');
     await expect(blocker).toBeVisible();
-    await expect(blocker).toContainText('Термін дії тарифного плану закінчився');
+    await expect(blocker).toContainText(
+      /(7-денний пробний період закінчився|Термін дії тарифного плану закінчився)/,
+    );
 
     // Клік по кнопці "Перейти до тарифів"
     const choosePlanBtn = page.getByTestId('choose-plan-button');
@@ -536,6 +545,11 @@ test.describe('Desktop App — Тарифні плани, білінгові п�
       'Оплату відхилено банком',
     );
 
+    await page.screenshot({
+      path: '/Users/oleg/.gemini/antigravity-ide/brain/d7eed6c3-a334-4c29-a82d-93b7ad73f29a/desktop-payment-modal-bright-red-declined.png',
+      fullPage: true,
+    });
+
     // Закриваємо модальне вікно
     await page.getByTestId('close-checkout-modal-btn').click();
 
@@ -562,6 +576,7 @@ test.describe('Desktop App — Тарифні плани, білінгові п�
 
     await page.getByTestId('nav-item-plans').click();
     await expect(page.getByTestId('plans-page')).toBeVisible();
+    await expect(page.getByTestId('plan-card-pro')).toBeVisible();
 
     // Рівно 1 запит до /api/plans
     expect(plansRequestsCount).toBe(1);

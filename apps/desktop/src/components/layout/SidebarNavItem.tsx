@@ -13,6 +13,7 @@ import {
   Shield,
   Bell,
   CreditCard,
+  Lock,
 } from 'lucide-react';
 import { NavigationItemDto } from '@smartfeed/shared';
 import { cn } from '@/lib/utils';
@@ -42,6 +43,7 @@ interface SidebarNavItemProps {
   item: NavigationItemDto;
   isCollapsed: boolean;
   currentLang: string;
+  isExpired?: boolean;
   onClick?: () => void;
 }
 
@@ -49,12 +51,16 @@ export const SidebarNavItem = React.memo(function SidebarNavItem({
   item,
   isCollapsed,
   currentLang,
+  isExpired = false,
   onClick,
 }: SidebarNavItemProps) {
   const location = useLocation();
   const label = currentLang === 'uk' ? item.labelUk : item.labelEn;
   const isActive =
     item.path === '/' ? location.pathname === '/' : location.pathname.startsWith(item.path);
+
+  const isRestrictedWhenExpired = isExpired && !['/plans', '/settings'].includes(item.path);
+  const isPlansLink = item.path === '/plans';
 
   return (
     <Link
@@ -67,7 +73,9 @@ export const SidebarNavItem = React.memo(function SidebarNavItem({
         isCollapsed ? 'justify-center h-10 w-10 mx-auto px-0' : 'space-x-3 px-3 py-2.5',
         isActive
           ? 'bg-primary text-primary-foreground shadow-sm shadow-primary/20 font-semibold'
-          : 'text-muted-foreground hover:text-foreground hover:bg-muted/50',
+          : isRestrictedWhenExpired
+            ? 'text-muted-foreground/60 hover:text-foreground hover:bg-muted/30 opacity-75'
+            : 'text-muted-foreground hover:text-foreground hover:bg-muted/50',
       )}
     >
       {renderItemIcon(
@@ -76,19 +84,32 @@ export const SidebarNavItem = React.memo(function SidebarNavItem({
           'h-4 w-4 shrink-0 transition-transform group-hover:scale-110',
           isActive
             ? 'text-primary-foreground'
-            : 'text-muted-foreground group-hover:text-foreground',
+            : isRestrictedWhenExpired
+              ? 'text-muted-foreground/50'
+              : 'text-muted-foreground group-hover:text-foreground',
         ),
       )}
       {!isCollapsed && (
         <div className="flex items-center justify-between flex-1 min-w-0">
           <span className="truncate">{label}</span>
-          {item.requiredPlan && (
+          {isRestrictedWhenExpired ? (
+            <Lock className="size-3 text-amber-500/70 shrink-0 ml-1" />
+          ) : isPlansLink && isExpired ? (
             <Badge
-              variant="outline"
-              className="text-[9px] px-1 py-0 ml-1 border-primary/30 text-primary"
+              variant="default"
+              className="text-[9px] px-1.5 py-0 ml-1 bg-amber-600 text-white font-semibold animate-pulse shadow-xs"
             >
-              {item.requiredPlan}
+              {currentLang === 'uk' ? 'Обрати' : 'Select'}
             </Badge>
+          ) : (
+            item.requiredPlan && (
+              <Badge
+                variant="outline"
+                className="text-[9px] px-1 py-0 ml-1 border-primary/30 text-primary"
+              >
+                {item.requiredPlan}
+              </Badge>
+            )
           )}
         </div>
       )}

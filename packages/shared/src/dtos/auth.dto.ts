@@ -73,6 +73,7 @@ export interface UserProfile {
   email: string;
   fullName: string | null;
   role: Role;
+  isActive?: boolean;
   organization?: UserOrganizationInfo | null;
   createdAt: Date | string;
   updatedAt?: Date | string;

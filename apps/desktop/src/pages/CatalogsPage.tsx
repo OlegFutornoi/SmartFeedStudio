@@ -3,6 +3,8 @@ import { Layers, Plus, Upload, RefreshCw, CheckCircle2, FileText, Search } from 
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { TablePagination } from '@/components/ui/table-pagination';
+import { usePagination } from '@/hooks/usePagination';
 import { useTranslation } from '@/i18n';
 import { useLicense } from '@/hooks/useLicense';
 import { ExpiredPlanBlocker } from '@/components/layout/ExpiredPlanBlocker';
@@ -18,7 +20,8 @@ interface CatalogItem {
 }
 
 export function CatalogsPage() {
-  const { t } = useTranslation(['catalogs', 'common']);
+  const { t, language } = useTranslation(['catalogs', 'common']);
+  const isUk = language === 'uk';
   const { isExpired } = useLicense();
 
   const [search, setSearch] = useState('');
@@ -61,6 +64,12 @@ export function CatalogsPage() {
       ),
     [catalogs, search],
   );
+
+  const { currentPage, pageSize, totalPages, totalItems, paginatedItems, setPage, setPageSize } =
+    usePagination(filteredCatalogs, {
+      initialPageSize: 10,
+      resetDeps: [search],
+    });
 
   if (isExpired) {
     return <ExpiredPlanBlocker featureName={t('catalogs:title')} />;
@@ -139,7 +148,7 @@ export function CatalogsPage() {
       </div>
 
       {/* Search & Catalogs List */}
-      <Card className="border-border/80 bg-card/60 backdrop-blur-md">
+      <Card className="border-border/80 bg-card/60 backdrop-blur-md overflow-hidden flex flex-col">
         <CardHeader className="flex flex-row items-center justify-between pb-3">
           <div>
             <CardTitle className="text-base font-semibold">
@@ -154,6 +163,7 @@ export function CatalogsPage() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
             <input
               type="text"
+              data-testid="catalogs-search-input"
               placeholder={t('catalogs:searchPlaceholder')}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -162,9 +172,9 @@ export function CatalogsPage() {
           </div>
         </CardHeader>
 
-        <CardContent className="p-0">
+        <CardContent className="p-0 flex-1">
           <div className="divide-y divide-border/60">
-            {filteredCatalogs.map((catalog) => (
+            {paginatedItems.map((catalog) => (
               <div
                 key={catalog.id}
                 className="flex flex-col sm:flex-row sm:items-center justify-between p-4 gap-3 hover:bg-muted/20 transition-colors"
@@ -214,6 +224,19 @@ export function CatalogsPage() {
             ))}
           </div>
         </CardContent>
+
+        {/* Pagination Footer */}
+        <TablePagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          pageSize={pageSize}
+          totalItems={totalItems}
+          onPageChange={setPage}
+          onPageSizeChange={setPageSize}
+          pageSizeOptions={[5, 10, 25, 50]}
+          isUk={isUk}
+          testIdPrefix="catalogs-pagination"
+        />
       </Card>
     </div>
   );

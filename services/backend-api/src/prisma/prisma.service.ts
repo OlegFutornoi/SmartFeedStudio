@@ -12,7 +12,12 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
     const connectionString =
       process.env.DATABASE_URL ||
       'postgresql://postgres:postgrespassword@localhost:5432/smartfeed_db?schema=public';
-    const pool = new Pool({ connectionString });
+    const pool = new Pool({
+      connectionString,
+      max: Number(process.env.DB_POOL_MAX) || 20,
+      idleTimeoutMillis: 30000,
+      connectionTimeoutMillis: 5000,
+    });
     const adapter = new PrismaPg(pool);
 
     super({

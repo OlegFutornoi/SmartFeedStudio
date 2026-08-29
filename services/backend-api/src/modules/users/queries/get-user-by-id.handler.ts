@@ -42,6 +42,7 @@ export class GetUserByIdHandler implements IQueryHandler<GetUserByIdQuery, UserP
       email: user.email,
       fullName: user.fullName,
       role: user.role as Role,
+      isActive: user.isActive,
       organization,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,

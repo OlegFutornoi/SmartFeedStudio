@@ -4,12 +4,13 @@ import {
   loginUser,
   registerUser,
   getCurrentUser,
+  refreshAuthSession,
+  TOKEN_KEY,
+  REFRESH_TOKEN_KEY,
+  USER_KEY,
   type LoginCredentials,
   type RegisterCredentials,
 } from '@/lib/api';
-
-const TOKEN_KEY = 'smartfeed_access_token';
-const USER_KEY = 'smartfeed_user_profile';
 
 interface AuthContextType {
   user: UserProfile | null;
@@ -18,7 +19,10 @@ interface AuthContextType {
   isLoading: boolean;
   login: (credentials: LoginCredentials) => Promise<void>;
   register: (credentials: RegisterCredentials) => Promise<void>;
-  setAuthSession: (authResponse: { tokens: { accessToken: string }; user: UserProfile }) => void;
+  setAuthSession: (authResponse: {
+    tokens: { accessToken: string; refreshToken?: string };
+    user: UserProfile;
+  }) => void;
   logout: () => void;
   refreshProfile: () => Promise<void>;
 }
@@ -48,6 +52,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = useCallback(() => {
     localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(REFRESH_TOKEN_KEY);
     localStorage.removeItem(USER_KEY);
     setToken(null);
     setUser(null);
@@ -64,8 +69,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const profile = await getCurrentUser(activeToken);
       setUser(profile);
       localStorage.setItem(USER_KEY, JSON.stringify(profile));
+      // In case token was silently refreshed during getCurrentUser
+      const currentStoredToken = localStorage.getItem(TOKEN_KEY);
+      if (currentStoredToken && currentStoredToken !== activeToken) {
+        setToken(currentStoredToken);
+      }
     } catch {
-      logout();
+      // Only logout if even refresh failed
+      const refreshToken = localStorage.getItem(REFRESH_TOKEN_KEY);
+      if (!refreshToken) {
+        logout();
+      }
     } finally {
       setIsLoading(false);
     }
@@ -80,12 +94,35 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [refreshProfile]);
 
+  // Proactive background silent refresh every 10 minutes to keep session active indefinitely
+  useEffect(() => {
+    if (!token) return;
+
+    const interval = setInterval(
+      async () => {
+        const refreshedToken = await refreshAuthSession();
+        if (refreshedToken) {
+          setToken(refreshedToken);
+        }
+      },
+      10 * 60 * 1000,
+    );
+
+    return () => clearInterval(interval);
+  }, [token]);
+
   const setAuthSession = useCallback(
-    (authResponse: { tokens: { accessToken: string }; user: UserProfile }) => {
+    (authResponse: {
+      tokens: { accessToken: string; refreshToken?: string };
+      user: UserProfile;
+    }) => {
       const accessToken = authResponse.tokens.accessToken;
       const userProfile = authResponse.user;
 
       localStorage.setItem(TOKEN_KEY, accessToken);
+      if (authResponse.tokens.refreshToken) {
+        localStorage.setItem(REFRESH_TOKEN_KEY, authResponse.tokens.refreshToken);
+      }
       localStorage.setItem(USER_KEY, JSON.stringify(userProfile));
 
       setToken(accessToken);
@@ -102,6 +139,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const userProfile = authResponse.user;
 
       localStorage.setItem(TOKEN_KEY, accessToken);
+      if (authResponse.tokens.refreshToken) {
+        localStorage.setItem(REFRESH_TOKEN_KEY, authResponse.tokens.refreshToken);
+      }
       localStorage.setItem(USER_KEY, JSON.stringify(userProfile));
 
       setToken(accessToken);
@@ -119,6 +159,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const userProfile = authResponse.user;
 
       localStorage.setItem(TOKEN_KEY, accessToken);
+      if (authResponse.tokens.refreshToken) {
+        localStorage.setItem(REFRESH_TOKEN_KEY, authResponse.tokens.refreshToken);
+      }
       localStorage.setItem(USER_KEY, JSON.stringify(userProfile));
 
       setToken(accessToken);

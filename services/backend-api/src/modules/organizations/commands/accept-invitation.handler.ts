@@ -116,6 +116,10 @@ export class AcceptInvitationHandler implements ICommandHandler<
         throw new ForbiddenException('Authenticated user email does not match invitation email');
       }
 
+      if (!targetUser.isActive) {
+        throw new ForbiddenException('Обліковий запис деактивовано');
+      }
+
       // If password was provided on the accept form, strictly verify against user password hash
       if (password) {
         const isPasswordValid = await bcrypt.compare(password, targetUser.passwordHash);

@@ -71,8 +71,9 @@ export function WayForPaySettingsDialog({
       setSuccess(true);
       onSaved(updated);
       onOpenChange(false);
-    } catch (err: any) {
-      setError(err.message || 'Failed to save settings');
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Failed to save settings';
+      setError(msg);
     } finally {
       setIsSaving(false);
     }

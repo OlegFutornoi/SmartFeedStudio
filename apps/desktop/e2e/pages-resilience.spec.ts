@@ -203,4 +203,31 @@ test.describe('Desktop App — Розділи додатку, i18n та Стій
       await langBtn.click();
     }
   });
+
+  test('4. Сторінка Каталогів: перевірка пагінації та пошуку по всій вибірці даних', async ({
+    page,
+  }) => {
+    await page.goto('/catalogs');
+    await expect(page.getByTestId('catalogs-page')).toBeVisible();
+
+    const pagination = page.getByTestId('catalogs-pagination');
+    await expect(pagination).toBeVisible();
+    await expect(page.getByTestId('catalogs-pagination-range-text')).toContainText(
+      'Показано 1–3 із 3 записів',
+    );
+
+    await page.screenshot({
+      path: '/Users/oleg/.gemini/antigravity-ide/brain/d7eed6c3-a334-4c29-a82d-93b7ad73f29a/desktop-catalogs-pagination-view.png',
+      fullPage: true,
+    });
+
+    // Search query narrows the pagination scope
+    const searchInput = page.getByTestId('catalogs-search-input');
+    await searchInput.fill('Google');
+    await expect(page.getByTestId('catalogs-pagination-range-text')).toContainText(
+      'Показано 1–1 із 1 записів',
+    );
+    await expect(page.getByText('Google Merchant Center Feed')).toBeVisible();
+    await expect(page.getByText('Rozetka XML')).not.toBeVisible();
+  });
 });

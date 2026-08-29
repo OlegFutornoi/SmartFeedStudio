@@ -24,18 +24,72 @@ import {
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
 
 class ApiClient {
+  private isRefreshing = false;
+  private refreshPromise: Promise<string | null> | null = null;
+
   private getToken(): string | null {
     if (typeof window === 'undefined') return null;
     return localStorage.getItem('smartfeed_admin_token');
   }
 
-  public setToken(token: string | null): void {
+  private getRefreshToken(): string | null {
+    if (typeof window === 'undefined') return null;
+    return localStorage.getItem('smartfeed_admin_refresh_token');
+  }
+
+  public setToken(token: string | null, refreshToken?: string | null): void {
     if (typeof window === 'undefined') return;
     if (token) {
       localStorage.setItem('smartfeed_admin_token', token);
     } else {
       localStorage.removeItem('smartfeed_admin_token');
     }
+    if (refreshToken !== undefined) {
+      if (refreshToken) {
+        localStorage.setItem('smartfeed_admin_refresh_token', refreshToken);
+      } else {
+        localStorage.removeItem('smartfeed_admin_refresh_token');
+      }
+    }
+  }
+
+  private async refreshSession(): Promise<string | null> {
+    const refreshToken = this.getRefreshToken();
+    if (!refreshToken) return null;
+
+    if (this.isRefreshing && this.refreshPromise) {
+      return this.refreshPromise;
+    }
+
+    this.isRefreshing = true;
+    this.refreshPromise = (async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/auth/refresh`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ refreshToken }),
+        });
+
+        if (!response.ok) {
+          this.setToken(null, null);
+          return null;
+        }
+
+        const data: AuthResponseDto = await response.json();
+        if (data.tokens?.accessToken) {
+          this.setToken(data.tokens.accessToken, data.tokens.refreshToken || null);
+          return data.tokens.accessToken;
+        }
+        return null;
+      } catch {
+        return null;
+      } finally {
+        this.isRefreshing = false;
+        this.refreshPromise = null;
+      }
+    })();
+
+    return this.refreshPromise;
   }
 
   private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
@@ -49,14 +103,25 @@ class ApiClient {
       headers['Authorization'] = `Bearer ${token}`;
     }
 
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    let response = await fetch(`${API_BASE_URL}${endpoint}`, {
       ...options,
       headers,
     });
 
+    if (response.status === 401 && endpoint !== '/auth/login' && endpoint !== '/auth/refresh') {
+      const newToken = await this.refreshSession();
+      if (newToken) {
+        headers['Authorization'] = `Bearer ${newToken}`;
+        response = await fetch(`${API_BASE_URL}${endpoint}`, {
+          ...options,
+          headers,
+        });
+      }
+    }
+
     if (!response.ok) {
       if (response.status === 401 && typeof window !== 'undefined' && endpoint !== '/auth/login') {
-        localStorage.removeItem('smartfeed_admin_token');
+        this.setToken(null, null);
         window.dispatchEvent(new CustomEvent('smartfeed_auth_unauthorized'));
       }
 
@@ -89,7 +154,7 @@ class ApiClient {
       body: JSON.stringify(dto),
     });
     if (res.tokens?.accessToken) {
-      this.setToken(res.tokens.accessToken);
+      this.setToken(res.tokens.accessToken, res.tokens.refreshToken || null);
     }
     return res;
   }

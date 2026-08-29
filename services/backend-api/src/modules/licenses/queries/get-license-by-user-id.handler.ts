@@ -15,6 +15,73 @@ export class GetLicenseByUserIdHandler implements IQueryHandler<
   async execute(query: GetLicenseByUserIdQuery): Promise<LicenseEntity | null> {
     const { userId } = query;
 
+    // Platform Super Admins and Admins have unrestricted perpetual Enterprise license
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (user && (user.role === 'SUPER_ADMIN' || user.role === 'ADMIN')) {
+      const enterprisePlan = await this.prisma.tariffPlan.findUnique({
+        where: { code: PlanType.ENTERPRISE },
+      });
+      return {
+        id: `admin-license-${user.id}`,
+        userId: user.id,
+        organizationId: null,
+        organizationName: 'SmartFeed Platform',
+        licenseKey: `SF-ENTERPRISE-ADMIN-${user.id.slice(-6).toUpperCase()}`,
+        planType: PlanType.ENTERPRISE,
+        canCloudBackup: true,
+        maxXmlLimit: 9999999,
+        aiCredits: 999999,
+        maxFeedsLimit: 999999,
+        maxChannelsLimit: 999999,
+        maxTeamSeats: 999,
+        maxSuppliersLimit: 999999,
+        hasApiAccess: true,
+        hasFeedDiff: true,
+        hasWhiteLabel: true,
+        hasSso: true,
+        hasAuditLog: true,
+        isActive: true,
+        expiresAt: null,
+        isExpired: false,
+        daysRemaining: null,
+        tariffPlan: enterprisePlan
+          ? {
+              id: enterprisePlan.id,
+              code: enterprisePlan.code,
+              nameUk: enterprisePlan.nameUk,
+              nameEn: enterprisePlan.nameEn,
+              descriptionUk: enterprisePlan.descriptionUk,
+              descriptionEn: enterprisePlan.descriptionEn,
+              priceMonthly: Number(enterprisePlan.priceMonthly),
+              priceYearly: enterprisePlan.priceYearly ? Number(enterprisePlan.priceYearly) : null,
+              currency: enterprisePlan.currency,
+              maxXmlLimit: enterprisePlan.maxXmlLimit,
+              aiCredits: enterprisePlan.aiCredits,
+              canCloudBackup: enterprisePlan.canCloudBackup,
+              maxFeedsLimit: enterprisePlan.maxFeedsLimit,
+              maxChannelsLimit: enterprisePlan.maxChannelsLimit,
+              maxTeamSeats: enterprisePlan.maxTeamSeats,
+              maxSuppliersLimit: enterprisePlan.maxSuppliersLimit,
+              hasApiAccess: enterprisePlan.hasApiAccess,
+              hasFeedDiff: enterprisePlan.hasFeedDiff,
+              isPopular: enterprisePlan.isPopular,
+              isActive: enterprisePlan.isActive,
+              order: enterprisePlan.order,
+              durationDays: enterprisePlan.durationDays,
+              featuresUk: enterprisePlan.featuresUk,
+              featuresEn: enterprisePlan.featuresEn,
+              createdAt: enterprisePlan.createdAt,
+              updatedAt: enterprisePlan.updatedAt,
+            }
+          : null,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
+      };
+    }
+
     // 1. Fetch all user's organization memberships with their latest license
     const memberships = await this.prisma.organizationMember.findMany({
       where: { userId },

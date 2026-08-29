@@ -122,10 +122,10 @@ describe('Licenses & Tariff Plan Expiration Policy (E2E)', () => {
       ],
     });
 
-    // Reset STARTER plan duration back to 7 days
+    // Reset STARTER plan duration back to 30 days
     await prisma.tariffPlan.updateMany({
       where: { code: 'STARTER' },
-      data: { durationDays: 7 },
+      data: { durationDays: 30 },
     });
 
     await app.close();
@@ -145,7 +145,7 @@ describe('Licenses & Tariff Plan Expiration Policy (E2E)', () => {
       expect(res.body.daysRemaining).toBeLessThanOrEqual(7);
       expect(res.body.expiresAt).toBeDefined();
       expect(res.body.tariffPlan).toBeDefined();
-      expect(res.body.tariffPlan.durationDays).toBe(7);
+      expect(res.body.tariffPlan.durationDays).toBe(30);
       // New quota fields
       expect(res.body.maxFeedsLimit).toBe(1);
       expect(res.body.maxChannelsLimit).toBe(1);
@@ -198,16 +198,32 @@ describe('Licenses & Tariff Plan Expiration Policy (E2E)', () => {
       expect(licRes.body.daysRemaining).toBeLessThanOrEqual(14);
       expect(licRes.body.tariffPlan.durationDays).toBe(14);
 
-      // Restore STARTER plan duration to 7
+      // Restore STARTER plan duration to 30
       await request(app.getHttpServer())
         .patch(`/api/plans/${starterPlan!.id}`)
         .set('Authorization', `Bearer ${adminToken}`)
-        .send({ durationDays: 7 })
+        .send({ durationDays: 30 })
         .expect(200);
     });
   });
 
   describe('POST /api/licenses/select-plan (User Plan Selection & Renewal)', () => {
+    it('should allow user to select STARTER paid plan and receive 30 days duration with starter quota', async () => {
+      const res = await request(app.getHttpServer())
+        .post('/api/licenses/select-plan')
+        .set('Authorization', `Bearer ${userToken}`)
+        .send({ planCode: 'STARTER' })
+        .expect(201);
+
+      expect(res.body.planType).toBe('STARTER');
+      expect(res.body.licenseKey).toMatch(/^SF-STARTER-/);
+      expect(res.body.isExpired).toBe(false);
+      expect(res.body.tariffPlan.priceMonthly).toBe(299);
+      expect(res.body.tariffPlan.priceYearly).toBe(2999);
+      expect(res.body.daysRemaining).toBeGreaterThanOrEqual(29);
+      expect(res.body.daysRemaining).toBeLessThanOrEqual(30);
+    });
+
     it('should allow user to select PRO plan and receive 30 days duration with correct quota', async () => {
       const res = await request(app.getHttpServer())
         .post('/api/licenses/select-plan')
@@ -334,6 +350,7 @@ describe('Licenses & Tariff Plan Expiration Policy (E2E)', () => {
   describe('DELETE /api/licenses/:id (Admin License Deletion)', () => {
     let licenseToDeleteId: string;
     let tempEmail: string;
+    let tempUserToken: string;
 
     beforeAll(async () => {
       // Create a temporary user with a license to delete
@@ -343,11 +360,12 @@ describe('Licenses & Tariff Plan Expiration Policy (E2E)', () => {
         password: 'Password123!',
         fullName: 'Delete License Target',
       });
+      tempUserToken = regRes.body.tokens.accessToken;
       await new Promise((resolve) => setTimeout(resolve, 200));
 
       const licRes = await request(app.getHttpServer())
         .get('/api/licenses/my')
-        .set('Authorization', `Bearer ${regRes.body.tokens.accessToken}`)
+        .set('Authorization', `Bearer ${tempUserToken}`)
         .expect(200);
       licenseToDeleteId = licRes.body.id;
     });
@@ -388,6 +406,26 @@ describe('Licenses & Tariff Plan Expiration Policy (E2E)', () => {
         where: { id: licenseToDeleteId },
       });
       expect(checkLic).toBeNull();
+    });
+
+    it('користувач із видаленою ліцензією отримує 404 на /api/licenses/my та 403 LICENSE_EXPIRED на захищених ендпоінтах', async () => {
+      // 1. GET /api/licenses/my returns 404
+      await request(app.getHttpServer())
+        .get('/api/licenses/my')
+        .set('Authorization', `Bearer ${tempUserToken}`)
+        .expect(404);
+
+      // 2. Protected storage endpoint returns 403 LICENSE_EXPIRED
+      const blockRes = await request(app.getHttpServer())
+        .post('/api/storage/presigned-url')
+        .set('Authorization', `Bearer ${tempUserToken}`)
+        .send({
+          fileName: 'deleted_license_test.zip',
+          contentType: 'application/zip',
+        })
+        .expect(403);
+
+      expect(blockRes.body.message).toBe('LICENSE_EXPIRED');
     });
   });
 });
