@@ -43,7 +43,9 @@ export const SuppliersToolbar: React.FC<SuppliersToolbarProps> = ({
         <Input
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}
-          placeholder={t('searchPlaceholder', { defaultValue: 'Пошук постачальника...' })}
+          placeholder={t('suppliers:searchPlaceholder', {
+            defaultValue: 'Пошук постачальника за назвою або кодом...',
+          })}
           className="pl-9 h-9 text-xs"
         />
       </div>
@@ -59,7 +61,7 @@ export const SuppliersToolbar: React.FC<SuppliersToolbarProps> = ({
             data-testid="import-feed-header-btn"
           >
             <Radio className="h-4 w-4" />
-            {t('importFeed', { defaultValue: 'Підключити фід (Майстер)' })}
+            {t('suppliers:importFeed', { defaultValue: 'Підключити фід' })}
           </Button>
         </div>
 
@@ -72,7 +74,7 @@ export const SuppliersToolbar: React.FC<SuppliersToolbarProps> = ({
             data-testid="add-supplier-header-btn"
           >
             <Plus className="h-4 w-4" />
-            {t('createSupplier', { defaultValue: 'Додати постачальника' })}
+            {t('suppliers:createSupplier', { defaultValue: 'Додати постачальника' })}
           </Button>
         </div>
       </div>

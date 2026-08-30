@@ -1,13 +1,15 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import {
   Layers,
-  Plus,
-  Upload,
-  RefreshCw,
-  CheckCircle2,
-  FileText,
-  Search,
   Store,
+  Package,
+  CheckCircle2,
+  RefreshCw,
+  Search,
+  FileText,
+  Plus,
+  Trash2,
+  Radio,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
@@ -16,64 +18,112 @@ import { TablePagination } from '@/components/ui/table-pagination';
 import { usePagination } from '@/hooks/usePagination';
 import { useTranslation } from '@/i18n';
 import { useLicense } from '@/hooks/useLicense';
+import { useAuth } from '@/contexts/AuthContext';
+import { useBackgroundJobs } from '@/contexts/BackgroundJobsContext';
+import { useQuotas } from '@/hooks/useQuotas';
 import { ExpiredPlanBlocker } from '@/components/layout/ExpiredPlanBlocker';
 import { ExportChannelsList } from '@/components/export/ExportChannelsList';
-
-interface CatalogItem {
-  id: string;
-  name: string;
-  source: string;
-  productsCount: number;
-  lastSync: string;
-  status: 'Synced' | 'Processing' | 'Error';
-  format: 'XML' | 'CSV' | 'YML';
-}
+import { ProductsView } from '@/components/products/ProductsView';
+import { ImportFeedWizardDialog } from '@/components/feeds/ImportFeedWizardDialog';
+import { ConfirmDeleteDialog } from '@/components/ui/ConfirmDeleteDialog';
+import {
+  getSuppliers,
+  getAllFeedSources,
+  syncSupplierFeedSource,
+  deleteSupplierFeedSource,
+  FeedSourceItemDto,
+} from '@/lib/api';
+import { SupplierDto } from '@smartfeed/shared';
+import { useDataSync, emitDataSync } from '@/lib/syncEvents';
+import { localDb } from '@/services/local-db';
 
 export function CatalogsPage() {
-  const { t, language } = useTranslation(['catalogs', 'common']);
+  const { t, language } = useTranslation(['catalogs', 'suppliers', 'common']);
   const isUk = language === 'uk';
   const { isExpired } = useLicense();
+  const { token } = useAuth();
+  const { refreshQuotas } = useQuotas();
+  const { addTrackedJob, runBackgroundTask } = useBackgroundJobs();
 
-  const [activeTab, setActiveTab] = useState<'catalogs' | 'channels'>('catalogs');
+  const [activeTab, setActiveTab] = useState<'products' | 'catalogs' | 'channels'>('products');
   const [search, setSearch] = useState('');
-  const [catalogs] = useState<CatalogItem[]>([
-    {
-      id: 'cat-1',
-      name: 'Основний каталог товарів (Rozetka XML)',
-      source: 'https://feed.myshop.ua/rozetka.xml',
-      productsCount: 14250,
-      lastSync: '2026-08-24 18:30',
-      status: 'Synced',
-      format: 'XML',
-    },
-    {
-      id: 'cat-2',
-      name: 'Prom.ua Експортний фід',
-      source: 'https://feed.myshop.ua/prom-catalog.xml',
-      productsCount: 8920,
-      lastSync: '2026-08-24 17:15',
-      status: 'Synced',
-      format: 'YML',
-    },
-    {
-      id: 'cat-3',
-      name: 'Google Merchant Center Feed',
-      source: 'local_storage://google_feed.csv',
-      productsCount: 5400,
-      lastSync: '2026-08-24 12:00',
-      status: 'Processing',
-      format: 'CSV',
-    },
-  ]);
+  const [suppliers, setSuppliers] = useState<SupplierDto[]>([]);
+  const [feeds, setFeeds] = useState<FeedSourceItemDto[]>([]);
+  const [totalProductsCount, setTotalProductsCount] = useState<number>(0);
+  const [syncingId, setSyncingId] = useState<string | null>(null);
+  const [feedToDelete, setFeedToDelete] = useState<FeedSourceItemDto | null>(null);
+  const [isImportWizardOpen, setIsImportWizardOpen] = useState(false);
+
+  const loadData = useCallback(async () => {
+    try {
+      const [suppliersData, feedsData, productsRes] = await Promise.all([
+        getSuppliers(token || undefined),
+        getAllFeedSources(token || undefined),
+        localDb.products.getProducts({ limit: 1 }),
+      ]);
+      setSuppliers(suppliersData);
+      setFeeds(feedsData);
+      setTotalProductsCount(productsRes.total);
+    } catch {
+      // Fallback
+    }
+  }, [token]);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
+
+  useDataSync(['suppliers', 'feeds', 'products', 'quotas', 'all'], () => {
+    loadData();
+  });
+
+  const handleSyncFeed = async (feed: FeedSourceItemDto) => {
+    setSyncingId(feed.id);
+    try {
+      const res = await syncSupplierFeedSource(feed.supplierId, feed.id, token || undefined);
+      addTrackedJob(res.jobId);
+      await loadData();
+      emitDataSync(['suppliers', 'feeds', 'products', 'quotas']);
+    } catch {
+      // Handled
+    } finally {
+      setSyncingId(null);
+    }
+  };
+
+  const handleConfirmDeleteFeed = async () => {
+    if (!feedToDelete) return;
+    const target = feedToDelete;
+    setFeedToDelete(null);
+
+    try {
+      await runBackgroundTask({
+        kind: 'DELETE_FEED',
+        title: isUk ? `Видалення фіду «${target.name}»` : `Deleting feed «${target.name}»`,
+        subtitle: isUk
+          ? 'Видалення джерела та товарів у фоні'
+          : 'Deleting feed and products in background',
+        action: async () => {
+          await deleteSupplierFeedSource(target.supplierId, target.id, token || undefined, true);
+          await loadData();
+          refreshQuotas();
+          emitDataSync(['suppliers', 'feeds', 'products', 'quotas']);
+        },
+      });
+    } catch {
+      // Handled
+    }
+  };
 
   const filteredCatalogs = useMemo(
     () =>
-      catalogs.filter(
+      feeds.filter(
         (c) =>
           c.name.toLowerCase().includes(search.toLowerCase()) ||
-          c.format.toLowerCase().includes(search.toLowerCase()),
+          c.fileFormat.toLowerCase().includes(search.toLowerCase()) ||
+          (c.sourceUrl && c.sourceUrl.toLowerCase().includes(search.toLowerCase())),
       ),
-    [catalogs, search],
+    [feeds, search],
   );
 
   const { currentPage, pageSize, totalPages, totalItems, paginatedItems, setPage, setPageSize } =
@@ -82,6 +132,14 @@ export function CatalogsPage() {
       resetDeps: [search],
     });
 
+  const latestSyncDate = useMemo(() => {
+    const dates = feeds
+      .map((f) => (f.lastSyncedAt ? new Date(f.lastSyncedAt).getTime() : 0))
+      .filter((d) => d > 0);
+    if (dates.length === 0) return null;
+    return new Date(Math.max(...dates));
+  }, [feeds]);
+
   if (isExpired) {
     return <ExpiredPlanBlocker featureName={t('catalogs:title')} />;
   }
@@ -89,7 +147,7 @@ export function CatalogsPage() {
   return (
     <div
       data-testid="catalogs-page"
-      className="max-w-6xl mx-auto space-y-8 animate-in fade-in duration-300"
+      className="max-w-6xl mx-auto space-y-6 animate-in fade-in duration-300"
     >
       {/* Header Banner */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-border/40">
@@ -107,24 +165,36 @@ export function CatalogsPage() {
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          {activeTab === 'catalogs' && (
-            <>
-              <Button variant="outline" className="gap-2 text-xs h-9">
-                <Upload className="h-4 w-4" />
-                <span>{t('catalogs:importButton')}</span>
-              </Button>
-              <Button className="gap-2 text-xs h-9 shadow-md shadow-primary/25">
-                <Plus className="h-4 w-4" />
-                <span>{t('catalogs:importButton')}</span>
-              </Button>
-            </>
-          )}
+        <div className="flex items-center gap-2.5">
+          <Button
+            onClick={() => setIsImportWizardOpen(true)}
+            className="flex items-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90 font-medium text-xs px-3.5 py-2 rounded-xl shadow-sm transition-all"
+            data-testid="catalogs-import-feed-btn"
+          >
+            <Plus className="size-4" />
+            <span>{t('catalogs:importButton')}</span>
+          </Button>
         </div>
       </div>
 
       {/* Tabs Navigation Bar */}
-      <div className="flex items-center gap-2 p-1 bg-secondary/30 border border-border/80 rounded-xl w-fit">
+      <div className="flex flex-wrap items-center gap-2 p-1 bg-secondary/30 border border-border/80 rounded-xl w-fit">
+        {/* Products Grid Tab */}
+        <button
+          type="button"
+          onClick={() => setActiveTab('products')}
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold transition-all ${
+            activeTab === 'products'
+              ? 'bg-card text-foreground shadow-sm border border-border/60'
+              : 'text-muted-foreground hover:text-foreground'
+          }`}
+          data-testid="tab-products"
+        >
+          <Package className="size-4 text-primary" />
+          <span>{t('catalogs:tabProducts')}</span>
+        </button>
+
+        {/* Feed Sources Tab */}
         <button
           type="button"
           onClick={() => setActiveTab('catalogs')}
@@ -136,12 +206,13 @@ export function CatalogsPage() {
           data-testid="tab-catalogs"
         >
           <Layers className="size-4 text-primary" />
-          <span>Каталоги товарів</span>
+          <span>{t('catalogs:tabCatalogs')}</span>
           <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4">
-            {catalogs.length}
+            {feeds.length}
           </Badge>
         </button>
 
+        {/* Export Channels Tab */}
         <button
           type="button"
           onClick={() => setActiveTab('channels')}
@@ -153,7 +224,7 @@ export function CatalogsPage() {
           data-testid="tab-export-channels"
         >
           <Store className="size-4 text-emerald-400" />
-          <span>Канали експорту та Маркетплейси</span>
+          <span>{t('catalogs:tabChannels')}</span>
           <Badge
             variant="outline"
             className="text-[10px] px-1.5 py-0 h-4 bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
@@ -163,9 +234,16 @@ export function CatalogsPage() {
         </button>
       </div>
 
-      {activeTab === 'channels' ? (
-        <ExportChannelsList catalogs={catalogs.map((c) => ({ id: c.id, name: c.name }))} />
-      ) : (
+      {/* Tab 1: Products Grid */}
+      {activeTab === 'products' && <ProductsView />}
+
+      {/* Tab 2: Export Channels */}
+      {activeTab === 'channels' && (
+        <ExportChannelsList catalogs={suppliers.map((s) => ({ id: s.id, name: s.name }))} />
+      )}
+
+      {/* Tab 3: Connected Feed Sources */}
+      {activeTab === 'catalogs' && (
         <>
           {/* Metrics Row */}
           <div className="grid gap-4 sm:grid-cols-3">
@@ -175,7 +253,7 @@ export function CatalogsPage() {
                 <Layers className="size-4 text-primary" />
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold text-foreground">{catalogs.length}</div>
+                <div className="text-3xl font-bold text-foreground">{feeds.length}</div>
                 <p className="text-xs text-muted-foreground mt-1">{t('catalogs:activeFeeds')}</p>
               </CardContent>
             </Card>
@@ -186,7 +264,9 @@ export function CatalogsPage() {
                 <FileText className="size-4 text-emerald-400" />
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold text-foreground">28,570</div>
+                <div className="text-3xl font-bold text-foreground">
+                  {totalProductsCount.toLocaleString()}
+                </div>
                 <p className="text-xs text-muted-foreground mt-1">Indexed in SQLCipher DB</p>
               </CardContent>
             </Card>
@@ -194,21 +274,31 @@ export function CatalogsPage() {
             <Card className="border-border/80 bg-card/60 backdrop-blur-md">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">{t('catalogs:lastSynced')}</CardTitle>
-                <CheckCircle2 className="size-4 text-emerald-400" />
+                <CheckCircle2
+                  className={`size-4 ${feeds.length > 0 ? 'text-emerald-400' : 'text-muted-foreground'}`}
+                />
               </CardHeader>
               <CardContent>
                 <div className="text-3xl font-bold text-foreground flex items-center gap-2">
-                  <span>{t('catalogs:statusSynced')}</span>
-                  <span className="size-2 rounded-full bg-emerald-400 animate-pulse" />
+                  <span>
+                    {feeds.length > 0 ? t('catalogs:statusSynced') : t('catalogs:statusIdle')}
+                  </span>
+                  {feeds.length > 0 && (
+                    <span className="size-2 rounded-full bg-emerald-400 animate-pulse" />
+                  )}
                 </div>
-                <p className="text-xs text-muted-foreground mt-1">18:30</p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {latestSyncDate
+                    ? latestSyncDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                    : t('catalogs:neverSynced')}
+                </p>
               </CardContent>
             </Card>
           </div>
 
           {/* Search & Catalogs List */}
           <Card className="border-border/80 bg-card/60 backdrop-blur-md overflow-hidden flex flex-col">
-            <CardHeader className="flex flex-row items-center justify-between pb-3">
+            <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3">
               <div>
                 <CardTitle className="text-base font-semibold">
                   {t('catalogs:connectedFeeds')}
@@ -218,89 +308,177 @@ export function CatalogsPage() {
                 </CardDescription>
               </div>
 
-              <div className="relative w-64">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-                <input
-                  type="text"
-                  data-testid="catalogs-search-input"
-                  placeholder={t('catalogs:searchPlaceholder')}
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  className="w-full bg-secondary/40 border border-border/80 rounded-xl pl-9 pr-4 py-1.5 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
-                />
-              </div>
+              {feeds.length > 0 && (
+                <div className="relative w-full sm:w-64">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                  <input
+                    type="text"
+                    data-testid="catalogs-search-input"
+                    placeholder={t('catalogs:searchPlaceholder')}
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    className="w-full bg-secondary/40 border border-border/80 rounded-xl pl-9 pr-4 py-1.5 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                  />
+                </div>
+              )}
             </CardHeader>
 
             <CardContent className="p-0 flex-1">
-              <div className="divide-y divide-border/60">
-                {paginatedItems.map((catalog) => (
-                  <div
-                    key={catalog.id}
-                    className="flex flex-col sm:flex-row sm:items-center justify-between p-4 gap-3 hover:bg-muted/20 transition-colors"
-                  >
-                    <div className="space-y-1">
-                      <div className="flex items-center space-x-2">
-                        <span className="font-semibold text-sm text-foreground">
-                          {catalog.name}
-                        </span>
-                        <Badge variant="outline" className="text-[10px] font-mono">
-                          {catalog.format}
-                        </Badge>
-                      </div>
-                      <p className="text-xs text-muted-foreground font-mono truncate max-w-md">
-                        {catalog.source}
-                      </p>
-                    </div>
-
-                    <div className="flex items-center gap-4">
-                      <div className="text-right hidden sm:block">
-                        <div className="text-xs font-semibold text-foreground">
-                          {catalog.productsCount.toLocaleString()} {t('catalogs:products')}
-                        </div>
-                        <div className="text-[11px] text-muted-foreground">{catalog.lastSync}</div>
-                      </div>
-
-                      <Badge
-                        variant={catalog.status === 'Synced' ? 'secondary' : 'default'}
-                        className="text-xs flex items-center gap-1"
-                      >
-                        {catalog.status === 'Synced' && (
-                          <CheckCircle2 className="h-3 w-3 text-emerald-400" />
-                        )}
-                        {catalog.status === 'Processing' && (
-                          <RefreshCw className="h-3 w-3 animate-spin text-primary" />
-                        )}
-                        <span>{catalog.status}</span>
-                      </Badge>
-
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground"
-                      >
-                        <RefreshCw className="h-3.5 w-3.5" />
-                      </Button>
-                    </div>
+              {filteredCatalogs.length === 0 ? (
+                <div className="flex flex-col items-center justify-center p-12 text-center space-y-4">
+                  <div className="p-3 bg-secondary/50 rounded-2xl border border-border/60 text-muted-foreground">
+                    <Radio className="size-8 stroke-[1.5]" />
                   </div>
-                ))}
-              </div>
+                  <div className="space-y-1 max-w-sm">
+                    <h3 className="text-sm font-semibold text-foreground">
+                      {search ? t('catalogs:emptySearch') : t('catalogs:noFeedsTitle')}
+                    </h3>
+                    <p className="text-xs text-muted-foreground leading-relaxed">
+                      {search ? t('catalogs:emptySearchDesc') : t('catalogs:noFeedsDesc')}
+                    </p>
+                  </div>
+                  {!search && (
+                    <Button
+                      onClick={() => setIsImportWizardOpen(true)}
+                      className="bg-primary text-primary-foreground hover:bg-primary/90 text-xs px-4 py-2 rounded-xl flex items-center gap-2 shadow-sm mt-2"
+                    >
+                      <Plus className="size-3.5" />
+                      <span>{t('catalogs:connectFeedBtn')}</span>
+                    </Button>
+                  )}
+                </div>
+              ) : (
+                <div className="divide-y divide-border/60">
+                  {paginatedItems.map((catalog) => (
+                    <div
+                      key={catalog.id}
+                      className="flex flex-col sm:flex-row sm:items-center justify-between p-4 gap-3 hover:bg-muted/20 transition-colors"
+                    >
+                      <div className="space-y-1">
+                        <div className="flex items-center space-x-2">
+                          <span className="font-semibold text-sm text-foreground">
+                            {catalog.name}
+                          </span>
+                          <Badge variant="outline" className="text-[10px] font-mono">
+                            {catalog.fileFormat}
+                          </Badge>
+                        </div>
+                        <p className="text-xs text-muted-foreground font-mono truncate max-w-md">
+                          {catalog.sourceUrl || (isUk ? 'Локальний файл' : 'Local File')}
+                        </p>
+                      </div>
+
+                      <div className="flex items-center gap-4">
+                        <div className="text-right hidden sm:block">
+                          <div className="text-xs font-semibold text-foreground">
+                            {(catalog.productsCount ?? 0).toLocaleString()} {t('catalogs:products')}
+                          </div>
+                          <div className="text-[11px] text-muted-foreground">
+                            {catalog.lastSyncedAt
+                              ? new Date(catalog.lastSyncedAt).toLocaleString(
+                                  isUk ? 'uk-UA' : 'en-US',
+                                  {
+                                    month: 'short',
+                                    day: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit',
+                                  },
+                                )
+                              : '—'}
+                          </div>
+                        </div>
+
+                        <Badge
+                          variant={catalog.lastSyncStatus === 'SUCCESS' ? 'secondary' : 'default'}
+                          className="text-xs flex items-center gap-1"
+                        >
+                          {catalog.lastSyncStatus === 'SUCCESS' && (
+                            <CheckCircle2 className="h-3 w-3 text-emerald-400" />
+                          )}
+                          {syncingId === catalog.id && (
+                            <RefreshCw className="h-3 w-3 animate-spin text-primary" />
+                          )}
+                          <span>
+                            {syncingId === catalog.id
+                              ? t('catalogs:statusProcessing')
+                              : catalog.lastSyncStatus === 'SUCCESS'
+                                ? t('catalogs:statusSynced')
+                                : t('catalogs:statusError')}
+                          </span>
+                        </Badge>
+
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          disabled={syncingId === catalog.id}
+                          onClick={() => handleSyncFeed(catalog)}
+                          className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground"
+                          title={t('catalogs:syncNow')}
+                        >
+                          <RefreshCw
+                            className={`h-3.5 w-3.5 ${syncingId === catalog.id ? 'animate-spin' : ''}`}
+                          />
+                        </Button>
+
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setFeedToDelete(catalog)}
+                          className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                          title={t('common:delete')}
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </CardContent>
 
             {/* Pagination Footer */}
-            <TablePagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              pageSize={pageSize}
-              totalItems={totalItems}
-              onPageChange={setPage}
-              onPageSizeChange={setPageSize}
-              pageSizeOptions={[5, 10, 25, 50]}
-              isUk={isUk}
-              testIdPrefix="catalogs-pagination"
-            />
+            {filteredCatalogs.length > 0 && (
+              <TablePagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                pageSize={pageSize}
+                totalItems={totalItems}
+                onPageChange={setPage}
+                onPageSizeChange={setPageSize}
+                pageSizeOptions={[5, 10, 25, 50]}
+                isUk={isUk}
+                testIdPrefix="catalogs-pagination"
+              />
+            )}
           </Card>
         </>
       )}
+
+      {/* Import Feed Wizard Modal */}
+      <ImportFeedWizardDialog
+        isOpen={isImportWizardOpen}
+        onClose={() => setIsImportWizardOpen(false)}
+        suppliers={suppliers}
+        onSuccess={() => {
+          loadData();
+          setIsImportWizardOpen(false);
+        }}
+      />
+
+      {/* Confirm Delete Feed Dialog */}
+      <ConfirmDeleteDialog
+        isOpen={!!feedToDelete}
+        title={isUk ? 'Видалити джерело фіду?' : 'Delete Feed Source?'}
+        description={
+          isUk
+            ? `Ви впевнені, що хочете видалити фід «${feedToDelete?.name}»? Всі пов'язані імпортовані товари будуть також видалені з локальної бази.`
+            : `Are you sure you want to delete feed «${feedToDelete?.name}»? All associated imported products will also be removed from the local database.`
+        }
+        confirmLabel={isUk ? 'Видалити фід' : 'Delete Feed'}
+        cancelLabel={t('common:cancel')}
+        onConfirm={handleConfirmDeleteFeed}
+        onClose={() => setFeedToDelete(null)}
+      />
     </div>
   );
 }

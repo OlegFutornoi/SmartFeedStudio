@@ -81,10 +81,55 @@ pub fn init_schema(conn: &Connection) -> Result<()> {
             FOREIGN KEY(feed_source_id) REFERENCES local_feed_sources(id) ON DELETE CASCADE
         );
 
+        CREATE TABLE IF NOT EXISTS local_pricing_rules (
+            id TEXT PRIMARY KEY,
+            supplier_id TEXT NOT NULL,
+            category TEXT,
+            min_price REAL,
+            max_price REAL,
+            markup_percent REAL DEFAULT 0,
+            markup_fixed REAL DEFAULT 0,
+            priority INTEGER DEFAULT 0,
+            is_active INTEGER DEFAULT 1,
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+            updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY(supplier_id) REFERENCES local_suppliers(id) ON DELETE CASCADE
+        );
+
+        CREATE TABLE IF NOT EXISTS local_export_channels (
+            id TEXT PRIMARY KEY,
+            name TEXT NOT NULL,
+            type TEXT NOT NULL,
+            slug TEXT NOT NULL UNIQUE,
+            feed_url TEXT,
+            marketplace_fee_percent REAL DEFAULT 10,
+            tax_percent REAL DEFAULT 5,
+            target_margin_percent REAL DEFAULT 20,
+            is_active INTEGER DEFAULT 1,
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+            updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+        );
+
+        CREATE TABLE IF NOT EXISTS local_export_pricing_rules (
+            id TEXT PRIMARY KEY,
+            export_channel_id TEXT NOT NULL,
+            category TEXT,
+            marketplace_fee_percent REAL,
+            target_margin_percent REAL,
+            additional_fixed_markup REAL,
+            is_active INTEGER DEFAULT 1,
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+            updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY(export_channel_id) REFERENCES local_export_channels(id) ON DELETE CASCADE
+        );
+
         CREATE INDEX IF NOT EXISTS idx_products_sku ON local_products(sku);
         CREATE INDEX IF NOT EXISTS idx_products_supplier ON local_products(supplier_id);
         CREATE INDEX IF NOT EXISTS idx_products_category ON local_products(category);
+        CREATE INDEX IF NOT EXISTS idx_pricing_supplier ON local_pricing_rules(supplier_id);
+        CREATE INDEX IF NOT EXISTS idx_export_rules_channel ON local_export_pricing_rules(export_channel_id);
         "#,
     )?;
     Ok(())
 }
+

@@ -79,7 +79,9 @@ export function SupplierCard({
           type="button"
           onClick={() => onPricingRules && onPricingRules(supplier)}
           className="w-full p-2.5 rounded-lg bg-secondary/30 border border-border/50 flex items-center justify-between text-xs hover:border-primary/40 hover:bg-secondary/60 transition-colors text-left group cursor-pointer"
-          title="Налаштувати складні правила націнки за категоріями та діапазонами цін"
+          title={t('suppliers:pricingRulesTooltip', {
+            defaultValue: 'Налаштувати правила націнки за категоріями та діапазонами цін',
+          })}
           data-testid={`supplier-pricing-rules-btn-${supplier.id}`}
         >
           <span className="text-muted-foreground flex items-center gap-1.5 font-medium group-hover:text-primary transition-colors">
@@ -94,7 +96,9 @@ export function SupplierCard({
                   {supplier.defaultFixedMarkup > 0 && `+${supplier.defaultFixedMarkup} ₴`}
                 </>
               ) : (
-                <span className="text-muted-foreground font-normal">0% (Без націнки)</span>
+                <span className="text-muted-foreground font-normal">
+                  0% ({t('suppliers:noMarkup', { defaultValue: 'Без націнки' })})
+                </span>
               )}
             </span>
             <SlidersHorizontal className="size-3 text-muted-foreground group-hover:text-primary shrink-0" />
@@ -198,7 +202,9 @@ export function SupplierCard({
                 size="icon"
                 className="size-8 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-lg"
                 onClick={() => onPricingRules(supplier)}
-                title="Правила націнки"
+                title={t('suppliers:pricingRulesButtonTooltip', {
+                  defaultValue: 'Правила націнки',
+                })}
                 data-testid={`supplier-pricing-rules-icon-${supplier.id}`}
               >
                 <SlidersHorizontal className="size-3.5" />

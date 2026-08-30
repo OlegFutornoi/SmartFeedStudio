@@ -3,6 +3,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { QuotaItemDto } from '@smartfeed/shared';
 import { ArrowUpRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from '@/i18n';
 
 interface QuotaMetricCardProps {
   title: string;
@@ -13,6 +14,8 @@ interface QuotaMetricCardProps {
 }
 
 export function QuotaMetricCard({ title, icon: Icon, quota, unit, testId }: QuotaMetricCardProps) {
+  const { t } = useTranslation(['common', 'suppliers']);
+
   if (!quota) {
     return (
       <Card data-testid={testId} className="border-border/80 bg-card/60 backdrop-blur-md">
@@ -30,6 +33,7 @@ export function QuotaMetricCard({ title, icon: Icon, quota, unit, testId }: Quot
   const isUnlimited = quota.isUnlimited;
   const isCritical = quota.percentUsed >= 100 || quota.isExceeded;
   const isWarning = quota.percentUsed >= 80 && !isCritical;
+  const displayPercent = Math.round(quota.percentUsed);
 
   let progressColor = 'bg-primary';
   let badgeColor = 'text-muted-foreground';
@@ -68,7 +72,7 @@ export function QuotaMetricCard({ title, icon: Icon, quota, unit, testId }: Quot
           </div>
 
           {!isUnlimited && (
-            <span className={`text-xs font-mono ${badgeColor}`}>{quota.percentUsed}%</span>
+            <span className={`text-xs font-mono ${badgeColor}`}>{displayPercent}%</span>
           )}
         </div>
 
@@ -77,7 +81,7 @@ export function QuotaMetricCard({ title, icon: Icon, quota, unit, testId }: Quot
           <div className="w-full bg-secondary/50 rounded-full h-1.5 overflow-hidden">
             <div
               className={`h-full rounded-full transition-all duration-500 ${progressColor}`}
-              style={{ width: `${Math.min(100, quota.percentUsed)}%` }}
+              style={{ width: `${Math.min(100, displayPercent)}%` }}
             />
           </div>
         )}
@@ -85,32 +89,39 @@ export function QuotaMetricCard({ title, icon: Icon, quota, unit, testId }: Quot
         {/* Footer Subtext or Upgrade Prompt */}
         <div className="flex items-center justify-between text-xs pt-0.5">
           {isUnlimited ? (
-            <span className="text-emerald-400 text-[11px] font-medium">Безлімітний тариф</span>
+            <span className="text-emerald-400 text-[11px] font-medium">
+              {t('common:unlimitedPlan', { defaultValue: 'Безлімітний тариф' })}
+            </span>
           ) : isCritical ? (
             <div className="flex items-center justify-between w-full">
-              <span className="text-rose-400 text-[11px] font-medium">Ліміт вичерпано</span>
+              <span className="text-rose-400 text-[11px] font-medium">
+                {t('common:limitExceeded', { defaultValue: 'Ліміт вичерпано' })}
+              </span>
               <Link
                 to="/plans"
                 className="text-[11px] text-primary hover:underline flex items-center gap-0.5 font-medium"
               >
-                <span>Збільшити квоту</span>
+                <span>{t('common:upgradeQuota', { defaultValue: 'Збільшити квоту' })}</span>
                 <ArrowUpRight className="size-3" />
               </Link>
             </div>
           ) : isWarning ? (
             <div className="flex items-center justify-between w-full">
-              <span className="text-amber-400 text-[11px]">Залишилось: {quota.remaining}</span>
+              <span className="text-amber-400 text-[11px]">
+                {t('common:remaining', { defaultValue: 'Залишилось' })}: {quota.remaining}
+              </span>
               <Link
                 to="/plans"
                 className="text-[11px] text-primary hover:underline flex items-center gap-0.5"
               >
-                <span>Апгрейд</span>
+                <span>{t('common:upgrade', { defaultValue: 'Апгрейд' })}</span>
                 <ArrowUpRight className="size-3" />
               </Link>
             </div>
           ) : (
             <span className="text-muted-foreground text-[11px]">
-              Доступно ще: <strong className="text-foreground">{quota.remaining}</strong>
+              {t('common:availableMore', { defaultValue: 'Доступно ще' })}:{' '}
+              <strong className="text-foreground">{quota.remaining}</strong>
             </span>
           )}
         </div>

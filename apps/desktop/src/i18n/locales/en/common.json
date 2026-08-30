@@ -19,5 +19,11 @@
   "search": "Search",
   "actions": "Actions",
   "filter": "Filter",
-  "all": "All"
+  "all": "All",
+  "unlimitedPlan": "Unlimited Plan",
+  "limitExceeded": "Limit Exceeded",
+  "upgradeQuota": "Increase Quota",
+  "remaining": "Remaining",
+  "upgrade": "Upgrade",
+  "availableMore": "Available"
 }

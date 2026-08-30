@@ -1,11 +1,5 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import {
-  ForbiddenException,
-  BadRequestException,
-  Injectable,
-  Logger,
-  NotFoundException,
-} from '@nestjs/common';
+import { ForbiddenException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { LicenseEntity, PlanType, PLAN_LIMITS_MAP } from '@smartfeed/shared';
 import * as crypto from 'crypto';
 import { PrismaService } from '../../../prisma/prisma.service';

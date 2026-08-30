@@ -54,11 +54,12 @@ Whenever writing, refactoring, reviewing, or testing code in this monorepo, the 
 
 ### 🔍 D. Code Review & Engineering Protocol
 
-| Skill                                       | Key Rules & Error Prevention Focus                                                                                                                       |
-| :------------------------------------------ | :------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **`requesting-code-review`**                | Dispatch self-review or review checks after completing major tasks to catch issues before they cascade.                                                  |
-| **`code-review-reception`**                 | Receive and evaluate feedback with technical rigor; verify against codebase reality; zero performative agreement; test every single fix individually.    |
-| **`writing-plans`** & **`executing-plans`** | Create bite-sized, deterministic implementation plans in `plans/<feature>.md` with clear review checkpoints and explicit user approval before execution. |
+| Skill                                       | Key Rules & Error Prevention Focus                                                                                                                                    |
+| :------------------------------------------ | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`fullstack-code-review`**                 | **Master Orchestrator**: Comprehensive multi-phase full-stack review inspecting CQRS boundaries, React performance, PostgreSQL schema, 100% i18n, and test isolation. |
+| **`requesting-code-review`**                | Dispatch self-review or review checks after completing major tasks to catch issues before they cascade.                                                               |
+| **`code-review-reception`**                 | Receive and evaluate feedback with technical rigor; verify against codebase reality; zero performative agreement; test every single fix individually.                 |
+| **`writing-plans`** & **`executing-plans`** | Create bite-sized, deterministic implementation plans in `plans/<feature>.md` with clear review checkpoints and explicit user approval before execution.              |
 
 ---
 

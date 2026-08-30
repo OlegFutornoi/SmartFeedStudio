@@ -101,6 +101,14 @@ test.describe('Desktop App — Multi-Tier Pricing Rules & Marketplace Reverse Ma
     mockRules = [];
     mockExportChannels = [];
 
+    await page.addInitScript((user) => {
+      window.localStorage.clear();
+      window.sessionStorage.clear();
+      window.localStorage.setItem('smartfeed_access_token', 'mock-valid-token');
+      window.localStorage.setItem('smartfeed_user_profile', JSON.stringify(user));
+      window.localStorage.setItem('smartfeed_language', 'uk');
+    }, mockUser);
+
     // Mock Backend API routes
     await page.route('**/api/auth/me', async (route) => {
       await route.fulfill({

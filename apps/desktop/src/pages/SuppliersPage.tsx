@@ -190,15 +190,15 @@ export function SuppliersPage() {
             </div>
             <h3 className="text-base font-semibold text-foreground">
               {search
-                ? t('noSearchResults', { defaultValue: 'Постачальників не знайдено' })
-                : t('emptyStateTitle', { defaultValue: 'Список постачальників порожній' })}
+                ? t('suppliers:noSuppliers', { defaultValue: 'Постачальників не знайдено' })
+                : t('suppliers:noSuppliers', { defaultValue: 'Список постачальників порожній' })}
             </h3>
             <p className="text-xs text-muted-foreground max-w-sm">
               {search
-                ? t('noSearchDesc', {
+                ? t('suppliers:noSuppliersDesc', {
                     defaultValue: 'Спробуйте змінити пошуковий запит або очистити фільтри',
                   })
-                : t('emptyStateDesc', {
+                : t('suppliers:noSuppliersDesc', {
                     defaultValue:
                       'Додайте свого першого постачальника товарів та підключіть XML/CSV фід для автоматичного імпорту каталогу',
                   })}
@@ -210,7 +210,7 @@ export function SuppliersPage() {
                 className="mt-2 text-xs h-9 gap-1.5"
                 data-testid="empty-create-supplier-btn"
               >
-                {t('createSupplier', { defaultValue: 'Додати постачальника' })}
+                {t('suppliers:createSupplier', { defaultValue: 'Додати постачальника' })}
               </Button>
             )}
           </div>

@@ -3,10 +3,9 @@ import { test, expect } from '@playwright/test';
 test.describe('Desktop App — Розділи додатку, i18n та Стійкість (POM E2E)', () => {
   test.beforeEach(async ({ page }) => {
     // Clear storage to prevent cross-test contamination
-    await page.goto('/');
-    await page.evaluate(() => {
-      localStorage.clear();
-      sessionStorage.clear();
+    await page.addInitScript(() => {
+      window.localStorage.setItem('smartfeed_e2e_seed', 'true');
+      window.localStorage.setItem('smartfeed_access_token', 'test-valid-jwt-token');
     });
 
     // Mock authenticated user session
@@ -137,11 +136,6 @@ test.describe('Desktop App — Розділи додатку, i18n та Стій
         ]),
       });
     });
-
-    // Set token
-    await page.evaluate(() => {
-      localStorage.setItem('smartfeed_access_token', 'test-valid-jwt-token');
-    });
   });
 
   test('1. Сторінка Каталогів: перегляд карток, фільтрація та двомовність UA ⇄ EN', async ({
@@ -209,6 +203,8 @@ test.describe('Desktop App — Розділи додатку, i18n та Стій
   }) => {
     await page.goto('/catalogs');
     await expect(page.getByTestId('catalogs-page')).toBeVisible();
+
+    await page.getByTestId('tab-catalogs').click();
 
     const pagination = page.getByTestId('catalogs-pagination');
     await expect(pagination).toBeVisible();

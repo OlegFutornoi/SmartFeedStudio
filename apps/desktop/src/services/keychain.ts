@@ -1,15 +1,5 @@
-/**
- * Secure OS Keychain integration via Tauri Rust invoke.
- * Falls back gracefully to memory/localStorage during web development.
- */
-
-declare global {
-  interface Window {
-    __TAURI_INTERNALS__?: unknown;
-  }
-}
-
-const isTauri = () => typeof window !== 'undefined' && Boolean(window.__TAURI_INTERNALS__);
+import { isTauri } from '../lib/runtime';
+export { isTauri };
 
 export async function storeRefreshToken(token: string): Promise<void> {
   if (isTauri()) {
