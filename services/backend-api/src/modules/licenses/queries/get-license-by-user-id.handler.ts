@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { LicenseEntity, PlanType } from '@smartfeed/shared';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { GetLicenseByUserIdQuery } from './get-license-by-user-id.query';
+import { Prisma } from '../../../generated/prisma/client';
 
 @Injectable()
 @QueryHandler(GetLicenseByUserIdQuery)
@@ -124,7 +125,18 @@ export class GetLicenseByUserIdHandler implements IQueryHandler<
       orderBy: { createdAt: 'desc' },
     });
 
-    let license: any = null;
+    type ResolvedLicense =
+      | (Prisma.LicenseGetPayload<{
+          include: {
+            tariffPlan: true;
+            organization: true;
+          };
+        }> & {
+          organization?: { id: string; name: string } | null;
+        })
+      | null;
+
+    let license: ResolvedLicense = null;
 
     if (corporateLicense) {
       if (corporateMembership?.role !== 'OWNER') {

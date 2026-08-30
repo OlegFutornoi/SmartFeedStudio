@@ -22,5 +22,15 @@
   "emptySearchDesc": "Try adjusting your search query or importing a new feed catalog",
   "sourceUrl": "Source:",
   "connectedFeeds": "Connected Feeds",
-  "connectedFeedsDesc": "List of active XML catalogs and export channels"
+  "connectedFeedsDesc": "List of active XML catalogs and export channels",
+  "tabCatalogs": "Product Catalogs",
+  "tabChannels": "Export Channels & Marketplaces",
+  "connectMarketplace": "Connect Marketplace",
+  "marketplaceCommission": "Marketplace Commission",
+  "reverseMarkup": "Reverse Markup",
+  "downloadFeed": "Download Feed",
+  "copyFeedUrl": "Copy Feed URL",
+  "feedUrlCopied": "Link copied",
+  "simulatorTitle": "Margin & Net Profit Simulator",
+  "netProfit": "Net Profit"
 }

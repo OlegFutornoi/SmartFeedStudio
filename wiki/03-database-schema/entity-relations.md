@@ -6,7 +6,7 @@
 erDiagram
     User ||--o{ License : "має (1 до N, активна 1)"
     User ||--o{ Snapshot : "володіє бекапами"
-    User ||--o{ ProductImage : "зберігає зображення"
+    User ||--o{ PaymentTransaction : "платіжні операції"
     User ||--o{ Organization : "є власником (owner)"
     User ||--o{ OrganizationMember : "членство в компаніях"
     User ||--o{ OrganizationInvitation : "створені інвайти"
@@ -23,8 +23,7 @@ erDiagram
         string passwordHash
         string fullName
         Role role
-        string resetToken
-        datetime resetTokenExpiry
+        boolean isActive
         datetime createdAt
     }
 
@@ -85,6 +84,27 @@ erDiagram
         datetime expiresAt
     }
 
+    PaymentTransaction {
+        string id PK
+        string orderReference UK
+        string userId FK
+        string planCode
+        PaymentInterval billingInterval
+        decimal amount
+        string currency
+        PaymentStatus status
+        PaymentProvider provider
+        datetime createdAt
+    }
+
+    PaymentSetting {
+        string id PK
+        PaymentProvider provider UK
+        boolean isEnabled
+        boolean isTestMode
+        string merchantAccount
+    }
+
     NavigationItem {
         string id PK
         string key UK
@@ -104,41 +124,22 @@ erDiagram
         string userId FK
         string snapshotName
         string s3Key
-        int sizeBytes
+        bigint sizeBytes
         datetime createdAt
     }
-
-    ProductImage {
-        string id PK
-        string userId FK
-        string originalUrl
-        string cloudUrl
-        string s3Key
-    }
-
-    User ||--o{ Supplier : "створює постачальників"
-    User ||--o{ Product : "володіє товарами каталогу"
-    Supplier ||--o{ FeedSource : "підключені фіди (URL/файл)"
-    FeedSource ||--o{ Product : "ізоляція товарів за фідом (feedSourceId)"
-    Supplier ||--o{ Product : "прямий зв'язок постачальника"
 ```
 
 ---
 
 ## 🛡 Каскадні Правила та Цілісність Даних
 
-1. **Видалення Користувача (`User` -> `License`, `Snapshot`, `ProductImage`, `Supplier`, `Product`)**:
-   - `onDelete: Cascade` налаштовано для сутностей `License`, `Snapshot`, `ProductImage`, `Supplier`, `Product`.
-   - При видаленні користувача всі пов'язані з ним ліцензії, бекапи, постачальники, фіди та товари **автоматично видаляються з PostgreSQL**.
+1. **Видалення Користувача (`User` -> `License`, `Snapshot`, `PaymentTransaction`, `Organization`)**:
+   - `onDelete: Cascade` налаштовано для сутностей `License`, `Snapshot`, `PaymentTransaction`, `Organization`.
+   - При видаленні користувача всі пов'язані з ним ліцензії, бекапи та транзакції **автоматично видаляються з PostgreSQL**.
 
-2. **Ізоляція та Видалення Фіду (`FeedSource` -> `Product`)**:
-   - `feedSourceId` у моделі `Product` посилається на конкретний `FeedSource` з індексом `@@index([feedSourceId])`.
-   - При видаленні фіду бекенд видаляє виключно товари цього конкретного джерела (`where: { feedSourceId }`), зберігаючи всі товари з інших фідів того ж постачальника.
-
-3. **Видалення Тарифного Плану (`TariffPlan` -> `License`)**:
+2. **Видалення Тарифного Плану (`TariffPlan` -> `License`)**:
    - `onDelete: SetNull` налаштовано для зв'язку `tariffPlanId` у моделі `License`.
    - Якщо адміністратор видаляє кастомний тарифний план, вже видані користувачам ліцензії **не втрачають працездатності** — їхній `tariffPlanId` встановлюється в `null`, але квоти (`maxXmlLimit`, `aiCredits`) та термін дії (`expiresAt`) зберігаються без змін.
 
-```
-
-```
+3. **Локальні Товари та Каталоги**:
+   - Усі товарні каталоги, фотографії, атрибути, постачальники, правила націнок та канали експорту обробляються та зберігаються **виключно у локальній зашифрованій базі даних клієнта (SQLCipher / SQLite на Rust Tauri)**.

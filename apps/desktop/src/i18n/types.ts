@@ -12,7 +12,8 @@ export type Namespace =
   | 'products'
   | 'ai'
   | 'cloud'
-  | 'settings';
+  | 'settings'
+  | 'storage';
 
 export type TranslationDict = Record<string, string>;
 

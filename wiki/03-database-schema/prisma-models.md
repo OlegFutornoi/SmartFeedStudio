@@ -2,7 +2,10 @@
 
 ## 📌 Загальний Огляд Файлу `schema.prisma`
 
-Файл схеми розташовано за адресою: `services/backend-api/prisma/schema.prisma`. Схема використовує провайдер `postgresql` з розширенням `pg_trgm`, генератор `@prisma/client` з прев'ю-функцією `postgresqlExtensions`, і містить 8 оптимізованих моделей та 4 перелічення (`enum`).
+Файл схеми розташовано за адресою: `services/backend-api/prisma/schema.prisma`. Схема використовує провайдер `postgresql` з розширенням `pg_trgm`, генератор `@prisma/client` з прев'ю-функцією `postgresqlExtensions`, і містить **10 моделей чистого SaaS-ядра** та **8 перелічень (`enum`)**.
+
+> [!NOTE]
+> **Архітектурний принцип Local-First**: База даних PostgreSQL на бекенді фокусується виключно на SaaS-задачах (Auth, Організації, Команда, Тарифи, Ліцензії, Платежі, S3 Метадані та Динамічна Навігація). Важкі комерційні дані (каталоги, товари 50k–500k SKU, фотографії, парсери та канали експорту) зберігаються у зашифрованій локальній базі даних клієнта (**SQLite / SQLCipher на Rust Tauri**).
 
 Всі первинні ключі стандартизовано на `cuid()` для збереження хронологічного порядку вставки та запобігання фрагментації B-tree індексів у PostgreSQL.
 
@@ -10,41 +13,14 @@
 
 ## 📋 Перелічення (Enums)
 
-### 1. `Role`
-
-Визначає системний рівень привілеїв користувача:
-
-- `SUPER_ADMIN`: Повний доступ до всіх системних налаштувань, бази даних, видачі ліцензій та конфігурації планів.
-- `ADMIN`: Управління користувачами, тарифами та навігацією.
-- `USER`: Звичайний клієнт (селлер, менеджер інтернет-магазину).
-
-### 2. `PlanType` (4-рівнева система)
-
-Тип тарифного плану — **4 рівні доступу**:
-
-| Значення     | Рівень | Ціна/міс | Опис                                                         |
-| :----------- | :----: | :------: | :----------------------------------------------------------- |
-| `STARTER`    |   1    |    $0    | Безкоштовний пробний план (7 днів, 500 SKU)                  |
-| `GROWTH`     |   2    |   $29    | Для активних продавців (30 днів, 10K SKU, 50 AI кредитів)    |
-| `PRO`        |   3    |   $79    | Для команд і агентств (30 днів, 100K SKU, 500 AI кредитів)   |
-| `ENTERPRISE` |   4    |   $249   | Корпоративний (365 днів, ∞ SKU, 5000 AI кредитів, SLA 99.9%) |
-
-> [!NOTE]
-> Ієрархія рівнів використовується в `GetAccessibleNavigationHandler` для фільтрації пунктів меню: `STARTER(1) → GROWTH(2) → PRO(3) → ENTERPRISE(4)`.
-
-### 3. `TargetApp`
-
-Визначає, в якому додатку відображається пункт динамічної навігації:
-
-- `DESKTOP`: Тільки в десктопному клієнті Tauri.
-- `ADMIN_PORTAL`: Тільки у веб-порталі адміністратора.
-- `ALL`: В усіх додатках.
-
-### 4. `MemberRole`
-
-Роль користувача всередині організації/команди:
-
-- `OWNER`, `ADMIN`, `MEMBER`.
+1. `Role`: `SUPER_ADMIN`, `ADMIN`, `USER`
+2. `PlanType`: `STARTER` (1), `GROWTH` (2), `PRO` (3), `ENTERPRISE` (4)
+3. `TargetApp`: `DESKTOP`, `ADMIN_PORTAL`, `ALL`
+4. `MemberRole`: `OWNER`, `ADMIN`, `MEMBER`
+5. `InvitationStatus`: `PENDING`, `ACCEPTED`, `DECLINED`, `EXPIRED`, `REVOKED`
+6. `PaymentStatus`: `PENDING`, `APPROVED`, `DECLINED`, `REFUNDED`, `EXPIRED`
+7. `PaymentProvider`: `WAYFORPAY`, `STRIPE`, `MANUAL`
+8. `PaymentInterval`: `MONTHLY`, `YEARLY`
 
 ---
 
@@ -61,16 +37,19 @@ model User {
   passwordHash String
   fullName     String?
   role         Role           @default(USER)
+  isActive     Boolean        @default(true) @map("is_active")
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
   licenses     License[]
   snapshots    Snapshot[]
-  images       ProductImage[]
+  paymentTransactions PaymentTransaction[]
 
-  ownedOrganizations      Organization[]       @relation("OrganizationOwner")
+  ownedOrganizations      Organization[]           @relation("OrganizationOwner")
   organizationMemberships OrganizationMember[]
+  sentInvitations         OrganizationInvitation[] @relation("InvitationSender")
 
   @@index([role])
+  @@index([role, isActive])
   @@index([createdAt])
   @@index([email(ops: raw("gin_trgm_ops"))], type: Gin)
   @@index([fullName(ops: raw("gin_trgm_ops"))], type: Gin)
@@ -80,7 +59,7 @@ model User {
 
 ### 🏢 `Organization`, `OrganizationMember` & `OrganizationInvitation`
 
-Організації для багатокористувацького командного доступу (`Multi-Tenant Organizations`) та двоканальні запрошення:
+Організації для багатокористувацького командного доступу (`Multi-Tenant Organizations`), командні місця та запрошення по email / токенах:
 
 ```prisma
 model Organization {
@@ -120,12 +99,12 @@ model OrganizationInvitation {
   id             String           @id @default(cuid())
   organizationId String
   organization   Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  invitedById    String
-  invitedBy      User             @relation("UserSentInvitations", fields: [invitedById], references: [id], onDelete: Cascade)
   email          String
   role           MemberRole       @default(MEMBER)
   token          String           @unique
   status         InvitationStatus @default(PENDING)
+  invitedById    String
+  invitedBy      User             @relation("InvitationSender", fields: [invitedById], references: [id], onDelete: Cascade)
   expiresAt      DateTime
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
@@ -135,13 +114,14 @@ model OrganizationInvitation {
   @@index([email])
   @@index([token])
   @@index([status])
+  @@index([expiresAt])
   @@map("organization_invitations")
 }
 ```
 
 ### 💎 `TariffPlan`
 
-Динамічний тарифний план з повним набором квот та feature flags. Параметри можна налаштовувати без перезапуску сервера через адмін-панель:
+Динамічний тарифний план з повним набором квот та feature flags:
 
 ```prisma
 model TariffPlan {
@@ -156,32 +136,31 @@ model TariffPlan {
   currency      String    @default("USD")
 
   // --- Quota Fields ---
-  maxXmlLimit         Int     @default(500)   // Max SKU count
-  aiCredits           Int     @default(0)     // AI credits per month
-  canCloudBackup      Boolean @default(false) // Cloud S3 backup access
-  maxFeedsLimit       Int     @default(1)     // Max active feeds
-  maxChannelsLimit    Int     @default(1)     // Max output channels
-  syncFrequencyHours  Int     @default(0)     // 0=manual, 24=daily, 4=6x/day, 1=hourly
-  maxStorageGb        Float   @default(0)     // Cloud storage GB
-  maxTeamSeats        Int     @default(1)     // Team member seats
-  maxSuppliersLimit   Int     @default(1)     // Connected product suppliers
+  maxXmlLimit         Int     @default(500)
+  aiCredits           Int     @default(0)
+  canCloudBackup      Boolean @default(false)
+  maxFeedsLimit       Int     @default(1)
+  maxChannelsLimit    Int     @default(1)
+  syncFrequencyHours  Int     @default(0)
+  maxStorageGb        Float   @default(0)
+  maxTeamSeats        Int     @default(1)
+  maxSuppliersLimit   Int     @default(1)
 
   // --- Feature Flags ---
-  hasApiAccess     Boolean  @default(false)  // REST API access
-  hasWebhooks      Boolean  @default(false)  // Webhook push on feed update
-  hasFeedDiff      Boolean  @default(false)  // Feed version comparison
-  hasWhiteLabel    Boolean  @default(false)  // White-label PDF reports
-  hasSso           Boolean  @default(false)  // SSO / SAML login
-  hasAuditLog      Boolean  @default(false)  // Full audit trail
-  hasCustomS3      Boolean  @default(false)  // Custom S3/MinIO endpoint
-  hasPriorityAi    Boolean  @default(false)  // Priority AI queue
-  slaUptimePercent Float?                    // null=no SLA, 99.9=Enterprise
+  hasApiAccess     Boolean  @default(false)
+  hasWebhooks      Boolean  @default(false)
+  hasFeedDiff      Boolean  @default(false)
+  hasWhiteLabel    Boolean  @default(false)
+  hasSso           Boolean  @default(false)
+  hasAuditLog      Boolean  @default(false)
+  hasCustomS3      Boolean  @default(false)
+  hasPriorityAi    Boolean  @default(false)
+  slaUptimePercent Float?
 
-  // --- Display Fields ---
   isPopular    Boolean   @default(false)
   isActive     Boolean   @default(true)
   order        Int       @default(0)
-  durationDays Int?      @default(7)         // Subscription cycle in days
+  durationDays Int?      @default(7)
   featuresUk   String[]  @default([])
   featuresEn   String[]  @default([])
   createdAt    DateTime  @default(now())
@@ -196,7 +175,7 @@ model TariffPlan {
 
 ### 🔑 `License`
 
-Ліцензійний ключ та знімок (snapshot) квот користувача на момент підписки з оптимізованими складеними індексами `[userId, isActive]`:
+Ліцензійні ключі користувачів та організацій із датою завершення та знімком квот:
 
 ```prisma
 model License {
@@ -213,7 +192,6 @@ model License {
   isActive       Boolean     @default(true)
   expiresAt      DateTime?
 
-  // Quota snapshot fields
   maxFeedsLimit      Int     @default(1)
   maxChannelsLimit   Int     @default(1)
   maxTeamSeats       Int     @default(1)
@@ -240,9 +218,81 @@ model License {
 }
 ```
 
+### 💳 `PaymentTransaction` & `PaymentSetting`
+
+Облік онлайн-оплат (WayForPay, Stripe) та конфігурація платіжних шлюзів:
+
+```prisma
+model PaymentTransaction {
+  id                String          @id @default(cuid())
+  orderReference    String          @unique @map("order_reference")
+  userId            String          @map("user_id")
+  user              User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  planCode          String          @map("plan_code")
+  billingInterval   PaymentInterval @default(MONTHLY) @map("billing_interval")
+  amount            Decimal         @db.Decimal(10, 2)
+  currency          String          @default("UAH")
+  status            PaymentStatus   @default(PENDING)
+  provider          PaymentProvider @default(WAYFORPAY)
+  providerPaymentId String?         @map("provider_payment_id")
+  cardPan           String?         @map("card_pan")
+  cardType          String?         @map("card_type")
+  issuerBank        String?         @map("issuer_bank")
+  failureReason     String?         @map("failure_reason")
+  paymentMethod     String?         @map("payment_method")
+  signature         String?
+  metadata          Json?
+  createdAt         DateTime        @default(now()) @map("created_at")
+  updatedAt         DateTime        @updatedAt @map("updated_at")
+
+  @@index([userId])
+  @@index([status])
+  @@index([provider])
+  @@index([createdAt])
+  @@index([orderReference])
+  @@map("payment_transactions")
+}
+
+model PaymentSetting {
+  id                 String          @id @default(cuid())
+  provider           PaymentProvider @unique
+  isEnabled          Boolean         @default(true) @map("is_enabled")
+  isTestMode         Boolean         @default(true) @map("is_test_mode")
+  merchantAccount    String?         @map("merchant_account")
+  merchantSecretKey  String?         @map("merchant_secret_key")
+  merchantDomain     String?         @map("merchant_domain")
+  serviceUrl         String?         @map("service_url")
+  returnUrl          String?         @map("return_url")
+  createdAt          DateTime        @default(now()) @map("created_at")
+  updatedAt          DateTime        @updatedAt @map("updated_at")
+
+  @@map("payment_settings")
+}
+```
+
+### 📦 `Snapshot`
+
+Метадані зашифрованих бекапів баз даних у хмарному об'єктному сховищі S3:
+
+```prisma
+model Snapshot {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  snapshotName String
+  s3Key        String
+  sizeBytes    BigInt
+  createdAt    DateTime @default(now())
+
+  @@index([userId])
+  @@index([createdAt])
+  @@map("snapshots")
+}
+```
+
 ### 🧭 `NavigationItem`
 
-Динамічний пункт бічного меню з фільтрацією за ролями та планами, оптимізований складеним індексом `[targetApp, isVisible, order]`:
+Динамічний пункт бічного меню сайдбару з фільтрацією за ролями та планами:
 
 ```prisma
 model NavigationItem {
@@ -264,8 +314,3 @@ model NavigationItem {
   @@map("navigation_items")
 }
 ```
-
-### 📦 `Snapshot` & `ProductImage`
-
-- `Snapshot`: `id String @id @default(cuid())`, `userId`, `snapshotName`, `s3Key`, `sizeBytes`, `createdAt`.
-- `ProductImage`: `id String @id @default(cuid())`, `userId`, `originalUrl`, `cloudUrl`, `s3Key`, `createdAt`.

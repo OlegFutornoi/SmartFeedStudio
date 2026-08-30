@@ -51,6 +51,7 @@ export function SignupForm({ className, ...props }: React.ComponentPropsWithoutR
         fullName: fullName.trim() || undefined,
         companyName: companyName.trim() || undefined,
       });
+      localStorage.setItem('smartfeed_show_workspace_onboarding', 'true');
       navigate('/', { replace: true });
     } catch (err: unknown) {
       setErrorRaw(err);

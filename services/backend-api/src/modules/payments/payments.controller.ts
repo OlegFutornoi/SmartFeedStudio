@@ -1,42 +1,46 @@
 import {
   Controller,
-  Post,
   Get,
+  Post,
   Patch,
   Body,
   Param,
   Query,
   UseGuards,
-  Request,
   HttpCode,
   HttpStatus,
   NotFoundException,
 } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
-import { PrismaService } from '../../prisma/prisma.service';
-import { WayForPayService } from './services/wayforpay.service';
+import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  CheckoutResponseDto,
+  PaymentProvider,
+  PaymentSettingDto,
+  PaymentStatsDto,
+  PaymentStatus,
+  PaymentTransactionDto,
+  Role,
+  UpdatePaymentSettingDto,
+  WayForPayWebhookDto,
+} from '@smartfeed/shared';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
-import {
-  Role,
-  CreateCheckoutDto,
-  WayForPayWebhookDto,
-  PaymentProvider,
-  PaymentStatus,
-  UpdatePaymentSettingDto,
-  CheckoutResponseDto,
-  PaymentTransactionDto,
-  PaymentSettingDto,
-  PaymentStatsDto,
-} from '@smartfeed/shared';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { CreatePaymentInvoiceCommand } from './commands/create-payment-invoice.command';
 import { HandleWayForPayWebhookCommand } from './commands/handle-wayforpay-webhook.command';
 import { UpdatePaymentSettingsCommand } from './commands/update-payment-settings.command';
 import { GetPaymentTransactionsQuery } from './queries/get-payment-transactions.query';
 import { GetPaymentStatsQuery } from './queries/get-payment-stats.query';
 import { GetPaymentSettingsQuery } from './queries/get-payment-settings.query';
+import { CreateCheckoutDto } from './dto/create-checkout.dto';
+import { SimulateSandboxWebhookDto } from './dto/simulate-sandbox-webhook.dto';
+import { PrismaService } from '../../prisma/prisma.service';
+import { WayForPayService } from './services/wayforpay.service';
 
+@ApiTags('Payments')
+@ApiBearerAuth()
 @Controller('payments')
 export class PaymentsController {
   constructor(
@@ -52,11 +56,11 @@ export class PaymentsController {
   @UseGuards(JwtAuthGuard)
   @Post('checkout')
   async createCheckout(
-    @Request() req: any,
+    @CurrentUser('id') userId: string,
     @Body() dto: CreateCheckoutDto,
   ): Promise<CheckoutResponseDto> {
     return this.commandBus.execute(
-      new CreatePaymentInvoiceCommand(req.user.id, dto.planCode, dto.billingInterval),
+      new CreatePaymentInvoiceCommand(userId, dto.planCode, dto.billingInterval),
     );
   }
 
@@ -75,21 +79,13 @@ export class PaymentsController {
   @UseGuards(JwtAuthGuard)
   @Post('simulate-sandbox-webhook')
   async simulateSandboxWebhook(
-    @Request() req: any,
-    @Body()
-    body: {
-      orderReference: string;
-      status?: 'Approved' | 'Declined';
-      reason?: string;
-      cardPan?: string;
-      cardType?: string;
-      issuerBank?: string;
-    },
+    @CurrentUser('id') userId: string,
+    @Body() body: SimulateSandboxWebhookDto,
   ) {
     const tx = await this.prisma.paymentTransaction.findUnique({
       where: { orderReference: body.orderReference },
     });
-    if (!tx || tx.userId !== req.user.id) {
+    if (!tx || tx.userId !== userId) {
       throw new NotFoundException('Transaction not found or unauthorized');
     }
 
@@ -159,13 +155,13 @@ export class PaymentsController {
   @UseGuards(JwtAuthGuard)
   @Get('my-transactions')
   async getMyTransactions(
-    @Request() req: any,
+    @CurrentUser('id') userId: string,
     @Query('limit') limit?: string,
     @Query('offset') offset?: string,
   ): Promise<{ transactions: PaymentTransactionDto[]; total: number }> {
     return this.queryBus.execute(
       new GetPaymentTransactionsQuery({
-        userId: req.user.id,
+        userId,
         limit: limit ? parseInt(limit, 10) : 20,
         offset: offset ? parseInt(offset, 10) : 0,
       }),

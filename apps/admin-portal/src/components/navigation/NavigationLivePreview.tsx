@@ -35,7 +35,7 @@ export const NavigationLivePreview = React.memo(function NavigationLivePreview({
   return (
     <Card
       data-testid="navigation-simulator-card"
-      className="border-border/60 bg-card/40 backdrop-blur-sm shadow-sm sticky top-24"
+      className="border-border bg-card shadow-sm sticky top-24 z-10"
     >
       <CardHeader className="pb-3">
         <CardTitle className="text-sm font-semibold flex items-center gap-2 text-foreground">

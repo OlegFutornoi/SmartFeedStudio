@@ -1,4 +1,14 @@
-import { Globe, Mail, Phone, ShoppingBag, Radio, Percent, Pencil, Trash2 } from 'lucide-react';
+import {
+  Globe,
+  Mail,
+  Phone,
+  ShoppingBag,
+  Radio,
+  Percent,
+  Pencil,
+  Trash2,
+  SlidersHorizontal,
+} from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -12,6 +22,7 @@ interface SupplierCardProps {
   onDelete?: (supplierId: string) => void;
   onImportFeed?: (supplier: SupplierDto) => void;
   onViewFeeds?: (supplier: SupplierDto) => void;
+  onPricingRules?: (supplier: SupplierDto) => void;
 }
 
 export function SupplierCard({
@@ -21,6 +32,7 @@ export function SupplierCard({
   onDelete,
   onImportFeed,
   onViewFeeds,
+  onPricingRules,
 }: SupplierCardProps) {
   const { t } = useTranslation(['suppliers', 'common']);
 
@@ -63,22 +75,31 @@ export function SupplierCard({
 
       <CardContent className="space-y-4 pt-0">
         {/* Pricing Markup Pill */}
-        <div className="p-2.5 rounded-lg bg-secondary/30 border border-border/50 flex items-center justify-between text-xs">
-          <span className="text-muted-foreground flex items-center gap-1.5 font-medium">
+        <button
+          type="button"
+          onClick={() => onPricingRules && onPricingRules(supplier)}
+          className="w-full p-2.5 rounded-lg bg-secondary/30 border border-border/50 flex items-center justify-between text-xs hover:border-primary/40 hover:bg-secondary/60 transition-colors text-left group cursor-pointer"
+          title="Налаштувати складні правила націнки за категоріями та діапазонами цін"
+          data-testid={`supplier-pricing-rules-btn-${supplier.id}`}
+        >
+          <span className="text-muted-foreground flex items-center gap-1.5 font-medium group-hover:text-primary transition-colors">
             <Percent className="size-3.5 text-primary shrink-0" />
             {t('suppliers:markup')}:
           </span>
-          <span className="font-semibold text-foreground font-mono truncate ml-2">
-            {hasMarkup ? (
-              <>
-                {supplier.defaultMarginPercent > 0 && `+${supplier.defaultMarginPercent}% `}
-                {supplier.defaultFixedMarkup > 0 && `+${supplier.defaultFixedMarkup} ₴`}
-              </>
-            ) : (
-              <span className="text-muted-foreground font-normal">0% (Без націнки)</span>
-            )}
-          </span>
-        </div>
+          <div className="flex items-center gap-1.5 truncate ml-2">
+            <span className="font-semibold text-foreground font-mono truncate">
+              {hasMarkup ? (
+                <>
+                  {supplier.defaultMarginPercent > 0 && `+${supplier.defaultMarginPercent}% `}
+                  {supplier.defaultFixedMarkup > 0 && `+${supplier.defaultFixedMarkup} ₴`}
+                </>
+              ) : (
+                <span className="text-muted-foreground font-normal">0% (Без націнки)</span>
+              )}
+            </span>
+            <SlidersHorizontal className="size-3 text-muted-foreground group-hover:text-primary shrink-0" />
+          </div>
+        </button>
 
         {/* Stats Row */}
         <div className="grid grid-cols-2 gap-2 text-xs">
@@ -171,6 +192,18 @@ export function SupplierCard({
           )}
 
           <div className="flex items-center gap-1 shrink-0">
+            {onPricingRules && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="size-8 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-lg"
+                onClick={() => onPricingRules(supplier)}
+                title="Правила націнки"
+                data-testid={`supplier-pricing-rules-icon-${supplier.id}`}
+              >
+                <SlidersHorizontal className="size-3.5" />
+              </Button>
+            )}
             {onEdit && (
               <Button
                 variant="ghost"

@@ -7,6 +7,7 @@ import {
   PaymentProvider,
   PaymentInterval,
 } from '@smartfeed/shared';
+import { Prisma } from '../../../generated/prisma/client';
 
 @QueryHandler(GetPaymentTransactionsQuery)
 export class GetPaymentTransactionsHandler implements IQueryHandler<GetPaymentTransactionsQuery> {
@@ -17,7 +18,7 @@ export class GetPaymentTransactionsHandler implements IQueryHandler<GetPaymentTr
   ): Promise<{ transactions: PaymentTransactionDto[]; total: number }> {
     const { userId, status, provider, search, limit = 50, offset = 0 } = query.options;
 
-    const where: any = {};
+    const where: Prisma.PaymentTransactionWhereInput = {};
 
     if (userId) {
       where.userId = userId;

@@ -12,6 +12,7 @@ import ukProducts from './locales/uk/products.json';
 import ukAi from './locales/uk/ai.json';
 import ukCloud from './locales/uk/cloud.json';
 import ukSettings from './locales/uk/settings.json';
+import ukStorage from './locales/uk/storage.json';
 import ukErrors from './locales/uk/errors.json';
 
 import enCommon from './locales/en/common.json';
@@ -25,6 +26,7 @@ import enProducts from './locales/en/products.json';
 import enAi from './locales/en/ai.json';
 import enCloud from './locales/en/cloud.json';
 import enSettings from './locales/en/settings.json';
+import enStorage from './locales/en/storage.json';
 import enErrors from './locales/en/errors.json';
 
 export * from './types';
@@ -45,6 +47,7 @@ const STATIC_TRANSLATIONS: Record<Language, Record<Namespace, TranslationDict>> 
     ai: ukAi as TranslationDict,
     cloud: ukCloud as TranslationDict,
     settings: ukSettings as TranslationDict,
+    storage: ukStorage as TranslationDict,
     errors: ukErrors as TranslationDict,
   },
   en: {
@@ -59,6 +62,7 @@ const STATIC_TRANSLATIONS: Record<Language, Record<Namespace, TranslationDict>> 
     ai: enAi as TranslationDict,
     cloud: enCloud as TranslationDict,
     settings: enSettings as TranslationDict,
+    storage: enStorage as TranslationDict,
     errors: enErrors as TranslationDict,
   },
 };

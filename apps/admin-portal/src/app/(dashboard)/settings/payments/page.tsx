@@ -1,18 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import {
-  CreditCard,
-  WalletCards,
-  ArrowLeft,
-  Settings,
-  ShieldCheck,
-  Sparkles,
-  CheckCircle2,
-  AlertCircle,
-  RefreshCw,
-} from 'lucide-react';
-import Link from 'next/link';
+import { CreditCard, Settings, ShieldCheck, CheckCircle2, AlertCircle } from 'lucide-react';
 import { Button } from '../../../../components/ui/button';
 import {
   Card,
@@ -26,6 +15,8 @@ import { useLanguage } from '../../../../contexts/LanguageContext';
 import { api } from '../../../../lib/api';
 import { PaymentSettingDto, PaymentProvider } from '@smartfeed/shared';
 import { WayForPaySettingsDialog } from '../../../../components/payments/WayForPaySettingsDialog';
+import { PaymentSettingsHeader } from '../../../../components/payments/PaymentSettingsHeader';
+import { PaymentGatewaysList } from '../../../../components/payments/PaymentGatewaysList';
 
 export default function PaymentsSettingsPage() {
   const { locale } = useLanguage();
@@ -68,227 +59,138 @@ export default function PaymentsSettingsPage() {
     setSettings((prev) => prev.map((s) => (s.provider === updated.provider ? updated : s)));
   };
 
-  const otherGateways = [
-    {
-      id: 'stripe',
-      name: 'Stripe Payments',
-      descUk: 'Міжнародний процесинг кредитних карток (Visa, MasterCard, Apple Pay, Google Pay)',
-      descEn: 'Global credit card processing (Visa, MasterCard, Apple Pay, Google Pay)',
-      statusUk: 'Скоро',
-      statusEn: 'Coming Soon',
-      badgeVariant: 'secondary' as const,
-      icon: CreditCard,
-    },
-    {
-      id: 'liqpay',
-      name: 'LiqPay / Privat24',
-      descUk: 'Миттєва оплата через українські банківські додатки та QR-коди',
-      descEn: 'Instant checkout through Ukrainian banking apps and QR payments',
-      statusUk: 'Скоро',
-      statusEn: 'Coming Soon',
-      badgeVariant: 'secondary' as const,
-      icon: WalletCards,
-    },
-    {
-      id: 'crypto',
-      name: 'Crypto Checkout (USDT / BTC)',
-      descUk: 'Автоматизований прийом платежів у стейблкоїнах (TRC-20, ERC-20)',
-      descEn: 'Automated crypto invoicing and payment processing in stablecoins',
-      statusUk: 'В розробці',
-      statusEn: 'In Development',
-      badgeVariant: 'outline' as const,
-      icon: Sparkles,
-    },
-  ];
-
   return (
     <div
       data-testid="payments-settings-page"
       className="flex flex-col gap-6 max-w-5xl animate-in fade-in duration-300"
     >
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-border">
-        <div>
-          <div className="flex items-center gap-2 mb-1.5">
-            <Link
-              href="/settings"
-              className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors"
-            >
-              <ArrowLeft className="size-3.5" />
-              <span>{isUk ? 'Налаштування' : 'Settings'}</span>
-            </Link>
-          </div>
-          <h1
-            data-testid="payments-header-title"
-            className="text-2xl font-semibold tracking-tight text-foreground flex items-center gap-2.5"
-          >
-            <WalletCards className="size-6 text-primary" />
-            <span>{isUk ? 'Платіжні системи' : 'Payment Gateways'}</span>
-          </h1>
-          <p className="text-xs text-muted-foreground mt-1">
-            {isUk
-              ? 'Підключення та конфігурація платіжного шлюзу WayForPay, тестового терміналу Sandbox та ключів мерчанта'
-              : 'Configure WayForPay gateway, Sandbox test terminal credentials, and live production keys'}
-          </p>
-        </div>
+      <PaymentSettingsHeader isUk={isUk} isLoading={isLoading} onRefresh={fetchSettings} />
 
-        <div className="flex items-center gap-2">
-          <Link href="/transactions">
-            <Button variant="outline" size="sm" className="h-8 text-xs gap-1.5">
-              <span>{isUk ? 'Журнал транзакцій' : 'View Transactions'}</span>
-            </Button>
-          </Link>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={fetchSettings}
-            disabled={isLoading}
-            className="h-8 px-2 text-xs"
-          >
-            <RefreshCw className={`size-3.5 ${isLoading ? 'animate-spin' : ''}`} />
-          </Button>
-        </div>
-      </div>
+      {/* Main Active Gateway Card (WayForPay) */}
+      <div className="flex flex-col gap-4">
+        <h2 className="text-sm font-semibold text-foreground tracking-tight">
+          {isUk ? 'Основний платіжний провайдер' : 'Primary Payment Provider'}
+        </h2>
 
-      {/* Info Banner */}
-      <div className="flex items-center gap-3 p-3.5 rounded-xl border border-primary/20 bg-primary/5 text-xs text-foreground">
-        <ShieldCheck className="size-5 shrink-0 text-primary" />
-        <div className="flex-1">
-          <span className="font-semibold text-primary">
-            {isUk ? 'Шлюз WayForPay активний' : 'WayForPay Gateway Active'}
-          </span>{' '}
-          —{' '}
-          {wfpSetting?.isTestMode ? (
-            <span className="text-muted-foreground">
-              {isUk
-                ? 'працює на офіційному тестовому мерчанті `test_merch_n1`. Оплати симулюються без реальних списань.'
-                : 'running in Sandbox test mode (`test_merch_n1`). Test payments simulate license provisioning without real charges.'}
-            </span>
-          ) : (
-            <span className="text-emerald-600 dark:text-emerald-400 font-medium">
-              {isUk
-                ? 'працює в БОЙОВОМУ режимі (Live Production). Реальні платежі клієнтів автоматично продовжують ліцензію.'
-                : 'running in LIVE production mode. Real customer charges automatically provision licenses.'}
-            </span>
-          )}
-        </div>
-      </div>
-
-      {/* Gateways Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-        {/* 1. WayForPay Active Gateway Card */}
         <Card
           data-testid="gateway-card-wayforpay"
-          className="border-primary/50 bg-card shadow-sm hover:border-primary transition-all flex flex-col justify-between relative overflow-hidden"
+          className="border-border bg-card shadow-sm hover:border-primary/40 transition-colors"
         >
-          <div className="absolute top-0 right-0 left-0 h-1 bg-gradient-to-r from-emerald-500 via-primary to-emerald-500" />
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                <div className="h-10 w-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
-                  <WalletCards className="h-5 w-5" />
+          <CardHeader className="pb-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="flex items-start gap-3.5">
+                <div className="size-11 rounded-xl bg-primary/10 border border-primary/20 text-primary flex items-center justify-center shrink-0">
+                  <CreditCard className="size-5" />
                 </div>
                 <div>
-                  <CardTitle className="text-base flex items-center gap-2">
-                    <span>WayForPay</span>
+                  <div className="flex items-center gap-2">
+                    <CardTitle className="text-base font-semibold">WayForPay (Україна)</CardTitle>
                     {wfpSetting?.isEnabled ? (
-                      <CheckCircle2 className="size-4 text-emerald-500" />
+                      <Badge
+                        variant="outline"
+                        data-testid="wfp-status-badge"
+                        className="bg-emerald-500/10 text-emerald-500 border-emerald-500/20 text-[10px] flex items-center gap-1 font-mono"
+                      >
+                        <CheckCircle2 className="size-3" />
+                        <span>{isUk ? 'Активний' : 'Active'}</span>
+                      </Badge>
                     ) : (
-                      <AlertCircle className="size-4 text-muted-foreground" />
+                      <Badge
+                        variant="secondary"
+                        data-testid="wfp-status-badge"
+                        className="text-[10px] flex items-center gap-1"
+                      >
+                        <AlertCircle className="size-3" />
+                        <span>{isUk ? 'Вимкнено' : 'Disabled'}</span>
+                      </Badge>
                     )}
-                  </CardTitle>
-                  <CardDescription className="text-xs mt-0.5">
+                    {wfpSetting?.isTestMode && (
+                      <Badge
+                        variant="outline"
+                        data-testid="wfp-testmode-badge"
+                        className="bg-amber-500/10 text-amber-500 border-amber-500/20 text-[10px] font-mono"
+                      >
+                        TEST MODE (SANDBOX)
+                      </Badge>
+                    )}
+                  </div>
+                  <CardDescription className="text-xs mt-1">
                     {isUk
-                      ? 'Оплата картками Visa, MasterCard, Apple Pay, Google Pay та Приват24'
-                      : 'Visa, MasterCard, Apple Pay, Google Pay & Privat24 checkout'}
+                      ? 'Оплата банківськими картками Visa / MasterCard, Apple Pay, Google Pay, Приват24, Monobank'
+                      : 'Card processing via Visa / MasterCard, Apple Pay, Google Pay, Privat24, Monobank'}
                   </CardDescription>
                 </div>
               </div>
-              <div className="flex flex-col items-end gap-1">
-                <Badge
-                  variant={wfpSetting?.isTestMode ? 'outline' : 'default'}
-                  className={`text-[10px] uppercase font-semibold ${
-                    wfpSetting?.isTestMode
-                      ? 'border-amber-500/40 text-amber-600 dark:text-amber-400 bg-amber-500/10'
-                      : 'bg-emerald-600 text-white'
-                  }`}
-                >
-                  {wfpSetting?.isTestMode
-                    ? isUk
-                      ? 'Тестовий (Sandbox)'
-                      : 'Sandbox Test'
-                    : isUk
-                      ? 'Бойовий (Live)'
-                      : 'Live'}
-                </Badge>
-                <span className="text-[10px] text-muted-foreground font-mono">
-                  {wfpSetting?.merchantAccount || 'test_merch_n1'}
-                </span>
-              </div>
+
+              <Button
+                data-testid="configure-wayforpay-btn"
+                variant="outline"
+                size="sm"
+                onClick={handleOpenWfp}
+                className="h-8 text-xs gap-1.5 shrink-0 self-start sm:self-center"
+              >
+                <Settings className="size-3.5" />
+                <span>{isUk ? 'Налаштувати' : 'Configure'}</span>
+              </Button>
             </div>
           </CardHeader>
 
-          <CardContent className="pt-2 flex items-center justify-between border-t border-border/50 mt-3">
-            <div className="text-[11px] text-muted-foreground font-mono">WAYFORPAY_GATEWAY</div>
-            <Button
-              variant="default"
-              size="sm"
-              data-testid="configure-wayforpay-btn"
-              onClick={handleOpenWfp}
-              className="h-8 text-xs gap-1.5"
-            >
-              <Settings className="size-3.5" />
-              <span>{isUk ? 'Налаштувати' : 'Configure'}</span>
-            </Button>
+          <CardContent className="pt-0 border-t border-border/40 mt-2">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-3 text-xs">
+              <div>
+                <span className="text-muted-foreground block text-[11px]">
+                  {isUk ? 'Ідентифікатор мерчанта:' : 'Merchant Account ID:'}
+                </span>
+                <span
+                  data-testid="wfp-merchant-account"
+                  className="font-mono font-medium text-foreground mt-0.5 block truncate"
+                >
+                  {wfpSetting?.merchantAccount || (isUk ? 'Не налаштовано' : 'Not configured')}
+                </span>
+              </div>
+
+              <div>
+                <span className="text-muted-foreground block text-[11px]">
+                  {isUk ? 'Секретний ключ:' : 'Secret Key:'}
+                </span>
+                <span
+                  data-testid="wfp-merchant-secret"
+                  className="font-mono font-medium text-foreground mt-0.5 block truncate"
+                >
+                  {wfpSetting?.merchantSecretKey
+                    ? '••••••••••••••••'
+                    : isUk
+                      ? 'Не встановлено'
+                      : 'Not set'}
+                </span>
+              </div>
+
+              <div>
+                <span className="text-muted-foreground block text-[11px]">
+                  {isUk ? 'Режим обробки:' : 'Processing Mode:'}
+                </span>
+                <span className="font-medium text-foreground mt-0.5 flex items-center gap-1">
+                  <ShieldCheck className="size-3.5 text-primary" />
+                  <span>
+                    {wfpSetting?.isTestMode
+                      ? isUk
+                        ? 'Тестовий (Sandbox)'
+                        : 'Sandbox'
+                      : isUk
+                        ? 'Продакшн (Бойові платежі)'
+                        : 'Production (Live)'}
+                  </span>
+                </span>
+              </div>
+            </div>
           </CardContent>
         </Card>
-
-        {/* Other Gateways */}
-        {otherGateways.map((gw) => {
-          const Icon = gw.icon;
-          return (
-            <Card
-              key={gw.id}
-              className="border-border/80 bg-card/60 backdrop-blur-sm shadow-sm hover:border-border transition-all flex flex-col justify-between opacity-80"
-            >
-              <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <div className="h-10 w-10 rounded-xl bg-muted text-muted-foreground flex items-center justify-center">
-                      <Icon className="h-5 w-5" />
-                    </div>
-                    <div>
-                      <CardTitle className="text-base text-muted-foreground">{gw.name}</CardTitle>
-                      <CardDescription className="text-xs mt-0.5">
-                        {isUk ? gw.descUk : gw.descEn}
-                      </CardDescription>
-                    </div>
-                  </div>
-                  <Badge variant={gw.badgeVariant} className="text-[10px] uppercase font-semibold">
-                    {isUk ? gw.statusUk : gw.statusEn}
-                  </Badge>
-                </div>
-              </CardHeader>
-
-              <CardContent className="pt-2 flex items-center justify-between border-t border-border/50 mt-4">
-                <div className="text-[11px] text-muted-foreground font-mono">
-                  {gw.id.toUpperCase()}_GATEWAY
-                </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled
-                  className="h-7 text-xs gap-1.5 opacity-60"
-                >
-                  <span>{isUk ? 'Налаштувати' : 'Configure'}</span>
-                </Button>
-              </CardContent>
-            </Card>
-          );
-        })}
       </div>
 
-      {/* Settings Dialog */}
+      {/* Additional Future Gateways */}
+      <PaymentGatewaysList isUk={isUk} />
+
+      {/* Settings Modal */}
       <WayForPaySettingsDialog
         open={dialogOpen}
         onOpenChange={setDialogOpen}

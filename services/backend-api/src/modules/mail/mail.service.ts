@@ -33,7 +33,7 @@ export class MailService {
     }
 
     try {
-      const transportOptions: nodemailer.TransportOptions = {
+      const transportOptions = {
         host,
         port,
         secure: port === 465,
@@ -41,12 +41,13 @@ export class MailService {
         tls: {
           rejectUnauthorized: false,
         },
-      } as any;
+      } as nodemailer.TransportOptions;
 
       this.transporter = nodemailer.createTransport(transportOptions);
       this.logger.log(`Mail service initialized with transport host: ${host}:${port}`);
-    } catch (err: any) {
-      this.logger.warn(`Failed to initialize mail transport: ${err?.message}`);
+    } catch (err: unknown) {
+      const errMsg = err instanceof Error ? err.message : String(err);
+      this.logger.warn(`Failed to initialize mail transport: ${errMsg}`);
       this.transporter = null;
     }
   }
@@ -79,11 +80,12 @@ export class MailService {
 
       this.logger.log(`Invitation email successfully sent to ${data.to}`);
       return { success: true };
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const errMsg = err instanceof Error ? err.message : String(err);
       this.logger.warn(
-        `Failed to send invitation email to ${data.to}: ${err?.message}. Direct link is: ${data.inviteUrl}`,
+        `Failed to send invitation email to ${data.to}: ${errMsg}. Direct link is: ${data.inviteUrl}`,
       );
-      return { success: false, error: err?.message };
+      return { success: false, error: errMsg };
     }
   }
 }

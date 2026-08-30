@@ -143,8 +143,9 @@ export function ImportFeedWizardDialog({
         setSelectedCategoryIds(result.categories.map((c) => c.id));
       }
       return true;
-    } catch (err: any) {
-      setAnalysisError(err.message || 'Помилка аналізу фіду');
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Помилка аналізу фіду';
+      setAnalysisError(msg);
       return false;
     } finally {
       setIsAnalyzing(false);
@@ -199,8 +200,9 @@ export function ImportFeedWizardDialog({
       refreshQuotas();
       emitDataSync(['suppliers', 'feeds', 'products', 'quotas']);
       onSuccess?.();
-    } catch (err: any) {
-      setImportError(err.message || 'Помилка під час запуску імпорту товарів');
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Помилка під час запуску імпорту товарів';
+      setImportError(msg);
     } finally {
       setIsImporting(false);
     }

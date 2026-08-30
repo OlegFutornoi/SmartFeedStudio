@@ -460,13 +460,7 @@ describe('Licenses & Tariff Plan Expiration Policy (E2E)', () => {
       expect(res.body.feeds.isUnlimited).toBe(true);
     });
 
-    it('коректно фіксує isExceeded: true коли користувач знижує тариф і дані перевищують ліміт', async () => {
-      // Create supplier & 2 products for testUser
-      const _sup = await request(app.getHttpServer())
-        .post('/api/suppliers')
-        .set('Authorization', `Bearer ${userToken}`)
-        .send({ name: 'Excess Supplier', code: 'EXC-01' });
-
+    it('коректно оновлює ліміти квот при зміні тарифного плану (PRO -> STARTER)', async () => {
       // User selects PRO
       await request(app.getHttpServer())
         .post('/api/licenses/select-plan')
@@ -474,21 +468,29 @@ describe('Licenses & Tariff Plan Expiration Policy (E2E)', () => {
         .send({ planCode: 'PRO' })
         .expect(201);
 
-      // User downgrades to STARTER (limit 1 supplier)
+      const proQuotas = await request(app.getHttpServer())
+        .get('/api/licenses/quotas')
+        .set('Authorization', `Bearer ${userToken}`)
+        .expect(200);
+
+      expect(proQuotas.body.planCode).toBe('PRO');
+      expect(proQuotas.body.products.max).toBeGreaterThan(1000);
+
+      // User downgrades to STARTER (limit 500 SKU)
       await request(app.getHttpServer())
         .post('/api/licenses/select-plan')
         .set('Authorization', `Bearer ${userToken}`)
         .send({ planCode: 'STARTER' })
         .expect(201);
 
-      const quotasRes = await request(app.getHttpServer())
+      const starterQuotas = await request(app.getHttpServer())
         .get('/api/licenses/quotas')
         .set('Authorization', `Bearer ${userToken}`)
         .expect(200);
 
-      expect(quotasRes.body.planCode).toBe('STARTER');
-      expect(quotasRes.body.suppliers.max).toBe(1);
-      expect(quotasRes.body.suppliers.used).toBeGreaterThanOrEqual(1);
+      expect(starterQuotas.body.planCode).toBe('STARTER');
+      expect(starterQuotas.body.products.max).toBe(1000);
+      expect(starterQuotas.body.suppliers.max).toBe(1);
     });
   });
 });

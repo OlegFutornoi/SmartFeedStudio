@@ -22,5 +22,15 @@
   "emptySearchDesc": "Спробуйте змінити пошуковий запит або імпортувати новий каталог",
   "sourceUrl": "Джерело:",
   "connectedFeeds": "Підключені фіди",
-  "connectedFeedsDesc": "Список активних XML каталогів та каналів експорту"
+  "connectedFeedsDesc": "Список активних XML каталогів та каналів експорту",
+  "tabCatalogs": "Каталоги товарів",
+  "tabChannels": "Канали експорту та Маркетплейси",
+  "connectMarketplace": "Підключити маркетплейс",
+  "marketplaceCommission": "Комісія маркетплейсу",
+  "reverseMarkup": "Зворотна націнка",
+  "downloadFeed": "Завантажити фід",
+  "copyFeedUrl": "Скопіювати посилання",
+  "feedUrlCopied": "Посилання скопійовано",
+  "simulatorTitle": "Симулятор маржинальності та чистого заробітку",
+  "netProfit": "Чистий прибуток"
 }

@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
-import { Building2, Plus, Search, Radio, ShoppingBag, Loader2, Sparkles } from 'lucide-react';
+import { Building2, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { TablePagination } from '@/components/ui/table-pagination';
@@ -14,13 +14,15 @@ import { SupplierCard } from '@/components/suppliers/SupplierCard';
 import { CreateSupplierDialog } from '@/components/suppliers/CreateSupplierDialog';
 import { ImportFeedWizardDialog } from '@/components/feeds/ImportFeedWizardDialog';
 import { SupplierFeedsModal } from '@/components/suppliers/SupplierFeedsModal';
-import { QuotaMetricCard } from '@/components/ui/QuotaMetricCard';
+import { SupplierPricingRulesModal } from '@/components/suppliers/SupplierPricingRulesModal';
 import { QuotaExceededDialog } from '@/components/ui/QuotaExceededDialog';
 import { QuotaExcessBanner } from '@/components/ui/QuotaExcessBanner';
 import { QuotaReconciliationDialog } from '@/components/plans/QuotaReconciliationDialog';
 import { ConfirmDeleteDialog } from '@/components/ui/ConfirmDeleteDialog';
 import { getSuppliers, createSupplier, updateSupplier, deleteSupplier } from '@/lib/api';
 import { useDataSync, emitDataSync } from '@/lib/syncEvents';
+import { SuppliersStatsHeader } from '@/components/suppliers/SuppliersStatsHeader';
+import { SuppliersToolbar } from '@/components/suppliers/SuppliersToolbar';
 
 export function SuppliersPage() {
   const { t, language } = useTranslation(['suppliers', 'common']);
@@ -45,6 +47,7 @@ export function SuppliersPage() {
     undefined,
   );
   const [feedsModalSupplier, setFeedsModalSupplier] = useState<SupplierDto | null>(null);
+  const [pricingRulesSupplier, setPricingRulesSupplier] = useState<SupplierDto | null>(null);
   const [isQuotaExceededOpen, setIsQuotaExceededOpen] = useState(false);
   const [selectedSupplier, setSelectedSupplier] = useState<SupplierDto | null>(null);
   const [supplierToDelete, setSupplierToDelete] = useState<SupplierDto | null>(null);
@@ -109,7 +112,6 @@ export function SuppliersPage() {
         return;
       }
       await createSupplier(dto, token);
-      // Instant optimistic local update (0 ms)
       updateLocalQuota('suppliers', 1);
     }
 
@@ -131,7 +133,6 @@ export function SuppliersPage() {
     setSupplierToDelete(null);
 
     await deleteSupplier(target.id, token);
-    // Instant optimistic local update (0 ms)
     updateLocalQuota('suppliers', -1);
     emitDataSync(['suppliers', 'feeds', 'products', 'quotas', 'all']);
     await fetchSuppliers(true);
@@ -146,155 +147,94 @@ export function SuppliersPage() {
   }, [suppliers, search]);
 
   const { currentPage, pageSize, totalPages, totalItems, paginatedItems, setPage, setPageSize } =
-    usePagination(filteredSuppliers, {
-      initialPageSize: 9,
+    usePagination<SupplierDto>(filteredSuppliers, {
+      initialPageSize: 10,
       resetDeps: [search],
     });
 
   if (isExpired) {
-    return <ExpiredPlanBlocker featureName={t('suppliers:title')} />;
+    return <ExpiredPlanBlocker />;
   }
 
   return (
-    <div
-      data-testid="suppliers-page"
-      className="max-w-6xl mx-auto space-y-8 animate-in fade-in duration-300"
-    >
-      {/* Header Banner */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-border/40">
-        <div className="flex items-center space-x-2.5">
-          <div className="p-2 bg-primary/10 rounded-xl text-primary border border-primary/20">
-            <Building2 className="h-6 w-6" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-              {t('suppliers:title')}
-            </h1>
-            <p className="text-sm text-muted-foreground">{t('suppliers:description')}</p>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            className="gap-2 text-xs h-9 bg-primary/5 hover:bg-primary/10 border-primary/20 text-foreground disabled:opacity-50 disabled:cursor-not-allowed"
-            onClick={() => handleOpenImportWizard()}
-            disabled={isFeedLimitReached}
-            title={
-              isFeedLimitReached
-                ? t('suppliers:feedLimitReachedTooltip', {
-                    defaultValue:
-                      'Ліміт джерел фідів вичерпано. Підвищіть тариф або видаліть зайві фіди.',
-                  })
-                : undefined
-            }
-            data-testid="import-feed-header-btn"
-          >
-            <Sparkles className="h-4 w-4 text-primary" />
-            <span>{t('suppliers:importFeedBtn', { defaultValue: 'Імпортувати фід' })}</span>
-          </Button>
-
-          <Button
-            className="gap-2 text-xs h-9 shadow-md shadow-primary/25 disabled:opacity-50 disabled:cursor-not-allowed"
-            onClick={handleOpenCreate}
-            disabled={isSupplierLimitReached}
-            title={
-              isSupplierLimitReached
-                ? t('suppliers:supplierLimitReachedTooltip', {
-                    defaultValue:
-                      'Ліміт постачальників вичерпано. Підвищіть тариф або видаліть зайвих постачальників.',
-                  })
-                : undefined
-            }
-            data-testid="add-supplier-header-btn"
-          >
-            <Plus className="h-4 w-4" />
-            <span>{t('suppliers:addSupplier')}</span>
-          </Button>
-        </div>
-      </div>
-
-      {/* Quota Excess Reconciliation Banner (Downgrade Warning) */}
+    <div className="p-6 space-y-6" data-testid="suppliers-page">
+      {/* Excess Data Alert Banner (Downgrade Reconciliation) */}
       <QuotaExcessBanner
         quotas={quotas}
         onOpenReconciliation={() => setIsReconciliationOpen(true)}
       />
 
-      {/* Unified Real-time Quota Metrics Row */}
-      <div className="grid gap-4 sm:grid-cols-3">
-        <QuotaMetricCard
-          title={t('suppliers:totalSuppliers')}
-          icon={Building2}
-          quota={quotas?.suppliers}
-          unit={isUk ? 'постач.' : 'supp.'}
-          testId="suppliers-quota-card"
-        />
+      {/* KPI Stats & Title */}
+      <SuppliersStatsHeader quotas={quotas} suppliersCount={suppliers.length} />
 
-        <QuotaMetricCard
-          title={t('suppliers:totalProducts')}
-          icon={ShoppingBag}
-          quota={quotas?.products}
-          unit="SKU"
-          testId="products-quota-card"
-        />
+      {/* Search & Actions Toolbar */}
+      <SuppliersToolbar
+        search={search}
+        isSupplierLimitReached={isSupplierLimitReached}
+        isFeedLimitReached={isFeedLimitReached}
+        onSearchChange={setSearch}
+        onOpenCreate={handleOpenCreate}
+        onOpenImportWizard={() => handleOpenImportWizard()}
+      />
 
-        <QuotaMetricCard
-          title={t('suppliers:activeFeeds')}
-          icon={Radio}
-          quota={quotas?.feeds}
-          unit={isUk ? 'фідів' : 'feeds'}
-          testId="feeds-quota-card"
-        />
-      </div>
-
-      {/* Search & Grid */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between gap-3">
-          <div className="relative w-72">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-            <input
-              type="text"
-              placeholder={t('suppliers:searchPlaceholder')}
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-secondary/40 border border-border/80 rounded-xl pl-9 pr-4 py-1.5 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
-            />
-          </div>
+      {/* Main Content Area */}
+      {isLoading ? (
+        <div className="flex items-center justify-center h-64">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
-
-        {isLoading ? (
-          <div className="flex items-center justify-center p-16">
-            <Loader2 className="size-8 animate-spin text-primary" />
-          </div>
-        ) : paginatedItems.length === 0 ? (
-          <Card className="p-12 text-center border-border/60 bg-card/40">
-            <Building2 className="size-12 text-muted-foreground/40 mx-auto mb-3" />
-            <h3 className="text-sm font-semibold text-foreground">{t('suppliers:noSuppliers')}</h3>
-            <p className="text-xs text-muted-foreground mt-1 max-w-sm mx-auto">
-              {t('suppliers:noSuppliersDesc')}
+      ) : filteredSuppliers.length === 0 ? (
+        <Card className="p-12 text-center border-dashed border-border/80 bg-card/40">
+          <div className="flex flex-col items-center justify-center gap-3">
+            <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+              <Building2 className="h-6 w-6" />
+            </div>
+            <h3 className="text-base font-semibold text-foreground">
+              {search
+                ? t('noSearchResults', { defaultValue: 'Постачальників не знайдено' })
+                : t('emptyStateTitle', { defaultValue: 'Список постачальників порожній' })}
+            </h3>
+            <p className="text-xs text-muted-foreground max-w-sm">
+              {search
+                ? t('noSearchDesc', {
+                    defaultValue: 'Спробуйте змінити пошуковий запит або очистити фільтри',
+                  })
+                : t('emptyStateDesc', {
+                    defaultValue:
+                      'Додайте свого першого постачальника товарів та підключіть XML/CSV фід для автоматичного імпорту каталогу',
+                  })}
             </p>
-          </Card>
-        ) : (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {!search && (
+              <Button
+                onClick={handleOpenCreate}
+                disabled={isSupplierLimitReached}
+                className="mt-2 text-xs h-9 gap-1.5"
+                data-testid="empty-create-supplier-btn"
+              >
+                {t('createSupplier', { defaultValue: 'Додати постачальника' })}
+              </Button>
+            )}
+          </div>
+        </Card>
+      ) : (
+        <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {paginatedItems.map((supplier) => (
               <SupplierCard
                 key={supplier.id}
                 supplier={supplier}
                 isFeedLimitReached={isFeedLimitReached}
-                onEdit={(sup) => {
-                  setSelectedSupplier(sup);
+                onEdit={(s: SupplierDto) => {
+                  setSelectedSupplier(s);
                   setIsCreateOpen(true);
                 }}
                 onDelete={handleDeleteSupplier}
-                onImportFeed={(sup) => handleOpenImportWizard(sup.id)}
-                onViewFeeds={(sup) => setFeedsModalSupplier(sup)}
+                onImportFeed={(s: SupplierDto) => handleOpenImportWizard(s.id)}
+                onViewFeeds={(s: SupplierDto) => setFeedsModalSupplier(s)}
+                onPricingRules={(s: SupplierDto) => setPricingRulesSupplier(s)}
               />
             ))}
           </div>
-        )}
 
-        {/* Pagination Footer */}
-        {totalPages > 1 && (
           <TablePagination
             currentPage={currentPage}
             totalPages={totalPages}
@@ -302,14 +242,11 @@ export function SuppliersPage() {
             totalItems={totalItems}
             onPageChange={setPage}
             onPageSizeChange={setPageSize}
-            pageSizeOptions={[6, 9, 18, 36]}
-            isUk={isUk}
-            testIdPrefix="suppliers-pagination"
           />
-        )}
-      </div>
+        </div>
+      )}
 
-      {/* Modal for Create/Edit Supplier */}
+      {/* Modals & Dialogs */}
       <CreateSupplierDialog
         isOpen={isCreateOpen}
         onClose={() => {
@@ -320,74 +257,59 @@ export function SuppliersPage() {
         initialData={selectedSupplier}
       />
 
-      {/* Modal for Connected Feed Sources Management */}
-      <SupplierFeedsModal
-        isOpen={!!feedsModalSupplier}
-        onClose={() => setFeedsModalSupplier(null)}
-        supplier={feedsModalSupplier}
-        onConnectNewFeed={(sup) => {
-          setFeedsModalSupplier(null);
-          handleOpenImportWizard(sup.id);
-        }}
-      />
-
-      {/* Modal for Import Feed Wizard */}
       <ImportFeedWizardDialog
         isOpen={isImportWizardOpen}
-        onClose={() => setIsImportWizardOpen(false)}
-        suppliers={suppliers}
-        initialSupplierId={importWizardSupplierId}
-        onSuccess={() => {
-          fetchSuppliers(true);
+        onClose={() => {
+          setIsImportWizardOpen(false);
+          setImportWizardSupplierId(undefined);
         }}
+        initialSupplierId={importWizardSupplierId}
+        suppliers={suppliers}
       />
 
-      {/* Quota Exceeded Blocker Modal */}
+      <SupplierFeedsModal
+        supplier={feedsModalSupplier}
+        isOpen={Boolean(feedsModalSupplier)}
+        onClose={() => setFeedsModalSupplier(null)}
+        onConnectNewFeed={(s: SupplierDto) => handleOpenImportWizard(s.id)}
+      />
+
+      <SupplierPricingRulesModal
+        supplier={pricingRulesSupplier}
+        isOpen={Boolean(pricingRulesSupplier)}
+        onClose={() => setPricingRulesSupplier(null)}
+      />
+
       <QuotaExceededDialog
         isOpen={isQuotaExceededOpen}
         onClose={() => setIsQuotaExceededOpen(false)}
-        resourceName={t('suppliers:title')}
-        currentCount={quotas?.suppliers?.used || suppliers.length}
-        maxLimit={quotas?.suppliers?.max || 1}
-        planName={isUk ? quotas?.planNameUk : quotas?.planNameEn}
+        resourceName={isUk ? 'Постачальники' : 'Suppliers'}
+        currentCount={quotas?.suppliers?.used ?? 2}
+        maxLimit={quotas?.suppliers?.max ?? 2}
+        planName={isUk ? quotas?.planNameUk || 'Старт' : quotas?.planNameEn || 'Starter'}
       />
 
-      {/* Quota Reconciliation / Downgrade Excess Modal */}
       <QuotaReconciliationDialog
         isOpen={isReconciliationOpen}
-        onClose={() => {
-          setIsReconciliationOpen(false);
-          fetchSuppliers(true);
-        }}
+        onClose={() => setIsReconciliationOpen(false)}
       />
 
-      {/* Styled Confirmation Dialog for Supplier Delete */}
       <ConfirmDeleteDialog
         isOpen={Boolean(supplierToDelete)}
-        onClose={() => setSupplierToDelete(null)}
-        onConfirm={handleConfirmDeleteSupplier}
-        title={isUk ? 'Видалити постачальника' : 'Delete Supplier'}
-        description={
-          <div className="space-y-2">
-            <p>
-              {isUk
-                ? 'Ви дійсно бажаєте видалити цього постачальника?'
-                : 'Are you sure you want to delete this supplier?'}
-            </p>
-            {supplierToDelete && (
-              <div className="p-2.5 rounded-lg bg-muted border border-border font-mono text-[11px] text-foreground font-semibold truncate">
-                {supplierToDelete.name} ({supplierToDelete.code})
-              </div>
-            )}
-            <p className="text-[11px] text-muted-foreground">
-              {isUk
-                ? 'Всі підключені джерела фідів та товари цього постачальника також буде видалено.'
-                : 'All connected feed sources and products of this supplier will also be deleted.'}
-            </p>
-          </div>
+        title={
+          isUk
+            ? `Видалити постачальника «${supplierToDelete?.name}»?`
+            : `Delete supplier «${supplierToDelete?.name}»?`
         }
-        confirmLabel={isUk ? 'Видалити постачальника' : 'Delete supplier'}
+        description={
+          isUk
+            ? 'Усі підключені фіди та імпортовані товари цього постачальника будуть безповоротно видалені з бази даних.'
+            : 'All connected feeds and imported products from this supplier will be permanently deleted.'
+        }
+        confirmLabel={isUk ? 'Видалити постачальника' : 'Delete Supplier'}
         cancelLabel={isUk ? 'Скасувати' : 'Cancel'}
+        onConfirm={handleConfirmDeleteSupplier}
+        onClose={() => setSupplierToDelete(null)}
       />
     </div>
   );

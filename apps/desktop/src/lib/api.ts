@@ -13,6 +13,16 @@ import type {
   ProductCategorySummaryDto,
   BulkDeleteProductsDto,
   BulkDeleteResultDto,
+  SupplierPricingRuleDto,
+  CreateSupplierPricingRuleDto,
+  UpdateSupplierPricingRuleDto,
+  ExportChannelDto,
+  CreateExportChannelDto,
+  UpdateExportChannelDto,
+  ExportChannelPricingRuleDto,
+  CreateExportChannelPricingRuleDto,
+  PriceSimulationRequestDto,
+  PriceSimulationResultDto,
 } from '@smartfeed/shared';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
@@ -798,7 +808,7 @@ export interface ImportJobDto {
   failedItems: number;
   progressPercent: number;
   selectedCategories?: string[] | null;
-  errorLogs?: any;
+  errorLogs?: unknown;
   startedAt?: string | null;
   completedAt?: string | null;
   createdAt: string;
@@ -1064,4 +1074,238 @@ export async function importFeedContent(
     throw new ApiError(message, response.status, data);
   }
   return data as ImportFeedResultDto;
+}
+
+// ---------------------------------------------------------------------------
+// Supplier Multi-Tier Pricing Rules API
+// ---------------------------------------------------------------------------
+
+export async function getSupplierPricingRules(
+  supplierId: string,
+  token?: string,
+): Promise<SupplierPricingRuleDto[]> {
+  const response = await fetchWithAuth(
+    `/suppliers/${supplierId}/pricing-rules`,
+    { method: 'GET' },
+    token,
+  );
+  const data = await response.json().catch(() => []);
+  if (!response.ok) {
+    throw new ApiError(data.message || 'Не вдалося завантажити правила націнки', response.status);
+  }
+  return data as SupplierPricingRuleDto[];
+}
+
+export async function createSupplierPricingRule(
+  supplierId: string,
+  dto: CreateSupplierPricingRuleDto,
+  token?: string,
+): Promise<SupplierPricingRuleDto> {
+  const response = await fetchWithAuth(
+    `/suppliers/${supplierId}/pricing-rules`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(dto),
+    },
+    token,
+  );
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    const message = Array.isArray(data.message)
+      ? data.message.join(', ')
+      : data.message || 'Не вдалося створити правило націнки';
+    throw new ApiError(message, response.status, data);
+  }
+  return data as SupplierPricingRuleDto;
+}
+
+export async function updateSupplierPricingRule(
+  supplierId: string,
+  ruleId: string,
+  dto: UpdateSupplierPricingRuleDto,
+  token?: string,
+): Promise<SupplierPricingRuleDto> {
+  const response = await fetchWithAuth(
+    `/suppliers/${supplierId}/pricing-rules/${ruleId}`,
+    {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(dto),
+    },
+    token,
+  );
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    const message = Array.isArray(data.message)
+      ? data.message.join(', ')
+      : data.message || 'Не вдалося оновити правило націнки';
+    throw new ApiError(message, response.status, data);
+  }
+  return data as SupplierPricingRuleDto;
+}
+
+export async function deleteSupplierPricingRule(
+  supplierId: string,
+  ruleId: string,
+  token?: string,
+): Promise<{ success: boolean }> {
+  const response = await fetchWithAuth(
+    `/suppliers/${supplierId}/pricing-rules/${ruleId}`,
+    { method: 'DELETE' },
+    token,
+  );
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new ApiError(data.message || 'Не вдалося видалити правило націнки', response.status);
+  }
+  return data;
+}
+
+// ---------------------------------------------------------------------------
+// Export Channels & Marketplace Feeds API
+// ---------------------------------------------------------------------------
+
+export async function getExportChannels(
+  params?: { search?: string; isActive?: boolean },
+  token?: string,
+): Promise<ExportChannelDto[]> {
+  const query = new URLSearchParams();
+  if (params?.search) query.append('search', params.search);
+  if (params?.isActive !== undefined) query.append('isActive', String(params.isActive));
+
+  const url = `/export/channels${query.toString() ? `?${query.toString()}` : ''}`;
+  const response = await fetchWithAuth(url, { method: 'GET' }, token);
+  const data = await response.json().catch(() => []);
+  if (!response.ok) {
+    throw new ApiError(data.message || 'Не вдалося завантажити канали експорту', response.status);
+  }
+  return data as ExportChannelDto[];
+}
+
+export async function getExportChannelById(
+  id: string,
+  token?: string,
+): Promise<ExportChannelDto & { pricingRules: ExportChannelPricingRuleDto[] }> {
+  const response = await fetchWithAuth(`/export/channels/${id}`, { method: 'GET' }, token);
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new ApiError(data.message || 'Не вдалося завантажити канал експорту', response.status);
+  }
+  return data;
+}
+
+export async function createExportChannel(
+  dto: CreateExportChannelDto,
+  token?: string,
+): Promise<ExportChannelDto> {
+  const response = await fetchWithAuth(
+    '/export/channels',
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(dto),
+    },
+    token,
+  );
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    const message = Array.isArray(data.message)
+      ? data.message.join(', ')
+      : data.message || 'Не вдалося створити канал експорту';
+    throw new ApiError(message, response.status, data);
+  }
+  return data as ExportChannelDto;
+}
+
+export async function updateExportChannel(
+  id: string,
+  dto: UpdateExportChannelDto,
+  token?: string,
+): Promise<ExportChannelDto> {
+  const response = await fetchWithAuth(
+    `/export/channels/${id}`,
+    {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(dto),
+    },
+    token,
+  );
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    const message = Array.isArray(data.message)
+      ? data.message.join(', ')
+      : data.message || 'Не вдалося оновити канал експорту';
+    throw new ApiError(message, response.status, data);
+  }
+  return data as ExportChannelDto;
+}
+
+export async function deleteExportChannel(
+  id: string,
+  token?: string,
+): Promise<{ success: boolean }> {
+  const response = await fetchWithAuth(`/export/channels/${id}`, { method: 'DELETE' }, token);
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new ApiError(data.message || 'Не вдалося видалити канал експорту', response.status);
+  }
+  return data;
+}
+
+export async function createExportChannelRule(
+  channelId: string,
+  dto: CreateExportChannelPricingRuleDto,
+  token?: string,
+): Promise<ExportChannelPricingRuleDto> {
+  const response = await fetchWithAuth(
+    `/export/channels/${channelId}/rules`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(dto),
+    },
+    token,
+  );
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    const message = Array.isArray(data.message)
+      ? data.message.join(', ')
+      : data.message || 'Не вдалося додати правило комісії для маркетплейсу';
+    throw new ApiError(message, response.status, data);
+  }
+  return data as ExportChannelPricingRuleDto;
+}
+
+export async function deleteExportChannelRule(
+  channelId: string,
+  ruleId: string,
+  token?: string,
+): Promise<{ success: boolean }> {
+  const response = await fetchWithAuth(
+    `/export/channels/${channelId}/rules/${ruleId}`,
+    { method: 'DELETE' },
+    token,
+  );
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new ApiError(data.message || 'Не вдалося видалити правило каналу', response.status);
+  }
+  return data;
+}
+
+export async function simulatePricing(
+  dto: PriceSimulationRequestDto,
+): Promise<PriceSimulationResultDto> {
+  const response = await fetch(`${API_BASE_URL}/export/simulate`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(dto),
+  });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new ApiError(data.message || 'Помилка симуляції націнки', response.status);
+  }
+  return data as PriceSimulationResultDto;
 }

@@ -7,6 +7,7 @@ import { NavigationProvider } from '@/contexts/NavigationContext';
 import { useLicense } from '@/hooks/useLicense';
 import { ExpiredPlanBlocker } from './ExpiredPlanBlocker';
 import { GlobalJobProgressBar } from '@/components/ui/GlobalJobProgressBar';
+import { FirstRunWorkspaceSetupDialog } from '@/components/storage/FirstRunWorkspaceSetupDialog';
 
 export function DashboardLayout({ children }: { children?: React.ReactNode }) {
   const { isExpired, isLoading } = useLicense();
@@ -28,6 +29,7 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
             </main>
           </div>
           <GlobalJobProgressBar />
+          <FirstRunWorkspaceSetupDialog />
         </div>
       </NavigationProvider>
     </SidebarProvider>

@@ -1,6 +1,7 @@
-import { Controller, Get, Post, Param, Body, Request, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Param, Body, HttpCode, HttpStatus } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { AcceptInvitationDto } from './dto/accept-invitation.dto';
 import { GetInvitationByTokenQuery } from './queries/get-invitation-by-token.query';
 import { AcceptInvitationCommand } from './commands/accept-invitation.command';
@@ -30,8 +31,10 @@ export class InvitationsController {
   @ApiResponse({ status: 200, description: 'Invitation accepted and tokens generated' })
   @ApiResponse({ status: 400, description: 'Invalid token, expired, or invalid credentials' })
   @ApiResponse({ status: 403, description: 'TEAM_SEATS_LIMIT_EXCEEDED when quota is exhausted' })
-  async acceptInvitation(@Body() dto: AcceptInvitationDto, @Request() req: any) {
-    const authenticatedUserId = req.user?.id;
+  async acceptInvitation(
+    @Body() dto: AcceptInvitationDto,
+    @CurrentUser('id') authenticatedUserId?: string,
+  ) {
     return this.commandBus.execute(
       new AcceptInvitationCommand(dto.token, dto.fullName, dto.password, authenticatedUserId),
     );

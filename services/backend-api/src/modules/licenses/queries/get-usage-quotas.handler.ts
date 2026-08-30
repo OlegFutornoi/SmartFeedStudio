@@ -34,30 +34,8 @@ export class GetUsageQuotasHandler implements IQueryHandler<GetUsageQuotasQuery,
     const organizationId =
       license?.organizationId || user?.organizationMemberships?.[0]?.organizationId || null;
 
-    const userScope = organizationId ? { OR: [{ organizationId }, { userId }] } : { userId };
-
-    // 2. Fetch live usage counts in parallel using index-backed Prisma queries
-    const [
-      suppliersUsed,
-      productsUsed,
-      feedsUsed,
-      teamMembersCount,
-      snapshotsAggregate,
-      productImagesCount,
-    ] = await Promise.all([
-      this.prisma.supplier.count({
-        where: userScope,
-      }),
-      this.prisma.product.count({
-        where: {
-          catalog: userScope,
-        },
-      }),
-      this.prisma.feedSource.count({
-        where: {
-          supplier: userScope,
-        },
-      }),
+    // 2. Fetch server-side SaaS usage counts: team members & S3 snapshots storage
+    const [teamMembersCount, snapshotsAggregate] = await Promise.all([
       organizationId
         ? this.prisma.organizationMember.count({
             where: { organizationId },
@@ -67,15 +45,10 @@ export class GetUsageQuotasHandler implements IQueryHandler<GetUsageQuotasQuery,
         where: { userId },
         _sum: { sizeBytes: true },
       }),
-      this.prisma.productImage.count({
-        where: { userId },
-      }),
     ]);
 
-    // Approximate storage: snapshots sum + average 150KB per product image
     const snapshotBytes = Number(snapshotsAggregate._sum.sizeBytes || 0);
-    const estimatedImageBytes = productImagesCount * 150 * 1024;
-    const totalStorageBytes = snapshotBytes + estimatedImageBytes;
+    const totalStorageBytes = snapshotBytes;
 
     const maxSuppliers = license?.maxSuppliersLimit ?? 1;
     const maxProducts = license?.maxXmlLimit ?? 1000;
@@ -111,10 +84,10 @@ export class GetUsageQuotasHandler implements IQueryHandler<GetUsageQuotasQuery,
       planNameUk: license?.tariffPlan?.nameUk || 'Старт',
       planNameEn: license?.tariffPlan?.nameEn || 'Starter',
       isExpired: license?.isExpired ?? false,
-      suppliers: buildQuotaItem(suppliersUsed, maxSuppliers),
-      products: buildQuotaItem(productsUsed, maxProducts),
-      feeds: buildQuotaItem(feedsUsed, maxFeeds),
-      channels: buildQuotaItem(1, maxChannels),
+      suppliers: buildQuotaItem(0, maxSuppliers),
+      products: buildQuotaItem(0, maxProducts),
+      feeds: buildQuotaItem(0, maxFeeds),
+      channels: buildQuotaItem(0, maxChannels),
       teamSeats: buildQuotaItem(teamMembersCount, maxTeamSeats),
       aiCredits: buildQuotaItem(0, maxAiCredits),
       storage: {
