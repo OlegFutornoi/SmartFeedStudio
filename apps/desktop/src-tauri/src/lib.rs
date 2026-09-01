@@ -155,8 +155,8 @@ fn clear_storage_cache() -> Result<u64, String> {
 
 #[tauri::command]
 fn db_get_counters() -> Result<db::LocalCounters, String> {
-    let workspace = workspace::get_default_workspace_dir().map_err(|e| e.to_string())?;
-    let db_path = std::path::Path::new(&workspace)
+    let workspace = workspace::get_default_workspace_dir();
+    let db_path = workspace
         .join("database")
         .join("catalog.db");
     
@@ -174,8 +174,8 @@ fn db_get_counters() -> Result<db::LocalCounters, String> {
 }
 
 fn get_db_conn() -> Result<rusqlite::Connection, String> {
-    let workspace = workspace::get_default_workspace_dir().map_err(|e| e.to_string())?;
-    let db_path = std::path::Path::new(&workspace)
+    let workspace = workspace::get_default_workspace_dir();
+    let db_path = workspace
         .join("database")
         .join("catalog.db");
     db::open_encrypted_connection(&db_path).map_err(|e| e.to_string())
@@ -269,10 +269,10 @@ pub fn run() {
         db_bulk_upsert_products,
         db_bulk_delete_products
     ])
-        .setup(|app| {
+        .setup(|_app| {
             #[cfg(debug_assertions)]
             {
-                let window = app.get_webview_window("main").unwrap();
+                let window = _app.get_webview_window("main").unwrap();
                 window.open_devtools();
             }
             Ok(())

@@ -1,5 +1,5 @@
 use keyring::Entry;
-use rusqlite::{Connection, Result};
+use rusqlite::{params, Connection, Result};
 use std::path::Path;
 use crate::models::{
     SupplierDto, CreateSupplierDto, UpdateSupplierDto,
@@ -504,7 +504,7 @@ pub fn bulk_upsert_products(conn: &mut Connection, products: Vec<CreateProductDt
             // Since we set PRIMARY KEY to id, we should generate an ID based on SKU to enforce upsert.
             let id = format!("sf_prod_{}_{}", &dto.supplier_id, &dto.sku);
             
-            stmt.execute((
+            stmt.execute(params![
                 &id,
                 dto.catalog_id.as_deref().unwrap_or("default_catalog"),
                 &dto.supplier_id,
@@ -525,7 +525,7 @@ pub fn bulk_upsert_products(conn: &mut Connection, products: Vec<CreateProductDt
                 dto.stock_quantity,
                 if dto.in_stock { 1 } else { 0 },
                 &dto.status,
-            ))?;
+            ])?;
 
             returned_products.push(ProductDto {
                 id,
