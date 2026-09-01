@@ -273,6 +273,10 @@ test.describe('Desktop App — Віртуалізована Таблиця То�
   }) => {
     await expect(page.getByTestId('products-view')).toBeVisible();
 
+    // Open the dropdown menu first
+    const actionsMenu = page.getByTestId('product-actions-prod_1');
+    await actionsMenu.click();
+
     // Click View Details icon on prod_1
     const viewBtn = page.getByTestId('view-details-btn-prod_1');
     await viewBtn.click();

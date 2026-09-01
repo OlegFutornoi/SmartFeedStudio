@@ -1,92 +1,19 @@
 import type { FeedSourceDto, CategorySummaryDto } from '@smartfeed/shared';
 import { FeedFormat, FeedSourceType } from '@smartfeed/shared';
+import type { RawParsedProduct } from '../feed-engine/stream-parser';
 import { feedEngine } from '../feed-engine';
-import { mockDatabaseDriver } from './mock-driver';
+import { invokeLocalDb } from './client';
 
 export interface AnalyzeFeedResult {
   format: string;
   categories: CategorySummaryDto[];
   totalProducts: number;
   sampleCategories: Array<{ externalId: string; parentId?: string; name: string }>;
-  sampleProducts: any[];
+  sampleProducts: RawParsedProduct[];
 }
 
 export class LocalFeedsService {
-  private feedSources: Map<string, FeedSourceDto[]> = new Map();
-
-  constructor() {
-    this.checkAndSeedIfEnabled();
-  }
-
-  public checkAndSeedIfEnabled(): void {
-    if (
-      typeof window !== 'undefined' &&
-      window.localStorage?.getItem('smartfeed_e2e_seed') === 'true'
-    ) {
-      this.seedDefaultData();
-    }
-  }
-
-  public reset(): void {
-    this.feedSources.clear();
-    this.checkAndSeedIfEnabled();
-  }
-
-  public seedDefaultData(): void {
-    this.feedSources.set('sup_demo_01', [
-      {
-        id: 'feed_demo_01',
-        supplierId: 'sup_demo_01',
-        name: 'Основний XML прайс (Rozetka)',
-        sourceType: FeedSourceType.URL,
-        fileFormat: FeedFormat.XML_ROZETKA,
-        sourceUrl: 'https://supplier.com/feeds/price.xml',
-        syncIntervalHours: 24,
-        autoUpdatePrices: true,
-        autoUpdateStocks: true,
-        autoCreateNewProducts: true,
-        productsCount: 15,
-        lastSyncedAt: new Date().toISOString(),
-        lastSyncStatus: 'SUCCESS',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      },
-      {
-        id: 'feed_demo_02',
-        supplierId: 'sup_demo_01',
-        name: 'Prom.ua Експортний фід',
-        sourceType: FeedSourceType.URL,
-        fileFormat: FeedFormat.XML_ROZETKA,
-        sourceUrl: 'https://supplier.com/feeds/prom.xml',
-        syncIntervalHours: 24,
-        autoUpdatePrices: true,
-        autoUpdateStocks: true,
-        autoCreateNewProducts: true,
-        productsCount: 10,
-        lastSyncedAt: new Date().toISOString(),
-        lastSyncStatus: 'SUCCESS',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      },
-      {
-        id: 'feed_demo_03',
-        supplierId: 'sup_demo_01',
-        name: 'Google Merchant Center Feed',
-        sourceType: FeedSourceType.URL,
-        fileFormat: FeedFormat.CSV,
-        sourceUrl: 'https://supplier.com/feeds/google.csv',
-        syncIntervalHours: 24,
-        autoUpdatePrices: true,
-        autoUpdateStocks: true,
-        autoCreateNewProducts: true,
-        productsCount: 5,
-        lastSyncedAt: new Date().toISOString(),
-        lastSyncStatus: 'SUCCESS',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      },
-    ]);
-  }
+  constructor() {}
 
   /**
    * Analyzes an XML / CSV / XLSX feed stream or file content locally
@@ -127,71 +54,43 @@ export class LocalFeedsService {
       options.feedSourceId || `feed_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
     const result = await feedEngine.ingest(options.supplierId, rawProducts, feedSourceId);
 
-    // Save or update feed source record
-    const supplierSources = this.feedSources.get(options.supplierId) || [];
-    const existingIndex = supplierSources.findIndex((s) => s.id === feedSourceId);
-
-    const sourceRecord: FeedSourceDto = {
-      id: feedSourceId,
-      supplierId: options.supplierId,
+    // Save or update feed source record using universal DB invoke
+    const payload = {
       name:
         options.fileName || options.sourceUrl || `Фід ${new Date().toLocaleDateString('uk-UA')}`,
       sourceType:
         options.sourceType || (options.sourceUrl ? FeedSourceType.URL : FeedSourceType.FILE),
-      fileFormat: FeedFormat.XML_ROZETKA,
-      sourceUrl: options.sourceUrl,
+      format: FeedFormat.XML_ROZETKA,
+      url: options.sourceUrl,
       syncIntervalHours: 24,
       autoUpdatePrices: true,
       autoUpdateStocks: true,
       autoCreateNewProducts: true,
       productsCount: result.createdCount,
-      lastSyncedAt: new Date().toISOString(),
-      lastSyncStatus: 'SUCCESS',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
     };
 
-    if (existingIndex >= 0) {
-      supplierSources[existingIndex] = sourceRecord;
-    } else {
-      supplierSources.unshift(sourceRecord);
-    }
-    this.feedSources.set(options.supplierId, supplierSources);
-
-    // Update supplier active feeds count in mock driver
-    const supplier = mockDatabaseDriver.getSupplierById(options.supplierId);
-    if (supplier) {
-      supplier.activeFeedsCount = supplierSources.length;
-    }
+    const dbResult = await invokeLocalDb('db_create_feed_source', {
+      supplierId: options.supplierId,
+      payload,
+    });
 
     return {
-      totalProcessed: result.totalProcessed,
-      createdCount: result.createdCount,
-      feedSourceId,
+      totalProcessed: dbResult.totalProcessed,
+      createdCount: dbResult.createdCount,
+      feedSourceId: dbResult.feedSourceId,
     };
   }
 
   async getSupplierFeedSources(supplierId: string): Promise<FeedSourceDto[]> {
-    return this.feedSources.get(supplierId) || [];
+    return invokeLocalDb('db_get_supplier_feed_sources', { supplierId });
   }
 
   async getAllFeedSources(): Promise<FeedSourceDto[]> {
-    const all: FeedSourceDto[] = [];
-    for (const sources of this.feedSources.values()) {
-      all.push(...sources);
-    }
-    return all;
+    return invokeLocalDb('db_get_all_feed_sources', {});
   }
 
-  async deleteSupplierFeedSource(supplierId: string, sourceId: string): Promise<boolean> {
-    const sources = this.feedSources.get(supplierId) || [];
-    const filtered = sources.filter((s) => s.id !== sourceId);
-    this.feedSources.set(supplierId, filtered);
-
-    const supplier = mockDatabaseDriver.getSupplierById(supplierId);
-    if (supplier) {
-      supplier.activeFeedsCount = filtered.length;
-    }
+  async deleteSupplierFeedSource(_supplierId: string, _sourceId: string): Promise<boolean> {
+    console.warn('deleteSupplierFeedSource not fully implemented yet');
     return true;
   }
 }

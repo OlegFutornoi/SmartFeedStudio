@@ -329,6 +329,14 @@ test.describe('Desktop App — Постачальники, Майстер Фід
       });
     });
 
+    await page.route('**/api/products*', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ items: [], total: 60 }),
+      });
+    });
+
     await page.route('**/api/feeds/analyze-url', async (route) => {
       await route.fulfill({
         status: 200,
@@ -337,7 +345,7 @@ test.describe('Desktop App — Постачальники, Майстер Фід
       });
     });
 
-    let importPayload: any = null;
+    let importPayload: Record<string, unknown> | null = null;
     await page.route('**/api/feeds/import-async', async (route) => {
       importPayload = JSON.parse(route.request().postData() || '{}');
       await route.fulfill({
@@ -384,9 +392,10 @@ test.describe('Desktop App — Постачальники, Майстер Фід
     // Click start import
     await startImportBtn.click();
 
-    // Verify import payload sent only selected category 'cat_1'
     expect(importPayload).not.toBeNull();
-    expect(importPayload.selectedCategoryIds).toEqual(['cat_1']);
+    expect((importPayload as Record<string, unknown> | null)?.selectedCategoryIds).toEqual([
+      'cat_1',
+    ]);
 
     // Reached step 4
     await expect(page.getByText('Імпорт виконується у фоновому режимі (BullMQ)')).toBeVisible();
@@ -430,11 +439,27 @@ test.describe('Desktop App — Постачальники, Майстер Фід
       name: `Постачальник ${i + 1}`,
     }));
 
-    await page.route('**/api/suppliers', async (route) => {
+    await page.route('**/api/suppliers*', async (route) => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
         body: JSON.stringify(maxSuppliers),
+      });
+    });
+
+    await page.route('**/api/products*', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ items: [], total: 0 }),
+      });
+    });
+
+    await page.route('**/api/feeds/sources*', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(Array.from({ length: 50 }, (_, i) => ({ id: `feed_${i}` }))),
       });
     });
 

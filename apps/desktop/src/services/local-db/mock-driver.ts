@@ -16,8 +16,9 @@ import type {
   ProductCategorySummaryDto,
   BulkDeleteProductsDto,
   BulkDeleteResultDto,
+  FeedSourceDto,
 } from '@smartfeed/shared';
-import { FeedFormat, ProductStatus } from '@smartfeed/shared';
+import { FeedFormat, FeedSourceType, ProductStatus } from '@smartfeed/shared';
 
 export class MockDatabaseDriver {
   private suppliers: SupplierDto[] = [];
@@ -25,12 +26,66 @@ export class MockDatabaseDriver {
   private exportChannels: ExportChannelDto[] = [];
   private exportPricingRules: Map<string, ExportChannelPricingRuleDto[]> = new Map();
   private products: ProductDto[] = [];
+  private feedSources: Map<string, FeedSourceDto[]> = new Map();
+
+  private counters = {
+    id: 'main',
+    suppliersCount: 0,
+    feedsCount: 0,
+    productsCount: 0,
+  };
 
   constructor() {
     this.checkAndSeedIfEnabled();
   }
 
+  public saveToStorage(): void {
+    if (typeof window === 'undefined') return;
+    this.syncCounters();
+    try {
+      const data = {
+        suppliers: this.suppliers,
+        pricingRules: Array.from(this.pricingRules.entries()),
+        exportChannels: this.exportChannels,
+        exportPricingRules: Array.from(this.exportPricingRules.entries()),
+        products: this.products,
+        feedSources: Array.from(this.feedSources.entries()),
+        counters: this.counters,
+      };
+      window.localStorage.setItem('smartfeed_mock_db', JSON.stringify(data));
+    } catch (err) {
+      console.warn('Failed to save mock db to localStorage', err);
+    }
+  }
+
+  private restoreFromStorage(dataStr: string): void {
+    try {
+      const data = JSON.parse(dataStr);
+      if (data.suppliers) this.suppliers = data.suppliers;
+      if (data.pricingRules) this.pricingRules = new Map(data.pricingRules);
+      if (data.exportChannels) this.exportChannels = data.exportChannels;
+      if (data.exportPricingRules) this.exportPricingRules = new Map(data.exportPricingRules);
+      if (data.products) this.products = data.products;
+      if (data.feedSources) this.feedSources = new Map(data.feedSources);
+      if (data.counters) this.counters = data.counters;
+
+      // Always ensure counters are in sync with actual restored data arrays
+      // to handle migration from older versions or missing counter data
+      this.syncCounters();
+    } catch (err) {
+      console.warn('Failed to parse mock db from localStorage', err);
+    }
+  }
+
   public checkAndSeedIfEnabled(): void {
+    if (typeof window !== 'undefined') {
+      const saved = window.localStorage?.getItem('smartfeed_mock_db');
+      if (saved) {
+        this.restoreFromStorage(saved);
+        return;
+      }
+    }
+
     if (
       typeof window !== 'undefined' &&
       window.localStorage?.getItem('smartfeed_e2e_seed') === 'true'
@@ -45,6 +100,8 @@ export class MockDatabaseDriver {
     this.exportChannels = [];
     this.exportPricingRules.clear();
     this.products = [];
+    this.feedSources.clear();
+    this.counters = { id: 'main', suppliersCount: 0, feedsCount: 0, productsCount: 0 };
     this.checkAndSeedIfEnabled();
   }
 
@@ -59,12 +116,66 @@ export class MockDatabaseDriver {
         defaultMarginPercent: 15,
         defaultFixedMarkup: 0,
         isActive: true,
-        activeFeedsCount: 2,
+        activeFeedsCount: 3,
         productsCount: 450,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       },
     ];
+
+    this.feedSources.set(defaultSupplierId, [
+      {
+        id: 'feed_demo_01',
+        supplierId: defaultSupplierId,
+        name: 'Основний XML прайс (Rozetka)',
+        sourceType: FeedSourceType.URL,
+        fileFormat: FeedFormat.XML_ROZETKA,
+        sourceUrl: 'https://supplier.com/feeds/price.xml',
+        syncIntervalHours: 24,
+        autoUpdatePrices: true,
+        autoUpdateStocks: true,
+        autoCreateNewProducts: true,
+        productsCount: 15,
+        lastSyncedAt: new Date().toISOString(),
+        lastSyncStatus: 'SUCCESS',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      },
+      {
+        id: 'feed_demo_02',
+        supplierId: defaultSupplierId,
+        name: 'Prom.ua Експортний фід',
+        sourceType: FeedSourceType.URL,
+        fileFormat: FeedFormat.XML_ROZETKA,
+        sourceUrl: 'https://supplier.com/feeds/prom.xml',
+        syncIntervalHours: 24,
+        autoUpdatePrices: true,
+        autoUpdateStocks: true,
+        autoCreateNewProducts: true,
+        productsCount: 10,
+        lastSyncedAt: new Date().toISOString(),
+        lastSyncStatus: 'SUCCESS',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      },
+      {
+        id: 'feed_demo_03',
+        supplierId: defaultSupplierId,
+        name: 'Google Merchant Center Feed',
+        sourceType: FeedSourceType.URL,
+        fileFormat: FeedFormat.CSV,
+        sourceUrl: 'https://supplier.com/feeds/google.csv',
+        syncIntervalHours: 24,
+        autoUpdatePrices: true,
+        autoUpdateStocks: true,
+        autoCreateNewProducts: true,
+        productsCount: 5,
+        lastSyncedAt: new Date().toISOString(),
+        lastSyncStatus: 'SUCCESS',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      },
+    ]);
 
     this.pricingRules.set(defaultSupplierId, [
       {
@@ -584,6 +695,94 @@ export class MockDatabaseDriver {
 
     return { count: products.length };
   }
+
+  // ============================================================================
+  // Feed Sources
+  // ============================================================================
+
+  public getSupplierFeedSources(supplierId: string): FeedSourceDto[] {
+    return this.feedSources.get(supplierId) || [];
+  }
+
+  public getAllFeedSources(): FeedSourceDto[] {
+    const all: FeedSourceDto[] = [];
+    for (const sources of this.feedSources.values()) {
+      all.push(...sources);
+    }
+    return all;
+  }
+
+  public createFeedSource(
+    supplierId: string,
+    payload: {
+      name?: string;
+      sourceType?: FeedSourceType;
+      format?: FeedFormat;
+      url?: string;
+      syncIntervalHours?: number;
+      autoUpdatePrices?: boolean;
+      autoUpdateStocks?: boolean;
+      autoCreateNewProducts?: boolean;
+      productsCount?: number;
+    },
+  ): { totalProcessed: number; createdCount: number; feedSourceId: string } {
+    const feedSourceId = `feed_${Math.random().toString(36).substr(2, 9)}`;
+    const supplierSources = this.feedSources.get(supplierId) || [];
+
+    const sourceRecord: FeedSourceDto = {
+      id: feedSourceId,
+      supplierId,
+      name: payload.name || 'Оновлений прайс-лист',
+      sourceType: payload.sourceType || FeedSourceType.URL,
+      fileFormat: payload.format || FeedFormat.XML_ROZETKA,
+      sourceUrl: payload.url,
+      syncIntervalHours: payload.syncIntervalHours || 24,
+      autoUpdatePrices: payload.autoUpdatePrices ?? true,
+      autoUpdateStocks: payload.autoUpdateStocks ?? true,
+      autoCreateNewProducts: payload.autoCreateNewProducts ?? true,
+      productsCount: payload.productsCount || 0,
+      lastSyncedAt: new Date().toISOString(),
+      lastSyncStatus: 'SUCCESS',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    supplierSources.unshift(sourceRecord);
+    this.feedSources.set(supplierId, supplierSources);
+
+    // Update supplier active feeds count in mock driver
+    const supplier = this.getSupplierById(supplierId);
+    if (supplier) {
+      supplier.activeFeedsCount = supplierSources.length;
+    }
+
+    this.saveToStorage();
+
+    return {
+      totalProcessed: payload.productsCount || 0,
+      createdCount: payload.productsCount || 0,
+      feedSourceId,
+    };
+  }
+
+  // ============================================================================
+  // Counters
+  // ============================================================================
+
+  public syncCounters(): void {
+    let feedsCount = 0;
+    for (const sources of this.feedSources.values()) {
+      feedsCount += sources.length;
+    }
+    this.counters.suppliersCount = this.suppliers.length;
+    this.counters.productsCount = this.products.length;
+    this.counters.feedsCount = feedsCount;
+  }
+
+  public getCounters() {
+    this.syncCounters();
+    return this.counters;
+  }
 }
 
 export const mockDatabaseDriver = new MockDatabaseDriver();
@@ -592,3 +791,35 @@ if (typeof window !== 'undefined') {
   (window as unknown as { __MOCK_LOCAL_DB__?: MockDatabaseDriver }).__MOCK_LOCAL_DB__ =
     mockDatabaseDriver;
 }
+
+// Wrap mutating methods to save to storage automatically
+const methodsToHook = [
+  'createSupplier',
+  'updateSupplier',
+  'deleteSupplier',
+  'createPricingRule',
+  'updatePricingRule',
+  'deletePricingRule',
+  'createExportChannel',
+  'updateExportChannel',
+  'deleteExportChannel',
+  'createExportPricingRule',
+  'deleteExportPricingRule',
+  'bulkDeleteProducts',
+  'bulkUpsertProducts',
+  'reset',
+  'seedDefaultData',
+  'createFeedSource',
+] as const;
+
+methodsToHook.forEach((method) => {
+  const original = mockDatabaseDriver[method as keyof MockDatabaseDriver] as (
+    ...args: unknown[]
+  ) => unknown;
+  (mockDatabaseDriver as unknown as Record<string, (...args: unknown[]) => unknown>)[method] =
+    function (this: MockDatabaseDriver, ...args: unknown[]) {
+      const result = original.apply(this, args);
+      this.saveToStorage();
+      return result;
+    };
+});

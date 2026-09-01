@@ -1,5 +1,11 @@
 import React, { useState } from 'react';
-import { Copy, Check, Eye, Trash2, Package } from 'lucide-react';
+import { Copy, Check, Eye, Trash2, Package, MoreHorizontal } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useTranslation } from '@/i18n';
@@ -179,30 +185,37 @@ export const ProductTableRow: React.FC<ProductTableRowProps> = ({
 
       {/* Actions */}
       <td className="py-3 px-3 text-right">
-        <div className="flex items-center justify-end gap-1">
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            data-testid={`view-details-btn-${product.id}`}
-            onClick={() => onViewDetails(product)}
-            className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground"
-            title={t('catalogs:viewDetails')}
-          >
-            <Eye className="h-3.5 w-3.5" />
-          </Button>
-
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            data-testid={`delete-product-btn-${product.id}`}
-            onClick={() => onDeleteProduct(product)}
-            className="h-7 w-7 p-0 text-muted-foreground hover:text-destructive"
-            title={t('catalogs:deleteProduct')}
-          >
-            <Trash2 className="h-3.5 w-3.5" />
-          </Button>
+        <div className="flex items-center justify-end">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                className="h-8 w-8 p-0 data-[state=open]:bg-muted"
+                data-testid={`product-actions-${product.id}`}
+              >
+                <MoreHorizontal className="h-4 w-4" />
+                <span className="sr-only">Відкрити меню дій</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-[160px]">
+              <DropdownMenuItem
+                onClick={() => onViewDetails(product)}
+                data-testid={`view-details-btn-${product.id}`}
+                className="cursor-pointer"
+              >
+                <Eye className="mr-2 h-4 w-4" />
+                {t('catalogs:viewDetails')}
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => onDeleteProduct(product)}
+                data-testid={`delete-product-btn-${product.id}`}
+                className="cursor-pointer text-destructive focus:text-destructive focus:bg-destructive/10"
+              >
+                <Trash2 className="mr-2 h-4 w-4" />
+                {t('catalogs:deleteProduct')}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </td>
     </tr>

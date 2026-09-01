@@ -16,9 +16,39 @@ import type {
   ProductCategorySummaryDto,
   BulkDeleteProductsDto,
   BulkDeleteResultDto,
+  FeedSourceDto,
+  FeedFormat,
+  FeedSourceType,
 } from '@smartfeed/shared';
 
 export interface LocalDbCommandMap {
+  // Counters
+  db_get_counters: {
+    args: Record<string, never>;
+    result: { id: string; suppliersCount: number; feedsCount: number; productsCount: number };
+  };
+
+  // Feed Sources
+  db_get_supplier_feed_sources: { args: { supplierId: string }; result: FeedSourceDto[] };
+  db_get_all_feed_sources: { args: Record<string, never>; result: FeedSourceDto[] };
+  db_create_feed_source: {
+    args: {
+      supplierId: string;
+      payload: {
+        name?: string;
+        sourceType?: FeedSourceType;
+        format?: FeedFormat;
+        url?: string;
+        syncIntervalHours?: number;
+        autoUpdatePrices?: boolean;
+        autoUpdateStocks?: boolean;
+        autoCreateNewProducts?: boolean;
+        productsCount?: number;
+      };
+    };
+    result: { totalProcessed: number; createdCount: number; feedSourceId: string };
+  };
+
   // Suppliers
   db_get_suppliers: { args: { search?: string }; result: SupplierDto[] };
   db_get_supplier_by_id: { args: { id: string }; result: SupplierDto | null };

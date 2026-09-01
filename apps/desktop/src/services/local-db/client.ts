@@ -28,6 +28,29 @@ export async function invokeLocalDb<K extends keyof LocalDbCommandMap>(
 
   // Fallback / Browser Test Mode
   switch (command) {
+    // Counters
+    case 'db_get_counters': {
+      return mockDatabaseDriver.getCounters() as LocalDbCommandMap[K]['result'];
+    }
+
+    // Feed Sources
+    case 'db_get_supplier_feed_sources': {
+      const a = args as LocalDbCommandMap['db_get_supplier_feed_sources']['args'];
+      return mockDatabaseDriver.getSupplierFeedSources(
+        a.supplierId,
+      ) as LocalDbCommandMap[K]['result'];
+    }
+    case 'db_get_all_feed_sources': {
+      return mockDatabaseDriver.getAllFeedSources() as LocalDbCommandMap[K]['result'];
+    }
+    case 'db_create_feed_source': {
+      const a = args as LocalDbCommandMap['db_create_feed_source']['args'];
+      return mockDatabaseDriver.createFeedSource(
+        a.supplierId,
+        a.payload,
+      ) as LocalDbCommandMap[K]['result'];
+    }
+
     // Suppliers
     case 'db_get_suppliers': {
       const a = args as LocalDbCommandMap['db_get_suppliers']['args'];

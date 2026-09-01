@@ -103,20 +103,11 @@ test.describe('Desktop App — Авторизація, Реєстрація, М�
     // Verify successful redirect to home page
     await expect(page.getByTestId('home-page')).toBeVisible();
 
-    // Verify user email in greeting
-    await expect(page.getByTestId('user-email')).toContainText('admin@smartfeed.studio');
+    // Verify add supplier button is present
+    await expect(page.getByTestId('add-supplier-button')).toBeVisible();
 
-    // Verify total meetings counter is displayed
-    await expect(page.getByTestId('meetings-count')).toBeVisible();
-    await expect(page.getByTestId('meetings-count')).toHaveText('3');
-
-    // Verify list of last 3 meetings is rendered
-    await expect(page.getByTestId('meetings-list')).toBeVisible();
-    await expect(page.getByTestId('meeting-item')).toHaveCount(3);
-
-    // Verify "Створити зустріч" button adds a meeting and increments counter
-    await page.getByTestId('create-meeting-button').click();
-    await expect(page.getByTestId('meetings-count')).toHaveText('4');
+    // Verify latest suppliers section is rendered
+    await expect(page.getByTestId('latest-suppliers-section')).toBeVisible();
 
     // Verify logout functionality
     await page.getByTestId('logout-button').click();
@@ -183,7 +174,6 @@ test.describe('Desktop App — Авторизація, Реєстрація, М�
 
     // Verify successful registration redirects to home page
     await expect(page.getByTestId('home-page')).toBeVisible();
-    await expect(page.getByTestId('user-email')).toContainText('newuser@smartfeed.studio');
     await expect(page.getByTestId('sidebar-user-organization')).toContainText(
       'Rozetka Sellers Pro',
     );

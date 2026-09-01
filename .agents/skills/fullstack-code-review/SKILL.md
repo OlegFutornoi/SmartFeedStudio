@@ -46,6 +46,10 @@ This skill orchestrates and systematically cross-references the project's specia
 
 ## 🔍 2. Review Protocol & Execution Workflow
 
+> [!WARNING]
+> **STRICT READ-ONLY & ZERO DATA DELETION POLICY**:
+> When acting under this skill, you are operating in a **review-only** capacity. You **MUST NOT** delete any data, configuration, or code unless explicitly instructed by the user to apply fixes. Your primary role is to verify, analyze, and report.
+
 When reviewing code (diffs, pull requests, modified files, or new features), execute the review across **6 Systematic Phases**:
 
 ```mermaid

@@ -1,3 +1,8 @@
+---
+trigger: always_on
+description: Essential CLI commands, environment ports, and access credentials for SmartFeed Studio monorepo.
+---
+
 # ⚡ SmartFeed Studio — Operations, Terminal Commands & Extended Rules
 
 ## ⚡ Key Terminal Commands

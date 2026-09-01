@@ -1,5 +1,6 @@
 pub mod db;
 pub mod workspace;
+pub mod models;
 
 use keyring::Entry;
 #[allow(unused_imports)]
@@ -152,6 +153,94 @@ fn clear_storage_cache() -> Result<u64, String> {
     Ok(freed)
 }
 
+#[tauri::command]
+fn db_get_counters() -> Result<db::LocalCounters, String> {
+    let workspace = workspace::get_default_workspace_dir().map_err(|e| e.to_string())?;
+    let db_path = std::path::Path::new(&workspace)
+        .join("database")
+        .join("catalog.db");
+    
+    if !db_path.exists() {
+        return Ok(db::LocalCounters {
+            id: "main".to_string(),
+            suppliers_count: 0,
+            feeds_count: 0,
+            products_count: 0,
+        });
+    }
+
+    let conn = db::open_encrypted_connection(&db_path).map_err(|e| e.to_string())?;
+    db::get_counters(&conn).map_err(|e| e.to_string())
+}
+
+fn get_db_conn() -> Result<rusqlite::Connection, String> {
+    let workspace = workspace::get_default_workspace_dir().map_err(|e| e.to_string())?;
+    let db_path = std::path::Path::new(&workspace)
+        .join("database")
+        .join("catalog.db");
+    db::open_encrypted_connection(&db_path).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+fn db_get_suppliers() -> Result<Vec<models::SupplierDto>, String> {
+    let conn = get_db_conn()?;
+    db::get_suppliers(&conn).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+fn db_create_supplier(dto: models::CreateSupplierDto) -> Result<models::SupplierDto, String> {
+    let conn = get_db_conn()?;
+    db::create_supplier(&conn, dto).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+fn db_update_supplier(id: String, dto: models::UpdateSupplierDto) -> Result<models::SupplierDto, String> {
+    let conn = get_db_conn()?;
+    db::update_supplier(&conn, &id, dto).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+fn db_delete_supplier(id: String) -> Result<(), String> {
+    let conn = get_db_conn()?;
+    db::delete_supplier(&conn, &id).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+fn db_get_supplier_feed_sources(supplier_id: String) -> Result<Vec<models::FeedSourceDto>, String> {
+    let conn = get_db_conn()?;
+    db::get_supplier_feed_sources(&conn, &supplier_id).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+fn db_create_feed_source(dto: models::CreateFeedSourceDto) -> Result<models::FeedSourceDto, String> {
+    let conn = get_db_conn()?;
+    db::create_feed_source(&conn, dto).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+fn db_delete_feed_source(id: String) -> Result<(), String> {
+    let conn = get_db_conn()?;
+    db::delete_feed_source(&conn, &id).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+fn db_get_products() -> Result<Vec<models::ProductDto>, String> {
+    let conn = get_db_conn()?;
+    db::get_products(&conn).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+fn db_bulk_upsert_products(products: Vec<models::CreateProductDto>) -> Result<Vec<models::ProductDto>, String> {
+    let mut conn = get_db_conn()?;
+    db::bulk_upsert_products(&mut conn, products).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+fn db_bulk_delete_products(ids: Vec<String>) -> Result<(), String> {
+    let conn = get_db_conn()?;
+    db::bulk_delete_products(&conn, ids).map_err(|e| e.to_string())
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -162,13 +251,24 @@ pub fn run() {
             delete_refresh_token,
             get_system_specs,
             init_workspace_directory,
-            get_workspace_info,
-            get_storage_stats,
-            create_local_backup,
-            run_database_maintenance,
-            open_in_file_manager,
-            clear_storage_cache
-        ])
+        get_workspace_info,
+        get_storage_stats,
+        create_local_backup,
+        run_database_maintenance,
+        open_in_file_manager,
+        clear_storage_cache,
+        db_get_counters,
+        db_get_suppliers,
+        db_create_supplier,
+        db_update_supplier,
+        db_delete_supplier,
+        db_get_supplier_feed_sources,
+        db_create_feed_source,
+        db_delete_feed_source,
+        db_get_products,
+        db_bulk_upsert_products,
+        db_bulk_delete_products
+    ])
         .setup(|app| {
             #[cfg(debug_assertions)]
             {

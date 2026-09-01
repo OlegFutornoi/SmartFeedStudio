@@ -21,3 +21,5 @@ tokio = { version = "1", features = ["full"] }
 rusqlite = { version = "0.31", features = ["bundled", "sqlcipher"] }
 keyring = "2.1"
 reqwest = { version = "0.11", features = ["json", "stream"] }
+uuid = { version = "1.8", features = ["v4"] }
+chrono = "0.4"

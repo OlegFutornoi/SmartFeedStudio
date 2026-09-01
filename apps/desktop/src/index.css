@@ -20,7 +20,7 @@
     --destructive-foreground: 0 0% 98%;
     --border: 240 5.9% 90%;
     --input: 240 5.9% 90%;
-    --radius: 0.5rem;
+    --radius: 0.15rem;
 
     /* Default Light Primary: Monochrome Zinc */
     --primary: 240 5.9% 10%;
@@ -45,7 +45,7 @@
     --destructive-foreground: 0 0% 98%;
     --border: 240 3.7% 15.9%;
     --input: 240 3.7% 15.9%;
-    --radius: 0.5rem;
+    --radius: 0.15rem;
 
     /* Default Dark Primary: Monochrome Zinc */
     --primary: 0 0% 98%;

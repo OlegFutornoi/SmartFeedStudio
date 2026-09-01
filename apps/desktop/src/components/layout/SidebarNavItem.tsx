@@ -71,10 +71,10 @@ export const SidebarNavItem = React.memo(function SidebarNavItem({
       title={isCollapsed ? label : undefined}
       data-testid={`nav-item-${item.key}`}
       className={cn(
-        'flex items-center rounded-xl text-sm font-medium transition-all group relative',
+        'flex items-center text-sm font-medium transition-all group relative border-l-2 border-transparent',
         isCollapsed ? 'justify-center h-10 w-10 mx-auto px-0' : 'space-x-3 px-3 py-2.5',
         isActive
-          ? 'bg-primary text-primary-foreground shadow-sm shadow-primary/20 font-semibold'
+          ? 'bg-primary/10 text-primary border-primary font-semibold'
           : isRestrictedWhenExpired
             ? 'text-muted-foreground/60 hover:text-foreground hover:bg-muted/30 opacity-75'
             : 'text-muted-foreground hover:text-foreground hover:bg-muted/50',
@@ -85,7 +85,7 @@ export const SidebarNavItem = React.memo(function SidebarNavItem({
         cn(
           'h-4 w-4 shrink-0 transition-transform group-hover:scale-110',
           isActive
-            ? 'text-primary-foreground'
+            ? 'text-primary'
             : isRestrictedWhenExpired
               ? 'text-muted-foreground/50'
               : 'text-muted-foreground group-hover:text-foreground',

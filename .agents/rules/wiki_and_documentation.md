@@ -1,21 +1,41 @@
 ---
 trigger: always_on
-description: 'Rules for continuous WIKI and knowledge base maintenance and synchronization'
+description: Continuous WIKI synchronization, knowledge base updates, and test coverage documentation rules.
 ---
 
-# 📚 SmartFeed Studio — Continuous WIKI & Knowledge Base Policy
+# 📚 SmartFeed Studio — Continuous WIKI & Documentation Policy
 
-## 📌 10. Mandatory WIKI & Knowledge Base Synchronization
+## 📌 1. Mandatory Architecture & Documentation Synchronization
 
-- **Central Knowledge Base Location**: All architecture, domain knowledge, schema documentation, UI flows, and FAQ guides reside in the root `wiki/` directory.
-- **Mandatory WIKI Updates**:
-  Whenever any of the following events occur:
-  1. **New or Modified Feature**: Adding or updating any UI page, component, endpoint, CQRS command/query/event, or service.
-  2. **Database Schema Changes (`schema.prisma`)**: Adding or modifying any model, relation, field, enum, or migration logic. Must be documented in `wiki/03-database-schema/`.
-  3. **New Test Suite or Coverage Change**: Every new or updated test suite must be updated in `wiki/07-testing-and-qa/test-coverage-matrix.md`.
-  4. **Tariffs & Pricing Changes**: Adjustments to plan pricing, quotas, duration policies (`durationDays`), or access guards must be reflected in `wiki/03-database-schema/dynamic-durations-policy.md`, `wiki/04-backend-cqrs/licenses-and-plans.md`, and `wiki/08-user-faq/plans-and-pricing-faq.md`.
-  5. **UI & User Experience Evolutions**: Any changes to user workflows must be reflected in `wiki/05-desktop-client/`, `wiki/06-admin-portal/`, and `wiki/08-user-faq/user-guide-faq.md`.
-- **WIKI Structure Integrity**:
-  - Keep `wiki/README.md` (Table of Contents) strictly synchronized with all files and subdirectories.
-  - Use GitHub markdown alerts (`[!NOTE]`, `[!TIP]`, `[!IMPORTANT]`, `[!WARNING]`), clear tables, and Mermaid diagrams for architectural readability.
-  - Never allow WIKI documentation to become stale or drift from actual code implementations.
+Whenever any architectural change occurs (new modules, CQRS commands/queries/events, DB schema changes in `schema.prisma`, shared DTOs/enums in `@smartfeed/shared`, Tauri commands/services, API endpoints, or ports):
+
+- **Always update documentation immediately**:
+  1. Central Knowledge Base: [wiki/README.md](file:///Users/oleg/AQA/SmartFeedStudio/wiki/README.md) and all relevant sub-articles in `wiki/`
+  2. Root [AGENTS.md](file:///Users/oleg/AQA/SmartFeedStudio/AGENTS.md) and [.agents/rules/rules.md](file:///Users/oleg/AQA/SmartFeedStudio/.agents/rules/rules.md)
+  3. Sub-project guides ([services/backend-api/AGENTS.md](file:///Users/oleg/AQA/SmartFeedStudio/services/backend-api/AGENTS.md), [apps/admin-portal/AGENTS.md](file:///Users/oleg/AQA/SmartFeedStudio/apps/admin-portal/AGENTS.md), [apps/desktop/AGENTS.md](file:///Users/oleg/AQA/SmartFeedStudio/apps/desktop/AGENTS.md), [packages/shared/AGENTS.md](file:///Users/oleg/AQA/SmartFeedStudio/packages/shared/AGENTS.md))
+  4. Root [README.md](file:///Users/oleg/AQA/SmartFeedStudio/README.md) (including Mermaid architecture diagrams, folder trees, and CQRS flow steps).
+- Outdated or drifting documentation is strictly prohibited.
+
+---
+
+## 📊 2. Mandatory Test Coverage Documentation (`services/backend-api/test/`)
+
+Whenever a new or modified `*.e2e-spec.ts` file appears in `services/backend-api/test/`:
+
+1. **Run the full E2E suite** to confirm all tests pass:
+   ```bash
+   pnpm --filter @smartfeed/backend-api test:e2e
+   ```
+2. **Update the coverage table** in [services/backend-api/AGENTS.md](file:///Users/oleg/AQA/SmartFeedStudio/services/backend-api/AGENTS.md) under section `🧪 Testing Policy & Coverage`.
+3. **Update the coverage table** in [services/backend-api/README.md](file:///Users/oleg/AQA/SmartFeedStudio/services/backend-api/README.md) under section `📊 E2E Test Coverage`.
+
+- The `services/backend-api/README.md` must **always begin** with the test run command as its first code block.
+- Never let coverage tables drift from actual test files.
+
+---
+
+## 🗂 3. WIKI Structure Integrity & Formatting
+
+- **Central Location**: All architecture, domain knowledge, schema documentation, UI flows, and FAQ guides reside in `wiki/`.
+- Keep `wiki/README.md` (Table of Contents) strictly synchronized with all files and subdirectories.
+- Use GitHub markdown alerts (`[!NOTE]`, `[!TIP]`, `[!IMPORTANT]`, `[!WARNING]`), clear tables, and Mermaid diagrams for architectural readability.

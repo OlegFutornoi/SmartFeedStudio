@@ -200,6 +200,9 @@ test.describe('Desktop App — Узгодження Надлишку Даних 
     await page.route('**/api/feeds/suppliers/sup_mmm_1/sources', (route) =>
       route.fulfill({ status: 200, json: mockFeedSources }),
     );
+    await page.route('**/api/products*', (route) =>
+      route.fulfill({ status: 200, json: { items: [], total: 5102, page: 1, pageSize: 1 } }),
+    );
     await page.route('**/api/feeds/jobs/active', (route) =>
       route.fulfill({ status: 200, json: [] }),
     );

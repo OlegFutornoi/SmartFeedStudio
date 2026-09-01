@@ -3,6 +3,13 @@ import { Search, FilterX, Building2, FolderTree } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { useTranslation } from '@/i18n';
 import type { SupplierDto } from '@smartfeed/shared';
 
@@ -57,40 +64,52 @@ export const ProductsToolbar: React.FC<ProductsToolbarProps> = ({
         {/* Filter controls */}
         <div className="flex flex-wrap items-center gap-2">
           {/* Supplier filter */}
-          <div className="relative flex items-center">
-            <Building2 className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
-            <select
+          <Select
+            value={selectedSupplierId || 'all'}
+            onValueChange={(val) => onSupplierChange(val === 'all' ? '' : val)}
+          >
+            <SelectTrigger
               data-testid="filter-supplier-select"
-              value={selectedSupplierId}
-              onChange={(e) => onSupplierChange(e.target.value)}
-              className="h-9 pl-8 pr-8 rounded-md border border-input bg-card text-xs font-medium focus:outline-none focus:ring-1 focus:ring-primary appearance-none cursor-pointer"
+              className="h-9 w-[160px] sm:w-[180px] text-xs font-medium"
             >
-              <option value="">{t('catalogs:allSuppliers')}</option>
+              <div className="flex items-center gap-2 truncate">
+                <Building2 className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                <SelectValue placeholder={t('catalogs:allSuppliers')} />
+              </div>
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">{t('catalogs:allSuppliers')}</SelectItem>
               {suppliers.map((s) => (
-                <option key={s.id} value={s.id}>
+                <SelectItem key={s.id} value={s.id}>
                   {s.name} ({s.code})
-                </option>
+                </SelectItem>
               ))}
-            </select>
-          </div>
+            </SelectContent>
+          </Select>
 
           {/* Category filter */}
-          <div className="relative flex items-center">
-            <FolderTree className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
-            <select
+          <Select
+            value={selectedCategory || 'all'}
+            onValueChange={(val) => onCategoryChange(val === 'all' ? '' : val)}
+          >
+            <SelectTrigger
               data-testid="filter-category-select"
-              value={selectedCategory}
-              onChange={(e) => onCategoryChange(e.target.value)}
-              className="h-9 pl-8 pr-8 rounded-md border border-input bg-card text-xs font-medium focus:outline-none focus:ring-1 focus:ring-primary appearance-none cursor-pointer"
+              className="h-9 w-[160px] sm:w-[200px] text-xs font-medium"
             >
-              <option value="">{t('catalogs:allCategories')}</option>
+              <div className="flex items-center gap-2 truncate">
+                <FolderTree className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                <SelectValue placeholder={t('catalogs:allCategories')} />
+              </div>
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">{t('catalogs:allCategories')}</SelectItem>
               {categories.map((c) => (
-                <option key={c} value={c}>
+                <SelectItem key={c} value={c}>
                   {c}
-                </option>
+                </SelectItem>
               ))}
-            </select>
-          </div>
+            </SelectContent>
+          </Select>
 
           {/* In Stock toggle button */}
           <Button
@@ -127,7 +146,7 @@ export const ProductsToolbar: React.FC<ProductsToolbarProps> = ({
           )}
 
           {/* Total Counter Badge */}
-          <Badge variant="outline" className="h-9 px-3 text-xs bg-muted/30 ml-auto lg:ml-0">
+          <Badge variant="outline" className="h-9 px-3 text-xs bg-muted/30 ml-auto lg:ml-2">
             {t('catalogs:totalProductsCount', { count: totalCount.toLocaleString() })}
           </Badge>
         </div>

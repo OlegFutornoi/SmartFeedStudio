@@ -11,6 +11,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { getUserQuotas } from '@/lib/api';
 import type { UserQuotasDto, QuotaItemDto } from '@smartfeed/shared';
 import { useDataSync } from '@/lib/syncEvents';
+import { localCountersService } from '@/services/local-counters.service';
 
 interface QuotasContextType {
   quotas: UserQuotasDto | null;
@@ -61,6 +62,23 @@ export function QuotasProvider({ children }: { children: React.ReactNode }) {
       try {
         const data = await getUserQuotas(token);
         if (data) {
+          const localCounts = await localCountersService.getLocalCounts(token);
+
+          const applyLocalCount = (item: QuotaItemDto, count: number) => {
+            item.used = count;
+            item.percentUsed = item.isUnlimited
+              ? 0
+              : item.max > 0
+                ? Math.min(100, Math.round((count / item.max) * 100))
+                : 0;
+            item.isExceeded = !item.isUnlimited && count >= item.max;
+            item.remaining = item.isUnlimited ? 999999 : Math.max(0, item.max - count);
+          };
+
+          if (data.suppliers) applyLocalCount(data.suppliers, localCounts.suppliers);
+          if (data.products) applyLocalCount(data.products, localCounts.products);
+          if (data.feeds) applyLocalCount(data.feeds, localCounts.feeds);
+
           setQuotas(data);
           lastFetchedTokenRef.current = token;
         }
@@ -140,6 +158,18 @@ export function QuotasProvider({ children }: { children: React.ReactNode }) {
     [],
   );
 
+  const syncLocalCounts = useCallback(async () => {
+    try {
+      const localCounts = await localCountersService.getLocalCounts(token || undefined);
+
+      setLocalQuotaUsed('suppliers', localCounts.suppliers);
+      setLocalQuotaUsed('products', localCounts.products);
+      setLocalQuotaUsed('feeds', localCounts.feeds);
+    } catch (err) {
+      console.error('Failed to sync local quota counts:', err);
+    }
+  }, [setLocalQuotaUsed, token]);
+
   useEffect(() => {
     fetchQuotas();
   }, [fetchQuotas]);
@@ -147,6 +177,11 @@ export function QuotasProvider({ children }: { children: React.ReactNode }) {
   // Unified reactive data sync subscription
   useDataSync(['quotas', 'all'], () => {
     fetchQuotas(true);
+  });
+
+  // Local data changes tracker to update quotas immediately
+  useDataSync(['suppliers', 'products', 'feeds'], () => {
+    syncLocalCounts();
   });
 
   // Global legacy event listener for instant local delta sync
@@ -159,6 +194,8 @@ export function QuotasProvider({ children }: { children: React.ReactNode }) {
       }>;
       if (customEvent.detail?.type && customEvent.detail?.delta !== undefined) {
         updateLocalQuota(customEvent.detail.type, customEvent.detail.delta);
+        // Also trigger full local sync just in case
+        syncLocalCounts();
       } else {
         fetchQuotas(true);
       }
@@ -166,7 +203,7 @@ export function QuotasProvider({ children }: { children: React.ReactNode }) {
 
     window.addEventListener('smartfeed:quota-update', handleQuotaSync);
     return () => window.removeEventListener('smartfeed:quota-update', handleQuotaSync);
-  }, [fetchQuotas, updateLocalQuota]);
+  }, [fetchQuotas, updateLocalQuota, syncLocalCounts]);
 
   const isSupplierLimitReached = Boolean(
     quotas?.suppliers &&
