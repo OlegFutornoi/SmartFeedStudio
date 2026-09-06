@@ -1,5 +1,10 @@
 {
   "title": "Suppliers",
+  "analysisSuccess": "Feed analyzed successfully",
+  "inStockPercent": "In Stock",
+  "topCategoriesTitle": "Top Categories",
+  "andMoreCategories": "...and {{count}} more categories",
+  "analyzeFirstTooltip": "Click \"Analyze\" first to validate the feed",
   "subtitle": "Supplier management, feed integration and custom pricing markup rules",
   "description": "Supplier management, feed integration and custom pricing markup rules",
   "addSupplier": "Add Supplier",
@@ -137,5 +142,8 @@
   "quotaExceededWarning": "Selected {{selected}} SKU, but only {{remaining}} SKU are available on your plan. Deselect extra categories to proceed.",
   "quotaExceededBtnTooltip": "Limit exceeded: selected {{selected}} of {{remaining}} available SKU. Deselect extra categories.",
   "noCategoriesSelected": "Select at least one category to import",
-  "noCategoriesSelectedBtnTooltip": "Select at least one category to proceed"
+  "noCategoriesSelectedBtnTooltip": "Select at least one category to proceed",
+  "feedLimitReachedTitle": "Feed sources limit reached",
+  "feedLimitReachedDesc": "Your current plan allows a limited number of feed sources. To import a new feed, upgrade your plan or remove an existing source.",
+  "feedLimitReachedError": "Feed sources limit reached. Upgrade your plan or remove an existing feed."
 }

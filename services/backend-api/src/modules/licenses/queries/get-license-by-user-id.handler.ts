@@ -181,8 +181,8 @@ export class GetLicenseByUserIdHandler implements IQueryHandler<
     return {
       id: license.id,
       userId: license.userId,
-      organizationId: license.organizationId || (license as any).organization?.id || null,
-      organizationName: (license as any).organization?.name || null,
+      organizationId: license.organizationId || license.organization?.id || null,
+      organizationName: license.organization?.name || null,
       licenseKey: license.licenseKey,
       planType: license.planType as PlanType,
       canCloudBackup: license.canCloudBackup,

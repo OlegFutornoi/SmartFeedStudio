@@ -73,3 +73,18 @@ Any match must be structurally replaced with semantic tokens before presenting c
      - Search bars and filter toolbars **must not** be displayed when `items.length === 0` (searching or filtering an empty dataset is meaningless).
    - Header/toolbar action buttons and search bars activate once items exist (`items.length > 0`) or when clearing/modifying an active search query.
    - Modal footers must **never** duplicate a create/connect action button if the modal body is displaying an empty state card with that exact CTA.
+
+---
+
+## ✂️ 6. Clean Text & URL Display Policy (Zero Raw URLs & Parameter Junk)
+
+1. **Never Expose Raw URLs with Query Parameters**:
+   - Long URLs containing query parameters (`?token=...&hash=...`), hashes, or auth credentials **MUST NEVER** be rendered directly in primary UI labels, table columns, cards, or titles.
+   - Always sanitize and shorten for human readability: display clean domain/hostname names and file types (e.g. `livolo.in.ua (rozetka.xml)` or `livolo.in.ua`).
+   - The full URL with parameters may only exist in the HTML `title` attribute for tooltip/hover inspection or in a dedicated "Copy URL" action.
+
+2. **Strict Quota Enforcement on All Action Triggers**:
+   - Whenever a resource quota is reached (e.g. `isFeedLimitReached`, `isSupplierLimitReached`, `isProductLimitReached`):
+     - ALL creation buttons (`[ + Підключити фід ]`, `[ + Імпортувати фід ]`) across headers, toolbars, and empty states **MUST** be disabled with a clear, localized tooltip explaining the limit.
+     - Multi-step wizards (e.g. `ImportFeedWizardDialog`) **MUST** display an alert banner and disable progression steps ("Далі", "Почати імпорт").
+     - Business logic and submit handlers **MUST** reject execution with a localized error message if a quota is exceeded.

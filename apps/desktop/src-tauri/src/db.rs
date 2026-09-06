@@ -433,10 +433,14 @@ pub fn create_feed_source(conn: &Connection, dto: CreateFeedSourceDto) -> Result
     })
 }
 
-pub fn delete_feed_source(conn: &Connection, id: &str) -> Result<()> {
+pub fn delete_feed_source(conn: &Connection, id: &str, delete_products: bool) -> Result<usize> {
     conn.execute("DELETE FROM local_feed_sources WHERE id = ?1", [id])?;
+    let mut deleted = 0;
+    if delete_products {
+        deleted = conn.execute("DELETE FROM local_products WHERE feed_source_id = ?1", [id])?;
+    }
     let _ = sync_counters(conn);
-    Ok(())
+    Ok(deleted)
 }
 
 pub fn get_products(conn: &Connection) -> Result<Vec<ProductDto>> {

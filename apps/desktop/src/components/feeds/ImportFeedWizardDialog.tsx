@@ -1,7 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { SupplierDto, CreateSupplierDto } from '@smartfeed/shared';
-import { Button } from '@/components/ui/button';
 import { useTranslation } from '@/i18n';
 import { useQuotas } from '@/hooks/useQuotas';
 import { useBackgroundJobs } from '@/contexts/BackgroundJobsContext';
@@ -19,7 +18,9 @@ import { WizardStepSupplier } from './WizardStepSupplier';
 import { WizardStepPreview } from './WizardStepPreview';
 import { WizardStepProgress } from './WizardStepProgress';
 import { CreateSupplierDialog } from '@/components/suppliers/CreateSupplierDialog';
-import { ArrowLeft, ArrowRight, Check, Loader2, Sparkles, X, Radio } from 'lucide-react';
+import { WizardDialogHeader, WizardStep } from './WizardDialogHeader';
+import { WizardDialogFooter } from './WizardDialogFooter';
+import { AlertCircle } from 'lucide-react';
 import { emitDataSync } from '@/lib/syncEvents';
 
 interface ImportFeedWizardDialogProps {
@@ -30,8 +31,6 @@ interface ImportFeedWizardDialogProps {
   onSuccess?: () => void;
 }
 
-type WizardStep = 'SOURCE' | 'SUPPLIER' | 'PREVIEW' | 'PROGRESS';
-
 export function ImportFeedWizardDialog({
   isOpen,
   onClose,
@@ -40,7 +39,7 @@ export function ImportFeedWizardDialog({
   onSuccess,
 }: ImportFeedWizardDialogProps) {
   const { t } = useTranslation(['suppliers', 'common']);
-  const { quotas, refreshQuotas } = useQuotas();
+  const { quotas, refreshQuotas, isFeedLimitReached } = useQuotas();
   const { addTrackedJob } = useBackgroundJobs();
 
   const { token } = useAuth();
@@ -178,9 +177,16 @@ export function ImportFeedWizardDialog({
     }
   };
 
-  const handleNextFromSource = async () => {
-    const success = await performAnalysis();
-    if (success) {
+  // Analyze only — no step transition. Called from "Аналізувати" button.
+  const handleAnalyzeOnly = async () => {
+    await performAnalysis();
+    // Stay on SOURCE step — analysis result shown inline
+  };
+
+  // Next from SOURCE — analysis must already be done
+  const handleNextFromSource = () => {
+    if (isFeedLimitReached) return;
+    if (analysis) {
       setStep('SUPPLIER');
     }
   };
@@ -196,6 +202,16 @@ export function ImportFeedWizardDialog({
   };
 
   const handleStartImport = async () => {
+    if (isFeedLimitReached) {
+      setImportError(
+        t('suppliers:feedLimitReachedError', {
+          defaultValue:
+            'Ліміт джерел фідів вичерпано. Оновіть тарифний план або видаліть непотрібний фід.',
+        }),
+      );
+      return;
+    }
+
     setStep('PROGRESS');
     setIsImporting(true);
     setImportError(null);
@@ -238,55 +254,29 @@ export function ImportFeedWizardDialog({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 animate-in fade-in duration-200">
       <div className="w-[95vw] max-w-6xl bg-card border border-border/80 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh] h-[92vh] animate-in zoom-in-95 duration-200">
         {/* Header (100% solid background) */}
-        <div className="p-5 border-b border-border bg-card flex items-center justify-between shrink-0">
-          <div className="flex items-center gap-2.5">
-            <div className="size-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
-              <Sparkles className="size-4" />
-            </div>
-            <div>
-              <h2 className="text-base font-semibold text-foreground">
-                {t('suppliers:importWizardTitle', { defaultValue: 'Майстер Імпорту Фідів' })}
-              </h2>
-              <p className="text-xs text-muted-foreground">
-                {step === 'SOURCE' && 'Крок 1 з 4: Джерело даних (URL або файл)'}
-                {step === 'SUPPLIER' && 'Крок 2 з 4: Постачальник та правила націнки'}
-                {step === 'PREVIEW' && 'Крок 3 з 4: Попередній перегляд та вибір категорій'}
-                {step === 'PROGRESS' && 'Крок 4 з 4: Фонова черга обробки товарів'}
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3">
-            {/* Step Indicators */}
-            <div className="flex items-center gap-1.5 text-xs font-medium">
-              {(['SOURCE', 'SUPPLIER', 'PREVIEW', 'PROGRESS'] as WizardStep[]).map((s, i) => (
-                <div
-                  key={s}
-                  className={`size-6 rounded-full flex items-center justify-center text-[10px] font-mono transition-colors ${
-                    step === s
-                      ? 'bg-primary text-primary-foreground shadow-sm'
-                      : i < ['SOURCE', 'SUPPLIER', 'PREVIEW', 'PROGRESS'].indexOf(step)
-                        ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                        : 'bg-secondary text-muted-foreground'
-                  }`}
-                >
-                  {i + 1}
-                </div>
-              ))}
-            </div>
-
-            <button
-              type="button"
-              onClick={handleClose}
-              className="text-muted-foreground hover:text-foreground transition-colors p-1 rounded-md hover:bg-secondary"
-            >
-              <X className="size-4" />
-            </button>
-          </div>
-        </div>
+        <WizardDialogHeader step={step} onClose={handleClose} />
 
         {/* Content Body */}
         <div className="p-6 overflow-y-auto flex-1 bg-card">
+          {isFeedLimitReached && (
+            <div className="mb-4 p-3.5 rounded-xl border border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400 text-xs flex items-center gap-2.5">
+              <AlertCircle className="size-4 shrink-0 text-amber-500" />
+              <div className="flex-1">
+                <span className="font-semibold">
+                  {t('suppliers:feedLimitReachedTitle', {
+                    defaultValue: 'Ліміт джерел фідів вичерпано',
+                  })}
+                  :{' '}
+                </span>
+                <span>
+                  {t('suppliers:feedLimitReachedDesc', {
+                    defaultValue:
+                      'Ваш поточний тариф дозволяє підключити обмежену кількість фідів. Щоб імпортувати новий фід, оновіть тариф або видаліть існуюче джерело.',
+                  })}
+                </span>
+              </div>
+            </div>
+          )}
           {step === 'SOURCE' && (
             <WizardStepSource
               sourceType={sourceType}
@@ -297,7 +287,8 @@ export function ImportFeedWizardDialog({
               fileName={fileName}
               onFileSelect={handleFileSelect}
               isAnalyzing={isAnalyzing}
-              onAnalyzeUrl={handleNextFromSource}
+              onAnalyzeUrl={handleAnalyzeOnly}
+              analysis={analysis}
               error={analysisError}
             />
           )}
@@ -335,113 +326,29 @@ export function ImportFeedWizardDialog({
         </div>
 
         {/* Footer (100% solid background) */}
-        <div className="p-4 border-t border-border bg-card flex items-center justify-between gap-2 shrink-0">
-          {step !== 'PROGRESS' ? (
-            <>
-              {step === 'SOURCE' ? (
-                <Button variant="ghost" size="sm" onClick={handleClose} className="text-xs">
-                  {t('common:cancel', { defaultValue: 'Скасувати' })}
-                </Button>
-              ) : (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    if (step === 'SUPPLIER') setStep('SOURCE');
-                    if (step === 'PREVIEW') setStep('SUPPLIER');
-                  }}
-                  className="text-xs flex items-center gap-1.5"
-                >
-                  <ArrowLeft className="size-3.5" />
-                  {t('common:back', { defaultValue: 'Назад' })}
-                </Button>
-              )}
-
-              {step === 'SOURCE' && (
-                <Button
-                  size="sm"
-                  onClick={handleNextFromSource}
-                  disabled={
-                    (sourceType === 'URL' && !feedUrl.trim()) ||
-                    (sourceType === 'FILE' && !fileContent) ||
-                    isAnalyzing
-                  }
-                  className="text-xs flex items-center gap-1.5"
-                >
-                  {isAnalyzing && <Loader2 className="size-3.5 animate-spin" />}
-                  {t('suppliers:nextStep', { defaultValue: 'Далі до постачальника' })}
-                  <ArrowRight className="size-3.5" />
-                </Button>
-              )}
-
-              {step === 'SUPPLIER' && (
-                <Button
-                  size="sm"
-                  onClick={handleNextFromSupplier}
-                  disabled={!selectedSupplierId || isAnalyzing || localSuppliers.length === 0}
-                  className="text-xs flex items-center gap-1.5"
-                  title={
-                    localSuppliers.length === 0
-                      ? t('suppliers:noSuppliersTooltip', {
-                          defaultValue: 'Спочатку створіть постачальника для продовження',
-                        })
-                      : undefined
-                  }
-                >
-                  {isAnalyzing && <Loader2 className="size-3.5 animate-spin" />}
-                  {t('suppliers:nextToPreview', { defaultValue: 'Переглянути товари' })}
-                  <ArrowRight className="size-3.5" />
-                </Button>
-              )}
-
-              {step === 'PREVIEW' && (
-                <Button
-                  size="sm"
-                  onClick={handleStartImport}
-                  disabled={isQuotaExceeded || totalSelectedSkus === 0 || isImporting}
-                  title={
-                    isQuotaExceeded
-                      ? t('suppliers:quotaExceededBtnTooltip', {
-                          selected: totalSelectedSkus.toLocaleString('uk-UA'),
-                          remaining: remainingQuota.toLocaleString('uk-UA'),
-                          defaultValue: `Перевищено ліміт: обрано ${totalSelectedSkus} з ${remainingQuota} доступних SKU. Зніміть зайві категорії.`,
-                        })
-                      : totalSelectedSkus === 0
-                        ? t('suppliers:noCategoriesSelectedBtnTooltip', {
-                            defaultValue: 'Оберіть хоча б одну категорію для продовження',
-                          })
-                        : undefined
-                  }
-                  className={`text-xs flex items-center gap-1.5 shadow-sm transition-all ${
-                    isQuotaExceeded || totalSelectedSkus === 0
-                      ? 'bg-muted text-muted-foreground border border-border cursor-not-allowed opacity-60'
-                      : 'bg-emerald-600 hover:bg-emerald-500 text-white'
-                  }`}
-                >
-                  <Check className="size-3.5" />
-                  {t('suppliers:startImport', { defaultValue: 'Розпочати імпорт' })}
-                </Button>
-              )}
-            </>
-          ) : (
-            <div className="w-full flex items-center justify-between gap-2">
-              <div className="text-xs text-muted-foreground flex items-center gap-1.5">
-                <Radio className="size-3.5 text-emerald-400 animate-pulse" />
-                <span>Імпорт виконується у фоновому режимі (BullMQ)</span>
-              </div>
-
-              <Button
-                size="sm"
-                onClick={handleClose}
-                className="text-xs px-4 bg-primary text-primary-foreground"
-              >
-                {t('suppliers:continueWorkCloseModal', {
-                  defaultValue: 'Продовжити роботу (закрити вікно)',
-                })}
-              </Button>
-            </div>
-          )}
-        </div>
+        <WizardDialogFooter
+          step={step}
+          sourceType={sourceType}
+          feedUrl={feedUrl}
+          fileContent={fileContent}
+          selectedSupplierId={selectedSupplierId}
+          hasSuppliers={localSuppliers.length > 0}
+          isAnalyzing={isAnalyzing}
+          isImporting={isImporting}
+          isFeedLimitReached={isFeedLimitReached}
+          isQuotaExceeded={isQuotaExceeded}
+          totalSelectedSkus={totalSelectedSkus}
+          remainingQuota={remainingQuota}
+          analysis={analysis}
+          onClose={handleClose}
+          onBack={() => {
+            if (step === 'SUPPLIER') setStep('SOURCE');
+            if (step === 'PREVIEW') setStep('SUPPLIER');
+          }}
+          onNextFromSource={handleNextFromSource}
+          onNextFromSupplier={handleNextFromSupplier}
+          onStartImport={handleStartImport}
+        />
       </div>
 
       {isCreateSupplierOpen && (

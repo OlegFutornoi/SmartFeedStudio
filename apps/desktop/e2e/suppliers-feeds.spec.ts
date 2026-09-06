@@ -192,6 +192,14 @@ test.describe('Desktop App — Постачальники, Майстер Фід
         body: JSON.stringify(mockFeedSources),
       });
     });
+
+    await page.route('**/api/feeds/analyze-url', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(mockAnalysis),
+      });
+    });
   });
 
   test('перегляд сторінки постачальників, квотних карток та відкриття підключених фідів', async ({
@@ -257,6 +265,8 @@ test.describe('Desktop App — Постачальники, Майстер Фід
     await page
       .getByPlaceholder('https://supplier.com/products_feed.xml')
       .fill('https://livolo.kiev.ua/products_feed.xml');
+    await page.getByRole('button', { name: 'Аналізувати' }).click();
+    await expect(page.getByText('Фід успішно проаналізовано')).toBeVisible();
     await page.getByRole('button', { name: 'Далі до постачальника' }).click();
 
     // Step 2: Supplier selection
@@ -365,10 +375,12 @@ test.describe('Desktop App — Постачальники, Майстер Фід
     // Open import wizard for supplier 1
     await page.getByTestId('supplier-card-import-btn-sup_test_1').click();
 
-    // Step 1: fill url & next
+    // Step 1: fill url, analyze & next
     await page
       .getByPlaceholder('https://supplier.com/products_feed.xml')
       .fill('https://example.com/feed.xml');
+    await page.getByRole('button', { name: 'Аналізувати' }).click();
+    await expect(page.getByText('Фід успішно проаналізовано')).toBeVisible();
     await page.getByRole('button', { name: 'Далі до постачальника' }).click();
 
     // Step 2: next to preview
@@ -464,6 +476,7 @@ test.describe('Desktop App — Постачальники, Майстер Фід
     });
 
     await page.goto('/suppliers');
+    await expect(page.getByRole('heading', { name: 'Постачальник 1', exact: true })).toBeVisible();
 
     // Add supplier header button should be disabled
     const addSupplierBtn = page.getByTestId('add-supplier-header-btn');
@@ -766,10 +779,12 @@ test.describe('Desktop App — Постачальники, Майстер Фід
     // Click Import Feed
     await page.getByRole('button', { name: /Підключити фід|Імпортувати фід/i }).click();
 
-    // Step 1: fill url & next
+    // Step 1: fill url, analyze & next
     await page
       .getByPlaceholder('https://supplier.com/products_feed.xml')
       .fill('https://example.com/feed.xml');
+    await page.getByRole('button', { name: 'Аналізувати' }).click();
+    await expect(page.getByText('Фід успішно проаналізовано')).toBeVisible();
     await page.getByRole('button', { name: 'Далі до постачальника' }).click();
 
     // Step 2: ASSERT empty state warning card is displayed, NOT a broken empty dropdown!

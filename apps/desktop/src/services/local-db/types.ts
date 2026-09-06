@@ -48,6 +48,10 @@ export interface LocalDbCommandMap {
     };
     result: { totalProcessed: number; createdCount: number; feedSourceId: string };
   };
+  db_delete_feed_source: {
+    args: { id: string; supplierId: string; deleteProducts?: boolean };
+    result: { success: boolean; deletedProductsCount: number };
+  };
 
   // Suppliers
   db_get_suppliers: { args: { search?: string }; result: SupplierDto[] };

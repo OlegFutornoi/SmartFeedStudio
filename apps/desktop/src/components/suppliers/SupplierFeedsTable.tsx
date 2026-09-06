@@ -14,6 +14,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { FeedSourceItemDto } from '@/lib/api';
 import { useTranslation } from '@/i18n';
+import { formatDisplayUrl, formatFeedTitle } from '@/lib/formatters';
 
 interface SupplierFeedsTableProps {
   sources: FeedSourceItemDto[];
@@ -47,8 +48,11 @@ export const SupplierFeedsTable: React.FC<SupplierFeedsTableProps> = ({
                 ) : (
                   <FileText className="size-4 text-primary shrink-0" />
                 )}
-                <span className="font-semibold text-xs text-foreground truncate">
-                  {source.name}
+                <span
+                  className="font-semibold text-xs text-foreground truncate max-w-sm"
+                  title={source.name}
+                >
+                  {formatFeedTitle(source.name, source.sourceUrl)}
                 </span>
                 <Badge variant="outline" className="text-[10px] font-mono uppercase bg-background">
                   {source.fileFormat}
@@ -63,10 +67,10 @@ export const SupplierFeedsTable: React.FC<SupplierFeedsTableProps> = ({
 
               {source.sourceUrl && (
                 <p
-                  className="text-[11px] font-mono text-muted-foreground truncate"
+                  className="text-[11px] font-mono text-muted-foreground truncate max-w-md"
                   title={source.sourceUrl}
                 >
-                  {source.sourceUrl}
+                  {formatDisplayUrl(source.sourceUrl)}
                 </p>
               )}
             </div>

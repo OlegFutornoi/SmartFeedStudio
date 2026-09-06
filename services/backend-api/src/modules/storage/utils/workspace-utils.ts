@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
-import { exec } from 'child_process';
+import { exec, execFile } from 'child_process';
 import {
   WorkspaceInfoDto,
   ClearStorageCacheResultDto,
@@ -218,8 +218,8 @@ export function runMaintenanceOnDisk(workspacePath: string): DatabaseMaintenance
     integrityOk: true,
     bytesFreed: 0,
     message: exists
-      ? `База даних SQLite (${(size / 1024).toFixed(1)} KB) цілісна та оптимізована`
-      : 'Файл бази даних ініціалізовано',
+      ? `SQLite database (${(size / 1024).toFixed(1)} KB) is intact and optimized`
+      : 'Database file initialized',
     timestamp: new Date().toISOString(),
   };
 }
@@ -231,21 +231,19 @@ export function openInOsFileManager(targetPath: string): void {
   }
 
   const platform = os.platform();
-  let command = '';
-
-  if (platform === 'darwin') {
-    command = `open "${resolved}"`;
-  } else if (platform === 'win32') {
-    command = `explorer "${resolved}"`;
-  } else {
-    command = `xdg-open "${resolved}"`;
-  }
-
-  exec(command, (err) => {
+  const handleError = (err: Error | null) => {
     if (err) {
       console.warn(`[Workspace] Failed to open in file manager: ${err.message}`);
     }
-  });
+  };
+
+  if (platform === 'darwin') {
+    execFile('open', [resolved], handleError);
+  } else if (platform === 'win32') {
+    execFile('explorer', [resolved], handleError);
+  } else {
+    execFile('xdg-open', [resolved], handleError);
+  }
 }
 
 export function migrateWorkspaceOnDisk(

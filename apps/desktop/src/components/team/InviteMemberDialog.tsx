@@ -11,7 +11,7 @@ import { useTranslation, getErrorMessage } from '@/i18n';
 interface InviteMemberDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  onInvite: (email: string, role: string) => Promise<any>;
+  onInvite: (email: string, role: string) => Promise<{ inviteUrl?: string } | unknown>;
   remainingSeats: number;
   maxSeats: number;
 }
@@ -55,8 +55,13 @@ export const InviteMemberDialog: React.FC<InviteMemberDialogProps> = ({
     setIsLoading(true);
     try {
       const res = await onInvite(trimmedEmail, role);
-      if (res?.inviteUrl) {
-        setGeneratedLink(res.inviteUrl);
+      if (
+        res &&
+        typeof res === 'object' &&
+        'inviteUrl' in res &&
+        typeof (res as { inviteUrl?: unknown }).inviteUrl === 'string'
+      ) {
+        setGeneratedLink((res as { inviteUrl: string }).inviteUrl);
       } else {
         handleClose();
       }

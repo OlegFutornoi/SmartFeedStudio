@@ -66,8 +66,9 @@ export const TeamMemberRow: React.FC<TeamMemberRowProps> = ({
     year: 'numeric',
   });
 
-  const memberEmail = member.userEmail || (member as any).email || '';
-  const memberFullName = member.userFullName || (member as any).fullName || '';
+  const memberEmail = member.userEmail || (member as unknown as { email?: string }).email || '';
+  const memberFullName =
+    member.userFullName || (member as unknown as { fullName?: string }).fullName || '';
 
   return (
     <div

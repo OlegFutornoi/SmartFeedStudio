@@ -1,5 +1,5 @@
 {
-  "sidebar.upsellHeader": "Можливості PRO",
+  "sidebar.upsellHeader": "Розширити можливості",
   "sidebar.upsellBadge": "PRO",
   "sidebar.upgradeAction": "Оновити",
   "sidebar.tooltip": "Доступно в тарифі {{plan}}: {{description}}",

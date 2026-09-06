@@ -19,6 +19,7 @@ import type {
   FeedSourceDto,
 } from '@smartfeed/shared';
 import { FeedFormat, FeedSourceType, ProductStatus } from '@smartfeed/shared';
+import { formatFeedTitle } from '@/lib/formatters';
 
 export class MockDatabaseDriver {
   private suppliers: SupplierDto[] = [];
@@ -732,7 +733,7 @@ export class MockDatabaseDriver {
     const sourceRecord: FeedSourceDto = {
       id: feedSourceId,
       supplierId,
-      name: payload.name || 'Оновлений прайс-лист',
+      name: formatFeedTitle(payload.name, payload.url) || 'Оновлений прайс-лист',
       sourceType: payload.sourceType || FeedSourceType.URL,
       fileFormat: payload.format || FeedFormat.XML_ROZETKA,
       sourceUrl: payload.url,
@@ -762,6 +763,56 @@ export class MockDatabaseDriver {
       totalProcessed: payload.productsCount || 0,
       createdCount: payload.productsCount || 0,
       feedSourceId,
+    };
+  }
+
+  public deleteFeedSource(
+    supplierId: string,
+    sourceId: string,
+    deleteProducts = true,
+  ): { success: boolean; deletedProductsCount: number } {
+    let deletedProductsCount = 0;
+
+    // 1. Remove from supplier sources
+    const supplierSources = this.feedSources.get(supplierId) || [];
+    const filtered = supplierSources.filter((s) => s.id !== sourceId);
+    this.feedSources.set(supplierId, filtered);
+
+    // Also check other suppliers in case sourceId belongs to another supplier
+    for (const [supId, sources] of this.feedSources.entries()) {
+      if (supId !== supplierId) {
+        const remaining = sources.filter((s) => s.id !== sourceId);
+        if (remaining.length !== sources.length) {
+          this.feedSources.set(supId, remaining);
+          const sup = this.getSupplierById(supId);
+          if (sup) sup.activeFeedsCount = remaining.length;
+        }
+      }
+    }
+
+    const supplier = this.getSupplierById(supplierId);
+    if (supplier) {
+      supplier.activeFeedsCount = filtered.length;
+    }
+
+    // 2. Remove associated products if requested
+    if (deleteProducts) {
+      const initialCount = this.products.length;
+      this.products = this.products.filter(
+        (p) =>
+          (p as unknown as { feedSourceId?: string; feed_source_id?: string }).feedSourceId !==
+            sourceId &&
+          (p as unknown as { feedSourceId?: string; feed_source_id?: string }).feed_source_id !==
+            sourceId,
+      );
+      deletedProductsCount = initialCount - this.products.length;
+    }
+
+    this.saveToStorage();
+
+    return {
+      success: true,
+      deletedProductsCount,
     };
   }
 
@@ -810,6 +861,7 @@ const methodsToHook = [
   'reset',
   'seedDefaultData',
   'createFeedSource',
+  'deleteFeedSource',
 ] as const;
 
 methodsToHook.forEach((method) => {

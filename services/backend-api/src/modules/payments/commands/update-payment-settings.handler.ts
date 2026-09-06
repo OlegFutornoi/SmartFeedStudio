@@ -2,6 +2,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { UpdatePaymentSettingsCommand } from './update-payment-settings.command';
 import { PaymentSettingDto, PaymentProvider } from '@smartfeed/shared';
+import { PaymentProvider as PrismaPaymentProvider } from '../../../generated/prisma/enums';
 
 @CommandHandler(UpdatePaymentSettingsCommand)
 export class UpdatePaymentSettingsHandler implements ICommandHandler<UpdatePaymentSettingsCommand> {
@@ -9,9 +10,10 @@ export class UpdatePaymentSettingsHandler implements ICommandHandler<UpdatePayme
 
   async execute(command: UpdatePaymentSettingsCommand): Promise<PaymentSettingDto> {
     const { provider, dto } = command;
+    const prismaProvider = provider as unknown as PrismaPaymentProvider;
 
     const setting = await this.prisma.paymentSetting.upsert({
-      where: { provider: provider as any },
+      where: { provider: prismaProvider },
       update: {
         ...(dto.isEnabled !== undefined ? { isEnabled: dto.isEnabled } : {}),
         ...(dto.isTestMode !== undefined ? { isTestMode: dto.isTestMode } : {}),
@@ -24,7 +26,7 @@ export class UpdatePaymentSettingsHandler implements ICommandHandler<UpdatePayme
         ...(dto.returnUrl !== undefined ? { returnUrl: dto.returnUrl } : {}),
       },
       create: {
-        provider: provider as any,
+        provider: prismaProvider,
         isEnabled: dto.isEnabled ?? true,
         isTestMode: dto.isTestMode ?? true,
         merchantAccount: dto.merchantAccount || 'test_merch_n1',

@@ -4,6 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useTranslation } from '@/i18n';
+import { FeedAnalysisResult } from '@/lib/api';
+import { FeedAnalysisCard } from './FeedAnalysisCard';
 
 interface WizardStepSourceProps {
   sourceType: 'URL' | 'FILE';
@@ -15,6 +17,7 @@ interface WizardStepSourceProps {
   onFileSelect: (name: string, content: string) => void;
   isAnalyzing: boolean;
   onAnalyzeUrl: () => void;
+  analysis?: FeedAnalysisResult | null;
   error?: string | null;
 }
 
@@ -27,6 +30,7 @@ export function WizardStepSource({
   onFileSelect,
   isAnalyzing,
   onAnalyzeUrl,
+  analysis,
   error,
 }: WizardStepSourceProps) {
   const { t } = useTranslation(['suppliers', 'common']);
@@ -148,6 +152,9 @@ export function WizardStepSource({
               })}
             </p>
           </div>
+
+          {/* Inline Analysis Result Card */}
+          {analysis && !isAnalyzing && <FeedAnalysisCard analysis={analysis} />}
         </div>
       ) : (
         <div className="space-y-3">
@@ -187,6 +194,9 @@ export function WizardStepSource({
               <p className="text-[11px] text-muted-foreground">XML, YML, CSV (до 100 МБ)</p>
             </label>
           </div>
+
+          {/* Inline Analysis Result Card for file */}
+          {analysis && !isAnalyzing && <FeedAnalysisCard analysis={analysis} />}
         </div>
       )}
     </div>

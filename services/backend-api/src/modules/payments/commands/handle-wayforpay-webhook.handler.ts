@@ -1,6 +1,7 @@
 import { CommandHandler, ICommandHandler, CommandBus } from '@nestjs/cqrs';
 import { BadRequestException, NotFoundException, Logger } from '@nestjs/common';
 import { PrismaService } from '../../../prisma/prisma.service';
+import { Prisma } from '../../../generated/prisma/client';
 import { HandleWayForPayWebhookCommand } from './handle-wayforpay-webhook.command';
 import { WayForPayService } from '../services/wayforpay.service';
 import { SelectTariffPlanCommand } from '../../licenses/commands/select-tariff-plan.command';
@@ -70,7 +71,7 @@ export class HandleWayForPayWebhookHandler implements ICommandHandler<HandleWayF
           cardType: payload.cardType || undefined,
           issuerBank: payload.issuerBankName || undefined,
           paymentMethod: payload.paymentSystem || undefined,
-          metadata: payload as any,
+          metadata: payload as unknown as Prisma.InputJsonValue,
         },
       });
 
@@ -89,7 +90,7 @@ export class HandleWayForPayWebhookHandler implements ICommandHandler<HandleWayF
         data: {
           status: 'DECLINED',
           failureReason: payload.reason || payload.transactionStatus,
-          metadata: payload as any,
+          metadata: payload as unknown as Prisma.InputJsonValue,
         },
       });
 

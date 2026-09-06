@@ -6,17 +6,14 @@ import type {
   ClearStorageCacheResultDto,
 } from '@smartfeed/shared';
 import { fetchWithAuth } from './api';
+import { isTauri } from './runtime';
 
 const LOCAL_STORAGE_WORKSPACE_KEY = 'smartfeed_workspace_path';
 const LOCAL_STORAGE_WORKSPACE_INIT_KEY = 'smartfeed_workspace_initialized';
 
-function isTauriEnvironment(): boolean {
-  return typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window;
-}
-
 export async function getDefaultWorkspacePath(): Promise<string> {
   // 1. Try Tauri IPC if in native app
-  if (isTauriEnvironment()) {
+  if (isTauri()) {
     try {
       const { invoke } = await import('@tauri-apps/api/core');
       const specs = (await invoke('get_system_specs')) as { default_workspace?: string };
@@ -52,7 +49,7 @@ export async function getWorkspaceInfo(customPath?: string): Promise<WorkspaceIn
   const savedPath = customPath || localStorage.getItem(LOCAL_STORAGE_WORKSPACE_KEY);
 
   // 1. Try Tauri IPC
-  if (isTauriEnvironment()) {
+  if (isTauri()) {
     try {
       const { invoke } = await import('@tauri-apps/api/core');
       const info = (await invoke('get_workspace_info')) as WorkspaceInfoDto | null;
@@ -98,7 +95,7 @@ export async function initWorkspace(
   enableEncryption: boolean = true,
 ): Promise<WorkspaceInfoDto> {
   // 1. Try Tauri IPC
-  if (isTauriEnvironment()) {
+  if (isTauri()) {
     try {
       const { invoke } = await import('@tauri-apps/api/core');
       const info = (await invoke('init_workspace_directory', { path })) as WorkspaceInfoDto;
@@ -152,7 +149,7 @@ export async function getStorageStats(workspacePath?: string): Promise<StorageSt
   const activePath = workspacePath || localStorage.getItem(LOCAL_STORAGE_WORKSPACE_KEY) || '';
 
   // 1. Try Tauri IPC
-  if (isTauriEnvironment()) {
+  if (isTauri()) {
     try {
       const { invoke } = await import('@tauri-apps/api/core');
       const stats = (await invoke('get_storage_stats')) as StorageStatsDto;
@@ -195,7 +192,7 @@ export async function createLocalBackup(
   const activePath = workspacePath || localStorage.getItem(LOCAL_STORAGE_WORKSPACE_KEY) || '';
 
   // 1. Try Tauri IPC
-  if (isTauriEnvironment()) {
+  if (isTauri()) {
     try {
       const { invoke } = await import('@tauri-apps/api/core');
       const backupPath = (await invoke('create_local_backup')) as string;
@@ -236,7 +233,7 @@ export async function runDatabaseMaintenance(
   const activePath = workspacePath || localStorage.getItem(LOCAL_STORAGE_WORKSPACE_KEY) || '';
 
   // 1. Try Tauri IPC
-  if (isTauriEnvironment()) {
+  if (isTauri()) {
     try {
       const { invoke } = await import('@tauri-apps/api/core');
       const result = (await invoke('run_database_maintenance')) as DatabaseMaintenanceResultDto;
@@ -272,7 +269,7 @@ export async function runDatabaseMaintenance(
 
 export async function openInFileManager(path: string): Promise<void> {
   // 1. Try Tauri IPC
-  if (isTauriEnvironment()) {
+  if (isTauri()) {
     try {
       const { invoke } = await import('@tauri-apps/api/core');
       await invoke('open_in_file_manager', { path });
@@ -296,7 +293,7 @@ export async function openInFileManager(path: string): Promise<void> {
 
 export async function pickWorkspaceFolder(): Promise<string | null> {
   // 1. Try Tauri IPC if running in native app
-  if (isTauriEnvironment()) {
+  if (isTauri()) {
     try {
       const { invoke } = await import('@tauri-apps/api/core');
       const chosen = (await invoke('pick_workspace_folder')) as string | null;
@@ -322,7 +319,8 @@ export async function pickWorkspaceFolder(): Promise<string | null> {
   // 3. Fallback: Browser showDirectoryPicker if available
   if (typeof window !== 'undefined' && 'showDirectoryPicker' in window) {
     try {
-      const dirHandle = await (window as any).showDirectoryPicker();
+      const win = window as Window & { showDirectoryPicker?: () => Promise<{ name?: string }> };
+      const dirHandle = await win.showDirectoryPicker?.();
       if (dirHandle?.name) {
         return `~/Documents/${dirHandle.name}`;
       }
@@ -340,7 +338,7 @@ export async function clearStorageCache(
   const activePath = workspacePath || localStorage.getItem(LOCAL_STORAGE_WORKSPACE_KEY) || '';
 
   // 1. Try Tauri IPC
-  if (isTauriEnvironment()) {
+  if (isTauri()) {
     try {
       const { invoke } = await import('@tauri-apps/api/core');
       const freed = (await invoke('clear_storage_cache')) as number;
@@ -374,7 +372,7 @@ export async function migrateWorkspace(
   moveExistingData: boolean = true,
 ): Promise<WorkspaceInfoDto> {
   // 1. Try Tauri IPC
-  if (isTauriEnvironment()) {
+  if (isTauri()) {
     try {
       const { invoke } = await import('@tauri-apps/api/core');
       const info = (await invoke('migrate_workspace', {

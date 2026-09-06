@@ -34,8 +34,9 @@ export const RemoveMemberDialog: React.FC<RemoveMemberDialogProps> = ({
     }
   };
 
-  const userEmail = member.userEmail || (member as any).email || '';
-  const userFullName = member.userFullName || (member as any).fullName || '';
+  const userEmail = member.userEmail || (member as unknown as { email?: string }).email || '';
+  const userFullName =
+    member.userFullName || (member as unknown as { fullName?: string }).fullName || '';
   const displayName = userFullName ? `${userFullName} (${userEmail})` : userEmail;
 
   return createPortal(

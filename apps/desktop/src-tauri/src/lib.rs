@@ -304,9 +304,13 @@ fn db_create_feed_source(dto: models::CreateFeedSourceDto) -> Result<models::Fee
 }
 
 #[tauri::command]
-fn db_delete_feed_source(id: String) -> Result<(), String> {
+fn db_delete_feed_source(id: String, delete_products: Option<bool>) -> Result<serde_json::Value, String> {
     let conn = get_db_conn()?;
-    db::delete_feed_source(&conn, &id).map_err(|e| e.to_string())
+    let deleted_count = db::delete_feed_source(&conn, &id, delete_products.unwrap_or(true)).map_err(|e| e.to_string())?;
+    Ok(serde_json::json!({
+        "success": true,
+        "deletedProductsCount": deleted_count
+    }))
 }
 
 #[tauri::command]

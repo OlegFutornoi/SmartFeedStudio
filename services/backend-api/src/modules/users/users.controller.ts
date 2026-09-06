@@ -19,9 +19,7 @@ import { Roles } from '../auth/decorators/roles.decorator';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { GetUsersListQuery } from './queries/get-users-list.query';
 import { GetUsersStatsQuery } from './queries/get-users-stats.query';
-import { ChangePasswordCommand } from './commands/change-password.command';
 import {
-  ChangePasswordDto,
   CreateUserByAdminDto,
   CreateUserByAdminDtoSchema,
   Role,
@@ -122,16 +120,5 @@ export class UsersController {
     @CurrentUser('id') requesterId: string,
   ): Promise<{ success: boolean }> {
     return this.commandBus.execute(new DeleteUserCommand(userId, requesterId));
-  }
-
-  @Post('change-password')
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Change password for current authenticated user' })
-  @ApiResponse({ status: 200, description: 'Password changed successfully' })
-  @ApiResponse({ status: 400, description: 'Current password is incorrect' })
-  async changePassword(@CurrentUser('id') userId: string, @Body() dto: ChangePasswordDto) {
-    return this.commandBus.execute(
-      new ChangePasswordCommand(userId, dto.currentPassword, dto.newPassword),
-    );
   }
 }

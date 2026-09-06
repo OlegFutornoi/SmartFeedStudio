@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { Loader2, CheckCircle2, AlertTriangle } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTranslation, getErrorMessage } from '@/i18n';
@@ -30,6 +30,10 @@ import { EditCompanyNameDialog } from '@/components/team/EditCompanyNameDialog';
 export const TeamPage: React.FC = () => {
   const { token, user } = useAuth();
   const { t } = useTranslation(['team', 'common', 'errors']);
+  const tRef = useRef(t);
+  useEffect(() => {
+    tRef.current = t;
+  }, [t]);
 
   const [organization, setOrganization] = useState<OrganizationDto | null>(null);
   const [invitations, setInvitations] = useState<OrganizationInvitationDto[]>([]);
@@ -71,12 +75,12 @@ export const TeamPage: React.FC = () => {
           setInvitations(invs);
         }
       } catch (err: unknown) {
-        setErrorMessage(getErrorMessage(err, t));
+        setErrorMessage(getErrorMessage(err, tRef.current));
       } finally {
         if (isInitial) setIsLoading(false);
       }
     },
-    [token, user?.organization?.id, t],
+    [token, user?.organization?.id],
   );
 
   useEffect(() => {
@@ -131,8 +135,6 @@ export const TeamPage: React.FC = () => {
 
   const currentMember = organization?.members?.find((m) => m.userId === user?.id);
   const isCurrentUserOwnerOrAdmin =
-    (organization as any)?.currentUserRole === 'OWNER' ||
-    (organization as any)?.currentUserRole === 'ADMIN' ||
     organization?.ownerId === user?.id ||
     currentMember?.role === 'OWNER' ||
     currentMember?.role === 'ADMIN' ||
@@ -140,7 +142,7 @@ export const TeamPage: React.FC = () => {
 
   const usedSeats = organization?.usedTeamSeats ?? organization?.members?.length ?? 1;
   const maxSeats = organization?.maxTeamSeats || license?.maxTeamSeats || 1;
-  const planType = (organization as any)?.activePlan || license?.planType || 'STARTER';
+  const planType = license?.planType || 'STARTER';
   const members = organization?.members || [];
   const remainingSeats = Math.max(0, maxSeats - usedSeats);
 

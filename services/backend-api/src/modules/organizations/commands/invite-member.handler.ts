@@ -104,7 +104,7 @@ export class InviteMemberHandler implements ICommandHandler<InviteMemberCommand>
         statusCode: 403,
         error: 'Forbidden',
         code: 'TEAM_SEATS_LIMIT_EXCEEDED',
-        message: `Ваш тариф дозволяє лише ${maxTeamSeats} місць у команді. Оновіть тариф до PRO або ENTERPRISE.`,
+        message: `Your current plan allows up to ${maxTeamSeats} team seats. Upgrade to PRO or ENTERPRISE to invite more members.`,
         currentMembersCount,
         maxTeamSeats,
       });
@@ -113,7 +113,7 @@ export class InviteMemberHandler implements ICommandHandler<InviteMemberCommand>
     // 5. Generate secure token & expiration (7 days)
     const token = `SF-INV-${crypto.randomBytes(24).toString('hex')}`;
     const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-    const memberRole = (role || MemberRole.MEMBER) as any;
+    const memberRole = (role as MemberRole) || MemberRole.MEMBER;
 
     // Check if there is already a PENDING invitation for this email
     const existingInvitation = await this.prisma.organizationInvitation.findFirst({

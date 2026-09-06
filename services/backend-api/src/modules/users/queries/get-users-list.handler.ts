@@ -158,8 +158,9 @@ export class GetUsersListHandler implements IQueryHandler<GetUsersListQuery> {
         }
       }
 
-      const activeLicense =
-        u.licenses[0] || (primaryMembership?.organization?.owner as any)?.licenses?.[0];
+      const ownerWithLicenses = primaryMembership?.organization?.owner as
+        { licenses?: typeof u.licenses } | undefined;
+      const activeLicense = u.licenses[0] || ownerWithLicenses?.licenses?.[0];
 
       return {
         id: u.id,

@@ -1,5 +1,6 @@
 import type { FeedSourceDto, CategorySummaryDto } from '@smartfeed/shared';
 import { FeedFormat, FeedSourceType } from '@smartfeed/shared';
+import { formatFeedTitle } from '@/lib/formatters';
 import type { RawParsedProduct } from '../feed-engine/stream-parser';
 import { feedEngine } from '../feed-engine';
 import { invokeLocalDb } from './client';
@@ -57,7 +58,10 @@ export class LocalFeedsService {
     // Save or update feed source record using universal DB invoke
     const payload = {
       name:
-        options.fileName || options.sourceUrl || `Фід ${new Date().toLocaleDateString('uk-UA')}`,
+        options.fileName ||
+        (options.sourceUrl
+          ? formatFeedTitle(options.sourceUrl)
+          : `Фід ${new Date().toLocaleDateString('uk-UA')}`),
       sourceType:
         options.sourceType || (options.sourceUrl ? FeedSourceType.URL : FeedSourceType.FILE),
       format: FeedFormat.XML_ROZETKA,
@@ -89,9 +93,16 @@ export class LocalFeedsService {
     return invokeLocalDb('db_get_all_feed_sources', {});
   }
 
-  async deleteSupplierFeedSource(_supplierId: string, _sourceId: string): Promise<boolean> {
-    console.warn('deleteSupplierFeedSource not fully implemented yet');
-    return true;
+  async deleteSupplierFeedSource(
+    supplierId: string,
+    sourceId: string,
+    deleteProducts = true,
+  ): Promise<{ success: boolean; deletedProductsCount: number }> {
+    return invokeLocalDb('db_delete_feed_source', {
+      supplierId,
+      id: sourceId,
+      deleteProducts,
+    });
   }
 }
 

@@ -226,6 +226,7 @@ export function useQuotaReconciliation(isOpen: boolean, isUk: boolean) {
           : 'Deleting feed and products in background',
         action: async () => {
           const res = await deleteSupplierFeedSource(supplierId, feed.id, token, true);
+          setFeedSources((prev) => prev.filter((item) => item.feed.id !== feed.id));
           setSuccessMessage(
             isUk
               ? `Фід успішно видалено разом із ${res.deletedProductsCount || 0} товарами.`

@@ -30,18 +30,33 @@ import { CreateLicenseCommand } from './commands/create-license.command';
 import { SelectTariffPlanCommand } from './commands/select-tariff-plan.command';
 import { UpdateLicenseStatusCommand } from './commands/update-license-status.command';
 import { DeleteLicenseCommand } from './commands/delete-license.command';
-import { IsBoolean } from 'class-validator';
+import { IsBoolean, IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
-class UpgradeLicenseDto {
+export class SelectPlanDto {
+  @IsString()
+  @IsNotEmpty()
+  planCode: string;
+
+  @IsOptional()
+  @IsString()
+  billingInterval?: 'monthly' | 'yearly';
+}
+
+export class UpgradeLicenseDto {
+  @IsEnum(PlanType)
   planType: PlanType;
 }
 
-class AssignLicenseDto {
+export class AssignLicenseDto {
+  @IsString()
+  @IsNotEmpty()
   userId: string;
+
+  @IsEnum(PlanType)
   planType: PlanType;
 }
 
-class UpdateLicenseStatusDto {
+export class UpdateLicenseStatusDto {
   @IsBoolean()
   isActive: boolean;
 }
@@ -104,7 +119,7 @@ export class LicensesController {
   @ApiResponse({ status: 201, description: 'Plan selected and license updated' })
   async selectPlan(
     @CurrentUser('id') userId: string,
-    @Body() dto: { planCode: string; billingInterval?: 'monthly' | 'yearly' },
+    @Body() dto: SelectPlanDto,
   ): Promise<LicenseEntity> {
     return this.commandBus.execute(
       new SelectTariffPlanCommand(userId, dto.planCode, dto.billingInterval || 'monthly'),

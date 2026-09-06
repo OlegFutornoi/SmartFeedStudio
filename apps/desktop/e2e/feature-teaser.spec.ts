@@ -119,7 +119,7 @@ test.describe('Desktop App — Модуль Feature Gate & Upsell Teaser (In-App
     });
   });
 
-  test('1. Сайдбар: Starter користувач бачить Команду в окремому блоці «Можливості PRO» із бейджем та замочком', async ({
+  test('1. Сайдбар: Starter користувач бачить Команду в окремому блоці «Розширити можливості» із бейджем та замочком', async ({
     page,
   }) => {
     await page.goto('/');
@@ -130,7 +130,7 @@ test.describe('Desktop App — Модуль Feature Gate & Upsell Teaser (In-App
     // Перевіряємо наявність секції upsell
     const upsellSection = page.locator('[data-testid="sidebar-upsell-section"]');
     await expect(upsellSection).toBeVisible();
-    await expect(upsellSection).toContainText('Можливості PRO');
+    await expect(upsellSection).toContainText('Розширити можливості');
 
     // Перевіряємо пункт Команда в блоці upsell
     const teamUpsellItem = upsellSection.locator('[data-testid="nav-item-team"]');
@@ -260,7 +260,7 @@ test.describe('Desktop App — Модуль Feature Gate & Upsell Teaser (In-App
 
     // Сайдбар англійською
     const upsellSection = page.locator('[data-testid="sidebar-upsell-section"]');
-    await expect(upsellSection).toContainText('PRO Capabilities');
+    await expect(upsellSection).toContainText('Expand Capabilities');
 
     // Заголовок англійською
     await expect(page.locator('[data-testid="feature-hero-title"]')).toHaveText(
@@ -348,6 +348,14 @@ test.describe('Desktop App — Модуль Feature Gate & Upsell Teaser (In-App
       });
     });
 
+    await page.route(/\/api\/organizations\/org-pro-1\/invitations/, async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify([]),
+      });
+    });
+
     await page.route(/\/api\/organizations\/org-pro-1$/, async (route) => {
       await route.fulfill({
         status: 200,
@@ -386,12 +394,12 @@ test.describe('Desktop App — Модуль Feature Gate & Upsell Teaser (In-App
     await expect(page.locator('[data-testid="company-title"]')).toHaveText('Pro Corporation');
   });
 
-  test('8. AI Асистент: відображається в блоці «Можливості PRO» та відкриває інтерактивний AI Sandbox з підтримкою UA ⇄ EN', async ({
+  test('8. AI Асистент: відображається в блоці «Розширити можливості» та відкриває інтерактивний AI Sandbox з підтримкою UA ⇄ EN', async ({
     page,
   }) => {
     await page.goto('/catalogs');
 
-    // Перевірка наявності AI Асистента у блоці Можливості PRO
+    // Перевірка наявності AI Асистента у блоці Розширити можливості
     const upsellSection = page.locator('[data-testid="sidebar-upsell-section"]');
     await expect(upsellSection).toBeVisible();
 

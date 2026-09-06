@@ -35,6 +35,13 @@ export const SelectTariffPlanDtoSchema = z.object({
 
 export type SelectTariffPlanDto = z.infer<typeof SelectTariffPlanDtoSchema>;
 
+export const AssignLicenseDtoSchema = z.object({
+  userId: z.string().min(1, 'User ID is required'),
+  planType: z.nativeEnum(PlanType),
+});
+
+export type AssignLicenseDto = z.infer<typeof AssignLicenseDtoSchema>;
+
 export interface PlanLimits {
   planType: PlanType;
   maxXmlLimit: number;

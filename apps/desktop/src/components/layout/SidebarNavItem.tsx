@@ -103,16 +103,7 @@ export const SidebarNavItem = React.memo(function SidebarNavItem({
             >
               {currentLang === 'uk' ? 'Обрати' : 'Select'}
             </Badge>
-          ) : (
-            item.requiredPlan && (
-              <Badge
-                variant="outline"
-                className="text-[9px] px-1 py-0 ml-1 border-primary/30 text-primary"
-              >
-                {item.requiredPlan}
-              </Badge>
-            )
-          )}
+          ) : null}
         </div>
       )}
     </Link>

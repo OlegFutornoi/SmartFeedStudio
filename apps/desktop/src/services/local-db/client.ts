@@ -50,6 +50,14 @@ export async function invokeLocalDb<K extends keyof LocalDbCommandMap>(
         a.payload,
       ) as LocalDbCommandMap[K]['result'];
     }
+    case 'db_delete_feed_source': {
+      const a = args as LocalDbCommandMap['db_delete_feed_source']['args'];
+      return mockDatabaseDriver.deleteFeedSource(
+        a.supplierId,
+        a.id,
+        a.deleteProducts,
+      ) as LocalDbCommandMap[K]['result'];
+    }
 
     // Suppliers
     case 'db_get_suppliers': {

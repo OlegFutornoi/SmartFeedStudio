@@ -1,5 +1,5 @@
 {
-  "sidebar.upsellHeader": "PRO Capabilities",
+  "sidebar.upsellHeader": "Expand Capabilities",
   "sidebar.upsellBadge": "PRO",
   "sidebar.upgradeAction": "Upgrade",
   "sidebar.tooltip": "Available in {{plan}} plan: {{description}}",

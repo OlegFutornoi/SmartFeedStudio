@@ -6,7 +6,7 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { Role, UserListItemDto } from '@smartfeed/shared';
+import { Role, PlanType, UserListItemDto } from '@smartfeed/shared';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { UpdateUserStatusCommand } from './update-user-status.command';
 
@@ -115,7 +115,7 @@ export class UpdateUserStatusHandler implements ICommandHandler<
       license: updated.licenses[0]
         ? {
             licenseKey: updated.licenses[0].licenseKey,
-            planType: updated.licenses[0].planType as any,
+            planType: updated.licenses[0].planType as unknown as PlanType,
             isActive: updated.licenses[0].isActive,
             maxXmlLimit: updated.licenses[0].maxXmlLimit,
             aiCredits: updated.licenses[0].aiCredits,

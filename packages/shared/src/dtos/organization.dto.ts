@@ -45,6 +45,21 @@ export const OrganizationDtoSchema = z.object({
 
 export type OrganizationDto = z.infer<typeof OrganizationDtoSchema>;
 
+export const UserOrganizationDtoSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  slug: z.string().nullable().optional(),
+  ownerId: z.string(),
+  userRole: z.nativeEnum(MemberRole),
+  usedTeamSeats: z.number().int().nonnegative(),
+  maxTeamSeats: z.number().int().nonnegative(),
+  activePlan: z.string(),
+  createdAt: z.union([z.date(), z.string()]),
+  updatedAt: z.union([z.date(), z.string()]),
+});
+
+export type UserOrganizationDto = z.infer<typeof UserOrganizationDtoSchema>;
+
 export const InviteMemberDtoSchema = z.object({
   email: z.string().email('Invalid email address format'),
   role: z.nativeEnum(MemberRole).default(MemberRole.MEMBER).optional(),
