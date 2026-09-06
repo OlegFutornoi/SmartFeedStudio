@@ -60,6 +60,27 @@ pub fn get_default_workspace_dir() -> PathBuf {
     }
 }
 
+pub fn resolve_path(path_str: &str) -> PathBuf {
+    let trimmed = path_str.trim();
+    if trimmed.starts_with("~/") || trimmed == "~" {
+        if let Ok(home) = std::env::var("HOME") {
+            let rel = trimmed.trim_start_matches("~/").trim_start_matches('~');
+            if rel.is_empty() {
+                return PathBuf::from(home);
+            }
+            return PathBuf::from(home).join(rel);
+        }
+        if let Ok(user_profile) = std::env::var("USERPROFILE") {
+            let rel = trimmed.trim_start_matches("~/").trim_start_matches('~');
+            if rel.is_empty() {
+                return PathBuf::from(user_profile);
+            }
+            return PathBuf::from(user_profile).join(rel);
+        }
+    }
+    PathBuf::from(trimmed)
+}
+
 pub fn dir_size(path: &Path) -> u64 {
     if !path.exists() {
         return 0;
@@ -82,7 +103,8 @@ pub fn dir_size(path: &Path) -> u64 {
 }
 
 pub fn init_workspace_structure(base_path: &str) -> Result<WorkspaceInfo, String> {
-    let root = Path::new(base_path);
+    let root = resolve_path(base_path);
+    let resolved_path_str = root.to_string_lossy().to_string();
     
     // Create folder structure
     let dirs = ["database", "feeds", "exports", "backups", "logs"];
@@ -104,7 +126,7 @@ pub fn init_workspace_structure(base_path: &str) -> Result<WorkspaceInfo, String
         .to_string();
 
     let info = WorkspaceInfo {
-        workspace_path: base_path.to_string(),
+        workspace_path: resolved_path_str,
         is_initialized: true,
         database_path: db_path.to_string_lossy().to_string(),
         is_encrypted: true,
@@ -120,7 +142,7 @@ pub fn init_workspace_structure(base_path: &str) -> Result<WorkspaceInfo, String
 }
 
 pub fn read_storage_stats(base_path: &str) -> Result<StorageStats, String> {
-    let root = Path::new(base_path);
+    let root = resolve_path(base_path);
     if !root.exists() {
         return Err(format!("Workspace path {:?} does not exist", base_path));
     }
@@ -147,7 +169,7 @@ pub fn read_storage_stats(base_path: &str) -> Result<StorageStats, String> {
 }
 
 pub fn create_backup_file(base_path: &str) -> Result<String, String> {
-    let root = Path::new(base_path);
+    let root = resolve_path(base_path);
     let db_file = root.join("database").join("catalog.db");
     if !db_file.exists() {
         return Err("Database file does not exist yet".to_string());

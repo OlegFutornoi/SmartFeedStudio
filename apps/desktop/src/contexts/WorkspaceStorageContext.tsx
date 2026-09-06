@@ -66,27 +66,19 @@ export const WorkspaceStorageProvider: React.FC<{ children: React.ReactNode }> =
         setShowOnboardingModal(false);
         const stats = await getStorageStats(info.workspacePath);
         setStorageStats(stats);
-      } else if (isExplicitlyPending || isExplicitlyUninit) {
+      } else {
+        // Workspace directory or database does not exist on disk!
+        // Show setup modal as during first-run / registration
+        localStorage.removeItem('smartfeed_workspace_initialized');
         setWorkspaceInfo(null);
         setIsInitialized(false);
         setShowOnboardingModal(true);
-      } else {
-        const fallbackInfo: WorkspaceInfoDto = info || {
-          workspacePath: def,
-          isInitialized: true,
-          databasePath: `${def}/database/catalog.db`,
-          isEncrypted: true,
-          encryptionAlgorithm: 'SQLCipher-AES256',
-          createdAt: new Date().toISOString(),
-        };
-        setWorkspaceInfo(fallbackInfo);
-        setIsInitialized(true);
-        setShowOnboardingModal(false);
-        const stats = await getStorageStats(fallbackInfo.workspacePath);
-        setStorageStats(stats);
       }
     } catch (e) {
       console.warn('Workspace check error:', e);
+      setWorkspaceInfo(null);
+      setIsInitialized(false);
+      setShowOnboardingModal(true);
     } finally {
       setIsLoading(false);
       isCheckingRef.current = false;
@@ -98,7 +90,7 @@ export const WorkspaceStorageProvider: React.FC<{ children: React.ReactNode }> =
       checkWorkspace();
     } else {
       setWorkspaceInfo(null);
-      setIsInitialized(true);
+      setIsInitialized(false);
       setShowOnboardingModal(false);
     }
   }, [isAuthenticated, checkWorkspace]);

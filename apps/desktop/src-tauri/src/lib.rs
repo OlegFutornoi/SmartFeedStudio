@@ -65,14 +65,22 @@ fn get_workspace_info() -> Result<Option<WorkspaceInfo>, String> {
     let entry = Entry::new(SERVICE_NAME, WORKSPACE_KEY_USER).map_err(|e| e.to_string())?;
     match entry.get_password() {
         Ok(path) if !path.is_empty() => {
-            let config_path = std::path::Path::new(&path).join("workspace.json");
-            if config_path.exists() {
-                let content = std::fs::read_to_string(&config_path).map_err(|e| e.to_string())?;
-                let info: WorkspaceInfo = serde_json::from_str(&content).map_err(|e| e.to_string())?;
-                Ok(Some(info))
+            let root = workspace::resolve_path(&path);
+            let config_path = root.join("workspace.json");
+            let db_path = root.join("database").join("catalog.db");
+            if root.exists() && (config_path.exists() || db_path.exists()) {
+                if config_path.exists() {
+                    let content = std::fs::read_to_string(&config_path).map_err(|e| e.to_string())?;
+                    let info: WorkspaceInfo = serde_json::from_str(&content).map_err(|e| e.to_string())?;
+                    Ok(Some(info))
+                } else {
+                    let info = init_workspace_structure(&path)?;
+                    Ok(Some(info))
+                }
             } else {
-                let info = init_workspace_structure(&path)?;
-                Ok(Some(info))
+                // The workspace folder or database was deleted on disk!
+                let _ = entry.delete_password();
+                Ok(None)
             }
         }
         _ => Ok(None),

@@ -41,6 +41,12 @@ export const FirstRunWorkspaceSetupDialog: React.FC = () => {
     }
   };
 
+  React.useEffect(() => {
+    if (defaultPath && (!customPath || customPath === '~/Documents/SmartFeedStudioData')) {
+      setCustomPath(defaultPath);
+    }
+  }, [defaultPath]);
+
   if (!showOnboardingModal) return null;
 
   const targetPath = useCustomPath ? customPath.trim() : defaultPath;

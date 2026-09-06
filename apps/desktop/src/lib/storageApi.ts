@@ -68,27 +68,13 @@ export async function getWorkspaceInfo(customPath?: string): Promise<WorkspaceIn
     const res = await fetchWithAuth(`/storage/workspace/info${query}`);
     if (res.ok) {
       const data = (await res.json()) as WorkspaceInfoDto | null;
-      if (data) return data;
+      if (data && data.isInitialized) return data;
     }
-  } catch {
-    // Fallback below
+  } catch (e) {
+    console.warn('Failed to get workspace info from API:', e);
   }
 
-  if (!savedPath && localStorage.getItem(LOCAL_STORAGE_WORKSPACE_INIT_KEY) === null) {
-    return null;
-  }
-
-  const activePath = savedPath || '~/Documents/SmartFeedStudioData';
-
-  return {
-    workspacePath: activePath,
-    isInitialized: true,
-    databasePath: `${activePath}/database/catalog.db`,
-    isEncrypted: true,
-    encryptionAlgorithm: 'SQLCipher-AES256',
-    createdAt: new Date().toISOString(),
-    lastBackupAt: undefined,
-  };
+  return null;
 }
 
 export async function initWorkspace(
