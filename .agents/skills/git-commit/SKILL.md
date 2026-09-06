@@ -1,21 +1,26 @@
 ---
 name: git-commit
-description: 'Execute git commit with conventional commit message analysis, intelligent staging, message generation, and release version tagging. Use when user asks to commit changes, create a git commit, or mentions "/commit". Supports: (1) Auto-detecting type and scope from changes, (2) Generating conventional commit messages from diff, (3) Release version tagging (SemVer tag creation and push), (4) Interactive commit with optional type/scope/description overrides, (5) Intelligent file staging for logical grouping'
+description: 'Execute automated end-to-end git commit workflow: intelligent staging, conventional commit generation, automatic SemVer release version tagging, and push with tags to remote. Use when user asks to commit changes, create a git commit, or mentions "/git-commit" or "/commit".'
 license: MIT
 allowed-tools: Bash
 ---
 
-# Git Commit with Conventional Commits & Release Tagging
+# Git Commit with Conventional Commits, Automated Release Tagging & Push
 
 ## Overview
 
-Create standardized, semantic git commits using the Conventional Commits specification. Analyze the actual diff to determine appropriate type, scope, and message, and automatically handle release version tagging when requested.
+Execute the complete, automated end-to-end git release workflow upon explicit user request (`/git-commit` or `/commit`):
+
+1. **Analyze & Stage**: Stage modified and untracked files safely (`git add .`).
+2. **Conventional Commit**: Generate and execute semantic Conventional Commit message based on the diff.
+3. **Automated SemVer Tagging**: Calculate the next version tag and create an annotated tag (`git tag -a vX.Y.Z -m "Release vX.Y.Z: ..."`).
+4. **Push with Tags**: Automatically push both the commit and all tags to remote (`git push origin <branch> --tags`).
 
 ---
 
 ## Conventional Commit Format
 
-```
+```text
 <type>[optional scope]: <description>
 
 [optional body]
@@ -25,120 +30,99 @@ Create standardized, semantic git commits using the Conventional Commits specifi
 
 ---
 
-## Commit Types
+## Commit Types & SemVer Impact
 
-| Type       | Purpose                        | SemVer Impact |
-| :--------- | :----------------------------- | :------------ |
-| `feat`     | New feature                    | MINOR (0.X.0) |
-| `fix`      | Bug fix                        | PATCH (0.0.X) |
-| `docs`     | Documentation only             | PATCH (0.0.X) |
-| `style`    | Formatting/style (no logic)    | PATCH (0.0.X) |
-| `refactor` | Code refactor (no feature/fix) | PATCH (0.0.X) |
-| `perf`     | Performance improvement        | PATCH (0.0.X) |
-| `test`     | Add/update tests               | PATCH (0.0.X) |
-| `build`    | Build system/dependencies      | PATCH (0.0.X) |
-| `ci`       | CI/config changes              | PATCH (0.0.X) |
-| `chore`    | Maintenance/misc               | PATCH (0.0.X) |
-| `revert`   | Revert commit                  | PATCH (0.0.X) |
+| Type       | Purpose                        | SemVer Impact | Version Bump Example |
+| :--------- | :----------------------------- | :------------ | :------------------- |
+| `feat`     | New feature                    | MINOR         | `v1.8.0` → `v1.9.0`  |
+| `fix`      | Bug fix                        | PATCH         | `v1.8.0` → `v1.8.1`  |
+| `refactor` | Code refactor (no feature/fix) | PATCH         | `v1.8.0` → `v1.8.1`  |
+| `perf`     | Performance improvement        | PATCH         | `v1.8.0` → `v1.8.1`  |
+| `docs`     | Documentation only             | PATCH         | `v1.8.0` → `v1.8.1`  |
+| `style`    | Formatting/style (no logic)    | PATCH         | `v1.8.0` → `v1.8.1`  |
+| `test`     | Add/update tests               | PATCH         | `v1.8.0` → `v1.8.1`  |
+| `build`    | Build system/dependencies      | PATCH         | `v1.8.0` → `v1.8.1`  |
+| `ci`       | CI/config changes              | PATCH         | `v1.8.0` → `v1.8.1`  |
+| `chore`    | Maintenance/misc               | PATCH         | `v1.8.0` → `v1.8.1`  |
 
----
-
-## Breaking Changes
-
-```
-# Exclamation mark after type/scope (triggers MAJOR version bump)
-feat!: remove deprecated endpoint
-
-# BREAKING CHANGE footer
-feat: allow config to extend other configs
-
-BREAKING CHANGE: `extends` key behavior changed
-```
+> **Breaking Changes** (`feat!` or `BREAKING CHANGE:` footer) trigger a **MAJOR** version bump: `v1.8.0` → `v2.0.0`.
 
 ---
 
-## 🏷️ Release Version Tagging Workflow
+## ⚡ Mandatory 4-Step Automated Execution Pipeline
 
-Whenever committing milestone features, significant updates, or when requested by the user:
+Whenever the user invokes `/git-commit` (or `/commit`), execute all 4 steps sequentially without stopping midway:
 
-1. **Check Existing Tags & Determine Next SemVer Version**:
-
-   ```bash
-   git tag -l --sort=-v:refname | head -5
-   ```
-   - **MAJOR** (`vX+1.0.0`): Breaking changes (`BREAKING CHANGE` or `feat!`).
-   - **MINOR** (`vX.Y+1.0`): New features (`feat`).
-   - **PATCH** (`vX.Y.Z+1`): Bug fixes, refactoring, docs, styling (`fix`, `refactor`, `perf`, `docs`).
-
-2. **Create the Tag**:
-
-   ```bash
-   # Lightweight or annotated tag
-   git tag vX.Y.Z
-   # OR with annotation
-   git tag -a vX.Y.Z -m "Release vX.Y.Z: <Short description of release>"
-   ```
-
-3. **Push Commit and Tag**:
-   ```bash
-   # Push current branch
-   git push origin <branch-name>
-
-   # Push the release tag
-   git push origin vX.Y.Z
-   # OR push all tags
-   git push origin --tags
-   ```
-
----
-
-## Complete Workflow
-
-### 1. Analyze Diff & Staging
+### 1. Stage Modified Files
 
 ```bash
-# Check status and working tree
-git status --porcelain
-git diff --staged
-git diff
-```
-
-### 2. Stage Files
-
-```bash
-# Stage specific files or directories
-git add path/to/file1 path/to/file2
 git add .
 ```
 
-> **Never commit secrets** (`.env`, credentials, private keys, certificates).
+_(Verify that secrets such as `.env`, certificates, or credentials are not staged)._
 
-### 3. Generate & Execute Commit
+### 2. Generate & Execute Conventional Commit
 
 ```bash
 git commit -m "$(cat <<'EOF'
-<type>[scope]: <description>
+<type>[scope]: <short description>
 
-<optional body with bullet points>
-
-<optional footer or references>
+<bullet points detailing key changes>
 EOF
 )"
 ```
 
-### 4. Apply & Push Release Tag (When applicable)
+### 3. Determine Next SemVer Version & Create Annotated Tag
+
+Check the latest tag:
 
 ```bash
-git tag vX.Y.Z
-git push origin <branch> --tags
+git tag -l --sort=-v:refname | head -5
 ```
+
+Calculate the next version (`vX.Y.Z`) based on the highest SemVer impact from the commit type:
+
+- **MAJOR** if breaking change (`feat!`)
+- **MINOR** if new feature (`feat`)
+- **PATCH** if bug fix, refactoring, quality hardening, or docs (`fix`, `refactor`, `perf`, `docs`)
+
+Create the annotated tag:
+
+```bash
+git tag -a vX.Y.Z -m "Release vX.Y.Z: <Short description of release>"
+```
+
+_Example:_
+
+```bash
+git tag -a v1.8.1 -m "Release v1.8.1: Navigation & upsell refinement, API modularization and quality hardening"
+```
+
+### 4. Push Commit and All Tags to Remote
+
+```bash
+git push origin <current-branch> --tags
+```
+
+_Example for main branch:_
+
+```bash
+git push origin main --tags
+```
+
+> **Single-Command Pipeline Example:**
+>
+> ```bash
+> git tag -a v1.8.1 -m "Release v1.8.1: Navigation & upsell refinement, API modularization and quality hardening" && git push origin main --tags
+> ```
 
 ---
 
-## Git Safety Protocol
+## 🛡️ Git Safety Protocol
 
-- NEVER update git config without permission
-- NEVER run destructive commands (`--force`, hard reset) without explicit request
-- NEVER skip hooks (`--no-verify`) unless user asks
-- NEVER force push to main/master
-- If commit fails due to hooks, fix issues and create a clean commit
+- NEVER run git commit or git push autonomously without explicit user invocation (`/git-commit`, `/commit`, _"вивантаж"_, _"закоміть"_).
+- When `/git-commit` IS invoked, ALWAYS perform the complete sequence: Commit → Tag → Push with tags.
+- NEVER update git config without permission.
+- NEVER run destructive commands (`--force`, `reset --hard`) without explicit request.
+- NEVER skip hooks (`--no-verify`) unless explicitly asked.
+- If pre-push verification fails, investigate the root cause, fix the compilation/test issue, and re-run.
