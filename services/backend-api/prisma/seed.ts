@@ -592,8 +592,8 @@ async function main() {
     },
     {
       key: 'ai_enrichment',
-      labelUk: 'AI Збагачення',
-      labelEn: 'AI Enrichment',
+      labelUk: 'AI Асистент',
+      labelEn: 'AI Assistant',
       path: '/ai-enrichment',
       icon: 'Sparkles',
       order: 4,

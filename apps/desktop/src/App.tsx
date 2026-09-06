@@ -39,6 +39,7 @@ const PlansPage = lazy(() => import('@/pages/PlansPage').then((m) => ({ default:
 const TeamPage = lazy(() => import('@/pages/TeamPage').then((m) => ({ default: m.TeamPage })));
 
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
+import { FeatureTeaserGate } from '@/modules/feature-teaser';
 
 function PageLoader() {
   return (
@@ -72,10 +73,31 @@ export default function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/catalogs" element={<CatalogsPage />} />
             <Route path="/suppliers" element={<SuppliersPage />} />
-            <Route path="/ai-enrichment" element={<AiEnrichmentPage />} />
-            <Route path="/cloud-sync" element={<CloudSyncPage />} />
+            <Route
+              path="/ai-enrichment"
+              element={
+                <FeatureTeaserGate featureKey="ai_enrichment">
+                  <AiEnrichmentPage />
+                </FeatureTeaserGate>
+              }
+            />
+            <Route
+              path="/cloud-sync"
+              element={
+                <FeatureTeaserGate featureKey="cloud_sync">
+                  <CloudSyncPage />
+                </FeatureTeaserGate>
+              }
+            />
             <Route path="/plans" element={<PlansPage />} />
-            <Route path="/team" element={<TeamPage />} />
+            <Route
+              path="/team"
+              element={
+                <FeatureTeaserGate featureKey="team">
+                  <TeamPage />
+                </FeatureTeaserGate>
+              }
+            />
             <Route path="/settings" element={<SettingsPage />} />
           </Route>
 

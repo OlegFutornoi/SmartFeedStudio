@@ -23,7 +23,7 @@ export function AiEnrichmentPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-border/40">
         <div>
           <div className="flex items-center space-x-2.5">
-            <div className="p-2 bg-purple-500/10 rounded-xl text-purple-400 border border-purple-500/20">
+            <div className="p-2 bg-primary/10 rounded-xl text-primary border border-primary/20">
               <Sparkles className="h-6 w-6" />
             </div>
             <div>
@@ -37,7 +37,7 @@ export function AiEnrichmentPage() {
 
         <Badge
           variant="outline"
-          className="text-xs bg-purple-500/10 text-purple-400 border-purple-500/30 px-3 py-1.5 gap-1.5 self-start sm:self-auto"
+          className="text-xs bg-primary/10 text-primary border-primary/20 px-3 py-1.5 gap-1.5 self-start sm:self-auto"
         >
           <Zap className="h-3.5 w-3.5" />
           <span>
@@ -48,16 +48,16 @@ export function AiEnrichmentPage() {
 
       {/* AI Features Grid */}
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        <Card className="border-border/80 bg-card/60 backdrop-blur-md hover:border-purple-500/40 transition-colors">
+        <Card className="border-border/80 bg-card/60 backdrop-blur-md hover:border-primary/40 transition-colors">
           <CardHeader>
-            <div className="p-2.5 w-fit rounded-xl bg-purple-500/10 text-purple-400 mb-2">
+            <div className="p-2.5 w-fit rounded-xl bg-primary/10 text-primary mb-2">
               <Wand2 className="h-5 w-5" />
             </div>
             <CardTitle className="text-base">{t('ai:seoTitle')}</CardTitle>
             <CardDescription className="text-xs">{t('ai:seoDesc')}</CardDescription>
           </CardHeader>
           <CardContent>
-            <Button className="w-full text-xs gap-1.5 bg-purple-600 hover:bg-purple-700 text-white shadow-md shadow-purple-600/25">
+            <Button className="w-full text-xs gap-1.5 bg-primary hover:bg-primary/90 text-primary-foreground shadow-xs">
               <span>{t('ai:startBatch')}</span>
               <ArrowRight className="h-3.5 w-3.5" />
             </Button>

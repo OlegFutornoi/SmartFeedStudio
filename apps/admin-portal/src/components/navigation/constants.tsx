@@ -26,7 +26,7 @@ export interface IconOption {
 export const AVAILABLE_ICONS: IconOption[] = [
   { name: 'LayoutDashboard', icon: LayoutDashboard, label: 'Дашборд / Dashboard' },
   { name: 'Layers', icon: Layers, label: 'Каталоги / Catalogs' },
-  { name: 'Sparkles', icon: Sparkles, label: 'AI Збагачення / AI Enrichment' },
+  { name: 'Sparkles', icon: Sparkles, label: 'AI Асистент / AI Assistant' },
   { name: 'Cloud', icon: Cloud, label: 'Хмара / Cloud Sync' },
   { name: 'Settings', icon: Settings, label: 'Налаштування / Settings' },
   { name: 'BarChart3', icon: BarChart3, label: 'Аналітика / Analytics' },

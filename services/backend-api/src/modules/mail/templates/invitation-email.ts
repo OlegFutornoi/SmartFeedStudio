@@ -161,7 +161,7 @@ export function generateInvitationEmailHtml(data: InvitationEmailData): string {
 
     <div class="footer">
       Якщо ви не очікували це запрошення, просто проігноруйте цей лист.<br>
-      © ${new Date().getFullYear()} SmartFeed Studio. Enterprise Catalog & AI Enrichment Platform.
+      © ${new Date().getFullYear()} SmartFeed Studio. Enterprise Catalog & AI Assistant Platform.
     </div>
   </div>
 </body>

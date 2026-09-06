@@ -64,7 +64,7 @@ export class CreateTariffPlanDto {
   @Min(1)
   maxXmlLimit: number;
 
-  @ApiProperty({ example: 500, description: 'Monthly AI enrichment credits' })
+  @ApiProperty({ example: 500, description: 'Monthly AI assistant credits' })
   @IsNumber()
   @Min(0)
   aiCredits: number;

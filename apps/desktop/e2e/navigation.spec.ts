@@ -38,8 +38,8 @@ test.describe('Desktop App — Динамічне бічне меню та ма�
     {
       id: 'item-3',
       key: 'ai_enrichment',
-      labelUk: 'AI Збагачення',
-      labelEn: 'AI Enrichment',
+      labelUk: 'AI Асистент',
+      labelEn: 'AI Assistant',
       path: '/ai-enrichment',
       icon: 'Sparkles',
       order: 3,
@@ -112,6 +112,24 @@ test.describe('Desktop App — Динамічне бічне меню та ма�
         body: JSON.stringify(mockNavigationItems),
       });
     });
+
+    await page.route('**/api/licenses/my', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          id: 'lic-test-nav',
+          licenseKey: 'SF-PRO-TEST-NAV',
+          planType: 'PRO',
+          isActive: true,
+          isExpired: false,
+          maxXmlLimit: 100000,
+          aiCredits: 500,
+          cloudBackupsLimit: 10,
+          canCloudBackup: true,
+        }),
+      });
+    });
   });
 
   test('успішна навігація по всіх пунктах меню: переходи без скидання і зникнення сторінок', async ({
@@ -139,14 +157,14 @@ test.describe('Desktop App — Динамічне бічне меню та ма�
     await expect(page.getByTestId('catalogs-page')).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Каталоги товарів' })).toBeVisible();
 
-    // 4. Перехід на "AI Збагачення" (/ai-enrichment)
-    const aiLink = sidebar.getByRole('link', { name: /AI Збагачення/i });
+    // 4. Перехід на "AI Асистент" (/ai-enrichment)
+    const aiLink = sidebar.getByRole('link', { name: /AI Асистент/i });
     await expect(aiLink).toBeVisible();
     await aiLink.click();
 
     await expect(page).toHaveURL('/ai-enrichment');
     await expect(page.getByTestId('ai-enrichment-page')).toBeVisible();
-    await expect(page.getByRole('heading', { name: 'AI Збагачення контенту' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'AI Асистент контенту' })).toBeVisible();
 
     // 5. Перехід на "Хмарна синхронізація" (/cloud-sync)
     const cloudLink = sidebar.getByRole('link', { name: /Хмарна синхронізація/i });

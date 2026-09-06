@@ -5,9 +5,12 @@ import { NavigationItemDto, UserProfile } from '@smartfeed/shared';
 import { Button } from '@/components/ui/button';
 import { SidebarNavItem } from './SidebarNavItem';
 
+import { SidebarUpsellSection } from './SidebarUpsellSection';
+
 interface SidebarMobileDrawerProps {
   isOpen: boolean;
   items: NavigationItemDto[];
+  upsellItems?: NavigationItemDto[];
   user: UserProfile | null;
   currentLang: string;
   onClose: () => void;
@@ -17,6 +20,7 @@ interface SidebarMobileDrawerProps {
 export const SidebarMobileDrawer = React.memo(function SidebarMobileDrawer({
   isOpen,
   items,
+  upsellItems = [],
   user,
   currentLang,
   onClose,
@@ -63,6 +67,13 @@ export const SidebarMobileDrawer = React.memo(function SidebarMobileDrawer({
                 onClick={onClose}
               />
             ))}
+
+            <SidebarUpsellSection
+              upsellItems={upsellItems}
+              isCollapsed={false}
+              currentLang={currentLang}
+              onItemClick={onClose}
+            />
           </nav>
         </div>
 

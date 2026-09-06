@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState, useCallback, useMemo } from 'react';
-import { NavigationItemDto, Role, TargetApp } from '@smartfeed/shared';
+import { NavigationItemDto, Role, TargetApp, PlanType } from '@smartfeed/shared';
 import { useAuth } from './AuthContext';
 import { getDesktopNavigation } from '../lib/api';
 
@@ -33,14 +33,14 @@ const DEFAULT_NAVIGATION_ITEMS: NavigationItemDto[] = [
   {
     id: 'default-ai',
     key: 'ai_enrichment',
-    labelUk: 'AI Збагачення',
-    labelEn: 'AI Enrichment',
+    labelUk: 'AI Асистент',
+    labelEn: 'AI Assistant',
     path: '/ai-enrichment',
     icon: 'Sparkles',
     order: 3,
     isVisible: true,
     requiredRoles: [Role.USER, Role.ADMIN, Role.SUPER_ADMIN],
-    requiredPlan: null,
+    requiredPlan: PlanType.GROWTH,
     targetApp: TargetApp.DESKTOP,
   },
   {
@@ -53,7 +53,7 @@ const DEFAULT_NAVIGATION_ITEMS: NavigationItemDto[] = [
     order: 4,
     isVisible: true,
     requiredRoles: [Role.USER, Role.ADMIN, Role.SUPER_ADMIN],
-    requiredPlan: null,
+    requiredPlan: PlanType.GROWTH,
     targetApp: TargetApp.DESKTOP,
   },
   {

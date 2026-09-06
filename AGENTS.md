@@ -23,6 +23,7 @@ All domain rules are modularized (max 12k chars per file):
 6. [postgres_skills.md](file:///Users/oleg/AQA/SmartFeedStudio/.agents/rules/postgres_skills.md) — PostgreSQL indexes & schema rules
 7. [frontend_network_dedup.md](file:///Users/oleg/AQA/SmartFeedStudio/.agents/rules/frontend_network_dedup.md) — Zero-duplicate API calls
 8. [commands.md](file:///Users/oleg/AQA/SmartFeedStudio/.agents/rules/commands.md) — CLI commands, ports, credentials
+9. [design_system_and_theming.md](file:///Users/oleg/AQA/SmartFeedStudio/.agents/rules/design_system_and_theming.md) — 100% theme harmony, semantic tokens & zero off-scheme colors (no ad-hoc purple/pink)
 
 ---
 
@@ -33,3 +34,10 @@ All domain rules are modularized (max 12k chars per file):
 - `pnpm --filter @smartfeed/backend-api test:e2e` / `pnpm test:desktop` / `pnpm test:admin` — Tests
 - `pnpm lint:fix && pnpm format` — Lint & Prettier format
 - **Admin**: `admin@smartfeed.studio` / `AdminPassword123!`
+
+---
+
+## 💬 Communication Policy (Strict)
+
+- **Concise & Direct**: Always answer user questions briefly, clearly, and to the point.
+- **Zero Text Walls**: Never generate long essay-style walls of text or redundant boilerplate unless explicitly requested.

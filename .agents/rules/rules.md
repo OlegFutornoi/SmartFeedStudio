@@ -60,3 +60,10 @@ description: Core architecture, tech stack, and module boundaries for SmartFeed 
 
 - Place all shared DTOs, Zod schemas, and enums in `@smartfeed/shared`.
 - Always run `pnpm build:shared` after modifying contracts.
+
+---
+
+## 💬 6. Communication Policy (Strict)
+
+- **Concise & Direct**: Always answer user questions briefly, clearly, and to the point.
+- **Zero Text Walls**: Never generate long essay-style walls of text, repetitive recaps, or boilerplate unless explicitly requested.

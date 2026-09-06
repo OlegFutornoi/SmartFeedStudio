@@ -59,7 +59,7 @@ test.describe('Admin Portal — Navigation & Access Control (POM)', () => {
     // Verify items in list
     await navigationPage.expectItemInList('Дашборд');
     await navigationPage.expectItemInList('Каталоги товарів');
-    await navigationPage.expectItemInList('AI Збагачення');
+    await navigationPage.expectItemInList('AI Асистент');
 
     // Verify live simulator
     await expect(navigationPage.simulator.container).toBeVisible();
@@ -78,17 +78,17 @@ test.describe('Admin Portal — Navigation & Access Control (POM)', () => {
 
     // Default Free plan: PRO items should not be visible in simulator
     await navigationPage.simulator.expectItemVisible('Каталоги товарів');
-    await navigationPage.simulator.expectItemHidden('AI Збагачення');
+    await navigationPage.simulator.expectItemHidden('AI Асистент');
     await navigationPage.simulator.expectItemHidden('Хмарна синхронізація');
 
     // Switch to PRO plan: PRO item should become visible, Enterprise still hidden
     await navigationPage.simulator.selectPlan(PlanType.PRO);
-    await navigationPage.simulator.expectItemVisible('AI Збагачення');
+    await navigationPage.simulator.expectItemVisible('AI Асистент');
     await navigationPage.simulator.expectItemHidden('Хмарна синхронізація');
 
     // Switch to Enterprise plan: all items visible
     await navigationPage.simulator.selectPlan(PlanType.ENTERPRISE);
-    await navigationPage.simulator.expectItemVisible('AI Збагачення');
+    await navigationPage.simulator.expectItemVisible('AI Асистент');
     await navigationPage.simulator.expectItemVisible('Хмарна синхронізація');
   });
 

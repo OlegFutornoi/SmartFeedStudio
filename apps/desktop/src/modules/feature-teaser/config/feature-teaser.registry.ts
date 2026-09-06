@@ -1,0 +1,213 @@
+import { PlanType } from '@smartfeed/shared';
+import type { FeatureTeaserConfig } from '../types/feature-teaser.types';
+
+export const PLAN_LEVEL: Record<PlanType, number> = {
+  [PlanType.STARTER]: 1,
+  [PlanType.GROWTH]: 2,
+  [PlanType.PRO]: 3,
+  [PlanType.ENTERPRISE]: 4,
+};
+
+export const FEATURE_TEASER_REGISTRY: Record<string, FeatureTeaserConfig> = {
+  team: {
+    key: 'team',
+    path: '/team',
+    icon: 'Users',
+    minPlan: PlanType.PRO,
+    badge: 'PRO',
+    targetPriceMonthly: 799,
+    heroBadgeKey: 'featureTeaser.team.badge',
+    heroTitleKey: 'featureTeaser.team.heroTitle',
+    heroSubtitleKey: 'featureTeaser.team.heroSubtitle',
+    benefitsTitleKey: 'featureTeaser.team.benefits.title',
+    benefits: [
+      {
+        id: 'seats',
+        iconName: 'Users',
+        titleKey: 'featureTeaser.team.benefits.seats.title',
+        descKey: 'featureTeaser.team.benefits.seats.desc',
+      },
+      {
+        id: 'roles',
+        iconName: 'ShieldCheck',
+        titleKey: 'featureTeaser.team.benefits.roles.title',
+        descKey: 'featureTeaser.team.benefits.roles.desc',
+      },
+      {
+        id: 'collab',
+        iconName: 'Sparkles',
+        titleKey: 'featureTeaser.team.benefits.collab.title',
+        descKey: 'featureTeaser.team.benefits.collab.desc',
+      },
+      {
+        id: 'audit',
+        iconName: 'History',
+        titleKey: 'featureTeaser.team.benefits.audit.title',
+        descKey: 'featureTeaser.team.benefits.audit.desc',
+      },
+    ],
+    mockupType: 'team',
+    roiConfig: {
+      defaultHours: 10,
+      minHours: 2,
+      maxHours: 40,
+      hourlyRateUah: 200,
+      efficiencyMultiplier: 0.8,
+    },
+    comparison: {
+      titleKey: 'featureTeaser.team.comparison.title',
+      starterTitleKey: 'featureTeaser.team.comparison.currentPlanTitle',
+      targetTitleKey: 'featureTeaser.team.comparison.targetPlanTitle',
+      starterFeaturesKeys: [
+        'featureTeaser.team.comparison.starterItems.0',
+        'featureTeaser.team.comparison.starterItems.1',
+        'featureTeaser.team.comparison.starterItems.2',
+      ],
+      targetFeaturesKeys: [
+        'featureTeaser.team.comparison.proItems.0',
+        'featureTeaser.team.comparison.proItems.1',
+        'featureTeaser.team.comparison.proItems.2',
+        'featureTeaser.team.comparison.proItems.3',
+      ],
+    },
+    cta: {
+      titleKey: 'featureTeaser.team.cta.title',
+      buttonKey: 'featureTeaser.team.cta.button',
+      priceTextKey: 'featureTeaser.team.cta.priceText',
+    },
+  },
+  cloud_sync: {
+    key: 'cloud_sync',
+    path: '/cloud-sync',
+    icon: 'Cloud',
+    minPlan: PlanType.GROWTH,
+    badge: 'GROWTH',
+    targetPriceMonthly: 599,
+    heroBadgeKey: 'featureTeaser.cloudSync.badge',
+    heroTitleKey: 'featureTeaser.cloudSync.heroTitle',
+    heroSubtitleKey: 'featureTeaser.cloudSync.heroSubtitle',
+    benefitsTitleKey: 'featureTeaser.cloudSync.benefits.title',
+    benefits: [
+      {
+        id: 'backup',
+        iconName: 'CloudUpload',
+        titleKey: 'featureTeaser.cloudSync.benefits.backup.title',
+        descKey: 'featureTeaser.cloudSync.benefits.backup.desc',
+      },
+      {
+        id: 'rollback',
+        iconName: 'RotateCcw',
+        titleKey: 'featureTeaser.cloudSync.benefits.rollback.title',
+        descKey: 'featureTeaser.cloudSync.benefits.rollback.desc',
+      },
+      {
+        id: 'devices',
+        iconName: 'Laptop',
+        titleKey: 'featureTeaser.cloudSync.benefits.devices.title',
+        descKey: 'featureTeaser.cloudSync.benefits.devices.desc',
+      },
+      {
+        id: 'storage',
+        iconName: 'Server',
+        titleKey: 'featureTeaser.cloudSync.benefits.storage.title',
+        descKey: 'featureTeaser.cloudSync.benefits.storage.desc',
+      },
+    ],
+    mockupType: 'cloud_sync',
+    roiConfig: {
+      defaultHours: 6,
+      minHours: 1,
+      maxHours: 30,
+      hourlyRateUah: 250,
+      efficiencyMultiplier: 0.9,
+    },
+    comparison: {
+      titleKey: 'featureTeaser.cloudSync.comparison.title',
+      starterTitleKey: 'featureTeaser.cloudSync.comparison.currentPlanTitle',
+      targetTitleKey: 'featureTeaser.cloudSync.comparison.targetPlanTitle',
+      starterFeaturesKeys: [
+        'featureTeaser.cloudSync.comparison.starterItems.0',
+        'featureTeaser.cloudSync.comparison.starterItems.1',
+        'featureTeaser.cloudSync.comparison.starterItems.2',
+      ],
+      targetFeaturesKeys: [
+        'featureTeaser.cloudSync.comparison.proItems.0',
+        'featureTeaser.cloudSync.comparison.proItems.1',
+        'featureTeaser.cloudSync.comparison.proItems.2',
+        'featureTeaser.cloudSync.comparison.proItems.3',
+      ],
+    },
+    cta: {
+      titleKey: 'featureTeaser.cloudSync.cta.title',
+      buttonKey: 'featureTeaser.cloudSync.cta.button',
+      priceTextKey: 'featureTeaser.cloudSync.cta.priceText',
+    },
+  },
+  ai_enrichment: {
+    key: 'ai_enrichment',
+    path: '/ai-enrichment',
+    icon: 'Sparkles',
+    minPlan: PlanType.GROWTH,
+    badge: 'GROWTH',
+    targetPriceMonthly: 599,
+    heroBadgeKey: 'featureTeaser.aiEnrichment.badge',
+    heroTitleKey: 'featureTeaser.aiEnrichment.heroTitle',
+    heroSubtitleKey: 'featureTeaser.aiEnrichment.heroSubtitle',
+    benefitsTitleKey: 'featureTeaser.aiEnrichment.benefits.title',
+    benefits: [
+      {
+        id: 'seo',
+        iconName: 'Sparkles',
+        titleKey: 'featureTeaser.aiEnrichment.benefits.seo.title',
+        descKey: 'featureTeaser.aiEnrichment.benefits.seo.desc',
+      },
+      {
+        id: 'specs',
+        iconName: 'Sliders',
+        titleKey: 'featureTeaser.aiEnrichment.benefits.specs.title',
+        descKey: 'featureTeaser.aiEnrichment.benefits.specs.desc',
+      },
+      {
+        id: 'translate',
+        iconName: 'Bot',
+        titleKey: 'featureTeaser.aiEnrichment.benefits.translate.title',
+        descKey: 'featureTeaser.aiEnrichment.benefits.translate.desc',
+      },
+      {
+        id: 'batch',
+        iconName: 'Wand2',
+        titleKey: 'featureTeaser.aiEnrichment.benefits.batch.title',
+        descKey: 'featureTeaser.aiEnrichment.benefits.batch.desc',
+      },
+    ],
+    mockupType: 'ai_enrichment',
+    roiConfig: {
+      defaultHours: 15,
+      minHours: 2,
+      maxHours: 50,
+      hourlyRateUah: 250,
+      efficiencyMultiplier: 0.85,
+    },
+    comparison: {
+      titleKey: 'featureTeaser.aiEnrichment.comparison.title',
+      starterTitleKey: 'featureTeaser.aiEnrichment.comparison.currentPlanTitle',
+      targetTitleKey: 'featureTeaser.aiEnrichment.comparison.targetPlanTitle',
+      starterFeaturesKeys: [
+        'featureTeaser.aiEnrichment.comparison.starterItems.0',
+        'featureTeaser.aiEnrichment.comparison.starterItems.1',
+        'featureTeaser.aiEnrichment.comparison.starterItems.2',
+      ],
+      targetFeaturesKeys: [
+        'featureTeaser.aiEnrichment.comparison.proItems.0',
+        'featureTeaser.aiEnrichment.comparison.proItems.1',
+        'featureTeaser.aiEnrichment.comparison.proItems.2',
+        'featureTeaser.aiEnrichment.comparison.proItems.3',
+      ],
+    },
+    cta: {
+      titleKey: 'featureTeaser.aiEnrichment.cta.title',
+      buttonKey: 'featureTeaser.aiEnrichment.cta.button',
+      priceTextKey: 'featureTeaser.aiEnrichment.cta.priceText',
+    },
+  },
+};

@@ -1,9 +1,9 @@
 {
-  "title": "AI Content Enrichment",
+  "title": "AI Content Assistant",
   "description": "Automated generation of SEO descriptions, specifications, and translations",
   "creditsRemaining": "AI Credits remaining",
   "creditsBadge": "AI Credits",
-  "startBatch": "Start AI Enrichment",
+  "startBatch": "Start AI Assistant",
   "generationSettings": "Generation Settings",
   "seoTitle": "SEO Titles & Descriptions Generation",
   "seoDesc": "Generate unique, search-optimized descriptions based on product characteristics",

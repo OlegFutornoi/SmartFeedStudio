@@ -88,8 +88,8 @@ test.describe('Desktop App — Розділи додатку, i18n та Стій
           {
             id: 'nav-3',
             key: 'ai_enrichment',
-            labelUk: 'AI Збагачення',
-            labelEn: 'AI Enrichment',
+            labelUk: 'AI Асистент',
+            labelEn: 'AI Assistant',
             path: '/ai-enrichment',
             icon: 'Sparkles',
             order: 3,
@@ -158,21 +158,21 @@ test.describe('Desktop App — Розділи додатку, i18n та Стій
     }
   });
 
-  test('2. Сторінка AI Збагачення: баланс кредитів, функції та двомовність UA ⇄ EN', async ({
+  test('2. Сторінка AI Асистента: баланс кредитів, функції та двомовність UA ⇄ EN', async ({
     page,
   }) => {
     await page.goto('/ai-enrichment');
     await expect(page.locator('[data-testid="ai-enrichment-page"]')).toBeVisible();
 
     // Assert Ukrainian title & credits
-    await expect(page.locator('h1')).toContainText('AI Збагачення контенту');
+    await expect(page.locator('h1')).toContainText('AI Асистент контенту');
     await expect(page.locator('text=500 AI Кредитів залишилось')).toBeVisible();
 
     // Toggle to English
     const langBtn = page.locator('[data-testid="language-toggle-btn"]');
     if (await langBtn.isVisible()) {
       await langBtn.click();
-      await expect(page.locator('h1')).toContainText('AI Content Enrichment');
+      await expect(page.locator('h1')).toContainText('AI Content Assistant');
       await expect(page.locator('text=500 AI Credits remaining')).toBeVisible();
       // Switch back
       await langBtn.click();

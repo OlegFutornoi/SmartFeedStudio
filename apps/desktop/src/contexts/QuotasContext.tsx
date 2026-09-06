@@ -75,9 +75,17 @@ export function QuotasProvider({ children }: { children: React.ReactNode }) {
             item.remaining = item.isUnlimited ? 999999 : Math.max(0, item.max - count);
           };
 
-          if (data.suppliers) applyLocalCount(data.suppliers, localCounts.suppliers);
-          if (data.products) applyLocalCount(data.products, localCounts.products);
-          if (data.feeds) applyLocalCount(data.feeds, localCounts.feeds);
+          // Only override with local counter if local counter has positive tracked items,
+          // or if backend data was 0. Never overwrite non-zero backend quota excess with empty local default.
+          if (data.suppliers && (localCounts.suppliers > 0 || data.suppliers.used === 0)) {
+            applyLocalCount(data.suppliers, localCounts.suppliers);
+          }
+          if (data.products && (localCounts.products > 0 || data.products.used === 0)) {
+            applyLocalCount(data.products, localCounts.products);
+          }
+          if (data.feeds && (localCounts.feeds > 0 || data.feeds.used === 0)) {
+            applyLocalCount(data.feeds, localCounts.feeds);
+          }
 
           setQuotas(data);
           lastFetchedTokenRef.current = token;

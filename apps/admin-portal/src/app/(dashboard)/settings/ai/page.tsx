@@ -22,7 +22,7 @@ export default function AiSettingsPage() {
     {
       id: 'openai',
       name: 'OpenAI GPT-4o / GPT-4o-mini',
-      descUk: 'Високоточна генерація та збагачення описів товарів, категорій і атрибутів',
+      descUk: 'Високоточна генерація та оптимізація описів товарів, категорій і атрибутів',
       descEn: 'High-accuracy product descriptions, attribute normalization, and tagging',
       statusUk: 'Скоро',
       statusEn: 'Coming Soon',
@@ -77,8 +77,8 @@ export default function AiSettingsPage() {
           </h1>
           <p className="text-xs text-muted-foreground mt-1">
             {isUk
-              ? 'Конфігурація провайдерів штучного інтелекту, лімітів токенів та дефолтних моделей збагачення'
-              : 'Configure AI model providers, monthly token quotas, and default enrichment pipelines'}
+              ? 'Конфігурація провайдерів штучного інтелекту, лімітів токенів та моделей AI Асистента'
+              : 'Configure AI model providers, monthly token quotas, and AI Assistant models'}
           </p>
         </div>
       </div>
@@ -89,8 +89,8 @@ export default function AiSettingsPage() {
         <div>
           <span className="font-semibold">
             {isUk
-              ? 'AI Збагачення інтегровано в тарифи PRO та ENTERPRISE.'
-              : 'AI Enrichment is built-in for PRO & ENTERPRISE tiers.'}
+              ? 'AI Асистент інтегровано в тарифи PRO та ENTERPRISE.'
+              : 'AI Assistant is built-in for PRO & ENTERPRISE tiers.'}
           </span>{' '}
           {isUk
             ? 'Налаштування власних ключів API та кастомних промптів для генерації з’явиться у релізі v2.1.'
