@@ -23,7 +23,7 @@ All domain rules are modularized (max 12k chars per file):
 6. [postgres_skills.md](file:///Users/oleg/AQA/SmartFeedStudio/.agents/rules/postgres_skills.md) — PostgreSQL indexes & schema rules
 7. [frontend_network_dedup.md](file:///Users/oleg/AQA/SmartFeedStudio/.agents/rules/frontend_network_dedup.md) — Zero-duplicate API calls
 8. [commands.md](file:///Users/oleg/AQA/SmartFeedStudio/.agents/rules/commands.md) — CLI commands, ports, credentials
-9. [design_system_and_theming.md](file:///Users/oleg/AQA/SmartFeedStudio/.agents/rules/design_system_and_theming.md) — 100% theme harmony, semantic tokens & zero off-scheme colors (no ad-hoc purple/pink)
+9. [design_system_and_theming.md](file:///Users/oleg/AQA/SmartFeedStudio/.agents/rules/design_system_and_theming.md) — 100% theme harmony, semantic tokens & zero off-scheme colors (no ad-hoc purple/pink), zero duplicate action buttons
 
 ---
 

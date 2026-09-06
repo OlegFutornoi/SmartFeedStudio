@@ -3,6 +3,13 @@ import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { ProductCategorySummaryDto } from '@smartfeed/shared';
 
 interface PricingRuleFormProps {
@@ -99,21 +106,26 @@ export const PricingRuleForm: React.FC<PricingRuleFormProps> = ({
         {ruleType === 'category' ? (
           <div className="col-span-1 sm:col-span-2">
             <Label className="text-[11px] text-muted-foreground">Категорія товару</Label>
-            <select
-              value={selectedCategoryId}
-              onChange={(e) => setSelectedCategoryId(e.target.value)}
-              className="w-full h-8 text-xs rounded-md border border-input bg-background px-2.5 py-1 text-foreground shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring mt-1"
-            >
-              {categories.length === 0 ? (
-                <option value="">Немає створених категорій</option>
-              ) : (
-                categories.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.nameUk} ({c.productCount} тов.)
-                  </option>
-                ))
-              )}
-            </select>
+            <div className="mt-1">
+              <Select value={selectedCategoryId} onValueChange={setSelectedCategoryId}>
+                <SelectTrigger className="w-full h-8 text-xs bg-background">
+                  <SelectValue placeholder="Оберіть категорію..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {categories.length === 0 ? (
+                    <div className="p-2 text-xs text-muted-foreground text-center">
+                      Немає створених категорій
+                    </div>
+                  ) : (
+                    categories.map((c) => (
+                      <SelectItem key={c.id} value={c.id} className="text-xs">
+                        {c.nameUk} ({c.productCount} тов.)
+                      </SelectItem>
+                    ))
+                  )}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
         ) : (
           <>

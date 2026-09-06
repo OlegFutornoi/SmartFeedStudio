@@ -5,6 +5,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
   ExportChannelDto,
   CreateExportChannelDto,
   FeedFormat,
@@ -173,18 +180,30 @@ export function CreateExportChannelDialog({
 
             <div>
               <Label className="text-xs text-foreground">Вихідний формат фіду</Label>
-              <select
-                value={feedFormat}
-                onChange={(e) => setFeedFormat(e.target.value as FeedFormat)}
-                className="w-full h-9 text-xs rounded-md border border-input bg-background px-3 py-1 text-foreground shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring mt-1"
-              >
-                <option value={FeedFormat.XML_ROZETKA}>
-                  XML (Формат Rozetka / Prom / Epicentr)
-                </option>
-                <option value={FeedFormat.YML_PROM}>YML (Yandex / Prom XML)</option>
-                <option value={FeedFormat.CSV}>CSV (Експорт для таблиць / Hotline)</option>
-                <option value={FeedFormat.XML_GENERIC}>Generic XML</option>
-              </select>
+              <div className="mt-1">
+                <Select
+                  value={feedFormat}
+                  onValueChange={(val) => setFeedFormat(val as FeedFormat)}
+                >
+                  <SelectTrigger className="w-full h-9 text-xs bg-background">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value={FeedFormat.XML_ROZETKA} className="text-xs">
+                      XML (Формат Rozetka / Prom / Epicentr)
+                    </SelectItem>
+                    <SelectItem value={FeedFormat.YML_PROM} className="text-xs">
+                      YML (Yandex / Prom XML)
+                    </SelectItem>
+                    <SelectItem value={FeedFormat.CSV} className="text-xs">
+                      CSV (Експорт для таблиць / Hotline)
+                    </SelectItem>
+                    <SelectItem value={FeedFormat.XML_GENERIC} className="text-xs">
+                      Generic XML
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </div>
 

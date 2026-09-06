@@ -749,4 +749,76 @@ test.describe('Desktop App — Постачальники, Майстер Фід
       page.getByTestId('feeds-quota-card').getByText('0', { exact: true }),
     ).toBeVisible();
   });
+
+  test('майстер імпорту фіду: при відсутності постачальників відображає картку-попередження замість випадашки та дозволяє створити постачальника', async ({
+    page,
+  }) => {
+    await page.route('**/api/suppliers*', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify([]),
+      });
+    });
+
+    await page.goto('/catalogs');
+
+    // Click Import Feed
+    await page.getByRole('button', { name: /Підключити фід|Імпортувати фід/i }).click();
+
+    // Step 1: fill url & next
+    await page
+      .getByPlaceholder('https://supplier.com/products_feed.xml')
+      .fill('https://example.com/feed.xml');
+    await page.getByRole('button', { name: 'Далі до постачальника' }).click();
+
+    // Step 2: ASSERT empty state warning card is displayed, NOT a broken empty dropdown!
+    await expect(page.getByTestId('no-suppliers-warning')).toBeVisible();
+    await expect(page.getByText('Постачальників ще не додано')).toBeVisible();
+    await expect(page.getByTestId('wizard-supplier-select')).not.toBeVisible();
+
+    // "Переглянути товари" button is disabled
+    const nextBtn = page.getByRole('button', { name: 'Переглянути товари' });
+    await expect(nextBtn).toBeDisabled();
+
+    // Click "+ Створити постачальника" in wizard
+    const createSupplierBtn = page.getByTestId('wizard-create-supplier-btn');
+    await expect(createSupplierBtn).toBeVisible();
+    await createSupplierBtn.click();
+
+    // Modal opens
+    await expect(page.getByRole('heading', { name: 'Новий постачальник' })).toBeVisible();
+  });
+
+  test('сторінка постачальників: при порожньому списку приховує тулбар і не дублює кнопку створення (єдина кнопка у картці)', async ({
+    page,
+  }) => {
+    await page.route('**/api/suppliers*', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify([]),
+      });
+    });
+
+    await page.goto('/suppliers');
+
+    // 1. Toolbar and header action buttons MUST NOT be visible (zero duplication, no useless search on 0 items)
+    await expect(page.getByTestId('add-supplier-header-btn')).not.toBeVisible();
+    await expect(page.getByTestId('import-feed-header-btn')).not.toBeVisible();
+
+    // 2. Empty state card is visible with proper title and a single CTA button
+    await expect(page.getByText('Список постачальників порожній')).toBeVisible();
+    const emptyCreateBtn = page.getByTestId('empty-create-supplier-btn');
+    await expect(emptyCreateBtn).toBeVisible();
+    await expect(emptyCreateBtn).toHaveText('Додати постачальника');
+
+    // 3. Exactly 1 button for adding a supplier on the entire screen
+    const allAddSupplierBtns = page.getByRole('button', { name: /Додати постачальника/i });
+    await expect(allAddSupplierBtns).toHaveCount(1);
+
+    // 4. Clicking the single button opens the create supplier dialog
+    await emptyCreateBtn.click();
+    await expect(page.getByRole('heading', { name: 'Новий постачальник' })).toBeVisible();
+  });
 });

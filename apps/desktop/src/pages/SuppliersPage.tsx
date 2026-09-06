@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
-import { Building2, Loader2 } from 'lucide-react';
+import { Building2, Loader2, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { TablePagination } from '@/components/ui/table-pagination';
@@ -167,15 +167,17 @@ export function SuppliersPage() {
       {/* KPI Stats & Title */}
       <SuppliersStatsHeader quotas={quotas} suppliersCount={suppliers.length} />
 
-      {/* Search & Actions Toolbar */}
-      <SuppliersToolbar
-        search={search}
-        isSupplierLimitReached={isSupplierLimitReached}
-        isFeedLimitReached={isFeedLimitReached}
-        onSearchChange={setSearch}
-        onOpenCreate={handleOpenCreate}
-        onOpenImportWizard={() => handleOpenImportWizard()}
-      />
+      {/* Search & Actions Toolbar (Only show when suppliers exist or search is active) */}
+      {(suppliers.length > 0 || search) && (
+        <SuppliersToolbar
+          search={search}
+          isSupplierLimitReached={isSupplierLimitReached}
+          isFeedLimitReached={isFeedLimitReached}
+          onSearchChange={setSearch}
+          onOpenCreate={handleOpenCreate}
+          onOpenImportWizard={() => handleOpenImportWizard()}
+        />
+      )}
 
       {/* Main Content Area */}
       {isLoading ? (
@@ -190,15 +192,15 @@ export function SuppliersPage() {
             </div>
             <h3 className="text-base font-semibold text-foreground">
               {search
-                ? t('suppliers:noSuppliers', { defaultValue: 'Постачальників не знайдено' })
-                : t('suppliers:noSuppliers', { defaultValue: 'Список постачальників порожній' })}
+                ? t('suppliers:noSearchResults', { defaultValue: 'Постачальників не знайдено' })
+                : t('suppliers:emptyListTitle', { defaultValue: 'Список постачальників порожній' })}
             </h3>
             <p className="text-xs text-muted-foreground max-w-sm">
               {search
-                ? t('suppliers:noSuppliersDesc', {
+                ? t('suppliers:noSearchDesc', {
                     defaultValue: 'Спробуйте змінити пошуковий запит або очистити фільтри',
                   })
-                : t('suppliers:noSuppliersDesc', {
+                : t('suppliers:emptyListDesc', {
                     defaultValue:
                       'Додайте свого першого постачальника товарів та підключіть XML/CSV фід для автоматичного імпорту каталогу',
                   })}
@@ -210,6 +212,7 @@ export function SuppliersPage() {
                 className="mt-2 text-xs h-9 gap-1.5"
                 data-testid="empty-create-supplier-btn"
               >
+                <Plus className="h-4 w-4" />
                 {t('suppliers:createSupplier', { defaultValue: 'Додати постачальника' })}
               </Button>
             )}

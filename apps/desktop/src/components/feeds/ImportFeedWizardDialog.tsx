@@ -1,14 +1,16 @@
 import { useState, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
-import { SupplierDto } from '@smartfeed/shared';
+import { SupplierDto, CreateSupplierDto } from '@smartfeed/shared';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from '@/i18n';
 import { useQuotas } from '@/hooks/useQuotas';
 import { useBackgroundJobs } from '@/contexts/BackgroundJobsContext';
+import { useAuth } from '@/contexts/AuthContext';
 import {
   analyzeFeedUrl,
   analyzeFeedContent,
   importFeedAsync,
+  createSupplier,
   FeedAnalysisResult,
   ImportFeedResultDto,
 } from '@/lib/api';
@@ -16,6 +18,7 @@ import { WizardStepSource } from './WizardStepSource';
 import { WizardStepSupplier } from './WizardStepSupplier';
 import { WizardStepPreview } from './WizardStepPreview';
 import { WizardStepProgress } from './WizardStepProgress';
+import { CreateSupplierDialog } from '@/components/suppliers/CreateSupplierDialog';
 import { ArrowLeft, ArrowRight, Check, Loader2, Sparkles, X, Radio } from 'lucide-react';
 import { emitDataSync } from '@/lib/syncEvents';
 
@@ -39,6 +42,14 @@ export function ImportFeedWizardDialog({
   const { t } = useTranslation(['suppliers', 'common']);
   const { quotas, refreshQuotas } = useQuotas();
   const { addTrackedJob } = useBackgroundJobs();
+
+  const { token } = useAuth();
+  const [localSuppliers, setLocalSuppliers] = useState<SupplierDto[]>(suppliers);
+  const [isCreateSupplierOpen, setIsCreateSupplierOpen] = useState(false);
+
+  useEffect(() => {
+    setLocalSuppliers(suppliers);
+  }, [suppliers]);
 
   const [step, setStep] = useState<WizardStep>('SOURCE');
   const [sourceType, setSourceType] = useState<'URL' | 'FILE'>('URL');
@@ -80,14 +91,29 @@ export function ImportFeedWizardDialog({
 
   const isQuotaExceeded = !isUnlimited && totalSelectedSkus > remainingQuota;
 
-  // Sync initialSupplierId when dialog opens
+  // Sync initialSupplierId when dialog opens or suppliers change
   useEffect(() => {
     if (initialSupplierId) {
       setSelectedSupplierId(initialSupplierId);
-    } else if (suppliers.length > 0 && !selectedSupplierId) {
-      setSelectedSupplierId(suppliers[0].id);
+    } else if (localSuppliers.length > 0 && !selectedSupplierId) {
+      setSelectedSupplierId(localSuppliers[0].id);
     }
-  }, [initialSupplierId, suppliers, selectedSupplierId]);
+  }, [initialSupplierId, localSuppliers, selectedSupplierId]);
+
+  const handleSaveSupplier = async (dto: CreateSupplierDto) => {
+    try {
+      const created = await createSupplier(dto, token || undefined);
+      if (created) {
+        setLocalSuppliers((prev) => [...prev, created]);
+        setSelectedSupplierId(created.id);
+        setIsCreateSupplierOpen(false);
+        emitDataSync('suppliers');
+      }
+    } catch (e) {
+      console.error('Failed to create supplier in wizard:', e);
+      throw e;
+    }
+  };
 
   if (!isOpen) return null;
 
@@ -278,13 +304,14 @@ export function ImportFeedWizardDialog({
 
           {step === 'SUPPLIER' && (
             <WizardStepSupplier
-              suppliers={suppliers}
+              suppliers={localSuppliers}
               selectedSupplierId={selectedSupplierId}
               setSelectedSupplierId={setSelectedSupplierId}
               autoUpdatePrices={autoUpdatePrices}
               setAutoUpdatePrices={setAutoUpdatePrices}
               autoUpdateStocks={autoUpdateStocks}
               setAutoUpdateStocks={setAutoUpdateStocks}
+              onOpenCreateSupplier={() => setIsCreateSupplierOpen(true)}
             />
           )}
 
@@ -351,8 +378,15 @@ export function ImportFeedWizardDialog({
                 <Button
                   size="sm"
                   onClick={handleNextFromSupplier}
-                  disabled={!selectedSupplierId || isAnalyzing}
+                  disabled={!selectedSupplierId || isAnalyzing || localSuppliers.length === 0}
                   className="text-xs flex items-center gap-1.5"
+                  title={
+                    localSuppliers.length === 0
+                      ? t('suppliers:noSuppliersTooltip', {
+                          defaultValue: 'Спочатку створіть постачальника для продовження',
+                        })
+                      : undefined
+                  }
                 >
                   {isAnalyzing && <Loader2 className="size-3.5 animate-spin" />}
                   {t('suppliers:nextToPreview', { defaultValue: 'Переглянути товари' })}
@@ -409,6 +443,14 @@ export function ImportFeedWizardDialog({
           )}
         </div>
       </div>
+
+      {isCreateSupplierOpen && (
+        <CreateSupplierDialog
+          isOpen={isCreateSupplierOpen}
+          onClose={() => setIsCreateSupplierOpen(false)}
+          onSave={handleSaveSupplier}
+        />
+      )}
     </div>,
     document.body,
   );

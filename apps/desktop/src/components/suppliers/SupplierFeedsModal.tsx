@@ -215,30 +215,32 @@ export function SupplierFeedsModal({
 
         {/* Modal Footer */}
         <div className="p-4 border-t border-border bg-card flex items-center justify-between gap-2 shrink-0">
-          <Button
-            size="sm"
-            variant="outline"
-            className="text-xs h-8 gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
-            onClick={() => {
-              onClose();
-              onConnectNewFeed(supplier);
-            }}
-            disabled={isFeedLimitReached}
-            title={
-              isFeedLimitReached
-                ? t('suppliers:feedLimitReachedTooltip', {
-                    defaultValue:
-                      'Ліміт джерел фідів вичерпано. Підвищіть тариф або видаліть зайві фіди.',
-                  })
-                : undefined
-            }
-            data-testid="modal-connect-new-feed-btn"
-          >
-            <Plus className="size-3.5" />
-            {t('suppliers:connectNewFeed', { defaultValue: 'Підключити новий фід' })}
-          </Button>
+          {sources.length > 0 && (
+            <Button
+              size="sm"
+              variant="outline"
+              className="text-xs h-8 gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
+              onClick={() => {
+                onClose();
+                onConnectNewFeed(supplier);
+              }}
+              disabled={isFeedLimitReached}
+              title={
+                isFeedLimitReached
+                  ? t('suppliers:feedLimitReachedTooltip', {
+                      defaultValue:
+                        'Ліміт джерел фідів вичерпано. Підвищіть тариф або видаліть зайві фіди.',
+                    })
+                  : undefined
+              }
+              data-testid="modal-connect-new-feed-btn"
+            >
+              <Plus className="size-3.5" />
+              {t('suppliers:connectNewFeed', { defaultValue: 'Підключити новий фід' })}
+            </Button>
+          )}
 
-          <Button size="sm" onClick={onClose} className="text-xs h-8 px-4">
+          <Button size="sm" onClick={onClose} className="text-xs h-8 px-4 ml-auto">
             {t('common:close', { defaultValue: 'Закрити' })}
           </Button>
         </div>

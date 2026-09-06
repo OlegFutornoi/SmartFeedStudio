@@ -57,3 +57,19 @@ git diff --name-only | xargs grep -E "purple-|violet-|fuchsia-|pink-"
 ```
 
 Any match must be structurally replaced with semantic tokens before presenting changes to the user.
+
+---
+
+## 🚫 5. Zero Duplicate Action / CTA Buttons Policy (No Redundant UI Controls)
+
+1. **Strict Prohibition of Duplicate Action Buttons on the Same Screen**:
+   - **NEVER** render duplicate Action or CTA buttons with identical functionality simultaneously in the same viewport, page, or modal.
+   - Example of violation: Having `[ + Додати постачальника ]` in the top toolbar/header AND `[ Додати постачальника ]` in an empty state card directly below it on the same view.
+
+2. **Empty State vs Header/Toolbar Hierarchy**:
+   - When an entity list or collection is empty (`items.length === 0`):
+     - The **Empty State Card** is the single, primary Call to Action (CTA) for creating the initial item.
+     - Redundant header or toolbar action buttons **must not** be displayed alongside an empty state card that already provides that action.
+     - Search bars and filter toolbars **must not** be displayed when `items.length === 0` (searching or filtering an empty dataset is meaningless).
+   - Header/toolbar action buttons and search bars activate once items exist (`items.length > 0`) or when clearing/modifying an active search query.
+   - Modal footers must **never** duplicate a create/connect action button if the modal body is displaying an empty state card with that exact CTA.

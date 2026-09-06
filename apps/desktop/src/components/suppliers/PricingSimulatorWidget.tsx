@@ -3,6 +3,13 @@ import { Calculator } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { ProductCategorySummaryDto, BasePriceCalculationResult } from '@smartfeed/shared';
 
 interface PricingSimulatorWidgetProps {
@@ -54,18 +61,26 @@ export const PricingSimulatorWidget: React.FC<PricingSimulatorWidgetProps> = ({
 
         <div>
           <Label className="text-[11px] text-muted-foreground">Тестова категорія товару</Label>
-          <select
-            value={testCategoryId}
-            onChange={(e) => onCategoryChange(e.target.value)}
-            className="w-full h-8 text-xs rounded-md border border-input bg-background px-2.5 py-1 text-foreground shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring mt-1"
-          >
-            <option value="">(Без категорії / Загальне правило)</option>
-            {categories.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.nameUk} ({c.productCount} тов.)
-              </option>
-            ))}
-          </select>
+          <div className="mt-1">
+            <Select
+              value={testCategoryId || 'none'}
+              onValueChange={(val) => onCategoryChange(val === 'none' ? '' : val)}
+            >
+              <SelectTrigger className="w-full h-8 text-xs bg-background">
+                <SelectValue placeholder="(Без категорії / Загальне правило)" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none" className="text-xs">
+                  (Без категорії / Загальне правило)
+                </SelectItem>
+                {categories.map((c) => (
+                  <SelectItem key={c.id} value={c.id} className="text-xs">
+                    {c.nameUk} ({c.productCount} тов.)
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
         <div className="p-2.5 rounded-lg bg-background border border-border/80 flex flex-col justify-center">

@@ -3,6 +3,7 @@
 import React, { useMemo } from 'react';
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
 import { Button } from './button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './select';
 
 export interface TablePaginationProps {
   currentPage: number;
@@ -87,18 +88,21 @@ export const TablePagination: React.FC<TablePaginationProps> = ({
             <span className="text-[11px] text-muted-foreground hidden md:inline">
               {isUk ? 'Рядків:' : 'Rows:'}
             </span>
-            <select
-              data-testid={`${testIdPrefix}-size-select`}
-              value={pageSize}
-              onChange={(e) => onPageSizeChange(Number(e.target.value))}
-              className="h-7 rounded-md border border-input bg-background px-2 text-xs font-medium text-foreground focus:outline-none focus:ring-1 focus:ring-ring cursor-pointer hover:bg-muted/50 transition-colors"
-            >
-              {pageSizeOptions.map((opt) => (
-                <option key={opt} value={opt}>
-                  {opt}
-                </option>
-              ))}
-            </select>
+            <Select value={String(pageSize)} onValueChange={(val) => onPageSizeChange(Number(val))}>
+              <SelectTrigger
+                data-testid={`${testIdPrefix}-size-select`}
+                className="h-7 w-[70px] text-xs px-2 font-medium bg-background"
+              >
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {pageSizeOptions.map((opt) => (
+                  <SelectItem key={opt} value={String(opt)} className="text-xs">
+                    {opt}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         )}
       </div>

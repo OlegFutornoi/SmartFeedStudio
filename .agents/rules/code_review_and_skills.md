@@ -77,3 +77,4 @@ Before reporting completion to the user or preparing any changes:
 8. ✅ **Auto-Formatting**: Has `pnpm format` been executed?
 9. ✅ **Visual Testing & `ui-ux-pro-max` DoD**: Has the UI been visually tested and verified against all `ui-ux-pro-max` standards before marking the task complete?
 10. ✅ **Zero Off-Scheme Palette Colors**: Are all UI components strictly using semantic design tokens (`primary`, `border`, `card`, `muted`, `background`)? Hardcoded palette colors (`purple-*`, `violet-*`, `fuchsia-*`, `pink-*`) are strictly prohibited per [design_system_and_theming.md](file:///Users/oleg/AQA/SmartFeedStudio/.agents/rules/design_system_and_theming.md).
+11. ✅ **Zero Duplicate Action / CTA Buttons**: Are all duplicate action buttons eliminated? Never show duplicate buttons in toolbar/header/footer when an empty state card already provides that CTA per [design_system_and_theming.md](file:///Users/oleg/AQA/SmartFeedStudio/.agents/rules/design_system_and_theming.md).
