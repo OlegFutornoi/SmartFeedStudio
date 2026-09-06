@@ -417,4 +417,30 @@ test.describe('Desktop App — Локальна зашифрована база 
     await expect(page.getByTestId('change-workspace-btn')).toContainText('Change Folder');
     await expect(page.getByTestId('open-explorer-btn')).toContainText('Open in Explorer');
   });
+
+  test('6. Існуючий користувач з діючою ліцензією при видаленій папці сховища бачить діалог вибору папки', async ({
+    page,
+  }) => {
+    // Симулюємо ситуацію: перевірка сховища на диску повертає null (папка/база була видалена)
+    await page.route('**/api/storage/workspace/info*', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(null),
+      });
+    });
+
+    await page.goto('/');
+
+    const dialog = page.getByTestId('first-run-workspace-dialog');
+    await expect(dialog).toBeVisible();
+    await expect(dialog).toContainText('Налаштування локальної бази даних');
+
+    // Клік на ініціалізацію створює структуру та закриває діалог
+    const initBtn = page.getByTestId('init-workspace-btn');
+    await expect(initBtn).toBeVisible();
+    await initBtn.click();
+
+    await expect(dialog).not.toBeVisible();
+  });
 });
