@@ -76,7 +76,7 @@ export const TeamPage: React.FC = () => {
         if (isInitial) setIsLoading(false);
       }
     },
-    [token, user?.organization?.id],
+    [token, user?.organization?.id, t],
   );
 
   useEffect(() => {

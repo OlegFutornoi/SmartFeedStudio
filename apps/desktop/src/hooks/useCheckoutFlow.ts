@@ -100,7 +100,7 @@ export function useCheckoutFlow({
     if (isOpen && plan) {
       initInvoice();
     }
-  }, [isOpen, plan, billingInterval, token]);
+  }, [isOpen, plan, initInvoice]);
 
   const handleOpenWayForPayGateway = useCallback(() => {
     if (!checkoutData) {

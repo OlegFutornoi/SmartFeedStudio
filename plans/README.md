@@ -30,14 +30,15 @@ graph LR
 
 ### 🌟 Головний модуль: Каталоги, Товари, Постачальники та Обробка Фідів (Products, Catalogs & Ingestion)
 
-| Файл плану                                                                                                                                           | Призначення та ключові теми                                                                 |      Рівень       |
-| :--------------------------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------ | :---------------: |
-| [`00_master_products_and_catalogs_plan.md`](file:///Users/oleg/AQA/SmartFeedStudio/plans/active/00_master_products_and_catalogs_plan.md)             | **Головний Генеральний План**: архітектура, візія, зв'язки модулів, дорожня карта 4 релізів |  🌐 Master Plan   |
-| [`01_suppliers_and_database_architecture.md`](file:///Users/oleg/AQA/SmartFeedStudio/plans/active/01_suppliers_and_database_architecture.md)         | **Архітектура БД & Постачальники**: схема PostgreSQL, Prisma, SQLCipher у Tauri, CQRS       |  🏗️ Backend & DB  |
-| [`03_image_storage_and_cdn_strategy.md`](file:///Users/oleg/AQA/SmartFeedStudio/plans/active/03_image_storage_and_cdn_strategy.md)                   | **Стратегія фотографій**: хмарний S3/MinIO пайплайн (WebP Sharp) vs Прямі посилання + кеш   |  🖼️ Media & CDN   |
-| [`05_product_card_and_manual_creation_module.md`](file:///Users/oleg/AQA/SmartFeedStudio/plans/active/05_product_card_and_manual_creation_module.md) | **Картка товару та ручне створення**: Drawer з 5 вкладками, чернетки, генератор SKU         |   🗂️ UI & Logic   |
-| [`06_roadmap_releases_and_testing_strategy.md`](file:///Users/oleg/AQA/SmartFeedStudio/plans/active/06_roadmap_releases_and_testing_strategy.md)     | **Дорожня карта релізів (1-4) & QA**: критерії готовності (DoD), Jest E2E, Playwright       |  🚀 Roadmap & QA  |
-| [`07_tasks_execution_checklist.md`](file:///Users/oleg/AQA/SmartFeedStudio/plans/active/07_tasks_execution_checklist.md)                             | **Чеклист виконання задач**: структурований перелік задач з відмітками `[x]` / `[ ]`        | 📋 Task Execution |
+| Файл плану                                                                                                                                             | Призначення та ключові теми                                                                     |      Рівень       |
+| :----------------------------------------------------------------------------------------------------------------------------------------------------- | :---------------------------------------------------------------------------------------------- | :---------------: |
+| [`00_master_products_and_catalogs_plan.md`](file:///Users/oleg/AQA/SmartFeedStudio/plans/active/00_master_products_and_catalogs_plan.md)               | **Головний Генеральний План**: архітектура, візія, зв'язки модулів, дорожня карта 4 релізів     |  🌐 Master Plan   |
+| [`01_suppliers_and_database_architecture.md`](file:///Users/oleg/AQA/SmartFeedStudio/plans/active/01_suppliers_and_database_architecture.md)           | **Архітектура БД & Постачальники**: схема PostgreSQL, Prisma, SQLCipher у Tauri, CQRS           |  🏗️ Backend & DB  |
+| [`03_image_storage_and_cdn_strategy.md`](file:///Users/oleg/AQA/SmartFeedStudio/plans/active/03_image_storage_and_cdn_strategy.md)                     | **Стратегія фотографій**: хмарний S3/MinIO пайплайн (WebP Sharp) vs Прямі посилання + кеш       |  🖼️ Media & CDN   |
+| [`05_product_card_and_manual_creation_module.md`](file:///Users/oleg/AQA/SmartFeedStudio/plans/active/05_product_card_and_manual_creation_module.md)   | **Картка товару та ручне створення**: Drawer з 5 вкладками, чернетки, генератор SKU             |   🗂️ UI & Logic   |
+| [`06_roadmap_releases_and_testing_strategy.md`](file:///Users/oleg/AQA/SmartFeedStudio/plans/active/06_roadmap_releases_and_testing_strategy.md)       | **Дорожня карта релізів (1-4) & QA**: критерії готовності (DoD), Jest E2E, Playwright           |  🚀 Roadmap & QA  |
+| [`07_tasks_execution_checklist.md`](file:///Users/oleg/AQA/SmartFeedStudio/plans/active/07_tasks_execution_checklist.md)                               | **Чеклист виконання задач**: структурований перелік задач з відмітками `[x]` / `[ ]`            | 📋 Task Execution |
+| [`11_fullstack_project_review_and_remediation.md`](file:///Users/oleg/AQA/SmartFeedStudio/plans/active/11_fullstack_project_review_and_remediation.md) | **Аудит проекту та усунення технічного боргу**: стабілізація E2E тестів бекенду, ESLint & React |  🛠️ Quality & QA  |
 
 ---
 
