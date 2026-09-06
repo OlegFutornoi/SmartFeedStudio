@@ -184,6 +184,7 @@ fn pick_workspace_folder() -> Result<Option<String>, String> {
         let output = std::process::Command::new("zenity")
             .arg("--file-selection")
             .arg("--directory")
+            .arg("--title=Select workspace folder")
             .output();
         if let Ok(out) = output {
             if out.status.success() {
@@ -193,6 +194,20 @@ fn pick_workspace_folder() -> Result<Option<String>, String> {
                 }
             }
         }
+
+        // Fallback to kdialog (KDE Plasma)
+        let kdialog_output = std::process::Command::new("kdialog")
+            .arg("--getexistingdirectory")
+            .output();
+        if let Ok(out) = kdialog_output {
+            if out.status.success() {
+                let path = String::from_utf8_lossy(&out.stdout).trim().to_string();
+                if !path.is_empty() {
+                    return Ok(Some(path));
+                }
+            }
+        }
+
         Ok(None)
     }
 }
