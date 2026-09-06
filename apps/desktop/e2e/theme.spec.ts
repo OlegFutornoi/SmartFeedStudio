@@ -169,4 +169,83 @@ test.describe('Desktop App — Сучасні теми shadcn/ui та монох
     const savedAccent = await page.evaluate(() => localStorage.getItem('smartfeed_theme_accent'));
     expect(savedAccent).toBe('zinc');
   });
+
+  test('глобальне масштабування радіусів: дефолтний 8px, перемикання на 0px (Sharp), 4px, 12px та збереження в localStorage', async ({
+    page,
+  }) => {
+    const loginPage = new DesktopLoginPage(page);
+    await loginPage.goto();
+    await loginPage.login(mockUser.email, 'ValidPassword123!');
+
+    const settingsPage = new DesktopSettingsPage(page);
+    await settingsPage.goto();
+    await expect(settingsPage.settingsPage).toBeVisible();
+
+    const html = page.locator('html');
+
+    // 1. Verify Default (0.5 / 8px)
+    await expect(html).toHaveAttribute('data-radius', '0.5');
+    await expect(settingsPage.radiusSegmentedControl).toBeVisible();
+
+    // 2. Select 0px (Sharp / Гострий)
+    await settingsPage.selectRadius('0');
+    await expect(html).toHaveAttribute('data-radius', '0');
+    let savedRadius = await page.evaluate(() => localStorage.getItem('smartfeed_theme_radius'));
+    expect(savedRadius).toBe('0');
+
+    // Verify computed CSS variable on root element
+    let rootRadiusVar = await page.evaluate(() =>
+      getComputedStyle(document.documentElement).getPropertyValue('--radius').trim(),
+    );
+    expect(rootRadiusVar).toBe('0rem');
+
+    // 3. Select 4px (Compact)
+    await settingsPage.selectRadius('0.25');
+    await expect(html).toHaveAttribute('data-radius', '0.25');
+    savedRadius = await page.evaluate(() => localStorage.getItem('smartfeed_theme_radius'));
+    expect(savedRadius).toBe('0.25');
+
+    rootRadiusVar = await page.evaluate(() =>
+      getComputedStyle(document.documentElement).getPropertyValue('--radius').trim(),
+    );
+    expect(rootRadiusVar).toBe('0.25rem');
+
+    // 4. Select 12px (Soft)
+    await settingsPage.selectRadius('0.75');
+    await expect(html).toHaveAttribute('data-radius', '0.75');
+    savedRadius = await page.evaluate(() => localStorage.getItem('smartfeed_theme_radius'));
+    expect(savedRadius).toBe('0.75');
+
+    // 5. Return to 8px (Modern / Harmonic)
+    await settingsPage.selectRadius('0.5');
+    await expect(html).toHaveAttribute('data-radius', '0.5');
+    savedRadius = await page.evaluate(() => localStorage.getItem('smartfeed_theme_radius'));
+    expect(savedRadius).toBe('0.5');
+  });
+
+  test('двомовність налаштувань радіусу: переклад міток та бейджа при перемиканні UA ⇄ EN', async ({
+    page,
+  }) => {
+    const loginPage = new DesktopLoginPage(page);
+    await loginPage.goto();
+    await loginPage.login(mockUser.email, 'ValidPassword123!');
+
+    const settingsPage = new DesktopSettingsPage(page);
+    await settingsPage.goto();
+    await expect(settingsPage.settingsPage).toBeVisible();
+
+    // Assert Ukrainian labels
+    await expect(page.locator('text=Радіус заокруглення')).toBeVisible();
+    await expect(page.locator('text=Глобально')).toBeVisible();
+
+    // Switch to English
+    await page.locator('button:has-text("English (EN)")').click();
+    await expect(page.locator('text=Border Radius')).toBeVisible();
+    await expect(page.locator('text=Global')).toBeVisible();
+
+    // Switch back to Ukrainian
+    await page.locator('button:has-text("Українська (UA)")').click();
+    await expect(page.locator('text=Радіус заокруглення')).toBeVisible();
+    await expect(page.locator('text=Глобально')).toBeVisible();
+  });
 });

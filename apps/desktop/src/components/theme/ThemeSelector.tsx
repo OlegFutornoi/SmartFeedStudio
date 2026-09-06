@@ -1,12 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Moon, Sun, Laptop, Check, ChevronDown } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { useTheme, ACCENT_OPTIONS, type Theme } from '@/contexts/ThemeContext';
+import { useTheme, ACCENT_OPTIONS, RADIUS_OPTIONS, type Theme } from '@/contexts/ThemeContext';
 import { useTranslation } from '@/i18n';
 
 export function ThemeSelector() {
-  const { theme, setTheme, accentColor, setAccentColor } = useTheme();
-  const { language, setLanguage } = useTranslation();
+  const { theme, setTheme, accentColor, setAccentColor, radius, setRadius } = useTheme();
+  const { t, language, setLanguage } = useTranslation(['settings', 'common']);
   const isUk = language === 'uk';
 
   const [isOpen, setIsOpen] = useState(false);
@@ -164,7 +164,56 @@ export function ThemeSelector() {
 
       <div className="h-[1px] w-full bg-border/60" />
 
-      {/* 3. Interface Language Row */}
+      {/* 3. Border Radius Row (Unified Global Geometry) */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex flex-col gap-1">
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-medium text-foreground">{t('borderRadius')}</span>
+            <Badge
+              variant="outline"
+              className="text-[10px] py-0 px-1.5 h-4 border-muted-foreground/30 text-muted-foreground"
+            >
+              {t('globalBadge')}
+            </Badge>
+          </div>
+          <span className="text-xs text-muted-foreground">{t('borderRadiusDesc')}</span>
+        </div>
+
+        {/* Radius Segmented Control */}
+        <div
+          data-testid="border-radius-segmented-control"
+          className="flex items-center p-1 rounded-lg bg-secondary/50 border border-border shrink-0"
+        >
+          {RADIUS_OPTIONS.map((r) => {
+            const isSelected = radius === r.id;
+            return (
+              <button
+                key={r.id}
+                type="button"
+                data-testid={`radius-option-${r.id}`}
+                onClick={() => setRadius(r.id)}
+                title={isUk ? r.descriptionUk : r.descriptionEn}
+                className={`flex items-center gap-1.5 h-8 px-2.5 sm:px-3 rounded-md text-xs font-medium transition-all ${
+                  isSelected
+                    ? 'bg-background text-foreground shadow-sm font-semibold'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                <span>{r.pixels}</span>
+                <span className="text-[10px] opacity-70 hidden md:inline">
+                  {isUk
+                    ? r.labelUk.split(' ')[1]?.replace(/[()]/g, '')
+                    : r.labelEn.split(' ')[1]?.replace(/[()]/g, '')}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="h-[1px] w-full bg-border/60" />
+
+      {/* 4. Interface Language Row */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex flex-col gap-1">
           <span className="text-sm font-medium text-foreground">

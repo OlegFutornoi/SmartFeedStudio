@@ -9,6 +9,9 @@
   "appearance": "Appearance & Theme",
   "theme": "Color Theme",
   "language": "Interface Language",
+  "borderRadius": "Border Radius",
+  "borderRadiusDesc": "Control shape of buttons, cards, inputs, and dialogs across the entire app",
+  "globalBadge": "Global",
   "security": "Account Security",
   "changePassword": "Change Password",
   "saveChanges": "Save Changes"

@@ -20,7 +20,7 @@
     --destructive-foreground: 0 0% 98%;
     --border: 240 5.9% 90%;
     --input: 240 5.9% 90%;
-    --radius: 0.15rem;
+    --radius: 0.5rem;
 
     /* Default Light Primary: Monochrome Zinc */
     --primary: 240 5.9% 10%;
@@ -45,7 +45,7 @@
     --destructive-foreground: 0 0% 98%;
     --border: 240 3.7% 15.9%;
     --input: 240 3.7% 15.9%;
-    --radius: 0.15rem;
+    --radius: 0.5rem;
 
     /* Default Dark Primary: Monochrome Zinc */
     --primary: 0 0% 98%;
@@ -131,6 +131,28 @@
     --primary: 30 50% 28%;
     --primary-foreground: 0 0% 98%;
     --ring: 30 50% 28%;
+  }
+
+  /* Border Radius Presets (Global UI Harmony) */
+  [data-radius='0'],
+  :root[data-radius='0'],
+  .dark[data-radius='0'] {
+    --radius: 0rem;
+  }
+  [data-radius='0.25'],
+  :root[data-radius='0.25'],
+  .dark[data-radius='0.25'] {
+    --radius: 0.25rem;
+  }
+  [data-radius='0.5'],
+  :root[data-radius='0.5'],
+  .dark[data-radius='0.5'] {
+    --radius: 0.5rem;
+  }
+  [data-radius='0.75'],
+  :root[data-radius='0.75'],
+  .dark[data-radius='0.75'] {
+    --radius: 0.75rem;
   }
 }
 
