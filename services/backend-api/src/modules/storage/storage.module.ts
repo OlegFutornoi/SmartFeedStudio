@@ -11,6 +11,7 @@ import { CreateLocalBackupHandler } from './commands/create-local-backup.handler
 import { RunDatabaseMaintenanceHandler } from './commands/run-database-maintenance.handler';
 import { ClearStorageCacheHandler } from './commands/clear-storage-cache.handler';
 import { MigrateWorkspaceHandler } from './commands/migrate-workspace.handler';
+import { SelectWorkspaceFolderHandler } from './commands/select-workspace-folder.handler';
 import { GetDefaultWorkspacePathHandler } from './queries/get-default-workspace-path.handler';
 import { GetWorkspaceInfoHandler } from './queries/get-workspace-info.handler';
 import { GetStorageStatsHandler } from './queries/get-storage-stats.handler';
@@ -23,6 +24,7 @@ export const CommandHandlers = [
   RunDatabaseMaintenanceHandler,
   ClearStorageCacheHandler,
   MigrateWorkspaceHandler,
+  SelectWorkspaceFolderHandler,
 ];
 
 export const QueryHandlers = [

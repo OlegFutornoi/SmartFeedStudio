@@ -292,6 +292,46 @@ export async function openInFileManager(path: string): Promise<void> {
   }
 }
 
+export async function pickWorkspaceFolder(): Promise<string | null> {
+  // 1. Try Tauri IPC if running in native app
+  if (isTauriEnvironment()) {
+    try {
+      const { invoke } = await import('@tauri-apps/api/core');
+      const chosen = (await invoke('pick_workspace_folder')) as string | null;
+      if (chosen) return chosen;
+    } catch (e) {
+      console.warn('Failed to pick folder via Tauri IPC:', e);
+    }
+  }
+
+  // 2. Try Backend API
+  try {
+    const res = await fetchWithAuth('/storage/workspace/select-folder', {
+      method: 'POST',
+    });
+    if (res.ok) {
+      const data = (await res.json()) as { path: string | null };
+      if (data?.path) return data.path;
+    }
+  } catch (e) {
+    console.warn('Failed to pick folder via API:', e);
+  }
+
+  // 3. Fallback: Browser showDirectoryPicker if available
+  if (typeof window !== 'undefined' && 'showDirectoryPicker' in window) {
+    try {
+      const dirHandle = await (window as any).showDirectoryPicker();
+      if (dirHandle?.name) {
+        return `~/Documents/${dirHandle.name}`;
+      }
+    } catch {
+      // User cancelled
+    }
+  }
+
+  return null;
+}
+
 export async function clearStorageCache(
   workspacePath?: string,
 ): Promise<ClearStorageCacheResultDto> {

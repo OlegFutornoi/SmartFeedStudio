@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useTranslation } from '@/i18n';
 import { useWorkspaceStorage } from '@/contexts/WorkspaceStorageContext';
+import { pickWorkspaceFolder } from '@/lib/storageApi';
 
 interface MigrateWorkspaceDialogProps {
   isOpen: boolean;
@@ -23,6 +24,21 @@ export const MigrateWorkspaceDialog: React.FC<MigrateWorkspaceDialogProps> = ({
   const [newPath, setNewPath] = useState(currentPath);
   const [moveExistingData, setMoveExistingData] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
+  const [isPickingFolder, setIsPickingFolder] = useState(false);
+
+  const handleBrowseFolder = async () => {
+    setIsPickingFolder(true);
+    try {
+      const chosen = await pickWorkspaceFolder();
+      if (chosen) {
+        setNewPath(chosen.replace(/\/$/, ''));
+      }
+    } catch (err) {
+      console.warn('Folder picker error:', err);
+    } finally {
+      setIsPickingFolder(false);
+    }
+  };
 
   if (!isOpen) return null;
 
@@ -101,9 +117,16 @@ export const MigrateWorkspaceDialog: React.FC<MigrateWorkspaceDialogProps> = ({
                 type="button"
                 variant="outline"
                 size="sm"
+                onClick={handleBrowseFolder}
+                disabled={isPickingFolder || isLoading}
                 className="h-9 text-xs gap-1.5 shrink-0"
+                data-testid="migrate-browse-folder-btn"
               >
-                <FolderOpen className="size-3.5" />
+                {isPickingFolder ? (
+                  <Loader2 className="size-3.5 animate-spin" />
+                ) : (
+                  <FolderOpen className="size-3.5" />
+                )}
                 <span>{t('storage:browseFolder')}</span>
               </Button>
             </div>

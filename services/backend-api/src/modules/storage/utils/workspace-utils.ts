@@ -280,3 +280,39 @@ export function migrateWorkspaceOnDisk(
 
   return newInfo;
 }
+
+export async function selectFolderDialog(): Promise<string | null> {
+  const platform = os.platform();
+
+  return new Promise((resolve) => {
+    let command = '';
+    if (platform === 'darwin') {
+      command = `osascript -e 'try' -e 'set folderPath to POSIX path of (choose folder with prompt "Оберіть папку для SmartFeed Studio:")' -e 'return folderPath' -e 'on error' -e 'return ""' -e 'end try'`;
+    } else if (platform === 'win32') {
+      const psScript = `
+        Add-Type -AssemblyName System.Windows.Forms;
+        $f = New-Object System.Windows.Forms.FolderBrowserDialog;
+        $f.Description = "Select workspace storage folder";
+        if ($f.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK) {
+          Write-Output $f.SelectedPath
+        }
+      `.replace(/\\r?\\n/g, ' ');
+      command = `powershell -NoProfile -NonInteractive -Command "${psScript}"`;
+    } else {
+      command = `zenity --file-selection --directory --title="Select workspace folder" 2>/dev/null || kdialog --getexistingdirectory 2>/dev/null`;
+    }
+
+    exec(command, { timeout: 120000 }, (error, stdout) => {
+      if (error || !stdout) {
+        resolve(null);
+        return;
+      }
+      const trimmed = stdout.trim();
+      if (!trimmed || trimmed === '') {
+        resolve(null);
+        return;
+      }
+      resolve(trimmed);
+    });
+  });
+}

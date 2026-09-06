@@ -135,6 +135,69 @@ fn open_in_file_manager(path: String) -> Result<(), String> {
 }
 
 #[tauri::command]
+fn pick_workspace_folder() -> Result<Option<String>, String> {
+    #[cfg(target_os = "macos")]
+    {
+        let output = std::process::Command::new("osascript")
+            .arg("-e")
+            .arg("try")
+            .arg("-e")
+            .arg("set folderPath to POSIX path of (choose folder with prompt \"Оберіть папку для SmartFeed Studio:\")")
+            .arg("-e")
+            .arg("return folderPath")
+            .arg("-e")
+            .arg("on error")
+            .arg("return \"\"")
+            .arg("-e")
+            .arg("end try")
+            .output()
+            .map_err(|e| e.to_string())?;
+
+        if output.status.success() {
+            let path = String::from_utf8_lossy(&output.stdout).trim().to_string();
+            if !path.is_empty() {
+                return Ok(Some(path));
+            }
+        }
+        Ok(None)
+    }
+    #[cfg(target_os = "windows")]
+    {
+        let script = "Add-Type -AssemblyName System.Windows.Forms; $f = New-Object System.Windows.Forms.FolderBrowserDialog; if ($f.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK) { Write-Output $f.SelectedPath }";
+        let output = std::process::Command::new("powershell")
+            .arg("-NoProfile")
+            .arg("-Command")
+            .arg(script)
+            .output()
+            .map_err(|e| e.to_string())?;
+
+        if output.status.success() {
+            let path = String::from_utf8_lossy(&output.stdout).trim().to_string();
+            if !path.is_empty() {
+                return Ok(Some(path));
+            }
+        }
+        Ok(None)
+    }
+    #[cfg(not(any(target_os = "macos", target_os = "windows")))]
+    {
+        let output = std::process::Command::new("zenity")
+            .arg("--file-selection")
+            .arg("--directory")
+            .output();
+        if let Ok(out) = output {
+            if out.status.success() {
+                let path = String::from_utf8_lossy(&out.stdout).trim().to_string();
+                if !path.is_empty() {
+                    return Ok(Some(path));
+                }
+            }
+        }
+        Ok(None)
+    }
+}
+
+#[tauri::command]
 fn clear_storage_cache() -> Result<u64, String> {
     let entry = Entry::new(SERVICE_NAME, WORKSPACE_KEY_USER).map_err(|e| e.to_string())?;
     let base_path = entry.get_password().map_err(|e| e.to_string())?;
@@ -256,6 +319,7 @@ pub fn run() {
         create_local_backup,
         run_database_maintenance,
         open_in_file_manager,
+        pick_workspace_folder,
         clear_storage_cache,
         db_get_counters,
         db_get_suppliers,

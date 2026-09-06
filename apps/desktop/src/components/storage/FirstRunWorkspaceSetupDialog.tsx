@@ -16,6 +16,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useTranslation } from '@/i18n';
 import { useWorkspaceStorage } from '@/contexts/WorkspaceStorageContext';
+import { pickWorkspaceFolder } from '@/lib/storageApi';
 
 export const FirstRunWorkspaceSetupDialog: React.FC = () => {
   const { t } = useTranslation(['storage', 'common']);
@@ -24,6 +25,21 @@ export const FirstRunWorkspaceSetupDialog: React.FC = () => {
   const [useCustomPath, setUseCustomPath] = useState(false);
   const [customPath, setCustomPath] = useState(defaultPath);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isPickingFolder, setIsPickingFolder] = useState(false);
+
+  const handleBrowseFolder = async () => {
+    setIsPickingFolder(true);
+    try {
+      const chosen = await pickWorkspaceFolder();
+      if (chosen) {
+        setCustomPath(chosen.replace(/\/$/, ''));
+      }
+    } catch (err) {
+      console.warn('Folder picker error:', err);
+    } finally {
+      setIsPickingFolder(false);
+    }
+  };
 
   if (!showOnboardingModal) return null;
 
@@ -142,12 +158,16 @@ export const FirstRunWorkspaceSetupDialog: React.FC = () => {
                       type="button"
                       variant="outline"
                       size="sm"
-                      onClick={() => {
-                        // When Tauri dialog is available
-                      }}
+                      onClick={handleBrowseFolder}
+                      disabled={isPickingFolder}
                       className="h-9 text-xs gap-1.5 shrink-0"
+                      data-testid="browse-workspace-folder-btn"
                     >
-                      <FolderOpen className="size-3.5" />
+                      {isPickingFolder ? (
+                        <Loader2 className="size-3.5 animate-spin" />
+                      ) : (
+                        <FolderOpen className="size-3.5" />
+                      )}
                       <span>{t('storage:browseFolder')}</span>
                     </Button>
                   </div>

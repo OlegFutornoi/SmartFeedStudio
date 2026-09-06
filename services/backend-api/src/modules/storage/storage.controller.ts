@@ -23,6 +23,7 @@ import { CreateLocalBackupCommand } from './commands/create-local-backup.command
 import { RunDatabaseMaintenanceCommand } from './commands/run-database-maintenance.command';
 import { ClearStorageCacheCommand } from './commands/clear-storage-cache.command';
 import { MigrateWorkspaceCommand } from './commands/migrate-workspace.command';
+import { SelectWorkspaceFolderCommand } from './commands/select-workspace-folder.command';
 
 export class PresignedUrlDto {
   @IsString()
@@ -184,5 +185,13 @@ export class StorageController {
     return this.commandBus.execute(
       new MigrateWorkspaceCommand(dto.currentPath, dto.newPath, dto.moveExistingData ?? true),
     );
+  }
+
+  @Post('workspace/select-folder')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Open native OS dialog to select directory on disk' })
+  async selectFolder(): Promise<{ path: string | null }> {
+    return this.commandBus.execute(new SelectWorkspaceFolderCommand());
   }
 }
