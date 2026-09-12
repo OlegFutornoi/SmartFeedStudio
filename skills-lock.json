@@ -205,6 +205,18 @@
       "skillPath": "app/.agents/skills/beautiful-desing/SKILL.md",
       "computedHash": "c9ed733231eb259eeff93a6fa6ce8b102221cc6dcf7713121365c99da0ecadd9"
     },
+    "design-taste-frontend": {
+      "source": "leonxlnx/taste-skill",
+      "sourceType": "github",
+      "skillPath": "skills/taste-skill/SKILL.md",
+      "computedHash": "6d838b246d0e35d0b53f4f23f98ba7a1dd561937e64f7d0c7553b0928e376c3e"
+    },
+    "design-taste-frontend-v1": {
+      "source": "leonxlnx/taste-skill",
+      "sourceType": "github",
+      "skillPath": "skills/taste-skill-v1/SKILL.md",
+      "computedHash": "d704ab912c4d0ca954ffa858983da755ae4cd5cad9ba22554db5557382f5bd34"
+    },
     "firecrawl-parse": {
       "source": "firecrawl/cli",
       "sourceType": "github",
@@ -234,6 +246,12 @@
       "sourceType": "github",
       "skillPath": "plugins/power-pages/skills/integrate-backend/SKILL.md",
       "computedHash": "b3a37ea27f061f50141aa1d603516b579cb99462d573bd2c392a9bc3f9b7b637"
+    },
+    "modern-web-guidance": {
+      "source": "googlechrome/modern-web-guidance",
+      "sourceType": "github",
+      "skillPath": "skills/modern-web-guidance/SKILL.md",
+      "computedHash": "da9b9c833351f0575ca7482f3c8decc8e24b02b76dea71f138738283c701b4c5"
     },
     "nestjs-best-practices": {
       "source": "kadajett/agent-nestjs-skills",

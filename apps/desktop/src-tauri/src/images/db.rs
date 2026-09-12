@@ -108,8 +108,6 @@ pub fn get_images_for_products(
     );
 
     let mut stmt = conn.prepare(&query)?;
-    let params = rusqlite::to_params_named(product_ids.iter().map(|s| s.as_str()).collect::<Vec<_>>().as_slice())
-        .unwrap_or_default();
 
     let mut rows = stmt.query(rusqlite::params_from_iter(product_ids.iter()))?;
     while let Some(row) = rows.next()? {

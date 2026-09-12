@@ -1,303 +1,536 @@
 ---
 name: playwright-best-practices
-description: Use when writing Playwright tests, fixing flaky tests, debugging failures, implementing Page Object Model, configuring CI/CD, optimizing performance, mocking APIs, handling authentication or OAuth, testing accessibility (axe-core), file uploads/downloads, date/time mocking, WebSockets, geolocation, permissions, multi-tab/popup flows, mobile/responsive layouts, touch gestures, GraphQL, error handling, offline mode, multi-user collaboration, third-party services (payments, email verification), console error monitoring, global setup/teardown, test annotations (skip, fixme, slow), test tags (@smoke, @fast, @critical, filtering with --grep), project dependencies, security testing (XSS, CSRF, auth), performance budgets (Web Vitals, Lighthouse), iframes, component testing, canvas/WebGL, service workers/PWA, test coverage, i18n/localization, Electron apps, or browser extension testing. Covers E2E, component, API, visual, accessibility, security, Electron, and extension testing.
+description: >-
+  Comprehensive Playwright testing master skill for SmartFeedStudio (React 18/19, Next.js 14,
+  Tauri v2, Electron) with embedded TDD discipline, anti-patterns enforcement, and SmartFeed-specific
+  testing patterns. Consolidates: test-driven-development-tdd (RED-GREEN-REFACTOR cycle),
+  testing-anti-patterns (3 Iron Laws), condition-based-waiting (replace sleep with polling),
+  verification-before-completion (run before claiming success), systematic-debugging, root-cause-tracing.
+  Enforces: cleanDatabase teardown, bilingual UA/EN tests, network dedup assertions (requestCount===1),
+  Page Object Model, data-testid selectors. Covers E2E, component, API, visual, accessibility, security,
+  i18n, Electron, mobile, multi-user, and performance testing. Use when writing Playwright tests, fixing
+  flaky tests, debugging failures, implementing POM, configuring CI/CD, mocking APIs, testing
+  authentication, accessibility (axe-core), file operations, date/time, WebSockets, geolocation,
+  multi-tab flows, mobile/responsive, GraphQL, offline mode, multi-user collaboration, third-party
+  services (payments, email), security (XSS, CSRF), performance budgets (Web Vitals), iframes,
+  canvas/WebGL, service workers, i18n/localization. Triggers on any test, spec, playwright, E2E,
+  testing, flaky, тест, автотест, coverage task.
 license: MIT
 metadata:
-  author: currents.dev
-  version: '1.2'
+  author: currents.dev (extended for SmartFeed Studio)
+  version: '2.0'
 ---
 
-# Playwright Best Practices
+# 🧪 Playwright Best Practices (SmartFeed Studio)
 
-This skill provides comprehensive guidance for all aspects of Playwright test development, from writing new tests to debugging and maintaining existing test suites.
+Comprehensive Playwright testing master skill combining universal Playwright best practices with SmartFeed-specific patterns, TDD discipline, anti-pattern enforcement, and condition-based waiting.
 
-## Activity-Based Reference Guide
+---
 
-Consult these references based on what you're doing:
+## 🏗️ 1. SmartFeed Studio Testing Architecture
+
+### Project-Specific Context
+
+```text
+SmartFeed Studio Test Locations:
+├── apps/admin-portal/tests/     # Next.js 14 Admin Portal E2E (pnpm test:admin)
+├── apps/desktop/tests/          # Tauri v2 + React Desktop E2E (pnpm test:desktop)
+└── services/backend-api/test/   # NestJS E2E with Supertest (pnpm --filter @smartfeed/backend-api test:e2e)
+```
+
+### SmartFeed Test Commands
+
+```bash
+# Run all E2E tests
+pnpm test:admin               # Admin Portal (headless)
+pnpm test:admin:headed        # Admin Portal (headed, visible browser)
+pnpm test:admin:ui            # Admin Portal (Playwright UI mode)
+pnpm test:desktop             # Desktop Client (headless)
+pnpm test:desktop:headed      # Desktop Client (headed)
+pnpm test:desktop:ui          # Desktop Client (Playwright UI mode)
+pnpm --filter @smartfeed/backend-api test:e2e  # Backend E2E
+
+# Run specific test file
+pnpm test:admin -- <feature>.spec.ts
+pnpm test:desktop -- <feature>.spec.ts
+```
+
+> [!WARNING]
+> **NEVER** call `browser_subagent` or `open_browser_url`. They unconditionally fail on macOS ARM64.
+> **ALWAYS** use direct Playwright MCP tools (`call_mcp_tool` with `ServerName: "playwright"`) or the test runners above.
+
+---
+
+## 🔌 1.5 MCP Research Tools — Use During Test Development
+
+### 📚 context7 — Документація Playwright API
+
+Перед написанням тестів — отримай актуальні Playwright patterns:
+
+```
+# Playwright документація
+call_mcp_tool(ServerName: "context7", ToolName: "resolve-library-id",
+  Arguments: { libraryName: "playwright" })
+call_mcp_tool(ServerName: "context7", ToolName: "query-docs",
+  Arguments: { context7CompatibleLibraryID: "/microsoft/playwright",
+               topic: "expect.poll condition polling" })
+
+# Next.js тестування patterns
+call_mcp_tool(ServerName: "context7", ToolName: "query-docs",
+  Arguments: { context7CompatibleLibraryID: "/vercel/next.js",
+               topic: "Playwright testing App Router" })
+```
+
+**Коли використовувати**:
+
+- `waitForResponse`, `expect.poll` — актуальний синтаксис
+- Page Object Model паттерни в Playwright v1.4x+
+- Network interception API (`route`, `fulfill`, `abort`)
+- `expect` matchers перед написанням асерцій
+- Electron/Tauri testing специфіка API
+
+### 🔥 firecrawl — Пошук Тестових Patterns
+
+```
+# Playwright best practices для специфічного сценарію
+call_mcp_tool(ServerName: "firecrawl", ToolName: "firecrawl_search",
+  Arguments: { query: "Playwright test file upload Next.js App Router" })
+
+# Реальні приклади i18n тестів
+call_mcp_tool(ServerName: "firecrawl", ToolName: "firecrawl_search",
+  Arguments: { query: "Playwright i18n language switch test example" })
+
+# Flaky test solutions
+call_mcp_tool(ServerName: "firecrawl", ToolName: "firecrawl_search",
+  Arguments: { query: "Playwright flaky tests race condition fix waitForResponse" })
+```
+
+**Коли використовувати**:
+
+- Жоден flaky test — шукати реальні приклади вирішення
+- Специфічні сценарії (file upload, OAuth, WebSocket)
+- CI/CD Playwright налаштування (GitHub Actions, Docker)
+- Accessibility testing patterns (axe-core integration)
+
+### 🎭 playwright MCP — Інспекція під час Тестування
+
+Використовуй для інспекції live додатку **до/під час написання автотестів**:
+
+```
+# Інспекція DOM для пошуку правильних selectors
+call_mcp_tool(ServerName: "playwright", ToolName: "browser_navigate",
+  Arguments: { url: "http://localhost:3000/dashboard" })
+call_mcp_tool(ServerName: "playwright", ToolName: "browser_snapshot",
+  Arguments: {})  # Повертає структуру DOM з ARIA roles
+
+# Перевірка що елемент існує
+call_mcp_tool(ServerName: "playwright", ToolName: "browser_find",
+  Arguments: { selector: "[data-testid='create-feed-btn']" })
+
+# Скриншот для visual regression порівняння
+call_mcp_tool(ServerName: "playwright", ToolName: "browser_take_screenshot",
+  Arguments: {})
+
+# Клік + інспекція dialog state
+call_mcp_tool(ServerName: "playwright", ToolName: "browser_click",
+  Arguments: { selector: "[data-testid='create-btn']" })
+call_mcp_tool(ServerName: "playwright", ToolName: "browser_snapshot", Arguments: {})
+```
+
+**Коли використовувати**:
+
+- Пошук `data-testid` selectors в live DOM перед написанням локаторів
+- Інспекція ARIA structure для accessibility tests
+- Візуальна перевірка після написання RED тесту
+- Дебаг flaky test — бачити що справді відбувається на сторінці
+- Порівняння screenshot before/after для visual regression
+
+---
+
+## 🔴 2. TDD Integration: RED-GREEN-REFACTOR
+
+_Embedded from `test-driven-development-tdd` skill_
+
+### The Iron Law of TDD
+
+```
+NO PRODUCTION CODE WITHOUT A FAILING TEST FIRST
+```
+
+**Cycle for every SmartFeed feature**:
+
+1. **RED** — Write the Playwright test first:
+   - Write `<feature>.spec.ts` asserting the desired behavior.
+   - Run: `pnpm test:admin -- <feature>.spec.ts`
+   - **Verify**: Test FAILS for the expected functional reason (element not found, missing translation, wrong data) — NOT due to syntax errors or config issues.
+
+2. **GREEN** — Write minimal implementation:
+   - Implement ONLY what the test needs to pass.
+   - Run tests again. **Verify**: Tests pass cleanly.
+
+3. **REFACTOR** — Improve without breaking:
+   - Refactor component structure, modularity, and styling.
+   - Run tests after each refactor. Tests must stay green.
+
+### SmartFeed RED Phase Verification Checklist
+
+Before moving from RED to GREEN, confirm:
+
+- [ ] Test runs without syntax/import errors
+- [ ] Test fails for the **expected UI/functional reason**
+- [ ] Test covers the **5 mandatory UI states** (loading, empty, data, error, success)
+- [ ] Bilingual test (UA⇄EN) is included
+
+---
+
+## 🚫 3. Testing Anti-Patterns: 3 Iron Laws
+
+_Embedded from `testing-anti-patterns` skill_
+
+### Law 1: Never Test Mock Behavior
+
+```typescript
+// ❌ WRONG: Testing that the mock was called
+mockApiClient.getUsers.mockResolvedValue([user]);
+await component.loadUsers();
+expect(mockApiClient.getUsers).toHaveBeenCalledTimes(1); // Testing the mock, not behavior!
+
+// ✅ CORRECT: Test observable behavior
+await page.goto('/users');
+await expect(page.locator('[data-testid="user-row"]')).toBeVisible();
+await expect(page.locator('[data-testid="user-name"]')).toHaveText('John Doe');
+```
+
+### Law 2: Never Add Test-Only Methods to Production Classes
+
+```typescript
+// ❌ WRONG: Adding method just for testing
+class UserService {
+  // This method exists only for tests — production anti-pattern!
+  getInternalState() {
+    return this._cache;
+  }
+}
+
+// ✅ CORRECT: Test through public API behavior only
+await page.goto('/users');
+await expect(page.locator('[data-testid="users-table"]')).toBeVisible();
+```
+
+### Law 3: Understand Dependencies Before Mocking
+
+Before mocking any service/API:
+
+1. What does the real implementation actually do?
+2. What are its side effects?
+3. Does the mock faithfully represent ALL those behaviors?
+4. Would a real integration test be more valuable here?
+
+---
+
+## ⏱️ 4. Condition-Based Waiting (Zero `sleep()`)
+
+_Embedded from `condition-based-waiting` skill_
+
+**Core Principle**: Never use `sleep()` or `waitForTimeout()`. Always wait for a specific condition.
+
+```typescript
+// ❌ WRONG: Arbitrary timeout
+await page.waitForTimeout(2000);
+
+// ✅ CORRECT: Wait for condition
+await page.waitForResponse((resp) => resp.url().includes('/api/users') && resp.status() === 200);
+await expect(page.locator('[data-testid="users-table"]')).toBeVisible();
+await expect(page.locator('[data-testid="loading-skeleton"]')).not.toBeVisible();
+```
+
+### SmartFeed Condition Patterns
+
+```typescript
+// Wait for API response
+await page.waitForResponse((resp) => resp.url().includes('/api/plans') && resp.status() === 200);
+
+// Wait for element state
+await expect(page.locator('[data-testid="submit-btn"]')).toBeEnabled();
+await expect(page.locator('[data-testid="error-toast"]')).toBeVisible();
+
+// Poll with expect.poll
+await expect
+  .poll(
+    async () => {
+      return page.locator('[data-testid="sync-status"]').textContent();
+    },
+    { timeout: 10000 },
+  )
+  .toBe('Synced');
+
+// Wait for navigation
+await Promise.all([
+  page.waitForURL('/dashboard'),
+  page.locator('[data-testid="login-btn"]').click(),
+]);
+```
+
+---
+
+## 🎯 5. SmartFeed-Specific Testing Patterns
+
+### 5.1 Mandatory Test Coverage for Every Feature
+
+Every new or modified screen MUST include:
+
+```typescript
+describe('<Feature> Tests', () => {
+  // 1. Loading state
+  test('shows loading skeleton while data is fetching', async ({ page }) => {
+    // Intercept and delay API
+    await page.route('**/api/target', (route) => setTimeout(() => route.continue(), 500));
+    await page.goto('/target-page');
+    await expect(page.locator('[data-testid="skeleton-loader"]')).toBeVisible();
+  });
+
+  // 2. Empty state
+  test('shows empty state with CTA when no data exists', async ({ page }) => {
+    await page.route('**/api/target', (route) => route.fulfill({ json: [] }));
+    await page.goto('/target-page');
+    await expect(page.locator('[data-testid="empty-state"]')).toBeVisible();
+    await expect(page.locator('[data-testid="create-btn"]')).toBeVisible();
+  });
+
+  // 3. Data state
+  test('renders data table with all columns', async ({ page }) => {
+    await page.goto('/target-page');
+    await expect(page.locator('[data-testid="data-table"]')).toBeVisible();
+    await expect(page.locator('[data-testid="data-row"]')).toHaveCount(5);
+  });
+
+  // 4. Error state
+  test('shows localized error when API fails', async ({ page }) => {
+    await page.route('**/api/target', (route) => route.fulfill({ status: 500 }));
+    await page.goto('/target-page');
+    await expect(page.locator('[data-testid="error-banner"]')).toBeVisible();
+  });
+});
+```
+
+### 5.2 Mandatory Bilingual Test (UA⇄EN)
+
+Every view MUST have dedicated language switching tests:
+
+```typescript
+test('all UI elements translate correctly UA → EN', async ({ page }) => {
+  // Start in Ukrainian (default)
+  await page.goto('/target-page');
+  await expect(page.locator('h1')).toHaveText('Цільова сторінка');
+  await expect(page.locator('[data-testid="create-btn"]')).toHaveText('Створити');
+
+  // Switch to English
+  await page.locator('[data-testid="language-switcher"]').click();
+  await page.locator('[data-testid="lang-en"]').click();
+
+  // Assert all elements translated
+  await expect(page.locator('h1')).toHaveText('Target Page');
+  await expect(page.locator('[data-testid="create-btn"]')).toHaveText('Create');
+  await expect(page.locator('[data-testid="table-header-name"]')).toHaveText('Name');
+
+  // Table headers, badges, tooltips, error messages all translated
+  await expect(page.locator('[data-testid="status-badge"]')).toHaveText('Active');
+});
+```
+
+### 5.3 Mandatory Network Deduplication Assertion
+
+Every page load test MUST verify API called exactly once:
+
+```typescript
+test('loads page data with exactly 1 API request', async ({ page }) => {
+  let requestCount = 0;
+  page.on('request', (req) => {
+    if (req.url().includes('/api/target')) requestCount++;
+  });
+
+  await page.goto('/target-page');
+  await expect(page.locator('[data-testid="data-table"]')).toBeVisible();
+
+  expect(requestCount).toBe(1); // Zero duplicates
+});
+```
+
+### 5.4 Test Isolation (Frontend)
+
+Before and after each test, clean all browser state:
+
+```typescript
+test.beforeEach(async ({ page, context }) => {
+  await context.clearCookies();
+  await page.evaluate(() => {
+    localStorage.clear();
+    sessionStorage.clear();
+  });
+  // Clear route mocks
+  await page.unrouteAll();
+});
+```
+
+### 5.5 Backend Test Isolation (`cleanDatabase`)
+
+Every backend E2E test file MUST use `cleanDatabase`:
+
+```typescript
+import { cleanDatabase } from '../utils/teardown.helper';
+
+beforeAll(async () => {
+  await cleanDatabase(prisma);
+  // Setup test data
+});
+
+afterAll(async () => {
+  await cleanDatabase(prisma); // Zero leftovers
+  await app.close();
+});
+```
+
+FK-safe teardown order:
+`Snapshot`/`ProductImage` → `OrganizationInvitation` → `OrganizationMember` → `License` → `Organization` → `User` → `TariffPlan`/`NavigationItem`
+
+---
+
+## 📖 6. Activity-Based Reference Guide
 
 ### Writing New Tests
 
-**When to use**: Creating new test files, writing test cases, implementing test scenarios
-
-| Activity                            | Reference Files                                                                                                                               |
-| ----------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Writing E2E tests**               | [test-suite-structure.md](core/test-suite-structure.md), [locators.md](core/locators.md), [assertions-waiting.md](core/assertions-waiting.md) |
-| **Writing component tests**         | [component-testing.md](testing-patterns/component-testing.md), [test-suite-structure.md](core/test-suite-structure.md)                        |
-| **Writing API tests**               | [api-testing.md](testing-patterns/api-testing.md), [test-suite-structure.md](core/test-suite-structure.md)                                    |
-| **Writing GraphQL tests**           | [graphql-testing.md](testing-patterns/graphql-testing.md), [api-testing.md](testing-patterns/api-testing.md)                                  |
-| **Writing visual regression tests** | [visual-regression.md](testing-patterns/visual-regression.md), [canvas-webgl.md](testing-patterns/canvas-webgl.md)                            |
-| **Structuring test code with POM**  | [page-object-model.md](core/page-object-model.md), [test-suite-structure.md](core/test-suite-structure.md)                                    |
-| **Setting up test data/fixtures**   | [fixtures-hooks.md](core/fixtures-hooks.md), [test-data.md](core/test-data.md)                                                                |
-| **Handling authentication**         | [authentication.md](advanced/authentication.md), [authentication-flows.md](advanced/authentication-flows.md)                                  |
-| **Testing date/time features**      | [clock-mocking.md](advanced/clock-mocking.md)                                                                                                 |
-| **Testing file upload/download**    | [file-operations.md](testing-patterns/file-operations.md), [file-upload-download.md](testing-patterns/file-upload-download.md)                |
-| **Testing forms/validation**        | [forms-validation.md](testing-patterns/forms-validation.md)                                                                                   |
-| **Testing drag and drop**           | [drag-drop.md](testing-patterns/drag-drop.md)                                                                                                 |
-| **Testing accessibility**           | [accessibility.md](testing-patterns/accessibility.md)                                                                                         |
-| **Testing security (XSS, CSRF)**    | [security-testing.md](testing-patterns/security-testing.md)                                                                                   |
-| **Using test annotations**          | [annotations.md](core/annotations.md)                                                                                                         |
-| **Using test tags**                 | [test-tags.md](core/test-tags.md)                                                                                                             |
-| **Testing iframes**                 | [iframes.md](browser-apis/iframes.md)                                                                                                         |
-| **Testing canvas/WebGL**            | [canvas-webgl.md](testing-patterns/canvas-webgl.md)                                                                                           |
-| **Internationalization (i18n)**     | [i18n.md](testing-patterns/i18n.md)                                                                                                           |
-| **Testing Electron apps**           | [electron.md](testing-patterns/electron.md)                                                                                                   |
-| **Testing browser extensions**      | [browser-extensions.md](testing-patterns/browser-extensions.md)                                                                               |
-
-### Mobile & Responsive Testing
-
-**When to use**: Testing mobile devices, touch interactions, responsive layouts
-
-| Activity                        | Reference Files                                                                  |
-| ------------------------------- | -------------------------------------------------------------------------------- |
-| **Device emulation**            | [mobile-testing.md](advanced/mobile-testing.md)                                  |
-| **Touch gestures (swipe, tap)** | [mobile-testing.md](advanced/mobile-testing.md)                                  |
-| **Viewport/breakpoint testing** | [mobile-testing.md](advanced/mobile-testing.md)                                  |
-| **Mobile-specific UI**          | [mobile-testing.md](advanced/mobile-testing.md), [locators.md](core/locators.md) |
-
-### Real-Time & Browser APIs
-
-**When to use**: Testing WebSockets, geolocation, permissions, multi-tab flows
-
-| Activity                        | Reference Files                                                                          |
-| ------------------------------- | ---------------------------------------------------------------------------------------- |
-| **WebSocket/real-time testing** | [websockets.md](browser-apis/websockets.md)                                              |
-| **Geolocation mocking**         | [browser-apis.md](browser-apis/browser-apis.md)                                          |
-| **Permission handling**         | [browser-apis.md](browser-apis/browser-apis.md)                                          |
-| **Clipboard testing**           | [browser-apis.md](browser-apis/browser-apis.md)                                          |
-| **Camera/microphone mocking**   | [browser-apis.md](browser-apis/browser-apis.md)                                          |
-| **Multi-tab/popup flows**       | [multi-context.md](advanced/multi-context.md)                                            |
-| **OAuth popup handling**        | [third-party.md](advanced/third-party.md), [multi-context.md](advanced/multi-context.md) |
+| Activity                   | Reference Files                                                                                                                                                  |
+| -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Writing E2E tests**      | [core/test-suite-structure.md](core/test-suite-structure.md), [core/locators.md](core/locators.md), [core/assertions-waiting.md](core/assertions-waiting.md)     |
+| **Structuring with POM**   | [core/page-object-model.md](core/page-object-model.md), [core/test-suite-structure.md](core/test-suite-structure.md)                                             |
+| **Setting up fixtures**    | [core/fixtures-hooks.md](core/fixtures-hooks.md), [core/test-data.md](core/test-data.md)                                                                         |
+| **Authentication testing** | [advanced/authentication.md](advanced/authentication.md), [advanced/authentication-flows.md](advanced/authentication-flows.md)                                   |
+| **i18n / localization**    | [testing-patterns/i18n.md](testing-patterns/i18n.md)                                                                                                             |
+| **Accessibility testing**  | [testing-patterns/accessibility.md](testing-patterns/accessibility.md)                                                                                           |
+| **Forms & validation**     | [testing-patterns/forms-validation.md](testing-patterns/forms-validation.md)                                                                                     |
+| **File upload/download**   | [testing-patterns/file-operations.md](testing-patterns/file-operations.md), [testing-patterns/file-upload-download.md](testing-patterns/file-upload-download.md) |
+| **Security (XSS, CSRF)**   | [testing-patterns/security-testing.md](testing-patterns/security-testing.md)                                                                                     |
+| **Electron app testing**   | [testing-patterns/electron.md](testing-patterns/electron.md)                                                                                                     |
+| **Component testing**      | [testing-patterns/component-testing.md](testing-patterns/component-testing.md)                                                                                   |
+| **API testing**            | [testing-patterns/api-testing.md](testing-patterns/api-testing.md)                                                                                               |
+| **Visual regression**      | [testing-patterns/visual-regression.md](testing-patterns/visual-regression.md)                                                                                   |
 
 ### Debugging & Troubleshooting
 
-**When to use**: Test failures, element not found, timeouts, unexpected behavior
-
-| Activity                                          | Reference Files                                                                                                                                |
-| ------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Debugging test failures**                       | [debugging.md](debugging/debugging.md), [assertions-waiting.md](core/assertions-waiting.md)                                                    |
-| **Fixing flaky tests**                            | [flaky-tests.md](debugging/flaky-tests.md), [debugging.md](debugging/debugging.md), [assertions-waiting.md](core/assertions-waiting.md)        |
-| **Debugging flaky parallel runs**                 | [flaky-tests.md](debugging/flaky-tests.md), [performance.md](infrastructure-ci-cd/performance.md), [fixtures-hooks.md](core/fixtures-hooks.md) |
-| **Ensuring test isolation / avoiding state leak** | [flaky-tests.md](debugging/flaky-tests.md), [fixtures-hooks.md](core/fixtures-hooks.md), [performance.md](infrastructure-ci-cd/performance.md) |
-| **Fixing selector issues**                        | [locators.md](core/locators.md), [debugging.md](debugging/debugging.md)                                                                        |
-| **Investigating timeout issues**                  | [assertions-waiting.md](core/assertions-waiting.md), [debugging.md](debugging/debugging.md)                                                    |
-| **Using trace viewer**                            | [debugging.md](debugging/debugging.md)                                                                                                         |
-| **Debugging race conditions**                     | [flaky-tests.md](debugging/flaky-tests.md), [debugging.md](debugging/debugging.md), [assertions-waiting.md](core/assertions-waiting.md)        |
-| **Debugging console/JS errors**                   | [console-errors.md](debugging/console-errors.md), [debugging.md](debugging/debugging.md)                                                       |
-
-### Error & Edge Case Testing
-
-**When to use**: Testing error states, offline mode, network failures, validation
-
-| Activity                       | Reference Files                                                                                       |
-| ------------------------------ | ----------------------------------------------------------------------------------------------------- |
-| **Error boundary testing**     | [error-testing.md](debugging/error-testing.md)                                                        |
-| **Network failure simulation** | [error-testing.md](debugging/error-testing.md), [network-advanced.md](advanced/network-advanced.md)   |
-| **Offline mode testing**       | [error-testing.md](debugging/error-testing.md), [service-workers.md](browser-apis/service-workers.md) |
-| **Service worker testing**     | [service-workers.md](browser-apis/service-workers.md)                                                 |
-| **Loading state testing**      | [error-testing.md](debugging/error-testing.md)                                                        |
-| **Form validation testing**    | [error-testing.md](debugging/error-testing.md)                                                        |
-
-### Multi-User & Collaboration Testing
-
-**When to use**: Testing features involving multiple users, roles, or real-time collaboration
-
-| Activity                       | Reference Files                                                                      |
-| ------------------------------ | ------------------------------------------------------------------------------------ |
-| **Multiple users in one test** | [multi-user.md](advanced/multi-user.md)                                              |
-| **Real-time collaboration**    | [multi-user.md](advanced/multi-user.md), [websockets.md](browser-apis/websockets.md) |
-| **Role-based access testing**  | [multi-user.md](advanced/multi-user.md)                                              |
-| **Concurrent action testing**  | [multi-user.md](advanced/multi-user.md)                                              |
-
-### Architecture Decisions
-
-**When to use**: Choosing test patterns, deciding between approaches, planning test architecture
-
-| Activity                     | Reference Files                                           |
-| ---------------------------- | --------------------------------------------------------- |
-| **POM vs fixtures decision** | [pom-vs-fixtures.md](architecture/pom-vs-fixtures.md)     |
-| **Test type selection**      | [test-architecture.md](architecture/test-architecture.md) |
-| **Mock vs real services**    | [when-to-mock.md](architecture/when-to-mock.md)           |
-| **Test suite structure**     | [test-suite-structure.md](core/test-suite-structure.md)   |
-
-### Framework-Specific Testing
-
-**When to use**: Testing React, Angular, Vue, or Next.js applications
-
-| Activity                  | Reference Files                     |
-| ------------------------- | ----------------------------------- |
-| **Testing React apps**    | [react.md](frameworks/react.md)     |
-| **Testing Angular apps**  | [angular.md](frameworks/angular.md) |
-| **Testing Vue/Nuxt apps** | [vue.md](frameworks/vue.md)         |
-| **Testing Next.js apps**  | [nextjs.md](frameworks/nextjs.md)   |
-
-### Refactoring & Maintenance
-
-**When to use**: Improving existing tests, code review, reducing duplication
-
-| Activity                             | Reference Files                                                                                            |
-| ------------------------------------ | ---------------------------------------------------------------------------------------------------------- |
-| **Refactoring to Page Object Model** | [page-object-model.md](core/page-object-model.md), [test-suite-structure.md](core/test-suite-structure.md) |
-| **Improving test organization**      | [test-suite-structure.md](core/test-suite-structure.md), [page-object-model.md](core/page-object-model.md) |
-| **Extracting common setup/teardown** | [fixtures-hooks.md](core/fixtures-hooks.md)                                                                |
-| **Replacing brittle selectors**      | [locators.md](core/locators.md)                                                                            |
-| **Removing explicit waits**          | [assertions-waiting.md](core/assertions-waiting.md)                                                        |
-| **Creating test data factories**     | [test-data.md](core/test-data.md)                                                                          |
-| **Configuration setup**              | [configuration.md](core/configuration.md)                                                                  |
-
-### Infrastructure & Configuration
-
-**When to use**: Setting up projects, configuring CI/CD, optimizing performance
-
-| Activity                                | Reference Files                                                                                                          |
-| --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| **Configuring Playwright project**      | [configuration.md](core/configuration.md), [projects-dependencies.md](core/projects-dependencies.md)                     |
-| **Setting up CI/CD pipelines**          | [ci-cd.md](infrastructure-ci-cd/ci-cd.md), [github-actions.md](infrastructure-ci-cd/github-actions.md)                   |
-| **GitHub Actions setup**                | [github-actions.md](infrastructure-ci-cd/github-actions.md)                                                              |
-| **GitLab CI setup**                     | [gitlab.md](infrastructure-ci-cd/gitlab.md)                                                                              |
-| **Other CI providers**                  | [other-providers.md](infrastructure-ci-cd/other-providers.md)                                                            |
-| **Docker/container setup**              | [docker.md](infrastructure-ci-cd/docker.md)                                                                              |
-| **Global setup & teardown**             | [global-setup.md](core/global-setup.md)                                                                                  |
-| **Project dependencies**                | [projects-dependencies.md](core/projects-dependencies.md)                                                                |
-| **Optimizing test performance**         | [performance.md](infrastructure-ci-cd/performance.md), [test-suite-structure.md](core/test-suite-structure.md)           |
-| **Configuring parallel execution**      | [parallel-sharding.md](infrastructure-ci-cd/parallel-sharding.md), [performance.md](infrastructure-ci-cd/performance.md) |
-| **Isolating test data between workers** | [fixtures-hooks.md](core/fixtures-hooks.md), [performance.md](infrastructure-ci-cd/performance.md)                       |
-| **Test coverage**                       | [test-coverage.md](infrastructure-ci-cd/test-coverage.md)                                                                |
-| **Test reporting/artifacts**            | [reporting.md](infrastructure-ci-cd/reporting.md)                                                                        |
+| Activity               | Reference Files                                                                                                |
+| ---------------------- | -------------------------------------------------------------------------------------------------------------- |
+| **Debugging failures** | [debugging/debugging.md](debugging/debugging.md), [core/assertions-waiting.md](core/assertions-waiting.md)     |
+| **Fixing flaky tests** | [debugging/flaky-tests.md](debugging/flaky-tests.md), [debugging/debugging.md](debugging/debugging.md)         |
+| **Race conditions**    | [debugging/flaky-tests.md](debugging/flaky-tests.md), [core/assertions-waiting.md](core/assertions-waiting.md) |
+| **Console/JS errors**  | [debugging/console-errors.md](debugging/console-errors.md)                                                     |
+| **Selector issues**    | [core/locators.md](core/locators.md), [debugging/debugging.md](debugging/debugging.md)                         |
+| **Timeout issues**     | [core/assertions-waiting.md](core/assertions-waiting.md), [debugging/debugging.md](debugging/debugging.md)     |
 
 ### Advanced Patterns
 
-**When to use**: Complex scenarios, API mocking, network interception
+| Activity                    | Reference Files                                                                                                        |
+| --------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| **Mocking API responses**   | [advanced/network-advanced.md](advanced/network-advanced.md)                                                           |
+| **Network interception**    | [advanced/network-advanced.md](advanced/network-advanced.md), [core/assertions-waiting.md](core/assertions-waiting.md) |
+| **OAuth/SSO mocking**       | [advanced/third-party.md](advanced/third-party.md), [advanced/multi-context.md](advanced/multi-context.md)             |
+| **Payment gateway mocking** | [advanced/third-party.md](advanced/third-party.md)                                                                     |
+| **Multi-user testing**      | [advanced/multi-user.md](advanced/multi-user.md)                                                                       |
+| **WebSocket/real-time**     | [browser-apis/websockets.md](browser-apis/websockets.md)                                                               |
+| **Performance budgets**     | [testing-patterns/performance-testing.md](testing-patterns/performance-testing.md)                                     |
+| **Mobile/responsive**       | [advanced/mobile-testing.md](advanced/mobile-testing.md)                                                               |
 
-| Activity                             | Reference Files                                                                                              |
-| ------------------------------------ | ------------------------------------------------------------------------------------------------------------ |
-| **Mocking API responses**            | [test-suite-structure.md](core/test-suite-structure.md), [network-advanced.md](advanced/network-advanced.md) |
-| **Network interception**             | [network-advanced.md](advanced/network-advanced.md), [assertions-waiting.md](core/assertions-waiting.md)     |
-| **GraphQL mocking**                  | [network-advanced.md](advanced/network-advanced.md)                                                          |
-| **HAR recording/playback**           | [network-advanced.md](advanced/network-advanced.md)                                                          |
-| **Custom fixtures**                  | [fixtures-hooks.md](core/fixtures-hooks.md)                                                                  |
-| **Advanced waiting strategies**      | [assertions-waiting.md](core/assertions-waiting.md)                                                          |
-| **OAuth/SSO mocking**                | [third-party.md](advanced/third-party.md), [multi-context.md](advanced/multi-context.md)                     |
-| **Payment gateway mocking**          | [third-party.md](advanced/third-party.md)                                                                    |
-| **Email/SMS verification mocking**   | [third-party.md](advanced/third-party.md)                                                                    |
-| **Failing on console errors**        | [console-errors.md](debugging/console-errors.md)                                                             |
-| **Security testing (XSS, CSRF)**     | [security-testing.md](testing-patterns/security-testing.md)                                                  |
-| **Performance budgets & Web Vitals** | [performance-testing.md](testing-patterns/performance-testing.md)                                            |
-| **Lighthouse integration**           | [performance-testing.md](testing-patterns/performance-testing.md)                                            |
-| **Test annotations (skip, fixme)**   | [annotations.md](core/annotations.md)                                                                        |
-| **Test tags (@smoke, @fast)**        | [test-tags.md](core/test-tags.md)                                                                            |
-| **Test steps for reporting**         | [annotations.md](core/annotations.md)                                                                        |
+### Infrastructure & CI/CD
 
-## Quick Decision Tree
+| Activity               | Reference Files                                                                                                                                  |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **CI/CD setup**        | [infrastructure-ci-cd/ci-cd.md](infrastructure-ci-cd/ci-cd.md), [infrastructure-ci-cd/github-actions.md](infrastructure-ci-cd/github-actions.md) |
+| **Parallel execution** | [infrastructure-ci-cd/parallel-sharding.md](infrastructure-ci-cd/parallel-sharding.md)                                                           |
+| **Docker setup**       | [infrastructure-ci-cd/docker.md](infrastructure-ci-cd/docker.md)                                                                                 |
+| **Test coverage**      | [infrastructure-ci-cd/test-coverage.md](infrastructure-ci-cd/test-coverage.md)                                                                   |
+| **Reporting**          | [infrastructure-ci-cd/reporting.md](infrastructure-ci-cd/reporting.md)                                                                           |
+
+---
+
+## ✅ 7. Test Validation Loop
+
+After writing or modifying tests (`verification-before-completion` embedded):
+
+```bash
+# 1. Run tests
+pnpm test:admin -- <feature>.spec.ts
+# or
+pnpm test:desktop -- <feature>.spec.ts
+
+# 2. If failing → review error output and trace
+npx playwright show-trace
+
+# 3. Fix locators, waits, or assertions (never add sleep())
+
+# 4. Re-run — must pass consistently
+pnpm test:admin -- <feature>.spec.ts --repeat-each=3
+
+# 5. Only proceed when all tests pass 3+ consecutive runs
+```
+
+### Systematic Debugging for Test Failures (`systematic-debugging`)
+
+```
+NO FIXES WITHOUT ROOT CAUSE INVESTIGATION FIRST
+```
+
+1. **Root Cause**: Read full error output. Is it a selector issue, timing, missing test data, or logic error?
+2. **Trace Viewer**: `npx playwright show-trace trace.zip` — inspect exact DOM state at failure.
+3. **Hypothesis**: _"I think the test fails because the button is not yet rendered when we click."_
+4. **Minimal Fix**: Smallest possible change — add condition wait, fix selector, or adjust test data.
+5. **Verify**: Run 3+ times to confirm stability. Check no regressions in related tests.
+
+**🚨 Circuit Breaker**: If 3+ different fixes fail → STOP. The test architecture itself needs redesign.
+
+---
+
+## 🔖 8. Quick Decision Tree
 
 ```
 What are you doing?
 │
-├─ Writing a new test?
-│  ├─ E2E test → core/test-suite-structure.md, core/locators.md, core/assertions-waiting.md
-│  ├─ Component test → testing-patterns/component-testing.md
-│  ├─ API test → testing-patterns/api-testing.md, core/test-suite-structure.md
-│  ├─ GraphQL test → testing-patterns/graphql-testing.md
-│  ├─ Visual regression → testing-patterns/visual-regression.md
-│  ├─ Visual/canvas test → testing-patterns/canvas-webgl.md, core/test-suite-structure.md
-│  ├─ Accessibility test → testing-patterns/accessibility.md
-│  ├─ Mobile/responsive test → advanced/mobile-testing.md
-│  ├─ i18n/locale test → testing-patterns/i18n.md
-│  ├─ Electron app test → testing-patterns/electron.md
-│  ├─ Browser extension test → testing-patterns/browser-extensions.md
-│  ├─ Multi-user test → advanced/multi-user.md
-│  ├─ Form validation test → testing-patterns/forms-validation.md
-│  └─ Drag and drop test → testing-patterns/drag-drop.md
+├─ SmartFeed-specific?
+│  ├─ Writing feature test → Section 5: SmartFeed Patterns
+│  ├─ TDD RED phase → Section 2: TDD Integration
+│  ├─ Test is flaky → Section 4: Condition-Based Waiting
+│  └─ Backend teardown → Section 5.5: cleanDatabase
 │
-├─ Testing specific features?
-│  ├─ File upload/download → testing-patterns/file-operations.md, testing-patterns/file-upload-download.md
-│  ├─ Date/time dependent → advanced/clock-mocking.md
-│  ├─ WebSocket/real-time → browser-apis/websockets.md
-│  ├─ Geolocation/permissions → browser-apis/browser-apis.md
-│  ├─ OAuth/SSO mocking → advanced/third-party.md, advanced/multi-context.md
-│  ├─ Payments/email/SMS → advanced/third-party.md
-│  ├─ iFrames → browser-apis/iframes.md
-│  ├─ Canvas/WebGL/charts → testing-patterns/canvas-webgl.md
-│  ├─ Service workers/PWA → browser-apis/service-workers.md
-│  ├─ i18n/localization → testing-patterns/i18n.md
-│  ├─ Security (XSS, CSRF) → testing-patterns/security-testing.md
-│  └─ Performance/Web Vitals → testing-patterns/performance-testing.md
+├─ Writing a new test?
+│  ├─ E2E → core/test-suite-structure.md, core/locators.md
+│  ├─ Component → testing-patterns/component-testing.md
+│  ├─ API → testing-patterns/api-testing.md
+│  ├─ Accessibility → testing-patterns/accessibility.md
+│  ├─ i18n → testing-patterns/i18n.md
+│  ├─ Electron → testing-patterns/electron.md
+│  └─ Visual regression → testing-patterns/visual-regression.md
+│
+├─ Test is failing/flaky?
+│  ├─ Flaky → debugging/flaky-tests.md + Section 4 (no sleep!)
+│  ├─ Timeout → core/assertions-waiting.md + Section 4
+│  ├─ Selector → core/locators.md
+│  └─ Race condition → debugging/flaky-tests.md + Section 4
 │
 ├─ Architecture decisions?
 │  ├─ POM vs fixtures → architecture/pom-vs-fixtures.md
 │  ├─ Test type selection → architecture/test-architecture.md
-│  ├─ Mock vs real services → architecture/when-to-mock.md
-│  └─ Test suite structure → core/test-suite-structure.md
+│  └─ Mock vs real → architecture/when-to-mock.md + Section 3 Law 3
 │
-├─ Framework-specific testing?
-│  ├─ React app → frameworks/react.md
-│  ├─ Angular app → frameworks/angular.md
-│  ├─ Vue/Nuxt app → frameworks/vue.md
-│  └─ Next.js app → frameworks/nextjs.md
+├─ Framework-specific?
+│  ├─ React/Next.js → frameworks/react.md, frameworks/nextjs.md
+│  └─ Electron/Tauri → testing-patterns/electron.md
 │
-├─ Authentication testing?
-│  ├─ Basic auth patterns → advanced/authentication.md
-│  └─ Complex flows (MFA, reset) → advanced/authentication-flows.md
-│
-├─ Test is failing/flaky?
-│  ├─ Flaky test investigation → debugging/flaky-tests.md
-│  ├─ Element not found → core/locators.md, debugging/debugging.md
-│  ├─ Timeout issues → core/assertions-waiting.md, debugging/debugging.md
-│  ├─ Race conditions → debugging/flaky-tests.md, debugging/debugging.md
-│  ├─ Flaky only with multiple workers → debugging/flaky-tests.md, infrastructure-ci-cd/performance.md
-│  ├─ State leak / isolation → debugging/flaky-tests.md, core/fixtures-hooks.md
-│  ├─ Console/JS errors → debugging/console-errors.md, debugging/debugging.md
-│  └─ General debugging → debugging/debugging.md
-│
-├─ Testing error scenarios?
-│  ├─ Network failures → debugging/error-testing.md, advanced/network-advanced.md
-│  ├─ Offline (unexpected) → debugging/error-testing.md
-│  ├─ Offline-first/PWA → browser-apis/service-workers.md
-│  ├─ Error boundaries → debugging/error-testing.md
-│  └─ Form validation → testing-patterns/forms-validation.md, debugging/error-testing.md
-│
-├─ Refactoring existing code?
-│  ├─ Implementing POM → core/page-object-model.md
-│  ├─ Improving selectors → core/locators.md
-│  ├─ Extracting fixtures → core/fixtures-hooks.md
-│  ├─ Creating data factories → core/test-data.md
-│  └─ Configuration setup → core/configuration.md
-│
-├─ Setting up infrastructure?
-│  ├─ CI/CD → infrastructure-ci-cd/ci-cd.md
-│  ├─ GitHub Actions → infrastructure-ci-cd/github-actions.md
-│  ├─ GitLab CI → infrastructure-ci-cd/gitlab.md
-│  ├─ Other CI providers → infrastructure-ci-cd/other-providers.md
-│  ├─ Docker/containers → infrastructure-ci-cd/docker.md
-│  ├─ Sharding/parallel → infrastructure-ci-cd/parallel-sharding.md
-│  ├─ Reporting/artifacts → infrastructure-ci-cd/reporting.md
-│  ├─ Global setup/teardown → core/global-setup.md
-│  ├─ Project dependencies → core/projects-dependencies.md
-│  ├─ Test performance → infrastructure-ci-cd/performance.md
-│  ├─ Test coverage → infrastructure-ci-cd/test-coverage.md
-│  └─ Project config → core/configuration.md, core/projects-dependencies.md
-│
-├─ Organizing tests?
-│  ├─ Skip/fixme/slow tests → core/annotations.md
-│  ├─ Test tags (@smoke, @fast) → core/test-tags.md
-│  ├─ Filtering tests (--grep) → core/test-tags.md
-│  ├─ Test steps → core/annotations.md
-│  └─ Conditional execution → core/annotations.md
-│
-└─ Running subset of tests?
-   ├─ By tag (@smoke, @critical) → core/test-tags.md
-   ├─ Exclude slow/flaky tests → core/test-tags.md
-   ├─ PR vs nightly tests → core/test-tags.md, infrastructure-ci-cd/ci-cd.md
-   └─ Project-specific filtering → core/test-tags.md, core/configuration.md
+└─ CI/CD setup?
+   ├─ GitHub Actions → infrastructure-ci-cd/github-actions.md
+   ├─ Parallel runs → infrastructure-ci-cd/parallel-sharding.md
+   └─ Reporting → infrastructure-ci-cd/reporting.md
 ```
 
-## Test Validation Loop
+**Related Project Rules** (always active):
 
-After writing or modifying tests:
-
-1. **Run tests**: `npx playwright test --reporter=list`
-2. **If tests fail**:
-   - Review error output and trace (`npx playwright show-trace`)
-   - Fix locators, waits, or assertions
-   - Re-run tests
-3. **Only proceed when all tests pass**
-4. **Run multiple times** for critical tests: `npx playwright test --repeat-each=5`
+- [testing_and_quality.md](../../rules/testing_and_quality.md) — cleanDatabase, 100% i18n tests, Git policy
+- [commands.md](../../rules/commands.md) — SmartFeed test commands & ports
+- [frontend_network_dedup.md](../../rules/frontend_network_dedup.md) — requestCount===1 assertions

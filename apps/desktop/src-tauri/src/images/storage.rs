@@ -1,5 +1,5 @@
 use std::fs;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 
 pub fn ensure_images_directories(workspace_root: &Path) -> std::io::Result<()> {
     let images_root = workspace_root.join("images");

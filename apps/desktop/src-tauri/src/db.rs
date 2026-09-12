@@ -487,6 +487,7 @@ pub fn get_products(conn: &Connection) -> Result<Vec<ProductDto>> {
             raw_payload: row.get(21)?,
             created_at: row.get(22)?,
             updated_at: row.get(23)?,
+            images: vec![],
         })
     })?;
 
