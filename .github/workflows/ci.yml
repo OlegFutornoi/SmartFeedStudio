@@ -22,8 +22,6 @@ jobs:
 
       - name: Setup pnpm package manager
         uses: pnpm/action-setup@v4
-        with:
-          version: 9
 
       - name: Setup Node.js 22 LTS with pnpm cache
         uses: actions/setup-node@v4
@@ -60,8 +58,6 @@ jobs:
 
       - name: Setup pnpm package manager
         uses: pnpm/action-setup@v4
-        with:
-          version: 9
 
       - name: Setup Node.js 22 LTS with pnpm cache
         uses: actions/setup-node@v4

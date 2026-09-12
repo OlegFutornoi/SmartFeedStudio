@@ -1,6 +1,3 @@
-#!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
-
 echo "🔍 [Pre-Push] Перевірка цілісності збірки перед відправкою (pnpm verify:build)..."
 pnpm verify:build
 

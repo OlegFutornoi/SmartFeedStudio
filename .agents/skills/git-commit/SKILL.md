@@ -1,6 +1,6 @@
 ---
 name: git-commit
-description: 'Execute automated end-to-end git commit workflow: intelligent staging, conventional commit generation, automatic SemVer release version tagging, and push with tags to remote. Use when user asks to commit changes, create a git commit, or mentions "/git-commit" or "/commit".'
+description: 'Execute automated end-to-end git commit workflow: pre-commit build and typecheck verification (Zero-Broken-Build), intelligent staging, conventional commit generation, automatic SemVer release version tagging, and push with tags to remote. Use when user asks to commit changes, create a git commit, or mentions "/git-commit" or "/commit".'
 license: MIT
 allowed-tools: Bash
 ---
@@ -11,6 +11,7 @@ allowed-tools: Bash
 
 Execute the complete, automated end-to-end git release workflow upon explicit user request (`/git-commit` or `/commit`):
 
+0. **Pre-Commit Verification Gate**: Run `pnpm verify:build` to guarantee contracts, Prisma schema, TypeScript across all packages, backend NestJS, Desktop frontend, and Rust/Tauri compile cleanly with 0 errors before staging.
 1. **Analyze & Stage**: Stage modified and untracked files safely (`git add .`).
 2. **Conventional Commit**: Generate and execute semantic Conventional Commit message based on the diff.
 3. **Automated SemVer Tagging**: Calculate the next version tag and create an annotated tag (`git tag -a vX.Y.Z -m "Release vX.Y.Z: ..."`).
@@ -49,9 +50,36 @@ Execute the complete, automated end-to-end git release workflow upon explicit us
 
 ---
 
-## ⚡ Mandatory 4-Step Automated Execution Pipeline
+## ⚡ Mandatory 5-Step Automated Execution Pipeline
 
-Whenever the user invokes `/git-commit` (or `/commit`), execute all 4 steps sequentially without stopping midway:
+Whenever the user invokes `/git-commit` (or `/commit`), execute all 5 steps sequentially without stopping midway:
+
+### 0. Pre-Commit Build & Integrity Gate (Zero-Broken-Build Policy)
+
+Before staging (`git add`) or committing any changes, **ALWAYS** run the full integrity check:
+
+```bash
+pnpm verify:build
+```
+
+This gate runs:
+
+1. `pnpm build:shared`: Verifies `@smartfeed/shared` contracts and TypeScript types.
+2. `pnpm prisma:generate`: Syncs Prisma Client with `schema.prisma`.
+3. `tsc --noEmit` across all 3 packages:
+   - `@smartfeed/backend-api`
+   - `@smartfeed/desktop`
+   - `admin-portal`
+4. Monorepo builds:
+   - `pnpm build:backend` (NestJS production build)
+   - `pnpm build:desktop` (Vite desktop production bundle)
+5. `pnpm verify:rust`: Runs `cargo check --manifest-path apps/desktop/src-tauri/Cargo.toml` if Cargo is present, catching Rust errors (like missing struct fields or invalid crate functions) before GitHub Actions runs.
+
+> 🛑 **Hard Stop on Verification Failure**:
+> If `pnpm verify:build` fails with any compilation, typing, or build error:
+>
+> - **DO NOT PROCEED** to `git add` or `git commit`.
+> - Analyze the exact error output, investigate the root cause, fix the code, and re-run `pnpm verify:build` until it exits with code 0.
 
 ### 1. Stage Modified Files
 
