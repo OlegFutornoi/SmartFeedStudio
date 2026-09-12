@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState, useCallback, useMemo } from 'react';
 
 export type Theme = 'dark' | 'light' | 'system';
-export type AccentColor = 'zinc' | 'slate' | 'stone' | 'gray' | 'neutral' | 'bronze';
+export type AccentColor = 'zinc' | 'slate' | 'stone' | 'gray' | 'neutral' | 'bronze' | 'green';
 export type RadiusPreset = '0' | '0.25' | '0.5' | '0.75';
 
 export interface AccentOption {
@@ -69,7 +69,6 @@ export const ACCENT_OPTIONS: AccentOption[] = [
     labelUk: 'Zinc (Монохромна)',
     labelEn: 'Zinc (Monochrome)',
     colorHex: '#ffffff',
-    isDefault: true,
   },
   {
     id: 'slate',
@@ -101,6 +100,13 @@ export const ACCENT_OPTIONS: AccentOption[] = [
     labelEn: 'Bronze (Metallic)',
     colorHex: '#d97706',
   },
+  {
+    id: 'green',
+    labelUk: 'Green (Смарагдова)',
+    labelEn: 'Green (Emerald)',
+    colorHex: '#22c55e',
+    isDefault: true,
+  },
 ];
 
 interface ThemeProviderProps {
@@ -126,7 +132,7 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 export function ThemeProvider({
   children,
   defaultTheme = 'dark',
-  defaultAccent = 'zinc',
+  defaultAccent = 'green',
   defaultRadius = '0.5',
   storageKey = 'smartfeed_theme',
 }: ThemeProviderProps) {

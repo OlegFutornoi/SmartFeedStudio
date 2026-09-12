@@ -133,6 +133,19 @@
     --ring: 30 50% 28%;
   }
 
+  /* 7. Green (Emerald) */
+  [data-accent='green'] {
+    --primary: 142 71% 45%;
+    --primary-foreground: 144 80% 7%;
+    --ring: 142 71% 45%;
+  }
+  .light[data-accent='green'],
+  .light [data-accent='green'] {
+    --primary: 142 76% 32%;
+    --primary-foreground: 0 0% 98%;
+    --ring: 142 76% 32%;
+  }
+
   /* Border Radius Presets (Global UI Harmony) */
   [data-radius='0'],
   :root[data-radius='0'],

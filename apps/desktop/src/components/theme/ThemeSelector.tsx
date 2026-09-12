@@ -94,8 +94,8 @@ export function ThemeSelector() {
           </div>
           <span className="text-xs text-muted-foreground">
             {isUk
-              ? 'Монохромна, сланцева, кам’яна, графітова або бронзова палітра'
-              : 'Zinc, slate, stone, gray, neutral, or dark bronze theme'}
+              ? 'Монохромна, сланцева, кам’яна, графітова, бронзова або смарагдова палітра'
+              : 'Zinc, slate, stone, gray, neutral, bronze, or emerald green theme'}
           </span>
         </div>
 
@@ -126,7 +126,7 @@ export function ThemeSelector() {
           {isOpen && (
             <div
               data-testid="accent-color-dropdown-menu"
-              className="absolute top-full right-0 mt-1.5 z-50 w-full min-w-[220px] p-1.5 rounded-lg border border-border bg-popover bg-zinc-950 dark:bg-zinc-950 text-popover-foreground shadow-2xl flex flex-col gap-0.5 animate-in fade-in zoom-in-95 duration-100"
+              className="absolute top-full right-0 mt-1.5 z-50 w-full min-w-[220px] p-1.5 rounded-lg border border-border bg-popover text-popover-foreground shadow-2xl flex flex-col gap-0.5 animate-in fade-in zoom-in-95 duration-100"
             >
               {ACCENT_OPTIONS.map((opt) => {
                 const isSelected = accentColor === opt.id;
