@@ -98,88 +98,148 @@ test.describe('Desktop App — Віртуалізована Таблиця То�
       window.localStorage.setItem('smartfeed_theme', 'dark');
       window.localStorage.setItem('has_selected_workspace', 'true');
       window.localStorage.setItem('workspace_path', '/mock/workspace/storage');
+      window.localStorage.setItem('smartfeed_workspace_path', '/mock/workspace/storage');
+      window.localStorage.setItem('smartfeed_workspace_initialized', 'true');
+      window.localStorage.setItem('smartfeed_show_workspace_onboarding', 'false');
       window.localStorage.setItem('smartfeed_e2e_seed', 'true');
     }, mockUser);
 
-    await page.route('**/api/auth/me', async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify(mockUser),
-      });
-    });
+    await page.route('**/api/**', async (route) => {
+      const url = route.request().url();
+      if (url.includes('/src/')) {
+        return route.continue();
+      }
 
-    await page.route('**/api/licenses/my', async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify(mockLicenseState),
-      });
-    });
+      if (url.includes('/api/auth/me')) {
+        return route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify(mockUser),
+        });
+      }
 
-    await page.route('**/api/licenses/quotas', async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify(mockQuotas),
-      });
-    });
+      if (url.includes('/api/licenses/my')) {
+        return route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify(mockLicenseState),
+        });
+      }
 
-    await page.route('**/api/suppliers*', async (route) => {
-      if (route.request().method() === 'GET') {
-        await route.fulfill({
+      if (url.includes('/api/licenses/quotas')) {
+        return route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify(mockQuotas),
+        });
+      }
+
+      if (url.includes('/api/suppliers')) {
+        return route.fulfill({
           status: 200,
           contentType: 'application/json',
           body: JSON.stringify(mockSuppliers),
         });
-      } else {
-        await route.continue();
       }
-    });
 
-    await page.route('**/api/navigation/active?app=DESKTOP', async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify([
-          {
-            id: '1',
-            key: 'home',
-            labelUk: 'Головна',
-            labelEn: 'Home',
-            path: '/',
-            icon: 'Home',
-            isVisible: true,
-          },
-          {
-            id: '2',
-            key: 'suppliers',
-            labelUk: 'Постачальники',
-            labelEn: 'Suppliers',
-            path: '/suppliers',
-            icon: 'Truck',
-            isVisible: true,
-          },
-          {
-            id: '3',
-            key: 'catalogs',
-            labelUk: 'Каталоги товарів',
-            labelEn: 'Catalogs',
-            path: '/catalogs',
-            icon: 'Layers',
-            isVisible: true,
-          },
-          {
-            id: '4',
-            key: 'plans',
-            labelUk: 'Тарифні плани',
-            labelEn: 'Plans',
-            path: '/plans',
-            icon: 'Shield',
-            isVisible: true,
-          },
-        ]),
-      });
+      if (url.includes('/api/background-jobs/active')) {
+        return route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify([]),
+        });
+      }
+
+      if (url.includes('/api/storage/workspace/default-path')) {
+        return route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({ defaultPath: '/mock/workspace/storage' }),
+        });
+      }
+
+      if (url.includes('/api/storage/workspace/info')) {
+        return route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            workspacePath: '/mock/workspace/storage',
+            isInitialized: true,
+            databasePath: '/mock/workspace/storage/catalog.db',
+            feedsPath: '/mock/workspace/storage/feeds',
+            imagesPath: '/mock/workspace/storage/images',
+            isEncrypted: true,
+            encryptionAlgorithm: 'SQLCipher-AES256',
+            sizeBytes: 25000000,
+            freeSpaceBytes: 150000000000,
+            createdAt: new Date().toISOString(),
+          }),
+        });
+      }
+
+      if (url.includes('/api/storage/workspace/stats')) {
+        return route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            workspacePath: '/mock/workspace/storage',
+            databaseSizeBytes: 2400000,
+            feedsCount: 2,
+            feedsSizeBytes: 5200000,
+            imagesCount: 30,
+            imagesSizeBytes: 12000000,
+            totalSizeBytes: 19600000,
+            freeDiskSpaceBytes: 120000000000,
+          }),
+        });
+      }
+
+      if (url.includes('/api/navigation')) {
+        return route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify([
+            {
+              id: '1',
+              key: 'home',
+              labelUk: 'Головна',
+              labelEn: 'Home',
+              path: '/',
+              icon: 'Home',
+              isVisible: true,
+            },
+            {
+              id: '2',
+              key: 'suppliers',
+              labelUk: 'Постачальники',
+              labelEn: 'Suppliers',
+              path: '/suppliers',
+              icon: 'Truck',
+              isVisible: true,
+            },
+            {
+              id: '3',
+              key: 'catalogs',
+              labelUk: 'Каталоги товарів',
+              labelEn: 'Catalogs',
+              path: '/catalogs',
+              icon: 'Layers',
+              isVisible: true,
+            },
+            {
+              id: '4',
+              key: 'plans',
+              labelUk: 'Тарифні плани',
+              labelEn: 'Plans',
+              path: '/plans',
+              icon: 'Shield',
+              isVisible: true,
+            },
+          ]),
+        });
+      }
+
+      return route.continue();
     });
 
     await page.goto('/catalogs');

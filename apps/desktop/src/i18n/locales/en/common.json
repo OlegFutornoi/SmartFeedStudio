@@ -25,5 +25,7 @@
   "upgradeQuota": "Increase Quota",
   "remaining": "Remaining",
   "upgrade": "Upgrade",
-  "availableMore": "Available"
+  "availableMore": "Available",
+  "previous": "Previous",
+  "next": "Next"
 }

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Copy, Check, Eye, Trash2, Package, MoreHorizontal } from 'lucide-react';
+import { Copy, Check, Eye, Trash2, MoreHorizontal } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useTranslation } from '@/i18n';
 import type { ProductDto } from '@smartfeed/shared';
+import { ProductImageThumbnail } from './ProductImageThumbnail';
 
 interface ProductTableRowProps {
   product: ProductDto;
@@ -64,21 +65,13 @@ export const ProductTableRow: React.FC<ProductTableRowProps> = ({
 
       {/* Image Thumbnail */}
       <td className="py-3 px-2 w-12">
-        <div className="h-10 w-10 rounded-lg overflow-hidden bg-muted/40 border border-border/60 flex items-center justify-center shrink-0">
-          {mainImage?.cloudUrl || mainImage?.originalUrl ? (
-            <img
-              src={mainImage.cloudUrl || mainImage.originalUrl}
-              alt={product.titleUk}
-              className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-200"
-              loading="lazy"
-              onError={(e) => {
-                (e.target as HTMLImageElement).style.display = 'none';
-              }}
-            />
-          ) : (
-            <Package className="h-5 w-5 text-muted-foreground/50" />
-          )}
-        </div>
+        <ProductImageThumbnail
+          image={mainImage}
+          alt={product.titleUk}
+          size="md"
+          dataTestId={`product-thumbnail-${product.id}`}
+          imageClassName="group-hover:scale-105 transition-transform duration-200"
+        />
       </td>
 
       {/* SKU & Code */}

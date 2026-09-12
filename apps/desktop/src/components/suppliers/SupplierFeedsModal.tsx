@@ -34,7 +34,7 @@ export function SupplierFeedsModal({
   const { t, language } = useTranslation(['suppliers', 'common']);
   const isUk = language === 'uk';
   const { token } = useAuth();
-  const { isFeedLimitReached } = useQuotas();
+  const { isFeedLimitReached, updateLocalQuota, refreshQuotas } = useQuotas();
   const { addTrackedJob, runBackgroundTask } = useBackgroundJobs();
 
   const [sources, setSources] = useState<FeedSourceItemDto[]>([]);
@@ -70,12 +70,12 @@ export function SupplierFeedsModal({
     if (!supplier) return;
     setSyncingId(sourceId);
     try {
-      const res = await syncSupplierFeedSource(supplier.id, sourceId);
+      const res = await syncSupplierFeedSource(supplier.id, sourceId, token || undefined);
       addTrackedJob(res.jobId);
       await fetchSources();
       emitDataSync(['suppliers', 'feeds', 'products', 'quotas']);
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Помилка синхронізації';
+      const msg = err instanceof Error ? err.message : 'Помилка запуску синхронізації';
       setError(msg);
     } finally {
       setSyncingId(null);
@@ -95,9 +95,19 @@ export function SupplierFeedsModal({
           ? 'Видалення джерела та товарів у фоні'
           : 'Deleting feed and products in background',
         action: async () => {
-          await deleteSupplierFeedSource(supplier.id, target.id, token || undefined, true);
+          const res = await deleteSupplierFeedSource(
+            supplier.id,
+            target.id,
+            token || undefined,
+            true,
+          );
+          if (res?.deletedProductsCount && res.deletedProductsCount > 0) {
+            updateLocalQuota('products', -res.deletedProductsCount);
+          }
+          updateLocalQuota('feeds', -1);
           setSources((prev) => prev.filter((s) => s.id !== target.id));
-          emitDataSync(['suppliers', 'feeds', 'products', 'quotas']);
+          refreshQuotas();
+          emitDataSync(['suppliers', 'feeds', 'products', 'quotas', 'all']);
         },
       });
     } catch (err: unknown) {

@@ -217,7 +217,14 @@ export const ProductsView: React.FC = () => {
       />
 
       {/* Drawer */}
-      <ProductDetailsDrawer product={drawerProduct} onClose={() => setDrawerProduct(null)} />
+      <ProductDetailsDrawer
+        product={drawerProduct}
+        onClose={() => setDrawerProduct(null)}
+        onProductUpdate={(updated) => {
+          setDrawerProduct(updated);
+          setProducts((prev) => prev.map((p) => (p.id === updated.id ? updated : p)));
+        }}
+      />
 
       {/* Single Delete Confirmation */}
       <ConfirmDeleteDialog

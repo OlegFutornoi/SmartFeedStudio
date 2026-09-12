@@ -19,6 +19,11 @@ export const ProductImageDtoSchema = z.object({
   cloudUrl: z.string().nullable().optional(),
   thumbnailUrl: z.string().nullable().optional(),
   s3Key: z.string().nullable().optional(),
+  localPath: z.string().nullable().optional(),
+  thumbnailPath: z.string().nullable().optional(),
+  fileHash: z.string().nullable().optional(),
+  fileSize: z.number().int().optional(),
+  status: z.string().optional(),
   order: z.number().int().default(0),
   isMain: z.boolean().default(false),
 });

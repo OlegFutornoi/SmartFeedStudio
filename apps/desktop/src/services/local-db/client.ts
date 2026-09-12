@@ -177,6 +177,27 @@ export async function invokeLocalDb<K extends keyof LocalDbCommandMap>(
       return mockDatabaseDriver.bulkUpsertProducts(a.products) as LocalDbCommandMap[K]['result'];
     }
 
+    // Images
+    case 'db_get_product_images': {
+      const a = args as LocalDbCommandMap['db_get_product_images']['args'];
+      return mockDatabaseDriver.getProductImages(a.productId) as LocalDbCommandMap[K]['result'];
+    }
+    case 'db_delete_product_image': {
+      const a = args as LocalDbCommandMap['db_delete_product_image']['args'];
+      return mockDatabaseDriver.deleteProductImage(a.imageId) as LocalDbCommandMap[K]['result'];
+    }
+    case 'db_update_product_images_order': {
+      const a = args as LocalDbCommandMap['db_update_product_images_order']['args'];
+      return mockDatabaseDriver.updateImagesOrder(a.payload) as LocalDbCommandMap[K]['result'];
+    }
+    case 'db_download_product_image': {
+      const a = args as LocalDbCommandMap['db_download_product_image']['args'];
+      return mockDatabaseDriver.downloadProductImage(
+        a.imageId,
+        a.imageUrl,
+      ) as LocalDbCommandMap[K]['result'];
+    }
+
     default:
       throw new Error(`Unknown LocalDB command: ${command}`);
   }

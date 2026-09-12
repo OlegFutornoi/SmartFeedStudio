@@ -3,6 +3,7 @@ import { localPricingService } from './pricing.service';
 import { localExportService } from './export.service';
 import { localProductsService } from './products.service';
 import { localFeedsService } from './feeds.service';
+import { localImagesService } from './images.service';
 import { mockDatabaseDriver } from './mock-driver';
 
 export {
@@ -11,6 +12,7 @@ export {
   localExportService,
   localProductsService,
   localFeedsService,
+  localImagesService,
   mockDatabaseDriver,
 };
 
@@ -20,6 +22,7 @@ export const localDb = {
   export: localExportService,
   products: localProductsService,
   feeds: localFeedsService,
+  images: localImagesService,
   mockDriver: mockDatabaseDriver,
 };
 

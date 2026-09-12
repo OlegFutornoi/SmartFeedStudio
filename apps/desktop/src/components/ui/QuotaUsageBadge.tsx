@@ -26,7 +26,7 @@ export function QuotaUsageBadge({ quota, unit, className = '' }: QuotaUsageBadge
 
   let colorClasses = 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20';
   if (isCritical) {
-    colorClasses = 'text-rose-400 bg-rose-500/10 border-rose-500/25 animate-pulse';
+    colorClasses = 'text-emerald-400 bg-emerald-500/15 border-emerald-500/30 font-semibold';
   } else if (isWarning) {
     colorClasses = 'text-amber-400 bg-amber-500/10 border-amber-500/25';
   }

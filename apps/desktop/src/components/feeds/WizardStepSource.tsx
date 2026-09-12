@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Globe, FileText, UploadCloud, Loader2, Sparkles, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -17,6 +17,7 @@ interface WizardStepSourceProps {
   onFileSelect: (name: string, content: string) => void;
   isAnalyzing: boolean;
   onAnalyzeUrl: () => void;
+  onAnalyzeFile?: () => void;
   analysis?: FeedAnalysisResult | null;
   error?: string | null;
 }
@@ -30,11 +31,17 @@ export function WizardStepSource({
   onFileSelect,
   isAnalyzing,
   onAnalyzeUrl,
+  onAnalyzeFile,
   analysis,
   error,
 }: WizardStepSourceProps) {
   const { t } = useTranslation(['suppliers', 'common']);
   const [dragOver, setDragOver] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handlePickFile = () => {
+    fileInputRef.current?.click();
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -158,6 +165,16 @@ export function WizardStepSource({
         </div>
       ) : (
         <div className="space-y-3">
+          {/* Hidden native file input — triggered via ref to fix Tauri WebView label click bug */}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".xml,.yml,.csv,.txt"
+            className="hidden"
+            onChange={handleFileChange}
+            disabled={isAnalyzing}
+          />
+
           <div
             onDragOver={(e) => {
               e.preventDefault();
@@ -165,25 +182,27 @@ export function WizardStepSource({
             }}
             onDragLeave={() => setDragOver(false)}
             onDrop={handleDrop}
-            className={`border-2 border-dashed rounded-xl p-6 text-center transition-colors ${
+            onClick={!isAnalyzing ? handlePickFile : undefined}
+            className={`border-2 border-dashed rounded-xl p-6 text-center transition-colors cursor-pointer ${
               dragOver
                 ? 'border-primary bg-primary/5'
                 : 'border-border/60 hover:border-primary/40 bg-secondary/10'
             }`}
           >
-            <input
-              type="file"
-              id="feed-file-upload"
-              accept=".xml,.yml,.csv,.txt"
-              className="hidden"
-              onChange={handleFileChange}
-            />
-            <label htmlFor="feed-file-upload" className="cursor-pointer block space-y-2">
+            <div className="space-y-2">
               <div className="size-10 rounded-full bg-primary/10 text-primary flex items-center justify-center mx-auto">
-                <UploadCloud className="size-5" />
+                {isAnalyzing ? (
+                  <Loader2 className="size-5 animate-spin text-primary" />
+                ) : (
+                  <UploadCloud className="size-5" />
+                )}
               </div>
               <div className="text-xs font-medium text-foreground">
-                {fileName ? (
+                {isAnalyzing ? (
+                  <span className="text-primary font-medium animate-pulse">
+                    {t('suppliers:analyzingFile', { defaultValue: 'Аналіз структури файлу…' })}
+                  </span>
+                ) : fileName ? (
                   <span className="text-primary font-semibold">{fileName}</span>
                 ) : (
                   t('suppliers:dragDropFile', {
@@ -192,8 +211,23 @@ export function WizardStepSource({
                 )}
               </div>
               <p className="text-[11px] text-muted-foreground">XML, YML, CSV (до 100 МБ)</p>
-            </label>
+            </div>
           </div>
+
+          {fileName && !isAnalyzing && !analysis && (
+            <div className="flex justify-center">
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                onClick={onAnalyzeFile}
+                className="text-xs h-8 px-3 flex items-center gap-1.5"
+              >
+                <Sparkles className="size-3 text-primary" />
+                {t('suppliers:analyzeFeed', { defaultValue: 'Аналізувати' })}
+              </Button>
+            </div>
+          )}
 
           {/* Inline Analysis Result Card for file */}
           {analysis && !isAnalyzing && <FeedAnalysisCard analysis={analysis} />}

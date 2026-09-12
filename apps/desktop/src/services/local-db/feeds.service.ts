@@ -57,6 +57,7 @@ export class LocalFeedsService {
 
     // Save or update feed source record using universal DB invoke
     const payload = {
+      id: feedSourceId,
       name:
         options.fileName ||
         (options.sourceUrl

@@ -34,6 +34,7 @@ pub fn open_encrypted_connection(db_path: &Path) -> Result<Connection> {
         let pragma_sql = format!("PRAGMA key = '{}';", key);
         let _ = conn.execute_batch(&pragma_sql);
     }
+    let _ = conn.execute_batch("PRAGMA foreign_keys = ON;");
     init_schema(&conn)?;
     Ok(conn)
 }
@@ -133,6 +134,7 @@ pub fn init_schema(conn: &Connection) -> Result<()> {
         CREATE INDEX IF NOT EXISTS idx_feeds_supplier ON local_feed_sources(supplier_id);
         "#,
     )?;
+    crate::images::db::init_images_schema(conn)?;
     Ok(())
 }
 
@@ -267,6 +269,12 @@ pub fn create_supplier(conn: &Connection, dto: CreateSupplierDto) -> Result<Supp
 }
 
 pub fn delete_supplier(conn: &Connection, id: &str) -> Result<()> {
+    let _ = conn.execute(
+        "DELETE FROM local_product_images WHERE product_id IN (SELECT id FROM local_products WHERE supplier_id = ?1)",
+        [id],
+    );
+    let _ = conn.execute("DELETE FROM local_products WHERE supplier_id = ?1", [id]);
+    let _ = conn.execute("DELETE FROM local_feed_sources WHERE supplier_id = ?1", [id]);
     conn.execute("DELETE FROM local_suppliers WHERE id = ?1", [id])?;
     let _ = sync_counters(conn);
     Ok(())
@@ -385,7 +393,7 @@ pub fn get_supplier_feed_sources(conn: &Connection, supplier_id: &str) -> Result
 }
 
 pub fn create_feed_source(conn: &Connection, dto: CreateFeedSourceDto) -> Result<FeedSourceDto> {
-    let id = format!("sf_feed_{}", uuid::Uuid::new_v4().to_string().replace("-", ""));
+    let id = dto.id.unwrap_or_else(|| format!("sf_feed_{}", uuid::Uuid::new_v4().to_string().replace("-", "")));
     
     conn.execute(
         "INSERT INTO local_feed_sources (id, supplier_id, name, source_type, file_format, source_url, auth_header_name, auth_header_value, sync_interval_hours, auto_update_prices, auto_update_stocks, auto_create_new_products, mapping_rules)
@@ -434,11 +442,15 @@ pub fn create_feed_source(conn: &Connection, dto: CreateFeedSourceDto) -> Result
 }
 
 pub fn delete_feed_source(conn: &Connection, id: &str, delete_products: bool) -> Result<usize> {
-    conn.execute("DELETE FROM local_feed_sources WHERE id = ?1", [id])?;
     let mut deleted = 0;
     if delete_products {
+        let _ = conn.execute(
+            "DELETE FROM local_product_images WHERE product_id IN (SELECT id FROM local_products WHERE feed_source_id = ?1)",
+            [id],
+        );
         deleted = conn.execute("DELETE FROM local_products WHERE feed_source_id = ?1", [id])?;
     }
+    conn.execute("DELETE FROM local_feed_sources WHERE id = ?1", [id])?;
     let _ = sync_counters(conn);
     Ok(deleted)
 }
@@ -481,6 +493,15 @@ pub fn get_products(conn: &Connection) -> Result<Vec<ProductDto>> {
     let mut products = Vec::new();
     for product in product_iter {
         products.push(product?);
+    }
+    
+    let ids: Vec<String> = products.iter().map(|p| p.id.clone()).collect();
+    if let Ok(images_map) = crate::images::db::get_images_for_products(conn, &ids) {
+        for prod in &mut products {
+            if let Some(imgs) = images_map.get(&prod.id) {
+                prod.images = imgs.clone();
+            }
+        }
     }
     
     Ok(products)
@@ -531,6 +552,13 @@ pub fn bulk_upsert_products(conn: &mut Connection, products: Vec<CreateProductDt
                 &dto.status,
             ])?;
 
+            let mut prod_images = Vec::new();
+            for img_dto in &dto.images {
+                if let Ok(inserted) = crate::images::db::insert_product_image(&tx, img_dto, &id) {
+                    prod_images.push(inserted);
+                }
+            }
+
             returned_products.push(ProductDto {
                 id,
                 catalog_id: dto.catalog_id.unwrap_or_else(|| "default_catalog".to_string()),
@@ -557,6 +585,7 @@ pub fn bulk_upsert_products(conn: &mut Connection, products: Vec<CreateProductDt
                 in_stock: dto.in_stock,
                 status: dto.status,
                 raw_payload: None,
+                images: prod_images,
                 created_at: chrono::Utc::now().to_rfc3339(),
                 updated_at: chrono::Utc::now().to_rfc3339(),
             });

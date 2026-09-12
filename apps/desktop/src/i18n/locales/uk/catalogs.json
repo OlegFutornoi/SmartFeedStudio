@@ -81,5 +81,20 @@
   "noProductsFound": "Товарів не знайдено",
   "noProductsFoundDesc": "Спробуйте змінити фільтри або імпортуйте новий фід",
   "totalProductsCount": "Всього товарів: {{count}}",
-  "copySkuSuccess": "Артикул скопійовано"
+  "copySkuSuccess": "Артикул скопійовано",
+  "deleteImage": "Видалити фото",
+  "deleteImageConfirmTitle": "Видалити це фото?",
+  "deleteImageConfirmDesc": "Фотографію буде видалено з картки товару, а файл — фізично очищено з локального сховища комп'ютера.",
+  "deleteImageSuccess": "Фотографію та локальний файл успішно видалено",
+  "makeMainImage": "Зробити головним",
+  "mainImageBadge": "Головне",
+  "imageStatusReady": "Збережено на диску",
+  "imageStatusPending": "В черзі завантаження",
+  "imageStatusDownloading": "Завантаження…",
+  "imageStatusFailed": "Помилка завантаження",
+  "imageStatusMissing": "Файл відсутній на диску",
+  "redownloadPhoto": "Завантажити повторно",
+  "noImagesAvailable": "Фотографії відсутні",
+  "viewFullGallery": "Переглянути всі фото",
+  "imageUnavailable": "Зображення недоступне"
 }

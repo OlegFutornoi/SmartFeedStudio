@@ -124,6 +124,8 @@ export async function deleteSupplierFeedSource(
   token?: string,
   deleteProducts = true,
 ): Promise<{ success: boolean; deletedProductsCount?: number }> {
+  let remoteDeletedCount: number | undefined = undefined;
+
   if (!isTauri()) {
     try {
       const query = deleteProducts ? '?deleteProducts=true' : '';
@@ -134,16 +136,29 @@ export async function deleteSupplierFeedSource(
       );
       if (response.ok) {
         const res = await response.json();
-        emitDataSync(['suppliers', 'feeds', 'products', 'quotas']);
-        return res;
+        remoteDeletedCount = res.deletedProductsCount;
       }
     } catch (err) {
       console.warn('[ApiClient] Remote call failed, using local fallback:', err);
     }
   }
-  const result = await localDb.feeds.deleteSupplierFeedSource(supplierId, sourceId, deleteProducts);
-  emitDataSync(['suppliers', 'feeds', 'products', 'quotas']);
-  return result;
+
+  // Always execute cascading deletion in local database (SQLCipher in Tauri / Mock in Web)
+  const localResult = await localDb.feeds.deleteSupplierFeedSource(
+    supplierId,
+    sourceId,
+    deleteProducts,
+  );
+
+  emitDataSync(['suppliers', 'feeds', 'products', 'quotas', 'all']);
+
+  return {
+    success: true,
+    deletedProductsCount:
+      localResult.deletedProductsCount !== undefined && localResult.deletedProductsCount > 0
+        ? localResult.deletedProductsCount
+        : remoteDeletedCount || 0,
+  };
 }
 
 export async function importFeedUrl(

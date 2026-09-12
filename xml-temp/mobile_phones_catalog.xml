@@ -27,8 +27,8 @@
                 <price>7999</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>101</categoryId>
-                <picture>https://www.abc.ua/upload/101/1011001_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/101/1011001_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1511707171634-5f897ff02560?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=500&q=80</picture>
                 <vendor>TechnoLine</vendor>
                 <article>1011001</article>
                 <stock_quantity>55</stock_quantity>
@@ -50,8 +50,8 @@
                 <price>10999</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>101</categoryId>
-                <picture>https://www.abc.ua/upload/101/1011002_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/101/1011002_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1511707171634-5f897ff02560?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=500&q=80</picture>
                 <vendor>MobiTech</vendor>
                 <article>1011002</article>
                 <stock_quantity>60</stock_quantity>
@@ -73,8 +73,8 @@
                 <price>13999</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>101</categoryId>
-                <picture>https://www.abc.ua/upload/101/1011003_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/101/1011003_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1511707171634-5f897ff02560?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=500&q=80</picture>
                 <vendor>GadgetPro</vendor>
                 <article>1011003</article>
                 <stock_quantity>65</stock_quantity>
@@ -96,8 +96,8 @@
                 <price>16999</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>101</categoryId>
-                <picture>https://www.abc.ua/upload/101/1011004_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/101/1011004_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1511707171634-5f897ff02560?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=500&q=80</picture>
                 <vendor>Alcora</vendor>
                 <article>1011004</article>
                 <stock_quantity>70</stock_quantity>
@@ -119,8 +119,8 @@
                 <price>19999</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>101</categoryId>
-                <picture>https://www.abc.ua/upload/101/1011005_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/101/1011005_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1511707171634-5f897ff02560?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=500&q=80</picture>
                 <vendor>Vixion</vendor>
                 <article>1011005</article>
                 <stock_quantity>75</stock_quantity>
@@ -142,8 +142,8 @@
                 <price>22999</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>101</categoryId>
-                <picture>https://www.abc.ua/upload/101/1011006_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/101/1011006_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1511707171634-5f897ff02560?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=500&q=80</picture>
                 <vendor>Optima</vendor>
                 <article>1011006</article>
                 <stock_quantity>80</stock_quantity>
@@ -165,8 +165,8 @@
                 <price>25999</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>101</categoryId>
-                <picture>https://www.abc.ua/upload/101/1011007_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/101/1011007_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1511707171634-5f897ff02560?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=500&q=80</picture>
                 <vendor>NexoTel</vendor>
                 <article>1011007</article>
                 <stock_quantity>85</stock_quantity>
@@ -188,8 +188,8 @@
                 <price>28999</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>101</categoryId>
-                <picture>https://www.abc.ua/upload/101/1011008_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/101/1011008_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1511707171634-5f897ff02560?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=500&q=80</picture>
                 <vendor>UltraFix</vendor>
                 <article>1011008</article>
                 <stock_quantity>90</stock_quantity>
@@ -211,8 +211,8 @@
                 <price>31999</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>101</categoryId>
-                <picture>https://www.abc.ua/upload/101/1011009_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/101/1011009_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1511707171634-5f897ff02560?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=500&q=80</picture>
                 <vendor>Wavex</vendor>
                 <article>1011009</article>
                 <stock_quantity>95</stock_quantity>
@@ -234,8 +234,8 @@
                 <price>34999</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>101</categoryId>
-                <picture>https://www.abc.ua/upload/101/1011010_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/101/1011010_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1511707171634-5f897ff02560?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=500&q=80</picture>
                 <vendor>Primo</vendor>
                 <article>1011010</article>
                 <stock_quantity>100</stock_quantity>
@@ -257,8 +257,8 @@
                 <price>149</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>102</categoryId>
-                <picture>https://www.abc.ua/upload/102/1021001_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/102/1021001_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=500&q=80</picture>
                 <vendor>TechnoLine</vendor>
                 <article>1021001</article>
                 <stock_quantity>55</stock_quantity>
@@ -280,8 +280,8 @@
                 <price>210</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>102</categoryId>
-                <picture>https://www.abc.ua/upload/102/1021002_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/102/1021002_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=500&q=80</picture>
                 <vendor>MobiTech</vendor>
                 <article>1021002</article>
                 <stock_quantity>60</stock_quantity>
@@ -303,8 +303,8 @@
                 <price>271</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>102</categoryId>
-                <picture>https://www.abc.ua/upload/102/1021003_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/102/1021003_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=500&q=80</picture>
                 <vendor>GadgetPro</vendor>
                 <article>1021003</article>
                 <stock_quantity>65</stock_quantity>
@@ -326,8 +326,8 @@
                 <price>332</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>102</categoryId>
-                <picture>https://www.abc.ua/upload/102/1021004_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/102/1021004_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=500&q=80</picture>
                 <vendor>Alcora</vendor>
                 <article>1021004</article>
                 <stock_quantity>70</stock_quantity>
@@ -349,8 +349,8 @@
                 <price>393</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>102</categoryId>
-                <picture>https://www.abc.ua/upload/102/1021005_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/102/1021005_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=500&q=80</picture>
                 <vendor>Vixion</vendor>
                 <article>1021005</article>
                 <stock_quantity>75</stock_quantity>
@@ -372,8 +372,8 @@
                 <price>454</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>102</categoryId>
-                <picture>https://www.abc.ua/upload/102/1021006_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/102/1021006_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=500&q=80</picture>
                 <vendor>Optima</vendor>
                 <article>1021006</article>
                 <stock_quantity>80</stock_quantity>
@@ -395,8 +395,8 @@
                 <price>515</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>102</categoryId>
-                <picture>https://www.abc.ua/upload/102/1021007_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/102/1021007_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=500&q=80</picture>
                 <vendor>NexoTel</vendor>
                 <article>1021007</article>
                 <stock_quantity>85</stock_quantity>
@@ -418,8 +418,8 @@
                 <price>576</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>102</categoryId>
-                <picture>https://www.abc.ua/upload/102/1021008_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/102/1021008_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=500&q=80</picture>
                 <vendor>UltraFix</vendor>
                 <article>1021008</article>
                 <stock_quantity>90</stock_quantity>
@@ -441,8 +441,8 @@
                 <price>637</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>102</categoryId>
-                <picture>https://www.abc.ua/upload/102/1021009_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/102/1021009_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=500&q=80</picture>
                 <vendor>Wavex</vendor>
                 <article>1021009</article>
                 <stock_quantity>95</stock_quantity>
@@ -464,8 +464,8 @@
                 <price>699</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>102</categoryId>
-                <picture>https://www.abc.ua/upload/102/1021010_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/102/1021010_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=500&q=80</picture>
                 <vendor>Primo</vendor>
                 <article>1021010</article>
                 <stock_quantity>100</stock_quantity>
@@ -487,8 +487,8 @@
                 <price>99</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>103</categoryId>
-                <picture>https://www.abc.ua/upload/103/1031001_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/103/1031001_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1580910051074-3eb694886505?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1567581935884-3349723552ca?w=500&q=80</picture>
                 <vendor>TechnoLine</vendor>
                 <article>1031001</article>
                 <stock_quantity>55</stock_quantity>
@@ -510,8 +510,8 @@
                 <price>132</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>103</categoryId>
-                <picture>https://www.abc.ua/upload/103/1031002_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/103/1031002_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1580910051074-3eb694886505?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1567581935884-3349723552ca?w=500&q=80</picture>
                 <vendor>MobiTech</vendor>
                 <article>1031002</article>
                 <stock_quantity>60</stock_quantity>
@@ -533,8 +533,8 @@
                 <price>165</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>103</categoryId>
-                <picture>https://www.abc.ua/upload/103/1031003_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/103/1031003_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1580910051074-3eb694886505?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1567581935884-3349723552ca?w=500&q=80</picture>
                 <vendor>GadgetPro</vendor>
                 <article>1031003</article>
                 <stock_quantity>65</stock_quantity>
@@ -556,8 +556,8 @@
                 <price>199</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>103</categoryId>
-                <picture>https://www.abc.ua/upload/103/1031004_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/103/1031004_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1580910051074-3eb694886505?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1567581935884-3349723552ca?w=500&q=80</picture>
                 <vendor>Alcora</vendor>
                 <article>1031004</article>
                 <stock_quantity>70</stock_quantity>
@@ -579,8 +579,8 @@
                 <price>232</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>103</categoryId>
-                <picture>https://www.abc.ua/upload/103/1031005_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/103/1031005_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1580910051074-3eb694886505?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1567581935884-3349723552ca?w=500&q=80</picture>
                 <vendor>Vixion</vendor>
                 <article>1031005</article>
                 <stock_quantity>75</stock_quantity>
@@ -602,8 +602,8 @@
                 <price>265</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>103</categoryId>
-                <picture>https://www.abc.ua/upload/103/1031006_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/103/1031006_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1580910051074-3eb694886505?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1567581935884-3349723552ca?w=500&q=80</picture>
                 <vendor>Optima</vendor>
                 <article>1031006</article>
                 <stock_quantity>80</stock_quantity>
@@ -625,8 +625,8 @@
                 <price>299</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>103</categoryId>
-                <picture>https://www.abc.ua/upload/103/1031007_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/103/1031007_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1580910051074-3eb694886505?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1567581935884-3349723552ca?w=500&q=80</picture>
                 <vendor>NexoTel</vendor>
                 <article>1031007</article>
                 <stock_quantity>85</stock_quantity>
@@ -648,8 +648,8 @@
                 <price>332</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>103</categoryId>
-                <picture>https://www.abc.ua/upload/103/1031008_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/103/1031008_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1580910051074-3eb694886505?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1567581935884-3349723552ca?w=500&q=80</picture>
                 <vendor>UltraFix</vendor>
                 <article>1031008</article>
                 <stock_quantity>90</stock_quantity>
@@ -671,8 +671,8 @@
                 <price>365</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>103</categoryId>
-                <picture>https://www.abc.ua/upload/103/1031009_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/103/1031009_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1580910051074-3eb694886505?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1567581935884-3349723552ca?w=500&q=80</picture>
                 <vendor>Wavex</vendor>
                 <article>1031009</article>
                 <stock_quantity>95</stock_quantity>
@@ -694,8 +694,8 @@
                 <price>399</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>103</categoryId>
-                <picture>https://www.abc.ua/upload/103/1031010_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/103/1031010_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1580910051074-3eb694886505?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1567581935884-3349723552ca?w=500&q=80</picture>
                 <vendor>Primo</vendor>
                 <article>1031010</article>
                 <stock_quantity>100</stock_quantity>
@@ -717,8 +717,8 @@
                 <price>199</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>104</categoryId>
-                <picture>https://www.abc.ua/upload/104/1041001_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/104/1041001_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1583394838336-acd977736f90?w=500&q=80</picture>
                 <vendor>TechnoLine</vendor>
                 <article>1041001</article>
                 <stock_quantity>55</stock_quantity>
@@ -740,8 +740,8 @@
                 <price>276</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>104</categoryId>
-                <picture>https://www.abc.ua/upload/104/1041002_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/104/1041002_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1583394838336-acd977736f90?w=500&q=80</picture>
                 <vendor>MobiTech</vendor>
                 <article>1041002</article>
                 <stock_quantity>60</stock_quantity>
@@ -763,8 +763,8 @@
                 <price>354</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>104</categoryId>
-                <picture>https://www.abc.ua/upload/104/1041003_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/104/1041003_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1583394838336-acd977736f90?w=500&q=80</picture>
                 <vendor>GadgetPro</vendor>
                 <article>1041003</article>
                 <stock_quantity>65</stock_quantity>
@@ -786,8 +786,8 @@
                 <price>432</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>104</categoryId>
-                <picture>https://www.abc.ua/upload/104/1041004_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/104/1041004_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1583394838336-acd977736f90?w=500&q=80</picture>
                 <vendor>Alcora</vendor>
                 <article>1041004</article>
                 <stock_quantity>70</stock_quantity>
@@ -809,8 +809,8 @@
                 <price>510</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>104</categoryId>
-                <picture>https://www.abc.ua/upload/104/1041005_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/104/1041005_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1583394838336-acd977736f90?w=500&q=80</picture>
                 <vendor>Vixion</vendor>
                 <article>1041005</article>
                 <stock_quantity>75</stock_quantity>
@@ -832,8 +832,8 @@
                 <price>587</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>104</categoryId>
-                <picture>https://www.abc.ua/upload/104/1041006_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/104/1041006_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1583394838336-acd977736f90?w=500&q=80</picture>
                 <vendor>Optima</vendor>
                 <article>1041006</article>
                 <stock_quantity>80</stock_quantity>
@@ -855,8 +855,8 @@
                 <price>665</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>104</categoryId>
-                <picture>https://www.abc.ua/upload/104/1041007_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/104/1041007_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1583394838336-acd977736f90?w=500&q=80</picture>
                 <vendor>NexoTel</vendor>
                 <article>1041007</article>
                 <stock_quantity>85</stock_quantity>
@@ -878,8 +878,8 @@
                 <price>743</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>104</categoryId>
-                <picture>https://www.abc.ua/upload/104/1041008_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/104/1041008_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1583394838336-acd977736f90?w=500&q=80</picture>
                 <vendor>UltraFix</vendor>
                 <article>1041008</article>
                 <stock_quantity>90</stock_quantity>
@@ -901,8 +901,8 @@
                 <price>821</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>104</categoryId>
-                <picture>https://www.abc.ua/upload/104/1041009_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/104/1041009_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1583394838336-acd977736f90?w=500&q=80</picture>
                 <vendor>Wavex</vendor>
                 <article>1041009</article>
                 <stock_quantity>95</stock_quantity>
@@ -924,8 +924,8 @@
                 <price>899</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>104</categoryId>
-                <picture>https://www.abc.ua/upload/104/1041010_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/104/1041010_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1583394838336-acd977736f90?w=500&q=80</picture>
                 <vendor>Primo</vendor>
                 <article>1041010</article>
                 <stock_quantity>100</stock_quantity>
@@ -947,8 +947,8 @@
                 <price>89</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>105</categoryId>
-                <picture>https://www.abc.ua/upload/105/1051001_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/105/1051001_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1616401784845-180882ba9ba8?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=500&q=80</picture>
                 <vendor>TechnoLine</vendor>
                 <article>1051001</article>
                 <stock_quantity>55</stock_quantity>
@@ -970,8 +970,8 @@
                 <price>117</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>105</categoryId>
-                <picture>https://www.abc.ua/upload/105/1051002_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/105/1051002_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1616401784845-180882ba9ba8?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=500&q=80</picture>
                 <vendor>MobiTech</vendor>
                 <article>1051002</article>
                 <stock_quantity>60</stock_quantity>
@@ -993,8 +993,8 @@
                 <price>146</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>105</categoryId>
-                <picture>https://www.abc.ua/upload/105/1051003_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/105/1051003_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1616401784845-180882ba9ba8?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=500&q=80</picture>
                 <vendor>GadgetPro</vendor>
                 <article>1051003</article>
                 <stock_quantity>65</stock_quantity>
@@ -1016,8 +1016,8 @@
                 <price>175</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>105</categoryId>
-                <picture>https://www.abc.ua/upload/105/1051004_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/105/1051004_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1616401784845-180882ba9ba8?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=500&q=80</picture>
                 <vendor>Alcora</vendor>
                 <article>1051004</article>
                 <stock_quantity>70</stock_quantity>
@@ -1039,8 +1039,8 @@
                 <price>204</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>105</categoryId>
-                <picture>https://www.abc.ua/upload/105/1051005_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/105/1051005_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1616401784845-180882ba9ba8?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=500&q=80</picture>
                 <vendor>Vixion</vendor>
                 <article>1051005</article>
                 <stock_quantity>75</stock_quantity>
@@ -1062,8 +1062,8 @@
                 <price>233</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>105</categoryId>
-                <picture>https://www.abc.ua/upload/105/1051006_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/105/1051006_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1616401784845-180882ba9ba8?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=500&q=80</picture>
                 <vendor>Optima</vendor>
                 <article>1051006</article>
                 <stock_quantity>80</stock_quantity>
@@ -1085,8 +1085,8 @@
                 <price>262</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>105</categoryId>
-                <picture>https://www.abc.ua/upload/105/1051007_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/105/1051007_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1616401784845-180882ba9ba8?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=500&q=80</picture>
                 <vendor>NexoTel</vendor>
                 <article>1051007</article>
                 <stock_quantity>85</stock_quantity>
@@ -1108,8 +1108,8 @@
                 <price>291</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>105</categoryId>
-                <picture>https://www.abc.ua/upload/105/1051008_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/105/1051008_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1616401784845-180882ba9ba8?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=500&q=80</picture>
                 <vendor>UltraFix</vendor>
                 <article>1051008</article>
                 <stock_quantity>90</stock_quantity>
@@ -1131,8 +1131,8 @@
                 <price>320</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>105</categoryId>
-                <picture>https://www.abc.ua/upload/105/1051009_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/105/1051009_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1616401784845-180882ba9ba8?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=500&q=80</picture>
                 <vendor>Wavex</vendor>
                 <article>1051009</article>
                 <stock_quantity>95</stock_quantity>
@@ -1154,8 +1154,8 @@
                 <price>349</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>105</categoryId>
-                <picture>https://www.abc.ua/upload/105/1051010_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/105/1051010_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1616401784845-180882ba9ba8?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=500&q=80</picture>
                 <vendor>Primo</vendor>
                 <article>1051010</article>
                 <stock_quantity>100</stock_quantity>
@@ -1177,8 +1177,8 @@
                 <price>149</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>106</categoryId>
-                <picture>https://www.abc.ua/upload/106/1061001_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/106/1061001_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1583394838336-acd977736f90?w=500&q=80</picture>
                 <vendor>TechnoLine</vendor>
                 <article>1061001</article>
                 <stock_quantity>55</stock_quantity>
@@ -1200,8 +1200,8 @@
                 <price>199</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>106</categoryId>
-                <picture>https://www.abc.ua/upload/106/1061002_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/106/1061002_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1583394838336-acd977736f90?w=500&q=80</picture>
                 <vendor>MobiTech</vendor>
                 <article>1061002</article>
                 <stock_quantity>60</stock_quantity>
@@ -1223,8 +1223,8 @@
                 <price>249</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>106</categoryId>
-                <picture>https://www.abc.ua/upload/106/1061003_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/106/1061003_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1583394838336-acd977736f90?w=500&q=80</picture>
                 <vendor>GadgetPro</vendor>
                 <article>1061003</article>
                 <stock_quantity>65</stock_quantity>
@@ -1246,8 +1246,8 @@
                 <price>299</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>106</categoryId>
-                <picture>https://www.abc.ua/upload/106/1061004_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/106/1061004_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1583394838336-acd977736f90?w=500&q=80</picture>
                 <vendor>Alcora</vendor>
                 <article>1061004</article>
                 <stock_quantity>70</stock_quantity>
@@ -1269,8 +1269,8 @@
                 <price>349</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>106</categoryId>
-                <picture>https://www.abc.ua/upload/106/1061005_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/106/1061005_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1583394838336-acd977736f90?w=500&q=80</picture>
                 <vendor>Vixion</vendor>
                 <article>1061005</article>
                 <stock_quantity>75</stock_quantity>
@@ -1292,8 +1292,8 @@
                 <price>399</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>106</categoryId>
-                <picture>https://www.abc.ua/upload/106/1061006_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/106/1061006_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1583394838336-acd977736f90?w=500&q=80</picture>
                 <vendor>Optima</vendor>
                 <article>1061006</article>
                 <stock_quantity>80</stock_quantity>
@@ -1315,8 +1315,8 @@
                 <price>449</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>106</categoryId>
-                <picture>https://www.abc.ua/upload/106/1061007_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/106/1061007_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1583394838336-acd977736f90?w=500&q=80</picture>
                 <vendor>NexoTel</vendor>
                 <article>1061007</article>
                 <stock_quantity>85</stock_quantity>
@@ -1338,8 +1338,8 @@
                 <price>499</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>106</categoryId>
-                <picture>https://www.abc.ua/upload/106/1061008_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/106/1061008_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1583394838336-acd977736f90?w=500&q=80</picture>
                 <vendor>UltraFix</vendor>
                 <article>1061008</article>
                 <stock_quantity>90</stock_quantity>
@@ -1361,8 +1361,8 @@
                 <price>549</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>106</categoryId>
-                <picture>https://www.abc.ua/upload/106/1061009_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/106/1061009_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1583394838336-acd977736f90?w=500&q=80</picture>
                 <vendor>Wavex</vendor>
                 <article>1061009</article>
                 <stock_quantity>95</stock_quantity>
@@ -1384,8 +1384,8 @@
                 <price>599</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>106</categoryId>
-                <picture>https://www.abc.ua/upload/106/1061010_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/106/1061010_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1583394838336-acd977736f90?w=500&q=80</picture>
                 <vendor>Primo</vendor>
                 <article>1061010</article>
                 <stock_quantity>100</stock_quantity>
@@ -1407,8 +1407,8 @@
                 <price>699</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>107</categoryId>
-                <picture>https://www.abc.ua/upload/107/1071001_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/107/1071001_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&q=80</picture>
                 <vendor>TechnoLine</vendor>
                 <article>1071001</article>
                 <stock_quantity>55</stock_quantity>
@@ -1430,8 +1430,8 @@
                 <price>1065</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>107</categoryId>
-                <picture>https://www.abc.ua/upload/107/1071002_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/107/1071002_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&q=80</picture>
                 <vendor>MobiTech</vendor>
                 <article>1071002</article>
                 <stock_quantity>60</stock_quantity>
@@ -1453,8 +1453,8 @@
                 <price>1432</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>107</categoryId>
-                <picture>https://www.abc.ua/upload/107/1071003_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/107/1071003_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&q=80</picture>
                 <vendor>GadgetPro</vendor>
                 <article>1071003</article>
                 <stock_quantity>65</stock_quantity>
@@ -1476,8 +1476,8 @@
                 <price>1799</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>107</categoryId>
-                <picture>https://www.abc.ua/upload/107/1071004_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/107/1071004_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&q=80</picture>
                 <vendor>Alcora</vendor>
                 <article>1071004</article>
                 <stock_quantity>70</stock_quantity>
@@ -1499,8 +1499,8 @@
                 <price>2165</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>107</categoryId>
-                <picture>https://www.abc.ua/upload/107/1071005_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/107/1071005_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&q=80</picture>
                 <vendor>Vixion</vendor>
                 <article>1071005</article>
                 <stock_quantity>75</stock_quantity>
@@ -1522,8 +1522,8 @@
                 <price>2532</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>107</categoryId>
-                <picture>https://www.abc.ua/upload/107/1071006_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/107/1071006_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&q=80</picture>
                 <vendor>Optima</vendor>
                 <article>1071006</article>
                 <stock_quantity>80</stock_quantity>
@@ -1545,8 +1545,8 @@
                 <price>2899</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>107</categoryId>
-                <picture>https://www.abc.ua/upload/107/1071007_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/107/1071007_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&q=80</picture>
                 <vendor>NexoTel</vendor>
                 <article>1071007</article>
                 <stock_quantity>85</stock_quantity>
@@ -1568,8 +1568,8 @@
                 <price>3265</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>107</categoryId>
-                <picture>https://www.abc.ua/upload/107/1071008_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/107/1071008_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&q=80</picture>
                 <vendor>UltraFix</vendor>
                 <article>1071008</article>
                 <stock_quantity>90</stock_quantity>
@@ -1591,8 +1591,8 @@
                 <price>3632</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>107</categoryId>
-                <picture>https://www.abc.ua/upload/107/1071009_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/107/1071009_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&q=80</picture>
                 <vendor>Wavex</vendor>
                 <article>1071009</article>
                 <stock_quantity>95</stock_quantity>
@@ -1614,8 +1614,8 @@
                 <price>3999</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>107</categoryId>
-                <picture>https://www.abc.ua/upload/107/1071010_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/107/1071010_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&q=80</picture>
                 <vendor>Primo</vendor>
                 <article>1071010</article>
                 <stock_quantity>100</stock_quantity>
@@ -1637,8 +1637,8 @@
                 <price>399</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>108</categoryId>
-                <picture>https://www.abc.ua/upload/108/1081001_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/108/1081001_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1583394838336-acd977736f90?w=500&q=80</picture>
                 <vendor>TechnoLine</vendor>
                 <article>1081001</article>
                 <stock_quantity>55</stock_quantity>
@@ -1660,8 +1660,8 @@
                 <price>565</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>108</categoryId>
-                <picture>https://www.abc.ua/upload/108/1081002_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/108/1081002_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1583394838336-acd977736f90?w=500&q=80</picture>
                 <vendor>MobiTech</vendor>
                 <article>1081002</article>
                 <stock_quantity>60</stock_quantity>
@@ -1683,8 +1683,8 @@
                 <price>732</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>108</categoryId>
-                <picture>https://www.abc.ua/upload/108/1081003_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/108/1081003_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1583394838336-acd977736f90?w=500&q=80</picture>
                 <vendor>GadgetPro</vendor>
                 <article>1081003</article>
                 <stock_quantity>65</stock_quantity>
@@ -1706,8 +1706,8 @@
                 <price>899</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>108</categoryId>
-                <picture>https://www.abc.ua/upload/108/1081004_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/108/1081004_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1583394838336-acd977736f90?w=500&q=80</picture>
                 <vendor>Alcora</vendor>
                 <article>1081004</article>
                 <stock_quantity>70</stock_quantity>
@@ -1729,8 +1729,8 @@
                 <price>1065</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>108</categoryId>
-                <picture>https://www.abc.ua/upload/108/1081005_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/108/1081005_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1583394838336-acd977736f90?w=500&q=80</picture>
                 <vendor>Vixion</vendor>
                 <article>1081005</article>
                 <stock_quantity>75</stock_quantity>
@@ -1752,8 +1752,8 @@
                 <price>1232</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>108</categoryId>
-                <picture>https://www.abc.ua/upload/108/1081006_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/108/1081006_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1583394838336-acd977736f90?w=500&q=80</picture>
                 <vendor>Optima</vendor>
                 <article>1081006</article>
                 <stock_quantity>80</stock_quantity>
@@ -1775,8 +1775,8 @@
                 <price>1399</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>108</categoryId>
-                <picture>https://www.abc.ua/upload/108/1081007_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/108/1081007_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1583394838336-acd977736f90?w=500&q=80</picture>
                 <vendor>NexoTel</vendor>
                 <article>1081007</article>
                 <stock_quantity>85</stock_quantity>
@@ -1798,8 +1798,8 @@
                 <price>1565</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>108</categoryId>
-                <picture>https://www.abc.ua/upload/108/1081008_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/108/1081008_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1583394838336-acd977736f90?w=500&q=80</picture>
                 <vendor>UltraFix</vendor>
                 <article>1081008</article>
                 <stock_quantity>90</stock_quantity>
@@ -1821,8 +1821,8 @@
                 <price>1732</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>108</categoryId>
-                <picture>https://www.abc.ua/upload/108/1081009_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/108/1081009_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1583394838336-acd977736f90?w=500&q=80</picture>
                 <vendor>Wavex</vendor>
                 <article>1081009</article>
                 <stock_quantity>95</stock_quantity>
@@ -1844,8 +1844,8 @@
                 <price>1899</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>108</categoryId>
-                <picture>https://www.abc.ua/upload/108/1081010_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/108/1081010_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1583394838336-acd977736f90?w=500&q=80</picture>
                 <vendor>Primo</vendor>
                 <article>1081010</article>
                 <stock_quantity>100</stock_quantity>
@@ -1867,8 +1867,8 @@
                 <price>99</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>109</categoryId>
-                <picture>https://www.abc.ua/upload/109/1091001_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/109/1091001_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?w=500&q=80</picture>
                 <vendor>TechnoLine</vendor>
                 <article>1091001</article>
                 <stock_quantity>55</stock_quantity>
@@ -1890,8 +1890,8 @@
                 <price>154</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>109</categoryId>
-                <picture>https://www.abc.ua/upload/109/1091002_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/109/1091002_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?w=500&q=80</picture>
                 <vendor>MobiTech</vendor>
                 <article>1091002</article>
                 <stock_quantity>60</stock_quantity>
@@ -1913,8 +1913,8 @@
                 <price>210</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>109</categoryId>
-                <picture>https://www.abc.ua/upload/109/1091003_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/109/1091003_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?w=500&q=80</picture>
                 <vendor>GadgetPro</vendor>
                 <article>1091003</article>
                 <stock_quantity>65</stock_quantity>
@@ -1936,8 +1936,8 @@
                 <price>265</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>109</categoryId>
-                <picture>https://www.abc.ua/upload/109/1091004_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/109/1091004_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?w=500&q=80</picture>
                 <vendor>Alcora</vendor>
                 <article>1091004</article>
                 <stock_quantity>70</stock_quantity>
@@ -1959,8 +1959,8 @@
                 <price>321</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>109</categoryId>
-                <picture>https://www.abc.ua/upload/109/1091005_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/109/1091005_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?w=500&q=80</picture>
                 <vendor>Vixion</vendor>
                 <article>1091005</article>
                 <stock_quantity>75</stock_quantity>
@@ -1982,8 +1982,8 @@
                 <price>376</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>109</categoryId>
-                <picture>https://www.abc.ua/upload/109/1091006_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/109/1091006_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?w=500&q=80</picture>
                 <vendor>Optima</vendor>
                 <article>1091006</article>
                 <stock_quantity>80</stock_quantity>
@@ -2005,8 +2005,8 @@
                 <price>432</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>109</categoryId>
-                <picture>https://www.abc.ua/upload/109/1091007_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/109/1091007_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?w=500&q=80</picture>
                 <vendor>NexoTel</vendor>
                 <article>1091007</article>
                 <stock_quantity>85</stock_quantity>
@@ -2028,8 +2028,8 @@
                 <price>487</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>109</categoryId>
-                <picture>https://www.abc.ua/upload/109/1091008_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/109/1091008_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?w=500&q=80</picture>
                 <vendor>UltraFix</vendor>
                 <article>1091008</article>
                 <stock_quantity>90</stock_quantity>
@@ -2051,8 +2051,8 @@
                 <price>543</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>109</categoryId>
-                <picture>https://www.abc.ua/upload/109/1091009_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/109/1091009_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?w=500&q=80</picture>
                 <vendor>Wavex</vendor>
                 <article>1091009</article>
                 <stock_quantity>95</stock_quantity>
@@ -2074,8 +2074,8 @@
                 <price>599</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>109</categoryId>
-                <picture>https://www.abc.ua/upload/109/1091010_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/109/1091010_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?w=500&q=80</picture>
                 <vendor>Primo</vendor>
                 <article>1091010</article>
                 <stock_quantity>100</stock_quantity>
@@ -2097,8 +2097,8 @@
                 <price>299</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>110</categoryId>
-                <picture>https://www.abc.ua/upload/110/1101001_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/110/1101001_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&q=80</picture>
                 <vendor>TechnoLine</vendor>
                 <article>1101001</article>
                 <stock_quantity>55</stock_quantity>
@@ -2120,8 +2120,8 @@
                 <price>410</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>110</categoryId>
-                <picture>https://www.abc.ua/upload/110/1101002_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/110/1101002_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&q=80</picture>
                 <vendor>MobiTech</vendor>
                 <article>1101002</article>
                 <stock_quantity>60</stock_quantity>
@@ -2143,8 +2143,8 @@
                 <price>521</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>110</categoryId>
-                <picture>https://www.abc.ua/upload/110/1101003_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/110/1101003_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&q=80</picture>
                 <vendor>GadgetPro</vendor>
                 <article>1101003</article>
                 <stock_quantity>65</stock_quantity>
@@ -2166,8 +2166,8 @@
                 <price>632</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>110</categoryId>
-                <picture>https://www.abc.ua/upload/110/1101004_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/110/1101004_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&q=80</picture>
                 <vendor>Alcora</vendor>
                 <article>1101004</article>
                 <stock_quantity>70</stock_quantity>
@@ -2189,8 +2189,8 @@
                 <price>743</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>110</categoryId>
-                <picture>https://www.abc.ua/upload/110/1101005_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/110/1101005_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&q=80</picture>
                 <vendor>Vixion</vendor>
                 <article>1101005</article>
                 <stock_quantity>75</stock_quantity>
@@ -2212,8 +2212,8 @@
                 <price>854</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>110</categoryId>
-                <picture>https://www.abc.ua/upload/110/1101006_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/110/1101006_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&q=80</picture>
                 <vendor>Optima</vendor>
                 <article>1101006</article>
                 <stock_quantity>80</stock_quantity>
@@ -2235,8 +2235,8 @@
                 <price>965</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>110</categoryId>
-                <picture>https://www.abc.ua/upload/110/1101007_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/110/1101007_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&q=80</picture>
                 <vendor>NexoTel</vendor>
                 <article>1101007</article>
                 <stock_quantity>85</stock_quantity>
@@ -2258,8 +2258,8 @@
                 <price>1076</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>110</categoryId>
-                <picture>https://www.abc.ua/upload/110/1101008_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/110/1101008_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&q=80</picture>
                 <vendor>UltraFix</vendor>
                 <article>1101008</article>
                 <stock_quantity>90</stock_quantity>
@@ -2281,8 +2281,8 @@
                 <price>1187</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>110</categoryId>
-                <picture>https://www.abc.ua/upload/110/1101009_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/110/1101009_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&q=80</picture>
                 <vendor>Wavex</vendor>
                 <article>1101009</article>
                 <stock_quantity>95</stock_quantity>
@@ -2304,8 +2304,8 @@
                 <price>1299</price>
                 <currencyId>UAH</currencyId>
                 <categoryId>110</categoryId>
-                <picture>https://www.abc.ua/upload/110/1101010_1.jpg</picture>
-                <picture>https://www.abc.ua/upload/110/1101010_2.jpg</picture>
+                <picture>https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=500&q=80</picture>
+                <picture>https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&q=80</picture>
                 <vendor>Primo</vendor>
                 <article>1101010</article>
                 <stock_quantity>100</stock_quantity>

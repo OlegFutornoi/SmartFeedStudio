@@ -183,6 +183,9 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
       }
 
       if (foundText === undefined) {
+        if (params && typeof params.defaultValue === 'string') {
+          return params.defaultValue;
+        }
         return key; // Fallback to raw key
       }
 

@@ -33,7 +33,7 @@ export function QuotaExceededDialog({
 
   return createPortal(
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-      <div className="w-full max-w-md bg-card border border-rose-500/30 rounded-2xl shadow-2xl overflow-hidden p-6 space-y-5 text-center relative animate-in zoom-in-95 duration-200">
+      <div className="w-full max-w-md bg-card border border-emerald-500/30 rounded-2xl shadow-2xl overflow-hidden p-6 space-y-5 text-center relative animate-in zoom-in-95 duration-200">
         <button
           onClick={onClose}
           className="absolute right-4 top-4 text-muted-foreground hover:text-foreground transition-colors"
@@ -41,7 +41,7 @@ export function QuotaExceededDialog({
           <X className="size-4" />
         </button>
 
-        <div className="mx-auto size-12 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center shadow-inner">
+        <div className="mx-auto size-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center shadow-inner">
           <AlertCircle className="size-6" />
         </div>
 
@@ -50,7 +50,7 @@ export function QuotaExceededDialog({
           <p className="text-xs text-muted-foreground max-w-sm mx-auto">
             Ваш поточний тариф {planName ? `«${planName}»` : ''} дозволяє використовувати до{' '}
             <strong className="text-foreground">{maxLimit}</strong> {resourceName.toLowerCase()}. Ви
-            вже використали <strong className="text-rose-400">{currentCount}</strong>.
+            вже використали <strong className="text-emerald-400">{currentCount}</strong>.
           </p>
         </div>
 

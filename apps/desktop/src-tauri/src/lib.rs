@@ -1,6 +1,7 @@
 pub mod db;
 pub mod workspace;
 pub mod models;
+pub mod images;
 
 use keyring::Entry;
 #[allow(unused_imports)]
@@ -259,8 +260,19 @@ fn db_get_counters() -> Result<db::LocalCounters, String> {
     db::get_counters(&conn).map_err(|e| e.to_string())
 }
 
+fn get_workspace_dir_resolved() -> std::path::PathBuf {
+    if let Ok(entry) = Entry::new(SERVICE_NAME, WORKSPACE_KEY_USER) {
+        if let Ok(path_str) = entry.get_password() {
+            if !path_str.is_empty() {
+                return workspace::resolve_path(&path_str);
+            }
+        }
+    }
+    workspace::get_default_workspace_dir()
+}
+
 fn get_db_conn() -> Result<rusqlite::Connection, String> {
-    let workspace = workspace::get_default_workspace_dir();
+    let workspace = get_workspace_dir_resolved();
     let db_path = workspace
         .join("database")
         .join("catalog.db");
@@ -331,6 +343,85 @@ fn db_bulk_delete_products(ids: Vec<String>) -> Result<(), String> {
     db::bulk_delete_products(&conn, ids).map_err(|e| e.to_string())
 }
 
+#[tauri::command]
+fn db_get_product_images(product_id: String) -> Result<Vec<models::LocalProductImageDto>, String> {
+    let conn = get_db_conn()?;
+    images::db::get_images_by_product_id(&conn, &product_id).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+fn db_delete_product_image(image_id: String) -> Result<models::DeleteProductImageResultDto, String> {
+    let conn = get_db_conn()?;
+    let workspace = get_workspace_dir_resolved();
+    images::delete_image_with_cascade(&conn, &workspace, &image_id)
+}
+
+#[tauri::command]
+fn db_update_product_images_order(payload: models::UpdateProductImageOrderDto) -> Result<(), String> {
+    let conn = get_db_conn()?;
+    images::db::update_images_order(&conn, &payload).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+async fn db_download_product_image(image_id: String, image_url: String) -> Result<models::LocalProductImageDto, String> {
+    let workspace = get_workspace_dir_resolved();
+    
+    match images::downloader::download_single_image(&workspace, &image_url).await {
+        Ok(res) => {
+            let conn = get_db_conn()?;
+            images::db::update_image_download_result(
+                &conn,
+                &image_id,
+                "READY",
+                Some(&res.local_path),
+                Some(&res.thumbnail_path),
+                Some(&res.file_hash),
+                res.file_size,
+                None,
+            ).map_err(|e| e.to_string())?;
+
+            Ok(models::LocalProductImageDto {
+                id: image_id,
+                product_id: String::new(),
+                original_url: image_url,
+                local_path: Some(res.local_path),
+                thumbnail_path: Some(res.thumbnail_path),
+                file_hash: Some(res.file_hash),
+                file_size: res.file_size,
+                mime_type: Some(res.mime_type),
+                width: None,
+                height: None,
+                order: 0,
+                is_main: false,
+                status: "READY".to_string(),
+                download_error: None,
+                retry_count: 0,
+                s3_key: None,
+                cloud_url: None,
+                sync_status: "LOCAL_ONLY".to_string(),
+                last_synced_at: None,
+                created_at: None,
+                updated_at: None,
+            })
+        },
+        Err(err) => {
+            if let Ok(conn) = get_db_conn() {
+                let _ = images::db::update_image_download_result(
+                    &conn,
+                    &image_id,
+                    "FAILED",
+                    None,
+                    None,
+                    None,
+                    0,
+                    Some(&err),
+                );
+            }
+            Err(err)
+        }
+    }
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -341,25 +432,29 @@ pub fn run() {
             delete_refresh_token,
             get_system_specs,
             init_workspace_directory,
-        get_workspace_info,
-        get_storage_stats,
-        create_local_backup,
-        run_database_maintenance,
-        open_in_file_manager,
-        pick_workspace_folder,
-        clear_storage_cache,
-        db_get_counters,
-        db_get_suppliers,
-        db_create_supplier,
-        db_update_supplier,
-        db_delete_supplier,
-        db_get_supplier_feed_sources,
-        db_create_feed_source,
-        db_delete_feed_source,
-        db_get_products,
-        db_bulk_upsert_products,
-        db_bulk_delete_products
-    ])
+            get_workspace_info,
+            get_storage_stats,
+            create_local_backup,
+            run_database_maintenance,
+            open_in_file_manager,
+            pick_workspace_folder,
+            clear_storage_cache,
+            db_get_counters,
+            db_get_suppliers,
+            db_create_supplier,
+            db_update_supplier,
+            db_delete_supplier,
+            db_get_supplier_feed_sources,
+            db_create_feed_source,
+            db_delete_feed_source,
+            db_get_products,
+            db_bulk_upsert_products,
+            db_bulk_delete_products,
+            db_get_product_images,
+            db_delete_product_image,
+            db_update_product_images_order,
+            db_download_product_image
+        ])
         .setup(|_app| {
             #[cfg(debug_assertions)]
             {

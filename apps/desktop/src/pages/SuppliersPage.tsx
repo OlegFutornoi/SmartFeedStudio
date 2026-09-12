@@ -32,6 +32,7 @@ export function SuppliersPage() {
   const {
     quotas,
     updateLocalQuota,
+    refreshQuotas,
     setLocalQuotaUsed,
     isSupplierLimitReached,
     isFeedLimitReached,
@@ -134,6 +135,13 @@ export function SuppliersPage() {
 
     await deleteSupplier(target.id, token);
     updateLocalQuota('suppliers', -1);
+    if (target.productsCount && target.productsCount > 0) {
+      updateLocalQuota('products', -target.productsCount);
+    }
+    if (target.activeFeedsCount && target.activeFeedsCount > 0) {
+      updateLocalQuota('feeds', -target.activeFeedsCount);
+    }
+    refreshQuotas();
     emitDataSync(['suppliers', 'feeds', 'products', 'quotas', 'all']);
     await fetchSuppliers(true);
   };

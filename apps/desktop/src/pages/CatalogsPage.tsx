@@ -29,7 +29,7 @@ export function CatalogsPage() {
   const isUk = language === 'uk';
   const { isExpired } = useLicense();
   const { token } = useAuth();
-  const { refreshQuotas, isFeedLimitReached } = useQuotas();
+  const { refreshQuotas, isFeedLimitReached, updateLocalQuota } = useQuotas();
   const { addTrackedJob, runBackgroundTask } = useBackgroundJobs();
 
   const [activeTab, setActiveTab] = useState<'products' | 'catalogs' | 'channels'>('products');
@@ -90,10 +90,19 @@ export function CatalogsPage() {
           ? 'Видалення джерела та товарів у фоні'
           : 'Deleting feed and products in background',
         action: async () => {
-          await deleteSupplierFeedSource(target.supplierId, target.id, token || undefined, true);
+          const res = await deleteSupplierFeedSource(
+            target.supplierId,
+            target.id,
+            token || undefined,
+            true,
+          );
+          if (res?.deletedProductsCount && res.deletedProductsCount > 0) {
+            updateLocalQuota('products', -res.deletedProductsCount);
+          }
+          updateLocalQuota('feeds', -1);
           await loadData();
           refreshQuotas();
-          emitDataSync(['suppliers', 'feeds', 'products', 'quotas']);
+          emitDataSync(['suppliers', 'feeds', 'products', 'quotas', 'all']);
         },
       });
     } catch {

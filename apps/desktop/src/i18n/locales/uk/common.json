@@ -25,5 +25,7 @@
   "upgradeQuota": "Збільшити квоту",
   "remaining": "Залишилось",
   "upgrade": "Апгрейд",
-  "availableMore": "Доступно ще"
+  "availableMore": "Доступно ще",
+  "previous": "Попереднє",
+  "next": "Наступне"
 }

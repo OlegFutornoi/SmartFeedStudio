@@ -79,6 +79,7 @@ pub struct FeedSourceDto {
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct CreateFeedSourceDto {
+    pub id: Option<String>,
     pub supplier_id: String,
     pub name: String,
     pub source_type: String,
@@ -121,10 +122,79 @@ pub struct ProductDto {
     pub in_stock: bool,
     pub status: String,
     pub raw_payload: Option<String>, // JSON string
-    // pub images: Vec<ProductImageDto>, // Skipping deep nesting for now to speed up bulk ops
-    // pub attributes: Vec<ProductAttributeDto>,
+    #[serde(default)]
+    pub images: Vec<LocalProductImageDto>,
     pub created_at: String,
     pub updated_at: String,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct LocalProductImageDto {
+    pub id: String,
+    pub product_id: String,
+    pub original_url: String,
+    pub local_path: Option<String>,
+    pub thumbnail_path: Option<String>,
+    pub file_hash: Option<String>,
+    #[serde(default)]
+    pub file_size: u64,
+    pub mime_type: Option<String>,
+    pub width: Option<u32>,
+    pub height: Option<u32>,
+    #[serde(default)]
+    pub order: i32,
+    #[serde(default)]
+    pub is_main: bool,
+    #[serde(default = "default_status")]
+    pub status: String,
+    pub download_error: Option<String>,
+    #[serde(default)]
+    pub retry_count: i32,
+    pub s3_key: Option<String>,
+    pub cloud_url: Option<String>,
+    #[serde(default = "default_sync_status")]
+    pub sync_status: String,
+    pub last_synced_at: Option<String>,
+    pub created_at: Option<String>,
+    pub updated_at: Option<String>,
+}
+
+fn default_status() -> String {
+    "PENDING".to_string()
+}
+
+fn default_sync_status() -> String {
+    "LOCAL_ONLY".to_string()
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct CreateProductImageDto {
+    pub product_id: Option<String>,
+    pub original_url: String,
+    #[serde(default)]
+    pub order: i32,
+    #[serde(default)]
+    pub is_main: bool,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct UpdateProductImageOrderDto {
+    pub product_id: String,
+    pub image_ids_in_order: Vec<String>,
+    pub main_image_id: Option<String>,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct DeleteProductImageResultDto {
+    pub success: bool,
+    pub image_id: String,
+    pub file_deleted: bool,
+    pub remaining_count: u32,
+    pub new_main_image_id: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -149,5 +219,6 @@ pub struct CreateProductDto {
     pub stock_quantity: i32,
     pub in_stock: bool,
     pub status: String,
-    // images and attributes would go here, omitting for now
+    #[serde(default)]
+    pub images: Vec<CreateProductImageDto>,
 }

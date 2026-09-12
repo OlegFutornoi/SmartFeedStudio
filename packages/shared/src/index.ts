@@ -11,6 +11,7 @@ export * from './dtos/organization.dto';
 export * from './dtos/payment.dto';
 export * from './dtos/supplier.dto';
 export * from './dtos/product.dto';
+export * from './dtos/product-image.dto';
 export * from './dtos/feed.dto';
 export * from './dtos/pricing-rule.dto';
 export * from './utils/pricing-calculator';

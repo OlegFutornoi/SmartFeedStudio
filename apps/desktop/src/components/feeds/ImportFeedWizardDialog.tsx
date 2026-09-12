@@ -136,31 +136,36 @@ export function ImportFeedWizardDialog({
     onClose();
   };
 
-  const handleFileSelect = (name: string, content: string) => {
+  const handleFileSelect = async (name: string, content: string) => {
     setFileName(name);
     setFileContent(content);
     setAnalysisError(null);
+    setAnalysis(null);
+    await performAnalysis(content);
   };
 
-  const performAnalysis = async (): Promise<boolean> => {
+  const performAnalysis = async (customContent?: string, customUrl?: string): Promise<boolean> => {
     setIsAnalyzing(true);
     setAnalysisError(null);
     try {
       let result: FeedAnalysisResult;
+      const targetUrl = customUrl ?? feedUrl;
+      const targetContent = customContent ?? fileContent;
+
       if (sourceType === 'URL') {
-        if (!feedUrl.trim()) {
+        if (!targetUrl.trim()) {
           setAnalysisError('Введіть посилання на фід');
           setIsAnalyzing(false);
           return false;
         }
-        result = await analyzeFeedUrl(feedUrl.trim(), selectedSupplierId || undefined);
+        result = await analyzeFeedUrl(targetUrl.trim(), selectedSupplierId || undefined);
       } else {
-        if (!fileContent) {
+        if (!targetContent) {
           setAnalysisError('Оберіть файл для імпорту');
           setIsAnalyzing(false);
           return false;
         }
-        result = await analyzeFeedContent(fileContent, selectedSupplierId || undefined);
+        result = await analyzeFeedContent(targetContent, selectedSupplierId || undefined);
       }
       setAnalysis(result);
       // Select all categories by default on analysis
@@ -183,12 +188,14 @@ export function ImportFeedWizardDialog({
     // Stay on SOURCE step — analysis result shown inline
   };
 
-  // Next from SOURCE — analysis must already be done
-  const handleNextFromSource = () => {
+  // Next from SOURCE — if not analyzed yet, analyze first then transition
+  const handleNextFromSource = async () => {
     if (isFeedLimitReached) return;
-    if (analysis) {
-      setStep('SUPPLIER');
+    if (!analysis) {
+      const ok = await performAnalysis();
+      if (!ok) return;
     }
+    setStep('SUPPLIER');
   };
 
   const handleNextFromSupplier = async () => {
@@ -288,6 +295,7 @@ export function ImportFeedWizardDialog({
               onFileSelect={handleFileSelect}
               isAnalyzing={isAnalyzing}
               onAnalyzeUrl={handleAnalyzeOnly}
+              onAnalyzeFile={handleAnalyzeOnly}
               analysis={analysis}
               error={analysisError}
             />

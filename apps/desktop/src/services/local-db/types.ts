@@ -19,6 +19,9 @@ import type {
   FeedSourceDto,
   FeedFormat,
   FeedSourceType,
+  LocalProductImageDto,
+  UpdateProductImageOrderDto,
+  DeleteProductImageResultDto,
 } from '@smartfeed/shared';
 
 export interface LocalDbCommandMap {
@@ -35,6 +38,7 @@ export interface LocalDbCommandMap {
     args: {
       supplierId: string;
       payload: {
+        id?: string;
         name?: string;
         sourceType?: FeedSourceType;
         format?: FeedFormat;
@@ -135,5 +139,23 @@ export interface LocalDbCommandMap {
   db_bulk_upsert_products: {
     args: { products: ProductDto[] };
     result: { count: number };
+  };
+
+  // Product Images
+  db_get_product_images: {
+    args: { productId: string };
+    result: LocalProductImageDto[];
+  };
+  db_delete_product_image: {
+    args: { imageId: string };
+    result: DeleteProductImageResultDto;
+  };
+  db_update_product_images_order: {
+    args: { payload: UpdateProductImageOrderDto };
+    result: void;
+  };
+  db_download_product_image: {
+    args: { imageId: string; imageUrl: string };
+    result: LocalProductImageDto;
   };
 }

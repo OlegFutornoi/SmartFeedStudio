@@ -39,7 +39,7 @@ export const WizardDialogFooter: React.FC<WizardDialogFooterProps> = ({
   isQuotaExceeded,
   totalSelectedSkus,
   remainingQuota,
-  analysis,
+  analysis: _analysis,
   onClose,
   onBack,
   onNextFromSource,
@@ -94,7 +94,6 @@ export const WizardDialogFooter: React.FC<WizardDialogFooterProps> = ({
           size="sm"
           onClick={onNextFromSource}
           disabled={
-            !analysis ||
             (sourceType === 'URL' && !feedUrl.trim()) ||
             (sourceType === 'FILE' && !fileContent) ||
             isAnalyzing ||
@@ -107,15 +106,20 @@ export const WizardDialogFooter: React.FC<WizardDialogFooterProps> = ({
                   defaultValue:
                     'Ліміт джерел фідів вичерпано. Підвищіть тариф або видаліть зайві фіди.',
                 })
-              : !analysis
-                ? t('suppliers:analyzeFirstTooltip', {
-                    defaultValue: 'Спочатку натисніть «Аналізувати» для перевірки фіду',
-                  })
-                : undefined
+              : undefined
           }
         >
-          {t('suppliers:nextStep', { defaultValue: 'Далі до постачальника' })}
-          <ArrowRight className="size-3.5" />
+          {isAnalyzing ? (
+            <>
+              <Loader2 className="size-3.5 animate-spin mr-1" />
+              {t('suppliers:analyzing', { defaultValue: 'Аналіз...' })}
+            </>
+          ) : (
+            <>
+              {t('suppliers:nextStep', { defaultValue: 'Далі до постачальника' })}
+              <ArrowRight className="size-3.5" />
+            </>
+          )}
         </Button>
       )}
 

@@ -258,6 +258,7 @@ export const ConnectedFeedsList: React.FC<ConnectedFeedsListProps> = ({
                       onClick={() => onDeleteFeed(catalog)}
                       className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
                       title={t('common:delete')}
+                      data-testid={`delete-feed-btn-${catalog.id}`}
                     >
                       <Trash2 className="h-3.5 w-3.5" />
                     </Button>

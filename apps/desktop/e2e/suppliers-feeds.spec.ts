@@ -140,8 +140,10 @@ test.describe('Desktop App — Постачальники, Майстер Фід
       window.localStorage.clear();
       window.sessionStorage.clear();
       window.localStorage.setItem('smartfeed_access_token', 'mock-valid-token');
+      window.localStorage.setItem('smartfeed_refresh_token', 'mock_refresh_token');
       window.localStorage.setItem('smartfeed_user_profile', JSON.stringify(user));
       window.localStorage.setItem('smartfeed_language', 'uk');
+      window.localStorage.setItem('smartfeed_theme', 'dark');
     }, mockUser);
 
     // Mock API routes
@@ -169,7 +171,7 @@ test.describe('Desktop App — Постачальники, Майстер Фід
       });
     });
 
-    await page.route('**/api/suppliers', async (route) => {
+    await page.route(/\/api\/suppliers(\?|$)/, async (route) => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -339,7 +341,7 @@ test.describe('Desktop App — Постачальники, Майстер Фід
       });
     });
 
-    await page.route('**/api/products*', async (route) => {
+    await page.route(/\/api\/products(\?|$)/, async (route) => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -371,6 +373,7 @@ test.describe('Desktop App — Постачальники, Майстер Фід
     });
 
     await page.goto('/suppliers');
+    await expect(page.getByTestId('suppliers-page')).toBeVisible({ timeout: 5000 });
 
     // Open import wizard for supplier 1
     await page.getByTestId('supplier-card-import-btn-sup_test_1').click();
@@ -451,7 +454,7 @@ test.describe('Desktop App — Постачальники, Майстер Фід
       name: `Постачальник ${i + 1}`,
     }));
 
-    await page.route('**/api/suppliers*', async (route) => {
+    await page.route(/\/api\/suppliers(\?|$)/, async (route) => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -459,7 +462,7 @@ test.describe('Desktop App — Постачальники, Майстер Фід
       });
     });
 
-    await page.route('**/api/products*', async (route) => {
+    await page.route(/\/api\/products(\?|$)/, async (route) => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -467,7 +470,7 @@ test.describe('Desktop App — Постачальники, Майстер Фід
       });
     });
 
-    await page.route('**/api/feeds/sources*', async (route) => {
+    await page.route(/\/api\/feeds\/sources(\?|$)/, async (route) => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -681,7 +684,7 @@ test.describe('Desktop App — Постачальники, Майстер Фід
       },
     ];
 
-    await page.route('**/api/suppliers*', async (route) => {
+    await page.route(/\/api\/suppliers(\?|$)/, async (route) => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -766,7 +769,7 @@ test.describe('Desktop App — Постачальники, Майстер Фід
   test('майстер імпорту фіду: при відсутності постачальників відображає картку-попередження замість випадашки та дозволяє створити постачальника', async ({
     page,
   }) => {
-    await page.route('**/api/suppliers*', async (route) => {
+    await page.route(/\/api\/suppliers(\?|$)/, async (route) => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -808,7 +811,7 @@ test.describe('Desktop App — Постачальники, Майстер Фід
   test('сторінка постачальників: при порожньому списку приховує тулбар і не дублює кнопку створення (єдина кнопка у картці)', async ({
     page,
   }) => {
-    await page.route('**/api/suppliers*', async (route) => {
+    await page.route(/\/api\/suppliers(\?|$)/, async (route) => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',

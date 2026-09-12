@@ -39,8 +39,8 @@ export function QuotaMetricCard({ title, icon: Icon, quota, unit, testId }: Quot
   let badgeColor = 'text-muted-foreground';
 
   if (isCritical) {
-    progressColor = 'bg-rose-500';
-    badgeColor = 'text-rose-400 font-semibold';
+    progressColor = 'bg-emerald-500';
+    badgeColor = 'text-emerald-400 font-semibold';
   } else if (isWarning) {
     progressColor = 'bg-amber-500';
     badgeColor = 'text-amber-400 font-semibold';
@@ -52,12 +52,12 @@ export function QuotaMetricCard({ title, icon: Icon, quota, unit, testId }: Quot
     <Card
       data-testid={testId}
       className={`border-border/80 bg-card/60 backdrop-blur-md transition-all duration-200 ${
-        isCritical ? 'border-rose-500/40 shadow-sm shadow-rose-500/10' : ''
+        isCritical ? 'border-emerald-500/30 shadow-xs' : ''
       }`}
     >
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium text-foreground">{title}</CardTitle>
-        <Icon className={`size-4 ${isCritical ? 'text-rose-400' : 'text-primary'}`} />
+        <Icon className={`size-4 ${isCritical ? 'text-emerald-400' : 'text-primary'}`} />
       </CardHeader>
 
       <CardContent className="space-y-2.5">
@@ -94,7 +94,7 @@ export function QuotaMetricCard({ title, icon: Icon, quota, unit, testId }: Quot
             </span>
           ) : isCritical ? (
             <div className="flex items-center justify-between w-full">
-              <span className="text-rose-400 text-[11px] font-medium">
+              <span className="text-emerald-400 text-[11px] font-medium">
                 {t('common:limitExceeded', { defaultValue: 'Ліміт вичерпано' })}
               </span>
               <Link

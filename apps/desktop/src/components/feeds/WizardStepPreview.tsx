@@ -6,15 +6,14 @@ import { Button } from '@/components/ui/button';
 import {
   Layers,
   ShoppingBag,
-  ArrowRight,
   CheckCircle2,
-  Image as ImageIcon,
   Search,
   CheckSquare,
   Square,
   AlertTriangle,
 } from 'lucide-react';
 import { useTranslation } from '@/i18n';
+import { WizardSampleProductsTable } from './WizardSampleProductsTable';
 
 interface WizardStepPreviewProps {
   analysis: FeedAnalysisResult;
@@ -267,87 +266,8 @@ export function WizardStepPreview({
         </div>
       )}
 
-      {/* Sample Products Table (100% Solid sticky thead) */}
-      <div className="space-y-2">
-        <div className="text-xs text-muted-foreground font-medium flex items-center justify-between">
-          <span>
-            {t('suppliers:sampleProductsTitle', {
-              defaultValue: 'Попередній перегляд товарів (перші 5):',
-            })}
-          </span>
-          <span className="text-xs text-emerald-400 font-medium flex items-center gap-1">
-            <CheckCircle2 className="size-3.5" />
-            {t('suppliers:markupCalculatedLive', { defaultValue: 'Націнка врахована' })}
-          </span>
-        </div>
-
-        <div className="rounded-xl border border-border overflow-hidden bg-card shadow-sm">
-          <div className="max-h-72 overflow-y-auto">
-            <table className="w-full text-left text-xs border-collapse">
-              <thead className="bg-muted sticky top-0 z-10 border-b border-border shadow-xs">
-                <tr className="text-foreground text-[11px] font-semibold uppercase tracking-wider">
-                  <th className="p-2.5 w-12 bg-muted">Фото</th>
-                  <th className="p-2.5 w-28 bg-muted">Артикул / SKU</th>
-                  <th className="p-2.5 bg-muted">Назва товару</th>
-                  <th className="p-2.5 text-right w-44 bg-muted">Закупка → Продаж</th>
-                  <th className="p-2.5 text-center w-28 bg-muted">Наявність</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border/40 bg-card">
-                {analysis.sampleProducts.map((prod, idx) => (
-                  <tr key={idx} className="hover:bg-secondary/40 transition-colors">
-                    <td className="p-2.5">
-                      {prod.images && prod.images.length > 0 ? (
-                        <img
-                          src={prod.images[0].originalUrl}
-                          alt=""
-                          className="size-8 rounded-md object-cover border border-border bg-background"
-                          onError={(e) => {
-                            (e.target as HTMLElement).style.display = 'none';
-                          }}
-                        />
-                      ) : (
-                        <div className="size-8 rounded-md bg-secondary flex items-center justify-center text-muted-foreground border border-border/50">
-                          <ImageIcon className="size-4" />
-                        </div>
-                      )}
-                    </td>
-                    <td className="p-2.5 font-mono text-xs font-semibold text-foreground truncate">
-                      {prod.sku}
-                    </td>
-                    <td className="p-2.5 text-foreground font-medium">
-                      <div className="truncate max-w-sm" title={prod.titleUk}>
-                        {prod.titleUk}
-                      </div>
-                    </td>
-                    <td className="p-2.5 text-right whitespace-nowrap font-mono text-xs">
-                      <span className="text-muted-foreground line-through text-[11px] mr-1">
-                        {prod.costPrice.toLocaleString('uk-UA')} ₴
-                      </span>
-                      <ArrowRight className="size-3 inline text-primary mx-1" />
-                      <span className="font-bold text-emerald-400">
-                        {prod.price.toLocaleString('uk-UA')} ₴
-                      </span>
-                    </td>
-                    <td className="p-2.5 text-center">
-                      <Badge
-                        variant={prod.inStock ? 'secondary' : 'outline'}
-                        className={`text-[10px] px-2 py-0.5 font-medium ${
-                          prod.inStock
-                            ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20'
-                            : 'text-muted-foreground bg-secondary/50'
-                        }`}
-                      >
-                        {prod.inStock ? 'В наявності' : 'Немає'}
-                      </Badge>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
+      {/* Sample Products Table (Modular Component) */}
+      <WizardSampleProductsTable sampleProducts={analysis.sampleProducts} />
     </div>
   );
 }

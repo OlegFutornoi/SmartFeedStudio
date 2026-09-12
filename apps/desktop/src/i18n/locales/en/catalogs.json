@@ -81,5 +81,20 @@
   "noProductsFound": "No products found",
   "noProductsFoundDesc": "Try adjusting your filters or importing a new feed",
   "totalProductsCount": "Total Products: {{count}}",
-  "copySkuSuccess": "SKU copied to clipboard"
+  "copySkuSuccess": "SKU copied to clipboard",
+  "deleteImage": "Delete Photo",
+  "deleteImageConfirmTitle": "Delete this photo?",
+  "deleteImageConfirmDesc": "The photo will be removed from the product and physically deleted from your local disk storage.",
+  "deleteImageSuccess": "Photo and local file successfully deleted",
+  "makeMainImage": "Set as Main",
+  "mainImageBadge": "Main",
+  "imageStatusReady": "Saved on disk",
+  "imageStatusPending": "Queued for download",
+  "imageStatusDownloading": "Downloading…",
+  "imageStatusFailed": "Download failed",
+  "imageStatusMissing": "File missing on disk",
+  "redownloadPhoto": "Redownload",
+  "noImagesAvailable": "No photos available",
+  "viewFullGallery": "View All Photos",
+  "imageUnavailable": "Image unavailable"
 }

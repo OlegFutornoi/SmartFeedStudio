@@ -1,18 +1,37 @@
-import React, { useState } from 'react';
-import { X, Package, Building2, FolderTree, Barcode, DollarSign, Layers } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { X, Building2, FolderTree, Barcode, DollarSign, Layers } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useTranslation } from '@/i18n';
-import type { ProductDto } from '@smartfeed/shared';
+import type { ProductDto, LocalProductImageDto, ProductImageDto } from '@smartfeed/shared';
+import { localImagesService } from '@/services/local-db';
+import { ProductGalleryModal } from './ProductGalleryModal';
+import { ProductDrawerImages } from './ProductDrawerImages';
 
 interface ProductDetailsDrawerProps {
   product: ProductDto | null;
   onClose: () => void;
+  onProductUpdate?: (updatedProduct: ProductDto) => void;
 }
 
-export const ProductDetailsDrawer: React.FC<ProductDetailsDrawerProps> = ({ product, onClose }) => {
+export const ProductDetailsDrawer: React.FC<ProductDetailsDrawerProps> = ({
+  product,
+  onClose,
+  onProductUpdate,
+}) => {
   const { t } = useTranslation(['catalogs', 'common']);
   const [activeImageIdx, setActiveImageIdx] = useState(0);
+  const [isGalleryOpen, setIsGalleryOpen] = useState(false);
+  const [localImages, setLocalImages] = useState<LocalProductImageDto[]>([]);
+
+  useEffect(() => {
+    if (product?.images) {
+      setLocalImages(product.images as LocalProductImageDto[]);
+      setActiveImageIdx(0);
+    } else {
+      setLocalImages([]);
+    }
+  }, [product]);
 
   if (!product) return null;
 
@@ -20,8 +39,38 @@ export const ProductDetailsDrawer: React.FC<ProductDetailsDrawerProps> = ({ prod
   const retail = product.price || 0;
   const marginDiff = retail - cost;
   const marginPercent = cost > 0 ? Math.round((marginDiff / cost) * 100) : 0;
-  const images = product.images && product.images.length > 0 ? product.images : [];
-  const currentImg = images[activeImageIdx] || images[0];
+  const currentImg = localImages[activeImageIdx] || localImages[0];
+
+  const handleImagesUpdated = (updated: LocalProductImageDto[]) => {
+    setLocalImages(updated);
+    if (onProductUpdate) {
+      onProductUpdate({
+        ...product,
+        images: updated as unknown as ProductImageDto[],
+      });
+    }
+  };
+
+  const handleDeleteCurrentImage = async () => {
+    if (!currentImg?.id) return;
+    try {
+      const res = await localImagesService.deleteProductImage(currentImg.id);
+      if (res.success) {
+        const next = localImages.filter((img) => img.id !== currentImg.id);
+        if (res.newMainImageId && next.length > 0) {
+          next.forEach((img) => {
+            img.isMain = img.id === res.newMainImageId;
+          });
+        }
+        handleImagesUpdated(next);
+        if (activeImageIdx >= next.length) {
+          setActiveImageIdx(Math.max(0, next.length - 1));
+        }
+      }
+    } catch (err) {
+      console.warn('[ProductDetailsDrawer] Failed to delete current image:', err);
+    }
+  };
 
   return (
     <div
@@ -52,41 +101,14 @@ export const ProductDetailsDrawer: React.FC<ProductDetailsDrawerProps> = ({ prod
         {/* Scrollable Content */}
         <div className="flex-1 overflow-y-auto p-4 space-y-5">
           {/* Images Section */}
-          <div className="space-y-2">
-            <div className="h-56 w-full rounded-xl overflow-hidden bg-muted/30 border border-border flex items-center justify-center">
-              {currentImg?.cloudUrl || currentImg?.originalUrl ? (
-                <img
-                  src={currentImg.cloudUrl || currentImg.originalUrl}
-                  alt={product.titleUk}
-                  className="h-full w-full object-contain p-2"
-                />
-              ) : (
-                <Package className="h-12 w-12 text-muted-foreground/30" />
-              )}
-            </div>
-
-            {/* Thumbnail selector */}
-            {images.length > 1 && (
-              <div className="flex items-center gap-2 overflow-x-auto pb-1">
-                {images.map((img, idx) => (
-                  <button
-                    key={idx}
-                    type="button"
-                    onClick={() => setActiveImageIdx(idx)}
-                    className={`h-12 w-12 rounded-lg overflow-hidden border-2 shrink-0 transition-all ${
-                      activeImageIdx === idx ? 'border-primary' : 'border-border opacity-60'
-                    }`}
-                  >
-                    <img
-                      src={img.cloudUrl || img.originalUrl}
-                      alt=""
-                      className="h-full w-full object-cover"
-                    />
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
+          <ProductDrawerImages
+            images={localImages}
+            activeIdx={activeImageIdx}
+            productTitle={product.titleUk}
+            onSelectIdx={setActiveImageIdx}
+            onOpenGallery={() => setIsGalleryOpen(true)}
+            onDeleteCurrent={handleDeleteCurrentImage}
+          />
 
           {/* Pricing Grid */}
           <div className="p-3.5 bg-muted/20 border border-border/60 rounded-xl space-y-3">
@@ -209,6 +231,18 @@ export const ProductDetailsDrawer: React.FC<ProductDetailsDrawerProps> = ({ prod
           </Button>
         </div>
       </div>
+
+      {/* Full Photo Gallery & Management Modal */}
+      {isGalleryOpen && (
+        <ProductGalleryModal
+          isOpen={isGalleryOpen}
+          onClose={() => setIsGalleryOpen(false)}
+          productTitle={product.titleUk}
+          productId={product.id}
+          images={localImages}
+          onImagesChange={handleImagesUpdated}
+        />
+      )}
     </div>
   );
 };
