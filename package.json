@@ -41,7 +41,9 @@
     "prisma:migrate": "pnpm --filter @smartfeed/backend-api prisma:migrate",
     "prisma:studio": "pnpm --filter @smartfeed/backend-api prisma:studio",
     "prisma:seed": "pnpm --filter @smartfeed/backend-api prisma:seed",
-    "admin:set": "pnpm --filter @smartfeed/backend-api admin:set"
+    "admin:set": "pnpm --filter @smartfeed/backend-api admin:set",
+    "sentry:issues": "node scripts/sentry.mjs list",
+    "sentry:issue": "node scripts/sentry.mjs issue"
   },
   "devDependencies": {
     "@eslint/js": "^9.18.0",

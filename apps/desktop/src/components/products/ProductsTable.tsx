@@ -80,7 +80,7 @@ export const ProductsTable: React.FC<ProductsTableProps> = ({
                   </td>
                 </tr>
               ))
-            ) : products.length === 0 ? (
+            ) : (products || []).length === 0 ? (
               // Empty state
               <tr>
                 <td colSpan={9} className="py-12 px-4 text-center">
@@ -98,7 +98,7 @@ export const ProductsTable: React.FC<ProductsTableProps> = ({
                 </td>
               </tr>
             ) : (
-              products.map((product) => (
+              (products || []).map((product) => (
                 <ProductTableRow
                   key={product.id}
                   product={product}

@@ -1,5 +1,6 @@
 import { Component, ErrorInfo, ReactNode } from 'react';
 import { AlertTriangle, RefreshCw, Home } from 'lucide-react';
+import { captureException } from '@/lib/sentry';
 import { Button } from './button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from './card';
 
@@ -25,6 +26,7 @@ export class ErrorBoundary extends Component<Props, State> {
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error('[Desktop ErrorBoundary] Uncaught exception:', error, errorInfo);
+    captureException(error, { componentStack: errorInfo.componentStack });
   }
 
   private handleReload = () => {

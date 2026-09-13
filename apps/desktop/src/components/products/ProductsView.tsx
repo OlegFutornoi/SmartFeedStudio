@@ -63,9 +63,9 @@ export const ProductsView: React.FC = () => {
         inStockOnly: inStockOnly || undefined,
       });
 
-      setProducts(res.items);
-      setTotal(res.total);
-      setTotalPages(res.totalPages);
+      setProducts(Array.isArray(res?.items) ? res.items : []);
+      setTotal(typeof res?.total === 'number' ? res.total : 0);
+      setTotalPages(typeof res?.totalPages === 'number' ? res.totalPages : 1);
     } catch (e) {
       console.warn('[ProductsView:fetchProducts] Failed to fetch products:', e);
       setProducts([]);
@@ -112,7 +112,10 @@ export const ProductsView: React.FC = () => {
   }, []);
 
   const isAllSelected = useMemo(
-    () => products.length > 0 && products.every((p) => selectedIds.includes(p.id)),
+    () =>
+      Array.isArray(products) &&
+      products.length > 0 &&
+      products.every((p) => selectedIds.includes(p.id)),
     [products, selectedIds],
   );
 
@@ -120,7 +123,7 @@ export const ProductsView: React.FC = () => {
     if (isAllSelected) {
       setSelectedIds([]);
     } else {
-      const currentPageIds = products.map((p) => p.id);
+      const currentPageIds = (products || []).map((p) => p.id);
       setSelectedIds((prev) => Array.from(new Set([...prev, ...currentPageIds])));
     }
   }, [isAllSelected, products]);

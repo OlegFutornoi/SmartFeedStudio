@@ -2,6 +2,84 @@ import { isTauri } from '../../lib/runtime';
 import { mockDatabaseDriver } from './mock-driver';
 import type { LocalDbCommandMap } from './types';
 
+function prepareTauriArgs(command: string, args: unknown): Record<string, unknown> {
+  const raw = (args || {}) as Record<string, unknown>;
+
+  switch (command) {
+    case 'db_create_supplier':
+      return {
+        dto: raw.payload || raw.dto || raw,
+      };
+
+    case 'db_update_supplier':
+      return {
+        id: raw.id,
+        dto: raw.payload || raw.dto || raw,
+      };
+
+    case 'db_create_feed_source': {
+      const p = (raw.payload || {}) as Record<string, unknown>;
+      const dto = {
+        id: p.id || undefined,
+        supplierId: raw.supplierId || p.supplierId,
+        name: p.name,
+        sourceType: p.sourceType,
+        fileFormat: p.format || p.fileFormat,
+        sourceUrl: p.url || p.sourceUrl,
+        authHeaderName: p.authHeaderName,
+        authHeaderValue: p.authHeaderValue,
+        syncIntervalHours: p.syncIntervalHours || 24,
+        autoUpdatePrices: p.autoUpdatePrices ?? true,
+        autoUpdateStocks: p.autoUpdateStocks ?? true,
+        autoCreateNewProducts: p.autoCreateNewProducts ?? true,
+        mappingRules: typeof p.mappingRules === 'string' ? p.mappingRules : undefined,
+      };
+      return { dto };
+    }
+
+    case 'db_delete_feed_source':
+      return {
+        id: raw.id,
+        deleteProducts: raw.deleteProducts ?? true,
+        delete_products: raw.deleteProducts ?? true,
+      };
+
+    case 'db_get_supplier_feed_sources':
+      return {
+        supplierId: raw.supplierId,
+        supplier_id: raw.supplierId,
+      };
+
+    case 'db_bulk_delete_products': {
+      const p = raw.payload as { productIds?: string[] } | undefined;
+      return {
+        ids: p?.productIds || raw.ids || [],
+      };
+    }
+
+    default:
+      return raw;
+  }
+}
+
+const REGISTERED_TAURI_COMMANDS = new Set([
+  'db_get_counters',
+  'db_get_suppliers',
+  'db_create_supplier',
+  'db_update_supplier',
+  'db_delete_supplier',
+  'db_get_supplier_feed_sources',
+  'db_create_feed_source',
+  'db_delete_feed_source',
+  'db_get_products',
+  'db_bulk_upsert_products',
+  'db_bulk_delete_products',
+  'db_get_product_images',
+  'db_delete_product_image',
+  'db_update_product_images_order',
+  'db_download_product_image',
+]);
+
 /**
  * Universal Local Database Dispatcher:
  * - When running in Tauri native app -> routes to Rust SQLCipher commands.
@@ -14,15 +92,14 @@ export async function invokeLocalDb<K extends keyof LocalDbCommandMap>(
   if (isTauri()) {
     try {
       const { invoke } = await import('@tauri-apps/api/core');
-      return (await invoke(
-        command,
-        args as Record<string, unknown>,
-      )) as LocalDbCommandMap[K]['result'];
+      const tauriArgs = prepareTauriArgs(command, args);
+      return (await invoke(command, tauriArgs)) as LocalDbCommandMap[K]['result'];
     } catch (error) {
-      console.warn(
-        `[LocalDB IPC] Tauri invoke('${command}') failed, falling back to mock driver:`,
-        error,
-      );
+      console.warn(`[LocalDB IPC] Tauri invoke('${command}') error:`, error);
+      // For registered native commands, propagate error so UI handles it instead of silently desyncing
+      if (REGISTERED_TAURI_COMMANDS.has(command)) {
+        throw error;
+      }
     }
   }
 

@@ -17,6 +17,7 @@ import { getSuppliers, createSupplier, updateSupplier, deleteSupplier } from '@/
 import { useDataSync, emitDataSync } from '@/lib/syncEvents';
 import { SuppliersStatsHeader } from '@/components/suppliers/SuppliersStatsHeader';
 import { SuppliersToolbar } from '@/components/suppliers/SuppliersToolbar';
+import { isTauri } from '@/lib/runtime';
 
 export function SuppliersPage() {
   const { t, language } = useTranslation(['suppliers', 'common']);
@@ -52,17 +53,18 @@ export function SuppliersPage() {
 
   const fetchSuppliers = useCallback(
     async (force = false, silent = false) => {
-      if (!token || !isAuthenticated) return;
-      if (!force && lastFetchedTokenRef.current === token) return;
+      if (!isTauri() && (!token || !isAuthenticated)) return;
+      const fetchKey = token || 'tauri-local';
+      if (!force && lastFetchedTokenRef.current === fetchKey) return;
       if (isFetchingRef.current) return;
 
       try {
         isFetchingRef.current = true;
         if (!silent) setIsLoading(true);
-        const data = await getSuppliers(token);
-        lastFetchedTokenRef.current = token;
-        setSuppliers(data);
-        setLocalQuotaUsed('suppliers', data.length);
+        const data = await getSuppliers(token || undefined);
+        lastFetchedTokenRef.current = fetchKey;
+        setSuppliers(data || []);
+        setLocalQuotaUsed('suppliers', data ? data.length : 0);
       } catch (err) {
         console.error('Failed to fetch suppliers:', err);
       } finally {
@@ -97,22 +99,27 @@ export function SuppliersPage() {
   };
 
   const handleSaveSupplier = async (dto: CreateSupplierDto) => {
-    if (!token) return;
+    if (!token && !isTauri()) return;
 
-    if (selectedSupplier) {
-      await updateSupplier(selectedSupplier.id, dto, token);
-    } else {
-      if (isSupplierLimitReached) {
-        setIsQuotaExceededOpen(true);
-        return;
+    try {
+      if (selectedSupplier) {
+        await updateSupplier(selectedSupplier.id, dto, token || undefined);
+      } else {
+        if (isSupplierLimitReached) {
+          setIsQuotaExceededOpen(true);
+          return;
+        }
+        await createSupplier(dto, token || undefined);
+        updateLocalQuota('suppliers', 1);
       }
-      await createSupplier(dto, token);
-      updateLocalQuota('suppliers', 1);
-    }
 
-    emitDataSync(['suppliers', 'quotas']);
-    await fetchSuppliers(true);
-    setSelectedSupplier(null);
+      emitDataSync(['suppliers', 'quotas']);
+      await fetchSuppliers(true);
+      setSelectedSupplier(null);
+    } catch (err) {
+      console.error('[SuppliersPage:handleSaveSupplier] Error:', err);
+      throw err;
+    }
   };
 
   const handleDeleteSupplier = (supplierId: string) => {
@@ -123,21 +130,26 @@ export function SuppliersPage() {
   };
 
   const handleConfirmDeleteSupplier = async () => {
-    if (!supplierToDelete || !token) return;
+    if (!supplierToDelete) return;
+    if (!token && !isTauri()) return;
     const target = supplierToDelete;
     setSupplierToDelete(null);
 
-    await deleteSupplier(target.id, token);
-    updateLocalQuota('suppliers', -1);
-    if (target.productsCount && target.productsCount > 0) {
-      updateLocalQuota('products', -target.productsCount);
+    try {
+      await deleteSupplier(target.id, token || undefined);
+      updateLocalQuota('suppliers', -1);
+      if (target.productsCount && target.productsCount > 0) {
+        updateLocalQuota('products', -target.productsCount);
+      }
+      if (target.activeFeedsCount && target.activeFeedsCount > 0) {
+        updateLocalQuota('feeds', -target.activeFeedsCount);
+      }
+      refreshQuotas();
+      emitDataSync(['suppliers', 'feeds', 'products', 'quotas', 'all']);
+      await fetchSuppliers(true);
+    } catch (err) {
+      console.error('[SuppliersPage:handleConfirmDeleteSupplier] Error:', err);
     }
-    if (target.activeFeedsCount && target.activeFeedsCount > 0) {
-      updateLocalQuota('feeds', -target.activeFeedsCount);
-    }
-    refreshQuotas();
-    emitDataSync(['suppliers', 'feeds', 'products', 'quotas', 'all']);
-    await fetchSuppliers(true);
   };
 
   const filteredSuppliers = useMemo(() => {

@@ -40,16 +40,8 @@ pub fn open_encrypted_connection(db_path: &Path) -> Result<Connection> {
 }
 
 pub fn init_schema(conn: &Connection) -> Result<()> {
-    // DROP tables if they exist to force schema update during this dev phase
     conn.execute_batch(
         r#"
-        DROP TABLE IF EXISTS local_export_pricing_rules;
-        DROP TABLE IF EXISTS local_export_channels;
-        DROP TABLE IF EXISTS local_pricing_rules;
-        DROP TABLE IF EXISTS local_products;
-        DROP TABLE IF EXISTS local_feed_sources;
-        DROP TABLE IF EXISTS local_suppliers;
-
         CREATE TABLE IF NOT EXISTS local_suppliers (
             id TEXT PRIMARY KEY,
             organization_id TEXT,

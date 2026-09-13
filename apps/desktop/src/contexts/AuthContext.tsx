@@ -11,6 +11,7 @@ import {
   type LoginCredentials,
   type RegisterCredentials,
 } from '@/lib/api';
+import { setSentryUser } from '@/lib/sentry';
 
 interface AuthContextType {
   user: UserProfile | null;
@@ -95,6 +96,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setIsLoading(false);
     }
   }, [refreshProfile]);
+
+  // Synchronize authenticated user identity with Sentry monitoring
+  useEffect(() => {
+    if (user) {
+      setSentryUser({ id: user.id, email: user.email });
+    } else {
+      setSentryUser(null);
+    }
+  }, [user]);
 
   // Proactive background silent refresh every 10 minutes to keep session active indefinitely
   useEffect(() => {

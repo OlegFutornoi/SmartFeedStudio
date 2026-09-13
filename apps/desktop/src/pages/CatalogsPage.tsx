@@ -47,9 +47,11 @@ export function CatalogsPage() {
         getAllFeedSources(token || undefined),
         localDb.products.getProducts({ limit: 1 }),
       ]);
-      setSuppliers(suppliersData);
-      setFeeds(feedsData);
-      setTotalProductsCount(productsRes.total);
+      setSuppliers(suppliersData || []);
+      setFeeds(feedsData || []);
+      setTotalProductsCount(
+        productsRes?.total ?? (Array.isArray(productsRes) ? productsRes.length : 0),
+      );
     } catch (e) {
       console.warn('[CatalogsPage:loadData] Failed to load catalogs data:', e);
     }

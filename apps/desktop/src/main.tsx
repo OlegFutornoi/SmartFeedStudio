@@ -7,8 +7,12 @@ import { QuotasProvider } from '@/contexts/QuotasContext';
 import { BackgroundJobsProvider } from '@/contexts/BackgroundJobsContext';
 import { WorkspaceStorageProvider } from '@/contexts/WorkspaceStorageContext';
 import { I18nProvider } from '@/i18n';
+import { initSentry } from '@/lib/sentry';
 import App from './App';
 import './index.css';
+
+// Initialize Sentry monitoring for desktop client
+initSentry();
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <BrowserRouter>
