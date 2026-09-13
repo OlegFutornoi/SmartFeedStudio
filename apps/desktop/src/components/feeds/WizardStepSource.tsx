@@ -168,6 +168,8 @@ export function WizardStepSource({
           {/* Hidden native file input — triggered via ref to fix Tauri WebView label click bug */}
           <input
             ref={fileInputRef}
+            id="feed-file-upload"
+            data-testid="feed-file-upload"
             type="file"
             accept=".xml,.yml,.csv,.txt"
             className="hidden"

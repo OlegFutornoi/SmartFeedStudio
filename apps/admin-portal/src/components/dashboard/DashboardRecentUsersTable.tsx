@@ -93,7 +93,7 @@ export const DashboardRecentUsersTable = React.memo(function DashboardRecentUser
                       variant="outline"
                       className={
                         u.role === 'SUPER_ADMIN'
-                          ? 'bg-purple-500/10 text-purple-400 border-purple-500/30'
+                          ? 'bg-primary/15 text-primary border-primary/30'
                           : u.role === 'ADMIN'
                             ? 'bg-blue-500/10 text-blue-400 border-blue-500/30'
                             : 'bg-secondary text-secondary-foreground'

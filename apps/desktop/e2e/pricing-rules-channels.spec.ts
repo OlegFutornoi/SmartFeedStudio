@@ -94,8 +94,40 @@ test.describe('Desktop App — Multi-Tier Pricing Rules & Marketplace Reverse Ma
     createdAt: new Date().toISOString(),
   };
 
-  let mockRules: any[] = [];
-  let mockExportChannels: any[] = [];
+  interface MockPricingRule {
+    id: string;
+    supplierId: string;
+    categoryId: string | null;
+    categoryNameUk: string | null;
+    minPrice: number | null;
+    maxPrice: number | null;
+    marginPercent: number;
+    fixedMarkup: number;
+    priority: number;
+    isActive: boolean;
+    createdAt: string;
+  }
+
+  interface MockExportChannel {
+    id: string;
+    userId: string;
+    name: string;
+    marketplaceCode: string;
+    feedFormat: string;
+    commissionPercent: number;
+    extraFixedCost: number;
+    applyReverseMarkup: boolean;
+    slug: string;
+    isActive: boolean;
+    catalogId: string | null;
+    catalogName: string;
+    totalProductsCount: number;
+    exportUrl: string;
+    createdAt: string;
+  }
+
+  let mockRules: MockPricingRule[] = [];
+  let mockExportChannels: MockExportChannel[] = [];
 
   test.beforeEach(async ({ page }) => {
     mockRules = [];

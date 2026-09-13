@@ -92,7 +92,7 @@ export const NavigationItemRow = React.memo(function NavigationItemRow({
             'text-[10px] uppercase font-mono px-2 py-0.5 gap-1',
             item.targetApp === TargetApp.DESKTOP
               ? 'border-blue-500/30 text-blue-500 bg-blue-500/5'
-              : 'border-purple-500/30 text-purple-500 bg-purple-500/5',
+              : 'border-primary/30 text-primary bg-primary/5',
           )}
         >
           {item.targetApp === TargetApp.DESKTOP ? (

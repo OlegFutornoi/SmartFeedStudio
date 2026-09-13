@@ -50,8 +50,8 @@ export function CatalogsPage() {
       setSuppliers(suppliersData);
       setFeeds(feedsData);
       setTotalProductsCount(productsRes.total);
-    } catch {
-      // Fallback
+    } catch (e) {
+      console.warn('[CatalogsPage:loadData] Failed to load catalogs data:', e);
     }
   }, [token]);
 
@@ -70,8 +70,8 @@ export function CatalogsPage() {
       addTrackedJob(res.jobId);
       await loadData();
       emitDataSync(['suppliers', 'feeds', 'products', 'quotas']);
-    } catch {
-      // Handled
+    } catch (e) {
+      console.warn('[CatalogsPage:handleSyncFeed] Failed to sync feed:', e);
     } finally {
       setSyncingId(null);
     }
@@ -105,8 +105,8 @@ export function CatalogsPage() {
           emitDataSync(['suppliers', 'feeds', 'products', 'quotas', 'all']);
         },
       });
-    } catch {
-      // Handled
+    } catch (e) {
+      console.warn('[CatalogsPage:handleConfirmDeleteFeed] Failed to delete feed:', e);
     }
   };
 

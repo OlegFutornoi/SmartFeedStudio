@@ -45,8 +45,8 @@ export const ProductsView: React.FC = () => {
       const catSummaries = await localDb.products.getCategoriesSummary();
       const uniqueCats = Array.from(new Set(catSummaries.map((c) => c.nameUk))).filter(Boolean);
       setCategories(uniqueCats);
-    } catch {
-      // Fallback
+    } catch (e) {
+      console.warn('[ProductsView:loadFilterOptions] Failed to load filter options:', e);
     }
   }, []);
 
@@ -66,7 +66,8 @@ export const ProductsView: React.FC = () => {
       setProducts(res.items);
       setTotal(res.total);
       setTotalPages(res.totalPages);
-    } catch {
+    } catch (e) {
+      console.warn('[ProductsView:fetchProducts] Failed to fetch products:', e);
       setProducts([]);
       setTotal(0);
       setTotalPages(1);

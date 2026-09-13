@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { LucideIcon, ShieldCheck, X, KeyRound, LogOut, Settings } from 'lucide-react';
+import { LucideIcon, ShieldCheck, X, KeyRound, LogOut } from 'lucide-react';
 import { UserProfile } from '@smartfeed/shared';
 import { Avatar, AvatarFallback } from '../ui/avatar';
 import { Button } from '../ui/button';

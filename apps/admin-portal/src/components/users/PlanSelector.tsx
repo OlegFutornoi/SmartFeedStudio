@@ -13,7 +13,7 @@ interface PlanSelectorProps {
 const PLAN_OPTIONS: { value: PlanType; badge: string; color: string }[] = [
   { value: PlanType.STARTER, badge: 'Starter', color: 'bg-muted text-muted-foreground' },
   { value: PlanType.GROWTH, badge: 'Growth', color: 'bg-blue-500/15 text-blue-500' },
-  { value: PlanType.PRO, badge: 'Pro', color: 'bg-violet-500/15 text-violet-500' },
+  { value: PlanType.PRO, badge: 'Pro', color: 'bg-emerald-500/15 text-emerald-500' },
   { value: PlanType.ENTERPRISE, badge: 'Enterprise', color: 'bg-amber-500/15 text-amber-600' },
 ];
 

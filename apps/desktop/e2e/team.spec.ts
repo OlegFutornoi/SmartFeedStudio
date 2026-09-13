@@ -34,7 +34,19 @@ test.describe('Desktop App — Команда, Компанія та Коман�
     ],
   };
 
-  let mockInvitationsState: any[] = [];
+  interface MockInvitationState {
+    id: string;
+    organizationId: string;
+    email: string;
+    role: string;
+    token: string;
+    inviteUrl: string;
+    status: string;
+    expiresAt: string;
+    createdAt: string;
+  }
+
+  let mockInvitationsState: MockInvitationState[] = [];
 
   let mockLicenseState = {
     id: 'lic-org-1',

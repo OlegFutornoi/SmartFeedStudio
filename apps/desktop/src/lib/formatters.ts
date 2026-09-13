@@ -14,7 +14,8 @@ export function formatDisplayUrl(url?: string | null): string {
     const host = parsed.hostname.replace(/^www\./, '');
     const pathname = parsed.pathname === '/' ? '' : parsed.pathname;
     return `${host}${pathname}`;
-  } catch {
+  } catch (err) {
+    console.warn('[formatters:formatDisplayUrl] Failed to parse URL:', err);
     return url.length > 40 ? `${url.slice(0, 37)}...` : url;
   }
 }
@@ -28,7 +29,8 @@ export function formatHostname(url?: string | null): string {
   try {
     const parsed = new URL(url);
     return parsed.hostname.replace(/^www\./, '');
-  } catch {
+  } catch (err) {
+    console.warn('[formatters:formatHostname] Failed to parse URL:', err);
     return url.slice(0, 30);
   }
 }
@@ -59,7 +61,8 @@ export function formatFeedTitle(name?: string | null, sourceUrl?: string | null)
         return `${host} (${fileName})`;
       }
       return host || formatDisplayUrl(candidate);
-    } catch {
+    } catch (err) {
+      console.warn('[formatters:formatFeedTitle] Failed to parse URL:', err);
       return candidate.length > 35 ? `${candidate.slice(0, 32)}...` : candidate;
     }
   }

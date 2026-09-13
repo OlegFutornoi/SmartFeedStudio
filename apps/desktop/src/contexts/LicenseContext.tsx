@@ -61,7 +61,8 @@ export function LicenseProvider({ children }: { children: React.ReactNode }) {
         const expired = isAdmin ? false : Boolean(!lic || !lic.isActive || lic.isExpired);
         setIsExpired(expired);
         lastFetchedTokenRef.current = token;
-      } catch {
+      } catch (err) {
+        console.warn('[LicenseContext:fetchLicense] Failed to fetch license:', err);
         if (isAdmin) {
           setIsExpired(false);
         } else if (token.startsWith('mock-')) {

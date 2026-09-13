@@ -14,7 +14,8 @@ export type Namespace =
   | 'cloud'
   | 'settings'
   | 'storage'
-  | 'featureTeaser';
+  | 'featureTeaser'
+  | 'export';
 
 export type TranslationDict = Record<string, string>;
 

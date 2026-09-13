@@ -93,12 +93,12 @@ export class AdminLicensesPage extends BasePage {
     await deleteBtn.click();
   }
 
-  async confirmDeleteLicense(licenseKey: string): Promise<void> {
+  async confirmDeleteLicense(_licenseKey?: string): Promise<void> {
     const confirmBtn = this.page.getByTestId('license-delete-confirm-btn');
     await confirmBtn.click();
   }
 
-  async cancelDeleteLicense(licenseKey: string): Promise<void> {
+  async cancelDeleteLicense(_licenseKey?: string): Promise<void> {
     const cancelBtn = this.page.getByTestId('license-delete-cancel-btn');
     await cancelBtn.click();
   }

@@ -31,6 +31,7 @@ import {
 import { CreateUserByAdminCommand } from './commands/create-user-by-admin.command';
 import { UpdateUserStatusCommand } from './commands/update-user-status.command';
 import { DeleteUserCommand } from './commands/delete-user.command';
+import { CreateUserByAdminRequestDto, UpdateUserStatusRequestDto } from './dto';
 
 @ApiTags('Users')
 @Controller('users')
@@ -84,7 +85,7 @@ export class UsersController {
   @ApiResponse({ status: 201, description: 'User created successfully' })
   @ApiResponse({ status: 400, description: 'Validation failed' })
   @ApiResponse({ status: 409, description: 'Email already exists' })
-  async createUserByAdmin(@Body() body: unknown): Promise<UserListItemDto> {
+  async createUserByAdmin(@Body() body: CreateUserByAdminRequestDto): Promise<UserListItemDto> {
     const dto: CreateUserByAdminDto = CreateUserByAdminDtoSchema.parse(body);
     return this.commandBus.execute(new CreateUserByAdminCommand(dto));
   }
@@ -99,7 +100,7 @@ export class UsersController {
   @ApiResponse({ status: 404, description: 'User not found' })
   async updateUserStatus(
     @Param('id') userId: string,
-    @Body() body: unknown,
+    @Body() body: UpdateUserStatusRequestDto,
     @CurrentUser('id') requesterId: string,
   ): Promise<UserListItemDto> {
     const dto: UpdateUserStatusDto = UpdateUserStatusDtoSchema.parse(body);

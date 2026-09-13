@@ -34,7 +34,8 @@ export function resolveImageSrc(
   if (isTauri() && tauriConvertFn) {
     try {
       return tauriConvertFn(target);
-    } catch {
+    } catch (err) {
+      console.warn('[image-url:resolveProductImageUrl] Tauri asset conversion failed:', err);
       return target;
     }
   }

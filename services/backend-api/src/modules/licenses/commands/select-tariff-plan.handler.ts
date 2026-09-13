@@ -3,6 +3,7 @@ import { ForbiddenException, Injectable, Logger, NotFoundException } from '@nest
 import { LicenseEntity, PlanType, PLAN_LIMITS_MAP } from '@smartfeed/shared';
 import * as crypto from 'crypto';
 import { PrismaService } from '../../../prisma/prisma.service';
+import { mapTariffPlanToDto } from '../../plans/utils/map-tariff-plan-to-dto';
 import { SelectTariffPlanCommand } from './select-tariff-plan.command';
 
 @Injectable()
@@ -163,34 +164,7 @@ export class SelectTariffPlanHandler implements ICommandHandler<
       expiresAt: license.expiresAt,
       isExpired: false,
       daysRemaining,
-      tariffPlan: {
-        id: dbPlan.id,
-        code: dbPlan.code,
-        nameUk: dbPlan.nameUk,
-        nameEn: dbPlan.nameEn,
-        descriptionUk: dbPlan.descriptionUk,
-        descriptionEn: dbPlan.descriptionEn,
-        priceMonthly: Number(dbPlan.priceMonthly),
-        priceYearly: dbPlan.priceYearly ? Number(dbPlan.priceYearly) : null,
-        currency: dbPlan.currency,
-        maxXmlLimit: dbPlan.maxXmlLimit,
-        aiCredits: dbPlan.aiCredits,
-        canCloudBackup: dbPlan.canCloudBackup,
-        maxFeedsLimit: dbPlan.maxFeedsLimit,
-        maxChannelsLimit: dbPlan.maxChannelsLimit,
-        maxTeamSeats: dbPlan.maxTeamSeats,
-        maxSuppliersLimit: dbPlan.maxSuppliersLimit,
-        hasApiAccess: dbPlan.hasApiAccess,
-        hasFeedDiff: dbPlan.hasFeedDiff,
-        isPopular: dbPlan.isPopular,
-        isActive: dbPlan.isActive,
-        order: dbPlan.order,
-        durationDays: dbPlan.durationDays,
-        featuresUk: dbPlan.featuresUk,
-        featuresEn: dbPlan.featuresEn,
-        createdAt: dbPlan.createdAt,
-        updatedAt: dbPlan.updatedAt,
-      },
+      tariffPlan: mapTariffPlanToDto(dbPlan),
       createdAt: license.createdAt,
       updatedAt: license.updatedAt,
     };

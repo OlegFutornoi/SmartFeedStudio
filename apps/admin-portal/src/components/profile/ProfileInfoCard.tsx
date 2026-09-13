@@ -52,7 +52,7 @@ export const ProfileInfoCard = React.memo(function ProfileInfoCard({ user }: Pro
             <Badge
               data-testid="profile-role"
               variant="outline"
-              className="bg-purple-500/10 text-purple-400 border-purple-500/30"
+              className="bg-primary/10 text-primary border-primary/30"
             >
               {user?.role || 'SUPER_ADMIN'}
             </Badge>

@@ -317,7 +317,9 @@ describe('Payments & WayForPay Gateway Integration (E2E)', () => {
         .expect(200);
 
       expect(Array.isArray(res.body.transactions)).toBe(true);
-      expect(res.body.transactions.every((t: any) => t.userId === userId)).toBe(true);
+      expect(res.body.transactions.every((t: { userId: string }) => t.userId === userId)).toBe(
+        true,
+      );
     });
 
     it('адміністратор отримує агреговану фінансову статистику (GET /api/payments/stats)', async () => {
@@ -340,7 +342,9 @@ describe('Payments & WayForPay Gateway Integration (E2E)', () => {
         .expect(200);
 
       expect(Array.isArray(getRes.body)).toBe(true);
-      const wfpSetting = getRes.body.find((s: any) => s.provider === PaymentProvider.WAYFORPAY);
+      const wfpSetting = (getRes.body as Array<{ provider: PaymentProvider }>).find(
+        (s) => s.provider === PaymentProvider.WAYFORPAY,
+      );
       expect(wfpSetting).toBeDefined();
 
       // 2. Оновлення

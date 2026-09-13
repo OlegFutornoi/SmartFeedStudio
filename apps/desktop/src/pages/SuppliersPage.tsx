@@ -11,14 +11,8 @@ import { useQuotas } from '@/hooks/useQuotas';
 import { ExpiredPlanBlocker } from '@/components/layout/ExpiredPlanBlocker';
 import { SupplierDto, CreateSupplierDto } from '@smartfeed/shared';
 import { SupplierCard } from '@/components/suppliers/SupplierCard';
-import { CreateSupplierDialog } from '@/components/suppliers/CreateSupplierDialog';
-import { ImportFeedWizardDialog } from '@/components/feeds/ImportFeedWizardDialog';
-import { SupplierFeedsModal } from '@/components/suppliers/SupplierFeedsModal';
-import { SupplierPricingRulesModal } from '@/components/suppliers/SupplierPricingRulesModal';
-import { QuotaExceededDialog } from '@/components/ui/QuotaExceededDialog';
 import { QuotaExcessBanner } from '@/components/ui/QuotaExcessBanner';
-import { QuotaReconciliationDialog } from '@/components/plans/QuotaReconciliationDialog';
-import { ConfirmDeleteDialog } from '@/components/ui/ConfirmDeleteDialog';
+import { SuppliersModals } from '@/components/suppliers/SuppliersModals';
 import { getSuppliers, createSupplier, updateSupplier, deleteSupplier } from '@/lib/api';
 import { useDataSync, emitDataSync } from '@/lib/syncEvents';
 import { SuppliersStatsHeader } from '@/components/suppliers/SuppliersStatsHeader';
@@ -258,69 +252,37 @@ export function SuppliersPage() {
       )}
 
       {/* Modals & Dialogs */}
-      <CreateSupplierDialog
-        isOpen={isCreateOpen}
-        onClose={() => {
+      <SuppliersModals
+        isCreateOpen={isCreateOpen}
+        selectedSupplier={selectedSupplier}
+        onCloseCreate={() => {
           setIsCreateOpen(false);
           setSelectedSupplier(null);
         }}
-        onSave={handleSaveSupplier}
-        initialData={selectedSupplier}
-      />
-
-      <ImportFeedWizardDialog
-        isOpen={isImportWizardOpen}
-        onClose={() => {
+        onSaveSupplier={handleSaveSupplier}
+        isImportWizardOpen={isImportWizardOpen}
+        importWizardSupplierId={importWizardSupplierId}
+        suppliers={suppliers}
+        onCloseImportWizard={() => {
           setIsImportWizardOpen(false);
           setImportWizardSupplierId(undefined);
         }}
-        initialSupplierId={importWizardSupplierId}
-        suppliers={suppliers}
-      />
-
-      <SupplierFeedsModal
-        supplier={feedsModalSupplier}
-        isOpen={Boolean(feedsModalSupplier)}
-        onClose={() => setFeedsModalSupplier(null)}
-        onConnectNewFeed={(s: SupplierDto) => handleOpenImportWizard(s.id)}
-      />
-
-      <SupplierPricingRulesModal
-        supplier={pricingRulesSupplier}
-        isOpen={Boolean(pricingRulesSupplier)}
-        onClose={() => setPricingRulesSupplier(null)}
-      />
-
-      <QuotaExceededDialog
-        isOpen={isQuotaExceededOpen}
-        onClose={() => setIsQuotaExceededOpen(false)}
-        resourceName={isUk ? 'Постачальники' : 'Suppliers'}
-        currentCount={quotas?.suppliers?.used ?? 2}
-        maxLimit={quotas?.suppliers?.max ?? 2}
-        planName={isUk ? quotas?.planNameUk || 'Старт' : quotas?.planNameEn || 'Starter'}
-      />
-
-      <QuotaReconciliationDialog
-        isOpen={isReconciliationOpen}
-        onClose={() => setIsReconciliationOpen(false)}
-      />
-
-      <ConfirmDeleteDialog
-        isOpen={Boolean(supplierToDelete)}
-        title={
-          isUk
-            ? `Видалити постачальника «${supplierToDelete?.name}»?`
-            : `Delete supplier «${supplierToDelete?.name}»?`
-        }
-        description={
-          isUk
-            ? 'Усі підключені фіди та імпортовані товари цього постачальника будуть безповоротно видалені з бази даних.'
-            : 'All connected feeds and imported products from this supplier will be permanently deleted.'
-        }
-        confirmLabel={isUk ? 'Видалити постачальника' : 'Delete Supplier'}
-        cancelLabel={isUk ? 'Скасувати' : 'Cancel'}
-        onConfirm={handleConfirmDeleteSupplier}
-        onClose={() => setSupplierToDelete(null)}
+        feedsModalSupplier={feedsModalSupplier}
+        onCloseFeedsModal={() => setFeedsModalSupplier(null)}
+        onConnectNewFeed={(id) => handleOpenImportWizard(id)}
+        pricingRulesSupplier={pricingRulesSupplier}
+        onClosePricingRules={() => setPricingRulesSupplier(null)}
+        isQuotaExceededOpen={isQuotaExceededOpen}
+        onCloseQuotaExceeded={() => setIsQuotaExceededOpen(false)}
+        isUk={isUk}
+        quotasSuppliersUsed={quotas?.suppliers?.used}
+        quotasSuppliersMax={quotas?.suppliers?.max}
+        currentPlanName={isUk ? quotas?.planNameUk || 'Старт' : quotas?.planNameEn || 'Starter'}
+        isReconciliationOpen={isReconciliationOpen}
+        onCloseReconciliation={() => setIsReconciliationOpen(false)}
+        supplierToDelete={supplierToDelete}
+        onCloseDeleteDialog={() => setSupplierToDelete(null)}
+        onConfirmDeleteSupplier={handleConfirmDeleteSupplier}
       />
     </div>
   );

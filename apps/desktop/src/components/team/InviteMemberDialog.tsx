@@ -78,8 +78,8 @@ export const InviteMemberDialog: React.FC<InviteMemberDialogProps> = ({
       await navigator.clipboard.writeText(generatedLink);
       setIsCopied(true);
       setTimeout(() => setIsCopied(false), 2500);
-    } catch {
-      // Fallback
+    } catch (e) {
+      console.warn('[InviteMemberDialog:handleCopyLink] Failed to copy invitation link:', e);
     }
   };
 

@@ -10,6 +10,8 @@ describe('Users & Admin Endpoints (E2E)', () => {
   let prisma: PrismaService;
   let authToken: string;
   let testUserId: string;
+  let regularUserToken: string;
+  let regularUserId: string;
 
   const testUser = {
     email: `admintest-${Date.now()}@smartfeed.studio`,
@@ -57,7 +59,8 @@ describe('Users & Admin Endpoints (E2E)', () => {
       .post('/api/auth/register')
       .send(regularUser)
       .expect(201);
-    const regularUserToken = regUserRes.body.tokens.accessToken;
+    regularUserToken = regUserRes.body.tokens.accessToken;
+    regularUserId = regUserRes.body.user.id;
 
     // Promote testUser to ADMIN in DB to test admin-only endpoints
     await prisma.user.update({
@@ -75,14 +78,10 @@ describe('Users & Admin Endpoints (E2E)', () => {
       .expect(200);
 
     authToken = loginRes.body.tokens.accessToken;
-
-    (global as any).regularUserToken = regularUserToken;
-    (global as any).regularUserId = regUserRes.body.user.id;
   });
 
   afterAll(async () => {
     // ── MANDATORY TEST DATA TEARDOWN ──────────────────────────────────────────
-    const regularUserId = (global as any).regularUserId;
     await cleanDatabase(prisma, {
       userIds: [testUserId, regularUserId].filter(Boolean),
       emailPrefixes: ['admintest-', 'regularuser-'],
@@ -98,7 +97,6 @@ describe('Users & Admin Endpoints (E2E)', () => {
     });
 
     it('returns 403 Forbidden when accessed by a regular USER', async () => {
-      const regularUserToken = (global as any).regularUserToken;
       await request(app.getHttpServer())
         .get('/api/users')
         .set('Authorization', `Bearer ${regularUserToken}`)
@@ -119,7 +117,7 @@ describe('Users & Admin Endpoints (E2E)', () => {
           email: string;
           fullName: string;
           license?: unknown;
-          organization?: any;
+          organization?: { isOwner?: boolean; memberRole?: string };
         }>
       ).find((u) => u.email === testUser.email);
       expect(found).toBeDefined();
@@ -137,8 +135,8 @@ describe('Users & Admin Endpoints (E2E)', () => {
         .expect(200);
 
       expect(Array.isArray(res.body)).toBe(true);
-      const allOwners = res.body.every(
-        (u: any) => !u.organization || u.organization.isOwner === true,
+      const allOwners = (res.body as Array<{ organization?: { isOwner?: boolean } }>).every(
+        (u) => !u.organization || u.organization.isOwner === true,
       );
       expect(allOwners).toBe(true);
     });
@@ -171,7 +169,9 @@ describe('Users & Admin Endpoints (E2E)', () => {
           .set('Authorization', `Bearer ${authToken}`)
           .expect(200);
 
-        const found = res.body.find((u: any) => u.email === superAdminEmail);
+        const found = (res.body as Array<{ email: string }>).find(
+          (u) => u.email === superAdminEmail,
+        );
         expect(found).toBeUndefined();
       } finally {
         await prisma.user.delete({ where: { id: superAdmin.id } }).catch(() => {});
@@ -264,7 +264,6 @@ describe('Users & Admin Endpoints (E2E)', () => {
     });
 
     it('returns 403 Forbidden when accessed by a regular USER', async () => {
-      const regularUserToken = (global as any).regularUserToken;
       await request(app.getHttpServer())
         .get('/api/users/stats')
         .set('Authorization', `Bearer ${regularUserToken}`)

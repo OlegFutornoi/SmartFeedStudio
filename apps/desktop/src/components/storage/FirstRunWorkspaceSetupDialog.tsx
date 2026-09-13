@@ -197,15 +197,15 @@ export const FirstRunWorkspaceSetupDialog: React.FC = () => {
                 <span className="truncate">database/catalog.db</span>
               </div>
               <div className="flex items-center gap-2 p-2 rounded-lg bg-card border border-border/40">
-                <DownloadCloud className="size-3.5 text-cyan-400 shrink-0" />
+                <DownloadCloud className="size-3.5 text-blue-500 shrink-0" />
                 <span className="truncate">feeds/ (XML/CSV)</span>
               </div>
               <div className="flex items-center gap-2 p-2 rounded-lg bg-card border border-border/40">
-                <FileSpreadsheet className="size-3.5 text-emerald-400 shrink-0" />
+                <FileSpreadsheet className="size-3.5 text-emerald-500 shrink-0" />
                 <span className="truncate">exports/ (Prom, Rozetka)</span>
               </div>
               <div className="flex items-center gap-2 p-2 rounded-lg bg-card border border-border/40">
-                <Archive className="size-3.5 text-purple-400 shrink-0" />
+                <Archive className="size-3.5 text-primary shrink-0" />
                 <span className="truncate">backups/ (Snapshots)</span>
               </div>
             </div>

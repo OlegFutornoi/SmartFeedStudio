@@ -78,8 +78,8 @@ async function fetchFeedContent(url: string): Promise<string> {
       const text = await resp.text();
       if (text && text.trim().length > 10) return text;
     }
-  } catch {
-    // cross-origin blocked — fall through to local proxy
+  } catch (err) {
+    console.warn('[feeds:fetchFeedContent] Direct fetch failed, falling back to proxy:', err);
   }
 
   // Local Vite dev-server proxy (avoids CORS): GET /feed-proxy?url=<encoded>

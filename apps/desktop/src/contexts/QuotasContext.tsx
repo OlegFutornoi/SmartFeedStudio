@@ -65,25 +65,26 @@ export function QuotasProvider({ children }: { children: React.ReactNode }) {
           const localCounts = await localCountersService.getLocalCounts(token);
 
           const applyLocalCount = (item: QuotaItemDto, count: number) => {
-            item.used = count;
+            const effectiveCount = Math.max(item.used, count);
+            item.used = effectiveCount;
             item.percentUsed = item.isUnlimited
               ? 0
               : item.max > 0
-                ? Math.min(100, Math.round((count / item.max) * 100))
+                ? Math.min(100, Math.round((effectiveCount / item.max) * 100))
                 : 0;
-            item.isExceeded = !item.isUnlimited && count >= item.max;
-            item.remaining = item.isUnlimited ? 999999 : Math.max(0, item.max - count);
+            item.isExceeded = !item.isUnlimited && effectiveCount >= item.max;
+            item.remaining = item.isUnlimited ? 999999 : Math.max(0, item.max - effectiveCount);
           };
 
           // Only override with local counter if local counter has positive tracked items,
           // or if backend data was 0. Never overwrite non-zero backend quota excess with empty local default.
-          if (data.suppliers && (localCounts.suppliers > 0 || data.suppliers.used === 0)) {
+          if (data.suppliers) {
             applyLocalCount(data.suppliers, localCounts.suppliers);
           }
-          if (data.products && (localCounts.products > 0 || data.products.used === 0)) {
+          if (data.products) {
             applyLocalCount(data.products, localCounts.products);
           }
-          if (data.feeds && (localCounts.feeds > 0 || data.feeds.used === 0)) {
+          if (data.feeds) {
             applyLocalCount(data.feeds, localCounts.feeds);
           }
 
@@ -141,7 +142,10 @@ export function QuotasProvider({ children }: { children: React.ReactNode }) {
       setQuotas((prev) => {
         if (!prev || !prev[type]) return prev;
         const currentItem = prev[type] as QuotaItemDto;
-        const newUsed = Math.max(0, count);
+        const newUsed =
+          currentItem.used > currentItem.max && count < currentItem.used
+            ? currentItem.used
+            : Math.max(0, count);
         const isUnlimited = currentItem.isUnlimited;
         const percentUsed = isUnlimited
           ? 0

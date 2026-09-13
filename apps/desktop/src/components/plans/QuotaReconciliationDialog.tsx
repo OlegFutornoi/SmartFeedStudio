@@ -1,23 +1,14 @@
 import React from 'react';
 import { createPortal } from 'react-dom';
-import {
-  X,
-  AlertTriangle,
-  Sparkles,
-  CheckCircle2,
-  FolderTree,
-  Radio,
-  Building2,
-  Loader2,
-  ArrowRight,
-} from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { AlertTriangle, CheckCircle2, FolderTree, Radio, Building2, Loader2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { useTranslation } from '@/i18n';
 import { useNavigate } from 'react-router-dom';
 import { QuotaCategoriesTab } from './QuotaCategoriesTab';
 import { QuotaFeedsTab } from './QuotaFeedsTab';
 import { QuotaSuppliersTab } from './QuotaSuppliersTab';
+import { QuotaReconciliationHeader } from './QuotaReconciliationHeader';
+import { QuotaReconciliationFooter } from './QuotaReconciliationFooter';
 import { useQuotaReconciliation } from '@/hooks/useQuotaReconciliation';
 
 interface QuotaReconciliationDialogProps {
@@ -29,7 +20,7 @@ export const QuotaReconciliationDialog: React.FC<QuotaReconciliationDialogProps>
   isOpen,
   onClose,
 }) => {
-  const { t, language } = useTranslation(['suppliers', 'plans', 'common']);
+  const { language } = useTranslation(['suppliers', 'plans', 'common']);
   const isUk = language === 'uk';
   const navigate = useNavigate();
 
@@ -79,96 +70,19 @@ export const QuotaReconciliationDialog: React.FC<QuotaReconciliationDialogProps>
         className="relative w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-2xl animate-in zoom-in-95 duration-200"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* 100% Solid Opaque Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-border bg-card z-10 shrink-0">
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-xl bg-destructive/10 text-destructive border border-destructive/20">
-              <AlertTriangle className="h-5 w-5" />
-            </div>
-            <div>
-              <h2 className="text-base font-bold text-foreground sm:text-lg">
-                {isUk ? 'Узгодження лімітів тарифного плану' : 'Plan Limits Reconciliation'}
-              </h2>
-              <p className="text-xs text-muted-foreground">
-                {isUk
-                  ? `Поточний тариф «${currentPlanName}»: оберіть що видалити або підвищіть тариф`
-                  : `Current plan «${currentPlanName}»: choose what to remove or upgrade`}
-              </p>
-            </div>
-          </div>
-
-          <button
-            type="button"
-            onClick={onClose}
-            data-testid="close-reconciliation-dialog-btn"
-            className="rounded-lg p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
-            aria-label={t('common:close', { defaultValue: 'Закрити' })}
-          >
-            <X className="h-4 w-4" />
-          </button>
-        </div>
-
-        {/* Live Quota Status Bar */}
-        <div className="px-6 py-3 bg-muted/40 border-b border-border/60 shrink-0">
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs">
-            <div className="p-2.5 rounded-xl border border-border/60 bg-card">
-              <span className="text-muted-foreground block text-[11px]">
-                {isUk ? 'Товарів у базі' : 'Products in DB'}
-              </span>
-              <div className="flex items-baseline gap-1 mt-0.5 font-bold font-mono">
-                <span
-                  className={
-                    currentProductsUsed > maxProductsLimit ? 'text-destructive' : 'text-foreground'
-                  }
-                >
-                  {currentProductsUsed.toLocaleString()}
-                </span>
-                <span className="text-muted-foreground font-normal text-[10px]">
-                  / {maxProductsLimit.toLocaleString()} SKU
-                </span>
-              </div>
-            </div>
-
-            <div className="p-2.5 rounded-xl border border-border/60 bg-card">
-              <span className="text-muted-foreground block text-[11px]">
-                {isUk ? 'Підключені фіди' : 'Connected Feeds'}
-              </span>
-              <div className="flex items-baseline gap-1 mt-0.5 font-bold font-mono">
-                <span
-                  className={
-                    currentFeedsUsed > maxFeedsLimit ? 'text-destructive' : 'text-foreground'
-                  }
-                >
-                  {currentFeedsUsed}
-                </span>
-                <span className="text-muted-foreground font-normal text-[10px]">
-                  / {maxFeedsLimit}
-                </span>
-              </div>
-            </div>
-
-            <div className="col-span-2 sm:col-span-1 p-2.5 rounded-xl border border-border/60 bg-card flex items-center justify-between">
-              <div>
-                <span className="text-muted-foreground block text-[11px]">
-                  {isUk ? 'Альтернатива' : 'Alternative'}
-                </span>
-                <span className="font-semibold text-xs text-primary block mt-0.5">PRO Тариф</span>
-              </div>
-              <Button
-                size="sm"
-                variant="outline"
-                className="h-7 text-xs border-primary/40 text-primary hover:bg-primary/10 gap-1 rounded-lg"
-                onClick={() => {
-                  onClose();
-                  navigate('/plans');
-                }}
-              >
-                <Sparkles className="h-3 w-3" />
-                {isUk ? 'Апгрейд' : 'Upgrade'}
-              </Button>
-            </div>
-          </div>
-        </div>
+        <QuotaReconciliationHeader
+          currentPlanName={currentPlanName}
+          isUk={isUk}
+          currentProductsUsed={currentProductsUsed}
+          maxProductsLimit={maxProductsLimit}
+          currentFeedsUsed={currentFeedsUsed}
+          maxFeedsLimit={maxFeedsLimit}
+          onClose={onClose}
+          onNavigatePlans={() => {
+            onClose();
+            navigate('/plans');
+          }}
+        />
 
         {/* Tab Navigation */}
         <div className="flex items-center gap-2 px-6 pt-3 border-b border-border/60 shrink-0 bg-card">
@@ -291,64 +205,17 @@ export const QuotaReconciliationDialog: React.FC<QuotaReconciliationDialogProps>
           )}
         </div>
 
-        {/* 100% Solid Opaque Sticky Footer */}
-        <div className="flex items-center justify-between px-6 py-4 border-t border-border bg-card z-10 shrink-0">
-          {activeTab === 'CATEGORIES' && selectedCategoryIds.length > 0 ? (
-            <div className="flex items-center gap-2 text-xs">
-              <span className="text-muted-foreground">{isUk ? 'Після видалення:' : 'After:'}</span>
-              <span
-                className={`font-mono font-bold ${
-                  isProjectedValid ? 'text-emerald-400' : 'text-amber-400'
-                }`}
-              >
-                {projectedRemainingProducts.toLocaleString()} SKU
-              </span>
-              {isProjectedValid && (
-                <Badge
-                  variant="outline"
-                  className="bg-emerald-500/10 text-emerald-400 border-emerald-500/20 text-[10px]"
-                >
-                  {isUk ? 'В межах ліміту' : 'Within limit'}
-                </Badge>
-              )}
-            </div>
-          ) : (
-            <div className="text-xs text-muted-foreground">
-              {isUk ? 'Узгодьте дані для розблокування' : 'Reconcile data to unlock'}
-            </div>
-          )}
-
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={onClose}
-              className="rounded-xl h-9 text-xs"
-            >
-              {isUk ? 'Закрити' : 'Close'}
-            </Button>
-
-            {activeTab === 'CATEGORIES' && selectedCategoryIds.length > 0 && (
-              <Button
-                variant="destructive"
-                size="sm"
-                data-testid="bulk-delete-categories-btn"
-                disabled={isBulkDeleting}
-                onClick={handleDeleteSelectedCategories}
-                className="rounded-xl h-9 text-xs gap-1.5 font-semibold"
-              >
-                {isBulkDeleting ? (
-                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                ) : (
-                  <ArrowRight className="h-3.5 w-3.5" />
-                )}
-                {isUk
-                  ? `Видалити ${selectedCategoryIds.length} категорій (-${selectedProductsToDeleteCount.toLocaleString()} SKU)`
-                  : `Delete ${selectedCategoryIds.length} categories (-${selectedProductsToDeleteCount.toLocaleString()} SKU)`}
-              </Button>
-            )}
-          </div>
-        </div>
+        <QuotaReconciliationFooter
+          activeTab={activeTab}
+          selectedCategoryIds={selectedCategoryIds}
+          isUk={isUk}
+          projectedRemainingProducts={projectedRemainingProducts}
+          isProjectedValid={isProjectedValid}
+          isBulkDeleting={isBulkDeleting}
+          selectedProductsToDeleteCount={selectedProductsToDeleteCount}
+          onClose={onClose}
+          onDeleteSelected={handleDeleteSelectedCategories}
+        />
       </div>
     </div>,
     document.body,

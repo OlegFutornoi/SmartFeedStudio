@@ -46,7 +46,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return;
       }
       setUser(profile);
-    } catch {
+    } catch (e) {
+      console.warn('[AuthContext:fetchCurrentUser] Failed to fetch profile, clearing session:', e);
       localStorage.removeItem('smartfeed_admin_token');
       setUser(null);
       setToken(null);

@@ -40,7 +40,7 @@ export function TransactionStatsCards({ stats, isUk }: TransactionStatsCardsProp
       value: `${stats?.successRatePercent ?? 100}%`,
       subtitle: isUk ? 'Співвідношення успіху' : 'Approval ratio',
       icon: Percent,
-      color: 'text-purple-500 bg-purple-500/10',
+      color: 'text-primary bg-primary/10',
     },
   ];
 

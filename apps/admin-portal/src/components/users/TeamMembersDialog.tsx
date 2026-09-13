@@ -7,7 +7,7 @@ import { Badge } from '../ui/badge';
 import { Input } from '../ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
 import { UserListItemDto } from '@smartfeed/shared';
-import { Users, Search, Building2, ShieldAlert } from 'lucide-react';
+import { Users, Search, Building2 } from 'lucide-react';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { UserRowActions } from './UserRowActions';
 
@@ -27,11 +27,10 @@ export function TeamMembersDialog({
   onOpenDelete,
 }: TeamMembersDialogProps) {
   const { t, locale } = useLanguage();
-  const isUk = locale === 'uk';
   const [searchTerm, setSearchTerm] = useState('');
 
   const companyName = ownerUser?.organization?.organizationName || 'Компанія';
-  const members = ownerUser?.teamMembers || [];
+  const members = useMemo(() => ownerUser?.teamMembers || [], [ownerUser?.teamMembers]);
 
   const filteredMembers = useMemo(() => {
     if (!searchTerm.trim()) return members;

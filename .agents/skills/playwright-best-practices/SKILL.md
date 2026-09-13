@@ -228,6 +228,55 @@ Before mocking any service/API:
 
 ---
 
+### 🚨 Law 4: Exact Backend URL Scoping in Mocks (Vite Collision Prevention)
+
+> [!CAUTION]
+> **NEVER USE LOOSE GLOBS LIKE `**/api/products*` OR `**/api/suppliers*`!**
+> In Vite dev server (`apps/desktop` :1420), frontend TypeScript modules are imported over HTTP (e.g. `http://localhost:1420/src/lib/api/products.ts`).
+> A loose pattern like `'**/api/products*'` will intercept the Vite frontend source module and return JSON, causing:
+> `Failed to load module script: Expected a JavaScript module script but received application/json`!
+
+```typescript
+// ❌ WRONG: Collides with Vite frontend source files (/src/lib/api/products.ts)
+await page.route('**/api/products*', (route) => route.fulfill({ json: [] }));
+
+// ✅ CORRECT: Explicitly scope to backend API origin port 4000
+await page.route('http://localhost:4000/api/products*', (route) => route.fulfill({ json: [] }));
+// Or regex requiring /api/ preceded by port 4000:
+await page.route(/.*:4000\/api\/products.*/, (route) => route.fulfill({ json: [] }));
+```
+
+---
+
+### 🧵 Law 5: Desktop Playwright Worker Concurrency (`workers: 1`)
+
+Desktop client (`apps/desktop`) tests run against a single shared local SQLite/state instance and localStorage.
+
+- **NEVER** run desktop Playwright tests with multiple parallel workers (`workers: > 1`).
+- `apps/desktop/playwright.config.ts` **MUST ALWAYS** configure `workers: 1` to prevent state collision, session invalidation, and flaky tests.
+
+---
+
+### 🔒 Law 6: Zero `any` in Test Mock Stores
+
+Mocks in E2E tests must have explicit TypeScript types, never `any[]` or `Record<string, any>`:
+
+```typescript
+// ❌ WRONG
+let mockRules: any[] = [];
+
+// ✅ CORRECT
+interface MockPricingRule {
+  id: string;
+  name: string;
+  markupPercent: number;
+  isActive: boolean;
+}
+let mockRules: MockPricingRule[] = [];
+```
+
+---
+
 ## ⏱️ 4. Condition-Based Waiting (Zero `sleep()`)
 
 _Embedded from `condition-based-waiting` skill_
@@ -283,15 +332,17 @@ Every new or modified screen MUST include:
 describe('<Feature> Tests', () => {
   // 1. Loading state
   test('shows loading skeleton while data is fetching', async ({ page }) => {
-    // Intercept and delay API
-    await page.route('**/api/target', (route) => setTimeout(() => route.continue(), 500));
+    // Intercept and delay API (always scoped to backend port 4000)
+    await page.route('http://localhost:4000/api/target', (route) =>
+      setTimeout(() => route.continue(), 500),
+    );
     await page.goto('/target-page');
     await expect(page.locator('[data-testid="skeleton-loader"]')).toBeVisible();
   });
 
   // 2. Empty state
   test('shows empty state with CTA when no data exists', async ({ page }) => {
-    await page.route('**/api/target', (route) => route.fulfill({ json: [] }));
+    await page.route('http://localhost:4000/api/target', (route) => route.fulfill({ json: [] }));
     await page.goto('/target-page');
     await expect(page.locator('[data-testid="empty-state"]')).toBeVisible();
     await expect(page.locator('[data-testid="create-btn"]')).toBeVisible();
@@ -306,7 +357,7 @@ describe('<Feature> Tests', () => {
 
   // 4. Error state
   test('shows localized error when API fails', async ({ page }) => {
-    await page.route('**/api/target', (route) => route.fulfill({ status: 500 }));
+    await page.route('http://localhost:4000/api/target', (route) => route.fulfill({ status: 500 }));
     await page.goto('/target-page');
     await expect(page.locator('[data-testid="error-banner"]')).toBeVisible();
   });
@@ -346,7 +397,7 @@ Every page load test MUST verify API called exactly once:
 test('loads page data with exactly 1 API request', async ({ page }) => {
   let requestCount = 0;
   page.on('request', (req) => {
-    if (req.url().includes('/api/target')) requestCount++;
+    if (req.url().includes(':4000/api/target')) requestCount++;
   });
 
   await page.goto('/target-page');
@@ -392,6 +443,52 @@ afterAll(async () => {
 
 FK-safe teardown order:
 `Snapshot`/`ProductImage` → `OrganizationInvitation` → `OrganizationMember` → `License` → `Organization` → `User` → `TariffPlan`/`NavigationItem`
+
+---
+
+### 5.6 Adversarial Race Condition & Quota Stress Tests
+
+Critical operations guarded by quotas (e.g. member invitations, XML feeds, AI credits) MUST include concurrent adversarial tests to prove that mutex locks prevent race condition overruns:
+
+```typescript
+it('should reject concurrent requests exceeding quota limits (TOCTOU protection)', async () => {
+  // Scenario: Organization has only 1 remaining seat available
+  // Launch 10 simultaneous invite requests concurrently
+  const promises = Array.from({ length: 10 }).map((_, i) =>
+    request(app.getHttpServer())
+      .post(`/organizations/${orgId}/invitations`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ email: `race_test_${i}@example.com`, role: 'MEMBER' }),
+  );
+
+  const results = await Promise.all(promises);
+  const successes = results.filter((r) => r.status === 201);
+  const rejections = results.filter((r) => r.status === 403);
+
+  // Exactly 1 request succeeds; exactly 9 are safely rejected by mutex
+  expect(successes.length).toBe(1);
+  expect(rejections.length).toBe(9);
+});
+```
+
+---
+
+### 5.7 Empty State Single CTA Assertion
+
+Tests MUST assert that when an empty state is rendered, duplicate action buttons in toolbar or header are completely hidden:
+
+```typescript
+test('hides toolbar action button when empty state card provides CTA', async ({ page }) => {
+  await page.route('http://localhost:4000/api/channels*', (route) => route.fulfill({ json: [] }));
+  await page.goto('/export');
+
+  // Empty state card CTA is visible
+  await expect(page.locator('[data-testid="empty-state-add-channel-btn"]')).toBeVisible();
+
+  // Toolbar action button MUST NOT be rendered
+  await expect(page.locator('[data-testid="toolbar-add-channel-btn"]')).not.toBeVisible();
+});
+```
 
 ---
 

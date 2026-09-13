@@ -1,10 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import {
-  TariffPlanDto,
-  CreateTariffPlanDto,
-  UpdateTariffPlanDto,
-  CreateTariffPlanDtoSchema,
-} from '@smartfeed/shared';
+import type { TariffPlanDto, CreateTariffPlanDto, UpdateTariffPlanDto } from '@smartfeed/shared';
+import { getDefaultPlanFormFields, buildPlanSubmitPayload } from './planFormDefaults';
 
 interface UsePlanFormProps {
   initialData?: TariffPlanDto | null;
@@ -60,77 +56,40 @@ export function usePlanForm({ initialData, isOpen, onSubmit, onClose }: UsePlanF
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (initialData) {
-      setCode(initialData.code);
-      setNameUk(initialData.nameUk);
-      setNameEn(initialData.nameEn);
-      setDescriptionUk(initialData.descriptionUk || '');
-      setDescriptionEn(initialData.descriptionEn || '');
-      setPriceMonthly(initialData.priceMonthly.toString());
-      setPriceYearly(initialData.priceYearly ? initialData.priceYearly.toString() : '');
-      setCurrency(initialData.currency || 'UAH');
-      setIsPopular(initialData.isPopular);
-      setIsActive(initialData.isActive);
-      setOrder(initialData.order.toString());
+    const defaults = getDefaultPlanFormFields(initialData);
+    setCode(defaults.code);
+    setNameUk(defaults.nameUk);
+    setNameEn(defaults.nameEn);
+    setDescriptionUk(defaults.descriptionUk);
+    setDescriptionEn(defaults.descriptionEn);
+    setPriceMonthly(defaults.priceMonthly);
+    setPriceYearly(defaults.priceYearly);
+    setCurrency(defaults.currency);
+    setIsPopular(defaults.isPopular);
+    setIsActive(defaults.isActive);
+    setOrder(defaults.order);
 
-      setMaxXmlLimit(initialData.maxXmlLimit.toString());
-      setMaxSuppliersLimit(initialData.maxSuppliersLimit.toString());
-      setMaxFeedsLimit(initialData.maxFeedsLimit.toString());
-      setMaxChannelsLimit(initialData.maxChannelsLimit.toString());
-      setMaxTeamSeats(initialData.maxTeamSeats.toString());
-      setMaxStorageGb(initialData.maxStorageGb.toString());
-      setAiCredits(initialData.aiCredits.toString());
-      setSyncFrequencyHours(initialData.syncFrequencyHours.toString());
+    setMaxXmlLimit(defaults.maxXmlLimit);
+    setMaxSuppliersLimit(defaults.maxSuppliersLimit);
+    setMaxFeedsLimit(defaults.maxFeedsLimit);
+    setMaxChannelsLimit(defaults.maxChannelsLimit);
+    setMaxTeamSeats(defaults.maxTeamSeats);
+    setMaxStorageGb(defaults.maxStorageGb);
+    setAiCredits(defaults.aiCredits);
+    setSyncFrequencyHours(defaults.syncFrequencyHours);
 
-      setCanCloudBackup(initialData.canCloudBackup);
-      setHasApiAccess(initialData.hasApiAccess);
-      setHasFeedDiff(initialData.hasFeedDiff);
-      setHasWebhooks(initialData.hasWebhooks);
-      setHasCustomS3(initialData.hasCustomS3);
-      setHasAuditLog(initialData.hasAuditLog);
-      setHasWhiteLabel(initialData.hasWhiteLabel);
-      setHasPriorityAi(initialData.hasPriorityAi);
-      setSlaUptimePercent(
-        initialData.slaUptimePercent ? initialData.slaUptimePercent.toString() : '',
-      );
+    setCanCloudBackup(defaults.canCloudBackup);
+    setHasApiAccess(defaults.hasApiAccess);
+    setHasFeedDiff(defaults.hasFeedDiff);
+    setHasWebhooks(defaults.hasWebhooks);
+    setHasCustomS3(defaults.hasCustomS3);
+    setHasAuditLog(defaults.hasAuditLog);
+    setHasWhiteLabel(defaults.hasWhiteLabel);
+    setHasPriorityAi(defaults.hasPriorityAi);
+    setSlaUptimePercent(defaults.slaUptimePercent);
 
-      setFeaturesUk(initialData.featuresUk || []);
-      setFeaturesEn(initialData.featuresEn || []);
-    } else {
-      setCode('');
-      setNameUk('');
-      setNameEn('');
-      setDescriptionUk('');
-      setDescriptionEn('');
-      setPriceMonthly('0');
-      setPriceYearly('');
-      setCurrency('UAH');
-      setIsPopular(false);
-      setIsActive(true);
-      setOrder('1');
-
-      setMaxXmlLimit('1000');
-      setMaxSuppliersLimit('1');
-      setMaxFeedsLimit('1');
-      setMaxChannelsLimit('1');
-      setMaxTeamSeats('1');
-      setMaxStorageGb('0');
-      setAiCredits('50');
-      setSyncFrequencyHours('0');
-
-      setCanCloudBackup(false);
-      setHasApiAccess(false);
-      setHasFeedDiff(false);
-      setHasWebhooks(false);
-      setHasCustomS3(false);
-      setHasAuditLog(false);
-      setHasWhiteLabel(false);
-      setHasPriorityAi(false);
-      setSlaUptimePercent('');
-
-      setFeaturesUk([]);
-      setFeaturesEn([]);
-    }
+    setFeaturesUk(defaults.featuresUk);
+    setFeaturesEn(defaults.featuresEn);
     setError(null);
   }, [initialData, isOpen]);
 
@@ -168,28 +127,26 @@ export function usePlanForm({ initialData, isOpen, onSubmit, onClose }: UsePlanF
       e.preventDefault();
       setError(null);
 
-      const payload = {
-        code: code.trim().toUpperCase(),
-        nameUk: nameUk.trim(),
-        nameEn: nameEn.trim(),
-        descriptionUk: descriptionUk.trim() || undefined,
-        descriptionEn: descriptionEn.trim() || undefined,
-        priceMonthly: parseFloat(priceMonthly) || 0,
-        priceYearly: priceYearly.trim() ? parseFloat(priceYearly) : undefined,
-        currency: currency.trim().toUpperCase() || 'UAH',
+      const fields = {
+        code,
+        nameUk,
+        nameEn,
+        descriptionUk,
+        descriptionEn,
+        priceMonthly,
+        priceYearly,
+        currency,
         isPopular,
         isActive,
-        order: parseInt(order, 10) || 0,
-
-        maxXmlLimit: parseInt(maxXmlLimit, 10) || 1000,
-        maxSuppliersLimit: parseInt(maxSuppliersLimit, 10) || 1,
-        maxFeedsLimit: parseInt(maxFeedsLimit, 10) || 1,
-        maxChannelsLimit: parseInt(maxChannelsLimit, 10) || 1,
-        maxTeamSeats: parseInt(maxTeamSeats, 10) || 1,
-        maxStorageGb: parseInt(maxStorageGb, 10) || 0,
-        aiCredits: parseInt(aiCredits, 10) || 0,
-        syncFrequencyHours: parseInt(syncFrequencyHours, 10) || 0,
-
+        order,
+        maxXmlLimit,
+        maxSuppliersLimit,
+        maxFeedsLimit,
+        maxChannelsLimit,
+        maxTeamSeats,
+        maxStorageGb,
+        aiCredits,
+        syncFrequencyHours,
         canCloudBackup,
         hasApiAccess,
         hasFeedDiff,
@@ -198,28 +155,20 @@ export function usePlanForm({ initialData, isOpen, onSubmit, onClose }: UsePlanF
         hasAuditLog,
         hasWhiteLabel,
         hasPriorityAi,
-        slaUptimePercent: slaUptimePercent.trim() ? parseFloat(slaUptimePercent) : undefined,
-
+        slaUptimePercent,
         featuresUk,
         featuresEn,
       };
 
-      let submitPayload: CreateTariffPlanDto | UpdateTariffPlanDto = payload;
-
-      if (!isEdit) {
-        const validation = CreateTariffPlanDtoSchema.safeParse(payload);
-        if (!validation.success) {
-          setError(
-            validation.error.issues[0]?.message || 'Перевірте правильність заповнення полів',
-          );
-          return;
-        }
-        submitPayload = validation.data;
+      const result = buildPlanSubmitPayload(fields, isEdit);
+      if (result.error || !result.payload) {
+        setError(result.error || 'Перевірте правильність заповнення полів');
+        return;
       }
 
       setIsSubmitting(true);
       try {
-        await onSubmit(submitPayload, isEdit);
+        await onSubmit(result.payload, isEdit);
         onClose();
       } catch (err: unknown) {
         const msg = err instanceof Error ? err.message : 'Помилка збереження тарифного плану';
@@ -267,7 +216,6 @@ export function usePlanForm({ initialData, isOpen, onSubmit, onClose }: UsePlanF
 
   return {
     isEdit,
-    // Basic
     code,
     setCode,
     nameUk,
@@ -290,7 +238,6 @@ export function usePlanForm({ initialData, isOpen, onSubmit, onClose }: UsePlanF
     setIsActive,
     order,
     setOrder,
-    // Quotas
     maxXmlLimit,
     setMaxXmlLimit,
     maxSuppliersLimit,
@@ -307,7 +254,6 @@ export function usePlanForm({ initialData, isOpen, onSubmit, onClose }: UsePlanF
     setAiCredits,
     syncFrequencyHours,
     setSyncFrequencyHours,
-    // Feature flags
     canCloudBackup,
     setCanCloudBackup,
     hasApiAccess,
@@ -326,14 +272,12 @@ export function usePlanForm({ initialData, isOpen, onSubmit, onClose }: UsePlanF
     setHasPriorityAi,
     slaUptimePercent,
     setSlaUptimePercent,
-    // Bullets
     featuresUk,
     featuresEn,
     newFeatureUk,
     setNewFeatureUk,
     newFeatureEn,
     setNewFeatureEn,
-    // Status
     isSubmitting,
     error,
     handleAddFeature,

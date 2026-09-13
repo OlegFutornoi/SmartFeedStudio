@@ -1,4 +1,5 @@
 import { Role, PlanType } from '../enums/index.js';
+import type { TariffPlanDto } from '../dtos/tariff-plan.dto.js';
 
 // ==========================================
 // User Commands & Queries Contracts
@@ -81,7 +82,7 @@ export interface LicenseEntity {
   expiresAt: Date | null;
   isExpired?: boolean;
   daysRemaining?: number | null;
-  tariffPlan?: any;
+  tariffPlan?: TariffPlanDto | null;
   createdAt: Date;
   updatedAt: Date;
 }

@@ -24,7 +24,8 @@ export default function SentryExamplePage() {
       try {
         const result = await Sentry.diagnoseSdkConnectivity();
         setIsConnected(result !== 'sentry-unreachable');
-      } catch {
+      } catch (err) {
+        console.warn('[SentryExamplePage] diagnoseSdkConnectivity check failed:', err);
         setIsConnected(true);
       }
     }

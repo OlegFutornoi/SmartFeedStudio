@@ -24,8 +24,7 @@ interface ExportChannelsListProps {
 }
 
 export function ExportChannelsList({ catalogs = [] }: ExportChannelsListProps) {
-  const { language } = useTranslation(['catalogs', 'common']);
-  const isUk = language === 'uk';
+  const { t } = useTranslation(['export', 'common']);
   const { token, isAuthenticated } = useAuth();
 
   const [channels, setChannels] = useState<ExportChannelDto[]>([]);
@@ -51,7 +50,7 @@ export function ExportChannelsList({ catalogs = [] }: ExportChannelsListProps) {
         lastFetchedTokenRef.current = token;
         setChannels(data);
       } catch (err) {
-        console.error('Failed to fetch export channels:', err);
+        console.warn('[ExportChannelsList:fetchChannels] Failed to fetch channels:', err);
       } finally {
         if (!silent) setIsLoading(false);
         isFetchingRef.current = false;
@@ -87,7 +86,7 @@ export function ExportChannelsList({ catalogs = [] }: ExportChannelsListProps) {
       setChannels((prev) => prev.filter((c) => c.id !== channelToDelete.id));
       setChannelToDelete(null);
     } catch (err) {
-      console.error('Failed to delete export channel:', err);
+      console.warn('[ExportChannelsList:handleConfirmDelete] Failed to delete channel:', err);
     }
   };
 
@@ -99,32 +98,34 @@ export function ExportChannelsList({ catalogs = [] }: ExportChannelsListProps) {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-        <div className="relative w-full sm:w-72">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-          <input
-            type="text"
-            placeholder="Пошук каналів та маркетплейсів..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-secondary/40 border border-border/80 rounded-xl pl-9 pr-4 py-1.5 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
-            data-testid="search-export-channels-input"
-          />
-        </div>
+      {(channels.length > 0 || search) && (
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div className="relative w-full sm:w-72">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+            <input
+              type="text"
+              placeholder={t('export:searchPlaceholder')}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full bg-secondary/40 border border-border/80 rounded-xl pl-9 pr-4 py-1.5 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+              data-testid="search-export-channels-input"
+            />
+          </div>
 
-        <Button
-          size="sm"
-          onClick={() => {
-            setEditingChannel(null);
-            setIsCreateOpen(true);
-          }}
-          className="h-8 text-xs gap-1.5 shadow-sm"
-          data-testid="create-export-channel-btn"
-        >
-          <Plus className="size-3.5" />
-          Підключити маркетплейс
-        </Button>
-      </div>
+          <Button
+            size="sm"
+            onClick={() => {
+              setEditingChannel(null);
+              setIsCreateOpen(true);
+            }}
+            className="h-8 text-xs gap-1.5 shadow-sm"
+            data-testid="create-export-channel-btn"
+          >
+            <Plus className="size-3.5" />
+            {t('export:connectMarketplace')}
+          </Button>
+        </div>
+      )}
 
       {isLoading ? (
         <div className="flex items-center justify-center p-16">
@@ -134,23 +135,25 @@ export function ExportChannelsList({ catalogs = [] }: ExportChannelsListProps) {
         <Card className="p-12 text-center border-border/60 bg-card/40">
           <Store className="size-12 text-muted-foreground/40 mx-auto mb-3" />
           <h3 className="text-sm font-semibold text-foreground">
-            {search ? 'Каналів не знайдено' : 'Немає підключених каналів експорту'}
+            {search ? t('export:noSearchResults') : t('export:emptyTitle')}
           </h3>
           <p className="text-xs text-muted-foreground mt-1 max-w-sm mx-auto">
-            Створіть свій перший канал експорту для Rozetka, Prom, Epicentr чи Hotline з
-            автоматичним розрахунком зворотної націнки
+            {t('export:emptyDesc')}
           </p>
-          <Button
-            size="sm"
-            onClick={() => {
-              setEditingChannel(null);
-              setIsCreateOpen(true);
-            }}
-            className="mt-4 text-xs"
-          >
-            <Plus className="size-3.5 mr-1.5" />
-            Підключити маркетплейс
-          </Button>
+          {!search && (
+            <Button
+              size="sm"
+              onClick={() => {
+                setEditingChannel(null);
+                setIsCreateOpen(true);
+              }}
+              className="mt-4 text-xs"
+              data-testid="create-export-channel-btn"
+            >
+              <Plus className="size-3.5 mr-1.5" />
+              {t('export:connectMarketplace')}
+            </Button>
+          )}
         </Card>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -188,28 +191,19 @@ export function ExportChannelsList({ catalogs = [] }: ExportChannelsListProps) {
         isOpen={Boolean(channelToDelete)}
         onClose={() => setChannelToDelete(null)}
         onConfirm={handleConfirmDelete}
-        title={isUk ? 'Видалити канал експорту' : 'Delete Export Channel'}
+        title={t('export:deleteTitle')}
         description={
           <div className="space-y-2">
-            <p>
-              {isUk
-                ? 'Ви дійсно бажаєте видалити цей канал експорту?'
-                : 'Are you sure you want to delete this export channel?'}
-            </p>
+            <p>{t('export:deleteDesc')}</p>
             {channelToDelete && (
               <div className="p-2.5 rounded-lg bg-muted border border-border font-mono text-[11px] text-foreground font-semibold truncate">
                 {channelToDelete.name} ({channelToDelete.marketplaceCode})
               </div>
             )}
-            <p className="text-[11px] text-muted-foreground">
-              {isUk
-                ? 'Публічне посилання на фід стане недоступним для маркетплейсу.'
-                : 'The public feed URL will become unavailable for the marketplace.'}
-            </p>
           </div>
         }
-        confirmLabel={isUk ? 'Видалити канал' : 'Delete channel'}
-        cancelLabel={isUk ? 'Скасувати' : 'Cancel'}
+        confirmLabel={t('export:deleteConfirm')}
+        cancelLabel={t('export:deleteCancel')}
       />
     </div>
   );

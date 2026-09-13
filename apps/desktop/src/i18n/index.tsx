@@ -15,6 +15,7 @@ import ukSettings from './locales/uk/settings.json';
 import ukStorage from './locales/uk/storage.json';
 import ukErrors from './locales/uk/errors.json';
 import ukFeatureTeaser from './locales/uk/featureTeaser.json';
+import ukExport from './locales/uk/export.json';
 
 import enCommon from './locales/en/common.json';
 import enAuth from './locales/en/auth.json';
@@ -30,6 +31,7 @@ import enSettings from './locales/en/settings.json';
 import enStorage from './locales/en/storage.json';
 import enErrors from './locales/en/errors.json';
 import enFeatureTeaser from './locales/en/featureTeaser.json';
+import enExport from './locales/en/export.json';
 
 export * from './types';
 
@@ -52,6 +54,7 @@ const STATIC_TRANSLATIONS: Record<Language, Record<Namespace, TranslationDict>> 
     storage: ukStorage as TranslationDict,
     errors: ukErrors as TranslationDict,
     featureTeaser: ukFeatureTeaser as TranslationDict,
+    export: ukExport as TranslationDict,
   },
   en: {
     common: enCommon as TranslationDict,
@@ -68,6 +71,7 @@ const STATIC_TRANSLATIONS: Record<Language, Record<Namespace, TranslationDict>> 
     storage: enStorage as TranslationDict,
     errors: enErrors as TranslationDict,
     featureTeaser: enFeatureTeaser as TranslationDict,
+    export: enExport as TranslationDict,
   },
 };
 

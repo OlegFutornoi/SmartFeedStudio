@@ -118,7 +118,7 @@ test.describe('Admin Portal — Navigation & Access Control (POM)', () => {
     navigationPage,
     page,
   }) => {
-    let reorderPayload: any = null;
+    let reorderPayload: { items: Array<{ id: string; order?: number }> } | undefined;
     await page.route('**/api/navigation/reorder*', async (route) => {
       reorderPayload = route.request().postDataJSON();
       await route.fulfill({
@@ -138,15 +138,16 @@ test.describe('Admin Portal — Navigation & Access Control (POM)', () => {
     await navigationPage.expectItemInList('Користувачі');
     await navigationPage.expectItemInList('Тарифи');
     await navigationPage.expectItemInList('Ліцензії');
-    await navigationPage.expectItemInList('Навігація меню');
+    await navigationPage.expectItemInList('Навігація');
 
-    // Click move-down on admin_dashboard
+    // Reorder: move first item (Dashboard) down
     const moveDownDashboardBtn = page.getByTestId('move-down-admin_dashboard');
     await expect(moveDownDashboardBtn).toBeVisible();
     await moveDownDashboardBtn.click();
 
     // Verify reorder API was called with correct items
     expect(reorderPayload).not.toBeNull();
+    if (!reorderPayload) throw new Error('reorderPayload is null');
     expect(reorderPayload.items).toHaveLength(5);
     expect(reorderPayload.items[0].id).toBe('b0000000-0000-0000-0000-000000000006'); // admin_users
     expect(reorderPayload.items[1].id).toBe('b0000000-0000-0000-0000-000000000005'); // admin_dashboard

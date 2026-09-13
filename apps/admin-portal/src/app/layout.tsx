@@ -13,7 +13,7 @@ const THEME_SCRIPT = `
 (function() {
   try {
     var mode = localStorage.getItem('smartfeed_theme_mode') || 'dark';
-    var accent = localStorage.getItem('smartfeed_theme_accent') || 'violet';
+    var accent = localStorage.getItem('smartfeed_theme_accent') || 'zinc';
     var root = document.documentElement;
     var resolved = mode === 'system'
       ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
@@ -21,7 +21,9 @@ const THEME_SCRIPT = `
     root.classList.remove('light', 'dark');
     root.classList.add(resolved);
     root.setAttribute('data-accent', accent);
-  } catch (e) {}
+  } catch (e) {
+    console.warn('Theme script error:', e);
+  }
 })();
 `;
 

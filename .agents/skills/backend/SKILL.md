@@ -54,12 +54,29 @@ This master skill synthesizes and enforces ALL project backend skills and rules:
 ### 💎 Iron Laws of Backend Engineering
 
 1. **Architecture & Scalability > Speed & Naive Simplicity**: "Working" is not enough. Modular design, CQRS, and concurrency safety from day one.
-2. **Zero God-Files**: Every file (controller, handler, service, DTO, repository) < **250–300 lines**. Monoliths strictly prohibited.
+2. **Zero God-Files (<250–300 lines)**: Every file (controller, handler, service, DTO, repository, utility) < **250–300 lines**. Monoliths and giant utility files strictly prohibited.
 3. **No Code Without a Failing Test First (TDD)**: Write test → observe RED → implement minimal GREEN.
 4. **4-Layer Defense-in-Depth**: Validate at DTO, Domain/Quota, Security/Guard, and DB Constraint layers.
-5. **Zero Test Data Leftovers**: Every test uses `cleanDatabase` in `beforeAll` AND `afterAll` with FK-safe teardown.
-6. **Zero Silent Failures & Zero `as any`**: No empty `catch {}`, no unsafe `any`, no `exec` with string interpolation (CWE-78).
-7. **Zero Inline Types**: All DTOs, Zod schemas, enums in `@smartfeed/shared`. Never duplicate types between backend and client.
+5. **PostgreSQL 100% snake_case & Indexed**: All models must have `@@map("snake_case")` and columns `@map("snake_case")`. Every foreign key MUST have an explicit `@@index([fkColumn])`.
+6. **Zero Silent Failures & Zero `as any`**: No empty `catch {}`, no `as any` (use Prisma-generated types like `Prisma.TariffPlanWhereInput[]`), no `exec` with string interpolation (CWE-78: use `execFile`).
+7. **Concurrency & TOCTOU Protection**: Sensitive quota operations (invitations, seats, credits) MUST use mutex locks (`OrganizationMutex`) or serializable transactions to prevent race conditions.
+8. **Always Validated DTOs**: Never accept untyped `@Body() body: unknown`. Every property must be decorated with `class-validator` and `@ApiProperty()`.
+9. **Zero Test Data Leftovers**: Every test uses `cleanDatabase` in `beforeAll` AND `afterAll` with FK-safe teardown.
+10. **Zero Inline Types**: All DTOs, Zod schemas, enums in `@smartfeed/shared`. Never duplicate types between backend and client.
+
+---
+
+### 🚫 Anti-Patterns & Remediation Lessons (Learned from Audits)
+
+| ❌ Severe Anti-Pattern                                                | Why It Fails                                                                                                        | ✅ Mandatory Correct Implementation                                                                                                      |
+| :-------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------ | :--------------------------------------------------------------------------------------------------------------------------------------- |
+| **Missing `@@map` / `@map` in Prisma**                                | Leads to mixed camelCase and snake_case in PostgreSQL, breaking standard SQL conventions and migration consistency. | **100% snake_case Mapping**: Every model has `@@map("model_plural")` and every column has `@map("column_name")`.                         |
+| **`whereClause as any` in Prisma Queries**                            | Disables TypeScript compiler checks; leads to runtime errors when schema fields change.                             | **Strict Prisma Types**: Use generated types: `const where: Prisma.TariffPlanWhereInput = { ... };`.                                     |
+| **`child_process.exec(\`open "${path}"\`)`**                          | CWE-78 Command Injection vulnerability. Metacharacters in file paths execute arbitrary OS commands.                 | **Safe OS Execution**: `execFile(binary, [args], { shell: false })` with `path.normalize()` and `path.resolve()`.                        |
+| **Untyped Controller Payloads** (`@Body() body: unknown`)             | Swagger documentation lacks schemas; `ValidationPipe({ whitelist: true })` cannot validate fields.                  | **Decorated DTO Classes**: Create dedicated DTO classes with `@IsString()`, `@IsOptional()`, `@ApiProperty()`.                           |
+| **TOCTOU Race Condition on Quotas**                                   | Rapid parallel requests (e.g. 10 simultaneous invites) bypass seat quotas before records are written.               | **Mutex Synchronization**: Wrap quota-check-and-write logic in an in-memory tenant mutex (`OrganizationMutex.runExclusive(...)`).        |
+| **Giant Monolithic Utility Files** (`workspace-utils.ts` > 400 lines) | Violates single responsibility principle; causes circular dependencies and difficult unit testing.                  | **Modular Utility Decomposition**: Split into focused modules under `workspace-utils/` (<250 lines each).                                |
+| **Discrepancy in Quota Error Messages**                               | Frontend cannot recognize error code to display localized translation to user.                                      | **Standard Error Keys**: Throw `ForbiddenException` with standardized machine-readable error codes (`QUOTA_EXCEEDED`, `SEATS_EXCEEDED`). |
 
 ---
 

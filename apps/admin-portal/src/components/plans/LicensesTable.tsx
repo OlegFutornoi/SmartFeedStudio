@@ -21,11 +21,6 @@ interface LicensesTableProps {
   isLoading?: boolean;
 }
 
-// Stable reference for `now` — updated only when component re-mounts.
-// Passed as stable prop to each LicensesTableRow to prevent row re-renders
-// caused by `new Date()` drift.
-const NOW_STABLE = new Date();
-
 export function LicensesTable({ licenses, isUk, onRefresh, isLoading }: LicensesTableProps) {
   const [filter, setFilter] = useState<LicensesFilterState>({
     searchQuery: '',
@@ -82,8 +77,8 @@ export function LicensesTable({ licenses, isUk, onRefresh, isLoading }: Licenses
     }
   }, [licenseToDelete, onRefresh]);
 
-  // Stable now reference — only recomputes when licenses array changes (new data from server)
-  const now = useMemo(() => new Date(), [licenses]);
+  // Stable now reference for row expiration calculations
+  const now = useMemo(() => new Date(), []);
 
   return (
     <Card

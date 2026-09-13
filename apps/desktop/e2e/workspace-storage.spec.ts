@@ -83,6 +83,7 @@ test.describe('Desktop App — Локальна зашифрована база 
     });
 
     await page.route('**/api/organizations*', async (route) => {
+      if (route.request().url().includes('/src/')) return route.continue();
       await route.fulfill({
         status: 200,
         contentType: 'application/json',

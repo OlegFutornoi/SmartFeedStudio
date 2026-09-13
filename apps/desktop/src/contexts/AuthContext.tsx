@@ -39,7 +39,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (saved) {
       try {
         return JSON.parse(saved) as UserProfile;
-      } catch {
+      } catch (e) {
+        console.warn('[AuthContext] Failed to parse saved user profile:', e);
         return null;
       }
     }
@@ -74,7 +75,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (currentStoredToken && currentStoredToken !== activeToken) {
         setToken(currentStoredToken);
       }
-    } catch {
+    } catch (e) {
+      console.warn('[AuthContext:refreshProfile] Failed to refresh user profile:', e);
       // Only logout if even refresh failed
       const refreshToken = localStorage.getItem(REFRESH_TOKEN_KEY);
       if (!refreshToken) {

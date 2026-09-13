@@ -39,10 +39,11 @@ Detailed verification checklist for every backend change in `services/backend-ap
 ## 4. 🔒 Security & Code Cleanliness
 
 - [ ] **Zero Command Injection (CWE-78)**: Never use `exec` with string concatenation. Use `execFile(bin, args, { shell: false })`.
+- [ ] **Concurrency & TOCTOU Prevention**: Multi-step check-then-act operations (invitations, seats, credits) protected with mutex locks (e.g. `OrganizationMutex`) or serializable transactions.
 - [ ] **Zero Silent Failures**: No empty `catch {}` blocks. Always log structured context or rethrow a domain exception.
-- [ ] **Zero `as any` Bypasses**: Strict typing with `@smartfeed/shared` interfaces, Zod schemas, or explicit type guards.
+- [ ] **Zero `as any` Bypasses**: Strict typing with `@smartfeed/shared` interfaces, Prisma generated types (`Prisma.TariffPlanWhereInput[]`), or explicit type guards.
 - [ ] **Password Security**: Passwords hashed using Argon2id or bcrypt with appropriate salt rounds.
-- [ ] **Component Modularity Budget**: Every file is kept under **250–300 lines**.
+- [ ] **Component & Utility Modularity Budget**: Every file (controller, handler, service, utility) is kept under **250–300 lines**. Monolithic utility scripts decomposed.
 
 ---
 

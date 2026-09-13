@@ -13,18 +13,19 @@ interface ExportChannelCardProps {
 }
 
 export function ExportChannelCard({ channel, onEdit, onDelete }: ExportChannelCardProps) {
-  const { t } = useTranslation(['catalogs', 'common']);
+  const { t } = useTranslation(['export', 'common']);
   const [isCopied, setIsCopied] = useState(false);
 
-  const fullFeedUrl = `${window.location.origin.replace(':1420', ':4000')}${channel.exportUrl}`;
+  const fullFeedUrl =
+    channel.exportUrl || `${window.location.origin}/api/export/${channel.slug || channel.id}`;
 
   const handleCopyUrl = async () => {
     try {
       await navigator.clipboard.writeText(fullFeedUrl);
       setIsCopied(true);
       setTimeout(() => setIsCopied(false), 2000);
-    } catch {
-      // Fallback
+    } catch (err) {
+      console.warn('[ExportChannelCard] Failed to copy URL to clipboard:', err);
     }
   };
 
@@ -37,7 +38,7 @@ export function ExportChannelCard({ channel, onEdit, onDelete }: ExportChannelCa
       case 'ROZETKA':
         return 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20';
       case 'PROM':
-        return 'bg-purple-500/10 text-purple-400 border-purple-500/20';
+        return 'bg-primary/10 text-primary border-primary/20';
       case 'EPICENTR':
         return 'bg-blue-500/10 text-blue-400 border-blue-500/20';
       case 'HOTLINE':
@@ -66,7 +67,9 @@ export function ExportChannelCard({ channel, onEdit, onDelete }: ExportChannelCa
               </Badge>
             </div>
             <p className="text-xs text-muted-foreground truncate">
-              {channel.catalogName ? `Каталог: ${channel.catalogName}` : 'Всі товари'}
+              {channel.catalogName
+                ? t('export:catalogLabel', { name: channel.catalogName })
+                : t('export:allProducts')}
             </p>
           </div>
 
@@ -78,7 +81,7 @@ export function ExportChannelCard({ channel, onEdit, onDelete }: ExportChannelCa
                 : 'text-muted-foreground'
             }`}
           >
-            {channel.isActive ? 'Активний' : 'Вимкнено'}
+            {channel.isActive ? t('export:statusActive') : t('export:statusDisabled')}
           </Badge>
         </div>
       </CardHeader>
@@ -88,7 +91,7 @@ export function ExportChannelCard({ channel, onEdit, onDelete }: ExportChannelCa
         <div className="p-2.5 rounded-lg bg-secondary/30 border border-border/50 flex items-center justify-between text-xs font-mono">
           <span className="text-muted-foreground flex items-center gap-1.5 font-sans font-medium">
             <Percent className="size-3.5 text-primary shrink-0" />
-            Комісія маркетплейсу:
+            {t('export:commissionLabel')}
           </span>
           <span className="font-semibold text-foreground">
             {channel.commissionPercent}%{' '}
@@ -98,24 +101,24 @@ export function ExportChannelCard({ channel, onEdit, onDelete }: ExportChannelCa
 
         {/* Reverse Markup Indicator */}
         <div className="flex items-center justify-between text-[11px] px-1">
-          <span className="text-muted-foreground">Формула націнки:</span>
+          <span className="text-muted-foreground">{t('export:markupFormulaLabel')}</span>
           {channel.applyReverseMarkup ? (
             <Badge
               variant="outline"
               className="text-[10px] bg-primary/10 text-primary border-primary/20 flex items-center gap-1"
             >
               <Sparkles className="size-3" />
-              Reverse Markup (100% прибутку)
+              {t('export:reverseMarkupBadge')}
             </Badge>
           ) : (
-            <span className="text-muted-foreground">Звичайна націнка</span>
+            <span className="text-muted-foreground">{t('export:standardMarkup')}</span>
           )}
         </div>
 
         {/* Live Feed URL Copy Box */}
         <div className="space-y-1.5">
           <div className="flex items-center justify-between text-[10px] text-muted-foreground">
-            <span>Посилання на live-фід:</span>
+            <span>{t('export:liveFeedLink')}</span>
             <span className="font-mono">{channel.feedFormat}</span>
           </div>
           <div className="flex items-center gap-1.5 p-1.5 rounded-lg bg-background border border-border/80">
@@ -130,7 +133,7 @@ export function ExportChannelCard({ channel, onEdit, onDelete }: ExportChannelCa
               size="icon"
               onClick={handleCopyUrl}
               className="size-6 text-muted-foreground hover:text-foreground shrink-0"
-              title="Скопіювати посилання на фід"
+              title={t('export:copyFeedLink')}
               data-testid={`copy-feed-url-btn-${channel.id}`}
             >
               {isCopied ? (
@@ -149,11 +152,11 @@ export function ExportChannelCard({ channel, onEdit, onDelete }: ExportChannelCa
             size="sm"
             onClick={handleDownload}
             className="flex-1 text-xs h-8 bg-secondary/40 border-border/80 hover:bg-secondary hover:text-foreground font-medium flex items-center justify-center gap-1.5 truncate"
-            title="Завантажити згенерований фід"
+            title={t('export:downloadTooltip')}
             data-testid={`download-feed-btn-${channel.id}`}
           >
             <Download className="size-3.5 shrink-0 text-primary" />
-            <span className="truncate">Завантажити фід</span>
+            <span className="truncate">{t('export:downloadFeed')}</span>
           </Button>
 
           <div className="flex items-center gap-1 shrink-0">

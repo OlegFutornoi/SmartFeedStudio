@@ -66,7 +66,8 @@ export async function refreshAuthSession(): Promise<string | null> {
         return data.tokens.accessToken;
       }
       return null;
-    } catch {
+    } catch (err) {
+      console.warn('[api:refreshToken] Refresh token request failed:', err);
       return null;
     } finally {
       isRefreshing = false;

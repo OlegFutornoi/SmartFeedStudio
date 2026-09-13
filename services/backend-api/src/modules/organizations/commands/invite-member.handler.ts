@@ -12,6 +12,7 @@ import { MemberRole } from '@smartfeed/shared';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { MailService } from '../../mail/mail.service';
 import { InviteMemberCommand } from './invite-member.command';
+import { organizationMutex } from '../utils/organization-mutex';
 
 @Injectable()
 @CommandHandler(InviteMemberCommand)
@@ -78,112 +79,130 @@ export class InviteMemberHandler implements ICommandHandler<InviteMemberCommand>
       );
     }
 
-    // 4. Team Seats Quota Check
-    const currentMembersCount = await this.prisma.organizationMember.count({
-      where: { organizationId },
-    });
+    // 4. Team Seats Quota Check (Active Members + Pending Invitations with Mutex Protection)
+    return organizationMutex.runExclusive(organizationId, async () => {
+      const [currentMembersCount, pendingInvitesCount] = await Promise.all([
+        this.prisma.organizationMember.count({
+          where: { organizationId },
+        }),
+        this.prisma.organizationInvitation.count({
+          where: {
+            organizationId,
+            status: 'PENDING',
+          },
+        }),
+      ]);
 
-    // Find active license for organization (or fallback to owner's active license)
-    const activeLicense =
-      (await this.prisma.license.findFirst({
-        where: { organizationId, isActive: true },
-        orderBy: { createdAt: 'desc' },
-      })) ||
-      (await this.prisma.license.findFirst({
-        where: { userId: organization.ownerId, isActive: true },
-        orderBy: { createdAt: 'desc' },
-      }));
+      // Find active license for organization (or fallback to owner's active license)
+      const activeLicense =
+        (await this.prisma.license.findFirst({
+          where: { organizationId, isActive: true },
+          orderBy: { createdAt: 'desc' },
+        })) ||
+        (await this.prisma.license.findFirst({
+          where: { userId: organization.ownerId, isActive: true },
+          orderBy: { createdAt: 'desc' },
+        }));
 
-    const maxTeamSeats = activeLicense?.maxTeamSeats || 1;
+      const maxTeamSeats = activeLicense?.maxTeamSeats || 1;
 
-    if (currentMembersCount >= maxTeamSeats) {
-      this.logger.warn(
-        `Team seats limit reached for organization "${organizationId}": current=${currentMembersCount}, max=${maxTeamSeats}`,
-      );
-      throw new ForbiddenException({
-        statusCode: 403,
-        error: 'Forbidden',
-        code: 'TEAM_SEATS_LIMIT_EXCEEDED',
-        message: `Your current plan allows up to ${maxTeamSeats} team seats. Upgrade to PRO or ENTERPRISE to invite more members.`,
-        currentMembersCount,
-        maxTeamSeats,
-      });
-    }
-
-    // 5. Generate secure token & expiration (7 days)
-    const token = `SF-INV-${crypto.randomBytes(24).toString('hex')}`;
-    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-    const memberRole = (role as MemberRole) || MemberRole.MEMBER;
-
-    // Check if there is already a PENDING invitation for this email
-    const existingInvitation = await this.prisma.organizationInvitation.findFirst({
-      where: {
-        organizationId,
-        email: normalizedEmail,
-        status: 'PENDING',
-      },
-    });
-
-    let invitation;
-    if (existingInvitation) {
-      invitation = await this.prisma.organizationInvitation.update({
-        where: { id: existingInvitation.id },
-        data: {
-          token,
-          role: memberRole,
-          expiresAt,
-          invitedById: requesterUserId,
-        },
-      });
-      this.logger.log(`Refreshed existing invitation for ${normalizedEmail} (token renewed)`);
-    } else {
-      invitation = await this.prisma.organizationInvitation.create({
-        data: {
+      // Check if there is already a PENDING invitation for this email
+      const existingInvitation = await this.prisma.organizationInvitation.findFirst({
+        where: {
           organizationId,
           email: normalizedEmail,
-          role: memberRole,
-          token,
-          expiresAt,
-          invitedById: requesterUserId,
+          status: 'PENDING',
         },
       });
-      this.logger.log(`Created new invitation for ${normalizedEmail} to org ${organization.name}`);
-    }
 
-    // 6. Form invite URL
-    const appUrl = this.configService.get<string>('APP_URL', 'http://localhost:1420');
-    const inviteUrl = `${appUrl}/invite?token=${token}`;
+      // If renewing an existing invite for the same email, it already occupies a slot
+      const totalOccupiedSeats = currentMembersCount + pendingInvitesCount;
+      const effectiveOccupiedSeats = existingInvitation
+        ? totalOccupiedSeats - 1
+        : totalOccupiedSeats;
 
-    // 7. Send notification email via MailService (asynchronously, with fallback)
-    const inviterName =
-      requesterMember.user?.fullName || requesterMember.user?.email || 'Адміністратор';
+      if (effectiveOccupiedSeats >= maxTeamSeats) {
+        this.logger.warn(
+          `Team seats limit reached for organization "${organizationId}": current=${effectiveOccupiedSeats}, max=${maxTeamSeats}`,
+        );
+        throw new ForbiddenException({
+          statusCode: 403,
+          error: 'Forbidden',
+          code: 'TEAM_SEATS_LIMIT_EXCEEDED',
+          message: `Ліміт місць у команді вичерпано (${effectiveOccupiedSeats}/${maxTeamSeats} місць у команді). Зверніться до власника для апгрейду тарифу.`,
+          currentMembersCount: effectiveOccupiedSeats,
+          maxTeamSeats,
+        });
+      }
 
-    this.mailService
-      .sendInvitationEmail({
-        to: normalizedEmail,
-        inviterName,
+      // 5. Generate secure token & expiration (7 days)
+      const token = `SF-INV-${crypto.randomBytes(24).toString('hex')}`;
+      const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+      const memberRole = (role as MemberRole) || MemberRole.MEMBER;
+
+      let invitation;
+      if (existingInvitation) {
+        invitation = await this.prisma.organizationInvitation.update({
+          where: { id: existingInvitation.id },
+          data: {
+            token,
+            role: memberRole,
+            expiresAt,
+            invitedById: requesterUserId,
+          },
+        });
+        this.logger.log(`Refreshed existing invitation for ${normalizedEmail} (token renewed)`);
+      } else {
+        invitation = await this.prisma.organizationInvitation.create({
+          data: {
+            organizationId,
+            email: normalizedEmail,
+            role: memberRole,
+            token,
+            expiresAt,
+            invitedById: requesterUserId,
+          },
+        });
+        this.logger.log(
+          `Created new invitation for ${normalizedEmail} to org ${organization.name}`,
+        );
+      }
+
+      // 6. Form invite URL
+      const appUrl = this.configService.get<string>('APP_URL', 'http://localhost:1420');
+      const inviteUrl = `${appUrl}/invite?token=${token}`;
+
+      // 7. Send notification email via MailService (asynchronously, with fallback)
+      const inviterName =
+        requesterMember.user?.fullName || requesterMember.user?.email || 'Адміністратор';
+
+      this.mailService
+        .sendInvitationEmail({
+          to: normalizedEmail,
+          inviterName,
+          organizationName: organization.name,
+          role: memberRole,
+          token,
+          inviteUrl,
+          expiresAt,
+        })
+        .catch((err) => {
+          this.logger.warn(`Non-blocking email sending error: ${err?.message}`);
+        });
+
+      return {
+        id: invitation.id,
+        organizationId: invitation.organizationId,
         organizationName: organization.name,
-        role: memberRole,
-        token,
+        email: invitation.email,
+        role: invitation.role,
+        token: invitation.token,
         inviteUrl,
-        expiresAt,
-      })
-      .catch((err) => {
-        this.logger.warn(`Non-blocking email sending error: ${err?.message}`);
-      });
-
-    return {
-      id: invitation.id,
-      organizationId: invitation.organizationId,
-      organizationName: organization.name,
-      email: invitation.email,
-      role: invitation.role,
-      token: invitation.token,
-      inviteUrl,
-      status: invitation.status,
-      invitedById: invitation.invitedById,
-      expiresAt: invitation.expiresAt,
-      createdAt: invitation.createdAt,
-    };
+        status: invitation.status,
+        invitedById: invitation.invitedById,
+        expiresAt: invitation.expiresAt,
+        createdAt: invitation.createdAt,
+      };
+    });
   }
 }

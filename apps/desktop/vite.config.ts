@@ -3,8 +3,6 @@ import react from '@vitejs/plugin-react';
 import path from 'path';
 import type { Plugin } from 'vite';
 import { IncomingMessage, ServerResponse } from 'node:http';
-import * as https from 'node:https';
-import * as http from 'node:http';
 
 /**
  * Vite dev-server middleware: GET /feed-proxy?url=<encoded>

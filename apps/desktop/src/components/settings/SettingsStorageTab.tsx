@@ -43,8 +43,8 @@ export const SettingsStorageTab: React.FC = () => {
       await navigator.clipboard.writeText(activePath);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    } catch {
-      // Fallback
+    } catch (e) {
+      console.warn('[SettingsStorageTab:handleCopyPath] Failed to copy path to clipboard:', e);
     }
   };
 

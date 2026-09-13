@@ -69,6 +69,7 @@ export const ACCENT_OPTIONS: AccentOption[] = [
     labelUk: 'Zinc (Монохромна)',
     labelEn: 'Zinc (Monochrome)',
     colorHex: '#ffffff',
+    isDefault: true,
   },
   {
     id: 'slate',
@@ -105,7 +106,6 @@ export const ACCENT_OPTIONS: AccentOption[] = [
     labelUk: 'Green (Смарагдова)',
     labelEn: 'Green (Emerald)',
     colorHex: '#22c55e',
-    isDefault: true,
   },
 ];
 
@@ -132,7 +132,7 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 export function ThemeProvider({
   children,
   defaultTheme = 'dark',
-  defaultAccent = 'green',
+  defaultAccent = 'zinc',
   defaultRadius = '0.5',
   storageKey = 'smartfeed_theme',
 }: ThemeProviderProps) {

@@ -105,13 +105,13 @@ export const DashboardStatsGrid = React.memo(function DashboardStatsGrid({
       {/* Database & Infrastructure */}
       <Card
         data-testid="stat-card-database"
-        className="border-border/80 bg-card/60 backdrop-blur-sm group hover:border-purple-500/50 transition-all shadow-md"
+        className="border-border/80 bg-card/60 backdrop-blur-sm group hover:border-primary/50 transition-all shadow-md"
       >
         <CardHeader className="flex flex-row items-center justify-between pb-2">
           <CardTitle className="text-sm font-medium text-muted-foreground">
             {t('dashboard', 'database_title')}
           </CardTitle>
-          <div className="h-9 w-9 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-400 group-hover:scale-110 transition-transform">
+          <div className="h-9 w-9 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
             <Activity className="h-5 w-5" />
           </div>
         </CardHeader>

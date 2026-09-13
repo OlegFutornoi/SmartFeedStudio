@@ -24,71 +24,71 @@ const ChangePasswordDialog = dynamic(
   { ssr: false },
 );
 
+const TEST_ID_MAP: Record<string, string> = {
+  admin_dashboard: 'nav-item-dashboard',
+  admin_users: 'nav-item-users',
+  admin_plans: 'nav-item-plans',
+  admin_licenses: 'nav-item-licenses',
+  admin_transactions: 'nav-item-transactions',
+  admin_payment_settings: 'nav-item-payments',
+  admin_navigation: 'nav-item-navigation',
+};
+
+const DEFAULT_MAIN_NAV = [
+  {
+    key: 'admin_dashboard',
+    labelUk: 'Дашборд',
+    labelEn: 'Dashboard',
+    path: '/',
+    icon: 'LayoutDashboard',
+  },
+  { key: 'admin_users', labelUk: 'Користувачі', labelEn: 'Users', path: '/users', icon: 'Users' },
+  {
+    key: 'admin_transactions',
+    labelUk: 'Транзакції',
+    labelEn: 'Transactions',
+    path: '/transactions',
+    icon: 'Receipt',
+  },
+  {
+    key: 'admin_licenses',
+    labelUk: 'Ліцензії',
+    labelEn: 'Licenses',
+    path: '/licenses',
+    icon: 'KeyRound',
+  },
+  {
+    key: 'admin_plans',
+    labelUk: 'Тарифи',
+    labelEn: 'Tariff Plans',
+    path: '/plans',
+    icon: 'Layers',
+  },
+  {
+    key: 'admin_payment_settings',
+    labelUk: 'Платіжні системи',
+    labelEn: 'Payment Gateways',
+    path: '/settings/payments',
+    icon: 'WalletCards',
+  },
+  {
+    key: 'admin_navigation',
+    labelUk: 'Навігація меню',
+    labelEn: 'Navigation Menu',
+    path: '/navigation',
+    icon: 'Compass',
+  },
+];
+
 export function Sidebar() {
   const pathname = usePathname();
   const { user, logout } = useAuth();
-  const { isCollapsed, toggleSidebar, isMobileOpen, closeMobileSidebar } = useSidebar();
+  const { isCollapsed, isMobileOpen, closeMobileSidebar } = useSidebar();
   const { locale } = useLanguage();
   const { items: dynamicNavItems } = useNavigation();
   const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
 
   const isUk = locale === 'uk';
-
-  const TEST_ID_MAP: Record<string, string> = {
-    admin_dashboard: 'nav-item-dashboard',
-    admin_users: 'nav-item-users',
-    admin_plans: 'nav-item-plans',
-    admin_licenses: 'nav-item-licenses',
-    admin_transactions: 'nav-item-transactions',
-    admin_payment_settings: 'nav-item-payments',
-    admin_navigation: 'nav-item-navigation',
-  };
-
-  const DEFAULT_MAIN_NAV = [
-    {
-      key: 'admin_dashboard',
-      labelUk: 'Дашборд',
-      labelEn: 'Dashboard',
-      path: '/',
-      icon: 'LayoutDashboard',
-    },
-    { key: 'admin_users', labelUk: 'Користувачі', labelEn: 'Users', path: '/users', icon: 'Users' },
-    {
-      key: 'admin_transactions',
-      labelUk: 'Транзакції',
-      labelEn: 'Transactions',
-      path: '/transactions',
-      icon: 'Receipt',
-    },
-    {
-      key: 'admin_licenses',
-      labelUk: 'Ліцензії',
-      labelEn: 'Licenses',
-      path: '/licenses',
-      icon: 'KeyRound',
-    },
-    {
-      key: 'admin_plans',
-      labelUk: 'Тарифи',
-      labelEn: 'Tariff Plans',
-      path: '/plans',
-      icon: 'Layers',
-    },
-    {
-      key: 'admin_payment_settings',
-      labelUk: 'Платіжні системи',
-      labelEn: 'Payment Gateways',
-      path: '/settings/payments',
-      icon: 'WalletCards',
-    },
-    {
-      key: 'admin_navigation',
-      labelUk: 'Навігація меню',
-      labelEn: 'Navigation Menu',
-      path: '/navigation',
-      icon: 'Compass',
-    },
-  ];
 
   const mainNavigation = useMemo(() => {
     const sourceItems =

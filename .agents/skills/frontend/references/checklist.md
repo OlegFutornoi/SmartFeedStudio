@@ -35,9 +35,15 @@ Comprehensive self-review checklist for all frontend changes in `apps/desktop` a
 - [ ] **Metric Formatting**: Percentages formatted cleanly (`Math.round(percent)` or `Number(percent.toFixed(1))`), never raw floats (`33.33333333333333%`).
 - [ ] **Backend Error Localization**: API error responses translated via `getErrorMessage(err, t)`.
 
+## 4. 🛡 Cleanliness & Error Handling (Zero Silent Failures)
+
+- [ ] **Zero Silent Failures**: No empty `catch {}` blocks anywhere in components, hooks, or utility scripts.
+- [ ] **Structured Diagnostics or User Toasts**: Every catch block logs structured diagnostic info (`console.warn('[Component:Context] Description:', err)`) or renders a localized toast notification (`toast.error(getErrorMessage(err, t))`).
+- [ ] **No `as any` Bypasses**: Strict typing with TypeScript interfaces or Zod contracts.
+
 ---
 
-## 4. ⚡ Network & React Performance
+## 5. ⚡ Network & React Performance
 
 - [ ] **Zero-Duplicate API Calls**: Context providers and data hooks use `isFetchingRef` and `lastFetchedTokenRef` to guard against concurrent/duplicate requests.
 - [ ] **No React.StrictMode Double-Mounting**: `reactStrictMode: false` in `next.config.mjs`; omitted in desktop `main.tsx`.

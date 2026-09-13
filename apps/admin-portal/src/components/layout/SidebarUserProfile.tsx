@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { KeyRound, LogOut, PanelLeftOpen } from 'lucide-react';
+import { KeyRound, LogOut } from 'lucide-react';
 import { UserProfile } from '@smartfeed/shared';
 import { Avatar, AvatarFallback } from '../ui/avatar';
 import { Button } from '../ui/button';

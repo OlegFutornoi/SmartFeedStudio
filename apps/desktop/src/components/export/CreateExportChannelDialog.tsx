@@ -36,7 +36,8 @@ export function CreateExportChannelDialog({
   initialData,
   catalogs = [],
 }: CreateExportChannelDialogProps) {
-  const { t } = useTranslation(['catalogs', 'common']);
+  const { t, language } = useTranslation(['export', 'common']);
+  const isUk = language === 'uk';
 
   const [name, setName] = useState('');
   const [marketplaceCode, setMarketplaceCode] = useState('ROZETKA');
@@ -62,7 +63,7 @@ export function CreateExportChannelDialog({
       setApplyReverseMarkup(initialData.applyReverseMarkup);
       setCatalogId(initialData.catalogId || '');
     } else {
-      setName('Rozetka — Основний фід');
+      setName(isUk ? 'Rozetka — Основний фід' : 'Rozetka — Main Feed');
       setMarketplaceCode('ROZETKA');
       setFeedFormat(FeedFormat.XML_ROZETKA);
       setCommissionPercent('15');
@@ -70,7 +71,7 @@ export function CreateExportChannelDialog({
       setApplyReverseMarkup(true);
       setCatalogId(catalogs[0]?.id || '');
     }
-  }, [initialData, isOpen, catalogs]);
+  }, [initialData, isOpen, catalogs, isUk]);
 
   const handleMarketplaceChange = (code: string) => {
     setMarketplaceCode(code);
@@ -79,7 +80,11 @@ export function CreateExportChannelDialog({
       setFeedFormat(m.defaultFormat);
       setCommissionPercent(String(m.defaultCommission));
       if (!initialData) {
-        setName(`${m.name.split(' ')[0]} — Каталог товарів`);
+        setName(
+          isUk
+            ? `${m.name.split(' ')[0]} — Каталог товарів`
+            : `${m.name.split(' ')[0]} — Product Catalog`,
+        );
       }
     }
   };
@@ -114,7 +119,7 @@ export function CreateExportChannelDialog({
       });
       onClose();
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Не вдалося зберегти канал експорту';
+      const msg = err instanceof Error ? err.message : t('export:saveError');
       setError(msg);
     } finally {
       setIsLoading(false);
@@ -134,13 +139,9 @@ export function CreateExportChannelDialog({
             </div>
             <div>
               <h3 className="text-lg font-bold text-foreground">
-                {initialData
-                  ? 'Редагувати канал експорту'
-                  : 'Створити канал експорту для маркетплейсу'}
+                {initialData ? t('export:editTitle') : t('export:createTitle')}
               </h3>
-              <p className="text-xs text-muted-foreground">
-                Генерація персоналізованого XML/CSV фіду зі зворотною націнкою під комісію сайту
-              </p>
+              <p className="text-xs text-muted-foreground">{t('export:dialogSubtitle')}</p>
             </div>
           </div>
           <Button
@@ -168,18 +169,18 @@ export function CreateExportChannelDialog({
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <Label className="text-xs text-foreground">Назва каналу експорту</Label>
+              <Label className="text-xs text-foreground">{t('export:channelName')}</Label>
               <Input
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="напр. Rozetka Одяг"
+                placeholder={t('export:channelNamePlaceholder')}
                 required
                 className="mt-1 h-9 text-xs"
               />
             </div>
 
             <div>
-              <Label className="text-xs text-foreground">Вихідний формат фіду</Label>
+              <Label className="text-xs text-foreground">{t('export:feedFormat')}</Label>
               <div className="mt-1">
                 <Select
                   value={feedFormat}
@@ -190,13 +191,13 @@ export function CreateExportChannelDialog({
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value={FeedFormat.XML_ROZETKA} className="text-xs">
-                      XML (Формат Rozetka / Prom / Epicentr)
+                      {t('export:formatXml')}
                     </SelectItem>
                     <SelectItem value={FeedFormat.YML_PROM} className="text-xs">
                       YML (Yandex / Prom XML)
                     </SelectItem>
                     <SelectItem value={FeedFormat.CSV} className="text-xs">
-                      CSV (Експорт для таблиць / Hotline)
+                      {t('export:formatCsv')}
                     </SelectItem>
                     <SelectItem value={FeedFormat.XML_GENERIC} className="text-xs">
                       Generic XML
@@ -209,7 +210,7 @@ export function CreateExportChannelDialog({
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <Label className="text-xs text-foreground">Комісія маркетплейсу (%)</Label>
+              <Label className="text-xs text-foreground">{t('export:commission')}</Label>
               <Input
                 type="number"
                 min="0"
@@ -222,7 +223,7 @@ export function CreateExportChannelDialog({
             </div>
 
             <div>
-              <Label className="text-xs text-foreground">Додаткові витрати на одиницю (₴)</Label>
+              <Label className="text-xs text-foreground">{t('export:unitExpenses')}</Label>
               <Input
                 type="number"
                 min="0"
@@ -248,11 +249,10 @@ export function CreateExportChannelDialog({
                 htmlFor="reverseMarkupCheck"
                 className="text-xs font-semibold text-foreground cursor-pointer"
               >
-                Автоматична зворотна націнка (Reverse Markup)
+                {t('export:reverseMarkupTitle')}
               </label>
               <p className="text-[11px] text-muted-foreground leading-relaxed">
-                Формула: Ціна на полиці = (БазоваЦіна + Витрати) / (1 - Комісія%). Зберігає 100%
-                вашого планового прибутку.
+                {t('export:reverseMarkupDesc')}
               </p>
             </div>
           </div>
@@ -279,7 +279,11 @@ export function CreateExportChannelDialog({
               data-testid="save-export-channel-btn"
               className="h-9 text-xs px-5 font-semibold"
             >
-              {isLoading ? 'Збереження...' : initialData ? 'Оновити канал' : 'Підключити канал'}
+              {isLoading
+                ? t('export:saving')
+                : initialData
+                  ? t('export:updateChannel')
+                  : t('export:createChannel')}
             </Button>
           </div>
         </form>

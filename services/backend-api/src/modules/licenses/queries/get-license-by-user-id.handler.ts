@@ -2,6 +2,7 @@ import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { Injectable } from '@nestjs/common';
 import { LicenseEntity, PlanType } from '@smartfeed/shared';
 import { PrismaService } from '../../../prisma/prisma.service';
+import { mapTariffPlanToDto } from '../../plans/utils/map-tariff-plan-to-dto';
 import { GetLicenseByUserIdQuery } from './get-license-by-user-id.query';
 import { Prisma } from '../../../generated/prisma/client';
 
@@ -48,36 +49,7 @@ export class GetLicenseByUserIdHandler implements IQueryHandler<
         expiresAt: null,
         isExpired: false,
         daysRemaining: null,
-        tariffPlan: enterprisePlan
-          ? {
-              id: enterprisePlan.id,
-              code: enterprisePlan.code,
-              nameUk: enterprisePlan.nameUk,
-              nameEn: enterprisePlan.nameEn,
-              descriptionUk: enterprisePlan.descriptionUk,
-              descriptionEn: enterprisePlan.descriptionEn,
-              priceMonthly: Number(enterprisePlan.priceMonthly),
-              priceYearly: enterprisePlan.priceYearly ? Number(enterprisePlan.priceYearly) : null,
-              currency: enterprisePlan.currency,
-              maxXmlLimit: enterprisePlan.maxXmlLimit,
-              aiCredits: enterprisePlan.aiCredits,
-              canCloudBackup: enterprisePlan.canCloudBackup,
-              maxFeedsLimit: enterprisePlan.maxFeedsLimit,
-              maxChannelsLimit: enterprisePlan.maxChannelsLimit,
-              maxTeamSeats: enterprisePlan.maxTeamSeats,
-              maxSuppliersLimit: enterprisePlan.maxSuppliersLimit,
-              hasApiAccess: enterprisePlan.hasApiAccess,
-              hasFeedDiff: enterprisePlan.hasFeedDiff,
-              isPopular: enterprisePlan.isPopular,
-              isActive: enterprisePlan.isActive,
-              order: enterprisePlan.order,
-              durationDays: enterprisePlan.durationDays,
-              featuresUk: enterprisePlan.featuresUk,
-              featuresEn: enterprisePlan.featuresEn,
-              createdAt: enterprisePlan.createdAt,
-              updatedAt: enterprisePlan.updatedAt,
-            }
-          : null,
+        tariffPlan: enterprisePlan ? mapTariffPlanToDto(enterprisePlan) : null,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
       };
@@ -201,38 +173,7 @@ export class GetLicenseByUserIdHandler implements IQueryHandler<
       expiresAt: license.expiresAt,
       isExpired,
       daysRemaining,
-      tariffPlan: license.tariffPlan
-        ? {
-            id: license.tariffPlan.id,
-            code: license.tariffPlan.code,
-            nameUk: license.tariffPlan.nameUk,
-            nameEn: license.tariffPlan.nameEn,
-            descriptionUk: license.tariffPlan.descriptionUk,
-            descriptionEn: license.tariffPlan.descriptionEn,
-            priceMonthly: Number(license.tariffPlan.priceMonthly),
-            priceYearly: license.tariffPlan.priceYearly
-              ? Number(license.tariffPlan.priceYearly)
-              : null,
-            currency: license.tariffPlan.currency,
-            maxXmlLimit: license.tariffPlan.maxXmlLimit,
-            aiCredits: license.tariffPlan.aiCredits,
-            canCloudBackup: license.tariffPlan.canCloudBackup,
-            maxFeedsLimit: license.tariffPlan.maxFeedsLimit,
-            maxChannelsLimit: license.tariffPlan.maxChannelsLimit,
-            maxTeamSeats: license.tariffPlan.maxTeamSeats,
-            maxSuppliersLimit: license.tariffPlan.maxSuppliersLimit ?? 1,
-            hasApiAccess: license.tariffPlan.hasApiAccess,
-            hasFeedDiff: license.tariffPlan.hasFeedDiff,
-            isPopular: license.tariffPlan.isPopular,
-            isActive: license.tariffPlan.isActive,
-            order: license.tariffPlan.order,
-            durationDays: license.tariffPlan.durationDays,
-            featuresUk: license.tariffPlan.featuresUk,
-            featuresEn: license.tariffPlan.featuresEn,
-            createdAt: license.tariffPlan.createdAt,
-            updatedAt: license.tariffPlan.updatedAt,
-          }
-        : null,
+      tariffPlan: license.tariffPlan ? mapTariffPlanToDto(license.tariffPlan) : null,
       createdAt: license.createdAt,
       updatedAt: license.updatedAt,
     };

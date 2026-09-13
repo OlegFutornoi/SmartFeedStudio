@@ -132,7 +132,11 @@ export function NavigationProvider({ children }: { children: React.ReactNode }) 
         } else {
           setItems(DEFAULT_ADMIN_NAVIGATION_ITEMS);
         }
-      } catch {
+      } catch (e) {
+        console.warn(
+          '[NavigationContext:fetchNavigation] Failed to fetch admin navigation items:',
+          e,
+        );
         setItems(DEFAULT_ADMIN_NAVIGATION_ITEMS);
       } finally {
         isFetchingRef.current = false;

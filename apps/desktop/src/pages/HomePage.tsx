@@ -104,7 +104,7 @@ export function HomePage() {
         <Card className="border-border/40 bg-card shadow-sm hover:shadow-md transition-shadow sm:col-span-2 lg:col-span-1">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">{t('totalFeeds')}</CardTitle>
-            <div className="p-2 rounded-md bg-purple-500/10 text-purple-500">
+            <div className="p-2 rounded-md bg-primary/10 text-primary">
               <Rss className="size-4" />
             </div>
           </CardHeader>
@@ -158,7 +158,7 @@ export function HomePage() {
                         {t('productsCount', { count: supplier.productsCount ?? 0 })}
                       </span>
                       <span className="flex items-center gap-1.5">
-                        <Rss className="size-3.5 text-purple-500" />
+                        <Rss className="size-3.5 text-primary" />
                         {t('feedsCount', { count: supplier.activeFeedsCount ?? 0 })}
                       </span>
                     </div>

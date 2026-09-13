@@ -83,7 +83,7 @@ export const UserTeamSubRows = React.memo(function UserTeamSubRows({
                     variant="outline"
                     className={
                       ownerUser.license.planType === 'ENTERPRISE'
-                        ? 'bg-purple-500/10 text-purple-400 border-purple-500/20 text-xs font-semibold'
+                        ? 'bg-primary/15 text-primary border-primary/30 text-xs font-semibold'
                         : ownerUser.license.planType === 'PRO'
                           ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20 text-xs font-semibold'
                           : ownerUser.license.planType === 'GROWTH'

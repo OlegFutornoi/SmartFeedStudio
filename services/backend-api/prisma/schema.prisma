@@ -68,12 +68,12 @@ enum PaymentInterval {
 model User {
   id           String         @id @default(cuid())
   email        String         @unique
-  passwordHash String
-  fullName     String?
+  passwordHash String         @map("password_hash")
+  fullName     String?        @map("full_name")
   role         Role           @default(USER)
   isActive     Boolean        @default(true) @map("is_active")
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
+  createdAt    DateTime       @default(now()) @map("created_at")
+  updatedAt    DateTime       @updatedAt @map("updated_at")
   licenses     License[]
   snapshots    Snapshot[]
   paymentTransactions PaymentTransaction[]
@@ -94,13 +94,13 @@ model Organization {
   id              String                   @id @default(cuid())
   name            String
   slug            String?                  @unique
-  ownerId         String
+  ownerId         String                   @map("owner_id")
   owner           User                     @relation("OrganizationOwner", fields: [ownerId], references: [id], onDelete: Cascade)
   members         OrganizationMember[]
   invitations     OrganizationInvitation[]
   licenses        License[]
-  createdAt       DateTime                 @default(now())
-  updatedAt       DateTime                 @updatedAt
+  createdAt       DateTime                 @default(now()) @map("created_at")
+  updatedAt       DateTime                 @updatedAt @map("updated_at")
 
   @@index([ownerId])
   @@index([createdAt])
@@ -109,12 +109,12 @@ model Organization {
 
 model OrganizationMember {
   id             String       @id @default(cuid())
-  organizationId String
+  organizationId String       @map("organization_id")
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  userId         String
+  userId         String       @map("user_id")
   user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   role           MemberRole   @default(MEMBER)
-  joinedAt       DateTime     @default(now())
+  joinedAt       DateTime     @default(now()) @map("joined_at")
 
   @@unique([organizationId, userId])
   @@index([organizationId])
@@ -125,17 +125,17 @@ model OrganizationMember {
 
 model OrganizationInvitation {
   id             String           @id @default(cuid())
-  organizationId String
+  organizationId String           @map("organization_id")
   organization   Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   email          String
   role           MemberRole       @default(MEMBER)
   token          String           @unique
   status         InvitationStatus @default(PENDING)
-  invitedById    String
+  invitedById    String           @map("invited_by_id")
   invitedBy      User             @relation("InvitationSender", fields: [invitedById], references: [id], onDelete: Cascade)
-  expiresAt      DateTime
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime         @updatedAt
+  expiresAt      DateTime         @map("expires_at")
+  createdAt      DateTime         @default(now()) @map("created_at")
+  updatedAt      DateTime         @updatedAt @map("updated_at")
 
   @@index([organizationId])
   @@index([invitedById])
@@ -149,45 +149,45 @@ model OrganizationInvitation {
 model TariffPlan {
   id            String    @id @default(cuid())
   code          String    @unique
-  nameUk        String
-  nameEn        String
-  descriptionUk String?
-  descriptionEn String?
-  priceMonthly  Decimal   @default(0) @db.Decimal(10, 2)
-  priceYearly   Decimal?  @db.Decimal(10, 2)
+  nameUk        String    @map("name_uk")
+  nameEn        String    @map("name_en")
+  descriptionUk String?   @map("description_uk")
+  descriptionEn String?   @map("description_en")
+  priceMonthly  Decimal   @default(0) @db.Decimal(10, 2) @map("price_monthly")
+  priceYearly   Decimal?  @db.Decimal(10, 2) @map("price_yearly")
   currency      String    @default("USD")
 
   // --- Quota Fields ---
-  maxXmlLimit         Int     @default(500)   // Max SKU count
-  aiCredits           Int     @default(0)     // AI credits per month
-  canCloudBackup      Boolean @default(false) // Cloud S3 backup access
-  maxFeedsLimit       Int     @default(1)     // Max active feeds
-  maxChannelsLimit    Int     @default(1)     // Max output channels
-  syncFrequencyHours  Int     @default(0)     // 0=manual, 24=daily, 4=6x/day, 1=hourly
-  maxStorageGb        Float   @default(0)     // Cloud storage GB (0=disabled)
-  maxTeamSeats        Int     @default(1)     // Team member seats
-  maxSuppliersLimit   Int     @default(1)     // Max connected suppliers
+  maxXmlLimit         Int     @default(500)   @map("max_xml_limit") // Max SKU count
+  aiCredits           Int     @default(0)     @map("ai_credits") // AI credits per month
+  canCloudBackup      Boolean @default(false) @map("can_cloud_backup") // Cloud S3 backup access
+  maxFeedsLimit       Int     @default(1)     @map("max_feeds_limit") // Max active feeds
+  maxChannelsLimit    Int     @default(1)     @map("max_channels_limit") // Max output channels
+  syncFrequencyHours  Int     @default(0)     @map("sync_frequency_hours") // 0=manual, 24=daily, 4=6x/day, 1=hourly
+  maxStorageGb        Float   @default(0)     @map("max_storage_gb") // Cloud storage GB (0=disabled)
+  maxTeamSeats        Int     @default(1)     @map("max_team_seats") // Team member seats
+  maxSuppliersLimit   Int     @default(1)     @map("max_suppliers_limit") // Max connected suppliers
 
   // --- Feature Flags ---
-  hasApiAccess     Boolean  @default(false)  // REST API access
-  hasWebhooks      Boolean  @default(false)  // Webhook push on feed update
-  hasFeedDiff      Boolean  @default(false)  // Feed version comparison (diff)
-  hasWhiteLabel    Boolean  @default(false)  // White-label PDF reports
-  hasSso           Boolean  @default(false)  // SSO / SAML login
-  hasAuditLog      Boolean  @default(false)  // Full audit trail
-  hasCustomS3      Boolean  @default(false)  // Custom S3/MinIO endpoint
-  hasPriorityAi    Boolean  @default(false)  // Priority AI queue
-  slaUptimePercent Float?                    // null=no SLA, 99.9=Enterprise
+  hasApiAccess     Boolean  @default(false)  @map("has_api_access") // REST API access
+  hasWebhooks      Boolean  @default(false)  @map("has_webhooks") // Webhook push on feed update
+  hasFeedDiff      Boolean  @default(false)  @map("has_feed_diff") // Feed version comparison (diff)
+  hasWhiteLabel    Boolean  @default(false)  @map("has_white_label") // White-label PDF reports
+  hasSso           Boolean  @default(false)  @map("has_sso") // SSO / SAML login
+  hasAuditLog      Boolean  @default(false)  @map("has_audit_log") // Full audit trail
+  hasCustomS3      Boolean  @default(false)  @map("has_custom_s3") // Custom S3/MinIO endpoint
+  hasPriorityAi    Boolean  @default(false)  @map("has_priority_ai") // Priority AI queue
+  slaUptimePercent Float?                    @map("sla_uptime_percent") // null=no SLA, 99.9=Enterprise
 
   // --- Display Fields ---
-  isPopular    Boolean   @default(false)
-  isActive     Boolean   @default(true)
+  isPopular    Boolean   @default(false) @map("is_popular")
+  isActive     Boolean   @default(true)  @map("is_active")
   order        Int       @default(0)
-  durationDays Int?      @default(7)         // Subscription cycle length in days
-  featuresUk   String[]  @default([])
-  featuresEn   String[]  @default([])
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  durationDays Int?      @default(7)     @map("duration_days") // Subscription cycle length in days
+  featuresUk   String[]  @default([])    @map("features_uk")
+  featuresEn   String[]  @default([])    @map("features_en")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt      @map("updated_at")
   licenses     License[]
 
   @@index([isActive, order])
@@ -197,33 +197,33 @@ model TariffPlan {
 
 model License {
   id             String      @id @default(cuid())
-  userId         String
+  userId         String      @map("user_id")
   user           User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  tariffPlanId   String?
+  tariffPlanId   String?     @map("tariff_plan_id")
   tariffPlan     TariffPlan? @relation(fields: [tariffPlanId], references: [id], onDelete: SetNull)
-  licenseKey     String      @unique
-  planType       PlanType    @default(STARTER)
-  canCloudBackup Boolean     @default(false)
-  maxXmlLimit    Int         @default(500)
-  aiCredits      Int         @default(0)
-  isActive       Boolean     @default(true)
-  expiresAt      DateTime?
+  licenseKey     String      @unique @map("license_key")
+  planType       PlanType    @default(STARTER) @map("plan_type")
+  canCloudBackup Boolean     @default(false) @map("can_cloud_backup")
+  maxXmlLimit    Int         @default(500) @map("max_xml_limit")
+  aiCredits      Int         @default(0) @map("ai_credits")
+  isActive       Boolean     @default(true) @map("is_active")
+  expiresAt      DateTime?   @map("expires_at")
 
   // Snapshot of quota at time of license creation
-  maxFeedsLimit      Int     @default(1)
-  maxChannelsLimit   Int     @default(1)
-  maxTeamSeats       Int     @default(1)
-  maxSuppliersLimit  Int     @default(1)
-  hasApiAccess       Boolean @default(false)
-  hasFeedDiff        Boolean @default(false)
-  hasWhiteLabel      Boolean @default(false)
-  hasSso             Boolean @default(false)
-  hasAuditLog        Boolean @default(false)
+  maxFeedsLimit      Int     @default(1) @map("max_feeds_limit")
+  maxChannelsLimit   Int     @default(1) @map("max_channels_limit")
+  maxTeamSeats       Int     @default(1) @map("max_team_seats")
+  maxSuppliersLimit  Int     @default(1) @map("max_suppliers_limit")
+  hasApiAccess       Boolean @default(false) @map("has_api_access")
+  hasFeedDiff        Boolean @default(false) @map("has_feed_diff")
+  hasWhiteLabel      Boolean @default(false) @map("has_white_label")
+  hasSso             Boolean @default(false) @map("has_sso")
+  hasAuditLog        Boolean @default(false) @map("has_audit_log")
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
-  organizationId String?
+  organizationId String? @map("organization_id")
   organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   @@index([userId])
@@ -237,12 +237,12 @@ model License {
 
 model Snapshot {
   id           String   @id @default(cuid())
-  userId       String
+  userId       String   @map("user_id")
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  snapshotName String
-  s3Key        String
-  sizeBytes    BigInt
-  createdAt    DateTime @default(now())
+  snapshotName String   @map("snapshot_name")
+  s3Key        String   @map("s3_key")
+  sizeBytes    BigInt   @map("size_bytes")
+  createdAt    DateTime @default(now()) @map("created_at")
 
   @@index([userId])
   @@index([createdAt])
@@ -252,17 +252,17 @@ model Snapshot {
 model NavigationItem {
   id            String    @id @default(cuid())
   key           String    @unique
-  labelUk       String
-  labelEn       String
+  labelUk       String    @map("label_uk")
+  labelEn       String    @map("label_en")
   path          String
   icon          String    @default("LayoutDashboard")
   order         Int       @default(0)
-  isVisible     Boolean   @default(true)
-  requiredRoles Role[]    @default([USER, ADMIN, SUPER_ADMIN])
-  requiredPlan  PlanType?
-  targetApp     TargetApp @default(DESKTOP)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  isVisible     Boolean   @default(true) @map("is_visible")
+  requiredRoles Role[]    @default([USER, ADMIN, SUPER_ADMIN]) @map("required_roles")
+  requiredPlan  PlanType? @map("required_plan")
+  targetApp     TargetApp @default(DESKTOP) @map("target_app")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
 
   @@index([targetApp, isVisible, order])
   @@map("navigation_items")

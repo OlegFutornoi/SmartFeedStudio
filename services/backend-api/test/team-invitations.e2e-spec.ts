@@ -115,9 +115,14 @@ describe('Team Invitations & Mail Service Life-cycle (E2E)', () => {
       try {
         const mailpitRes = await fetch('http://localhost:8025/api/v1/messages');
         if (mailpitRes.ok) {
-          const mailpitData: any = await mailpitRes.json();
-          const sentMessage = mailpitData.messages?.find((m: any) =>
-            m.To?.some((to: any) => to.Address === newColleagueEmail),
+          interface MailpitMessage {
+            Subject?: string;
+            Snippet?: string;
+            To?: Array<{ Address: string }>;
+          }
+          const mailpitData = (await mailpitRes.json()) as { messages?: MailpitMessage[] };
+          const sentMessage = mailpitData.messages?.find((m) =>
+            m.To?.some((to) => to.Address === newColleagueEmail),
           );
 
           if (sentMessage) {
@@ -303,8 +308,13 @@ describe('Team Invitations & Mail Service Life-cycle (E2E)', () => {
         .set('Authorization', `Bearer ${ownerToken}`)
         .expect(200);
 
-      const existingMem = members.body.find(
-        (m: any) => m.userEmail === existingColleagueEmail || m.email === existingColleagueEmail,
+      interface OrgMemberSummary {
+        id: string;
+        userEmail?: string;
+        email?: string;
+      }
+      const existingMem = (members.body as OrgMemberSummary[]).find(
+        (m) => m.userEmail === existingColleagueEmail || m.email === existingColleagueEmail,
       );
       if (existingMem) {
         await request(app.getHttpServer())
@@ -338,7 +348,7 @@ describe('Team Invitations & Mail Service Life-cycle (E2E)', () => {
         .set('Authorization', `Bearer ${ownerToken}`)
         .expect(200);
 
-      expect(res.body.some((i: any) => i.id === invitationId)).toBe(false);
+      expect(res.body.some((i: { id: string }) => i.id === invitationId)).toBe(false);
     });
   });
 });

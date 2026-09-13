@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Receipt, Download } from 'lucide-react';
 import { Button } from '../../../components/ui/button';
 import { useLanguage } from '../../../contexts/LanguageContext';
@@ -16,7 +16,6 @@ export default function TransactionsPage() {
 
   const [transactions, setTransactions] = useState<PaymentTransactionDto[]>([]);
   const [stats, setStats] = useState<PaymentStatsDto | null>(null);
-  const [total, setTotal] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
 
   const [search, setSearch] = useState('');
@@ -36,7 +35,6 @@ export default function TransactionsPage() {
       ]);
 
       setTransactions(txRes.transactions);
-      setTotal(txRes.total);
       setStats(statsRes);
     } catch (err) {
       console.error('Failed to load transactions data', err);

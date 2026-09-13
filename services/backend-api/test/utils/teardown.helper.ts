@@ -1,4 +1,5 @@
 import { PrismaService } from '../../src/prisma/prisma.service';
+import { Prisma } from '../../src/generated/prisma/client';
 
 export interface CleanDatabaseOptions {
   userIds?: string[];
@@ -170,13 +171,13 @@ export async function cleanDatabase(
     }
 
     // 8. Cleanup Test Tariff Plans
-    const planConditions: Array<{ code: string } | { code: { startsWith: string } }> = [
+    const planConditions: Prisma.TariffPlanWhereInput[] = [
       { code: { startsWith: 'TEST_' } },
       { code: { startsWith: 'PLAN_' } },
       { code: 'CUSTOM_ULTRA' },
     ];
     if (planCodes.length > 0) {
-      planConditions.push({ code: { in: planCodes } } as any);
+      planConditions.push({ code: { in: planCodes } });
     }
     await prisma.tariffPlan.deleteMany({
       where: {
@@ -185,13 +186,13 @@ export async function cleanDatabase(
     });
 
     // 9. Cleanup Test Navigation Items
-    const navConditions: Array<{ key: string } | { key: { startsWith: string } }> = [
+    const navConditions: Prisma.NavigationItemWhereInput[] = [
       { key: { startsWith: 'analytics_' } },
       { key: { startsWith: 'custom_' } },
       { key: { startsWith: 'test_' } },
     ];
     if (navigationKeys.length > 0) {
-      navConditions.push({ key: { in: navigationKeys } } as any);
+      navConditions.push({ key: { in: navigationKeys } });
     }
     await prisma.navigationItem.deleteMany({
       where: {

@@ -92,7 +92,7 @@ export function TransactionsTable({ transactions, isLoading, isUk }: Transaction
         variant="outline"
         className={`text-[10px] uppercase font-bold tracking-wider ${
           isEnterprise
-            ? 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/30'
+            ? 'bg-primary/20 text-primary border-primary/40'
             : isPro
               ? 'bg-primary/10 text-primary border-primary/30'
               : 'bg-muted text-muted-foreground'

@@ -59,14 +59,29 @@ This master skill synthesizes and enforces ALL project frontend skills and rules
 
 ### 💎 Iron Laws of Frontend Engineering
 
-1. **Component Modularity Budget (<250–300 lines)**: Monolithic components (500–1000+ lines) are strictly prohibited. Decompose into `*View.tsx`, `*Header.tsx`, `*Table.tsx`, `*Row.tsx`, `*Dialog.tsx`, `*EmptyState.tsx`, `use*.ts`.
+1. **Component Modularity Budget (<250–300 lines)**: Monolithic components (500–1000+ lines) are strictly prohibited. Decompose into `*View.tsx`, `*Header.tsx`, `*Table.tsx`, `*Row.tsx`, `*Dialog.tsx`, `*EmptyState.tsx`, `use*.ts`, and modular utility directories.
 2. **100% Solid Sticky Headers & Modals**: Sticky headers, modal headers/footers **MUST** use `bg-card`, `bg-muted`, `bg-background` — never semi-transparent `bg-*/40`, `bg-*/50`.
-3. **Zero Off-Scheme Palette Colors**: NEVER `purple-*`, `violet-*`, `fuchsia-*`, `pink-*`. Only semantic tokens: `primary`, `border`, `card`, `muted`, `background`, `destructive`.
-4. **Zero Duplicate Action / CTA Buttons**: Empty state CTA = hidden header CTA. Never both simultaneously.
+3. **Zero Off-Scheme Palette Colors**: NEVER `purple-*`, `violet-*`, `fuchsia-*`, `pink-*`, `emerald-*` or ad-hoc colors. Only semantic design tokens: `primary`, `secondary`, `destructive`, `muted`, `accent`, `card`, `background`, `border` with alpha channels (`border-primary/20 bg-primary/10 text-primary`).
+4. **Zero Duplicate Action / CTA Buttons**: Empty state CTA = hidden header CTA. If an empty state card provides a CTA (e.g. "Add Channel", "Create Feed"), the toolbar/header button MUST be hidden (`items.length === 0 && !search ? null : <Button ...>`).
 5. **Zero Duplicate API Requests**: `useRef` guards (`isFetchingRef`, `lastFetchedTokenRef`). No `React.StrictMode` double-mounting.
-6. **100% Bilingual Internationalization (i18n)**: Zero hardcoded strings. All labels, toasts, modals, tooltips, placeholders, HTML titles (`title={t('...')}`) in both `locales/uk/*.json` and `locales/en/*.json`.
-7. **No Arbitrary Timeouts**: Playwright tests use condition-based waiting (`waitForResponse`, `waitForSelector`, `expect.poll`).
-8. **Architecture > Speed**: Correct modular design from day one. "Working" is not enough.
+6. **Zero Silent Failures (`catch {}`)**: NEVER write empty `catch {}` or ignore errors silently. Any `catch` block MUST either display a localized toast (`toast.error(getErrorMessage(err, t))`) or log structured diagnostics (`console.warn('[Module:Context] Description:', err)`).
+7. **100% Bilingual Internationalization (i18n)**: Zero hardcoded strings. All labels, toasts, modals, tooltips, placeholders, and HTML titles (`title={t('...')}`) in both `locales/uk/*.json` and `locales/en/*.json`. Numerical metrics like percentages must be formatted cleanly (`Math.round(percent)`).
+8. **No Arbitrary Timeouts**: Playwright tests use condition-based waiting (`waitForResponse`, `waitForSelector`, `expect.poll`).
+9. **Architecture > Speed**: Correct modular design from day one. "Working" is not enough.
+
+---
+
+### 🚫 Anti-Patterns & Remediation Lessons (Learned from Audits)
+
+| ❌ Severe Anti-Pattern                                             | Why It Fails                                                               | ✅ Mandatory Correct Implementation                                                                                            |
+| :----------------------------------------------------------------- | :------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------- |
+| **Ad-hoc Palette Colors** (`purple-600`, `violet-500`, `pink-500`) | Breaks theme harmony in dark/light mode; causes visual fragmentation.      | **Use Semantic Tokens**: `bg-primary/10 text-primary border-primary/20`, `bg-muted text-muted-foreground`.                     |
+| **Duplicate CTA in Header & Empty State**                          | User sees two identical "Add" buttons simultaneously when list is empty.   | **Conditionally Hide Header CTA**: `if (items.length === 0 && !search) return null;` in toolbar.                               |
+| **Empty `catch {}` Blocks**                                        | Hides network, parsing, or state errors; leaves UI in broken/frozen state. | **Structured Log or Toast**: `console.warn('[ExportChannels:load] Failed:', err);` or `toast.error(getErrorMessage(err, t));`. |
+| **God-Components (400–1000+ lines)**                               | Unmaintainable, untestable, causes excessive re-renders.                   | **Strict Decomposition**: Split into `<View>`, `<Header>`, `<Table>`, `<Row>`, `<Dialog>`, `<EmptyState>`, `useHook`.          |
+| **Hardcoded English/Ukrainian Strings**                            | Incomplete localization; raw strings leak when user switches language.     | **100% i18n**: All text in `t('ns:key')`. Keys registered in both `uk` and `en` JSON dictionaries.                             |
+| **Untranslated HTML Titles** (`title="Edit"`)                      | Browser tooltips display English in Ukrainian interface.                   | **Translated Attributes**: `title={t('common:edit')}`, `aria-label={t('common:delete')}`.                                      |
+| **Raw Floating Percentages** (`33.33333333333333%`)                | Looks unpolished and breaks table formatting.                              | **Clean Formatting**: `Math.round(percent)` or `Number(percent.toFixed(1))`.                                                   |
 
 ---
 

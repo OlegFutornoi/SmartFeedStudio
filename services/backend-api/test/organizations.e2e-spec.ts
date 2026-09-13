@@ -6,6 +6,12 @@ import { PrismaService } from '../src/prisma/prisma.service';
 import { GlobalHttpExceptionFilter } from '../src/common/filters/http-exception.filter';
 import { cleanDatabase } from './utils/teardown.helper';
 
+interface MemberSummaryRow {
+  id: string;
+  userEmail?: string;
+  email?: string;
+}
+
 describe('Organizations & Team Seats Quota Policy (E2E)', () => {
   let app: INestApplication;
   let prisma: PrismaService;
@@ -289,7 +295,9 @@ describe('Organizations & Team Seats Quota Policy (E2E)', () => {
         .get(`/api/organizations/${orgId}/members`)
         .set('Authorization', `Bearer ${ownerToken}`)
         .expect(200);
-      const m1 = membersAfter1.body.find((m: any) => m.userEmail === colleague1Email);
+      const m1 = (membersAfter1.body as MemberSummaryRow[]).find(
+        (m) => m.userEmail === colleague1Email,
+      );
       colleague1MemberId = m1.id;
 
       // Invite Colleague 2
@@ -460,8 +468,8 @@ describe('Organizations & Team Seats Quota Policy (E2E)', () => {
         .get(`/api/organizations/${orgId}/members`)
         .set('Authorization', `Bearer ${ownerToken}`)
         .expect(200);
-      const colleague2Member = membersList.body.find(
-        (m: any) => m.email === colleague2Email || m.userEmail === colleague2Email,
+      const colleague2Member = (membersList.body as MemberSummaryRow[]).find(
+        (m) => m.email === colleague2Email || m.userEmail === colleague2Email,
       );
       if (colleague2Member) {
         await request(app.getHttpServer())

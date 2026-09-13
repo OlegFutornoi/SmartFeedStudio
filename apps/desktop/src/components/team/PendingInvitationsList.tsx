@@ -31,8 +31,8 @@ export const PendingInvitationsList: React.FC<PendingInvitationsListProps> = ({
       await navigator.clipboard.writeText(url);
       setCopiedId(id);
       setTimeout(() => setCopiedId(null), 2500);
-    } catch {
-      // Fallback
+    } catch (e) {
+      console.warn('[PendingInvitationsList:handleCopy] Failed to copy invitation URL:', e);
     }
   };
 

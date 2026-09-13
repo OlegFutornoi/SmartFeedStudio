@@ -63,7 +63,8 @@ export function useImageDownloader() {
             } else {
               failedCount++;
             }
-          } catch {
+          } catch (e) {
+            console.warn(`[useImageDownloader] Failed to download image ${item.url}:`, e);
             failedCount++;
           }
 

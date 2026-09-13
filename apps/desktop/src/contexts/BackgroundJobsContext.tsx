@@ -66,14 +66,14 @@ export function BackgroundJobsProvider({ children }: { children: React.ReactNode
               await refreshQuotas(true);
               emitDataSync('all', { force: true });
             }
-          } catch {
-            // Ignore finished job fetch error
+          } catch (err) {
+            console.warn('[BackgroundJobs] Finished job status fetch error:', err);
           }
           trackedJobIdsRef.current.delete(id);
         }
       }
-    } catch {
-      // Ignore background network errors
+    } catch (err) {
+      console.warn('[BackgroundJobs] Polling error:', err);
     } finally {
       isPollingRef.current = false;
     }

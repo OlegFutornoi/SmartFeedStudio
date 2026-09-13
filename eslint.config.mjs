@@ -16,6 +16,7 @@ export default tseslint.config(
       '**/*.d.ts',
       '.agents/skills/**',
       '.claude/**',
+      'scripts/**',
     ],
   },
   js.configs.recommended,
