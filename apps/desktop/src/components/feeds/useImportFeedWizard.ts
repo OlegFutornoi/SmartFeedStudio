@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import type { SupplierDto, CreateSupplierDto } from '@smartfeed/shared';
 import { useTranslation } from '@/i18n';
 import { useQuotas } from '@/hooks/useQuotas';
@@ -16,6 +16,7 @@ import type { WizardStep } from './WizardDialogHeader';
 import { emitDataSync } from '@/lib/syncEvents';
 
 interface UseImportFeedWizardOptions {
+  isOpen: boolean;
   suppliers: SupplierDto[];
   initialSupplierId?: string;
   onSuccess?: () => void;
@@ -23,6 +24,7 @@ interface UseImportFeedWizardOptions {
 }
 
 export function useImportFeedWizard({
+  isOpen,
   suppliers,
   initialSupplierId,
   onSuccess,
@@ -80,14 +82,29 @@ export function useImportFeedWizard({
 
   const isQuotaExceeded = !isUnlimited && totalSelectedSkus > remainingQuota;
 
-  // Sync initialSupplierId when dialog opens or suppliers change
+  const prevIsOpenRef = useRef(isOpen);
+  const prevInitialSupplierIdRef = useRef(initialSupplierId);
+
+  // Sync initialSupplierId only when dialog opens or initialSupplierId prop changes
   useEffect(() => {
-    if (initialSupplierId) {
-      setSelectedSupplierId(initialSupplierId);
+    const justOpened = isOpen && !prevIsOpenRef.current;
+    const initialChanged = initialSupplierId !== prevInitialSupplierIdRef.current;
+
+    prevIsOpenRef.current = isOpen;
+    prevInitialSupplierIdRef.current = initialSupplierId;
+
+    if (justOpened || initialChanged) {
+      if (initialSupplierId) {
+        setSelectedSupplierId(initialSupplierId);
+      } else if (localSuppliers.length > 0) {
+        setSelectedSupplierId((prev) => {
+          return localSuppliers.some((s) => s.id === prev) ? prev : localSuppliers[0].id;
+        });
+      }
     } else if (localSuppliers.length > 0 && !selectedSupplierId) {
       setSelectedSupplierId(localSuppliers[0].id);
     }
-  }, [initialSupplierId, localSuppliers, selectedSupplierId]);
+  }, [isOpen, initialSupplierId, localSuppliers, selectedSupplierId]);
 
   const handleSaveSupplier = async (dto: CreateSupplierDto) => {
     try {
@@ -117,6 +134,7 @@ export function useImportFeedWizard({
     setIsImporting(false);
     setImportResult(null);
     setImportError(null);
+    setSelectedSupplierId(initialSupplierId || (suppliers[0]?.id ?? ''));
   };
 
   const handleClose = () => {
@@ -127,6 +145,7 @@ export function useImportFeedWizard({
   const performAnalysis = async (customContent?: string, customUrl?: string): Promise<boolean> => {
     setIsAnalyzing(true);
     setAnalysisError(null);
+    setAnalysis(null);
     try {
       let result: FeedAnalysisResult;
       const targetUrl = customUrl ?? feedUrl;
@@ -134,14 +153,18 @@ export function useImportFeedWizard({
 
       if (sourceType === 'URL') {
         if (!targetUrl.trim()) {
-          setAnalysisError('Введіть посилання на фід');
+          setAnalysisError(
+            t('suppliers:enterFeedUrl', { defaultValue: 'Введіть посилання на фід' }),
+          );
           setIsAnalyzing(false);
           return false;
         }
         result = await analyzeFeedUrl(targetUrl.trim(), selectedSupplierId || undefined);
       } else {
         if (!targetContent) {
-          setAnalysisError('Оберіть файл для імпорту');
+          setAnalysisError(
+            t('suppliers:chooseFileForImport', { defaultValue: 'Оберіть файл для імпорту' }),
+          );
           setIsAnalyzing(false);
           return false;
         }
@@ -153,8 +176,48 @@ export function useImportFeedWizard({
       }
       return true;
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Помилка аналізу фіду';
-      setAnalysisError(msg);
+      const msg = err instanceof Error ? err.message : String(err);
+      let localized = t('suppliers:errorFeedGeneric', {
+        defaultValue:
+          'Помилка аналізу або завантаження фіду. Перевірте URL-адресу або спробуйте завантажити файл безпосередньо.',
+      });
+
+      if (msg === 'FEED_TIMEOUT' || msg.includes('timeout') || msg.includes('504')) {
+        localized = t('suppliers:errorFeedTimeout', {
+          defaultValue:
+            'Час очікування відповіді сервера фіду вичерпано. Сервер постачальника надто довго формує файл або недоступний.',
+        });
+      } else if (msg === 'FEED_NOT_FOUND' || msg.includes('404')) {
+        localized = t('suppliers:errorFeedNotFound', {
+          defaultValue:
+            'Фід за вказаним URL не знайдено (помилка 404). Перевірте правильність посилання.',
+        });
+      } else if (msg === 'FEED_EMPTY' || msg.includes('empty')) {
+        localized = t('suppliers:errorFeedEmpty', {
+          defaultValue: 'Сервер постачальника повернув порожню відповідь. Перевірте URL-адресу.',
+        });
+      } else if (
+        msg === 'FEED_SERVER_ERROR' ||
+        msg.includes('500') ||
+        msg.includes('502') ||
+        msg.includes('503')
+      ) {
+        localized = t('suppliers:errorFeedServerError', {
+          defaultValue:
+            'Сервер постачальника повернув помилку при спробі завантажити фід. Спробуйте пізніше.',
+        });
+      } else if (
+        msg === 'FEED_NETWORK_ERROR' ||
+        msg.includes('Failed to fetch') ||
+        msg.includes('NetworkError')
+      ) {
+        localized = t('suppliers:errorFeedNetwork', {
+          defaultValue:
+            'Не вдалося завантажити фід. Перевірте підключення до інтернету або доступність сервера постачальника.',
+        });
+      }
+
+      setAnalysisError(localized);
       return false;
     } finally {
       setIsAnalyzing(false);
@@ -211,7 +274,7 @@ export function useImportFeedWizard({
         supplierId: selectedSupplierId,
         sourceType,
         sourceUrl: sourceType === 'URL' ? feedUrl.trim() : undefined,
-        fileContent: sourceType === 'FILE' ? fileContent! : undefined,
+        fileContent: fileContent || analysis?.rawContent || undefined,
         fileName: fileName || undefined,
         selectedCategoryIds: selectedCategoryIds.length > 0 ? selectedCategoryIds : undefined,
         autoUpdatePrices,

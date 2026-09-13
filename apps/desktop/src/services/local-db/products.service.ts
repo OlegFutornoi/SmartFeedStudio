@@ -7,16 +7,18 @@ import type {
 import { invokeLocalDb } from './client';
 
 export class LocalProductsService {
-  async getProducts(params: {
-    page?: number;
-    limit?: number;
-    search?: string;
-    category?: string;
-    supplierId?: string;
-    minPrice?: number;
-    maxPrice?: number;
-    inStockOnly?: boolean;
-  }): Promise<{
+  async getProducts(
+    params: {
+      page?: number;
+      limit?: number;
+      search?: string;
+      category?: string;
+      supplierId?: string;
+      minPrice?: number;
+      maxPrice?: number;
+      inStockOnly?: boolean;
+    } = {},
+  ): Promise<{
     items: ProductDto[];
     total: number;
     page: number;

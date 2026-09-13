@@ -56,7 +56,7 @@ export const ProductsTable: React.FC<ProductsTableProps> = ({
                   data-testid="select-all-products-checkbox"
                   checked={isAllSelected}
                   onChange={onToggleSelectAll}
-                  className="rounded border-input text-primary focus:ring-primary h-4 w-4 cursor-pointer"
+                  className="rounded border-input accent-primary focus:ring-primary h-4 w-4 cursor-pointer"
                 />
               </th>
               <th className="py-3 px-2 w-12 bg-card">{t('catalogs:colImage')}</th>

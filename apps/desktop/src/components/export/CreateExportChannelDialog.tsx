@@ -242,7 +242,7 @@ export function CreateExportChannelDialog({
               id="reverseMarkupCheck"
               checked={applyReverseMarkup}
               onChange={(e) => setApplyReverseMarkup(e.target.checked)}
-              className="mt-1 rounded border-border text-primary focus:ring-primary h-4 w-4"
+              className="mt-1 rounded border-border accent-primary focus:ring-primary h-4 w-4 cursor-pointer"
             />
             <div className="space-y-0.5">
               <label

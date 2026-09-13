@@ -59,7 +59,7 @@ export const ProductTableRow: React.FC<ProductTableRowProps> = ({
           data-testid={`product-checkbox-${product.id}`}
           checked={isSelected}
           onChange={() => onToggleSelect(product.id)}
-          className="rounded border-input text-primary focus:ring-primary h-4 w-4 cursor-pointer"
+          className="rounded border-input accent-primary focus:ring-primary h-4 w-4 cursor-pointer"
         />
       </td>
 

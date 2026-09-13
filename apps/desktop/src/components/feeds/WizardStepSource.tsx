@@ -160,8 +160,28 @@ export function WizardStepSource({
             </p>
           </div>
 
+          {/* Loading Progress State */}
+          {isAnalyzing && (
+            <div className="p-3.5 rounded-lg bg-primary/10 border border-primary/20 flex items-center gap-3 text-xs text-primary">
+              <Loader2 className="size-4 animate-spin shrink-0 text-primary" />
+              <div>
+                <p className="font-medium">
+                  {t('suppliers:analyzingFeedProgressTitle', {
+                    defaultValue: 'Завантаження та аналіз структури фіду...',
+                  })}
+                </p>
+                <p className="text-[11px] text-muted-foreground mt-0.5">
+                  {t('suppliers:analyzingFeedProgressHint', {
+                    defaultValue:
+                      'Великі каталоги (30+ МБ) можуть завантажуватися 10–20 секунд. Зачекайте...',
+                  })}
+                </p>
+              </div>
+            </div>
+          )}
+
           {/* Inline Analysis Result Card */}
-          {analysis && !isAnalyzing && <FeedAnalysisCard analysis={analysis} />}
+          {analysis && !isAnalyzing && !error && <FeedAnalysisCard analysis={analysis} />}
         </div>
       ) : (
         <div className="space-y-3">

@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsEmail, IsEnum, IsOptional, IsString, MinLength } from 'class-validator';
-import { Role, PlanType, AccountType, CreateUserByAdminDto } from '@smartfeed/shared';
+import { Role, PlanType, AccountType } from '@smartfeed/shared';
 
 export class CreateUserByAdminRequestDto {
   @ApiProperty({ example: 'manager@company.com', description: 'User email address' })

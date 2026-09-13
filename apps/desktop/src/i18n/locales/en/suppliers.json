@@ -157,5 +157,15 @@
   "noCategoriesSelectedBtnTooltip": "Select at least one category to proceed",
   "feedLimitReachedTitle": "Feed sources limit reached",
   "feedLimitReachedDesc": "Your current plan allows a limited number of feed sources. To import a new feed, upgrade your plan or remove an existing source.",
-  "feedLimitReachedError": "Feed sources limit reached. Upgrade your plan or remove an existing feed."
+  "feedLimitReachedError": "Feed sources limit reached. Upgrade your plan or remove an existing feed.",
+  "enterFeedUrl": "Enter feed URL",
+  "chooseFileForImport": "Choose file to import",
+  "errorFeedTimeout": "Feed server timed out. The supplier server is taking too long to generate the feed or is unreachable.",
+  "errorFeedNotFound": "Feed not found at the specified URL (404 error). Please check the link.",
+  "errorFeedEmpty": "Supplier server returned an empty response. Please verify the URL.",
+  "errorFeedServerError": "Supplier server returned an error while fetching the feed. Please try again later.",
+  "errorFeedNetwork": "Failed to fetch feed. Please check your network connection or supplier server availability.",
+  "errorFeedGeneric": "Error loading or analyzing feed. Please check the URL or try uploading the file directly.",
+  "analyzingFeedProgressTitle": "Downloading and analyzing feed structure...",
+  "analyzingFeedProgressHint": "Large catalogs (30+ MB) may take 10–20 seconds to download. Please wait..."
 }

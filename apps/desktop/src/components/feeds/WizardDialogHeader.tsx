@@ -63,6 +63,8 @@ export const WizardDialogHeader: React.FC<WizardDialogHeaderProps> = ({ step, on
         <button
           type="button"
           onClick={onClose}
+          data-testid="wizard-close-btn"
+          aria-label={t('common:close', { defaultValue: 'Закрити' })}
           className="text-muted-foreground hover:text-foreground transition-colors p-1 rounded-md hover:bg-secondary"
         >
           <X className="size-4" />

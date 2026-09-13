@@ -9,12 +9,24 @@ import { localDb } from '../../services/local-db';
 import { isTauri } from '../runtime';
 import { fetchWithAuth } from './client';
 
+export interface GetProductsParams {
+  page?: number;
+  limit?: number;
+  search?: string;
+  category?: string;
+  supplierId?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  inStockOnly?: boolean;
+  [key: string]: unknown;
+}
+
 export async function getProducts(
-  params?: Record<string, string | number | boolean>,
+  params?: GetProductsParams,
   token?: string,
 ): Promise<{ items: ProductDto[]; total: number; page: number; pageSize: number }> {
   if (isTauri()) {
-    const res = await localDb.products.getProducts(params as any);
+    const res = await localDb.products.getProducts(params || {});
     return {
       items: res.items,
       total: res.total,
@@ -40,7 +52,7 @@ export async function getProducts(
     console.warn('[ApiClient] Remote call failed, using local fallback:', err);
   }
 
-  const res = await localDb.products.getProducts(params as any);
+  const res = await localDb.products.getProducts(params || {});
   return {
     items: res.items,
     total: res.total,

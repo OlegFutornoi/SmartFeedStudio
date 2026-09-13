@@ -65,6 +65,7 @@ export function ImportFeedWizardDialog({
     handleNextFromSupplier,
     handleStartImport,
   } = useImportFeedWizard({
+    isOpen,
     suppliers,
     initialSupplierId,
     onSuccess,

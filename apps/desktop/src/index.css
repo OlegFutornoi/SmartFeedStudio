@@ -3,6 +3,11 @@
 @tailwind utilities;
 
 @layer base {
+  input[type='checkbox'],
+  input[type='radio'] {
+    accent-color: hsl(var(--primary));
+  }
+
   :root {
     --background: 0 0% 100%;
     --foreground: 240 10% 3.9%;

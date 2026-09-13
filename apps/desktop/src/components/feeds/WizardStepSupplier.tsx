@@ -121,7 +121,12 @@ export function WizardStepSupplier({
             </SelectTrigger>
             <SelectContent>
               {suppliers.map((s) => (
-                <SelectItem key={s.id} value={s.id} className="text-xs cursor-pointer">
+                <SelectItem
+                  key={s.id}
+                  value={s.id}
+                  className="text-xs cursor-pointer"
+                  data-testid={`wizard-supplier-option-${s.id}`}
+                >
                   <div className="flex items-center gap-2">
                     <span className="font-medium text-foreground">{s.name}</span>
                     <span className="text-muted-foreground font-mono text-[10px]">({s.code})</span>
@@ -142,7 +147,10 @@ export function WizardStepSupplier({
 
       {/* Selected Supplier Markup Card */}
       {selectedSupplier && (
-        <div className="p-3 rounded-lg bg-secondary/30 border border-border/50 space-y-2 text-xs">
+        <div
+          data-testid="wizard-selected-supplier-card"
+          className="p-3 rounded-lg bg-secondary/30 border border-border/50 space-y-2 text-xs"
+        >
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <span className="font-semibold text-foreground">{selectedSupplier.name}</span>
@@ -152,6 +160,7 @@ export function WizardStepSupplier({
             </div>
             <Badge
               variant="outline"
+              data-testid="wizard-selected-supplier-markup"
               className="text-[11px] text-emerald-400 bg-emerald-500/10 border-emerald-500/20"
             >
               <Percent className="size-3 mr-1 text-primary" />
@@ -188,9 +197,10 @@ export function WizardStepSupplier({
           <label className="flex items-center gap-2.5 p-2 rounded-md hover:bg-secondary/30 transition-colors cursor-pointer">
             <input
               type="checkbox"
+              data-testid="wizard-auto-update-prices-checkbox"
               checked={autoUpdatePrices}
               onChange={(e) => setAutoUpdatePrices(e.target.checked)}
-              className="size-4 rounded border-border text-primary focus:ring-primary"
+              className="size-4 rounded border-border accent-primary focus:ring-primary cursor-pointer"
             />
             <div className="text-xs">
               <div className="font-medium text-foreground flex items-center gap-1.5">
@@ -210,9 +220,10 @@ export function WizardStepSupplier({
           <label className="flex items-center gap-2.5 p-2 rounded-md hover:bg-secondary/30 transition-colors cursor-pointer">
             <input
               type="checkbox"
+              data-testid="wizard-auto-update-stocks-checkbox"
               checked={autoUpdateStocks}
               onChange={(e) => setAutoUpdateStocks(e.target.checked)}
-              className="size-4 rounded border-border text-primary focus:ring-primary"
+              className="size-4 rounded border-border accent-primary focus:ring-primary cursor-pointer"
             />
             <div className="text-xs">
               <div className="font-medium text-foreground flex items-center gap-1.5">

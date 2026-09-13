@@ -38,6 +38,7 @@ graph LR
 | [`05_product_card_and_manual_creation_module.md`](file:///Users/oleg/AQA/SmartFeedStudio/plans/active/05_product_card_and_manual_creation_module.md) | **Картка товару та ручне створення**: Drawer з 5 вкладками, чернетки, генератор SKU         |   🗂️ UI & Logic   |
 | [`06_roadmap_releases_and_testing_strategy.md`](file:///Users/oleg/AQA/SmartFeedStudio/plans/active/06_roadmap_releases_and_testing_strategy.md)     | **Дорожня карта релізів (1-4) & QA**: критерії готовності (DoD), Jest E2E, Playwright       |  🚀 Roadmap & QA  |
 | [`07_tasks_execution_checklist.md`](file:///Users/oleg/AQA/SmartFeedStudio/plans/active/07_tasks_execution_checklist.md)                             | **Чеклист виконання задач**: структурований перелік задач з відмітками `[x]` / `[ ]`        | 📋 Task Execution |
+| [`csv_websklad_import_fix.md`](file:///Users/oleg/AQA/SmartFeedStudio/plans/active/csv_websklad_import_fix.md)                                       | **Виправлення CSV парсингу (Websklad)**: RFC 4180 токенізатор, фікс категорій та цін        |  ⚡ Parser & Fix  |
 
 ---
 

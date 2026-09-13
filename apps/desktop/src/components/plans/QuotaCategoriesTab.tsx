@@ -121,7 +121,7 @@ export const QuotaCategoriesTab: React.FC<QuotaCategoriesTabProps> = ({
                         checked={isChecked}
                         disabled={isItemDeleting || isBulkDeleting}
                         onChange={() => onToggleCategory(cat.id)}
-                        className="h-4 w-4 rounded border-border text-destructive focus:ring-destructive cursor-pointer"
+                        className="h-4 w-4 rounded border-border accent-destructive focus:ring-destructive cursor-pointer"
                       />
                     </td>
                     <td className="p-3 font-medium text-foreground">

@@ -92,6 +92,19 @@ test.describe('Desktop App — Постачальники, Майстер Фід
       contactPhone: '+380501112233',
       website: 'https://livolo.ua',
     },
+    {
+      id: 'sup_test_2',
+      name: 'Mobioptom',
+      code: 'MOBI',
+      defaultMarginPercent: 0,
+      defaultFixedMarkup: 0,
+      isActive: true,
+      productsCount: 150,
+      activeFeedsCount: 0,
+      contactEmail: 'sales@mobioptom.com',
+      contactPhone: '+380509998877',
+      website: 'https://mobioptom.com',
+    },
   ];
 
   const mockFeedSources = [
@@ -295,6 +308,81 @@ test.describe('Desktop App — Постачальники, Майстер Фід
 
     // Click close to continue work without blocking
     await page.getByRole('button', { name: 'Продовжити роботу (закрити вікно)' }).click();
+  });
+
+  test('перемикання постачальника у майстрі імпорту фідів успішно обирає іншого постачальника, оновлює правила націнки та не скидає вибір', async ({
+    page,
+  }) => {
+    // Mock analyze-url endpoint
+    await page.route('**/api/feeds/analyze-url', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(mockAnalysis),
+      });
+    });
+
+    await page.goto('/suppliers');
+
+    // Click on "Підключити фід" on first supplier card (Livolo)
+    await page.getByTestId('supplier-card-import-btn-sup_test_1').click();
+
+    // Step 1: Fill feed URL and click Analyze
+    await page
+      .getByPlaceholder('https://supplier.com/products_feed.xml')
+      .fill('https://mobioptom.com/price/allcategories.xml');
+    await page.getByRole('button', { name: 'Аналізувати' }).click();
+    await expect(page.getByText('Фід успішно проаналізовано')).toBeVisible();
+    await page.getByRole('button', { name: 'Далі до постачальника' }).click();
+
+    // Step 2: Verify Step 2 is active
+    await expect(page.getByText('Постачальник та правила націнки')).toBeVisible();
+
+    // Verify initial selection is Livolo
+    const selectTrigger = page.getByTestId('wizard-supplier-select');
+    await expect(selectTrigger).toContainText('Livolo Офіційний');
+    const markupBadge = page.getByTestId('wizard-selected-supplier-markup');
+    await expect(markupBadge).toContainText('+25%');
+    await expect(markupBadge).toContainText('+100 ₴');
+
+    // Open supplier select dropdown
+    await selectTrigger.click();
+
+    // Click second supplier option (Mobioptom)
+    const mobiOption = page.getByTestId('wizard-supplier-option-sup_test_2');
+    await expect(mobiOption).toBeVisible();
+    await mobiOption.click();
+
+    // Assert that the select trigger updated to Mobioptom
+    await expect(selectTrigger).toContainText('Mobioptom');
+
+    // Assert that the selected supplier card updated to Mobioptom's markup (0%)
+    await expect(markupBadge).toContainText('0% (Базова ціна)');
+    const card = page.getByTestId('wizard-selected-supplier-card');
+    await expect(card).toContainText('MOBI');
+
+    // Click next to Step 3 (Preview)
+    await page.getByRole('button', { name: 'Переглянути товари' }).click();
+    await expect(page.getByText('Оберіть категорії для імпорту:')).toBeVisible();
+
+    // Click back to Step 2
+    await page.getByRole('button', { name: 'Назад' }).click();
+    await expect(page.getByText('Постачальник та правила націнки')).toBeVisible();
+
+    // Critical assertion: Supplier selection MUST NOT have reverted to Livolo!
+    await expect(selectTrigger).toContainText('Mobioptom');
+    await expect(markupBadge).toContainText('0% (Базова ціна)');
+
+    // Assert monochrome checkboxes (accent-primary class and checked state)
+    const priceCheckbox = page.getByTestId('wizard-auto-update-prices-checkbox');
+    const stockCheckbox = page.getByTestId('wizard-auto-update-stocks-checkbox');
+    await expect(priceCheckbox).toBeChecked();
+    await expect(stockCheckbox).toBeChecked();
+    await expect(priceCheckbox).toHaveClass(/accent-primary/);
+    await expect(stockCheckbox).toHaveClass(/accent-primary/);
+
+    // Close wizard
+    await page.getByTestId('wizard-close-btn').click();
   });
 
   test('блокування кнопки імпорту у майстрі фідів при перевищенні ліміту SKU та динамічне розблокування при знятті категорій', async ({
@@ -538,8 +626,8 @@ test.describe('Desktop App — Постачальники, Майстер Фід
     // Click confirm delete button in dialog
     await page.getByTestId('confirm-dialog-confirm-btn').click();
 
-    // Verify delete was triggered
-    expect(deleteCalled).toBe(true);
+    // Verify delete was triggered via condition polling
+    await expect.poll(() => deleteCalled).toBe(true);
   });
 
   test('диференціація дій URL vs FILE фідів, локалізація статусів та відсутність дублювання знака плюс на кнопці', async ({
@@ -838,5 +926,45 @@ test.describe('Desktop App — Постачальники, Майстер Фід
     // 4. Clicking the single button opens the create supplier dialog
     await emptyCreateBtn.click();
     await expect(page.getByRole('heading', { name: 'Новий постачальник' })).toBeVisible();
+  });
+
+  test('майстер імпорту фіду: коректна обробка помилок мережі/таймауту без накладання попереднього результату та без англійських рядків', async ({
+    page,
+  }) => {
+    // 1. First feed succeeds
+    await page.route('**/api/feeds/analyze-url', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(mockAnalysis),
+      });
+    });
+
+    await page.goto('/suppliers');
+    await page.getByTestId('supplier-card-import-btn-sup_test_1').click();
+
+    const input = page.getByPlaceholder('https://supplier.com/products_feed.xml');
+    await input.fill('https://livolo.kiev.ua/products_feed.xml');
+    await page.getByRole('button', { name: 'Аналізувати' }).click();
+
+    // Verify success card is visible
+    await expect(page.getByText('Фід успішно проаналізовано')).toBeVisible();
+
+    // 2. Mock fails with network timeout on second attempt
+    await page.route('**/api/feeds/analyze-url', async (route) => {
+      await route.abort('timedout');
+    });
+
+    await input.fill('https://broken-supplier.com/feed.xml');
+    await page.getByRole('button', { name: 'Аналізувати' }).click();
+
+    // 3. Assert green card from previous feed is completely gone
+    await expect(page.getByText('Фід успішно проаналізовано')).not.toBeVisible();
+
+    // 4. Assert localized error message is displayed and NO raw English "Failed to fetch" leaks into UI
+    await expect(
+      page.getByText(/Час очікування відповіді сервера фіду вичерпано|Не вдалося завантажити фід/),
+    ).toBeVisible();
+    await expect(page.getByText('Failed to fetch')).not.toBeVisible();
   });
 });

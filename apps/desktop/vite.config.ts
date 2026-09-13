@@ -24,21 +24,37 @@ function feedProxyPlugin(): Plugin {
             res.end('Missing url param');
             return;
           }
-          const targetUrl = decodeURIComponent(match[1]);
+          let targetUrl: string;
+          try {
+            targetUrl = decodeURIComponent(match[1]);
+            const parsed = new URL(targetUrl);
+            if (!['http:', 'https:'].includes(parsed.protocol)) {
+              throw new Error('Invalid protocol');
+            }
+          } catch {
+            res.writeHead(400, { 'Content-Type': 'text/plain' });
+            res.end('Invalid URL parameter');
+            return;
+          }
+
           try {
             const response = await fetch(targetUrl, {
               headers: {
-                'User-Agent': 'SmartFeedStudio/1.0',
+                'User-Agent':
+                  'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 SmartFeedStudio/1.0',
                 Accept: (req.headers['accept'] as string) || '*/*',
               },
-              signal: AbortSignal.timeout(3500),
+              signal: AbortSignal.timeout(120_000),
             });
 
-            res.writeHead(response.status, {
-              'Content-Type': response.headers.get('content-type') || 'application/octet-stream',
-              'Access-Control-Allow-Origin': '*',
-              'Cache-Control': 'public, max-age=86400',
-            });
+            if (!res.headersSent) {
+              res.writeHead(response.status, {
+                'Content-Type':
+                  response.headers.get('content-type') || 'application/xml; charset=utf-8',
+                'Access-Control-Allow-Origin': '*',
+                'Cache-Control': 'public, max-age=86400',
+              });
+            }
 
             if (response.body) {
               const arrayBuffer = await response.arrayBuffer();
@@ -48,10 +64,12 @@ function feedProxyPlugin(): Plugin {
             }
           } catch (err: unknown) {
             const msg = err instanceof Error ? err.message : 'Unknown proxy error';
-            res.writeHead(504, {
-              'Content-Type': 'text/plain',
-              'Access-Control-Allow-Origin': '*',
-            });
+            if (!res.headersSent) {
+              res.writeHead(504, {
+                'Content-Type': 'text/plain',
+                'Access-Control-Allow-Origin': '*',
+              });
+            }
             res.end(`Feed proxy timeout/error: ${msg}`);
           }
         },
