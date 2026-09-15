@@ -41,9 +41,11 @@ export const ProductsView: React.FC = () => {
   const loadFilterOptions = useCallback(async () => {
     try {
       const sups = await localDb.suppliers.getSuppliers();
-      setSuppliers(sups);
+      setSuppliers(Array.isArray(sups) ? sups : []);
       const catSummaries = await localDb.products.getCategoriesSummary();
-      const uniqueCats = Array.from(new Set(catSummaries.map((c) => c.nameUk))).filter(Boolean);
+      const uniqueCats = Array.isArray(catSummaries)
+        ? Array.from(new Set(catSummaries.map((c) => c.nameUk))).filter(Boolean)
+        : [];
       setCategories(uniqueCats);
     } catch (e) {
       console.warn('[ProductsView:loadFilterOptions] Failed to load filter options:', e);

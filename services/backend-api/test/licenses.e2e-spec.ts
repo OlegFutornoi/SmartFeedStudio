@@ -169,41 +169,42 @@ describe('Licenses & Tariff Plan Expiration Policy (E2E)', () => {
       const starterPlan = await prisma.tariffPlan.findUnique({ where: { code: 'STARTER' } });
       expect(starterPlan).toBeDefined();
 
-      // Admin updates STARTER plan duration from 7 to 14 days
-      await request(app.getHttpServer())
-        .patch(`/api/plans/${starterPlan!.id}`)
-        .set('Authorization', `Bearer ${adminToken}`)
-        .send({ durationDays: 14 })
-        .expect(200);
+      try {
+        // Admin updates STARTER plan duration from 7 to 14 days
+        await request(app.getHttpServer())
+          .patch(`/api/plans/${starterPlan!.id}`)
+          .set('Authorization', `Bearer ${adminToken}`)
+          .send({ durationDays: 14 })
+          .expect(200);
 
-      // Register new user under 14-day duration
-      const newDurationUser = {
-        email: 'duration.test@smartfeed.studio',
-        password: 'UserPassword123!',
-        fullName: '14-Day Duration Tester',
-      };
-      const regRes = await request(app.getHttpServer())
-        .post('/api/auth/register')
-        .send(newDurationUser)
-        .expect(201);
+        // Register new user under 14-day duration
+        const newDurationUser = {
+          email: 'duration.test@smartfeed.studio',
+          password: 'UserPassword123!',
+          fullName: '14-Day Duration Tester',
+        };
+        const regRes = await request(app.getHttpServer())
+          .post('/api/auth/register')
+          .send(newDurationUser)
+          .expect(201);
 
-      await new Promise((resolve) => setTimeout(resolve, 200));
+        await new Promise((resolve) => setTimeout(resolve, 200));
 
-      const licRes = await request(app.getHttpServer())
-        .get('/api/licenses/my')
-        .set('Authorization', `Bearer ${regRes.body.tokens.accessToken}`)
-        .expect(200);
+        const licRes = await request(app.getHttpServer())
+          .get('/api/licenses/my')
+          .set('Authorization', `Bearer ${regRes.body.tokens.accessToken}`)
+          .expect(200);
 
-      expect(licRes.body.daysRemaining).toBeGreaterThanOrEqual(13);
-      expect(licRes.body.daysRemaining).toBeLessThanOrEqual(14);
-      expect(licRes.body.tariffPlan.durationDays).toBe(14);
-
-      // Restore STARTER plan duration to 30
-      await request(app.getHttpServer())
-        .patch(`/api/plans/${starterPlan!.id}`)
-        .set('Authorization', `Bearer ${adminToken}`)
-        .send({ durationDays: 30 })
-        .expect(200);
+        expect(licRes.body.daysRemaining).toBeGreaterThanOrEqual(13);
+        expect(licRes.body.daysRemaining).toBeLessThanOrEqual(14);
+        expect(licRes.body.tariffPlan.durationDays).toBe(14);
+      } finally {
+        // Always restore STARTER plan duration to 30
+        await request(app.getHttpServer())
+          .patch(`/api/plans/${starterPlan!.id}`)
+          .set('Authorization', `Bearer ${adminToken}`)
+          .send({ durationDays: 30 });
+      }
     });
   });
 
