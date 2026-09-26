@@ -115,21 +115,28 @@ export class AcceptInvitationHandler implements ICommandHandler<
 
         this.logger.log(`Created new user from accepted invitation: ${targetUser.email}`);
       } else {
-        // User exists -> Security Verification
-        if (authenticatedUserId && authenticatedUserId !== targetUser.id) {
-          throw new ForbiddenException('Authenticated user email does not match invitation email');
-        }
-
-        if (!targetUser.isActive) {
-          throw new ForbiddenException('Обліковий запис деактивовано');
-        }
-
-        // If password was provided on the accept form, strictly verify against user password hash
-        if (password) {
+        // User exists -> Security Verification (Defense-in-Depth)
+        if (authenticatedUserId) {
+          if (authenticatedUserId !== targetUser.id) {
+            throw new ForbiddenException(
+              'Authenticated user email does not match invitation email',
+            );
+          }
+        } else {
+          // If user is not currently logged in, password is strictly required to verify account ownership
+          if (!password) {
+            throw new BadRequestException(
+              'Для підтвердження запрошення існуючого облікового запису необхідно ввести пароль',
+            );
+          }
           const isPasswordValid = await bcrypt.compare(password, targetUser.passwordHash);
           if (!isPasswordValid) {
             throw new UnauthorizedException('Невірний пароль для існуючого облікового запису');
           }
+        }
+
+        if (!targetUser.isActive) {
+          throw new ForbiddenException('Обліковий запис деактивовано');
         }
       }
 

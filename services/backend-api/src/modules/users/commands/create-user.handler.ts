@@ -33,32 +33,37 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand, Use
     const saltRounds = 10;
     const passwordHash = await bcrypt.hash(password, saltRounds);
 
-    // Persist user in DB
-    const user = await this.prisma.user.create({
-      data: {
-        email: normalizedEmail,
-        passwordHash,
-        fullName: fullName?.trim() || null,
-        role: role || Role.USER,
-      },
-    });
+    // Persist user and default organization atomically in DB
+    const { user, organization } = await this.prisma.$transaction(async (tx) => {
+      const createdUser = await tx.user.create({
+        data: {
+          email: normalizedEmail,
+          passwordHash,
+          fullName: fullName?.trim() || null,
+          role: role || Role.USER,
+        },
+      });
 
-    // Auto-create default Organization for the user
-    const defaultOrgName =
-      command.companyName?.trim() ||
-      (user.fullName ? `Компанія ${user.fullName}` : `Компанія ${normalizedEmail.split('@')[0]}`);
+      const defaultOrgName =
+        command.companyName?.trim() ||
+        (createdUser.fullName
+          ? `Компанія ${createdUser.fullName}`
+          : `Компанія ${normalizedEmail.split('@')[0]}`);
 
-    const organization = await this.prisma.organization.create({
-      data: {
-        name: defaultOrgName,
-        ownerId: user.id,
-        members: {
-          create: {
-            userId: user.id,
-            role: 'OWNER',
+      const createdOrg = await tx.organization.create({
+        data: {
+          name: defaultOrgName,
+          ownerId: createdUser.id,
+          members: {
+            create: {
+              userId: createdUser.id,
+              role: 'OWNER',
+            },
           },
         },
-      },
+      });
+
+      return { user: createdUser, organization: createdOrg };
     });
 
     this.logger.log(

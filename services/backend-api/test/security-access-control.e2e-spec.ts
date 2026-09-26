@@ -275,6 +275,24 @@ describe('Security & Access Control (RBAC/ABAC E2E)', () => {
         })
         .expect(401);
     });
+
+    it('ADVERSARIAL P0: should reject invitation accept for existing user if password is NOT provided and user is unauthenticated', async () => {
+      const invExistingRes = await request(app.getHttpServer())
+        .post(`/api/organizations/${ownerUser.orgId}/members`)
+        .set('Authorization', `Bearer ${ownerUser.token}`)
+        .send({
+          email: memberUser.email,
+          role: 'MEMBER',
+        })
+        .expect(201);
+
+      // Attempt to accept WITHOUT password and WITHOUT Bearer auth - MUST be rejected
+      const res = await request(app.getHttpServer()).post('/api/invitations/accept').send({
+        token: invExistingRes.body.token,
+      });
+
+      expect([400, 401]).toContain(res.status);
+    });
   });
 
   describe('4. Storage S3 Presigned URL Security & User Scoping', () => {

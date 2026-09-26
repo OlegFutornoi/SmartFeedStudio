@@ -8,6 +8,7 @@ import { WayForPayService } from './services/wayforpay.service';
 import { CreatePaymentInvoiceHandler } from './commands/create-payment-invoice.handler';
 import { HandleWayForPayWebhookHandler } from './commands/handle-wayforpay-webhook.handler';
 import { UpdatePaymentSettingsHandler } from './commands/update-payment-settings.handler';
+import { SimulateSandboxWebhookHandler } from './commands/simulate-sandbox-webhook.handler';
 
 // Query Handlers
 import { GetPaymentTransactionsHandler } from './queries/get-payment-transactions.handler';
@@ -18,6 +19,7 @@ export const CommandHandlers = [
   CreatePaymentInvoiceHandler,
   HandleWayForPayWebhookHandler,
   UpdatePaymentSettingsHandler,
+  SimulateSandboxWebhookHandler,
 ];
 
 export const QueryHandlers = [

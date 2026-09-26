@@ -284,11 +284,21 @@ describe('Team Invitations & Mail Service Life-cycle (E2E)', () => {
       expect(res.body.role).toBe('ADMIN');
     });
 
-    it('should allow existing user to accept without re-entering password', async () => {
+    it('should require password or authenticated session for existing user to accept', async () => {
+      // Unauthenticated without password should fail (defense-in-depth)
+      await request(app.getHttpServer())
+        .post('/api/invitations/accept')
+        .send({
+          token: invitationToken,
+        })
+        .expect(400);
+
+      // Verifying ownership via password succeeds
       const res = await request(app.getHttpServer())
         .post('/api/invitations/accept')
         .send({
           token: invitationToken,
+          password: 'ExistingPassword123!',
         })
         .expect(200);
 

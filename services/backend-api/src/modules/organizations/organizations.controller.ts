@@ -67,9 +67,16 @@ export class OrganizationsController {
     return this.queryBus.execute(new GetOrganizationMembersQuery(id, userId));
   }
 
+  /**
+   * @deprecated Use POST :id/invitations instead. Kept for backward compatibility.
+   */
   @Post(':id/members')
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Invite a team member (checks maxTeamSeats quota)' })
+  @ApiOperation({
+    summary: 'Invite a team member (checks maxTeamSeats quota) [Deprecated]',
+    description: 'Deprecated: Use POST :id/invitations instead.',
+    deprecated: true,
+  })
   @ApiResponse({ status: 201, description: 'Invitation created and link generated' })
   @ApiResponse({ status: 403, description: 'TEAM_SEATS_LIMIT_EXCEEDED when quota is exhausted' })
   async inviteMember(

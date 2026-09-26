@@ -37,92 +37,102 @@ export class CreateUserByAdminHandler implements ICommandHandler<
     // 2. Hash password
     const passwordHash = await bcrypt.hash(password, 10);
 
-    // 3. Create user
-    const user = await this.prisma.user.create({
-      data: {
-        email: normalizedEmail,
-        passwordHash,
-        fullName: fullName.trim(),
-        role,
-      },
-    });
+    // 3. Pre-checks & plan resolution
+    if (role === Role.USER && accountType === AccountType.MEMBER) {
+      if (!organizationId) {
+        throw new BadRequestException('organizationId is required when accountType is MEMBER');
+      }
+      const org = await this.prisma.organization.findUnique({
+        where: { id: organizationId },
+      });
+      if (!org) {
+        throw new NotFoundException(`Organization "${organizationId}" not found`);
+      }
+    }
 
-    // 4. Handle organization structure (only for Role.USER accounts)
-    let orgId: string | null = null;
+    const selectedPlan = planCode ?? PlanType.STARTER;
+    const limits = PLAN_LIMITS_MAP[selectedPlan] || PLAN_LIMITS_MAP[PlanType.STARTER];
+    const dbPlan =
+      role === Role.USER && accountType === AccountType.OWNER
+        ? await this.prisma.tariffPlan.findUnique({ where: { code: selectedPlan } })
+        : null;
 
-    if (role === Role.USER) {
-      if (accountType === AccountType.MEMBER) {
-        // Attach to an existing organization
-        if (!organizationId) {
-          throw new BadRequestException('organizationId is required when accountType is MEMBER');
-        }
-        const org = await this.prisma.organization.findUnique({
-          where: { id: organizationId },
-        });
-        if (!org) {
-          throw new NotFoundException(`Organization "${organizationId}" not found`);
-        }
-        await this.prisma.organizationMember.create({
-          data: { userId: user.id, organizationId, role: 'MEMBER' },
-        });
-        orgId = organizationId;
-      } else {
-        // Default (OWNER): Every user has an organization
-        const orgName =
-          companyName?.trim() ||
-          (user.fullName
-            ? `Компанія ${user.fullName}`
-            : `Компанія ${normalizedEmail.split('@')[0]}`);
-        const org = await this.prisma.organization.create({
-          data: {
-            name: orgName,
-            ownerId: user.id,
-            members: {
-              create: { userId: user.id, role: 'OWNER' },
+    // 4. Create user, organization structure, and license atomically
+    const { user, orgId } = await this.prisma.$transaction(async (tx) => {
+      const createdUser = await tx.user.create({
+        data: {
+          email: normalizedEmail,
+          passwordHash,
+          fullName: fullName.trim(),
+          role,
+        },
+      });
+
+      let assignedOrgId: string | null = null;
+
+      if (role === Role.USER) {
+        if (accountType === AccountType.MEMBER) {
+          await tx.organizationMember.create({
+            data: { userId: createdUser.id, organizationId: organizationId!, role: 'MEMBER' },
+          });
+          assignedOrgId = organizationId!;
+        } else {
+          const orgName =
+            companyName?.trim() ||
+            (createdUser.fullName
+              ? `Компанія ${createdUser.fullName}`
+              : `Компанія ${normalizedEmail.split('@')[0]}`);
+          const org = await tx.organization.create({
+            data: {
+              name: orgName,
+              ownerId: createdUser.id,
+              members: {
+                create: { userId: createdUser.id, role: 'OWNER' },
+              },
             },
-          },
-        });
-        orgId = org.id;
+          });
+          assignedOrgId = org.id;
+        }
+
+        if (accountType === AccountType.OWNER) {
+          const randomBytes = crypto.randomBytes(6).toString('hex').toUpperCase();
+          const licenseKey = `SF-${selectedPlan}-${randomBytes.slice(0, 4)}-${randomBytes.slice(4, 8)}-${randomBytes.slice(8, 12)}`;
+
+          const expiresAt = dbPlan?.durationDays
+            ? new Date(Date.now() + dbPlan.durationDays * 24 * 60 * 60 * 1000)
+            : null;
+
+          await tx.license.create({
+            data: {
+              userId: createdUser.id,
+              organizationId: assignedOrgId,
+              licenseKey,
+              planType: selectedPlan,
+              tariffPlanId: dbPlan?.id ?? null,
+              canCloudBackup: dbPlan?.canCloudBackup ?? limits.canCloudBackup,
+              maxXmlLimit: dbPlan?.maxXmlLimit ?? limits.maxXmlLimit,
+              aiCredits: dbPlan?.aiCredits ?? limits.aiCredits,
+              maxFeedsLimit: dbPlan?.maxFeedsLimit ?? limits.maxFeedsLimit,
+              maxChannelsLimit: dbPlan?.maxChannelsLimit ?? limits.maxChannelsLimit,
+              maxTeamSeats: dbPlan?.maxTeamSeats ?? limits.maxTeamSeats,
+              maxSuppliersLimit: dbPlan?.maxSuppliersLimit ?? limits.maxSuppliersLimit,
+              hasApiAccess: dbPlan?.hasApiAccess ?? limits.hasApiAccess,
+              hasFeedDiff: dbPlan?.hasFeedDiff ?? limits.hasFeedDiff,
+              hasWhiteLabel: dbPlan?.hasWhiteLabel ?? limits.hasWhiteLabel,
+              hasSso: dbPlan?.hasSso ?? limits.hasSso,
+              hasAuditLog: dbPlan?.hasAuditLog ?? limits.hasAuditLog,
+              isActive: true,
+              expiresAt,
+            },
+          });
+        }
       }
 
-      // 5. Auto-provision license only for OWNER accounts
+      return { user: createdUser, orgId: assignedOrgId };
+    });
+
+    if (role === Role.USER) {
       if (accountType === AccountType.OWNER) {
-        const selectedPlan = planCode ?? PlanType.STARTER;
-        const limits = PLAN_LIMITS_MAP[selectedPlan];
-
-        const dbPlan = await this.prisma.tariffPlan.findUnique({ where: { code: selectedPlan } });
-
-        const randomBytes = crypto.randomBytes(6).toString('hex').toUpperCase();
-        const licenseKey = `SF-${selectedPlan}-${randomBytes.slice(0, 4)}-${randomBytes.slice(4, 8)}-${randomBytes.slice(8, 12)}`;
-
-        const expiresAt = dbPlan?.durationDays
-          ? new Date(Date.now() + dbPlan.durationDays * 24 * 60 * 60 * 1000)
-          : null;
-
-        await this.prisma.license.create({
-          data: {
-            userId: user.id,
-            organizationId: orgId,
-            licenseKey,
-            planType: selectedPlan,
-            tariffPlanId: dbPlan?.id ?? null,
-            canCloudBackup: dbPlan?.canCloudBackup ?? limits.canCloudBackup,
-            maxXmlLimit: dbPlan?.maxXmlLimit ?? limits.maxXmlLimit,
-            aiCredits: dbPlan?.aiCredits ?? limits.aiCredits,
-            maxFeedsLimit: dbPlan?.maxFeedsLimit ?? limits.maxFeedsLimit,
-            maxChannelsLimit: dbPlan?.maxChannelsLimit ?? limits.maxChannelsLimit,
-            maxTeamSeats: dbPlan?.maxTeamSeats ?? limits.maxTeamSeats,
-            maxSuppliersLimit: dbPlan?.maxSuppliersLimit ?? limits.maxSuppliersLimit,
-            hasApiAccess: dbPlan?.hasApiAccess ?? limits.hasApiAccess,
-            hasFeedDiff: dbPlan?.hasFeedDiff ?? limits.hasFeedDiff,
-            hasWhiteLabel: dbPlan?.hasWhiteLabel ?? limits.hasWhiteLabel,
-            hasSso: dbPlan?.hasSso ?? limits.hasSso,
-            hasAuditLog: dbPlan?.hasAuditLog ?? limits.hasAuditLog,
-            isActive: true,
-            expiresAt,
-          },
-        });
-
         this.logger.log(
           `Admin created user (OWNER): id=${user.id}, email=${user.email}, plan=${selectedPlan}`,
         );

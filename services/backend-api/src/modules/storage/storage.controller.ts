@@ -13,7 +13,6 @@ import {
   CreateLocalBackupResultDto,
   ClearStorageCacheResultDto,
 } from '@smartfeed/shared';
-import { IsBoolean, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { GetDefaultWorkspacePathQuery } from './queries/get-default-workspace-path.query';
 import { GetWorkspaceInfoQuery } from './queries/get-workspace-info.query';
 import { GetStorageStatsQuery } from './queries/get-storage-stats.query';
@@ -24,56 +23,15 @@ import { RunDatabaseMaintenanceCommand } from './commands/run-database-maintenan
 import { ClearStorageCacheCommand } from './commands/clear-storage-cache.command';
 import { MigrateWorkspaceCommand } from './commands/migrate-workspace.command';
 import { SelectWorkspaceFolderCommand } from './commands/select-workspace-folder.command';
+import {
+  PresignedUrlDto,
+  InitWorkspaceRequestDto,
+  OpenFolderRequestDto,
+  WorkspaceActionRequestDto,
+  MigrateWorkspaceRequestDto,
+} from './dto';
 
-export class PresignedUrlDto {
-  @IsString()
-  @IsNotEmpty()
-  fileName: string;
-
-  @IsString()
-  @IsNotEmpty()
-  contentType: string;
-
-  @IsString()
-  @IsOptional()
-  folder?: string;
-}
-
-export class InitWorkspaceRequestDto {
-  @IsString()
-  @IsNotEmpty()
-  workspacePath: string;
-
-  @IsBoolean()
-  @IsOptional()
-  enableEncryption?: boolean;
-}
-
-export class OpenFolderRequestDto {
-  @IsString()
-  @IsNotEmpty()
-  path: string;
-}
-
-export class WorkspaceActionRequestDto {
-  @IsString()
-  @IsNotEmpty()
-  workspacePath: string;
-}
-
-export class MigrateWorkspaceRequestDto {
-  @IsString()
-  @IsNotEmpty()
-  currentPath: string;
-
-  @IsString()
-  @IsNotEmpty()
-  newPath: string;
-
-  @IsBoolean()
-  @IsOptional()
-  moveExistingData?: boolean;
-}
+export * from './dto';
 
 @ApiTags('Storage')
 @Controller('storage')

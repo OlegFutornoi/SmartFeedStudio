@@ -9,7 +9,6 @@ import {
   UseGuards,
   HttpCode,
   HttpStatus,
-  NotFoundException,
 } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
@@ -30,14 +29,13 @@ import { Roles } from '../auth/decorators/roles.decorator';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { CreatePaymentInvoiceCommand } from './commands/create-payment-invoice.command';
 import { HandleWayForPayWebhookCommand } from './commands/handle-wayforpay-webhook.command';
+import { SimulateSandboxWebhookCommand } from './commands/simulate-sandbox-webhook.command';
 import { UpdatePaymentSettingsCommand } from './commands/update-payment-settings.command';
 import { GetPaymentTransactionsQuery } from './queries/get-payment-transactions.query';
 import { GetPaymentStatsQuery } from './queries/get-payment-stats.query';
 import { GetPaymentSettingsQuery } from './queries/get-payment-settings.query';
 import { CreateCheckoutDto } from './dto/create-checkout.dto';
 import { SimulateSandboxWebhookDto } from './dto/simulate-sandbox-webhook.dto';
-import { PrismaService } from '../../prisma/prisma.service';
-import { WayForPayService } from './services/wayforpay.service';
 
 @ApiTags('Payments')
 @ApiBearerAuth()
@@ -46,8 +44,6 @@ export class PaymentsController {
   constructor(
     private readonly commandBus: CommandBus,
     private readonly queryBus: QueryBus,
-    private readonly prisma: PrismaService,
-    private readonly wayforpayService: WayForPayService,
   ) {}
 
   /**
@@ -82,47 +78,7 @@ export class PaymentsController {
     @CurrentUser('id') userId: string,
     @Body() body: SimulateSandboxWebhookDto,
   ) {
-    const tx = await this.prisma.paymentTransaction.findUnique({
-      where: { orderReference: body.orderReference },
-    });
-    if (!tx || tx.userId !== userId) {
-      throw new NotFoundException('Transaction not found or unauthorized');
-    }
-
-    const setting = await this.prisma.paymentSetting.findUnique({
-      where: { provider: PaymentProvider.WAYFORPAY },
-    });
-    const merchantAccount = setting?.merchantAccount || 'test_merch_n1';
-    const secretKey = setting?.merchantSecretKey || 'flk3409refn54t54t*FNJRET';
-
-    const cleanedPan = (body.cardPan || '').replace(/\D/g, '');
-    let finalStatus: 'Approved' | 'Declined' = body.status || 'Approved';
-    let finalReason = body.reason;
-
-    if (!body.status && cleanedPan) {
-      if (cleanedPan.endsWith('0002')) {
-        finalStatus = 'Declined';
-        finalReason = 'Відхилено банком-емітентом (Do Not Honor)';
-      } else if (cleanedPan.endsWith('0001')) {
-        finalStatus = 'Declined';
-        finalReason = 'Недостатньо коштів на картці (Insufficient Funds)';
-      }
-    }
-
-    const payload = this.wayforpayService.createSimulatedWebhookPayload(
-      merchantAccount,
-      secretKey,
-      tx.orderReference,
-      Number(tx.amount),
-      tx.currency,
-      finalStatus,
-      finalReason,
-      body.cardPan,
-      body.cardType,
-      body.issuerBank,
-    );
-
-    return this.commandBus.execute(new HandleWayForPayWebhookCommand(payload));
+    return this.commandBus.execute(new SimulateSandboxWebhookCommand(userId, body));
   }
 
   /**

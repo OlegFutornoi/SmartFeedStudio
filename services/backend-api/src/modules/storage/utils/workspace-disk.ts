@@ -148,8 +148,8 @@ export function readWorkspaceInfo(targetPath?: string): WorkspaceInfoDto | null 
         workspacePath: rootPath,
         databasePath: path.join(rootPath, 'database', 'catalog.db'),
       };
-    } catch {
-      // Fallback below
+    } catch (err) {
+      console.warn('[WorkspaceDisk] Corrupt or unreadable workspace.json, falling back:', err);
     }
   }
 

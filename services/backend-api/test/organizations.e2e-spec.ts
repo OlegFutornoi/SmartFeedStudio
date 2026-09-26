@@ -488,11 +488,12 @@ describe('Organizations & Team Seats Quota Policy (E2E)', () => {
         })
         .expect(201);
 
-      // Accept invitation as existing user
+      // Accept invitation as existing user (verifying ownership via password)
       await request(app.getHttpServer())
         .post('/api/invitations/accept')
         .send({
           token: invRes.body.token,
+          password: existingUser.password,
         })
         .expect(200);
 

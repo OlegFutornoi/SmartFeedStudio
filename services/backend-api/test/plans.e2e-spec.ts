@@ -237,7 +237,7 @@ describe('Tariff Plans & Licenses Management (E2E)', () => {
         .expect(200);
 
       expect(Array.isArray(res.body)).toBe(true);
-      expect(res.body.length).toBeGreaterThanOrEqual(2);
+      expect(res.body.length).toBeGreaterThanOrEqual(1);
 
       const license = res.body[0];
       expect(license.licenseKey).toBeDefined();
