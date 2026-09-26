@@ -99,7 +99,11 @@ export const DashboardRecentUsersTable = React.memo(function DashboardRecentUser
                             : 'bg-secondary text-secondary-foreground'
                       }
                     >
-                      {u.role}
+                      {u.role === 'SUPER_ADMIN'
+                        ? t('users', 'role_super_admin')
+                        : u.role === 'ADMIN'
+                          ? t('users', 'role_admin')
+                          : t('users', 'role_user')}
                     </Badge>
                   </TableCell>
                   <TableCell>

@@ -179,7 +179,13 @@ export function NavigationItemDialog({
                       onChange={() => toggleRole(role)}
                       className="rounded border-border text-primary focus:ring-primary h-3.5 w-3.5"
                     />
-                    <span>{role}</span>
+                    <span>
+                      {role === Role.SUPER_ADMIN
+                        ? t('users', 'role_super_admin')
+                        : role === Role.ADMIN
+                          ? t('users', 'role_admin')
+                          : t('users', 'role_user')}
+                    </span>
                   </label>
                 ))}
               </div>

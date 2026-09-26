@@ -16,14 +16,20 @@ export class GetAdminLicensesHandler implements IQueryHandler<
   async execute(query: GetAdminLicensesQuery): Promise<AdminLicenseItemDto[]> {
     const { search, limit = 50, offset = 0 } = query;
 
-    const where: Prisma.LicenseWhereInput = {};
-    if (search) {
-      where.OR = [
-        { licenseKey: { contains: search, mode: 'insensitive' } },
-        { user: { email: { contains: search, mode: 'insensitive' } } },
-        { user: { fullName: { contains: search, mode: 'insensitive' } } },
-      ];
+    const andConditions: Prisma.LicenseWhereInput[] = [{ user: { role: { not: 'SUPER_ADMIN' } } }];
+
+    if (search && search.trim() !== '') {
+      const term = search.trim();
+      andConditions.push({
+        OR: [
+          { licenseKey: { contains: term, mode: 'insensitive' } },
+          { user: { email: { contains: term, mode: 'insensitive' } } },
+          { user: { fullName: { contains: term, mode: 'insensitive' } } },
+        ],
+      });
     }
+
+    const where: Prisma.LicenseWhereInput = { AND: andConditions };
 
     const licenses = await this.prisma.license.findMany({
       where,

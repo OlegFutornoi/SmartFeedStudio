@@ -89,16 +89,7 @@ export const UserTableRow = React.memo(function UserTableRow({
 
       {/* Role */}
       <TableCell>
-        {user.organization?.isOwner ? (
-          <Badge
-            data-testid="user-row-role-owner"
-            variant="outline"
-            className="bg-amber-500/10 text-amber-500 border-amber-500/30 text-xs font-semibold"
-          >
-            <Building2 className="h-3 w-3 mr-1" />
-            {t('users', 'team_owner')}
-          </Badge>
-        ) : user.role === 'ADMIN' ? (
+        {user.role === 'ADMIN' ? (
           <Badge
             data-testid="user-row-role-admin"
             variant="outline"
@@ -129,6 +120,17 @@ export const UserTableRow = React.memo(function UserTableRow({
               >
                 {user.organization.organizationName}
               </span>
+
+              {user.organization.isOwner && (
+                <Badge
+                  data-testid="user-row-role-owner"
+                  variant="outline"
+                  className="bg-amber-500/10 text-amber-500 border-amber-500/30 text-[10px] font-medium py-0 px-1.5"
+                >
+                  <Building2 className="h-2.5 w-2.5 mr-0.5" />
+                  {t('users', 'team_owner')}
+                </Badge>
+              )}
 
               {user.membersCount !== undefined && user.membersCount > 0 && onOpenTeam && (
                 <button

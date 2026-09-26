@@ -8,7 +8,11 @@ import {
 import { PrismaPg } from '@prisma/adapter-pg';
 import { Pool } from 'pg';
 import * as bcrypt from 'bcrypt';
-import 'dotenv/config';
+import * as dotenv from 'dotenv';
+import * as path from 'path';
+
+dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
+dotenv.config();
 
 const connectionString =
   process.env.DATABASE_URL ||
@@ -21,7 +25,14 @@ async function main() {
   console.log('🌱 Starting database seeding for SmartFeed Studio...');
 
   const saltRounds = 10;
-  const ownerPasswordHash = await bcrypt.hash('adminadmin', saltRounds);
+  const adminEmail = process.env.ADMIN_EMAIL;
+  const adminPassword = process.env.ADMIN_PASSWORD;
+  const adminName = process.env.ADMIN_NAME || 'Platform Owner';
+
+  if (!adminEmail || !adminPassword) {
+    throw new Error('ADMIN_EMAIL and ADMIN_PASSWORD environment variables must be defined in .env');
+  }
+  const ownerPasswordHash = await bcrypt.hash(adminPassword, saltRounds);
 
   // ============================================================
   // 1. Seed Dynamic Tariff Plans (STARTER, GROWTH, PRO, ENTERPRISE)
@@ -503,17 +514,17 @@ async function main() {
   // ============================================================
   // 2. Create Single Super Admin (Owner — No customer licenses needed)
   // ============================================================
-  const superAdmin = await prisma.user.upsert({
-    where: { email: 'admin@admin.com' },
+  await prisma.user.upsert({
+    where: { email: adminEmail },
     update: {
       passwordHash: ownerPasswordHash,
       role: Role.SUPER_ADMIN,
-      fullName: 'Super Administrator',
+      fullName: adminName,
     },
     create: {
-      email: 'admin@admin.com',
+      email: adminEmail,
       passwordHash: ownerPasswordHash,
-      fullName: 'Super Administrator',
+      fullName: adminName,
       role: Role.SUPER_ADMIN,
     },
   });
@@ -545,9 +556,9 @@ async function main() {
       email: { in: ['admin@gmail.com', 'admin@smartfeed.studio'] },
     },
   });
-  // Super Admin is platform host, delete any customer licenses
+  // Super Admin is platform host, delete any customer licenses for all SUPER_ADMIN accounts
   await prisma.license.deleteMany({
-    where: { userId: superAdmin.id },
+    where: { user: { role: Role.SUPER_ADMIN } },
   });
 
   // ============================================================

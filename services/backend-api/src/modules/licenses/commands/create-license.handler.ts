@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { Injectable, Logger } from '@nestjs/common';
-import { LicenseEntity, PlanType, PLAN_LIMITS_MAP } from '@smartfeed/shared';
+import { ForbiddenException, Injectable, Logger } from '@nestjs/common';
+import { LicenseEntity, PlanType, PLAN_LIMITS_MAP, Role } from '@smartfeed/shared';
 import * as crypto from 'crypto';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { CreateLicenseCommand } from './create-license.command';
@@ -14,6 +14,14 @@ export class CreateLicenseHandler implements ICommandHandler<CreateLicenseComman
 
   async execute(command: CreateLicenseCommand): Promise<LicenseEntity> {
     const { userId, planType = PlanType.STARTER, expiresAt } = command;
+
+    // Platform Super Admin does not hold customer licenses
+    const targetUser = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+    if (targetUser?.role === Role.SUPER_ADMIN) {
+      throw new ForbiddenException('SUPER_ADMIN_CANNOT_HAVE_LICENSE');
+    }
 
     // Fetch dynamic plan from database if present, otherwise fallback to static map
     const dbPlan = await this.prisma.tariffPlan.findUnique({

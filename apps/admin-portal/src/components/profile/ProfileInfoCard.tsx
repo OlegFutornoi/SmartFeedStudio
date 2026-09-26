@@ -54,7 +54,11 @@ export const ProfileInfoCard = React.memo(function ProfileInfoCard({ user }: Pro
               variant="outline"
               className="bg-primary/10 text-primary border-primary/30"
             >
-              {user?.role || 'SUPER_ADMIN'}
+              {user?.role === 'SUPER_ADMIN'
+                ? t('users', 'role_super_admin')
+                : user?.role === 'ADMIN'
+                  ? t('users', 'role_admin')
+                  : t('users', 'role_user')}
             </Badge>
           </div>
         </div>

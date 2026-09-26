@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { ForbiddenException, Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { LicenseEntity, PlanType, PLAN_LIMITS_MAP } from '@smartfeed/shared';
+import { LicenseEntity, PlanType, PLAN_LIMITS_MAP, Role } from '@smartfeed/shared';
 import * as crypto from 'crypto';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { mapTariffPlanToDto } from '../../plans/utils/map-tariff-plan-to-dto';
@@ -19,6 +19,14 @@ export class SelectTariffPlanHandler implements ICommandHandler<
   async execute(command: SelectTariffPlanCommand): Promise<LicenseEntity> {
     const { userId, planCode, billingInterval = 'monthly' } = command;
     const normalizedCode = planCode.toUpperCase().trim();
+
+    // 0. Platform Super Admin does not need or hold commercial customer licenses
+    const targetUser = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+    if (targetUser?.role === Role.SUPER_ADMIN) {
+      throw new ForbiddenException('SUPER_ADMIN_CANNOT_SELECT_PLAN');
+    }
 
     // 1. Fetch requested tariff plan
     const dbPlan = await this.prisma.tariffPlan.findUnique({

@@ -252,6 +252,31 @@ describe('Licenses & Tariff Plan Expiration Policy (E2E)', () => {
         .send({ planCode: 'NON_EXISTENT_PLAN_CODE' })
         .expect(404);
     });
+
+    it('should reject SUPER_ADMIN from selecting commercial customer plans with 403', async () => {
+      await request(app.getHttpServer())
+        .post('/api/licenses/select-plan')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({ planCode: 'PRO' })
+        .expect(403);
+    });
+  });
+
+  describe('GET /api/licenses/admin (SUPER_ADMIN Exclusion from Commercial Licenses)', () => {
+    it('should return client licenses but NEVER return licenses belonging to SUPER_ADMIN', async () => {
+      const res = await request(app.getHttpServer())
+        .get('/api/licenses/admin')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .expect(200);
+
+      expect(Array.isArray(res.body)).toBe(true);
+      // All returned licenses must belong to users who are NOT SUPER_ADMIN
+      const hasSuperAdmin = res.body.some(
+        (lic: { user?: { role?: string; email?: string } }) =>
+          lic.user?.role === 'SUPER_ADMIN' || lic.user?.email === testAdmin.email,
+      );
+      expect(hasSuperAdmin).toBe(false);
+    });
   });
 
   describe('RequireActiveLicenseGuard (Access Enforcement)', () => {

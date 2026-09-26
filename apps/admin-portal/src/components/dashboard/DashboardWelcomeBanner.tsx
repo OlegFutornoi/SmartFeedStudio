@@ -38,7 +38,11 @@ export const DashboardWelcomeBanner = React.memo(function DashboardWelcomeBanner
             variant="outline"
             className="bg-primary/10 text-primary border-primary/30"
           >
-            {user?.role || 'SUPER_ADMIN'}
+            {user?.role === 'SUPER_ADMIN'
+              ? t('users', 'role_super_admin')
+              : user?.role === 'ADMIN'
+                ? t('users', 'role_admin')
+                : t('users', 'role_user')}
           </Badge>
         </div>
         <p data-testid="dashboard-welcome-subtitle" className="text-sm text-muted-foreground">

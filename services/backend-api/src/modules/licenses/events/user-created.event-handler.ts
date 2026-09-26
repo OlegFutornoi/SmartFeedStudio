@@ -1,6 +1,6 @@
 import { EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { Injectable, Logger } from '@nestjs/common';
-import { PlanType, PLAN_LIMITS_MAP } from '@smartfeed/shared';
+import { PlanType, PLAN_LIMITS_MAP, Role } from '@smartfeed/shared';
 import * as crypto from 'crypto';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { UserCreatedEvent } from '../../users/events/user-created.event';
@@ -14,6 +14,14 @@ export class UserCreatedEventHandler implements IEventHandler<UserCreatedEvent> 
 
   async handle(event: UserCreatedEvent) {
     this.logger.log(`Handling UserCreatedEvent for user: ${event.userId} (${event.email})`);
+
+    // Platform Owner / Super Admin never receives customer licenses
+    if (event.role === Role.SUPER_ADMIN) {
+      this.logger.log(
+        `Skipping customer license auto-provisioning for platform SUPER_ADMIN: ${event.userId} (${event.email})`,
+      );
+      return;
+    }
 
     const defaultPlan = PlanType.STARTER;
     const limits = PLAN_LIMITS_MAP[defaultPlan];

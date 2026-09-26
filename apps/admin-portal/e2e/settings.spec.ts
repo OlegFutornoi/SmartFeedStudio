@@ -11,7 +11,7 @@ test.describe('Admin Portal — Налаштування, Профіль та В
     await expect(settingsPage.profileCard).toBeVisible();
     await expect(settingsPage.profileName).toContainText('Super Admin');
     await expect(settingsPage.profileEmail).toContainText('admin@smartfeed.studio');
-    await expect(settingsPage.profileRole).toContainText('SUPER_ADMIN');
+    await expect(settingsPage.profileRole).toContainText('Власник');
 
     // 3. Інфраструктура
     await expect(settingsPage.infraCard).toBeVisible();

@@ -2,7 +2,11 @@ import { PrismaClient } from '../src/generated/prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { Pool } from 'pg';
 import * as bcrypt from 'bcrypt';
-import 'dotenv/config';
+import * as dotenv from 'dotenv';
+import * as path from 'path';
+
+dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
+dotenv.config();
 
 const connectionString =
   process.env.DATABASE_URL ||
@@ -12,9 +16,13 @@ const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 
 async function setAdmin() {
-  const email = process.env.ADMIN_EMAIL || 'admin@admin.com';
-  const password = process.env.ADMIN_PASSWORD || 'adminadmin';
-  const fullName = process.env.ADMIN_NAME || 'Super Administrator';
+  const email = process.env.ADMIN_EMAIL;
+  const password = process.env.ADMIN_PASSWORD;
+  const fullName = process.env.ADMIN_NAME || 'Platform Owner';
+
+  if (!email || !password) {
+    throw new Error('ADMIN_EMAIL and ADMIN_PASSWORD environment variables must be defined in .env');
+  }
 
   const saltRounds = 10;
   const passwordHash = await bcrypt.hash(password, saltRounds);
@@ -65,7 +73,9 @@ async function setAdmin() {
 
   // Super Admin is the platform owner — they do not require customer licenses
   await prisma.license.deleteMany({
-    where: { userId: user.id },
+    where: {
+      OR: [{ userId: user.id }, { user: { role: 'SUPER_ADMIN' } }],
+    },
   });
 
   console.log('✅ Super Admin successfully configured:');
