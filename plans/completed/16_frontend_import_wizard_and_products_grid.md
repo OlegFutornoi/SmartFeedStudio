@@ -3,7 +3,7 @@
 > **Статус:** ✅ **Реалізовано та протестовано (100% тестів пройдено)**  
 > **Категорія:** `plans/completed/`  
 > **Дата виконання:** 30.08.2026  
-> **Батьківський план:** [`00_master_products_and_catalogs_plan.md`](file:///Users/oleg/AQA/SmartFeedStudio/plans/active/00_master_products_and_catalogs_plan.md)  
+> **Батьківський план:** [`00_master_products_and_catalogs_plan.md`](../active/00_master_products_and_catalogs_plan.md)  
 > **Результат:** 274/274 тести PASS у монорепозиторії
 
 ---

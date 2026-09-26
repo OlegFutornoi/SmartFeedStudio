@@ -243,7 +243,7 @@ Before writing any component, analyze user journeys, layout states, and platform
 > 💡 **MCP at this phase**: Use `context7` to verify latest shadcn/Next.js/Tailwind API before planning component structure.
 
 _Rules: [plans_lifecycle.md](../../rules/plans_lifecycle.md) · [engineering_discipline_and_planning.md](../../rules/engineering_discipline_and_planning.md)_
-_Skills: [writing-plans](../writing-plans/SKILL.md) · [executing-plans](../executing-plans/SKILL.md) · [dispatching-parallel-agents](../dispatching-parallel-agents/SKILL.md) · [subagent-driven-development](../subagent-driven-development/SKILL.md)_
+_Skills: [writing-plans](../sub-skills/writing-plans/SKILL.md) · [executing-plans](../sub-skills/executing-plans/SKILL.md) · [dispatching-parallel-agents](../sub-skills/dispatching-parallel-agents/SKILL.md) · [subagent-driven-development](../sub-skills/subagent-driven-development/SKILL.md)_
 
 1. **Component Modularity Budgeting**: Plan decomposition immediately. No file > **250–300 lines**.
    ```text
@@ -297,7 +297,7 @@ _Read [references/ui-ux-design-system.md](references/ui-ux-design-system.md) · 
 
 ### 🧪 Phase 4: Playwright TDD — RED Phase
 
-_Read [references/playwright-testing.md](references/playwright-testing.md) · Skill: [playwright-best-practices](../playwright-best-practices/SKILL.md)_
+_Read [references/playwright-testing.md](references/playwright-testing.md) · Skill: [playwright-best-practices](../sub-skills/playwright-best-practices/SKILL.md)_
 
 > [!WARNING]
 > **NEVER** call `browser_subagent` or `open_browser_url`. Always use:
@@ -321,7 +321,7 @@ _Read [references/playwright-testing.md](references/playwright-testing.md) · Sk
 
 > 💡 **MCP at this phase**: Use `playwright` MCP (`browser_take_screenshot`, `browser_snapshot`) to visually verify UI after implementation before running full test suite.
 
-_Skills: [shadcn](../shadcn/SKILL.md) · [ui-ux-pro-max](../ui-ux-pro-max/SKILL.md) · [beautiful-desing](../beautiful-desing/SKILL.md)_
+_Skills: [shadcn](../sub-skills/shadcn/SKILL.md) · [ui-ux-pro-max](../sub-skills/ui-ux-pro-max/SKILL.md) · [beautiful-desing](../sub-skills/beautiful-desing/SKILL.md)_
 
 1. **Decomposed Subcomponents**: Each file within modularity budget (<250 lines).
 2. **100% i18n Completeness**: Keys in both `locales/uk/<ns>.json` and `locales/en/<ns>.json`. Use `const { t } = useTranslation('<namespace>')`. Format percentages cleanly (`Math.round(percent)`). HTML titles: `title={t('common:edit')}`.
@@ -338,7 +338,7 @@ _Skills: [shadcn](../shadcn/SKILL.md) · [ui-ux-pro-max](../ui-ux-pro-max/SKILL.
 
 ### 🔍 Phase 6: Code Review & DoD Verification
 
-_Read [references/checklist.md](references/checklist.md) · Skills: [requesting-code-review](../requesting-code-review/SKILL.md) · [code-review-reception](../code-review-reception/SKILL.md) · [verification-before-completion](../verification-before-completion/SKILL.md)_
+_Read [references/checklist.md](references/checklist.md) · Skills: [requesting-code-review](../sub-skills/requesting-code-review/SKILL.md) · [code-review-reception](../sub-skills/code-review-reception/SKILL.md) · [verification-before-completion](../sub-skills/verification-before-completion/SKILL.md)_
 
 **Step 1 — Dispatch Self-Review** (`requesting-code-review`): Before claiming complete, dispatch a review subagent against the implementation.
 
@@ -372,7 +372,7 @@ _Read [references/checklist.md](references/checklist.md) · Skills: [requesting-
 
 ### 🛠️ Phase 7: Systematic Debugging & Error Remediation
 
-_Skills: [systematic-debugging](../systematic-debugging/SKILL.md) · [root-cause-tracing](../root-cause-tracing/SKILL.md)_
+_Skills: [systematic-debugging](../sub-skills/systematic-debugging/SKILL.md) · [root-cause-tracing](../sub-skills/root-cause-tracing/SKILL.md)_
 
 ```text
 NO FIXES WITHOUT ROOT CAUSE INVESTIGATION FIRST
@@ -396,7 +396,7 @@ NO FIXES WITHOUT ROOT CAUSE INVESTIGATION FIRST
 | [references/checklist.md](references/checklist.md)                     | Pre-commit Frontend & UI/UX Checklist                        |
 | [references/ui-ux-design-system.md](references/ui-ux-design-system.md) | Semantic tokens, solid headers, modularity                   |
 | [references/playwright-testing.md](references/playwright-testing.md)   | POM, bilingual tests, network dedup assertions               |
-| [references/design-patterns.md](references/design-patterns.md)         | Anti-templated design, editorial hierarchy, micro-animations |
+| [references/ui-ux-design-system.md](references/ui-ux-design-system.md) | Anti-templated design, editorial hierarchy, micro-animations |
 
 **Related Project Rules** (always active):
 

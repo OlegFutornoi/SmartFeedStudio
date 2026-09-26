@@ -114,12 +114,12 @@ export interface UserQuotasDto {
      - `refreshQuotas(force = false)` — фонова звірка з бекендом.
    - Підписка на глобальні події `window.addEventListener('smartfeed:quota-sync')`.
 2. **Уніфіковані UI Компоненти**:
-   - [`QuotaUsageBadge.tsx`](file:///Users/oleg/AQA/SmartFeedStudio/apps/desktop/src/components/ui/QuotaUsageBadge.tsx):
+   - [`QuotaUsageBadge.tsx`](../../apps/desktop/src/components/ui/QuotaUsageBadge.tsx):
      - Формат: `1 / 3` або `14.2k / 20k` з бейджем статусу:
        - 🟢 Звичайний (< 80%)
        - 🟡 Попередження (80–99%)
        - 🔴 Вичерпано (100%) + кнопка швидкого переходу на `/plans`
-   - [`QuotaMetricCard.tsx`](file:///Users/oleg/AQA/SmartFeedStudio/apps/desktop/src/components/ui/QuotaMetricCard.tsx):
+   - [`QuotaMetricCard.tsx`](../../apps/desktop/src/components/ui/QuotaMetricCard.tsx):
      - Використовується в шапці сторінок (Постачальники, Товари, Фіди) з прогрес-баром.
 3. **Інтеграція в `SuppliersPage.tsx`**:
    - Картка метрики постачальників відображає: **`1 / 3` (33%)** з прогрес-баром.

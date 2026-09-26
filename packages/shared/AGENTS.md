@@ -36,7 +36,7 @@ packages/shared/
 
 ## 📝 Documentation Synchronization
 
-- Whenever shared contracts, DTOs, Enums, or constants are added or modified, ensure all referencing package `AGENTS.md` files and root documentation ([README.md](file:///Users/oleg/AQA/SmartFeedStudio/README.md), [AGENTS.md](file:///Users/oleg/AQA/SmartFeedStudio/AGENTS.md), [.agents/rules/rules.md](file:///Users/oleg/AQA/SmartFeedStudio/.agents/rules/rules.md)) reflect these changes.
+- Whenever shared contracts, DTOs, Enums, or constants are added or modified, ensure all referencing package `AGENTS.md` files and root documentation ([README.md](../../README.md), [AGENTS.md](../../AGENTS.md), [.agents/rules/rules.md](../../.agents/rules/rules.md)) reflect these changes.
 
 ---
 

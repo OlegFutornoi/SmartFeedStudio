@@ -5,8 +5,8 @@
 > **Автор:** Antigravity Agent  
 > **Зв'язані документи:**
 >
-> - [`plans/company_registration_and_team_access.md`](file:///Users/oleg/AQA/SmartFeedStudio/plans/company_registration_and_team_access.md)
-> - [`plans/organizations_and_team_seats.md`](file:///Users/oleg/AQA/SmartFeedStudio/plans/organizations_and_team_seats.md)
+> - [`plans/company_registration_and_team_access.md`](../company_registration_and_team_access.md)
+> - [`plans/organizations_and_team_seats.md`](../organizations_and_team_seats.md)
 
 ---
 
@@ -65,14 +65,14 @@
 
 ### Етап 1. Захист Бекенду (`services/backend-api`)
 
-1. **`UsersController` ([services/backend-api/src/modules/users/users.controller.ts](file:///Users/oleg/AQA/SmartFeedStudio/services/backend-api/src/modules/users/users.controller.ts))**:
+1. **`UsersController` ([services/backend-api/src/modules/users/users.controller.ts](../../services/backend-api/src/modules/users/users.controller.ts))**:
    - Імпортувати `RolesGuard` та `@Roles`.
    - Захистити `GET /api/users` та `GET /api/users/stats` декораторами:
      ```typescript
      @UseGuards(JwtAuthGuard, RolesGuard)
      @Roles(Role.SUPER_ADMIN, Role.ADMIN)
      ```
-2. **Оновлення E2E тестів бекенду ([services/backend-api/test/users.e2e-spec.ts](file:///Users/oleg/AQA/SmartFeedStudio/services/backend-api/test/users.e2e-spec.ts))**:
+2. **Оновлення E2E тестів бекенду ([services/backend-api/test/users.e2e-spec.ts](../../services/backend-api/test/users.e2e-spec.ts))**:
    - Додати негативні тести: звичайний користувач `USER` при спробі викликати `GET /api/users` та `GET /api/users/stats` отримує **`403 Forbidden`**.
    - Для позитивних перевірок створення даних створити адміністратора або підвищити роль користувача до `SUPER_ADMIN`.
 
@@ -80,7 +80,7 @@
 
 ### Етап 2. Захист Фронтенду Адмін-Панелі (`apps/admin-portal`)
 
-1. **`AuthContext.tsx` ([apps/admin-portal/src/contexts/AuthContext.tsx](file:///Users/oleg/AQA/SmartFeedStudio/apps/admin-portal/src/contexts/AuthContext.tsx))**:
+1. **`AuthContext.tsx` ([apps/admin-portal/src/contexts/AuthContext.tsx](../../apps/admin-portal/src/contexts/AuthContext.tsx))**:
    - У методі `login()` перевіряти роль користувача:
      ```typescript
      if (res.user.role !== Role.ADMIN && res.user.role !== Role.SUPER_ADMIN) {
@@ -89,16 +89,16 @@
      }
      ```
    - У методі `fetchCurrentUser()` при завантаженні профілю: якщо `profile.role !== Role.ADMIN && profile.role !== Role.SUPER_ADMIN`, скидати сесію `logout()` та перенаправляти на `/login`.
-2. **`AuthGuard.tsx` ([apps/admin-portal/src/components/auth/AuthGuard.tsx](file:///Users/oleg/AQA/SmartFeedStudio/apps/admin-portal/src/components/auth/AuthGuard.tsx))**:
+2. **`AuthGuard.tsx` ([apps/admin-portal/src/components/auth/AuthGuard.tsx](../../apps/admin-portal/src/components/auth/AuthGuard.tsx))**:
    - Перевіряти не лише наявність `user`, а й права:
      ```typescript
      if (!isLoading && user && user.role !== Role.ADMIN && user.role !== Role.SUPER_ADMIN) {
        router.push('/login?error=access_denied');
      }
      ```
-3. **Локалізація помилок ([i18n/locales/uk/errors.json](file:///Users/oleg/AQA/SmartFeedStudio/apps/admin-portal/src/i18n/locales/uk/errors.json) та [en/errors.json](file:///Users/oleg/AQA/SmartFeedStudio/apps/admin-portal/src/i18n/locales/en/errors.json))**:
+3. **Локалізація помилок ([i18n/locales/uk/errors.json](../../apps/admin-portal/src/i18n/locales/uk/errors.json) та [en/errors.json](../../apps/admin-portal/src/i18n/locales/en/errors.json))**:
    - Додати ключ `access_denied_admin_only`: _"Доступ заборонено. Вхід дозволено лише адміністраторам системи."_ / _"Access denied. Restricted to administrators only."_
-4. **Playwright E2E тести адмінки ([apps/admin-portal/e2e/auth.spec.ts](file:///Users/oleg/AQA/SmartFeedStudio/apps/admin-portal/e2e/auth.spec.ts))**:
+4. **Playwright E2E тести адмінки ([apps/admin-portal/e2e/auth.spec.ts](../../apps/admin-portal/e2e/auth.spec.ts))**:
    - Додати тест: спроба входу користувача з роллю `USER` відхиляється, користувач не пускається в дашборд, а на екрані з'являється червоне сповіщення про відсутність прав адміністратора.
 
 ---

@@ -390,7 +390,7 @@ _(Good architectural decisions, clean patterns, solid test coverage)_
 
 **All 10 Project Rules** (always enforced):
 
-- [rules.md](../../rules/rules.md) · [code_review_and_skills.md](../../rules/code_review_and_skills.md) · [testing_and_quality.md](../../rules/testing_and_quality.md)
-- [plans_lifecycle.md](../../rules/plans_lifecycle.md) · [wiki_and_documentation.md](../../rules/wiki_and_documentation.md) · [postgres_skills.md](../../rules/postgres_skills.md)
-- [frontend_network_dedup.md](../../rules/frontend_network_dedup.md) · [commands.md](../../rules/commands.md)
-- [design_system_and_theming.md](../../rules/design_system_and_theming.md) · [engineering_discipline_and_planning.md](../../rules/engineering_discipline_and_planning.md)
+- [rules.md](../../../rules/rules.md) · [code_review_and_skills.md](../../../rules/code_review_and_skills.md) · [testing_and_quality.md](../../../rules/testing_and_quality.md)
+- [plans_lifecycle.md](../../../rules/plans_lifecycle.md) · [wiki_and_documentation.md](../../../rules/wiki_and_documentation.md) · [postgres_skills.md](../../../rules/postgres_skills.md)
+- [frontend_network_dedup.md](../../../rules/frontend_network_dedup.md) · [commands.md](../../../rules/commands.md)
+- [design_system_and_theming.md](../../../rules/design_system_and_theming.md) · [engineering_discipline_and_planning.md](../../../rules/engineering_discipline_and_planning.md)

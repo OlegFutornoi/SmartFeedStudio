@@ -628,6 +628,6 @@ What are you doing?
 
 **Related Project Rules** (always active):
 
-- [testing_and_quality.md](../../rules/testing_and_quality.md) — cleanDatabase, 100% i18n tests, Git policy
-- [commands.md](../../rules/commands.md) — SmartFeed test commands & ports
-- [frontend_network_dedup.md](../../rules/frontend_network_dedup.md) — requestCount===1 assertions
+- [testing_and_quality.md](../../../rules/testing_and_quality.md) — cleanDatabase, 100% i18n tests, Git policy
+- [commands.md](../../../rules/commands.md) — SmartFeed test commands & ports
+- [frontend_network_dedup.md](../../../rules/frontend_network_dedup.md) — requestCount===1 assertions

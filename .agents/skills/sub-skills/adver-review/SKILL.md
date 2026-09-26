@@ -29,7 +29,7 @@ Whenever this skill is triggered, you launch a targeted adversarial assault agai
 
 3. 🧼 **100% CLEANUP & TEST ISOLATION (Zero Leftovers)**:
    - All adversarial tests **MUST** clean up after themselves.
-   - In backend tests, use `cleanDatabase` in `beforeAll` and `afterAll` per [testing_and_quality.md](file:///Users/oleg/AQA/SmartFeedStudio/.agents/rules/testing_and_quality.md). Never pollute PostgreSQL, Redis, or object storage.
+   - In backend tests, use `cleanDatabase` in `beforeAll` and `afterAll` per [testing_and_quality.md](../../../rules/testing_and_quality.md). Never pollute PostgreSQL, Redis, or object storage.
 
 4. 📋 **ACTIONABLE REMEDIATION PLAN (Zero Blind Criticism)**:
    - Deliver an adversarial audit report and a deterministic, step-by-step remediation plan following the `writing-plans` specification so developers have an exact blueprint to fix every vulnerability.

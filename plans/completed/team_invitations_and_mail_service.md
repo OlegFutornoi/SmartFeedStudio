@@ -4,9 +4,9 @@
 > **Дата виконання:** 27.08.2026  
 > **Зв'язані документи:**
 >
-> - [`plans/company_registration_and_team_access.md`](file:///Users/oleg/AQA/SmartFeedStudio/plans/company_registration_and_team_access.md)
-> - [`plans/organizations_and_team_seats.md`](file:///Users/oleg/AQA/SmartFeedStudio/plans/organizations_and_team_seats.md)
-> - [`plans/tariff_strategy.md`](file:///Users/oleg/AQA/SmartFeedStudio/plans/tariff_strategy.md)
+> - [`plans/company_registration_and_team_access.md`](../company_registration_and_team_access.md)
+> - [`plans/organizations_and_team_seats.md`](../organizations_and_team_seats.md)
+> - [`plans/tariff_strategy.md`](../tariff_strategy.md)
 
 ---
 

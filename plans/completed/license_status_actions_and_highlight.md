@@ -86,7 +86,7 @@ graph TD
 
 ### 💻 Етап 2: Фронтенд (Admin Web Portal)
 
-1. **API Клієнт ([api.ts](file:///Users/oleg/AQA/SmartFeedStudio/apps/admin-portal/src/lib/api.ts))**:
+1. **API Клієнт ([api.ts](../../apps/admin-portal/src/lib/api.ts))**:
    - Додати `updateLicenseStatus(id: string, isActive: boolean): Promise<AdminLicenseItemDto>`.
    - Додати `deleteLicense(id: string): Promise<{ success: boolean }>`.
 2. **Модульні компоненти UI**:
@@ -94,7 +94,7 @@ graph TD
      - `Призупинити ліцензію` / `Відновити ліцензію`.
      - `Видалити ліцензію`.
    - `LicenseDeleteDialog.tsx`: компактний модальний діалог підтвердження видалення із зазначенням ключа ліцензії.
-3. **Оновлення [LicensesTable.tsx](file:///Users/oleg/AQA/SmartFeedStudio/apps/admin-portal/src/components/plans/LicensesTable.tsx)**:
+3. **Оновлення [LicensesTable.tsx](../../apps/admin-portal/src/components/plans/LicensesTable.tsx)**:
    - Додати колонку **`Статус` (Status)**:
      - 🟢 **Активна** (`Active` / `Діє`): `lic.isActive && (!lic.expiresAt || new Date(lic.expiresAt) > now)`.
      - 🟡 **Призупинена** (`Suspended`): `!lic.isActive`.
@@ -109,7 +109,7 @@ graph TD
 
 ### 🧪 Етап 3: Автоматизовані Тести Playwright & Перевірка
 
-1. **Playwright E2E Тести ([e2e/licenses.spec.ts](file:///Users/oleg/AQA/SmartFeedStudio/apps/admin-portal/e2e/licenses.spec.ts))**:
+1. **Playwright E2E Тести ([e2e/licenses.spec.ts](../../apps/admin-portal/e2e/licenses.spec.ts))**:
    - Перевірка рендеру бейджів статусу та підсвічування діючої ліцензії.
    - Перевірка кліку на 3 крапки `...` -> натискання "Призупинити ліцензію" -> оновлення статусу на "Призупинена".
    - Перевірка кліку на 3 крапки `...` -> натискання "Відновити ліцензію" -> оновлення статусу на "Активна".

@@ -70,8 +70,8 @@ graph TD
 ### Крок 1: Очищення словників локалізації від емодзі
 
 - Файли:
-  - [apps/admin-portal/src/i18n/locales/uk/users.json](file:///Users/oleg/AQA/SmartFeedStudio/apps/admin-portal/src/i18n/locales/uk/users.json)
-  - [apps/admin-portal/src/i18n/locales/en/users.json](file:///Users/oleg/AQA/SmartFeedStudio/apps/admin-portal/src/i18n/locales/en/users.json)
+  - [apps/admin-portal/src/i18n/locales/uk/users.json](../../apps/admin-portal/src/i18n/locales/uk/users.json)
+  - [apps/admin-portal/src/i18n/locales/en/users.json](../../apps/admin-portal/src/i18n/locales/en/users.json)
 - Зміни:
   - `👑 Власники компаній` ➔ `Власники компаній` / `Company Owners`
   - `👥 Запрошені співробітники` ➔ `Запрошені учасники` / `Invited Members`
@@ -79,7 +79,7 @@ graph TD
 
 ### Крок 2: Створення універсального або адаптація фасетного фільтра `UserFacetedFilter`
 
-- Створити компактний компонент фасетного випадаючого списку (аналогічно до перевіреного [LicensesFacetedFilter.tsx](file:///Users/oleg/AQA/SmartFeedStudio/apps/admin-portal/src/components/plans/LicensesFacetedFilter.tsx)):
+- Створити компактний компонент фасетного випадаючого списку (аналогічно до перевіреного [LicensesFacetedFilter.tsx](../../apps/admin-portal/src/components/plans/LicensesFacetedFilter.tsx)):
   - Кнопка зі штриховою або тонкою рамкою `border-dashed border-border/80 hover:border-border`.
   - Всередині випадаючого вікна (`popover`):
     - Список пунктів з чекбоксами або підсвіткою активного.
@@ -88,7 +88,7 @@ graph TD
 
 ### Крок 3: Створення єдиного тулбара `UsersTableToolbar`
 
-- Створити компонент [UsersTableToolbar.tsx](file:///Users/oleg/AQA/SmartFeedStudio/apps/admin-portal/src/components/users/UsersTableToolbar.tsx):
+- Створити компонент [UsersTableToolbar.tsx](../../apps/admin-portal/src/components/users/UsersTableToolbar.tsx):
   - Пошуковий інпут + очищення.
   - Фасетний фільтр `Роль`.
   - Фасетний фільтр `Команда`.
@@ -103,7 +103,7 @@ graph TD
 
 ### Крок 5: Оновлення Playwright E2E тестів
 
-- Оновити селектори та тести у [apps/admin-portal/e2e/users.spec.ts](file:///Users/oleg/AQA/SmartFeedStudio/apps/admin-portal/e2e/users.spec.ts) та POM [apps/admin-portal/e2e/pages/users.page.ts](file:///Users/oleg/AQA/SmartFeedStudio/apps/admin-portal/e2e/pages/users.page.ts).
+- Оновити селектори та тести у [apps/admin-portal/e2e/users.spec.ts](../../apps/admin-portal/e2e/users.spec.ts) та POM [apps/admin-portal/e2e/pages/users.page.ts](../../apps/admin-portal/e2e/pages/users.page.ts).
 - Перевірити проходження 100% тестів.
 - Зробити скріншоти у світлій та темній темах для демонстрації користувачу.
 

@@ -3,8 +3,8 @@
 > **Статус:** ✅ **Реалізовано та протестовано (100% тестів пройдено)**  
 > **Дата виконання:** 12.09.2026  
 > **Категорія:** `plans/completed/`  
-> **Батьківський план:** [`00_master_products_and_catalogs_plan.md`](file:///Users/oleg/AQA/SmartFeedStudio/plans/active/00_master_products_and_catalogs_plan.md)  
-> **Пов'язаний підплан:** [`03_image_storage_and_cdn_strategy.md`](file:///Users/oleg/AQA/SmartFeedStudio/plans/active/03_image_storage_and_cdn_strategy.md)  
+> **Батьківський план:** [`00_master_products_and_catalogs_plan.md`](../active/00_master_products_and_catalogs_plan.md)  
+> **Пов'язаний підплан:** [`03_image_storage_and_cdn_strategy.md`](../active/03_image_storage_and_cdn_strategy.md)  
 > **Ціль:** Забезпечити швидке, неблокуюче локальне збереження, фонове завантаження, відображення та повне керування фотографіями товарів у Desktop-клієнті (Tauri v2 + React 18 + SQLCipher), із гарантією каскадного видалення файлів з диска при видаленні фото чи товарів, обробкою всіх крайових випадків та 100% готовністю до майбутнього вивантаження в S3.
 
 ---

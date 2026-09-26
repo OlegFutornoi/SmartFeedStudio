@@ -10,10 +10,10 @@ description: Continuous WIKI synchronization, knowledge base updates, and test c
 Whenever any architectural change occurs (new modules, CQRS commands/queries/events, DB schema changes in `schema.prisma`, shared DTOs/enums in `@smartfeed/shared`, Tauri commands/services, API endpoints, or ports):
 
 - **Always update documentation immediately**:
-  1. Central Knowledge Base: [wiki/README.md](file:///Users/oleg/AQA/SmartFeedStudio/wiki/README.md) and all relevant sub-articles in `wiki/`
-  2. Root [AGENTS.md](file:///Users/oleg/AQA/SmartFeedStudio/AGENTS.md) and [.agents/rules/rules.md](file:///Users/oleg/AQA/SmartFeedStudio/.agents/rules/rules.md)
-  3. Sub-project guides ([services/backend-api/AGENTS.md](file:///Users/oleg/AQA/SmartFeedStudio/services/backend-api/AGENTS.md), [apps/admin-portal/AGENTS.md](file:///Users/oleg/AQA/SmartFeedStudio/apps/admin-portal/AGENTS.md), [apps/desktop/AGENTS.md](file:///Users/oleg/AQA/SmartFeedStudio/apps/desktop/AGENTS.md), [packages/shared/AGENTS.md](file:///Users/oleg/AQA/SmartFeedStudio/packages/shared/AGENTS.md))
-  4. Root [README.md](file:///Users/oleg/AQA/SmartFeedStudio/README.md) (including Mermaid architecture diagrams, folder trees, and CQRS flow steps).
+  1. Central Knowledge Base: [wiki/README.md](../../wiki/README.md) and all relevant sub-articles in `wiki/`
+  2. Root [AGENTS.md](../../AGENTS.md) and [.agents/rules/rules.md](rules.md)
+  3. Sub-project guides ([services/backend-api/AGENTS.md](../../services/backend-api/AGENTS.md), [apps/admin-portal/AGENTS.md](../../apps/admin-portal/AGENTS.md), [apps/desktop/AGENTS.md](../../apps/desktop/AGENTS.md), [packages/shared/AGENTS.md](../../packages/shared/AGENTS.md))
+  4. Root [README.md](../../README.md) (including Mermaid architecture diagrams, folder trees, and CQRS flow steps).
 - Outdated or drifting documentation is strictly prohibited.
 
 ---
@@ -26,8 +26,8 @@ Whenever a new or modified `*.e2e-spec.ts` file appears in `services/backend-api
    ```bash
    pnpm --filter @smartfeed/backend-api test:e2e
    ```
-2. **Update the coverage table** in [services/backend-api/AGENTS.md](file:///Users/oleg/AQA/SmartFeedStudio/services/backend-api/AGENTS.md) under section `🧪 Testing Policy & Coverage`.
-3. **Update the coverage table** in [services/backend-api/README.md](file:///Users/oleg/AQA/SmartFeedStudio/services/backend-api/README.md) under section `📊 E2E Test Coverage`.
+2. **Update the coverage table** in [services/backend-api/AGENTS.md](../../services/backend-api/AGENTS.md) under section `🧪 Testing Policy & Coverage`.
+3. **Update the coverage table** in [services/backend-api/README.md](../../services/backend-api/README.md) under section `📊 E2E Test Coverage`.
 
 - The `services/backend-api/README.md` must **always begin** with the test run command as its first code block.
 - Never let coverage tables drift from actual test files.

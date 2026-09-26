@@ -15,16 +15,20 @@ Enterprise platform for catalog feeds.
 
 All domain rules are modularized (max 12k chars per file):
 
-1. [rules.md](file:///Users/oleg/AQA/SmartFeedStudio/.agents/rules/rules.md) — Architecture, CQRS, Native vs Cloud backend
-2. [code_review_and_skills.md](file:///Users/oleg/AQA/SmartFeedStudio/.agents/rules/code_review_and_skills.md) — Skills matrix & pre-commit checklist
-3. [testing_and_quality.md](file:///Users/oleg/AQA/SmartFeedStudio/.agents/rules/testing_and_quality.md) — Teardown (`cleanDatabase`), 100% i18n, Git policy
-4. [plans_lifecycle.md](file:///Users/oleg/AQA/SmartFeedStudio/.agents/rules/plans_lifecycle.md) — Plans lifecycle (`active/`, `backlog/`, `completed/`)
-5. [wiki_and_documentation.md](file:///Users/oleg/AQA/SmartFeedStudio/.agents/rules/wiki_and_documentation.md) — WIKI & test coverage sync
-6. [postgres_skills.md](file:///Users/oleg/AQA/SmartFeedStudio/.agents/rules/postgres_skills.md) — PostgreSQL indexes & schema rules
-7. [frontend_network_dedup.md](file:///Users/oleg/AQA/SmartFeedStudio/.agents/rules/frontend_network_dedup.md) — Zero-duplicate API calls
-8. [commands.md](file:///Users/oleg/AQA/SmartFeedStudio/.agents/rules/commands.md) — CLI commands, ports, credentials
-9. [design_system_and_theming.md](file:///Users/oleg/AQA/SmartFeedStudio/.agents/rules/design_system_and_theming.md) — 100% theme harmony, semantic tokens & zero off-scheme colors (no ad-hoc purple/pink), zero duplicate action buttons
-10. [engineering_discipline_and_planning.md](file:///Users/oleg/AQA/SmartFeedStudio/.agents/rules/engineering_discipline_and_planning.md) — Architecture & scalability first, quality over naive simplicity ("working" is not enough), zero God-files (<250-300 lines), mutex concurrency, safe OS execution, pre-planned domain modularity
+1. [rules.md](.agents/rules/rules.md) — Architecture, CQRS, Native vs Cloud backend
+2. [code_review_and_skills.md](.agents/rules/code_review_and_skills.md) — Skills matrix & pre-commit checklist
+3. [testing_and_quality.md](.agents/rules/testing_and_quality.md) — Teardown (`cleanDatabase`), 100% i18n, Git policy
+4. [plans_lifecycle.md](.agents/rules/plans_lifecycle.md) — Plans lifecycle (`active/`, `backlog/`, `completed/`)
+5. [wiki_and_documentation.md](.agents/rules/wiki_and_documentation.md) — WIKI & test coverage sync
+6. [postgres_skills.md](.agents/rules/postgres_skills.md) — PostgreSQL indexes & schema rules
+7. [frontend_network_dedup.md](.agents/rules/frontend_network_dedup.md) — Zero-duplicate API calls
+8. [commands.md](.agents/rules/commands.md) — CLI commands, ports, credentials
+9. [design_system_and_theming.md](.agents/rules/design_system_and_theming.md) — 100% theme harmony, semantic tokens & zero off-scheme colors (no ad-hoc purple/pink), zero duplicate action buttons
+10. [engineering_discipline_and_planning.md](.agents/rules/engineering_discipline_and_planning.md) — Architecture & scalability first, quality over naive simplicity ("working" is not enough), zero God-files (<250-300 lines), mutex concurrency, safe OS execution, pre-planned domain modularity
+11. [Master Skills Guide](.agents/AGENTS.md) — Повний каталог та диспетчер 71 скіла (4 майстер-оркестратори, 67 підскілів за 7 напрямками)
+12. [Frontend Agent (agents_frontend)](.agents/agents_frontend.md) — Спеціалізований фронтенд-агент повного циклу (8 етапів: аналіз, планування, дизайн, рев'ю, автотести кожної кнопки/флоу/регресії, дебаг, переведення планів)
+13. [Backend Agent (agents_backend)](.agents/agents_backend.md) — Спеціалізований бекенд-агент повного циклу (8 етапів: аналіз, планування, TDD RED тести спочатку, 4-шарова реалізація GREEN, рев'ю, E2E регресія, дебаг, переведення планів)
+14. [Code Review & Audit Agent (agents_review)](.agents/agents_review.md) — Спеціалізований агент аудиту та якості (8 етапів: розвідка, CQRS аудит, 4-шаровий захист, UX аудит, БД аудит, змагальний стрес-тест, формування плану покращення plans/active/remediation_*.md, фінальний звіт)
 
 ---
 

@@ -11,7 +11,7 @@
 ## 🔍 1. Реалізований Функціонал та Архітектура
 
 1. **Сучасний Сегментований Перемикач Періоду (Billing Interval Switcher)**:
-   - Розміщений у центрі верхньої частини сторінки тарифів ([PlansPage.tsx](file:///Users/oleg/AQA/SmartFeedStudio/apps/desktop/src/pages/PlansPage.tsx)).
+   - Розміщений у центрі верхньої частини сторінки тарифів ([PlansPage.tsx](../../apps/desktop/src/pages/PlansPage.tsx)).
    - Пігулкоподібний перемикач:
      - **«Щомісяця» (Monthly)**
      - **«Щорічно» (Yearly / Annual)** + зелений бейдж **`-20% знижка`** (або «Save 20%»).

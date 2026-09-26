@@ -47,7 +47,7 @@ graph TD
 
 ### Крок 1. Виправлення підрахунку квот на бекенді (`services/backend-api`)
 
-- У [`GetUsageQuotasHandler`](file:///Users/oleg/AQA/SmartFeedStudio/services/backend-api/src/modules/licenses/queries/get-usage-quotas.handler.ts):
+- У [`GetUsageQuotasHandler`](../../services/backend-api/src/modules/licenses/queries/get-usage-quotas.handler.ts):
   - Застосовано скоупінг: `{ OR: [{ organizationId }, { userId }] }` для `Supplier`, `Product`, `FeedSource`.
   - Забезпечено повернення прапорців `isExceeded: true` для всіх переповнених квот.
 
@@ -67,8 +67,8 @@ graph TD
 
 ### Крок 4. Компоненти інтерфейсу узгодження
 
-- [`QuotaExcessBanner.tsx`](file:///Users/oleg/AQA/SmartFeedStudio/apps/desktop/src/components/ui/QuotaExcessBanner.tsx) — банер попередження на сторінці постачальників.
-- [`QuotaReconciliationDialog.tsx`](file:///Users/oleg/AQA/SmartFeedStudio/apps/desktop/src/components/plans/QuotaReconciliationDialog.tsx) — діалог узгодження з вкладками категорій, фідів, постачальників та апгрейду.
+- [`QuotaExcessBanner.tsx`](../../apps/desktop/src/components/ui/QuotaExcessBanner.tsx) — банер попередження на сторінці постачальників.
+- [`QuotaReconciliationDialog.tsx`](../../apps/desktop/src/components/plans/QuotaReconciliationDialog.tsx) — діалог узгодження з вкладками категорій, фідів, постачальників та апгрейду.
 
 ---
 

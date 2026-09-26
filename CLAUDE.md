@@ -16,7 +16,7 @@ Welcome! This guide outlines the core rules and operating instructions for worki
 
 ## 🏛 Sub-Package Guides
 
-- **Admin Web Portal**: [`apps/admin-portal/CLAUDE.md`](file:///Users/oleg/AQA/SmartFeedStudio/apps/admin-portal/CLAUDE.md)
-- **Desktop Client**: [`apps/desktop/CLAUDE.md`](file:///Users/oleg/AQA/SmartFeedStudio/apps/desktop/CLAUDE.md)
-- **Backend API**: [`services/backend-api/AGENTS.md`](file:///Users/oleg/AQA/SmartFeedStudio/services/backend-api/AGENTS.md)
-- **Central Rules**: [`.agents/rules/rules.md`](file:///Users/oleg/AQA/SmartFeedStudio/.agents/rules/rules.md) and [`.agents/rules/code_review_and_skills.md`](file:///Users/oleg/AQA/SmartFeedStudio/.agents/rules/code_review_and_skills.md)
+- **Admin Web Portal**: [`apps/admin-portal/CLAUDE.md`](apps/admin-portal/CLAUDE.md)
+- **Desktop Client**: [`apps/desktop/CLAUDE.md`](apps/desktop/CLAUDE.md)
+- **Backend API**: [`services/backend-api/AGENTS.md`](services/backend-api/AGENTS.md)
+- **Central Rules**: [`.agents/rules/rules.md`](.agents/rules/rules.md) and [`.agents/rules/code_review_and_skills.md`](.agents/rules/code_review_and_skills.md)

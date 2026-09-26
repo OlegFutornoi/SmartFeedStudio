@@ -4,7 +4,7 @@
 > **Дата виконання:** 06.09.2026  
 > **Версія:** 1.0.0  
 > **Автор:** SmartFeed Studio Core Architecture & Growth Engineering  
-> **Пов'язані правила:** [`plans_lifecycle.md`](file:///Users/oleg/AQA/SmartFeedStudio/.agents/rules/plans_lifecycle.md), [`code_review_and_skills.md`](file:///Users/oleg/AQA/SmartFeedStudio/.agents/rules/code_review_and_skills.md), [`ui-ux-pro-max`](file:///Users/oleg/AQA/SmartFeedStudio/.agents/skills/ui-ux-pro-max/SKILL.md)
+> **Пов'язані правила:** [`plans_lifecycle.md`](../../.agents/rules/plans_lifecycle.md), [`code_review_and_skills.md`](../../.agents/rules/code_review_and_skills.md), [`ui-ux-pro-max`](../../.agents/skills/ui-ux-pro-max/SKILL.md)
 
 ---
 

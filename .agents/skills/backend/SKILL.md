@@ -201,7 +201,7 @@ Before any code or schema modification:
 ### 📋 Phase 2: Task Planning & Shared Contracts
 
 _Rules: [plans_lifecycle.md](../../rules/plans_lifecycle.md) · [engineering_discipline_and_planning.md](../../rules/engineering_discipline_and_planning.md)_
-_Skills: [writing-plans](../writing-plans/SKILL.md) · [executing-plans](../executing-plans/SKILL.md) · [dispatching-parallel-agents](../dispatching-parallel-agents/SKILL.md) · [subagent-driven-development](../subagent-driven-development/SKILL.md)_
+_Skills: [writing-plans](../sub-skills/writing-plans/SKILL.md) · [executing-plans](../sub-skills/executing-plans/SKILL.md) · [dispatching-parallel-agents](../sub-skills/dispatching-parallel-agents/SKILL.md) · [subagent-driven-development](../sub-skills/subagent-driven-development/SKILL.md)_
 
 1. **Shared Contracts First (`packages/shared`)**:
    - Define TypeScript interfaces, Zod schemas, and Enums BEFORE backend handlers.
@@ -225,7 +225,7 @@ _Skills: [writing-plans](../writing-plans/SKILL.md) · [executing-plans](../exec
 > 💡 **MCP at this phase**: Use `context7` for Prisma/NestJS/BullMQ API docs. Use `firecrawl_search` for PostgreSQL index strategies and security patterns.
 
 _Read [references/architecture-patterns.md](references/architecture-patterns.md) · [references/api-design-and-security.md](references/api-design-and-security.md) · Rules: [postgres_skills.md](../../rules/postgres_skills.md)_
-_Skills: [prisma-cli](../prisma-cli/SKILL.md) · [prisma-client-api](../prisma-client-api/SKILL.md) · [prisma-upgrade-v7](../prisma-upgrade-v7/SKILL.md) · [supabase-postgres-best-practices](../supabase-postgres-best-practices/SKILL.md)_
+_Skills: [prisma-cli](../sub-skills/prisma-cli/SKILL.md) · [prisma-client-api](../sub-skills/prisma-client-api/SKILL.md) · [prisma-upgrade-v7](../sub-skills/prisma-upgrade-v7/SKILL.md) · [supabase-postgres-best-practices](../sub-skills/supabase-postgres-best-practices/SKILL.md)_
 
 1. **CQRS Boundaries** (`nestjs-best-practices`):
    - `UsersModule`: Pure data layer via Prisma. Zero JWT/Auth imports.
@@ -259,7 +259,7 @@ _Skills: [prisma-cli](../prisma-cli/SKILL.md) · [prisma-client-api](../prisma-c
 
 ### 🧪 Phase 4: TDD — RED Phase
 
-_Skills: [test-driven-development-tdd](../test-driven-development-tdd/SKILL.md) · [testing-anti-patterns](../testing-anti-patterns/SKILL.md) · [condition-based-waiting](../condition-based-waiting/SKILL.md)_
+_Skills: [test-driven-development-tdd](../sub-skills/test-driven-development-tdd/SKILL.md) · [testing-anti-patterns](../sub-skills/testing-anti-patterns/SKILL.md) · [condition-based-waiting](../sub-skills/condition-based-waiting/SKILL.md)_
 _Rules: [testing_and_quality.md](../../rules/testing_and_quality.md)_
 
 1. **Iron Law**: **NO PRODUCTION CODE WITHOUT A FAILING TEST FIRST.**
@@ -288,7 +288,7 @@ _Rules: [testing_and_quality.md](../../rules/testing_and_quality.md)_
 
 ### 💻 Phase 5: Implementation & 4-Layer Defense — GREEN Phase
 
-_Skills: [defense-in-depth-validation](../defense-in-depth-validation/SKILL.md) · [sentry-backend-bugs](../sentry-backend-bugs/SKILL.md)_
+_Skills: [defense-in-depth-validation](../sub-skills/defense-in-depth-validation/SKILL.md) · [sentry-backend-bugs](../sub-skills/sentry-backend-bugs/SKILL.md)_
 
 #### Layer 1: Entry Point & DTO Validation
 
@@ -327,7 +327,7 @@ pnpm --filter @smartfeed/backend-api test:e2e -- <feature>.e2e-spec.ts
 
 ### 🔍 Phase 6: Code Review & Pre-Commit Audit
 
-_Skills: [requesting-code-review](../requesting-code-review/SKILL.md) · [code-review-reception](../code-review-reception/SKILL.md) · [verification-before-completion](../verification-before-completion/SKILL.md)_
+_Skills: [requesting-code-review](../sub-skills/requesting-code-review/SKILL.md) · [code-review-reception](../sub-skills/code-review-reception/SKILL.md) · [verification-before-completion](../sub-skills/verification-before-completion/SKILL.md)_
 
 **Step 1 — Dispatch Self-Review** (`requesting-code-review`): Before claiming complete, dispatch review subagent.
 
@@ -362,7 +362,7 @@ _Skills: [requesting-code-review](../requesting-code-review/SKILL.md) · [code-r
 
 ### 🛠️ Phase 7: Systematic Debugging & Error Remediation
 
-_Skills: [systematic-debugging](../systematic-debugging/SKILL.md) · [root-cause-tracing](../root-cause-tracing/SKILL.md)_
+_Skills: [systematic-debugging](../sub-skills/systematic-debugging/SKILL.md) · [root-cause-tracing](../sub-skills/root-cause-tracing/SKILL.md)_
 
 ```text
 NO FIXES WITHOUT ROOT CAUSE INVESTIGATION FIRST
@@ -397,8 +397,8 @@ NO FIXES WITHOUT ROOT CAUSE INVESTIGATION FIRST
 
 **Related Prisma Skills** (load as needed):
 
-- [prisma-cli](../prisma-cli/SKILL.md) — `prisma generate`, `db push`, `migrate`, `studio`
-- [prisma-client-api](../prisma-client-api/SKILL.md) — `findMany`, `create`, `$transaction` query patterns
-- [prisma-postgres](../prisma-postgres/SKILL.md) — Prisma Postgres setup & operations
-- [prisma-upgrade-v7](../prisma-upgrade-v7/SKILL.md) — v6→v7 migration guidance
-- [supabase-postgres-best-practices](../supabase-postgres-best-practices/SKILL.md) — Full PostgreSQL schema rules
+- [prisma-cli](../sub-skills/prisma-cli/SKILL.md) — `prisma generate`, `db push`, `migrate`, `studio`
+- [prisma-client-api](../sub-skills/prisma-client-api/SKILL.md) — `findMany`, `create`, `$transaction` query patterns
+- [prisma-postgres](../sub-skills/prisma-postgres/SKILL.md) — Prisma Postgres setup & operations
+- [prisma-upgrade-v7](../sub-skills/prisma-upgrade-v7/SKILL.md) — v6→v7 migration guidance
+- [supabase-postgres-best-practices](../sub-skills/supabase-postgres-best-practices/SKILL.md) — Full PostgreSQL schema rules

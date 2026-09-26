@@ -2,7 +2,7 @@
 
 > **Статус:** 📋 **В процесі планування та погодження (Planning / Active)**  
 > **Категорія:** `plans/active/`  
-> **Батьківський план:** [`00_master_products_and_catalogs_plan.md`](file:///Users/oleg/AQA/SmartFeedStudio/plans/active/00_master_products_and_catalogs_plan.md)  
+> **Батьківський план:** [`00_master_products_and_catalogs_plan.md`](00_master_products_and_catalogs_plan.md)  
 > **Ціль:** Створити надійну, масштабовану та оптимізовану схему бази даних (PostgreSQL у хмарі + SQLCipher на клієнті), яка забезпечить повну ізоляцію даних за тенантами (організаціями) та постачальниками.
 
 ---
@@ -94,7 +94,7 @@ erDiagram
 
 ## 🗄️ 2. PostgreSQL Prisma Schema (`services/backend-api/prisma/schema.prisma`)
 
-Відповідно до правил проекту ([`postgres_skills.md`](file:///Users/oleg/AQA/SmartFeedStudio/.agents/rules/postgres_skills.md)), схема містить:
+Відповідно до правил проекту ([`postgres_skills.md`](../../.agents/rules/postgres_skills.md)), схема містить:
 
 1. **100% індексів зовнішніх ключів (`@@index([fkColumn])`)**.
 2. **`timestamptz`** для всіх дат (`DateTime`).

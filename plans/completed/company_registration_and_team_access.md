@@ -4,8 +4,8 @@
 > **Дата виконання:** 27.08.2026  
 > **Зв'язані документи:**
 >
-> - [`plans/tariff_strategy.md`](file:///Users/oleg/AQA/SmartFeedStudio/plans/tariff_strategy.md) (4-рівнева модель тарифів)
-> - [`plans/organizations_and_team_seats.md`](file:///Users/oleg/AQA/SmartFeedStudio/plans/organizations_and_team_seats.md) (Модель БД організацій)
+> - [`plans/tariff_strategy.md`](../tariff_strategy.md) (4-рівнева модель тарифів)
+> - [`plans/organizations_and_team_seats.md`](../organizations_and_team_seats.md) (Модель БД організацій)
 
 ---
 
@@ -91,12 +91,12 @@ flowchart TD
 
 ### Етап 3. Фронтенд Desktop-клієнта (`apps/desktop`)
 
-- [x] **Типи та API-клієнт ([apps/desktop/src/lib/api.ts](file:///Users/oleg/AQA/SmartFeedStudio/apps/desktop/src/lib/api.ts))**:
+- [x] **Типи та API-клієнт ([apps/desktop/src/lib/api.ts](../../apps/desktop/src/lib/api.ts))**:
   - Додано методи отримання поточної організації, учасників, оновлення назви та запрошення/видалення (`getUserOrganizations`, `getOrganizationById`, `getOrganizationMembers`, `inviteOrganizationMember`, `removeOrganizationMember`, `updateOrganization`).
-- [x] **Форма реєстрації ([apps/desktop/src/components/signup-form.tsx](file:///Users/oleg/AQA/SmartFeedStudio/apps/desktop/src/components/signup-form.tsx))**:
+- [x] **Форма реєстрації ([apps/desktop/src/components/signup-form.tsx](../../apps/desktop/src/components/signup-form.tsx))**:
   - Додано інпут `companyName` («Назва компанії / магазину») з валідацією, іконкою `Building2` та плейсхолдером.
 - [x] **Двомовна локалізація (i18n)**:
-  - Створено [locales/uk/team.json](file:///Users/oleg/AQA/SmartFeedStudio/apps/desktop/src/i18n/locales/uk/team.json) та [locales/en/team.json](file:///Users/oleg/AQA/SmartFeedStudio/apps/desktop/src/i18n/locales/en/team.json) з повним набором ключів та зареєстровано `team` namespace в `i18n/index.tsx`.
+  - Створено [locales/uk/team.json](../../apps/desktop/src/i18n/locales/uk/team.json) та [locales/en/team.json](../../apps/desktop/src/i18n/locales/en/team.json) з повним набором ключів та зареєстровано `team` namespace в `i18n/index.tsx`.
 - [x] **Сайдбар та відображення Компанії**:
   - У сайдбарі поруч з профілем відображається назва компанії `🏢 {user.organization.name}`.
   - Додано пункт головного меню **«👥 Команда»** (`/team`) у навігацію та роутер (`App.tsx`).
@@ -109,7 +109,7 @@ flowchart TD
 
 ### Етап 4. Автоматизоване Тестування (Playwright & Jest)
 
-- [x] **Desktop E2E Playwright Tests ([apps/desktop/e2e/team.spec.ts](file:///Users/oleg/AQA/SmartFeedStudio/apps/desktop/e2e/team.spec.ts))**:
+- [x] **Desktop E2E Playwright Tests ([apps/desktop/e2e/team.spec.ts](../../apps/desktop/e2e/team.spec.ts))**:
   - 7 з 7 тестів пройдено: навігація, соло-тариф з модалкою апгрейду, інвайт на PRO з оновленням лічильника, вичерпаний ліміт 3/3 з пропозицією Enterprise, видалення учасника з вивільненням місця, зміна назви компанії та мультимовність (UA ⇄ EN).
 - [x] **Повне очищення тестових даних (Zero Leftovers)**:
   - Всі створені під час тестів дані та стан сховища очищаються в `afterEach`.

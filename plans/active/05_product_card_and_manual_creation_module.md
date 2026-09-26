@@ -2,7 +2,7 @@
 
 > **Статус:** 📋 **В процесі планування та погодження (Planning / Active)**  
 > **Категорія:** `plans/active/`  
-> **Батьківський план:** [`00_master_products_and_catalogs_plan.md`](file:///Users/oleg/AQA/SmartFeedStudio/plans/active/00_master_products_and_catalogs_plan.md)  
+> **Батьківський план:** [`00_master_products_and_catalogs_plan.md`](00_master_products_and_catalogs_plan.md)  
 > **Ціль:** Створити багатофункціональну інтерактивну картку перегляду/редагування товару (Drawer/Modal) та повноцінний автономний модуль створення товару вручну з підтримкою динамічних характеристик, генерації артикулів та мультиязичності.
 
 ---

@@ -213,7 +213,7 @@
     "beautiful-desing": {
       "source": "zay-m3/naturalsql",
       "sourceType": "github",
-      "skillPath": "app/.agents/skills/beautiful-desing/SKILL.md",
+      "skillPath": ".agents/skills/sub-skills/beautiful-desing/SKILL.md",
       "computedHash": "c9ed733231eb259eeff93a6fa6ce8b102221cc6dcf7713121365c99da0ecadd9"
     },
     "canvas-design": {
@@ -333,7 +333,7 @@
     "sentry-backend-bugs": {
       "source": "getsentry/sentry",
       "sourceType": "github",
-      "skillPath": ".agents/skills/sentry-backend-bugs/SKILL.md",
+      "skillPath": ".agents/skills/sub-skills/sentry-backend-bugs/SKILL.md",
       "computedHash": "eb7668a2b46817e72ba945003ab844a0d5191a0a2301e9808f831f1e280bdfc1"
     },
     "shadcn": {

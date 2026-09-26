@@ -17,9 +17,9 @@
   Error: PrismaConfigEnvError: Cannot resolve environment variable: DATABASE_URL.
   ```
 - **Причина:**
-  У Prisma 7 конфігурація [prisma.config.ts](file:///Users/oleg/AQA/SmartFeedStudio/services/backend-api/prisma.config.ts) використовувала хелпер `env('DATABASE_URL')`. Хелпер `env()` у Prisma 7 строго викидає виняток `PrismaConfigEnvError`, якщо змінна відсутня.
+  У Prisma 7 конфігурація [prisma.config.ts](../../services/backend-api/prisma.config.ts) використовувала хелпер `env('DATABASE_URL')`. Хелпер `env()` у Prisma 7 строго викидає виняток `PrismaConfigEnvError`, якщо змінна відсутня.
   - На локальній машині розробника існує файл `.env`, з якого `dotenv` завантажує змінні.
-  - У Dockerfile файл `.env` виключений через [.dockerignore](file:///Users/oleg/AQA/SmartFeedStudio/.dockerignore) (із міркувань безпеки).
+  - У Dockerfile файл `.env` виключений через [.dockerignore](../../.dockerignore) (із міркувань безпеки).
   - Під час виконання `RUN pnpm --filter @smartfeed/backend-api prisma:generate` змінна `DATABASE_URL` була відсутня в середовищі образу, що призвело до краху.
   - **Парадокс:** `prisma generate` взагалі не підключається до бази даних — він лише генерує статичний TypeScript-код на основі `schema.prisma`. Проте Prisma 7 валідує `prisma.config.ts` перед запуском генератора.
 
@@ -31,13 +31,13 @@
   If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true...
   ```
 - **Причина:**
-  GitHub офіційно оголосив про знецінення Node 20 для ранерів Actions і перехід на Node 24. Всі пайплайни [.github/workflows/ci.yml](file:///Users/oleg/AQA/SmartFeedStudio/.github/workflows/ci.yml) та [docker.yml](file:///Users/oleg/AQA/SmartFeedStudio/.github/workflows/docker.yml) використовували `node-version: 20` та базові Docker-образи `node:20-alpine`.
+  GitHub офіційно оголосив про знецінення Node 20 для ранерів Actions і перехід на Node 24. Всі пайплайни [.github/workflows/ci.yml](../../.github/workflows/ci.yml) та [docker.yml](../../.github/workflows/docker.yml) використовували `node-version: 20` та базові Docker-образи `node:20-alpine`.
 
 ### Проблема 3: Чому білд у GitHub Actions пішов без попередньої перевірки? (Головне архітектурне питання)
 
 - **Розрив між тригерами пайплайнів:**
-  - Пайплайн [ci.yml](file:///Users/oleg/AQA/SmartFeedStudio/.github/workflows/ci.yml) запускається **виключно** на `push: branches: [main]`.
-  - Пайплайн публікації Docker [docker.yml](file:///Users/oleg/AQA/SmartFeedStudio/.github/workflows/docker.yml) запускається на `push: tags: ['v*']`.
+  - Пайплайн [ci.yml](../../.github/workflows/ci.yml) запускається **виключно** на `push: branches: [main]`.
+  - Пайплайн публікації Docker [docker.yml](../../.github/workflows/docker.yml) запускається на `push: tags: ['v*']`.
   - Коли розробник створює та пушить релізний тег (наприклад, `v1.5.0` або `git push --tags`), **`ci.yml` взагалі не виконується**!
   - `docker.yml` не мав попереднього етапу валідації (`pre-flight verification`) і відразу викликав `docker/build-push-action@v6` з параметром `push: true`.
   - У репозиторії був лише `.husky/pre-commit` (який перевіряє тільки форматування `lint-staged`), але **повністю був відсутній `.husky/pre-push`**, що дозволяло відправити непротестований тег у віддалений репозиторій.
@@ -84,22 +84,22 @@ flowchart TD
 
 ### Крок 1: Виправлення `prisma.config.ts` та Dockerfile
 
-1. **[services/backend-api/prisma.config.ts](file:///Users/oleg/AQA/SmartFeedStudio/services/backend-api/prisma.config.ts)**:
+1. **[services/backend-api/prisma.config.ts](../../services/backend-api/prisma.config.ts)**:
    - Забезпечити безпечний fallback для `DATABASE_URL`, щоб утиліта `prisma generate` працювала в будь-якому середовищі навіть без наявності локального `.env`:
      ```ts
      datasource: {
        url: process.env.DATABASE_URL || 'postgresql://postgres:postgrespassword@localhost:5432/smartfeed_db?schema=public',
      },
      ```
-2. **[services/backend-api/Dockerfile](file:///Users/oleg/AQA/SmartFeedStudio/services/backend-api/Dockerfile)**:
+2. **[services/backend-api/Dockerfile](../../services/backend-api/Dockerfile)**:
    - Оновити базовий образ на `node:22-alpine` (Active LTS).
    - Додати `ENV DATABASE_URL="postgresql://postgres:postgrespassword@localhost:5432/smartfeed_db?schema=public"` перед викликом `prisma:generate`.
-3. **[apps/admin-portal/Dockerfile](file:///Users/oleg/AQA/SmartFeedStudio/apps/admin-portal/Dockerfile)**:
+3. **[apps/admin-portal/Dockerfile](../../apps/admin-portal/Dockerfile)**:
    - Оновити базовий образ на `node:22-alpine`.
 
 ### Крок 2: Додавання скриптів верифікації у `package.json`
 
-- Додати у корінь [package.json](file:///Users/oleg/AQA/SmartFeedStudio/package.json):
+- Додати у корінь [package.json](../../package.json):
   ```json
   "verify:build": "pnpm build:shared && pnpm prisma:generate && turbo run build",
   "verify:docker": "docker build -t smartfeed-backend-test -f services/backend-api/Dockerfile . && docker build -t smartfeed-admin-test -f apps/admin-portal/Dockerfile .",
@@ -108,7 +108,7 @@ flowchart TD
 
 ### Крок 3: Впровадження Git Pre-Push Hook у `.husky/pre-push`
 
-- Створити виконуваний файл [.husky/pre-push](file:///Users/oleg/AQA/SmartFeedStudio/.husky/pre-push):
+- Створити виконуваний файл [.husky/pre-push](../../.husky/pre-push):
   ```bash
   #!/usr/bin/env sh
   . "$(dirname -- "$0")/_/husky.sh"
@@ -120,17 +120,17 @@ flowchart TD
 
 ### Крок 4: Модернізація GitHub Actions (`docker.yml`, `ci.yml`, `release.yml`)
 
-1. **[.github/workflows/docker.yml](file:///Users/oleg/AQA/SmartFeedStudio/.github/workflows/docker.yml)**:
+1. **[.github/workflows/docker.yml](../../.github/workflows/docker.yml)**:
    - Додати gating job `verify-release`:
      - Runs-on: `ubuntu-latest`
      - Node: `22`
      - Кроки: `pnpm install`, `pnpm build`, `pnpm prisma:generate`.
    - Зробити так, щоб `publish-backend-api` та `publish-admin-portal` мали:
      `needs: verify-release`!
-2. **[.github/workflows/ci.yml](file:///Users/oleg/AQA/SmartFeedStudio/.github/workflows/ci.yml)**:
+2. **[.github/workflows/ci.yml](../../.github/workflows/ci.yml)**:
    - Оновити `node-version: 22`.
    - Додати тригер на теги `tags: ['v*']` або синхронізувати перевірки.
-3. **[.github/workflows/release.yml](file:///Users/oleg/AQA/SmartFeedStudio/.github/workflows/release.yml)**:
+3. **[.github/workflows/release.yml](../../.github/workflows/release.yml)**:
    - Оновити `node-version: 22`.
 
 ---
