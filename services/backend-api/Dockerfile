@@ -8,8 +8,10 @@ WORKDIR /app
 # Enable pnpm
 RUN corepack enable && corepack prepare pnpm@9.15.4 --activate
 
-# Install OpenSSL & libc for Prisma build
-RUN apk add --no-cache openssl libc6-compat
+# Install OpenSSL & libc for Prisma build (with resilient mirror fallback)
+RUN apk add --no-cache openssl libc6-compat || \
+    (sed -i 's/dl-cdn.alpinelinux.org/uk.alpinelinux.org/g' /etc/apk/repositories && apk update && apk add --no-cache openssl libc6-compat) || \
+    true
 
 # Copy workspace definition files (all packages declared in pnpm-workspace.yaml to satisfy frozen-lockfile)
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json ./
@@ -44,8 +46,10 @@ ENV NODE_ENV=production
 ENV PORT=4000
 ENV NODE_PATH="/app/node_modules:/app/services/backend-api/node_modules"
 
-# Install OpenSSL for Prisma engine runtime
-RUN apk add --no-cache openssl libc6-compat
+# Install OpenSSL for Prisma engine runtime (with resilient mirror fallback)
+RUN apk add --no-cache openssl libc6-compat || \
+    (sed -i 's/dl-cdn.alpinelinux.org/uk.alpinelinux.org/g' /etc/apk/repositories && apk update && apk add --no-cache openssl libc6-compat) || \
+    true
 
 # Create non-root system user for security
 RUN addgroup --system --gid 1001 nodejs && \
