@@ -25,6 +25,7 @@ description: Essential CLI commands, environment ports, and access credentials f
 - **Prisma Schema Sync**: `pnpm --filter @smartfeed/backend-api exec prisma db push`
 - **Run Database Seeder**: `pnpm prisma:seed`
 - **Open Prisma Studio**: `pnpm prisma:studio`
+- **Railway CLI**: `railway status` / `railway up` / `railway mcp` (Token: `RAILWAY_TOKEN`)
 
 ---
 

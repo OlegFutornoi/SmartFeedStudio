@@ -1,4 +1,13 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Patch,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
 import { AuthService } from './auth.service';
@@ -7,11 +16,13 @@ import { LoginDto } from './dto/login.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { UpdateAvatarDto } from './dto/update-avatar.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { CurrentUser } from './decorators/current-user.decorator';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { GetUserByIdQuery } from '../users/queries/get-user-by-id.query';
 import { ChangePasswordCommand } from '../users/commands/change-password.command';
+import { UpdateUserAvatarCommand } from '../users/commands/update-user-avatar.command';
 import {
   ChangePasswordDto,
   ForgotPasswordResponseDto,
@@ -100,5 +111,21 @@ export class AuthController {
     return this.commandBus.execute(
       new ChangePasswordCommand(userId, dto.currentPassword, dto.newPassword),
     );
+  }
+
+  @Patch('avatar')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Update avatar for current authenticated user' })
+  @ApiResponse({ status: 200, description: 'Avatar updated successfully' })
+  @ApiResponse({ status: 400, description: 'Invalid avatar data' })
+  async updateAvatar(
+    @CurrentUser('id') userId: string,
+    @Body() dto: UpdateAvatarDto,
+  ): Promise<UserProfile> {
+    const avatarUrl = dto.avatarUrl && dto.avatarUrl.trim() !== '' ? dto.avatarUrl : null;
+    await this.commandBus.execute(new UpdateUserAvatarCommand(userId, avatarUrl));
+    return this.queryBus.execute(new GetUserByIdQuery(userId));
   }
 }

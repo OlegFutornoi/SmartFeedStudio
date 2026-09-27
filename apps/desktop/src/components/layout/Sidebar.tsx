@@ -179,13 +179,13 @@ export function Sidebar() {
       <aside
         data-testid="desktop-sidebar"
         className={cn(
-          'hidden md:flex flex-col justify-between h-screen sticky top-0 border-r border-border bg-card transition-all duration-300 z-20 select-none shadow-xs',
+          'hidden md:flex flex-col justify-between h-screen sticky top-0 bg-transparent transition-all duration-300 z-20 select-none',
           isCollapsed ? 'w-[72px]' : 'w-64',
         )}
       >
         <div className="flex flex-col flex-1 min-h-0">
           {/* Top Brand Header */}
-          <div className="h-16 px-4 flex items-center border-b border-border">
+          <div className="p-4 flex items-center">
             <div className="flex items-center">
               <button
                 type="button"
@@ -221,11 +221,6 @@ export function Sidebar() {
             className="space-y-1.5 flex-1 overflow-y-auto overflow-x-hidden py-2"
             data-testid="desktop-sidebar-nav"
           >
-            {!isCollapsed && (
-              <div className="px-3 pb-2 text-[11px] font-semibold text-muted-foreground tracking-wider uppercase">
-                {currentLang === 'uk' ? 'Меню клієнта' : 'Client Navigation'}
-              </div>
-            )}
             {primaryNavItems.map((item) => (
               <SidebarNavItem
                 key={item.id || item.key}

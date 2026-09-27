@@ -1,21 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  PanelLeft,
-  Menu,
-  Search,
-  User,
-  Zap,
-  Sparkles,
-  AlertTriangle,
-  ShieldCheck,
-} from 'lucide-react';
+import { PanelLeft, Menu, Search, Zap, Sparkles, AlertTriangle, ShieldCheck } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSidebar } from '@/contexts/SidebarContext';
 import { useLicense } from '@/hooks/useLicense';
 import { useTranslation } from '@/i18n';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { LanguageToggle } from '@/components/ui/language-toggle';
 import { CommandSearchDialog } from './CommandSearchDialog';
@@ -53,7 +45,7 @@ export const Header = React.memo(function Header() {
   return (
     <header
       data-testid="desktop-header"
-      className="h-16 border-b border-border bg-card px-4 sm:px-6 flex items-center justify-between sticky top-0 z-40 gap-4 shadow-xs"
+      className="h-13 sm:h-14 border-b border-border/60 bg-card/60 px-4 sm:px-6 flex items-center justify-between sticky top-0 z-40 gap-4 shadow-xs"
     >
       {/* Left side: Single Sidebar Toggle & Active Subscription Status */}
       <div className="flex items-center space-x-3">
@@ -182,9 +174,19 @@ export const Header = React.memo(function Header() {
           data-testid="user-profile-badge"
           className="flex items-center gap-2 px-2.5 py-1 rounded-xl border border-border/80 text-xs text-muted-foreground bg-secondary/30"
         >
-          <div className="w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center text-primary text-[10px] font-bold">
-            <User className="h-3 w-3" />
-          </div>
+          <Avatar className="size-5 border border-primary/30 shrink-0">
+            <AvatarImage src={user?.avatarUrl || undefined} alt={user?.fullName || 'User'} />
+            <AvatarFallback className="bg-primary/20 text-primary text-[9px] font-bold">
+              {user?.fullName
+                ? user.fullName
+                    .split(' ')
+                    .map((n) => n[0])
+                    .join('')
+                    .slice(0, 2)
+                    .toUpperCase()
+                : 'US'}
+            </AvatarFallback>
+          </Avatar>
           <span
             data-testid="user-email"
             className="font-medium text-foreground max-w-[160px] truncate"

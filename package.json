@@ -35,6 +35,10 @@
     "docker:up": "docker compose up -d",
     "docker:down": "docker compose down",
     "docker:logs": "docker compose logs -f",
+    "docker:prod:build": "docker compose -f docker-compose.prod.yml build",
+    "docker:prod:up": "docker compose -f docker-compose.prod.yml up -d",
+    "docker:prod:down": "docker compose -f docker-compose.prod.yml down",
+    "docker:prod:logs": "docker compose -f docker-compose.prod.yml logs -f",
     "mail:open": "open http://localhost:8025 || xdg-open http://localhost:8025",
     "mail:logs": "docker compose logs -f mailpit",
     "prisma:generate": "pnpm --filter @smartfeed/backend-api prisma:generate",
@@ -54,6 +58,7 @@
     "husky": "^9.1.7",
     "lint-staged": "^15.4.1",
     "prettier": "^3.4.2",
+    "shadcn": "^4.21.0",
     "turbo": "^2.3.3",
     "typescript": "^5.7.3",
     "typescript-eslint": "^8.20.0"

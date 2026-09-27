@@ -45,20 +45,16 @@ export const SidebarNavItem = React.memo(function SidebarNavItem({
             : 'space-x-3 px-3',
         isActive
           ? isSubItem
-            ? 'bg-primary/15 text-primary font-semibold border-l-2 border-primary'
-            : 'bg-primary text-primary-foreground shadow-sm shadow-primary/20 font-semibold'
-          : 'text-muted-foreground hover:text-foreground hover:bg-muted/50',
+            ? 'bg-accent/80 text-foreground font-semibold'
+            : 'bg-accent text-accent-foreground shadow-2xs font-semibold'
+          : 'text-muted-foreground hover:text-foreground hover:bg-accent/50',
       )}
     >
       <Icon
         className={cn(
           'shrink-0 transition-transform group-hover:scale-110',
           isSubItem ? 'h-3.5 w-3.5' : 'h-4 w-4',
-          isActive
-            ? isSubItem
-              ? 'text-primary'
-              : 'text-primary-foreground'
-            : 'text-muted-foreground group-hover:text-foreground',
+          isActive ? 'text-foreground' : 'text-muted-foreground group-hover:text-foreground',
         )}
       />
       {!isCollapsed && (

@@ -15,5 +15,7 @@
   "feedsCount": "{{count}} фідів",
   "statusActive": "Активний",
   "statusInactive": "Неактивний",
-  "noSuppliers": "Поки немає постачальників"
+  "noSuppliers": "Поки немає постачальників",
+  "skuUtilization": "Використання SKU",
+  "skuLimitText": "Ліміт: {{limit}} SKU"
 }

@@ -109,6 +109,10 @@
   - `shadcn/ui`, `radix-ui` (доступність, фокус-пастки, клавіатурна навігація).
   - `@tanstack/react-table` (сортування, пагінація, віртуалізація рядків).
   - `lucide-react` (семантичні піктограми без зайвих імпортів).
+- **`shadcn` (MCP Server)**: Офіційні реєстри компонентів, демо-шаблони та аудит-перевірка:
+  - `view_items_in_registries`: отримання офіційного коду та залежностей компонентів (`@shadcn/avatar`, `@shadcn/card`, `@shadcn/dialog`).
+  - `get_item_examples_from_registries`: пошук робочих демо-прикладів (`avatar-demo`, `table-demo`).
+  - `get_add_command_for_items`: отримання точних команд додавання компонентів.
 - **`firecrawl`**: дослідження преміальних дизайн-референсів, сучасних UX-патернів та стандартів доступності WCAG.
 
 ---
@@ -350,13 +354,13 @@
 
 ## 🧰 Зведена таблиця використання інструментів за етапами
 
-| Етап                  | Ключові скіли                                                            | MCP інструменти         | Команди перевірки                      |
-| :-------------------- | :----------------------------------------------------------------------- | :---------------------- | :------------------------------------- |
-| **1. Аналіз**         | `brainstorming`, `inversion-exercise`, `scale-game`                      | `context7`, `firecrawl` | —                                      |
-| **2. Планування**     | `writing-plans`, `executing-plans`, `subagent-driven`                    | —                       | Створення `plans/active/*.md`          |
-| **3. Дизайн & Код**   | `frontend`, `ui-ux-pro-max`, `shadcn`, `tailwind`, `emil-design`         | `context7`              | `pnpm format`                          |
-| **4. Проміжне рев'ю** | `requesting-code-review`, `code-review-reception`                        | —                       | `tsc --noEmit` (<250 рядків)           |
-| **5. Автотести**      | `playwright-best-practices`, `webapp-testing`, `condition-based-waiting` | `playwright` (MCP)      | `pnpm test:desktop`, `pnpm test:admin` |
-| **6. Дебаг**          | `systematic-debugging`, `root-cause-tracing`                             | —                       | Трейсинг, 4-фазний фікс                |
-| **7. Фінальне рев'ю** | `fullstack-code-review`, `adver-review`, `verification`                  | —                       | Повна верифікація білда                |
-| **8. Фінал**          | `plans_lifecycle.md`, `finishing-a-development-branch`                   | —                       | Переміщення в `plans/completed/`       |
+| Етап                  | Ключові скіли                                                            | MCP інструменти                         | Команди перевірки                      |
+| :-------------------- | :----------------------------------------------------------------------- | :-------------------------------------- | :------------------------------------- |
+| **1. Аналіз**         | `brainstorming`, `inversion-exercise`, `scale-game`                      | `context7`, `firecrawl`, `shadcn` (MCP) | —                                      |
+| **2. Планування**     | `writing-plans`, `executing-plans`, `subagent-driven`                    | —                                       | Створення `plans/active/*.md`          |
+| **3. Дизайн & Код**   | `frontend`, `ui-ux-pro-max`, `shadcn`, `tailwind`, `emil-design`         | `context7`, `shadcn` (MCP)              | `pnpm format`                          |
+| **4. Проміжне рев'ю** | `requesting-code-review`, `code-review-reception`                        | —                                       | `tsc --noEmit` (<250 рядків)           |
+| **5. Автотести**      | `playwright-best-practices`, `webapp-testing`, `condition-based-waiting` | `playwright` (MCP)                      | `pnpm test:desktop`, `pnpm test:admin` |
+| **6. Дебаг**          | `systematic-debugging`, `root-cause-tracing`                             | —                                       | Трейсинг, 4-фазний фікс                |
+| **7. Фінальне рев'ю** | `fullstack-code-review`, `adver-review`, `verification`                  | —                                       | Повна верифікація білда                |
+| **8. Фінал**          | `plans_lifecycle.md`, `finishing-a-development-branch`                   | —                                       | Переміщення в `plans/completed/`       |

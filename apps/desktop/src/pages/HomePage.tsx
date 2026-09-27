@@ -1,15 +1,33 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Building2, Package, Rss, Plus, CheckCircle2, XCircle } from 'lucide-react';
+import {
+  Building2,
+  Package,
+  Rss,
+  Plus,
+  CheckCircle2,
+  XCircle,
+  TrendingUp,
+  Layers,
+  Sparkles,
+} from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useQuotas } from '@/contexts/QuotasContext';
 import { useTranslation } from '@/i18n';
 import { useDataSync } from '@/lib/syncEvents';
 import { Button } from '@/components/ui/button';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+} from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import type { SupplierDto } from '@smartfeed/shared';
 import { getSuppliers } from '@/lib/api';
+import { FeedSyncActivityChart } from '@/components/dashboard/FeedSyncActivityChart';
 
 export function HomePage() {
   const { user, token } = useAuth();
@@ -41,6 +59,9 @@ export function HomePage() {
   const productsCount = quotas?.products?.used ?? 0;
   const feedsCount = quotas?.feeds?.used ?? 0;
 
+  const skuLimit = quotas?.products?.max ?? 1000;
+  const skuPercent = quotas?.products?.percentUsed ?? 0;
+
   return (
     <div
       data-testid="home-page"
@@ -60,63 +81,119 @@ export function HomePage() {
         <Button
           onClick={() => navigate('/suppliers')}
           data-testid="add-supplier-button"
-          className="gap-2 shadow-md shadow-primary/25 self-start sm:self-auto"
+          className="gap-2 shadow-xs self-start sm:self-auto"
         >
           <Plus className="size-4" />
           <span>{t('addSupplier')}</span>
         </Button>
       </div>
 
-      {/* Stats Grid */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <Card className="border-border/40 bg-card shadow-sm hover:shadow-md transition-shadow">
+      {/* Stats Grid: dashboard-01 4-Column Metric Cards */}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {/* 1. Total Products */}
+        <Card className="border-border/80 bg-gradient-to-t from-primary/5 to-card dark:bg-card shadow-xs hover:border-primary/40 transition-all">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{t('totalSuppliers')}</CardTitle>
-            <div className="p-2 rounded-md bg-blue-500/10 text-blue-500">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              {t('totalProducts')}
+            </CardTitle>
+            <div className="flex items-center gap-1.5">
+              <Badge
+                variant="outline"
+                className="text-[11px] font-medium px-1.5 py-0 rounded-md border-emerald-500/30 text-emerald-500 bg-emerald-500/5 flex items-center gap-1"
+              >
+                <TrendingUp className="size-3" />
+                <span>+100%</span>
+              </Badge>
+              <div className="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-500">
+                <Package className="size-4" />
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="pb-2">
+            <div className="text-3xl font-semibold tabular-nums tracking-tight text-foreground">
+              {new Intl.NumberFormat(language === 'uk' ? 'uk-UA' : 'en-US').format(productsCount)}
+            </div>
+          </CardContent>
+          <CardFooter className="pt-0 pb-3 text-xs text-muted-foreground">
+            <p>{t('totalProductsDesc')}</p>
+          </CardFooter>
+        </Card>
+
+        {/* 2. Total Suppliers */}
+        <Card className="border-border/80 bg-gradient-to-t from-primary/5 to-card dark:bg-card shadow-xs hover:border-primary/40 transition-all">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              {t('totalSuppliers')}
+            </CardTitle>
+            <div className="p-1.5 rounded-lg bg-blue-500/10 text-blue-500">
               <Building2 className="size-4" />
             </div>
           </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold tracking-tight text-foreground">
+          <CardContent className="pb-2">
+            <div className="text-3xl font-semibold tabular-nums tracking-tight text-foreground">
               {suppliersCount}
             </div>
-            <p className="text-xs text-muted-foreground mt-1">{t('totalSuppliersDesc')}</p>
           </CardContent>
+          <CardFooter className="pt-0 pb-3 text-xs text-muted-foreground">
+            <p>{t('totalSuppliersDesc')}</p>
+          </CardFooter>
         </Card>
 
-        <Card className="border-border/40 bg-card shadow-sm hover:shadow-md transition-shadow">
+        {/* 3. Export Feeds */}
+        <Card className="border-border/80 bg-gradient-to-t from-primary/5 to-card dark:bg-card shadow-xs hover:border-primary/40 transition-all">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{t('totalProducts')}</CardTitle>
-            <div className="p-2 rounded-md bg-emerald-500/10 text-emerald-500">
-              <Package className="size-4" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold tracking-tight text-foreground flex items-center gap-2">
-              <span>
-                {new Intl.NumberFormat(language === 'uk' ? 'uk-UA' : 'en-US').format(productsCount)}
-              </span>
-            </div>
-            <p className="text-xs text-muted-foreground mt-1">{t('totalProductsDesc')}</p>
-          </CardContent>
-        </Card>
-
-        <Card className="border-border/40 bg-card shadow-sm hover:shadow-md transition-shadow sm:col-span-2 lg:col-span-1">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{t('totalFeeds')}</CardTitle>
-            <div className="p-2 rounded-md bg-primary/10 text-primary">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              {t('totalFeeds')}
+            </CardTitle>
+            <div className="p-1.5 rounded-lg bg-primary/10 text-primary">
               <Rss className="size-4" />
             </div>
           </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold tracking-tight text-foreground">{feedsCount}</div>
-            <p className="text-xs text-muted-foreground mt-1">{t('totalFeedsDesc')}</p>
+          <CardContent className="pb-2">
+            <div className="text-3xl font-semibold tabular-nums tracking-tight text-foreground">
+              {feedsCount}
+            </div>
           </CardContent>
+          <CardFooter className="pt-0 pb-3 text-xs text-muted-foreground">
+            <p>{t('totalFeedsDesc')}</p>
+          </CardFooter>
+        </Card>
+
+        {/* 4. SKU Quota Usage */}
+        <Card className="border-border/80 bg-gradient-to-t from-primary/5 to-card dark:bg-card shadow-xs hover:border-primary/40 transition-all">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              {t('skuUtilization')}
+            </CardTitle>
+            <div className="flex items-center gap-1.5">
+              <Badge
+                variant="outline"
+                className="text-[11px] font-medium px-1.5 py-0 rounded-md border-primary/30 text-primary bg-primary/5 flex items-center gap-1"
+              >
+                <Sparkles className="size-3" />
+                <span>{skuPercent}%</span>
+              </Badge>
+              <div className="p-1.5 rounded-lg bg-primary/10 text-primary">
+                <Layers className="size-4" />
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="pb-2">
+            <div className="text-3xl font-semibold tabular-nums tracking-tight text-foreground">
+              {skuPercent}%
+            </div>
+          </CardContent>
+          <CardFooter className="pt-0 pb-3 text-xs text-muted-foreground">
+            <p>{t('skuLimitText', { limit: skuLimit.toLocaleString() })}</p>
+          </CardFooter>
         </Card>
       </div>
 
+      {/* Interactive Sync Activity Chart (dashboard-01) */}
+      <FeedSyncActivityChart productsCount={productsCount} feedsCount={feedsCount} />
+
       {/* Latest Suppliers Section */}
-      <Card data-testid="latest-suppliers-section" className="border-border/40 bg-card shadow-sm">
+      <Card data-testid="latest-suppliers-section" className="border-border/80 bg-card shadow-xs">
         <CardHeader className="flex flex-row items-center justify-between pb-4">
           <div>
             <CardTitle className="text-base font-semibold text-foreground">
@@ -126,7 +203,7 @@ export function HomePage() {
           </div>
           <Badge
             variant="outline"
-            className="text-xs bg-primary/10 text-primary border-primary/20 rounded-md"
+            className="text-xs bg-primary/5 text-primary border-primary/20 rounded-md"
           >
             {t('showingCount', { current: latestSuppliers.length, total: totalSuppliersDB })}
           </Badge>

@@ -20,5 +20,9 @@
   "profileDesc": "Personal information and access level",
   "keySecurity": "Key Security",
   "keySecurityDesc": "Saved in native Keychain",
-  "appearanceDesc": "Configure color accents, theme mode, and border radii"
+  "appearanceDesc": "Configure color accents, theme mode, and border radii",
+  "avatar": "Profile Avatar",
+  "changeAvatar": "Change photo",
+  "removeAvatar": "Remove",
+  "avatarHint": "Image is automatically optimized and stored locally"
 }

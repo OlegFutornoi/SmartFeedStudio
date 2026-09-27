@@ -20,7 +20,7 @@ export const DashboardQuickActions = React.memo(function DashboardQuickActions({
 
   return (
     <div data-testid="dashboard-quick-actions-panel" className="md:col-span-2 space-y-4">
-      <Card className="border-border/80 bg-card/60 backdrop-blur-sm shadow-md">
+      <Card className="border-border/80 bg-card shadow-xs">
         <CardHeader className="pb-3">
           <CardTitle
             data-testid="quick-actions-title"

@@ -32,5 +32,11 @@
   "password_updated": "Password updated successfully!",
   "err_password_min": "New password must be at least 8 characters long",
   "err_password_mismatch": "New password and confirmation do not match",
-  "err_password_failed": "Failed to change password. Please check your current password."
+  "err_password_failed": "Failed to change password. Please check your current password.",
+  "change_avatar": "Change photo",
+  "remove_avatar": "Remove",
+  "avatar_hint": "PNG, JPG or WebP up to 2MB",
+  "avatar_updated": "Avatar updated successfully!",
+  "avatar_removed": "Avatar removed!",
+  "avatar_too_large": "File size exceeds 2MB limit"
 }

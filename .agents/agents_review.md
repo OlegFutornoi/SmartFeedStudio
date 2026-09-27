@@ -62,6 +62,7 @@
     │    • 100% Solid Sticky Headers (thead.sticky.top-0 має solid bg-card)         │
     │    • Zero Duplicate CTAs, дедуплікація запитів (useRef guards), 100% i18n     │
     │    • MCP: Playwright MCP (live скріншоти, інспекція DOM, без browser_subagent)│
+    │    • MCP: shadcn (перевірка UI компонентів через get_audit_checklist)          │
     │    • Скіли: ui-ux-pro-max, tailwind-design-system, vercel-react-best-practices│
     └───────────────────────────────────────┬───────────────────────────────────────┘
                                             │
@@ -330,13 +331,13 @@ _Скіли: [code-review-reception](skills/sub-skills/code-review-reception/SKI
 
 ## 🧰 Зведена таблиця використання інструментів аудиту за етапами
 
-| Етап                       | Ключові скіли                                                                                                                 | MCP інструменти         | Артефакти та дії                                  |
-| :------------------------- | :---------------------------------------------------------------------------------------------------------------------------- | :---------------------- | :------------------------------------------------ |
-| **1. Розвідка меж**        | `inversion-exercise`, `scale-game`, `collision-zone-thinking`, `preserving-productive-tensions`, `tracing-knowledge-lineages` | `context7`, `firecrawl` | Визначення target files, git diff                 |
-| **2. Архітектурний аудит** | `fullstack-code-review`, `nestjs-best-practices`                                                                              | `context7`              | Перевірка меж CQRS, ліміту <250 рядків            |
-| **3. Безпека & 4 шари**    | `defense-in-depth`, `sentry-backend-bugs`, `api-security-bp`, `better-auth-security-bp`, `security-bp`                        | `firecrawl` (OWASP)     | Пошук CWE-78, IDOR, TOCTOU, 0 any, 0 empty catch  |
-| **4. Фронтенд & UX**       | `ui-ux-pro-max`, `tailwind-design-system`, `vercel-react`, `security-best-practices`                                          | `playwright` (MCP live) | Sticky headers, Theme tokens, Zero dups, i18n     |
-| **5. БД & Prisma**         | `supabase-postgres-best-practices`, `prisma-client-api`, `postgresql-optimization`                                            | `context7` (Prisma)     | 100% FK індекси, snake_case @@map, 0 N+1, timestz |
-| **6. Стрес-тест (Adver)**  | `adver-review`, `api-security-testing`, `testing-anti-patterns`                                                               | —                       | Написання падаючих тестів-доказів (RED)           |
-| **7. План покращення**     | `writing-plans`, `executing-plans`, `simplification-cascades`                                                                 | —                       | Генерація `plans/active/remediation_*.md`         |
-| **8. Фінальний звіт**      | `code-review-reception`, `requesting-code-review`, `verification`                                                             | —                       | Звіт користувачу та очікування команди на старт   |
+| Етап                       | Ключові скіли                                                                                                                 | MCP інструменти                    | Артефакти та дії                                  |
+| :------------------------- | :---------------------------------------------------------------------------------------------------------------------------- | :--------------------------------- | :------------------------------------------------ |
+| **1. Розвідка меж**        | `inversion-exercise`, `scale-game`, `collision-zone-thinking`, `preserving-productive-tensions`, `tracing-knowledge-lineages` | `context7`, `firecrawl`            | Визначення target files, git diff                 |
+| **2. Архітектурний аудит** | `fullstack-code-review`, `nestjs-best-practices`                                                                              | `context7`                         | Перевірка меж CQRS, ліміту <250 рядків            |
+| **3. Безпека & 4 шари**    | `defense-in-depth`, `sentry-backend-bugs`, `api-security-bp`, `better-auth-security-bp`, `security-bp`                        | `firecrawl` (OWASP)                | Пошук CWE-78, IDOR, TOCTOU, 0 any, 0 empty catch  |
+| **4. Фронтенд & UX**       | `ui-ux-pro-max`, `tailwind-design-system`, `vercel-react`, `security-best-practices`                                          | `playwright` (MCP), `shadcn` (MCP) | Sticky headers, Theme tokens, Zero dups, i18n     |
+| **5. БД & Prisma**         | `supabase-postgres-best-practices`, `prisma-client-api`, `postgresql-optimization`                                            | `context7` (Prisma)                | 100% FK індекси, snake_case @@map, 0 N+1, timestz |
+| **6. Стрес-тест (Adver)**  | `adver-review`, `api-security-testing`, `testing-anti-patterns`                                                               | —                                  | Написання падаючих тестів-доказів (RED)           |
+| **7. План покращення**     | `writing-plans`, `executing-plans`, `simplification-cascades`                                                                 | —                                  | Генерація `plans/active/remediation_*.md`         |
+| **8. Фінальний звіт**      | `code-review-reception`, `requesting-code-review`, `verification`                                                             | —                                  | Звіт користувачу та очікування команди на старт   |

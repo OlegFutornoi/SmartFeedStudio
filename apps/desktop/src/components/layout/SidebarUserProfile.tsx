@@ -2,6 +2,7 @@ import React from 'react';
 import { LogOut, Building2 } from 'lucide-react';
 import { UserProfile } from '@smartfeed/shared';
 import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 interface SidebarUserProfileProps {
   user: UserProfile | null;
@@ -29,13 +30,16 @@ export const SidebarUserProfile = React.memo(function SidebarUserProfile({
   };
 
   return (
-    <div className="p-3 border-t border-border/80 bg-card/60">
+    <div className="p-3 mt-auto">
       {!isCollapsed ? (
         <div className="flex items-center justify-between gap-2 px-1">
           <div className="flex items-center space-x-2.5 min-w-0 flex-1">
-            <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center text-primary text-xs font-bold border border-primary/30 shrink-0">
-              {getInitials(user?.fullName, user?.email)}
-            </div>
+            <Avatar className="h-8 w-8 border border-primary/30 shrink-0">
+              <AvatarImage src={user?.avatarUrl || undefined} alt={user?.fullName || 'User'} />
+              <AvatarFallback className="bg-primary/20 text-primary text-xs font-bold">
+                {getInitials(user?.fullName, user?.email)}
+              </AvatarFallback>
+            </Avatar>
             <div className="flex-1 min-w-0">
               <p
                 data-testid="sidebar-user-fullname"
@@ -75,9 +79,12 @@ export const SidebarUserProfile = React.memo(function SidebarUserProfile({
         </div>
       ) : (
         <div className="flex flex-col items-center space-y-2">
-          <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center text-primary text-[10px] font-bold border border-primary/30">
-            {getInitials(user?.fullName, user?.email)}
-          </div>
+          <Avatar className="h-8 w-8 border border-primary/30">
+            <AvatarImage src={user?.avatarUrl || undefined} alt={user?.fullName || 'User'} />
+            <AvatarFallback className="bg-primary/20 text-primary text-[10px] font-bold">
+              {getInitials(user?.fullName, user?.email)}
+            </AvatarFallback>
+          </Avatar>
           <button
             type="button"
             data-testid="logout-button"

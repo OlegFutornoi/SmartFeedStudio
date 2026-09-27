@@ -124,12 +124,12 @@ export function Sidebar() {
       {/* Desktop Collapsible Sidebar */}
       <aside
         className={cn(
-          'hidden md:flex flex-col justify-between h-screen sticky top-0 border-r border-border bg-card transition-all duration-300 z-20 select-none shadow-xs',
+          'hidden md:flex flex-col justify-between h-screen sticky top-0 bg-transparent transition-all duration-300 z-20 select-none',
           isCollapsed ? 'w-[72px]' : 'w-64',
         )}
       >
         {/* Top brand header */}
-        <div className="h-16 px-4 flex items-center border-b border-border">
+        <div className="p-4 flex items-center">
           <div className="flex items-center">
             <Link href="/" className="flex items-center space-x-3 w-full overflow-hidden group">
               <div className="h-9 w-9 rounded-xl bg-primary/20 border border-primary/40 flex items-center justify-center text-primary group-hover:scale-105 transition-transform shrink-0 shadow-sm shadow-primary/20">
@@ -159,11 +159,6 @@ export function Sidebar() {
         <div className="flex-1 px-3 py-2 overflow-y-auto overflow-x-hidden flex flex-col justify-between">
           {/* Main Top Navigation */}
           <nav className="space-y-1 py-1">
-            {!isCollapsed && (
-              <div className="px-3 pb-2 text-[11px] font-semibold text-muted-foreground tracking-wider uppercase">
-                {isUk ? 'Головне меню' : 'Main Menu'}
-              </div>
-            )}
             {mainNavigation.map((item) => {
               const isActive =
                 item.href === '/' ? pathname === '/' : pathname.startsWith(item.href);
@@ -183,7 +178,7 @@ export function Sidebar() {
           </nav>
 
           {/* Bottom Settings Navigation */}
-          <div className="mt-auto pt-3 border-t border-border/50 space-y-1">
+          <div className="mt-auto pt-2 space-y-1">
             <SidebarNavItem
               name={isUk ? 'Налаштування' : 'Settings'}
               href="/settings"

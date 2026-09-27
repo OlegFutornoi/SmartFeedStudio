@@ -57,6 +57,8 @@ COPY --from=builder --chown=nestjs:nodejs /app/packages/shared ./packages/shared
 COPY --from=builder --chown=nestjs:nodejs /app/services/backend-api/package.json ./services/backend-api/
 COPY --from=builder --chown=nestjs:nodejs /app/services/backend-api/dist ./services/backend-api/dist
 COPY --from=builder --chown=nestjs:nodejs /app/services/backend-api/prisma ./services/backend-api/prisma
+COPY --chown=nestjs:nodejs services/backend-api/docker-entrypoint.sh ./services/backend-api/docker-entrypoint.sh
+RUN chmod +x ./services/backend-api/docker-entrypoint.sh
 
 USER nestjs
 
@@ -64,4 +66,6 @@ EXPOSE 4000
 
 WORKDIR /app/services/backend-api
 
+ENTRYPOINT ["./docker-entrypoint.sh"]
 CMD ["node", "dist/main.js"]
+

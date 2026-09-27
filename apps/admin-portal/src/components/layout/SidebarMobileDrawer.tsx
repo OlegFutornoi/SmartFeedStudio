@@ -85,9 +85,6 @@ export const SidebarMobileDrawer = React.memo(function SidebarMobileDrawer({
         <div className="flex-1 py-4 overflow-y-auto space-y-4">
           {/* Main menu */}
           <nav className="space-y-1.5">
-            <div className="px-3 pb-1 text-[11px] font-semibold text-muted-foreground tracking-wider uppercase">
-              {isUk ? 'Головне меню' : 'Main Menu'}
-            </div>
             {mainNavigation.map((item) => {
               const isActive =
                 item.href === '/' ? pathname === '/' : pathname.startsWith(item.href);

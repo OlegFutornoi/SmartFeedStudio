@@ -7,6 +7,7 @@ import { UserListItemDto, UsersStatsDto } from '@smartfeed/shared';
 import { useAuth } from '../../contexts/AuthContext';
 import { DashboardWelcomeBanner } from '../../components/dashboard/DashboardWelcomeBanner';
 import { DashboardStatsGrid } from '../../components/dashboard/DashboardStatsGrid';
+import { AdminActivityChart } from '../../components/dashboard/AdminActivityChart';
 import { DashboardRecentUsersTable } from '../../components/dashboard/DashboardRecentUsersTable';
 import { DashboardQuickActions } from '../../components/dashboard/DashboardQuickActions';
 
@@ -63,6 +64,9 @@ export default function DashboardOverviewPage() {
 
       {/* Primary Metrics Grid */}
       <DashboardStatsGrid stats={stats} isLoading={isLoading} />
+
+      {/* Interactive Activity & Growth Trends Chart (dashboard-01) */}
+      <AdminActivityChart totalUsers={stats.totalUsers} activeLicenses={stats.activeLicenses} />
 
       {/* Main Content & Quick Actions */}
       <div className="grid gap-6 md:grid-cols-7">

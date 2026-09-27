@@ -12,13 +12,15 @@
     "test:e2e:ui": "playwright test --ui"
   },
   "dependencies": {
-    "@smartfeed/shared": "workspace:*",
+    "@radix-ui/react-avatar": "^1.2.6",
     "@sentry/nextjs": "^10",
+    "@smartfeed/shared": "workspace:*",
     "clsx": "^2.1.1",
     "lucide-react": "^0.473.0",
     "next": "^14.2.23",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "recharts": "2.15.4",
     "tailwind-merge": "^2.6.0"
   },
   "devDependencies": {

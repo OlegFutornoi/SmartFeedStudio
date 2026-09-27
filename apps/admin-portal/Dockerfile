@@ -28,9 +28,14 @@ COPY apps/admin-portal/ ./apps/admin-portal/
 # Ensure public directory exists
 RUN mkdir -p /app/apps/admin-portal/public
 
+# Build-time environment variables for Next.js bundle
+ARG NEXT_PUBLIC_API_URL=http://localhost:4000/api
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+
 # Build shared library & Next.js admin portal
 RUN pnpm --filter @smartfeed/shared build
 RUN pnpm --filter @smartfeed/admin-portal build
+
 
 # ==============================================================================
 # Stage 2: Production runner

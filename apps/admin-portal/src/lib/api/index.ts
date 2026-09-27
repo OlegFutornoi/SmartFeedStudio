@@ -24,6 +24,7 @@ export const api = {
   login: auth.login,
   getMe: auth.getMe,
   changePassword: auth.changePassword,
+  updateAvatar: auth.updateAvatar,
 
   // Users
   getUsers: users.getUsers,

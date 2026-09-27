@@ -26,7 +26,7 @@ export const DashboardRecentUsersTable = React.memo(function DashboardRecentUser
   return (
     <Card
       data-testid="dashboard-recent-users-card"
-      className="md:col-span-5 border-border/80 bg-card/60 backdrop-blur-sm shadow-md"
+      className="md:col-span-5 border-border/80 bg-card shadow-xs"
     >
       <CardHeader className="flex flex-row items-center justify-between">
         <div>

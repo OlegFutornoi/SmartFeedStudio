@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { UserProfile, LoginDto, ChangePasswordDto } from '@smartfeed/shared';
-import { api } from '../lib/api';
+import { api } from '@/lib/api';
 
 interface AuthContextType {
   user: UserProfile | null;
@@ -13,6 +13,7 @@ interface AuthContextType {
   login: (dto: LoginDto) => Promise<void>;
   logout: () => void;
   changePassword: (dto: ChangePasswordDto) => Promise<void>;
+  updateAvatar: (avatarUrl: string | null) => Promise<void>;
   refreshUser: () => Promise<void>;
 }
 
@@ -98,6 +99,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await api.changePassword(dto);
   };
 
+  const updateAvatar = async (avatarUrl: string | null) => {
+    setError(null);
+    const updated = await api.updateAvatar(avatarUrl);
+    setUser(updated);
+  };
+
   const refreshUser = async () => {
     await fetchCurrentUser();
   };
@@ -112,6 +119,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         login,
         logout,
         changePassword,
+        updateAvatar,
         refreshUser,
       }}
     >

@@ -3,9 +3,9 @@
 import React from 'react';
 import { KeyRound, LogOut } from 'lucide-react';
 import { UserProfile } from '@smartfeed/shared';
-import { Avatar, AvatarFallback } from '../ui/avatar';
-import { Button } from '../ui/button';
-import { useLanguage } from '../../contexts/LanguageContext';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface SidebarUserProfileProps {
   user: UserProfile | null;
@@ -35,11 +35,12 @@ export const SidebarUserProfile = React.memo(function SidebarUserProfile({
   };
 
   return (
-    <div className="p-3 border-t border-border/60 bg-muted/20">
+    <div className="p-3 mt-auto">
       {!isCollapsed ? (
         <div className="flex items-center justify-between gap-2 px-1">
           <div className="flex items-center space-x-2.5 min-w-0 flex-1">
             <Avatar className="h-8 w-8 border border-border shrink-0">
+              <AvatarImage src={user?.avatarUrl || undefined} alt={user?.fullName || 'Admin'} />
               <AvatarFallback className="bg-primary/20 text-primary font-bold text-xs">
                 {getInitials(user?.fullName, user?.email)}
               </AvatarFallback>
@@ -80,6 +81,7 @@ export const SidebarUserProfile = React.memo(function SidebarUserProfile({
       ) : (
         <div className="flex flex-col items-center space-y-2">
           <Avatar className="h-8 w-8 border border-border">
+            <AvatarImage src={user?.avatarUrl || undefined} alt={user?.fullName || 'Admin'} />
             <AvatarFallback className="bg-primary/20 text-primary font-bold text-[10px]">
               {getInitials(user?.fullName, user?.email)}
             </AvatarFallback>

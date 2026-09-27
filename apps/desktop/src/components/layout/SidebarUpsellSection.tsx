@@ -76,11 +76,11 @@ export const SidebarUpsellSection: React.FC<SidebarUpsellSectionProps> = ({
               data-testid={`nav-item-${item.key}`}
               data-upsell-item={item.key}
               className={cn(
-                'flex items-center text-sm font-medium transition-all group relative border-l-2 border-transparent',
-                isCollapsed ? 'justify-center h-10 w-10 mx-auto px-0' : 'space-x-3 px-3 py-2',
+                'flex items-center text-sm font-medium transition-all group relative rounded-lg',
+                isCollapsed ? 'justify-center h-9 w-9 mx-auto px-0' : 'space-x-3 mx-2 px-3 py-2',
                 isActive
-                  ? 'bg-primary/10 text-primary border-primary font-semibold'
-                  : 'text-muted-foreground/80 hover:text-foreground hover:bg-muted/40',
+                  ? 'bg-accent text-accent-foreground font-semibold'
+                  : 'text-muted-foreground/80 hover:text-foreground hover:bg-accent/40',
               )}
             >
               {renderItemIcon(

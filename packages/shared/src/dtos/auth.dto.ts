@@ -44,6 +44,12 @@ export const ResetPasswordDtoSchema = z.object({
 
 export type ResetPasswordDto = z.infer<typeof ResetPasswordDtoSchema>;
 
+export const UpdateAvatarDtoSchema = z.object({
+  avatarUrl: z.string().max(3000000).nullable().optional(),
+});
+
+export type UpdateAvatarDto = z.infer<typeof UpdateAvatarDtoSchema>;
+
 export interface ForgotPasswordResponseDto {
   success: boolean;
   message: string;
@@ -73,6 +79,7 @@ export interface UserProfile {
   email: string;
   fullName: string | null;
   role: Role;
+  avatarUrl?: string | null;
   isActive?: boolean;
   organization?: UserOrganizationInfo | null;
   createdAt: Date | string;

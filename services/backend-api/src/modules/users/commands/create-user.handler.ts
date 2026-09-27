@@ -80,6 +80,7 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand, Use
       email: user.email,
       fullName: user.fullName,
       role: user.role as Role,
+      avatarUrl: user.avatarUrl,
       organization: {
         id: organization.id,
         name: organization.name,

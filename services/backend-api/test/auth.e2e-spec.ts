@@ -218,4 +218,69 @@ describe('Auth — Registration & Login (E2E)', () => {
         .expect(400);
     });
   });
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // AVATAR UPDATE
+  // ─────────────────────────────────────────────────────────────────────────────
+
+  describe('PATCH /api/auth/avatar', () => {
+    it('updates avatar for authenticated user', async () => {
+      const loginRes = await request(app.getHttpServer())
+        .post('/api/auth/login')
+        .send({ email: testUser.email, password: testUser.password })
+        .expect(200);
+
+      const token = loginRes.body.tokens.accessToken;
+      const avatarData =
+        'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
+
+      const response = await request(app.getHttpServer())
+        .patch('/api/auth/avatar')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ avatarUrl: avatarData })
+        .expect(200);
+
+      expect(response.body.avatarUrl).toBe(avatarData);
+
+      // Verify GET /api/auth/me also returns updated avatar
+      const meRes = await request(app.getHttpServer())
+        .get('/api/auth/me')
+        .set('Authorization', `Bearer ${token}`)
+        .expect(200);
+
+      expect(meRes.body.avatarUrl).toBe(avatarData);
+    });
+
+    it('returns 401 Unauthorized without token', async () => {
+      await request(app.getHttpServer())
+        .patch('/api/auth/avatar')
+        .send({ avatarUrl: 'https://example.com/avatar.png' })
+        .expect(401);
+    });
+
+    it('removes avatar when empty avatarUrl or null is sent', async () => {
+      const loginRes = await request(app.getHttpServer())
+        .post('/api/auth/login')
+        .send({ email: testUser.email, password: testUser.password })
+        .expect(200);
+
+      const token = loginRes.body.tokens.accessToken;
+
+      const resEmpty = await request(app.getHttpServer())
+        .patch('/api/auth/avatar')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ avatarUrl: '' })
+        .expect(200);
+
+      expect(resEmpty.body.avatarUrl).toBeNull();
+
+      const resNull = await request(app.getHttpServer())
+        .patch('/api/auth/avatar')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ avatarUrl: null })
+        .expect(200);
+
+      expect(resNull.body.avatarUrl).toBeNull();
+    });
+  });
 });

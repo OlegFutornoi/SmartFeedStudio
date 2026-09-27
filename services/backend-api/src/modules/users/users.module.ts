@@ -6,6 +6,7 @@ import { UpdateUserStatusHandler } from './commands/update-user-status.handler';
 import { DeleteUserHandler } from './commands/delete-user.handler';
 import { ChangePasswordHandler } from './commands/change-password.handler';
 import { ResetPasswordHandler } from './commands/reset-password.handler';
+import { UpdateUserAvatarHandler } from './commands/update-user-avatar.handler';
 import { GetUserByEmailHandler } from './queries/get-user-by-email.handler';
 import { GetUserByIdHandler } from './queries/get-user-by-id.handler';
 import { GetUsersListHandler } from './queries/get-users-list.handler';
@@ -19,6 +20,7 @@ export const CommandHandlers = [
   DeleteUserHandler,
   ChangePasswordHandler,
   ResetPasswordHandler,
+  UpdateUserAvatarHandler,
 ];
 export const QueryHandlers = [
   GetUserByEmailHandler,

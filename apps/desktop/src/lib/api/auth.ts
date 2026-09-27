@@ -216,3 +216,19 @@ export async function acceptInvitation(payload: {
 
   return authData;
 }
+
+export async function updateUserAvatar(avatarUrl: string | null): Promise<UserProfile | null> {
+  const token = localStorage.getItem(TOKEN_KEY);
+  if (!token) return null;
+  const res = await fetchWithAuth('/auth/avatar', {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ avatarUrl }),
+  });
+  if (!res.ok) {
+    throw new ApiError('Failed to update avatar on server', res.status);
+  }
+  return res.json();
+}

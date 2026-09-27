@@ -3,13 +3,14 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { PanelLeft, Menu, Moon, Sun, Palette, Search, ShieldCheck } from 'lucide-react';
-import { Button } from '../ui/button';
-import { Badge } from '../ui/badge';
-import { LanguageToggle } from '../ui/language-toggle';
-import { useAuth } from '../../contexts/AuthContext';
-import { useTheme } from '../../contexts/ThemeContext';
-import { useSidebar } from '../../contexts/SidebarContext';
-import { useLanguage } from '../../contexts/LanguageContext';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { LanguageToggle } from '@/components/ui/language-toggle';
+import { useAuth } from '@/contexts/AuthContext';
+import { useTheme } from '@/contexts/ThemeContext';
+import { useSidebar } from '@/contexts/SidebarContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { AdminCommandSearchDialog } from './AdminCommandSearchDialog';
 
 export function Header() {
@@ -35,7 +36,7 @@ export function Header() {
   };
 
   return (
-    <header className="h-16 border-b border-border bg-card px-4 sm:px-6 flex items-center justify-between sticky top-0 z-40 gap-4 shadow-xs">
+    <header className="h-14 border-b border-border/60 bg-card/60 backdrop-blur-md px-4 sm:px-6 flex items-center justify-between sticky top-0 z-40 gap-4 shadow-xs">
       {/* Left side: Sidebar Toggle & System Status */}
       <div className="flex items-center space-x-3">
         {/* Desktop Sidebar Toggle Button */}
@@ -136,9 +137,12 @@ export function Header() {
 
         {/* User Profile */}
         <Link href="/settings" className="flex items-center gap-2.5 group">
-          <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary text-xs font-bold border border-primary/30 group-hover:scale-105 transition-transform">
-            {user?.fullName ? user.fullName.slice(0, 2).toUpperCase() : 'AD'}
-          </div>
+          <Avatar className="w-8 h-8 border border-primary/30 group-hover:scale-105 transition-transform shrink-0">
+            <AvatarImage src={user?.avatarUrl || undefined} alt={user?.fullName || 'Admin'} />
+            <AvatarFallback className="bg-primary/20 text-primary text-xs font-bold">
+              {user?.fullName ? user.fullName.slice(0, 2).toUpperCase() : 'AD'}
+            </AvatarFallback>
+          </Avatar>
           <div className="text-left hidden xl:block">
             <div className="text-xs font-semibold text-foreground flex items-center gap-1 group-hover:text-primary transition-colors">
               {user?.fullName || t('common', 'administrator')}

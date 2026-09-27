@@ -1,9 +1,5 @@
 {
   "mcpServers": {
-    "playwright": {
-      "command": "npx",
-      "args": ["-y", "@playwright/mcp@latest"]
-    },
     "shadcn": {
       "command": "npx",
       "args": ["shadcn@latest", "mcp"]

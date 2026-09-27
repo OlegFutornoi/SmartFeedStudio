@@ -15,5 +15,7 @@
   "feedsCount": "{{count}} feeds",
   "statusActive": "Active",
   "statusInactive": "Inactive",
-  "noSuppliers": "No suppliers yet"
+  "noSuppliers": "No suppliers yet",
+  "skuUtilization": "SKU Utilization",
+  "skuLimitText": "Limit: {{limit}} SKUs"
 }

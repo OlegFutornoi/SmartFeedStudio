@@ -24,3 +24,10 @@ export async function changePassword(
     body: JSON.stringify(dto),
   });
 }
+
+export async function updateAvatar(avatarUrl: string | null): Promise<UserProfile> {
+  return baseClient.request<UserProfile>('/auth/avatar', {
+    method: 'PATCH',
+    body: JSON.stringify({ avatarUrl: avatarUrl || null }),
+  });
+}

@@ -5,6 +5,7 @@ import {
   registerUser,
   getCurrentUser,
   refreshAuthSession,
+  updateUserAvatar,
   TOKEN_KEY,
   REFRESH_TOKEN_KEY,
   USER_KEY,
@@ -12,6 +13,7 @@ import {
   type RegisterCredentials,
 } from '@/lib/api';
 import { setSentryUser } from '@/lib/sentry';
+import { getLocalAvatar, saveLocalAvatar } from '@/services/localUserProfile';
 
 interface AuthContextType {
   user: UserProfile | null;
@@ -26,6 +28,7 @@ interface AuthContextType {
   }) => void;
   logout: () => void;
   refreshProfile: () => Promise<void>;
+  updateAvatar: (avatarUrl: string | null) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -69,6 +72,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     try {
       const profile = await getCurrentUser(activeToken);
+      const localAvatar = await getLocalAvatar(profile.id);
+      if (localAvatar === '') {
+        profile.avatarUrl = null;
+      } else if (localAvatar) {
+        profile.avatarUrl = localAvatar;
+      }
       setUser(profile);
       localStorage.setItem(USER_KEY, JSON.stringify(profile));
       // In case token was silently refreshed during getCurrentUser
@@ -183,6 +192,41 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
+  // Sync local avatar for desktop user
+  useEffect(() => {
+    if (user?.id) {
+      getLocalAvatar(user.id).then((localAvatar) => {
+        if (localAvatar === '' && user.avatarUrl) {
+          setUser((prev) => (prev ? { ...prev, avatarUrl: null } : null));
+        } else if (localAvatar && user.avatarUrl !== localAvatar) {
+          setUser((prev) => (prev ? { ...prev, avatarUrl: localAvatar } : null));
+        }
+      });
+    }
+  }, [user?.id, user?.avatarUrl]);
+
+  const updateAvatar = useCallback(
+    async (avatarUrl: string | null) => {
+      if (!user) return;
+      const normalized = avatarUrl && avatarUrl.trim() !== '' ? avatarUrl : null;
+      await saveLocalAvatar(user.id, normalized);
+      setUser((prev) => {
+        if (!prev) return null;
+        const updated = { ...prev, avatarUrl: normalized };
+        localStorage.setItem(USER_KEY, JSON.stringify(updated));
+        return updated;
+      });
+
+      // Synchronize with backend API if authenticated
+      try {
+        await updateUserAvatar(normalized);
+      } catch (err) {
+        console.warn('[AuthContext] Backend avatar sync skipped:', err);
+      }
+    },
+    [user],
+  );
+
   const value: AuthContextType = useMemo(
     () => ({
       user,
@@ -194,8 +238,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setAuthSession,
       logout,
       refreshProfile,
+      updateAvatar,
     }),
-    [user, token, isLoading, login, register, setAuthSession, logout, refreshProfile],
+    [user, token, isLoading, login, register, setAuthSession, logout, refreshProfile, updateAvatar],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

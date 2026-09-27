@@ -1,0 +1,192 @@
+version: '3.8'
+
+services:
+  # ============================================================================
+  # 1. PostgreSQL 16 (Primary Database)
+  # ============================================================================
+  postgre:
+    image: postgres:16-alpine
+    container_name: smartfeed-prod-postgres
+    restart: unless-stopped
+    ports:
+      - '${POSTGRES_PORT:-5432}:5432'
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-smartfeed_db}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgrespassword}
+    volumes:
+      - postgres_prod_data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-smartfeed_db}']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - smartfeed-network
+
+  # ============================================================================
+  # 2. Redis 7 (BullMQ & Cache)
+  # ============================================================================
+  redis:
+    image: redis:7-alpine
+    container_name: smartfeed-prod-redis
+    restart: unless-stopped
+    ports:
+      - '${REDIS_PORT:-6379}:6379'
+    volumes:
+      - redis_prod_data:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - smartfeed-network
+
+  # ============================================================================
+  # 3. MinIO S3 Object Storage
+  # ============================================================================
+  minio:
+    image: minio/minio:latest
+    container_name: smartfeed-prod-minio
+    restart: unless-stopped
+    ports:
+      - '${S3_API_PORT:-9000}:9000' # S3 API
+      - '${S3_CONSOLE_PORT:-9001}:9001' # Web Console
+    environment:
+      MINIO_ROOT_USER: ${S3_ACCESS_KEY_ID:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${S3_SECRET_ACCESS_KEY:-minioadminpassword}
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio_prod_data:/data
+    healthcheck:
+      test: ['CMD', 'mc', 'ready', 'local']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - smartfeed-network
+
+  minio-init:
+    image: minio/mc:latest
+    container_name: smartfeed-prod-minio-init
+    depends_on:
+      minio:
+        condition: service_started
+    entrypoint: >
+      /bin/sh -c "
+      sleep 2;
+      /usr/bin/mc alias set myminio http://minio:9000 ${S3_ACCESS_KEY_ID:-minioadmin} ${S3_SECRET_ACCESS_KEY:-minioadminpassword};
+      /usr/bin/mc mb myminio/${S3_BUCKET_NAME:-smartfeed-storage} || true;
+      /usr/bin/mc anonymous set download myminio/${S3_BUCKET_NAME:-smartfeed-storage} || true;
+      exit 0;
+      "
+    networks:
+      - smartfeed-network
+
+  # ============================================================================
+  # 4. Mail Service (Mailpit / SMTP)
+  # ============================================================================
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: smartfeed-prod-mailpit
+    restart: unless-stopped
+    ports:
+      - '${MAIL_SMTP_PORT:-1025}:1025' # SMTP port
+      - '${MAIL_WEB_PORT:-8025}:8025' # Web UI port
+    environment:
+      MP_MAX_MESSAGES: 1000
+      MP_DATA_FILE: ''
+      MP_SMTP_AUTH_ACCEPT_ANY: 1
+      MP_SMTP_AUTH_ALLOW_INSECURE: 1
+    networks:
+      - smartfeed-network
+
+  # ============================================================================
+  # 5. Backend API (NestJS CQRS + Prisma + BullMQ)
+  # ============================================================================
+  backend-api:
+    build:
+      context: .
+      dockerfile: services/backend-api/Dockerfile
+    container_name: smartfeed-prod-backend-api
+    restart: unless-stopped
+    ports:
+      - '${PORT:-4000}:4000'
+    depends_on:
+      postgre:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 4000
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgrespassword}@postgre:5432/${POSTGRES_DB:-smartfeed_db}?schema=public
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+      S3_ENDPOINT: ${S3_INTERNAL_ENDPOINT:-http://minio:9000}
+      S3_REGION: ${S3_REGION:-us-east-1}
+      S3_ACCESS_KEY_ID: ${S3_ACCESS_KEY_ID:-minioadmin}
+      S3_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY:-minioadminpassword}
+      S3_BUCKET_NAME: ${S3_BUCKET_NAME:-smartfeed-storage}
+      S3_FORCE_PATH_STYLE: 'true'
+      MAIL_ENABLED: 'true'
+      MAIL_HOST: mailpit
+      MAIL_PORT: 1025
+      MAIL_USER: ${MAIL_USER:-}
+      MAIL_PASS: ${MAIL_PASS:-}
+      MAIL_FROM: ${MAIL_FROM:-SmartFeed Studio <no-reply@smartfeed.studio>}
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET:-smartfeed-prod-access-token-secret-must-be-changed-in-production-min-32-chars}
+      JWT_ACCESS_EXPIRATION: ${JWT_ACCESS_EXPIRATION:-15m}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-smartfeed-prod-refresh-token-secret-must-be-changed-in-production-min-32-chars}
+      JWT_REFRESH_EXPIRATION: ${JWT_REFRESH_EXPIRATION:-7d}
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:3000,http://admin-portal:3000,tauri://localhost,http://localhost:1420}
+      APP_URL: ${APP_URL:-http://localhost:3000}
+      PRISMA_DB_PUSH: 'true'
+    healthcheck:
+      test: ['CMD-SHELL', 'wget -qO- http://localhost:4000/api/health || exit 0']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - smartfeed-network
+
+  # ============================================================================
+  # 6. Admin Portal (Next.js 14 Standalone)
+  # ============================================================================
+  admin-portal:
+    build:
+      context: .
+      dockerfile: apps/admin-portal/Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:4000/api}
+    container_name: smartfeed-prod-admin-portal
+    restart: unless-stopped
+    ports:
+      - '${ADMIN_PORT:-3000}:3000'
+    depends_on:
+      backend-api:
+        condition: service_started
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      HOSTNAME: '0.0.0.0'
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:4000/api}
+    networks:
+      - smartfeed-network
+
+volumes:
+  postgres_prod_data:
+    driver: local
+  redis_prod_data:
+    driver: local
+  minio_prod_data:
+    driver: local
+
+networks:
+  smartfeed-network:
+    driver: bridge
