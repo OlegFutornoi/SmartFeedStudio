@@ -5,8 +5,8 @@ FROM node:22-alpine AS builder
 
 WORKDIR /app
 
-# Enable pnpm
-RUN corepack enable && corepack prepare pnpm@9.15.4 --activate
+# Enable pnpm via npm
+RUN npm install -g pnpm@9.15.4
 
 # Install OpenSSL & libc for Prisma build (with resilient mirror fallback)
 RUN apk add --no-cache openssl libc6-compat || \
