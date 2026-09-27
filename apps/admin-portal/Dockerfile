@@ -53,7 +53,7 @@ RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 nextjs
 
 # Copy static assets and standalone build output
-COPY --from=builder /app/apps/admin-portal/public ./apps/admin-portal/public
+COPY --from=builder --chown=nextjs:nodejs /app/apps/admin-portal/public ./apps/admin-portal/public
 COPY --from=builder --chown=nextjs:nodejs /app/apps/admin-portal/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/apps/admin-portal/.next/static ./apps/admin-portal/.next/static
 

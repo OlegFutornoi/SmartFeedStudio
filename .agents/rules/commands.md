@@ -9,6 +9,7 @@ description: Essential CLI commands, environment ports, and access credentials f
 
 - **Start Infrastructure**: `pnpm docker:up` (Postgres: 5432, Redis: 6379, MinIO: 9000/9001)
 - **Stop Infrastructure**: `pnpm docker:down`
+- **Production Docker**: `pnpm docker:prod:build` / `pnpm docker:prod:up` / `pnpm docker:prod:down` / `pnpm docker:prod:logs`
 - **Start All Apps (Dev)**: `pnpm dev`
 - **Run Backend API**: `pnpm dev:backend`
 - **Run Admin Portal**: `pnpm dev:admin`

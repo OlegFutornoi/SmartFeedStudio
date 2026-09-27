@@ -91,3 +91,44 @@ pnpm mail:logs
   ```text
   postgresql://postgres:postgrespassword@localhost:5432/smartfeed_db?schema=public
   ```
+
+---
+
+## 🚀 Продакшн-Стек Docker Compose (`docker-compose.prod.yml`)
+
+Для розгортання автономного продакшн середовища (всі сервіси, включаючи додатки) використовується `docker-compose.prod.yml`:
+
+- **Admin Portal**: Next.js 14 Standalone (`:3000`)
+- **Backend API**: NestJS 11 CQRS + Prisma (`:4000`)
+- **PostgreSQL 16**: База даних (`:5432`)
+- **Redis 7**: Кеш та BullMQ (`:6379`)
+- **MinIO S3**: Об'єктне сховище (`:9000`, `:9001`)
+- **Mailpit**: SMTP сервіс (`:1025`, `:8025`)
+
+```bash
+# Збірка продакшн образів
+pnpm docker:prod:build
+
+# Запуск продакшн контейнерів у фоновому режимі
+pnpm docker:prod:up
+
+# Перегляд логів продакшн стеку
+pnpm docker:prod:logs
+
+# Зупинка продакшн контейнерів
+pnpm docker:prod:down
+```
+
+---
+
+## ☁️ Хмарне Розгортання (Railway Cloud)
+
+Проект підтримує розгортання на платформі [Railway](https://railway.app) через конфігурацію `railway.json`:
+
+```bash
+# Перевірити статус Railway проекту
+railway status
+
+# Розгорнути проект у Railway
+railway up
+```

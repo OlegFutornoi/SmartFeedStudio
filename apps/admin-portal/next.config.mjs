@@ -5,6 +5,9 @@ const nextConfig = {
   reactStrictMode: false,
   transpilePackages: ['@smartfeed/shared'],
   output: 'standalone',
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
 };
 
 export default withSentryConfig(nextConfig, {

@@ -42,6 +42,7 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 ENV PORT=4000
+ENV NODE_PATH="/app/node_modules:/app/services/backend-api/node_modules"
 
 # Install OpenSSL for Prisma engine runtime
 RUN apk add --no-cache openssl libc6-compat
@@ -55,8 +56,10 @@ COPY --from=builder --chown=nestjs:nodejs /app/node_modules ./node_modules
 COPY --from=builder --chown=nestjs:nodejs /app/package.json /app/pnpm-workspace.yaml ./
 COPY --from=builder --chown=nestjs:nodejs /app/packages/shared ./packages/shared
 COPY --from=builder --chown=nestjs:nodejs /app/services/backend-api/package.json ./services/backend-api/
+COPY --from=builder --chown=nestjs:nodejs /app/services/backend-api/node_modules ./services/backend-api/node_modules
 COPY --from=builder --chown=nestjs:nodejs /app/services/backend-api/dist ./services/backend-api/dist
 COPY --from=builder --chown=nestjs:nodejs /app/services/backend-api/prisma ./services/backend-api/prisma
+COPY --from=builder --chown=nestjs:nodejs /app/services/backend-api/prisma.config.ts ./services/backend-api/prisma.config.ts
 COPY --chown=nestjs:nodejs services/backend-api/docker-entrypoint.sh ./services/backend-api/docker-entrypoint.sh
 RUN chmod +x ./services/backend-api/docker-entrypoint.sh
 
@@ -67,5 +70,5 @@ EXPOSE 4000
 WORKDIR /app/services/backend-api
 
 ENTRYPOINT ["./docker-entrypoint.sh"]
-CMD ["node", "dist/main.js"]
+CMD ["sh", "-c", "if [ -f dist/src/main.js ]; then exec node dist/src/main.js; else exec node dist/main.js; fi"]
 

@@ -169,7 +169,7 @@ importers:
         version: 18.3.7(@types/react@18.3.31)
       '@vitejs/plugin-react':
         specifier: ^4.3.4
-        version: 4.7.0(vite@6.4.3(@types/node@22.20.1)(jiti@1.21.7)(terser@5.50.0)(yaml@2.9.0))
+        version: 4.7.0(vite@6.4.3(@types/node@22.20.1)(jiti@2.7.0)(terser@5.50.0)(yaml@2.9.0))
       autoprefixer:
         specifier: ^10.4.20
         version: 10.5.4(postcss@8.5.26)
@@ -184,7 +184,7 @@ importers:
         version: 5.9.3
       vite:
         specifier: ^6.0.7
-        version: 6.4.3(@types/node@22.20.1)(jiti@1.21.7)(terser@5.50.0)(yaml@2.9.0)
+        version: 6.4.3(@types/node@22.20.1)(jiti@2.7.0)(terser@5.50.0)(yaml@2.9.0)
 
   packages/shared:
     dependencies:
@@ -261,6 +261,9 @@ importers:
       dotenv:
         specifier: ^17.4.2
         version: 17.4.2
+      express:
+        specifier: ^5.0.0
+        version: 5.2.1
       fast-xml-parser:
         specifier: ^5.11.1
         version: 5.11.1
@@ -9460,7 +9463,7 @@ snapshots:
       d3-time-format: 4.1.0
       internmap: 2.0.3
 
-  '@vitejs/plugin-react@4.7.0(vite@6.4.3(@types/node@22.20.1)(jiti@1.21.7)(terser@5.50.0)(yaml@2.9.0))':
+  '@vitejs/plugin-react@4.7.0(vite@6.4.3(@types/node@22.20.1)(jiti@2.7.0)(terser@5.50.0)(yaml@2.9.0))':
     dependencies:
       '@babel/core': 7.29.7
       '@babel/plugin-transform-react-jsx-self': 7.29.7(@babel/core@7.29.7)
@@ -9468,7 +9471,7 @@ snapshots:
       '@rolldown/pluginutils': 1.0.0-beta.27
       '@types/babel__core': 7.20.5
       react-refresh: 0.17.0
-      vite: 6.4.3(@types/node@22.20.1)(jiti@1.21.7)(terser@5.50.0)(yaml@2.9.0)
+      vite: 6.4.3(@types/node@22.20.1)(jiti@2.7.0)(terser@5.50.0)(yaml@2.9.0)
     transitivePeerDependencies:
       - supports-color
 
@@ -13107,7 +13110,7 @@ snapshots:
       d3-time: 3.1.0
       d3-timer: 3.0.1
 
-  vite@6.4.3(@types/node@22.20.1)(jiti@1.21.7)(terser@5.50.0)(yaml@2.9.0):
+  vite@6.4.3(@types/node@22.20.1)(jiti@2.7.0)(terser@5.50.0)(yaml@2.9.0):
     dependencies:
       esbuild: 0.25.12
       fdir: 6.5.0(picomatch@4.0.5)
@@ -13118,7 +13121,7 @@ snapshots:
     optionalDependencies:
       '@types/node': 22.20.1
       fsevents: 2.3.3
-      jiti: 1.21.7
+      jiti: 2.7.0
       terser: 5.50.0
       yaml: 2.9.0
 

@@ -4,7 +4,7 @@ services:
   # ============================================================================
   # 1. PostgreSQL 16 (Primary Database)
   # ============================================================================
-  postgre:
+  postgres:
     image: postgres:16-alpine
     container_name: smartfeed-prod-postgres
     restart: unless-stopped
@@ -115,7 +115,7 @@ services:
     ports:
       - '${PORT:-4000}:4000'
     depends_on:
-      postgre:
+      postgres:
         condition: service_healthy
       redis:
         condition: service_healthy
@@ -124,7 +124,7 @@ services:
     environment:
       NODE_ENV: production
       PORT: 4000
-      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgrespassword}@postgre:5432/${POSTGRES_DB:-smartfeed_db}?schema=public
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgrespassword}@postgres:5432/${POSTGRES_DB:-smartfeed_db}?schema=public
       REDIS_HOST: redis
       REDIS_PORT: 6379
       REDIS_PASSWORD: ${REDIS_PASSWORD:-}
