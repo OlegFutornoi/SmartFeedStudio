@@ -70,7 +70,7 @@
     │    • 100% індекси на FK (@@index([fkColumn])), snake_case mapping (@@map)     │
     │    • Курсорна пагінація замість OFFSET, ліквідація N+1 запитів, timestamptz   │
     │    • Короткі транзакції $transaction (без HTTP/S3 всередині)                  │
-    │    • Скіли: supabase-postgres-best-practices, prisma-client-api, neon-postgres│
+    │    • Скіли: supabase-postgres-best-practices, prisma-client-api, postgresql-code-review│
     └───────────────────────────────────────┬───────────────────────────────────────┘
                                             │
     ┌───────────────────────────────────────▼───────────────────────────────────────┐
@@ -145,7 +145,7 @@ _Скіли: [fullstack-code-review](skills/sub-skills/fullstack-code-review/SKI
 
 ## 🛡️ Етап 3: Безпековий аудит та 4-шаровий захист (Security & 4-Layer Defense)
 
-_Скіли: [defense-in-depth-validation](skills/sub-skills/defense-in-depth-validation/SKILL.md) · [sentry-backend-bugs](skills/sub-skills/sentry-backend-bugs/SKILL.md) · [subscription-lifecycle](skills/sub-skills/subscription-lifecycle/SKILL.md) · [backend-development](skills/sub-skills/backend-development/SKILL.md)_
+_Скіли: [defense-in-depth-validation](skills/sub-skills/defense-in-depth-validation/SKILL.md) · [sentry-backend-bugs](skills/sub-skills/sentry-backend-bugs/SKILL.md) · [subscription-lifecycle](skills/sub-skills/subscription-lifecycle/SKILL.md) · [backend-development](skills/sub-skills/backend-development/SKILL.md) · [api-security-best-practices](skills/sub-skills/api-security-best-practices/SKILL.md) · [better-auth-security-best-practices](skills/sub-skills/better-auth-security-best-practices/SKILL.md) · [security-best-practices](skills/sub-skills/security-best-practices/SKILL.md) · [firebase-security-rules-auditor](skills/sub-skills/firebase-security-rules-auditor/SKILL.md)_
 
 Аудитор детально перевіряє реалізацію 4-рівневого захисту на кожному ендпоінті:
 
@@ -163,7 +163,20 @@ _Скіли: [defense-in-depth-validation](skills/sub-skills/defense-in-depth-va
    - **IDOR / Tenant Isolation**: чи перевіряється, що `resource.organizationId === user.organizationId`? Користувач однієї компанії не має права читати чи змінювати ресурси іншої.
    - **CWE-78 Command Injection**: перевірка викликів зовнішніх процесів. Тільки `execFile(binary, [args], { shell: false })`. Використання `exec` з конкатенацією рядків — критична вразливість P0!
    - Безпека паролів: тільки Argon2id або bcrypt. Жодного plain-text або MD5/SHA1.
-4. **Шар 4 (Database & Sentry Bug Prevention)**:
+4. **API Security аудит ([api-security-best-practices](skills/sub-skills/api-security-best-practices/SKILL.md))**:
+   - Перевірка JWT контракту: фіксований алгоритм, issuer, audience, заборона вибору алгоритму від клієнта.
+   - Авторизація на рівні ресурсу та тенанту (не лише рольова).
+   - Zod/class-validator валідація тіла запиту (заборона `12abc` як ID 12).
+   - Rate limiting з правильною IP-ключом (IPv6-aware), атомарний counter+expiration.
+   - Захист від SSRF, DNS rebinding, file upload вразливостей.
+5. **Auth безпека ([better-auth-security-best-practices](skills/sub-skills/better-auth-security-best-practices/SKILL.md))**:
+   - Секрети не коротші 32 символів з ентропією ≥120 біт.
+   - CSRF захист, trusted origins, безпечна конфігурація cookies та сесій.
+   - Шифрування OAuth токенів, audit logging.
+6. **Загальний безпековий рев'ю ([security-best-practices](skills/sub-skills/security-best-practices/SKILL.md))**:
+   - Мовно-специфічний аудит для TypeScript/NestJS та React за документами з `references/`.
+   - Генерація повного security report з пріоритезацією за севериті.
+7. **Шар 4 (Database & Sentry Bug Prevention)**:
    - **Zero Silent Failures**: пошук порожніх блоків `catch {}`. Кожен блок зобов'язаний містити структурований лог або викидати доменний HTTP виняток.
    - **Zero `as any`**: пошук приведень до `any`, особливо у `where` блоках Prisma.
    - **Null checks на зв'язках**: захист від `TypeError: Cannot read property of null` на зв'язаних сутностях (`user.organization?.name`).
@@ -204,7 +217,7 @@ _Скіли: [ui-ux-pro-max](skills/sub-skills/ui-ux-pro-max/SKILL.md) · [tailw
 
 ## 🐘 Етап 5: Аудит бази даних, індексів та запитів (Database & Prisma)
 
-_Скіли: [supabase-postgres-best-practices](skills/sub-skills/supabase-postgres-best-practices/SKILL.md) · [prisma-client-api](skills/sub-skills/prisma-client-api/SKILL.md) · [prisma-postgres](skills/sub-skills/prisma-postgres/SKILL.md)_
+_Скіли: [supabase-postgres-best-practices](skills/sub-skills/supabase-postgres-best-practices/SKILL.md) · [prisma-client-api](skills/sub-skills/prisma-client-api/SKILL.md) · [prisma-postgres](skills/sub-skills/prisma-postgres/SKILL.md) · [postgresql-optimization](skills/sub-skills/postgresql-optimization/SKILL.md) · [postgresql-code-review](skills/sub-skills/postgresql-code-review/SKILL.md)_
 
 ### 🐘 Чеклист інспекції PostgreSQL & Prisma ([postgres_skills.md](rules/postgres_skills.md)):
 
@@ -220,12 +233,23 @@ _Скіли: [supabase-postgres-best-practices](skills/sub-skills/supabase-postg
    - Текстовий пошук `ILIKE`: наявність індексів `GIN` з розширенням `pg_trgm`.
 5. **Транзакційна гігієна**:
    - Блоки `$transaction()` повинні бути максимально короткими і містити **виключно** операції з БД. Заборонено виклики зовнішніх API, відправку пошти чи генерацію S3 URL всередині транзакцій.
+6. **Розширена оптимізація PostgreSQL ([postgresql-optimization](skills/sub-skills/postgresql-optimization/SKILL.md))**:
+   - JSONB операції з GIN індексами для збереження метаданих.
+   - Масиви PostgreSQL, віконні функції (аналітика, агрегації).
+   - Повнотекстовий пошук `tsvector`/`tsquery`.
+   - Partitioning, materialized views, моніторинг та профілювання запитів.
+7. **Спеціалізований PostgreSQL Code Review ([postgresql-code-review](skills/sub-skills/postgresql-code-review/SKILL.md))**:
+   - **JSONB Best Practices**: індексація JSONB через GIN (`(data->'status')`), запити через containment-оператори `@>`, CHECK-констрейнти на структуру JSONB.
+   - **Операції з масивами**: GIN індекси на масиви, оператори `@>`, заборона неефективної конкатенації масивів у циклах.
+   - **Дизайн типів та схеми**: `CITEXT` для case-insensitive полів (email), `TIMESTAMPTZ` для дат, `ENUM` типи замість вільних рядків `VARCHAR`, кастомні `DOMAIN` з валідацією.
+   - **Оптимізація функцій та тригерів**: виконання тригерів тільки при змінах `WHEN (OLD.* IS DISTINCT FROM NEW.*)`, усунення повільних функцій у PL/pgSQL.
+   - **Безпека та RLS**: Row Level Security (`ENABLE ROW LEVEL SECURITY`) для ізоляції чутливих таблиць, гранулярні привілеї замість надлишкових прав.
 
 ---
 
 ## ⚔️ Етап 6: Змагальний стрес-тест та доказ дефектів (Adversarial Testing)
 
-_Скіл: [adver-review](skills/sub-skills/adver-review/SKILL.md)_
+_Скіл: [adver-review](skills/sub-skills/adver-review/SKILL.md) · [api-security-testing](skills/sub-skills/api-security-testing/SKILL.md)_
 
 Аудитор діє за принципом **«код вважається дефектним, доки не доведено протилежне»**.
 
@@ -248,6 +272,10 @@ _Скіл: [adver-review](skills/sub-skills/adver-review/SKILL.md)_
    - **Vector D: State Lifecycle**: переривання операцій на середині кроку, витоки незбережених стейтів.
    - **Vector E: Resource Starvation**: важкі неіндексовані вибірки, вичерпання пулу з'єднань БД.
    - **Vector F: Frontend Fragility**: переривання запитів, швидкі подвійні кліки, відсутність обробки помилок.
+5. **API Security Testing ([api-security-testing](skills/sub-skills/api-security-testing/SKILL.md))**:
+   - Перевірка вразливостей за OWASP API Security Top 10 (2023): BOLA/IDOR, mass assignment, SSRF, broken function-level auth.
+   - Тестування з двома наборами креденшелів (різні тенанти) для доведення IDOR.
+   - ID tampering, excessive data exposure, обхід rate limits.
 
 ---
 
@@ -302,13 +330,13 @@ _Скіли: [code-review-reception](skills/sub-skills/code-review-reception/SKI
 
 ## 🧰 Зведена таблиця використання інструментів аудиту за етапами
 
-| Етап                       | Ключові скіли                                                     | MCP інструменти         | Артефакти та дії                                  |
-| :------------------------- | :---------------------------------------------------------------- | :---------------------- | :------------------------------------------------ |
-| **1. Розвідка меж**        | `inversion-exercise`, `scale-game`, `collision-zone-thinking`     | `context7`, `firecrawl` | Визначення target files, git diff                 |
-| **2. Архітектурний аудит** | `fullstack-code-review`, `nestjs-best-practices`                  | `context7`              | Перевірка меж CQRS, ліміту <250 рядків            |
-| **3. Безпека & 4 шари**    | `defense-in-depth`, `sentry-backend-bugs`, `subscription-lc`      | `firecrawl` (OWASP)     | Пошук CWE-78, IDOR, TOCTOU, 0 any, 0 empty catch  |
-| **4. Фронтенд & UX**       | `ui-ux-pro-max`, `tailwind-design-system`, `vercel-react`         | `playwright` (MCP live) | Sticky headers, Theme tokens, Zero dups, i18n     |
-| **5. БД & Prisma**         | `supabase-postgres-best-practices`, `prisma-client-api`           | `context7` (Prisma)     | 100% FK індекси, snake_case @@map, 0 N+1, timestz |
-| **6. Стрес-тест (Adver)**  | `adver-review`, `testing-anti-patterns`                           | —                       | Написання падаючих тестів-доказів (RED)           |
-| **7. План покращення**     | `writing-plans`, `executing-plans`, `simplification-cascades`     | —                       | Генерація `plans/active/remediation_*.md`         |
-| **8. Фінальний звіт**      | `code-review-reception`, `requesting-code-review`, `verification` | —                       | Звіт користувачу та очікування команди на старт   |
+| Етап                       | Ключові скіли                                                                                                                 | MCP інструменти         | Артефакти та дії                                  |
+| :------------------------- | :---------------------------------------------------------------------------------------------------------------------------- | :---------------------- | :------------------------------------------------ |
+| **1. Розвідка меж**        | `inversion-exercise`, `scale-game`, `collision-zone-thinking`, `preserving-productive-tensions`, `tracing-knowledge-lineages` | `context7`, `firecrawl` | Визначення target files, git diff                 |
+| **2. Архітектурний аудит** | `fullstack-code-review`, `nestjs-best-practices`                                                                              | `context7`              | Перевірка меж CQRS, ліміту <250 рядків            |
+| **3. Безпека & 4 шари**    | `defense-in-depth`, `sentry-backend-bugs`, `api-security-bp`, `better-auth-security-bp`, `security-bp`                        | `firecrawl` (OWASP)     | Пошук CWE-78, IDOR, TOCTOU, 0 any, 0 empty catch  |
+| **4. Фронтенд & UX**       | `ui-ux-pro-max`, `tailwind-design-system`, `vercel-react`, `security-best-practices`                                          | `playwright` (MCP live) | Sticky headers, Theme tokens, Zero dups, i18n     |
+| **5. БД & Prisma**         | `supabase-postgres-best-practices`, `prisma-client-api`, `postgresql-optimization`                                            | `context7` (Prisma)     | 100% FK індекси, snake_case @@map, 0 N+1, timestz |
+| **6. Стрес-тест (Adver)**  | `adver-review`, `api-security-testing`, `testing-anti-patterns`                                                               | —                       | Написання падаючих тестів-доказів (RED)           |
+| **7. План покращення**     | `writing-plans`, `executing-plans`, `simplification-cascades`                                                                 | —                       | Генерація `plans/active/remediation_*.md`         |
+| **8. Фінальний звіт**      | `code-review-reception`, `requesting-code-review`, `verification`                                                             | —                       | Звіт користувачу та очікування команди на старт   |

@@ -27,5 +27,13 @@
   "upgrade": "Upgrade",
   "availableMore": "Available",
   "previous": "Previous",
-  "next": "Next"
+  "next": "Next",
+  "commandSearchPlaceholder": "Search pages, actions or sections (⌘K)...",
+  "commandSearchNoResults": "No results found for query",
+  "commandSearchNavGroup": "Navigation",
+  "commandSearchActionsGroup": "Quick Actions",
+  "navCatalogs": "Product Catalogs",
+  "navSuppliers": "Suppliers",
+  "navPlans": "Subscription Plans",
+  "navSettings": "Theme & Profile Settings"
 }

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Layers, Store, Package, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -39,9 +39,12 @@ export function CatalogsPage() {
   const [syncingId, setSyncingId] = useState<string | null>(null);
   const [feedToDelete, setFeedToDelete] = useState<FeedSourceItemDto | null>(null);
   const [isImportWizardOpen, setIsImportWizardOpen] = useState(false);
+  const isFetchingRef = useRef<boolean>(false);
 
   const loadData = useCallback(async () => {
+    if (isFetchingRef.current) return;
     try {
+      isFetchingRef.current = true;
       const [suppliersData, feedsData, productsRes] = await Promise.all([
         getSuppliers(token || undefined),
         getAllFeedSources(token || undefined),
@@ -54,6 +57,8 @@ export function CatalogsPage() {
       );
     } catch (e) {
       console.warn('[CatalogsPage:loadData] Failed to load catalogs data:', e);
+    } finally {
+      isFetchingRef.current = false;
     }
   }, [token]);
 
@@ -70,7 +75,6 @@ export function CatalogsPage() {
     try {
       const res = await syncSupplierFeedSource(feed.supplierId, feed.id, token || undefined);
       addTrackedJob(res.jobId);
-      await loadData();
       emitDataSync(['suppliers', 'feeds', 'products', 'quotas']);
     } catch (e) {
       console.warn('[CatalogsPage:handleSyncFeed] Failed to sync feed:', e);
@@ -102,7 +106,6 @@ export function CatalogsPage() {
             updateLocalQuota('products', -res.deletedProductsCount);
           }
           updateLocalQuota('feeds', -1);
-          await loadData();
           refreshQuotas();
           emitDataSync(['suppliers', 'feeds', 'products', 'quotas', 'all']);
         },
@@ -137,24 +140,21 @@ export function CatalogsPage() {
           </div>
         </div>
 
-        <div className="flex items-center gap-2.5">
-          <Button
-            onClick={() => setIsImportWizardOpen(true)}
-            disabled={isFeedLimitReached}
-            title={
-              isFeedLimitReached
-                ? isUk
-                  ? 'Ліміт фідів вичерпано. Оновіть тариф.'
-                  : 'Feed limit reached. Upgrade your plan.'
-                : undefined
-            }
-            className="flex items-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90 font-medium text-xs px-3.5 py-2 rounded-xl shadow-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-            data-testid="catalogs-import-feed-btn"
-          >
-            <Plus className="size-4" />
-            <span>{t('catalogs:importButton')}</span>
-          </Button>
-        </div>
+        {/* Only show header button if there are already feeds/products or on other tabs */}
+        {!(activeTab === 'products' && totalProductsCount === 0 && feeds.length === 0) && (
+          <div className="flex items-center gap-2.5">
+            <Button
+              onClick={() => setIsImportWizardOpen(true)}
+              disabled={isFeedLimitReached}
+              title={isFeedLimitReached ? t('catalogs:feedLimitReachedTooltip') : undefined}
+              className="flex items-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90 font-medium text-xs px-3.5 py-2 rounded-xl shadow-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              data-testid="catalogs-import-feed-btn"
+            >
+              <Plus className="size-4" />
+              <span>{t('catalogs:importButton')}</span>
+            </Button>
+          </div>
+        )}
       </div>
 
       {/* Tabs Navigation Bar */}
@@ -209,13 +209,18 @@ export function CatalogsPage() {
             variant="outline"
             className="text-[10px] px-1.5 py-0 h-4 bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
           >
-            Reverse Margin
+            {t('catalogs:reverseMargin')}
           </Badge>
         </button>
       </div>
 
       {/* Tab 1: Products Grid */}
-      {activeTab === 'products' && <ProductsView />}
+      {activeTab === 'products' && (
+        <ProductsView
+          onOpenImportWizard={() => setIsImportWizardOpen(true)}
+          isFeedLimitReached={isFeedLimitReached}
+        />
+      )}
 
       {/* Tab 2: Export Channels */}
       {activeTab === 'channels' && (
@@ -250,13 +255,9 @@ export function CatalogsPage() {
       {/* Confirm Delete Feed Dialog */}
       <ConfirmDeleteDialog
         isOpen={!!feedToDelete}
-        title={isUk ? 'Видалити джерело фіду?' : 'Delete Feed Source?'}
-        description={
-          isUk
-            ? `Ви впевнені, що хочете видалити фід «${feedToDelete?.name}»? Всі пов'язані імпортовані товари будуть також видалені з локальної бази.`
-            : `Are you sure you want to delete feed «${feedToDelete?.name}»? All associated imported products will also be removed from the local database.`
-        }
-        confirmLabel={isUk ? 'Видалити фід' : 'Delete Feed'}
+        title={t('catalogs:deleteFeedTitle')}
+        description={t('catalogs:deleteFeedDesc', { name: feedToDelete?.name || '' })}
+        confirmLabel={t('catalogs:deleteFeedConfirm')}
         cancelLabel={t('common:cancel')}
         onConfirm={handleConfirmDeleteFeed}
         onClose={() => setFeedToDelete(null)}

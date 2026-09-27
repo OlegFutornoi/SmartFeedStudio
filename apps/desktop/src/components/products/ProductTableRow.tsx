@@ -122,18 +122,18 @@ export const ProductTableRow: React.FC<ProductTableRowProps> = ({
           variant="secondary"
           className="text-[11px] font-medium bg-secondary/80 text-secondary-foreground"
         >
-          {product.supplierName || product.supplierCode || 'Постачальник'}
+          {product.supplierName || product.supplierCode || t('catalogs:colSupplier')}
         </Badge>
       </td>
 
       {/* Cost & Retail Price */}
       <td className="py-3 px-3">
         <div className="space-y-0.5">
-          <div className="text-xs font-semibold text-foreground">
+          <div className="text-xs font-semibold text-foreground tabular-nums">
             {product.price?.toLocaleString()} {product.currency || 'UAH'}
           </div>
           {product.costPrice !== undefined && product.costPrice > 0 && (
-            <div className="text-[11px] text-muted-foreground">
+            <div className="text-[11px] text-muted-foreground tabular-nums">
               {t('catalogs:colCostPrice')}: {product.costPrice.toLocaleString()}{' '}
               {product.currency || 'UAH'}
             </div>
@@ -146,7 +146,7 @@ export const ProductTableRow: React.FC<ProductTableRowProps> = ({
         {marginDiff > 0 ? (
           <Badge
             variant="outline"
-            className="text-[11px] font-medium bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30"
+            className="text-[11px] font-medium tabular-nums bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30"
           >
             +{marginPercent}% (+{Math.round(marginDiff)} ₴)
           </Badge>
@@ -160,7 +160,7 @@ export const ProductTableRow: React.FC<ProductTableRowProps> = ({
         {product.inStock ? (
           <div className="flex items-center gap-1.5">
             <span className="h-2 w-2 rounded-full bg-emerald-500 shrink-0" />
-            <span className="text-xs font-medium text-emerald-600 dark:text-emerald-400">
+            <span className="text-xs font-medium tabular-nums text-emerald-600 dark:text-emerald-400">
               {product.stockQuantity !== undefined
                 ? `${product.stockQuantity} шт`
                 : t('catalogs:statusInStock')}
@@ -187,7 +187,7 @@ export const ProductTableRow: React.FC<ProductTableRowProps> = ({
                 data-testid={`product-actions-${product.id}`}
               >
                 <MoreHorizontal className="h-4 w-4" />
-                <span className="sr-only">Відкрити меню дій</span>
+                <span className="sr-only">{t('common:actions')}</span>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-[160px]">

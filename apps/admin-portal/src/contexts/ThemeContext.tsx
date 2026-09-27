@@ -4,7 +4,7 @@ import React, { createContext, useContext, useEffect, useState, useCallback } fr
 import { useAuth } from './AuthContext';
 
 export type ThemeMode = 'dark' | 'light' | 'system';
-export type AccentColor = 'zinc' | 'slate' | 'stone' | 'gray' | 'neutral' | 'bronze';
+export type AccentColor = 'zinc' | 'slate' | 'stone' | 'gray' | 'neutral' | 'bronze' | 'green';
 
 export interface AccentOption {
   id: AccentColor;
@@ -44,6 +44,11 @@ export const ACCENT_OPTIONS: AccentOption[] = [
     id: 'bronze',
     name: 'Bronze',
     colorHex: '#d97706',
+  },
+  {
+    id: 'green',
+    name: 'Green (Emerald)',
+    colorHex: '#22c55e',
   },
 ];
 

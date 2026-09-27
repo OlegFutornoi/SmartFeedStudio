@@ -27,5 +27,13 @@
   "upgrade": "Апгрейд",
   "availableMore": "Доступно ще",
   "previous": "Попереднє",
-  "next": "Наступне"
+  "next": "Наступне",
+  "commandSearchPlaceholder": "Пошук сторінок, дій чи розділів (⌘K)...",
+  "commandSearchNoResults": "Нічого не знайдено за запитом",
+  "commandSearchNavGroup": "Навігація",
+  "commandSearchActionsGroup": "Швидкі дії",
+  "navCatalogs": "Каталоги товарів",
+  "navSuppliers": "Постачальники",
+  "navPlans": "Тарифні плани",
+  "navSettings": "Налаштування теми та профілю"
 }

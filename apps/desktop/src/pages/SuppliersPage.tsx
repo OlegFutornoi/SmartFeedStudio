@@ -114,7 +114,6 @@ export function SuppliersPage() {
       }
 
       emitDataSync(['suppliers', 'quotas']);
-      await fetchSuppliers(true);
       setSelectedSupplier(null);
     } catch (err) {
       console.error('[SuppliersPage:handleSaveSupplier] Error:', err);
@@ -146,7 +145,6 @@ export function SuppliersPage() {
       }
       refreshQuotas();
       emitDataSync(['suppliers', 'feeds', 'products', 'quotas', 'all']);
-      await fetchSuppliers(true);
     } catch (err) {
       console.error('[SuppliersPage:handleConfirmDeleteSupplier] Error:', err);
     }

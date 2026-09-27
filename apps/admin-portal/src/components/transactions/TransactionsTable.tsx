@@ -106,7 +106,7 @@ export function TransactionsTable({ transactions, isLoading, isUk }: Transaction
   return (
     <div className="rounded-xl border border-border bg-card overflow-hidden flex flex-col shadow-sm">
       <Table>
-        <TableHeader className="bg-muted/40">
+        <TableHeader className="bg-card border-b border-border">
           <TableRow className="text-xs">
             <TableHead className="w-[180px]">{isUk ? 'Номер замовлення' : 'Order Ref'}</TableHead>
             <TableHead>{isUk ? 'Клієнт' : 'Customer'}</TableHead>
@@ -172,7 +172,7 @@ export function TransactionsTable({ transactions, isLoading, isUk }: Transaction
                 </TableCell>
 
                 {/* Amount */}
-                <TableCell className="text-right font-bold text-foreground">
+                <TableCell className="text-right font-bold text-foreground tabular-nums">
                   {tx.amount.toLocaleString()} {tx.currency}
                 </TableCell>
 
@@ -199,7 +199,7 @@ export function TransactionsTable({ transactions, isLoading, isUk }: Transaction
                 </TableCell>
 
                 {/* Date */}
-                <TableCell className="text-right text-muted-foreground font-mono text-[11px]">
+                <TableCell className="text-right text-muted-foreground font-mono text-[11px] tabular-nums">
                   {formattedDate}
                 </TableCell>
               </TableRow>

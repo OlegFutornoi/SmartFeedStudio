@@ -27,6 +27,14 @@ const NavigationItemDialog = dynamic(
   { ssr: false },
 );
 
+const NavigationDeleteDialog = dynamic(
+  () =>
+    import('../../../components/navigation/NavigationDeleteDialog').then((m) => ({
+      default: m.NavigationDeleteDialog,
+    })),
+  { ssr: false },
+);
+
 const INITIAL_FORM_DATA: NavigationFormData = {
   key: '',
   targetApp: TargetApp.DESKTOP,
@@ -51,6 +59,8 @@ export default function NavigationManagementPage() {
   const [editingItem, setEditingItem] = useState<NavigationItemDto | null>(null);
   const [formData, setFormData] = useState<NavigationFormData>(INITIAL_FORM_DATA);
   const [isSaving, setIsSaving] = useState(false);
+  const [deleteItem, setDeleteItem] = useState<NavigationItemDto | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const { t, locale } = useLanguage();
 
@@ -157,20 +167,25 @@ export default function NavigationManagementPage() {
     [locale, refreshNavigation],
   );
 
-  const handleDelete = useCallback(
-    async (item: NavigationItemDto) => {
-      if (!confirm(t('common', 'confirm_delete'))) return;
-      try {
-        await api.deleteNavigationItem(item.id);
-        showSuccess(t('navigation', 'success_deleted'));
-        await loadItems();
-        await refreshNavigation();
-      } catch (err: unknown) {
-        setError(translateError(err, locale));
-      }
-    },
-    [locale, loadItems, refreshNavigation, showSuccess, t],
-  );
+  const handleDelete = useCallback((item: NavigationItemDto) => {
+    setDeleteItem(item);
+  }, []);
+
+  const handleConfirmDelete = useCallback(async () => {
+    if (!deleteItem) return;
+    try {
+      setIsDeleting(true);
+      await api.deleteNavigationItem(deleteItem.id);
+      showSuccess(t('navigation', 'success_deleted'));
+      setDeleteItem(null);
+      await loadItems();
+      await refreshNavigation();
+    } catch (err: unknown) {
+      setError(translateError(err, locale));
+    } finally {
+      setIsDeleting(false);
+    }
+  }, [deleteItem, locale, loadItems, refreshNavigation, showSuccess, t]);
 
   const handleMove = useCallback(
     async (index: number, direction: 'UP' | 'DOWN', currentFilteredList: NavigationItemDto[]) => {
@@ -271,6 +286,15 @@ export default function NavigationManagementPage() {
         isSaving={isSaving}
         onClose={handleCloseDialog}
         onSave={handleSave}
+      />
+
+      <NavigationDeleteDialog
+        open={!!deleteItem}
+        onOpenChange={(open) => !open && setDeleteItem(null)}
+        item={deleteItem}
+        isUk={locale === 'uk'}
+        onConfirm={handleConfirmDelete}
+        isDeleting={isDeleting}
       />
     </div>
   );

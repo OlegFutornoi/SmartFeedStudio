@@ -40,7 +40,7 @@ export function ThemeCustomizer() {
   ];
 
   return (
-    <Card className="border-border bg-card shadow-sm overflow-visible relative z-30">
+    <Card className="border-border bg-card shadow-sm overflow-visible">
       <CardHeader className="pb-4">
         <div className="flex items-center gap-2.5">
           <Sliders className="size-4 text-muted-foreground" />
@@ -144,7 +144,7 @@ export function ThemeCustomizer() {
             {isOpen && (
               <div
                 data-testid="admin-accent-dropdown-menu"
-                className="absolute top-full right-0 mt-1.5 z-50 w-full min-w-[220px] p-1.5 rounded-lg border border-border bg-popover bg-zinc-950 dark:bg-zinc-950 text-popover-foreground shadow-2xl flex flex-col gap-0.5 animate-in fade-in zoom-in-95 duration-100"
+                className="absolute top-full right-0 mt-1.5 z-50 w-full min-w-[220px] p-1.5 rounded-lg border border-border bg-popover text-popover-foreground shadow-2xl flex flex-col gap-0.5 animate-in fade-in zoom-in-95 duration-100"
               >
                 {ACCENT_OPTIONS.map((opt) => {
                   const isSelected = accentColor === opt.id;

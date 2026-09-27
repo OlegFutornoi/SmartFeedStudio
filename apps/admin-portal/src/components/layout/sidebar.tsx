@@ -124,12 +124,12 @@ export function Sidebar() {
       {/* Desktop Collapsible Sidebar */}
       <aside
         className={cn(
-          'hidden md:flex flex-col justify-between h-screen sticky top-0 border-r border-border bg-card/50 backdrop-blur-xl transition-all duration-300 z-20 select-none',
+          'hidden md:flex flex-col justify-between h-screen sticky top-0 border-r border-border bg-card transition-all duration-300 z-20 select-none shadow-xs',
           isCollapsed ? 'w-[72px]' : 'w-64',
         )}
       >
         {/* Top brand header */}
-        <div className="p-4 border-b border-border/60">
+        <div className="h-16 px-4 flex items-center border-b border-border">
           <div className="flex items-center">
             <Link href="/" className="flex items-center space-x-3 w-full overflow-hidden group">
               <div className="h-9 w-9 rounded-xl bg-primary/20 border border-primary/40 flex items-center justify-center text-primary group-hover:scale-105 transition-transform shrink-0 shadow-sm shadow-primary/20">

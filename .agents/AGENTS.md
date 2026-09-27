@@ -1,7 +1,7 @@
 # 🤖 SmartFeed Studio — Master Skills & Multi-Domain Agent Guide
 
 > **Файл розташування:** [`.agents/AGENTS.md`](./AGENTS.md)  
-> **Призначення:** Єдиний центр інтелекту, каталог та диспетчер усіх **71 скіла** SmartFeed Studio (4 майстер-оркестратори та 67 спеціалізованих підскілів).  
+> **Призначення:** Єдиний центр інтелекту, каталог та диспетчер усіх **79 скілів** SmartFeed Studio (4 майстер-оркестратори та 75 спеціалізованих підскілів).  
 > **Спеціалізовані агенти:** [🎨 Frontend Engineering Agent (`agents_frontend`)](./agents_frontend.md) · [⚙️ Backend Engineering Agent (`agents_backend`)](./agents_backend.md) · [🔍 Code Review & Audit Agent (`agents_review`)](./agents_review.md)
 
 ---
@@ -11,8 +11,8 @@
 Усі скіли в SmartFeed Studio організовані у чітку двошарову ієрархію:
 
 1. **Майстер-оркестратори (Master Skills)** — розташовані безпосередньо в [`.agents/skills/`](skills/). Керують повними інженерними життєвими циклами (7 етапів для бекенду і фронтенду, релізи, мета-генерація скілів) та автоматично залучають підскіли.
-2. **Спеціалізовані підскіли (Sub-Skills)** — розташовані в [`.agents/skills/sub-skills/`](skills/sub-skills/). Виконують точкові інженерні завдання: перевірка схем БД, патерни компонентів, мікроанімації, аналіз граничних умов, ліквідація гонок пам'яті.
-3. **Синхронізація з Claude Code**: Усі 68 сумісних скілів дзеркалюються через відносні символічні посилання у [`.claude/skills/`](../.claude/skills/), які валідовані та резолвляться без жодного битого посилання.
+2. **Спеціалізовані підскіли (Sub-Skills)** — розташовані в [`.agents/skills/sub-skills/`](skills/sub-skills/). Виконують точкові інженерні завдання: перевірка схем БД, патерни компонентів, мікроанімації, аналіз граничних умов, ліквідація гонок пам'яті, безпековий аудит.
+3. **Синхронізація з Claude Code**: Усі 79 сумісних скілів дзеркалюються через відносні символічні посилання у [`.claude/skills/`](../.claude/skills/), які валідовані та резолвляться без жодного битого посилання.
 
 ```text
                                  ┌──────────────────────────────────────────────┐
@@ -27,28 +27,29 @@
            │                        │                                    │                        │
            ▼                        ▼                                    ▼                        ▼
  ┌──────────────────────────────────────────────────────────────────────────────────────────────────────┐
- │                              .agents/skills/sub-skills/ (67 Sub-Skills)                              │
- │  ⚙️ Backend & DB  │  💻 Frontend & UI  │  🔍 Code Review  │  🐞 Debug  │  🧠 Analysis  │  📋 Plans  │  🛠 DevOps  │
+ │                              .agents/skills/sub-skills/ (75 Sub-Skills)                              │
+ │  ⚙️ Backend & DB  │  💻 Frontend & UI  │  🔍 Code Review  │  🐞 Debug  │  🧠 Analysis  │  📋 Plans  │  🛠 DevOps  │  🔒 Security  │
  └──────────────────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 🗺 2. Навігаційна матриця за напрямками (7 напрямків, 71 скіл)
+## 🗺 2. Навігаційна матриця за напрямками (8 напрямків, 79 скілів)
 
-| Напрямок                               | Кількість | Майстер-скіли                                                                                | Ключові підскіли                                                                                                                          |
-| :------------------------------------- | :-------: | :------------------------------------------------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------- |
-| **1. ⚙️ Backend & Бази Даних**         |    15     | [`backend`](skills/backend/SKILL.md)                                                         | `nestjs-best-practices`, `supabase-postgres-best-practices`, `prisma-client-api`, `subscription-lifecycle`, `defense-in-depth-validation` |
-| **2. 💻 Frontend & UI/UX Дизайн**      |    15     | [`frontend`](skills/frontend/SKILL.md)                                                       | `ui-ux-pro-max`, `shadcn`, `tailwind-design-system`, `vercel-react-best-practices`, `emil-design-eng`, `design-taste-frontend`            |
-| **3. 🔍 Код-Ревью, Аудит & Якість**    |     6     | —                                                                                            | `fullstack-code-review`, `adver-review`, `requesting-code-review`, `code-review-reception`, `verification-before-completion`              |
-| **4. 🐞 Дебаг, Трейсинг & Тестування** |     8     | —                                                                                            | `systematic-debugging`, `root-cause-tracing`, `playwright-best-practices`, `test-driven-development-tdd`, `condition-based-waiting`       |
-| **5. 🧠 Системний Аналіз & Стратегія** |     9     | —                                                                                            | `inversion-exercise`, `scale-game`, `collision-zone-thinking`, `meta-pattern-recognition`, `simplification-cascades`                      |
-| **6. 📋 Планування & Оркестрація**     |     5     | —                                                                                            | `writing-plans`, `executing-plans`, `subagent-driven-development`, `dispatching-parallel-agents`, `remembering-conversations`             |
-| **7. 🛠 Монорепо, Типи, Git & Скіли**   |    13     | [`git-commit`](skills/git-commit/SKILL.md), [`skill-creator`](skills/skill-creator/SKILL.md) | `turborepo`, `typescript-advanced-types`, `ai-sdk`, `firecrawl-parse`, `using-git-worktrees`, `writing-skills`                            |
+| Напрямок                               | Кількість | Майстер-скіли                                                                                | Ключові підскіли                                                                                                                                                |
+| :------------------------------------- | :-------: | :------------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **1. ⚙️ Backend & Бази Даних**         |    19     | [`backend`](skills/backend/SKILL.md)                                                         | `nestjs-best-practices`, `supabase-postgres-best-practices`, `prisma-client-api`, `postgresql-code-review`, `postgresql-optimization`, `subscription-lifecycle` |
+| **2. 💻 Frontend & UI/UX Дизайн**      |    18     | [`frontend`](skills/frontend/SKILL.md)                                                       | `ui-ux-pro-max`, `shadcn`, `tailwind-design-system`, `vercel-react-best-practices`, `image`, `emil-design-eng`, `design-taste-frontend`                         |
+| **3. 🔍 Код-Ревью, Аудит & Якість**    |     7     | —                                                                                            | `fullstack-code-review`, `adver-review`, `postgresql-code-review`, `requesting-code-review`, `code-review-reception`, `verification-before-completion`          |
+| **4. 🐞 Дебаг, Трейсинг & Тестування** |     8     | —                                                                                            | `systematic-debugging`, `root-cause-tracing`, `playwright-best-practices`, `test-driven-development-tdd`, `condition-based-waiting`                             |
+| **5. 🧠 Системний Аналіз & Стратегія** |     9     | —                                                                                            | `inversion-exercise`, `scale-game`, `collision-zone-thinking`, `meta-pattern-recognition`, `simplification-cascades`                                            |
+| **6. 📋 Планування & Оркестрація**     |     5     | —                                                                                            | `writing-plans`, `executing-plans`, `subagent-driven-development`, `dispatching-parallel-agents`, `remembering-conversations`                                   |
+| **7. 🛠 Монорепо, Типи, Git & Скіли**   |    13     | [`git-commit`](skills/git-commit/SKILL.md), [`skill-creator`](skills/skill-creator/SKILL.md) | `turborepo`, `typescript-advanced-types`, `ai-sdk`, `firecrawl-parse`, `using-git-worktrees`, `writing-skills`                                                  |
+| **8. 🔒 Безпека & Аудит**              |     6     | —                                                                                            | `api-security-best-practices`, `api-security-testing`, `better-auth-security-best-practices`, `security-best-practices`, `firebase-security-rules-auditor`      |
 
 ---
 
-## ⚙️ Напрямок 1: Backend Architecture, APIs & Бази Даних (15 скілів)
+## ⚙️ Напрямок 1: Backend Architecture, APIs & Бази Даних (18 скілів)
 
 ### 👑 Майстер-скіл
 
@@ -100,10 +101,25 @@
 14. [**`integrate-backend`**](skills/sub-skills/integrate-backend/SKILL.md)
     - **Призначення:** Безпечна стиковка фронтенду з бекендом: спільні TypeScript DTO з `@smartfeed/shared`, дедуплікація запитів через `useRef`, локалізовані обробники помилок.
     - **Коли застосовувати:** Підключення UI-компонентів до бекенд REST API, обробка відповідей і мережевих помилок.
+15. [**`api-security-best-practices`**](skills/sub-skills/api-security-best-practices/SKILL.md)
+    - **Призначення:** OWASP API Security: JWT верифікація з фіксованим алгоритмом, авторизація ресурсів та тенантів, input validation, rate limiting, захист від SSRF/injection.
+    - **Коли застосовувати:** Дизайн нових API ендпоінтів, аудит існуючих контролерів на вразливості.
+16. [**`better-auth-security-best-practices`**](skills/sub-skills/better-auth-security-best-practices/SKILL.md)
+    - **Призначення:** Захист секретів (≥120 біт ентропії), CSRF, trusted origins, шифрування OAuth-токенів, audit logging, конфігурація сесій та cookies.
+    - **Коли застосовувати:** Налаштування аутентифікації, управління токенами та сесіями, інтеграція OAuth провайдерів.
+17. [**`postgresql-optimization`**](skills/sub-skills/postgresql-optimization/SKILL.md)
+    - **Призначення:** Розширені можливості PostgreSQL: JSONB з GIN індексами, масиви, повнотекстовий пошук `tsvector`/`tsquery`, віконні функції, partitioning, materialized views.
+    - **Коли застосовувати:** Оптимізація повільних запитів, профілювання БД, моніторинг продуктивності.
+18. [**`security-best-practices`**](skills/sub-skills/security-best-practices/SKILL.md)
+    - **Призначення:** Мовно- та фреймворк-специфічний безпековий рев'ю: TypeScript/NestJS антипатерни, secure-by-default код, генерація security report.
+    - **Коли застосовувати:** Комплексний безпековий аудит будь-якого модуля (backend чи frontend).
+19. [**`postgresql-code-review`**](skills/sub-skills/postgresql-code-review/SKILL.md)
+    - **Призначення:** Спеціалізований аудит коду PostgreSQL: валідація JSONB операцій та GIN індексів, ефективність масивів (`@>`), дизайн схеми (CITEXT, TIMESTAMPTZ, ENUM, CHECK констрейнти), оптимізація тригерів і функцій PL/pgSQL, перевірка розширень та безпека RLS.
+    - **Коли застосовувати:** Написання, оптимізація та рев'ю запитів PostgreSQL, міграцій, схеми `schema.prisma` та констрейнтів.
 
 ---
 
-## 💻 Напрямок 2: Frontend Engineering & UI/UX Дизайн (15 скілів)
+## 💻 Напрямок 2: Frontend Engineering & UI/UX Дизайн (17 скілів)
 
 ### 👑 Майстер-скіл
 
@@ -155,10 +171,19 @@
 14. [**`web-design-guidelines`**](skills/sub-skills/web-design-guidelines/SKILL.md)
     - **Призначення:** Контроль стандартів Web Interface Guidelines: видимий фокус клавіатури, табуляція цифр (`font-variant-numeric: tabular-nums`), автозаповнення та валідація форм.
     - **Коли застосовувати:** Перевірка форм вводу, фінансових даних, списків цін і лічильників.
+15. [**`image`**](skills/sub-skills/image/SKILL.md)
+    - **Призначення:** Створення та оптимізація зображень: hero images, соціальна графіка, мокапи продуктів, банери, OG-зображення, WebP оптимізація.
+    - **Коли застосовувати:** Генерація графічних асетів для лендінгів, маркетингових матеріалів, прев'ю фідів.
+16. [**`brainstorming-ideas-into-designs`**](skills/sub-skills/brainstorming-ideas-into-designs/SKILL.md)
+    - **Призначення:** Структурований мозковий штурм: перетворення нечіткої ідеї користувача на інженерні специфікації через сокративське опитування та дослідження альтернатив.
+    - **Коли застосовувати:** Початковий етап нової великої фічі, дизайн-спрінти, прототипування UI.
+17. [**`webapp-testing`**](skills/sub-skills/webapp-testing/SKILL.md)
+    - **Призначення:** Тестування локальних веб-додатків через Playwright скрипти: запуск серверів, знімки, інспекція DOM, дебаг UI.
+    - **Коли застосовувати:** Інструментальне дослідження локального сайту через браузерний стек.
 
 ---
 
-## 🔍 Напрямок 3: Код-Ревью, Аудит & Контроль Якості (6 скілів)
+## 🔍 Напрямок 3: Код-Ревью, Аудит & Контроль Якості (7 скілів)
 
 1. [**`fullstack-code-review`**](skills/sub-skills/fullstack-code-review/SKILL.md)
    - **Призначення:** Центральний майстер рев'ю для SmartFeed Studio: сувора інспекція меж CQRS, ліміту розміру файлів (<250–300 рядків), 100% двомовного перекладу i18n (UA ⇄ EN), індексів PostgreSQL, відсутності витоків даних і дублюючих HTTP-запитів.
@@ -166,16 +191,19 @@
 2. [**`adver-review`**](skills/sub-skills/adver-review/SKILL.md)
    - **Призначення:** Безжальний змагальний аудит (Adversarial Review): ламання припущень, пошук вразливостей CWE/OWASP, гонок (TOCTOU), витоків пам'яті; кожна знайдена вада обов'язково відтворюється автотестом.
    - **Коли застосовувати:** Аудит безпеки, перевірка білінгу, генерації ліцензій, криптографії чи прав доступу.
-3. [**`requesting-code-review`**](skills/sub-skills/requesting-code-review/SKILL.md)
+3. [**`postgresql-code-review`**](skills/sub-skills/postgresql-code-review/SKILL.md)
+   - **Призначення:** Поглиблений аудит специфічного коду PostgreSQL: JSONB containment queries (`@>`), GIN-індексація масивів, кастомні домени/ENUM, `CITEXT`/`TIMESTAMPTZ`, CHECK-констрейнти, оптимізація PL/pgSQL функцій та RLS.
+   - **Коли застосовувати:** Аудит міграцій, схеми `schema.prisma`, складних SQL запитів, функцій БД та перевірка відсутності анти-патернів PostgreSQL.
+4. [**`requesting-code-review`**](skills/sub-skills/requesting-code-review/SKILL.md)
    - **Призначення:** Протокол самоперевірки та відправки дифу на рев'ю спеціалізованому сабагенту без засмічення контексту.
    - **Коли застосовувати:** Після завершення пакету підзадач у плані перед переходом до наступного кроку.
-4. [**`code-review-reception`**](skills/sub-skills/code-review-reception/SKILL.md)
+5. [**`code-review-reception`**](skills/sub-skills/code-review-reception/SKILL.md)
    - **Призначення:** Зріла інженерна реакція на зауваження: технічна аргументація, перевірка кожного пункту автотестом, категорична заборона формального "погоджуюсь, але нічого не змінив".
    - **Коли застосовувати:** Отримання фідбеку від рев'юера чи користувача, усунення зауважень.
-5. [**`verification-before-completion`**](skills/sub-skills/verification-before-completion/SKILL.md)
+6. [**`verification-before-completion`**](skills/sub-skills/verification-before-completion/SKILL.md)
    - **Призначення:** Залізне правило контролю: перед заявою про успіх обов'язковий запуск повного білда, генерації контрактів, типізації (`tsc --noEmit`) та тестового набору.
    - **Коли застосовувати:** Безпосередньо перед фінальною відповіддю користувачу.
-6. [**`testing-anti-patterns`**](skills/sub-skills/testing-anti-patterns/SKILL.md)
+7. [**`testing-anti-patterns`**](skills/sub-skills/testing-anti-patterns/SKILL.md)
    - **Призначення:** Захист від шкідливих тестів: ніколи не тестувати поведінку власних моків, ніколи не додавати публічні методи суто для тестів, ніколи не мокати незрозумілі залежності.
    - **Коли застосовувати:** Написання модульних та інтеграційних тестів у Jest або Vitest.
 
@@ -262,7 +290,7 @@
 
 ---
 
-## 🛠 Напрямок 7: Монорепозиторій, Типізація, Git & Управління Скілами (13 скілів)
+## 🛠 Напрямок 7: Монорепозиторій, Типізація, Git & Управління Скілами (14 скілів)
 
 ### 👑 Майстер-скіли
 
@@ -309,6 +337,28 @@
 
 ---
 
+## 🔒 Напрямок 8: Безпека & Аудит (7 скілів)
+
+1. [**`api-security-best-practices`**](skills/sub-skills/api-security-best-practices/SKILL.md)
+   - **Призначення:** OWASP API Security Top 10: JWT з фіксованим алгоритмом, авторизація ресурсів/тенантів, input validation, rate limiting, SSRF захист.
+   - **Коли застосовувати:** Дизайн та аудит REST API ендпоінтів.
+2. [**`api-security-testing`**](skills/sub-skills/api-security-testing/SKILL.md)
+   - **Призначення:** Практичне тестування безпеки API: BOLA/IDOR доведення з двома наборами креденшелів, mass assignment, обхід rate limits, ID tampering.
+   - **Коли застосовувати:** Стрес-тести безпеки, аудит авторизації та тенант-ізоляції.
+3. [**`better-auth-security-best-practices`**](skills/sub-skills/better-auth-security-best-practices/SKILL.md)
+   - **Призначення:** Захист секретів (≥32 chars, ≥120 біт ентропії), CSRF, trusted origins, шифрування OAuth токенів, cookies безпека, audit logging.
+   - **Коли застосовувати:** Налаштування аутентифікації, OAuth провайдерів, сесій.
+4. [**`security-best-practices`**](skills/sub-skills/security-best-practices/SKILL.md)
+   - **Призначення:** Мовно-специфічний безпековий рев'ю: TypeScript/NestJS антипатерни, XSS-превенція для React, secure-by-default код, генерація security report.
+   - **Коли застосовувати:** Комплексний аудит будь-якого модуля.
+5. [**`firebase-security-rules-auditor`**](skills/sub-skills/firebase-security-rules-auditor/SKILL.md)
+   - **Призначення:** Аудит правил безпеки Firebase/Firestore: перевірка прав доступу, тенант-ізоляція, валідація схем.
+   - **Коли застосовувати:** Аудит інфраструктурної безпеки та правил доступу.
+6. [**`api-security-testing`**](skills/sub-skills/api-security-testing/SKILL.md) — вже описаний вище.
+7. [**`postgresql-optimization`**](skills/sub-skills/postgresql-optimization/SKILL.md) — крос-доменний скіл, також використовується в Напрямку 1.
+
+---
+
 ## 🚦 3. Протокол авто-маршрутизації агента (Automatic Routing Engine)
 
 Коли агент отримує запит від користувача, він **зобов'язаний діяти за цим маршрутизатором**:
@@ -318,7 +368,7 @@ graph TD
     Start["Запит користувача"] --> TypeCheck{"Який характер задачі?"}
 
     TypeCheck -->|"Бекенд / API / База"| B["Запуск майстра backend"]
-    B --> B_Sub["Підключення: nestjs-best-practices + supabase-postgres + defense-in-depth"]
+    B --> B_Sub["Підключення: nestjs-best-practices + supabase-postgres + defense-in-depth + postgresql-code-review"]
 
     TypeCheck -->|"Фронтенд / UI / Верстка"| F["Запуск майстра frontend"]
     F --> F_Sub["Підключення: ui-ux-pro-max + shadcn + vercel-react-best-practices"]
@@ -327,7 +377,7 @@ graph TD
     D --> D_Sub["Трейсинг: root-cause-tracing + condition-based-waiting"]
 
     TypeCheck -->|"Аудит / Перевірка коду"| R["Запуск fullstack-code-review"]
-    R --> R_Sub["Стрес-тест: adver-review + verification-before-completion"]
+    R --> R_Sub["Стрес-тест: adver-review + postgresql-code-review + verification-before-completion"]
 
     TypeCheck -->|"Архітектурний ступор / Дилема"| A["Запуск ментальних моделей"]
     A --> A_Sub["Вибір: inversion-exercise + scale-game + simplification-cascades"]

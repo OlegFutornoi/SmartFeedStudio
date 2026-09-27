@@ -179,13 +179,13 @@ export function Sidebar() {
       <aside
         data-testid="desktop-sidebar"
         className={cn(
-          'hidden md:flex flex-col justify-between h-screen sticky top-0 border-r border-border bg-card/60 backdrop-blur-xl transition-all duration-300 z-20 select-none shadow-xs',
+          'hidden md:flex flex-col justify-between h-screen sticky top-0 border-r border-border bg-card transition-all duration-300 z-20 select-none shadow-xs',
           isCollapsed ? 'w-[72px]' : 'w-64',
         )}
       >
         <div className="flex flex-col flex-1 min-h-0">
           {/* Top Brand Header */}
-          <div className="p-4 border-b border-border/80">
+          <div className="h-16 px-4 flex items-center border-b border-border">
             <div className="flex items-center">
               <button
                 type="button"

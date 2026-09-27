@@ -868,7 +868,7 @@ test.describe('Desktop App — Постачальники, Майстер Фід
     await page.goto('/catalogs');
 
     // Click Import Feed
-    await page.getByRole('button', { name: /Підключити фід|Імпортувати фід/i }).click();
+    await page.getByRole('button', { name: /Підключити фід|Імпортувати.*фід/i }).click();
 
     // Step 1: fill url, analyze & next
     await page

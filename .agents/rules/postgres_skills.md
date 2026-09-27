@@ -22,6 +22,8 @@ The agent MUST load and apply ALL of the following skills BEFORE making ANY chan
 | Diagnosing slow queries, timeouts, or high CPU                                                    | `supabase-postgres-best-practices` (rules: `monitor-explain-analyze`, `monitor-pg-stat-statements`)                          |
 | Implementing pagination in any query handler                                                      | `supabase-postgres-best-practices` (rule: `data-pagination`) — **MUST use cursor-based for high-scale feeds**                |
 | Any seed or migration writing raw SQL or Prisma bulk ops                                          | `supabase-postgres-best-practices` (rule: `data-batch-inserts`, `data-upsert`)                                               |
+| Code review or audit of PostgreSQL schema, JSONB, arrays, or DB constraints                       | `postgresql-code-review`, `supabase-postgres-best-practices`                                                                 |
+| PostgreSQL advanced optimization, functions, triggers, or security (RLS)                          | `postgresql-code-review`, `postgresql-optimization`                                                                          |
 
 ---
 

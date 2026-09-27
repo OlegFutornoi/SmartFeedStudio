@@ -19,6 +19,7 @@ interface ProductsTableProps {
   isAllSelected: boolean;
   onViewDetails: (product: ProductDto) => void;
   onDeleteProduct: (product: ProductDto) => void;
+  onResetFilters?: () => void;
   isLoading?: boolean;
 }
 
@@ -36,6 +37,7 @@ export const ProductsTable: React.FC<ProductsTableProps> = ({
   isAllSelected,
   onViewDetails,
   onDeleteProduct,
+  onResetFilters,
   isLoading = false,
 }) => {
   const { t } = useTranslation(['catalogs', 'common']);
@@ -94,6 +96,16 @@ export const ProductsTable: React.FC<ProductsTableProps> = ({
                     <p className="text-xs text-muted-foreground max-w-sm">
                       {t('catalogs:noProductsFoundDesc')}
                     </p>
+                    {onResetFilters && (
+                      <button
+                        type="button"
+                        onClick={onResetFilters}
+                        data-testid="table-reset-filters-btn"
+                        className="mt-2 text-xs font-medium text-primary hover:underline cursor-pointer"
+                      >
+                        {t('catalogs:resetFilters')}
+                      </button>
+                    )}
                   </div>
                 </td>
               </tr>

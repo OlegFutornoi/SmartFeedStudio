@@ -14,5 +14,11 @@
   "globalBadge": "Global",
   "security": "Account Security",
   "changePassword": "Change Password",
-  "saveChanges": "Save Changes"
+  "saveChanges": "Save Changes",
+  "generalTab": "General",
+  "databaseTab": "Database & Storage",
+  "profileDesc": "Personal information and access level",
+  "keySecurity": "Key Security",
+  "keySecurityDesc": "Saved in native Keychain",
+  "appearanceDesc": "Configure color accents, theme mode, and border radii"
 }

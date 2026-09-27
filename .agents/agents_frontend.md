@@ -188,6 +188,28 @@
    - Жодних захардкодженних рядків в коді. Усі помилки бекенду транслюються через `getErrorMessage(err, t)`.
 8. **Zero Silent Failures ([engineering_discipline_and_planning.md](rules/engineering_discipline_and_planning.md))**:
    - Повна заборона порожніх `catch {}`. Кожна помилка показує локалізований тост `toast.error(getErrorMessage(err, t))` або записує структурований лог `console.warn('[Module:Context] Details:', err)`.
+9. **Empty State & CTA Hierarchy (Суворе розділення 0 елементів vs фільтри)**:
+   - **Початковий нульовий стан (`items.length === 0 && !isSearching`)**:
+     - **Категорично заборонено** рендерити шапку таблиці `<thead>` з чекбоксами або тулбар пошуку та фільтрів.
+     - Рендерити **Hero Empty State Card**: іконка в семантичному контейнері (`bg-primary/10 text-primary border border-primary/20`), заголовок, опис кроків та **обов'язкова первинна кнопка дії всередині картки** (наприклад: `[ + Імпортувати перший фід ]`, `[ + Додати постачальника ]`).
+     - Верхня дублююча кнопка дії у шапці/тулбарі в цей момент приховується, щоб увага користувача не розпорошувалася.
+   - **Результат порожньої фільтрації (`items.length === 0 && isSearching`)**:
+     - Тулбар фільтрів залишається видимим.
+     - Відображається картка «За вашим запитом нічого не знайдено» з обов'язковою кнопкою `[ Скинути всі фільтри ]`.
+10. **Преміальна типографіка & Tabular Figures (`tabular-nums`)**:
+    - Обидва додатки використовують єдиний шрифт `Inter` (або `Geist`) з повною підтримкою української кирилиці (для Desktop клієнта — офлайн `@fontsource/inter`).
+    - **Обов'язковий клас `tabular-nums`**: усі числові, фінансові та кількісні стовпчики (ціни, собівартість, маржа `+25% (+150 ₴)`, кількість SKU, залишки на складі, лічильники квот, дати) зобов'язані використовувати моноширинні цифри для суворого вертикального вирівнювання колонок без візуального тремтіння.
+    - Для технічних токенів (SKU, штрихкоди, API ключі, ліцензії, хеші) обов'язковий `font-mono`.
+11. **Zero Mockup UI Controls (Заборона муляжів у Header)**:
+    - Інпути глобального пошуку у шапці додатків **не мають права бути декоративними муляжами**. Вони зобов'язані бути підключені до повноцінного Command Palette (`⌘K` / `Ctrl+K`) з миттєвим пошуком по каталогах, товарах за SKU, постачальниках та швидким переходом.
+12. **Шина подій без каскадних самотригерів (`emitDataSync`)**:
+    - Якщо компонент підписаний на `useDataSync(['domain'])`, обробники мутацій (створення, видалення, синхронізація) публікують `emitDataSync(['domain'])`, але **НЕ повинні** перед цим викликати `await loadData()`. Оновлення має бути строго декларативним і однократним.
+    - Кожна функція завантаження обов'язково захищається прапорцем `isFetchingRef` (`useRef<boolean>`).
+13. **Ліквідація інлайн-тернарників `isUk ? ... : ...` (100% Dictionary Translations)**:
+    - Повна заборона розміщення текстів інтерфейсу через `isUk ? 'UA' : 'EN'` у JSX компонентах.
+    - 100% рядків, повідомлень, назв колонок, бейджів (зокрема `Reverse Margin`), описів модалок та плейсхолдерів мають жити у файлах `locales/uk/*.json` та `locales/en/*.json`.
+14. **Доступні діалоги замість `window.confirm()`**:
+    - Категорична заборона викликів системного браузерного `window.confirm()` чи `window.alert()`. Використовувати виключно доступні, стилізовані діалоги на базі Shadcn/Radix (`ConfirmDeleteDialog`, `AlertDialog`).
 
 ### 💻 Скіли дизайну та реалізації:
 
@@ -198,8 +220,11 @@
 - [**`design-taste-frontend`**](skills/sub-skills/design-taste-frontend/SKILL.md) & [**`beautiful-desing`**](skills/sub-skills/beautiful-desing/SKILL.md) — естетична типографіка, плавні градієнти, м'які тіні, anti-slop підхід.
 - [**`emil-design-eng`**](skills/sub-skills/emil-design-eng/SKILL.md) — фізика пружин (springs), мікроанімації, тактильний відгук на взаємодії.
 - [**`canvas-design`**](skills/sub-skills/canvas-design/SKILL.md) — робота з Canvas 2D, генерація прев'ю карток та графіки.
+- [**`image`**](skills/sub-skills/image/SKILL.md) — створення та оптимізація зображень (hero, соціальна графіка, мокапи продуктів, банери, OG-зображення, WebP оптимізація).
+- [**`brainstorming-ideas-into-designs`**](skills/sub-skills/brainstorming-ideas-into-designs/SKILL.md) — інтерактивна розробка дизайну через сокративське опитування та дослідження альтернатив.
 - [**`vercel-composition-patterns`**](skills/sub-skills/vercel-composition-patterns/SKILL.md) — архітектура Compound Components (`children` замість 30 пропсів).
 - [**`vercel-react-best-practices`**](skills/sub-skills/vercel-react-best-practices/SKILL.md) — усунення зайвих ререндерів, hoisting констант, мемоізація селекторів.
+- [**`security-best-practices`**](skills/sub-skills/security-best-practices/SKILL.md) — фронтенд-безпека: XSS-превенція, CSP, безпечне зберігання токенів, sanitization.
 - [**`integrate-backend`**](skills/sub-skills/integrate-backend/SKILL.md) — стиковка з API через DTO з `@smartfeed/shared`.
 
 ---
@@ -265,6 +290,7 @@
 ### 🧪 Скіли тестування:
 
 - [**`playwright-best-practices`**](skills/sub-skills/playwright-best-practices/SKILL.md) — створення Page Object Model (POM), data-testid локатори.
+- [**`webapp-testing`**](skills/sub-skills/webapp-testing/SKILL.md) — тестування локальних веб-додатків через Playwright скрипти: запуск серверів, знімки, дебаг UI.
 - [**`condition-based-waiting`**](skills/sub-skills/condition-based-waiting/SKILL.md) — очікування подій мережі та DOM замість сліпих `sleep()`.
 - [**`test-driven-development`**](skills/sub-skills/test-driven-development/SKILL.md) & [**`test-driven-development-tdd`**](skills/sub-skills/test-driven-development-tdd/SKILL.md) — контрактні твердження.
 - [**`testing-anti-patterns`**](skills/sub-skills/testing-anti-patterns/SKILL.md) — запобігання тестуванню власних моків.
@@ -310,26 +336,27 @@
 Тільки після успішного проходження всіх 7 попередніх етапів:
 
 1. **Перенесення файлу плану**: перемістити `plans/active/<feature>.md` у `plans/completed/<feature>.md` згідно з [plans_lifecycle.md](rules/plans_lifecycle.md).
-2. **Оновлення метаданих**:
+2. **Завершення гілки розробки**: [**`finishing-a-development-branch`**](skills/sub-skills/finishing-a-development-branch/SKILL.md) — верифікація тестів → вибір стратегії інтеграції (merge/PR/cleanup) → виконання.
+3. **Оновлення метаданих**:
    ```markdown
    > **Статус:** ✅ **Реалізовано та протестовано (100% тестів пройдено)**  
    > **Дата виконання:** DD.MM.YYYY  
    > **Покриття:** Playwright E2E UI тести (дизайн, кнопки, флоу, i18n, регресія)
    ```
-3. **Синхронізація реєстру**: оновити таблицю `Завершені та протестовані плани` у [`plans/README.md`](../plans/README.md).
-4. Якщо хоч один тест чи рев'ю не пройдено — план **залишається у `plans/active/`** і робота повертається на етап виправлення та дебагу.
+4. **Синхронізація реєстру**: оновити таблицю `Завершені та протестовані плани` у [`plans/README.md`](../plans/README.md).
+5. Якщо хоч один тест чи рев'ю не пройдено — план **залишається у `plans/active/`** і робота повертається на етап виправлення та дебагу.
 
 ---
 
 ## 🧰 Зведена таблиця використання інструментів за етапами
 
-| Етап                  | Ключові скіли                                                    | MCP інструменти         | Команди перевірки                      |
-| :-------------------- | :--------------------------------------------------------------- | :---------------------- | :------------------------------------- |
-| **1. Аналіз**         | `brainstorming`, `inversion-exercise`, `scale-game`              | `context7`, `firecrawl` | —                                      |
-| **2. Планування**     | `writing-plans`, `executing-plans`, `subagent-driven`            | —                       | Створення `plans/active/*.md`          |
-| **3. Дизайн & Код**   | `frontend`, `ui-ux-pro-max`, `shadcn`, `tailwind`, `emil-design` | `context7`              | `pnpm format`                          |
-| **4. Проміжне рев'ю** | `requesting-code-review`, `code-review-reception`                | —                       | `tsc --noEmit` (<250 рядків)           |
-| **5. Автотести**      | `playwright-best-practices`, `condition-based-waiting`           | `playwright` (MCP)      | `pnpm test:desktop`, `pnpm test:admin` |
-| **6. Дебаг**          | `systematic-debugging`, `root-cause-tracing`                     | —                       | Трейсинг, 4-фазний фікс                |
-| **7. Фінальне рев'ю** | `fullstack-code-review`, `adver-review`, `verification`          | —                       | Повна верифікація білда                |
-| **8. Фінал**          | `plans_lifecycle.md`                                             | —                       | Переміщення в `plans/completed/`       |
+| Етап                  | Ключові скіли                                                            | MCP інструменти         | Команди перевірки                      |
+| :-------------------- | :----------------------------------------------------------------------- | :---------------------- | :------------------------------------- |
+| **1. Аналіз**         | `brainstorming`, `inversion-exercise`, `scale-game`                      | `context7`, `firecrawl` | —                                      |
+| **2. Планування**     | `writing-plans`, `executing-plans`, `subagent-driven`                    | —                       | Створення `plans/active/*.md`          |
+| **3. Дизайн & Код**   | `frontend`, `ui-ux-pro-max`, `shadcn`, `tailwind`, `emil-design`         | `context7`              | `pnpm format`                          |
+| **4. Проміжне рев'ю** | `requesting-code-review`, `code-review-reception`                        | —                       | `tsc --noEmit` (<250 рядків)           |
+| **5. Автотести**      | `playwright-best-practices`, `webapp-testing`, `condition-based-waiting` | `playwright` (MCP)      | `pnpm test:desktop`, `pnpm test:admin` |
+| **6. Дебаг**          | `systematic-debugging`, `root-cause-tracing`                             | —                       | Трейсинг, 4-фазний фікс                |
+| **7. Фінальне рев'ю** | `fullstack-code-review`, `adver-review`, `verification`                  | —                       | Повна верифікація білда                |
+| **8. Фінал**          | `plans_lifecycle.md`, `finishing-a-development-branch`                   | —                       | Переміщення в `plans/completed/`       |

@@ -60,7 +60,7 @@
     │    • Шар 3 (Guards/RBAC + Argon2/CWE-78 execFile), Шар 4 (Prisma FKs/Trx)     │
     │    • PostgreSQL: 100% FK indexes, snake_case @@map, timestamptz, cuid PK      │
     │    • Запуск тесту -> ПЕРЕКОНАТИСЯ У 100% УСПІШНОМУ ПРОХОДЖЕННІ (GREEN)        │
-    │    • Скіли: backend, defense-in-depth-validation, supabase-postgres-bp, prisma│
+    │    • Скіли: backend, defense-in-depth-validation, supabase-postgres-bp, postgresql-code-review│
     └───────────────────────────────────────┬───────────────────────────────────────┘
                                             │
     ┌───────────────────────────────────────▼───────────────────────────────────────┐
@@ -125,6 +125,9 @@
 - [**`backend-patterns`**](skills/sub-skills/backend-patterns/SKILL.md) — доменна архітектура, Redis кешування, черги BullMQ.
 - [**`subscription-lifecycle`**](skills/sub-skills/subscription-lifecycle/SKILL.md) — квоти, тарифи, grace-періоди.
 - [**`sentry-backend-bugs`**](skills/sub-skills/sentry-backend-bugs/SKILL.md) — запобігання витокам пам'яті, блокуванням пулу БД та гонкам.
+- [**`api-security-best-practices`**](skills/sub-skills/api-security-best-practices/SKILL.md) — OWASP API Security: автентифікація JWT, авторизація ресурсів, input validation, rate limiting, захист від SSRF та injection.
+- [**`better-auth-security-best-practices`**](skills/sub-skills/better-auth-security-best-practices/SKILL.md) — захист секретів, CSRF, trusted origins, шифрування OAuth-токенів, аудит-логування, конфігурація сесій та cookies.
+- [**`security-best-practices`**](skills/sub-skills/security-best-practices/SKILL.md) — мовно- та фреймворк-специфічний безпековий рев'ю (TypeScript/NestJS): виявлення вразливостей, secure-by-default код, security report.
 - [**`inversion-exercise`**](skills/sub-skills/inversion-exercise/SKILL.md) & [**`scale-game`**](skills/sub-skills/scale-game/SKILL.md) — мислення від збою та тестування на масштабі (10,000 паралельних запитів).
 - [**`collision-zone-thinking`**](skills/sub-skills/collision-zone-thinking/SKILL.md) — аналіз конфліктних точок між сервісами.
 
@@ -287,9 +290,13 @@ pnpm --filter @smartfeed/backend-api test:e2e -- <feature>.e2e-spec.ts
 - [**`backend`**](skills/backend/SKILL.md) — генеральний майстер бекенд-інженерії.
 - [**`defense-in-depth-validation`**](skills/sub-skills/defense-in-depth-validation/SKILL.md) — 4-рівнева модель валідації.
 - [**`supabase-postgres-best-practices`**](skills/sub-skills/supabase-postgres-best-practices/SKILL.md) — залізні стандарти PostgreSQL.
+- [**`postgresql-code-review`**](skills/sub-skills/postgresql-code-review/SKILL.md) — спеціалізований огляд та валідація PostgreSQL-коду: JSONB containment queries (`@>`), GIN індекси на масиви, кастомні ENUM/DOMAIN типи, `CITEXT`/`TIMESTAMPTZ`, CHECK констрейнти, оптимізація тригерів та RLS безпека.
+- [**`postgresql-optimization`**](skills/sub-skills/postgresql-optimization/SKILL.md) — розширені можливості PostgreSQL: JSONB, масиви, повнотекстовий пошук, віконні функції, оптимізація запитів та індексів.
 - [**`prisma-client-api`**](skills/sub-skills/prisma-client-api/SKILL.md) & [**`prisma-postgres`**](skills/sub-skills/prisma-postgres/SKILL.md) — безпечні запити та connection pooling.
 - [**`prisma-cli`**](skills/sub-skills/prisma-cli/SKILL.md) — безпечне виконання `prisma generate`, `db push`, `migrate`.
 - [**`backend-development`**](skills/sub-skills/backend-development/SKILL.md) — REST стандарти, OWASP безпека.
+- [**`api-security-best-practices`**](skills/sub-skills/api-security-best-practices/SKILL.md) — захищений дизайн API: JWT верифікація, авторизація ресурсів, Zod валідація, rate limiting.
+- [**`better-auth-security-best-practices`**](skills/sub-skills/better-auth-security-best-practices/SKILL.md) — секрети, CSRF захист, trusted origins, cookie безпека.
 
 ---
 
@@ -317,6 +324,7 @@ pnpm --filter @smartfeed/backend-api test:e2e -- <feature>.e2e-spec.ts
 
 - [**`requesting-code-review`**](skills/sub-skills/requesting-code-review/SKILL.md)
 - [**`code-review-reception`**](skills/sub-skills/code-review-reception/SKILL.md)
+- [**`postgresql-code-review`**](skills/sub-skills/postgresql-code-review/SKILL.md) — самоаудит запитів до PostgreSQL, міграцій, типів та індексів перед інтеграцією.
 
 ---
 
@@ -369,6 +377,7 @@ pnpm --filter @smartfeed/backend-api test:e2e -- <feature>.e2e-spec.ts
 ### 1. Фінальний контроль якості:
 
 - [**`fullstack-code-review`**](skills/sub-skills/fullstack-code-review/SKILL.md) — комплексна інспекція дотримання CQRS, PostgreSQL індексів, лімітів файлів та типів.
+- [**`postgresql-code-review`**](skills/sub-skills/postgresql-code-review/SKILL.md) — фінальний аудит структури бази даних, констрейнтів, JSONB та індексів.
 - [**`adver-review`**](skills/sub-skills/adver-review/SKILL.md) — змагальний стрес-тест граничних випадків (гонки квот, колізії email, переривання транзакцій).
 - [**`verification-before-completion`**](skills/sub-skills/verification-before-completion/SKILL.md) — фінальний прогін компіляції та лінтування:
   ```bash
@@ -397,7 +406,11 @@ pnpm --filter @smartfeed/backend-api test:e2e -- <feature>.e2e-spec.ts
   ```
 - Оновити та синхронізувати таблицю `Завершені та протестовані плани` у [`plans/README.md`](../plans/README.md).
 
-### 4. Політика Git Commit ([testing_and_quality.md](rules/testing_and_quality.md)):
+### 4. Завершення гілки розробки:
+
+- [**`finishing-a-development-branch`**](skills/sub-skills/finishing-a-development-branch/SKILL.md) — структурований процес завершення feature branch: верифікація тестів → вибір стратегії інтеграції (merge/PR/cleanup) → виконання.
+
+### 5. Політика Git Commit ([testing_and_quality.md](rules/testing_and_quality.md)):
 
 - **СУВОРА ЗАБОРОНА**: агент **НІКОЛИ** не робить `git commit` чи `git push` автоматично.
 - Закомітити зміни можна **виключно** за явною командою користувача (наприклад, `/git-commit`).
@@ -406,13 +419,13 @@ pnpm --filter @smartfeed/backend-api test:e2e -- <feature>.e2e-spec.ts
 
 ## 🧰 Зведена таблиця використання інструментів бекенду за етапами
 
-| Етап                         | Ключові скіли                                                    | MCP інструменти         | Команди верифікації                                    |
-| :--------------------------- | :--------------------------------------------------------------- | :---------------------- | :----------------------------------------------------- |
-| **1. Аналіз & Безпека**      | `nestjs-best-practices`, `subscription-lifecycle`, `sentry-bugs` | `context7`, `firecrawl` | —                                                      |
-| **2. Планування**            | `writing-plans`, `executing-plans`, `subagent-driven`            | —                       | Створення `plans/active/*.md`, `pnpm build:shared`     |
-| **3. TDD RED (Тести перші)** | `test-driven-development-tdd`, `testing-anti-patterns`           | —                       | `pnpm --filter @smartfeed/backend-api test:e2e -- <t>` |
-| **4. Реалізація GREEN**      | `backend`, `defense-in-depth`, `supabase-postgres-bp`, `prisma`  | `context7`              | `pnpm test:e2e` (перевірка переходу в GREEN)           |
-| **5. Проміжне рев'ю**        | `requesting-code-review`, `code-review-reception`                | —                       | `tsc --noEmit` (<250 рядків на файл), `pnpm format`    |
-| **6. Регресійні тести**      | `backend`, `condition-based-waiting`                             | `playwright` (Swagger)  | `pnpm --filter @smartfeed/backend-api test:e2e` (100%) |
-| **7. Систематичний дебаг**   | `systematic-debugging`, `root-cause-tracing`                     | —                       | Трейсинг, 4 фази виправлення root-cause                |
-| **8. Фінал & DoD**           | `fullstack-code-review`, `adver-review`, `plans_lifecycle.md`    | —                       | Синхронізація WIKI/README, переміщення в `completed/`  |
+| Етап                         | Ключові скіли                                                                                         | MCP інструменти         | Команди верифікації                                    |
+| :--------------------------- | :---------------------------------------------------------------------------------------------------- | :---------------------- | :----------------------------------------------------- |
+| **1. Аналіз & Безпека**      | `nestjs-best-practices`, `subscription-lifecycle`, `sentry-bugs`, `api-security-bp`, `security-bp`    | `context7`, `firecrawl` | —                                                      |
+| **2. Планування**            | `writing-plans`, `executing-plans`, `subagent-driven`                                                 | —                       | Створення `plans/active/*.md`, `pnpm build:shared`     |
+| **3. TDD RED (Тести перші)** | `test-driven-development-tdd`, `testing-anti-patterns`                                                | —                       | `pnpm --filter @smartfeed/backend-api test:e2e -- <t>` |
+| **4. Реалізація GREEN**      | `backend`, `defense-in-depth`, `supabase-postgres-bp`, `postgresql-optimization`, `prisma`, `api-sec` | `context7`              | `pnpm test:e2e` (перевірка переходу в GREEN)           |
+| **5. Проміжне рев'ю**        | `requesting-code-review`, `code-review-reception`                                                     | —                       | `tsc --noEmit` (<250 рядків на файл), `pnpm format`    |
+| **6. Регресійні тести**      | `backend`, `condition-based-waiting`                                                                  | `playwright` (Swagger)  | `pnpm --filter @smartfeed/backend-api test:e2e` (100%) |
+| **7. Систематичний дебаг**   | `systematic-debugging`, `root-cause-tracing`                                                          | —                       | Трейсинг, 4 фази виправлення root-cause                |
+| **8. Фінал & DoD**           | `fullstack-code-review`, `adver-review`, `finishing-a-development-branch`                             | —                       | Синхронізація WIKI/README, переміщення в `completed/`  |

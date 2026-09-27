@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   PanelLeft,
@@ -18,6 +18,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { LanguageToggle } from '@/components/ui/language-toggle';
+import { CommandSearchDialog } from './CommandSearchDialog';
 import { cn } from '@/lib/utils';
 
 export const Header = React.memo(function Header() {
@@ -26,7 +27,19 @@ export const Header = React.memo(function Header() {
   const { toggleSidebar, toggleMobileSidebar, isCollapsed } = useSidebar();
   const { license, daysRemaining, isExpired } = useLicense();
   const { language } = useTranslation();
+  const [isCommandOpen, setIsCommandOpen] = useState(false);
   const isUk = language === 'uk';
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setIsCommandOpen((prev) => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   const planName =
     license?.tariffPlan?.nameUk && isUk
@@ -40,7 +53,7 @@ export const Header = React.memo(function Header() {
   return (
     <header
       data-testid="desktop-header"
-      className="h-16 border-b border-border bg-card/40 backdrop-blur-md px-4 sm:px-6 flex items-center justify-between sticky top-0 z-10 gap-4"
+      className="h-16 border-b border-border bg-card px-4 sm:px-6 flex items-center justify-between sticky top-0 z-40 gap-4 shadow-xs"
     >
       {/* Left side: Single Sidebar Toggle & Active Subscription Status */}
       <div className="flex items-center space-x-3">
@@ -140,14 +153,22 @@ export const Header = React.memo(function Header() {
 
       {/* Center: Search */}
       <div className="hidden lg:flex items-center max-w-sm flex-1">
-        <div className="relative w-full">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <input
-            type="text"
-            placeholder={isUk ? 'Пошук по каталогах і товарах...' : 'Search catalogs and SKUs...'}
-            className="w-full bg-secondary/40 border border-border/80 rounded-xl pl-9 pr-4 py-1.5 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
-          />
-        </div>
+        <button
+          type="button"
+          data-testid="header-command-search-trigger"
+          onClick={() => setIsCommandOpen(true)}
+          className="w-full bg-secondary/40 hover:bg-secondary/70 border border-border/80 rounded-xl pl-3 pr-2 py-1.5 text-xs text-muted-foreground flex items-center justify-between transition-colors cursor-pointer text-left group"
+        >
+          <div className="flex items-center gap-2">
+            <Search className="h-3.5 w-3.5 text-muted-foreground group-hover:text-foreground transition-colors" />
+            <span className="truncate">
+              {isUk ? 'Швидкий пошук по системі...' : 'Search catalogs and actions...'}
+            </span>
+          </div>
+          <kbd className="inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-mono font-medium text-muted-foreground bg-muted border border-border rounded-md shadow-xs">
+            <span className="text-xs">⌘</span>K
+          </kbd>
+        </button>
       </div>
 
       {/* Right side: Language, Theme, User badge */}
@@ -172,6 +193,9 @@ export const Header = React.memo(function Header() {
           </span>
         </div>
       </div>
+
+      {/* Global Command Palette Dialog */}
+      <CommandSearchDialog isOpen={isCommandOpen} onClose={() => setIsCommandOpen(false)} />
     </header>
   );
 });

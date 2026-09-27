@@ -141,7 +141,7 @@ export const UserTableRow = React.memo(function UserTableRow({
                   title={t('users', 'action_manage_team')}
                 >
                   <UsersIcon className="size-3" />
-                  <span>{user.membersCount}</span>
+                  <span className="tabular-nums">{user.membersCount}</span>
                 </button>
               )}
             </div>
@@ -198,7 +198,7 @@ export const UserTableRow = React.memo(function UserTableRow({
       </TableCell>
 
       {/* Created Date */}
-      <TableCell className="text-xs text-muted-foreground font-mono">
+      <TableCell className="text-xs text-muted-foreground font-mono tabular-nums">
         {new Date(user.createdAt).toLocaleDateString(locale === 'uk' ? 'uk-UA' : 'en-US', {
           day: '2-digit',
           month: '2-digit',

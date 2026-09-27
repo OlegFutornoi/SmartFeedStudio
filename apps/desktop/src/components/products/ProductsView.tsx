@@ -3,13 +3,22 @@ import { ProductsToolbar } from './ProductsToolbar';
 import { ProductsBulkActionsBar } from './ProductsBulkActionsBar';
 import { ProductsTable } from './ProductsTable';
 import { ProductDetailsDrawer } from './ProductDetailsDrawer';
+import { ProductsZeroStateCard } from './ProductsZeroStateCard';
 import { ConfirmDeleteDialog } from '@/components/ui/ConfirmDeleteDialog';
 import { localDb } from '@/services/local-db';
 import { useDataSync } from '@/lib/syncEvents';
 import { useTranslation } from '@/i18n';
 import type { ProductDto, SupplierDto } from '@smartfeed/shared';
 
-export const ProductsView: React.FC = () => {
+interface ProductsViewProps {
+  onOpenImportWizard?: () => void;
+  isFeedLimitReached?: boolean;
+}
+
+export const ProductsView: React.FC<ProductsViewProps> = ({
+  onOpenImportWizard,
+  isFeedLimitReached = false,
+}) => {
   const { t } = useTranslation(['catalogs', 'common']);
 
   // Data state
@@ -164,63 +173,74 @@ export const ProductsView: React.FC = () => {
 
   return (
     <div data-testid="products-view" className="space-y-4 animate-in fade-in duration-200">
-      {/* Toolbar */}
-      <ProductsToolbar
-        search={search}
-        onSearchChange={(val) => {
-          setSearch(val);
-          setPage(1);
-        }}
-        selectedSupplierId={selectedSupplierId}
-        onSupplierChange={(val) => {
-          setSelectedSupplierId(val);
-          setPage(1);
-        }}
-        selectedCategory={selectedCategory}
-        onCategoryChange={(val) => {
-          setSelectedCategory(val);
-          setPage(1);
-        }}
-        inStockOnly={inStockOnly}
-        onInStockOnlyChange={(val) => {
-          setInStockOnly(val);
-          setPage(1);
-        }}
-        suppliers={suppliers}
-        categories={categories}
-        onResetFilters={handleResetFilters}
-        hasActiveFilters={hasActiveFilters}
-        totalCount={total}
-      />
+      {!isLoading && total === 0 && !hasActiveFilters ? (
+        /* Pristine Zero State: Catalog has 0 items and no filters */
+        <ProductsZeroStateCard
+          onOpenImportWizard={onOpenImportWizard || (() => {})}
+          isFeedLimitReached={isFeedLimitReached}
+        />
+      ) : (
+        <>
+          {/* Toolbar */}
+          <ProductsToolbar
+            search={search}
+            onSearchChange={(val) => {
+              setSearch(val);
+              setPage(1);
+            }}
+            selectedSupplierId={selectedSupplierId}
+            onSupplierChange={(val) => {
+              setSelectedSupplierId(val);
+              setPage(1);
+            }}
+            selectedCategory={selectedCategory}
+            onCategoryChange={(val) => {
+              setSelectedCategory(val);
+              setPage(1);
+            }}
+            inStockOnly={inStockOnly}
+            onInStockOnlyChange={(val) => {
+              setInStockOnly(val);
+              setPage(1);
+            }}
+            suppliers={suppliers}
+            categories={categories}
+            onResetFilters={handleResetFilters}
+            hasActiveFilters={hasActiveFilters}
+            totalCount={total}
+          />
 
-      {/* Bulk Actions Bar */}
-      <ProductsBulkActionsBar
-        selectedCount={selectedIds.length}
-        onClearSelection={handleClearSelection}
-        onBulkDelete={() => setIsBulkDeleteModalOpen(true)}
-        isDeleting={isDeleting}
-      />
+          {/* Bulk Actions Bar */}
+          <ProductsBulkActionsBar
+            selectedCount={selectedIds.length}
+            onClearSelection={handleClearSelection}
+            onBulkDelete={() => setIsBulkDeleteModalOpen(true)}
+            isDeleting={isDeleting}
+          />
 
-      {/* Main Table */}
-      <ProductsTable
-        products={products}
-        totalItems={total}
-        currentPage={page}
-        pageSize={limit}
-        totalPages={totalPages}
-        onPageChange={setPage}
-        onPageSizeChange={(sz) => {
-          setLimit(sz);
-          setPage(1);
-        }}
-        selectedIds={selectedIds}
-        onToggleSelect={handleToggleSelect}
-        onToggleSelectAll={handleToggleSelectAll}
-        isAllSelected={isAllSelected}
-        onViewDetails={setDrawerProduct}
-        onDeleteProduct={setProductToDelete}
-        isLoading={isLoading}
-      />
+          {/* Main Table */}
+          <ProductsTable
+            products={products}
+            totalItems={total}
+            currentPage={page}
+            pageSize={limit}
+            totalPages={totalPages}
+            onPageChange={setPage}
+            onPageSizeChange={(sz) => {
+              setLimit(sz);
+              setPage(1);
+            }}
+            selectedIds={selectedIds}
+            onToggleSelect={handleToggleSelect}
+            onToggleSelectAll={handleToggleSelectAll}
+            isAllSelected={isAllSelected}
+            onViewDetails={setDrawerProduct}
+            onDeleteProduct={setProductToDelete}
+            onResetFilters={handleResetFilters}
+            isLoading={isLoading}
+          />
+        </>
+      )}
 
       {/* Drawer */}
       <ProductDetailsDrawer
