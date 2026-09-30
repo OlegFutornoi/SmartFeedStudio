@@ -3,16 +3,10 @@
 import React from 'react';
 import { Sparkles, Bot, ArrowLeft, Cpu, ShieldCheck, ExternalLink } from 'lucide-react';
 import Link from 'next/link';
-import { Button } from '../../../../components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '../../../../components/ui/card';
-import { Badge } from '../../../../components/ui/badge';
-import { useLanguage } from '../../../../contexts/LanguageContext';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function AiSettingsPage() {
   const { locale } = useLanguage();

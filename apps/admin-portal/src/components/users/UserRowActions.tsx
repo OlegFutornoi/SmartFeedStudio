@@ -3,9 +3,9 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { UserListItemDto } from '@smartfeed/shared';
-import { Button } from '../ui/button';
+import { Button } from '@/components/ui/button';
 import { MoreHorizontal, PauseCircle, PlayCircle, Trash2, Users, Loader2 } from 'lucide-react';
-import { useLanguage } from '../../contexts/LanguageContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface UserRowActionsProps {
   user: UserListItemDto;
@@ -164,9 +164,9 @@ export function UserRowActions({
               {isToggling ? (
                 <Loader2 className="size-3.5 animate-spin shrink-0" />
               ) : isActive ? (
-                <PauseCircle className="size-3.5 text-amber-500 shrink-0" />
+                <PauseCircle className="size-3.5 text-muted-foreground shrink-0" />
               ) : (
-                <PlayCircle className="size-3.5 text-emerald-500 shrink-0" />
+                <PlayCircle className="size-3.5 text-muted-foreground shrink-0" />
               )}
               <span className="whitespace-nowrap">
                 {isActive ? t('users', 'action_suspend') : t('users', 'action_resume')}

@@ -1,6 +1,6 @@
 import { FeedSourceType } from '@smartfeed/shared';
-import { localDb } from '../../services/local-db';
-import { isTauri } from '../runtime';
+import { localDb } from '@/services/local-db';
+import { isTauri } from '@/lib/runtime';
 import { fetchWithAuth } from './client';
 
 export interface FeedCategoryItem {

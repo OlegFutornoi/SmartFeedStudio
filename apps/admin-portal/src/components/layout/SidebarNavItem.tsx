@@ -3,8 +3,8 @@
 import React from 'react';
 import Link from 'next/link';
 import { LucideIcon } from 'lucide-react';
-import { cn } from '../../lib/utils';
-import { Badge } from '../ui/badge';
+import { cn } from '@/lib/utils';
+import { Badge } from '@/components/ui/badge';
 
 interface SidebarNavItemProps {
   name: string;

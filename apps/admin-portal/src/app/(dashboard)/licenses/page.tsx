@@ -3,10 +3,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { KeyRound, Layers } from 'lucide-react';
-import { api } from '../../../lib/api';
-import { useLanguage } from '../../../contexts/LanguageContext';
+import { api } from '@/lib/api';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { AdminLicenseItemDto } from '@smartfeed/shared';
-import { LicensesTable } from '../../../components/plans/LicensesTable';
+import { LicensesTable } from '@/components/plans/LicensesTable';
 
 export default function LicensesPage() {
   const { locale } = useLanguage();

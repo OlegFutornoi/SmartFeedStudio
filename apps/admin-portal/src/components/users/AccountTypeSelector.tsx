@@ -3,7 +3,7 @@
 import React from 'react';
 import { Building2, UserCheck } from 'lucide-react';
 import { AccountType } from '@smartfeed/shared';
-import { cn } from '../../lib/utils';
+import { cn } from '@/lib/utils';
 
 interface AccountTypeSelectorProps {
   selected: AccountType;

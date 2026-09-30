@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { captureException } from '@/lib/sentry';
 
 export function SignupForm({ className, ...props }: React.ComponentPropsWithoutRef<typeof Card>) {
   const [fullName, setFullName] = useState('');
@@ -54,6 +55,7 @@ export function SignupForm({ className, ...props }: React.ComponentPropsWithoutR
       localStorage.setItem('smartfeed_show_workspace_onboarding', 'true');
       navigate('/', { replace: true });
     } catch (err: unknown) {
+      captureException(err, { form: 'signup', email: email.trim() });
       setErrorRaw(err);
     } finally {
       setIsLoading(false);

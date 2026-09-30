@@ -2,21 +2,15 @@
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { CreditCard, Settings, ShieldCheck, CheckCircle2, AlertCircle } from 'lucide-react';
-import { Button } from '../../../../components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '../../../../components/ui/card';
-import { Badge } from '../../../../components/ui/badge';
-import { useLanguage } from '../../../../contexts/LanguageContext';
-import { api } from '../../../../lib/api';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { api } from '@/lib/api';
 import { PaymentSettingDto, PaymentProvider } from '@smartfeed/shared';
-import { WayForPaySettingsDialog } from '../../../../components/payments/WayForPaySettingsDialog';
-import { PaymentSettingsHeader } from '../../../../components/payments/PaymentSettingsHeader';
-import { PaymentGatewaysList } from '../../../../components/payments/PaymentGatewaysList';
+import { WayForPaySettingsDialog } from '@/components/payments/WayForPaySettingsDialog';
+import { PaymentSettingsHeader } from '@/components/payments/PaymentSettingsHeader';
+import { PaymentGatewaysList } from '@/components/payments/PaymentGatewaysList';
 
 export default function PaymentsSettingsPage() {
   const { locale } = useLanguage();
@@ -89,7 +83,7 @@ export default function PaymentsSettingsPage() {
                       <Badge
                         variant="outline"
                         data-testid="wfp-status-badge"
-                        className="bg-emerald-500/10 text-emerald-500 border-emerald-500/20 text-[10px] flex items-center gap-1 font-mono"
+                        className="bg-primary/10 text-primary border-primary/20 text-[10px] flex items-center gap-1 font-mono font-medium"
                       >
                         <CheckCircle2 className="size-3" />
                         <span>{isUk ? 'Активний' : 'Active'}</span>
@@ -106,9 +100,9 @@ export default function PaymentsSettingsPage() {
                     )}
                     {wfpSetting?.isTestMode && (
                       <Badge
-                        variant="outline"
+                        variant="secondary"
                         data-testid="wfp-testmode-badge"
-                        className="bg-amber-500/10 text-amber-500 border-amber-500/20 text-[10px] font-mono"
+                        className="text-[10px] font-mono border border-border"
                       >
                         TEST MODE (SANDBOX)
                       </Badge>

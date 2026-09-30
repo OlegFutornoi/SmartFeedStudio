@@ -2,8 +2,8 @@
 
 import React from 'react';
 import { Compass, Plus } from 'lucide-react';
-import { Button } from '../ui/button';
-import { useLanguage } from '../../contexts/LanguageContext';
+import { Button } from '@/components/ui/button';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface NavigationHeaderProps {
   onAddItem: () => void;

@@ -3,12 +3,19 @@
 import React from 'react';
 import Link from 'next/link';
 import { ExternalLink } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
-import { Badge } from '../ui/badge';
-import { Button } from '../ui/button';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import { UserListItemDto } from '@smartfeed/shared';
-import { useLanguage } from '../../contexts/LanguageContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface DashboardRecentUsersTableProps {
   users: UserListItemDto[];
@@ -95,7 +102,7 @@ export const DashboardRecentUsersTable = React.memo(function DashboardRecentUser
                         u.role === 'SUPER_ADMIN'
                           ? 'bg-primary/15 text-primary border-primary/30'
                           : u.role === 'ADMIN'
-                            ? 'bg-blue-500/10 text-blue-400 border-blue-500/30'
+                            ? 'bg-muted text-foreground border-border'
                             : 'bg-secondary text-secondary-foreground'
                       }
                     >
@@ -110,7 +117,7 @@ export const DashboardRecentUsersTable = React.memo(function DashboardRecentUser
                     {u.license ? (
                       <Badge
                         variant="outline"
-                        className="bg-emerald-500/10 text-emerald-400 border-emerald-500/30"
+                        className="border-border text-foreground bg-muted/40 font-normal"
                       >
                         {u.license.planType}
                       </Badge>

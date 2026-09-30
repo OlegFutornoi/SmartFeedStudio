@@ -3,8 +3,11 @@ import { useLocation } from 'react-router-dom';
 import { PlanType } from '@smartfeed/shared';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLicense } from '@/hooks/useLicense';
-import { FEATURE_TEASER_REGISTRY, PLAN_LEVEL } from '../config/feature-teaser.registry';
-import type { FeatureAccessResult } from '../types/feature-teaser.types';
+import {
+  FEATURE_TEASER_REGISTRY,
+  PLAN_LEVEL,
+} from '@/modules/feature-teaser/config/feature-teaser.registry';
+import type { FeatureAccessResult } from '@/modules/feature-teaser/types/feature-teaser.types';
 
 export function useFeatureAccess(featureKey: string): FeatureAccessResult {
   const { user } = useAuth();

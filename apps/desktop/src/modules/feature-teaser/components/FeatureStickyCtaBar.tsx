@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Sparkles, ShieldCheck, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from '@/i18n';
-import type { FeatureTeaserConfig } from '../types/feature-teaser.types';
+import type { FeatureTeaserConfig } from '@/modules/feature-teaser/types/feature-teaser.types';
 
 interface FeatureStickyCtaBarProps {
   config: FeatureTeaserConfig;

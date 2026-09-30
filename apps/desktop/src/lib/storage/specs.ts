@@ -1,5 +1,5 @@
-import { fetchWithAuth } from '../api';
-import { isTauri } from '../runtime';
+import { fetchWithAuth } from '@/lib/api';
+import { isTauri } from '@/lib/runtime';
 
 export async function getDefaultWorkspacePath(): Promise<string> {
   // 1. Try Tauri IPC if in native app

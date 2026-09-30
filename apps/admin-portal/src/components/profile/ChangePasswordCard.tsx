@@ -2,12 +2,12 @@
 
 import React, { useState } from 'react';
 import { Lock, AlertCircle, CheckCircle2, Loader2 } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
-import { Input } from '../ui/input';
-import { Label } from '../ui/label';
-import { Button } from '../ui/button';
-import { useAuth } from '../../contexts/AuthContext';
-import { useLanguage } from '../../contexts/LanguageContext';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
+import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export const ChangePasswordCard = React.memo(function ChangePasswordCard() {
   const { changePassword } = useAuth();
@@ -55,16 +55,16 @@ export const ChangePasswordCard = React.memo(function ChangePasswordCard() {
       data-testid="change-password-card"
       className="border-border/80 bg-card/60 backdrop-blur-sm shadow-md"
     >
-      <CardHeader>
-        <div className="flex items-center space-x-3">
-          <div className="h-10 w-10 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center">
-            <Lock className="h-5 w-5" />
-          </div>
-          <div>
-            <CardTitle className="text-lg">{t('settings', 'change_password_title')}</CardTitle>
-            <CardDescription>{t('settings', 'change_password_desc')}</CardDescription>
-          </div>
+      <CardHeader className="pb-4">
+        <div className="flex items-center gap-2">
+          <Lock className="size-4 text-muted-foreground" />
+          <CardTitle className="text-base font-semibold">
+            {t('settings', 'change_password_title')}
+          </CardTitle>
         </div>
+        <CardDescription className="text-xs text-muted-foreground">
+          {t('settings', 'change_password_desc')}
+        </CardDescription>
       </CardHeader>
       <CardContent>
         {error && (
@@ -80,14 +80,14 @@ export const ChangePasswordCard = React.memo(function ChangePasswordCard() {
         {success && (
           <div
             data-testid="change-password-success"
-            className="mb-4 flex items-center space-x-2 rounded-lg bg-emerald-500/15 p-3 text-sm text-emerald-400 border border-emerald-500/30"
+            className="mb-4 flex items-center space-x-2 rounded-lg bg-primary/10 p-3 text-sm text-primary border border-primary/20"
           >
             <CheckCircle2 className="h-4 w-4 shrink-0" />
             <span>{t('settings', 'password_updated')}</span>
           </div>
         )}
 
-        <form onSubmit={handlePasswordChange} className="space-y-4 max-w-md">
+        <form onSubmit={handlePasswordChange} className="space-y-4 w-full">
           <div className="space-y-1.5">
             <Label htmlFor="current-pwd">{t('settings', 'current_password')}</Label>
             <Input

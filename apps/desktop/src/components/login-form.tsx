@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { captureException } from '@/lib/sentry';
 
 export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) {
   const [email, setEmail] = useState('');
@@ -35,6 +36,7 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
       await login({ email: email.trim(), password });
       navigate('/', { replace: true });
     } catch (err: unknown) {
+      captureException(err, { form: 'login', email: email.trim() });
       setErrorRaw(err);
     } finally {
       setIsLoading(false);

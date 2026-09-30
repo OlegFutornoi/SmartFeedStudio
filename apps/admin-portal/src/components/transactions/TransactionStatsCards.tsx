@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Card, CardContent } from '../ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { PaymentStatsDto } from '@smartfeed/shared';
 import { TrendingUp, CheckCircle2, Receipt, Percent } from 'lucide-react';
 
@@ -17,7 +17,7 @@ export function TransactionStatsCards({ stats, isUk }: TransactionStatsCardsProp
       value: `${(stats?.totalRevenueUah || 0).toLocaleString()} грн`,
       subtitle: isUk ? 'Успішні транзакції' : 'Successful charges',
       icon: TrendingUp,
-      color: 'text-emerald-500 bg-emerald-500/10',
+      color: 'text-primary bg-primary/10 border border-primary/20',
     },
     {
       title: isUk ? 'Успішні оплати' : 'Successful Payments',
@@ -26,21 +26,21 @@ export function TransactionStatsCards({ stats, isUk }: TransactionStatsCardsProp
         ? `${stats?.pendingCount || 0} в очікуванні`
         : `${stats?.pendingCount || 0} pending`,
       icon: CheckCircle2,
-      color: 'text-primary bg-primary/10',
+      color: 'text-primary bg-primary/10 border border-primary/20',
     },
     {
       title: isUk ? 'Середній чек' : 'Average Check',
       value: `${(stats?.averageCheckUah || 0).toLocaleString()} грн`,
       subtitle: isUk ? 'На одну транзакцію' : 'Per transaction',
       icon: Receipt,
-      color: 'text-blue-500 bg-blue-500/10',
+      color: 'text-primary bg-primary/10 border border-primary/20',
     },
     {
       title: isUk ? 'Конверсія оплат' : 'Success Rate',
       value: `${stats?.successRatePercent ?? 100}%`,
       subtitle: isUk ? 'Співвідношення успіху' : 'Approval ratio',
       icon: Percent,
-      color: 'text-primary bg-primary/10',
+      color: 'text-primary bg-primary/10 border border-primary/20',
     },
   ];
 

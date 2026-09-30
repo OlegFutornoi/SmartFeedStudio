@@ -203,11 +203,11 @@ export function CatalogsPage() {
           }`}
           data-testid="tab-export-channels"
         >
-          <Store className="size-4 text-emerald-400" />
+          <Store className="size-4 text-primary" />
           <span>{t('catalogs:tabChannels')}</span>
           <Badge
             variant="outline"
-            className="text-[10px] px-1.5 py-0 h-4 bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+            className="text-[10px] px-1.5 py-0 h-4 bg-primary/10 text-primary border-primary/20"
           >
             {t('catalogs:reverseMargin')}
           </Badge>

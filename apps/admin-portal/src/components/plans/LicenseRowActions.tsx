@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { AdminLicenseItemDto } from '@smartfeed/shared';
-import { Button } from '../ui/button';
+import { Button } from '@/components/ui/button';
 import { MoreHorizontal, PauseCircle, PlayCircle, Trash2, Loader2 } from 'lucide-react';
 
 interface LicenseRowActionsProps {
@@ -141,9 +141,9 @@ export function LicenseRowActions({
               {isToggling ? (
                 <Loader2 className="size-3.5 animate-spin" />
               ) : license.isActive ? (
-                <PauseCircle className="size-3.5 text-amber-500" />
+                <PauseCircle className="size-3.5 text-muted-foreground" />
               ) : (
-                <PlayCircle className="size-3.5 text-emerald-500" />
+                <PlayCircle className="size-3.5 text-muted-foreground" />
               )}
               <span>
                 {license.isActive

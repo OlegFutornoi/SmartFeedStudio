@@ -1,12 +1,12 @@
 'use client';
 
 import React from 'react';
-import { TableCell, TableRow } from '../ui/table';
-import { Badge } from '../ui/badge';
-import { Cloud, CheckCircle2, PauseCircle, AlertCircle, KeyRound } from 'lucide-react';
+import { TableCell, TableRow } from '@/components/ui/table';
+import { Badge } from '@/components/ui/badge';
+import { Cloud, PauseCircle, AlertCircle, KeyRound } from 'lucide-react';
 import { AdminLicenseItemDto } from '@smartfeed/shared';
 import { LicenseRowActions } from './LicenseRowActions';
-import { cn } from '../../lib/utils';
+import { cn } from '@/lib/utils';
 
 interface LicensesTableRowProps {
   license: AdminLicenseItemDto;
@@ -32,12 +32,8 @@ export const LicensesTableRow = React.memo(function LicensesTableRow({
       key={lic.id}
       data-testid={`license-row-${lic.licenseKey}`}
       className={cn(
-        'transition-colors',
-        isCurrentActive
-          ? 'hover:bg-emerald-500/[0.04] bg-emerald-500/[0.02] border-l-2 border-l-emerald-500'
-          : isSuspended
-            ? 'hover:bg-muted/40 bg-muted/10'
-            : 'hover:bg-muted/40',
+        'transition-colors hover:bg-muted/40',
+        isCurrentActive && 'border-l-2 border-l-primary',
       )}
     >
       {/* License Key */}
@@ -47,8 +43,8 @@ export const LicensesTableRow = React.memo(function LicensesTableRow({
           className={cn(
             'p-1 px-1.5 rounded border text-xs',
             isCurrentActive
-              ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-600 dark:text-emerald-400 font-semibold'
-              : 'bg-muted/40 border-border/50',
+              ? 'bg-primary/10 border-primary/20 text-primary font-semibold'
+              : 'bg-muted/40 border-border/50 text-muted-foreground',
           )}
         >
           {lic.licenseKey}
@@ -80,9 +76,9 @@ export const LicensesTableRow = React.memo(function LicensesTableRow({
           data-testid={`license-plan-badge-${lic.licenseKey}`}
           className={
             lic.planType === 'ENTERPRISE'
-              ? 'bg-amber-500/10 text-amber-400 border-amber-500/30 font-medium text-xs'
+              ? 'bg-primary/15 text-primary border-primary/30 font-medium text-xs'
               : lic.planType === 'PRO'
-                ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30 font-medium text-xs'
+                ? 'bg-muted text-foreground border-border font-medium text-xs'
                 : 'bg-secondary text-secondary-foreground font-medium text-xs'
           }
         >
@@ -97,7 +93,7 @@ export const LicensesTableRow = React.memo(function LicensesTableRow({
           <Badge
             variant="outline"
             data-testid={`license-status-badge-${lic.licenseKey}`}
-            className="border-amber-500/40 bg-amber-500/10 text-amber-600 dark:text-amber-400 text-[10px] gap-1 px-1.5 py-0 font-medium"
+            className="border-border bg-muted/50 text-muted-foreground text-[10px] gap-1 px-1.5 py-0 font-medium"
           >
             <PauseCircle className="size-2.5" />
             <span>{isUk ? 'Призупинена' : 'Suspended'}</span>
@@ -115,9 +111,9 @@ export const LicensesTableRow = React.memo(function LicensesTableRow({
           <Badge
             variant="outline"
             data-testid={`license-status-badge-${lic.licenseKey}`}
-            className="border-emerald-500/40 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px] gap-1 px-1.5 py-0 font-medium"
+            className="border-border text-foreground text-[10px] gap-1.5 px-2 py-0 font-normal"
           >
-            <CheckCircle2 className="size-2.5" />
+            <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
             <span>{isUk ? 'Активна' : 'Active'}</span>
           </Badge>
         )}

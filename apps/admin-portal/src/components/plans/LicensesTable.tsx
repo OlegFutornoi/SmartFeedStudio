@@ -1,18 +1,25 @@
 'use client';
 
 import React, { useState, useCallback, useMemo } from 'react';
-import { Card, CardContent } from '../ui/card';
-import { Button } from '../ui/button';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import { AdminLicenseItemDto } from '@smartfeed/shared';
 import { SearchX } from 'lucide-react';
 import { LicensesTableToolbar } from './LicensesTableToolbar';
 import { LicensesTableRow } from './LicensesTableRow';
 import { LicenseDeleteDialog } from './LicenseDeleteDialog';
 import { useLicensesFilter, LicensesFilterState } from './useLicensesFilter';
-import { TablePagination } from '../ui/table-pagination';
-import { usePagination } from '../../hooks/usePagination';
-import { api } from '../../lib/api';
+import { TablePagination } from '@/components/ui/table-pagination';
+import { usePagination } from '@/hooks/usePagination';
+import { api } from '@/lib/api';
 
 interface LicensesTableProps {
   licenses: AdminLicenseItemDto[];

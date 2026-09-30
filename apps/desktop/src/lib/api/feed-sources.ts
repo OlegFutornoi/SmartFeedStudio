@@ -1,6 +1,6 @@
-import { localDb } from '../../services/local-db';
-import { isTauri } from '../runtime';
-import { emitDataSync } from '../syncEvents';
+import { localDb } from '@/services/local-db';
+import { isTauri } from '@/lib/runtime';
+import { emitDataSync } from '@/lib/syncEvents';
 import { fetchWithAuth } from './client';
 import type { ImportFeedResultDto } from './feeds';
 

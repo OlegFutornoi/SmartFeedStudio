@@ -11,7 +11,7 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 import { useTranslation } from '@/i18n';
-import type { FeatureBenefitItem } from '../types/feature-teaser.types';
+import type { FeatureBenefitItem } from '@/modules/feature-teaser/types/feature-teaser.types';
 
 const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   Users,

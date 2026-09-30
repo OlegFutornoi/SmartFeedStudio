@@ -1,5 +1,5 @@
 import { ProductStatus, type ProductDto, type SupplierPricingRuleDto } from '@smartfeed/shared';
-import { localDb } from '../local-db';
+import { localDb } from '@/services/local-db';
 import { emitDataSync } from '@/lib/syncEvents';
 import type { RawParsedProduct } from './stream-parser';
 

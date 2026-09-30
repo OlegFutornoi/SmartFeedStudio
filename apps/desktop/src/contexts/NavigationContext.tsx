@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState, useCallback, useMemo } from 'react';
 import { NavigationItemDto, Role, TargetApp, PlanType } from '@smartfeed/shared';
 import { useAuth } from './AuthContext';
-import { getDesktopNavigation } from '../lib/api';
+import { getDesktopNavigation } from '@/lib/api';
 
 const DEFAULT_NAVIGATION_ITEMS: NavigationItemDto[] = [
   {

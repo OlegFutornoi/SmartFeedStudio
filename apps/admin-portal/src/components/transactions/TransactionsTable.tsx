@@ -1,12 +1,19 @@
 'use client';
 
 import React from 'react';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
-import { Badge } from '../ui/badge';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { Badge } from '@/components/ui/badge';
 import { PaymentTransactionDto } from '@smartfeed/shared';
 import { CheckCircle2, Clock, XCircle, CreditCard } from 'lucide-react';
-import { TablePagination } from '../ui/table-pagination';
-import { usePagination } from '../../hooks/usePagination';
+import { TablePagination } from '@/components/ui/table-pagination';
+import { usePagination } from '@/hooks/usePagination';
 
 interface TransactionsTableProps {
   transactions: PaymentTransactionDto[];
@@ -53,7 +60,10 @@ export function TransactionsTable({ transactions, isLoading, isUk }: Transaction
     switch (status) {
       case 'APPROVED':
         return (
-          <Badge className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20 border-emerald-500/30 gap-1 text-[11px]">
+          <Badge
+            variant="outline"
+            className="bg-primary/10 text-primary hover:bg-primary/20 border-primary/20 gap-1 text-[11px] font-medium"
+          >
             <CheckCircle2 className="size-3" />
             <span>{isUk ? 'Оплачено' : 'Approved'}</span>
           </Badge>
@@ -62,7 +72,7 @@ export function TransactionsTable({ transactions, isLoading, isUk }: Transaction
         return (
           <Badge
             variant="outline"
-            className="border-amber-500/40 text-amber-600 dark:text-amber-400 bg-amber-500/10 gap-1 text-[11px]"
+            className="border-border text-muted-foreground bg-muted/40 gap-1 text-[11px]"
           >
             <Clock className="size-3" />
             <span>{isUk ? 'Очікує' : 'Pending'}</span>

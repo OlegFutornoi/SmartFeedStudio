@@ -8,12 +8,12 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '../ui/dialog';
-import { Input } from '../ui/input';
-import { Label } from '../ui/label';
-import { Button } from '../ui/button';
-import { useAuth } from '../../contexts/AuthContext';
-import { useLanguage } from '../../contexts/LanguageContext';
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
+import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { KeyRound, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
 
 interface ChangePasswordDialogProps {
@@ -94,7 +94,7 @@ export function ChangePasswordDialog({ open, onOpenChange }: ChangePasswordDialo
         {success && (
           <div
             data-testid="modal-password-success"
-            className="flex items-center space-x-2 rounded-lg bg-emerald-500/15 p-3 text-sm text-emerald-400 border border-emerald-500/30"
+            className="flex items-center space-x-2 rounded-lg bg-primary/10 p-3 text-sm text-primary border border-primary/20"
           >
             <CheckCircle2 className="h-4 w-4 shrink-0" />
             <span>{t('settings', 'password_updated')}</span>

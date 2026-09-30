@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { Calculator, Clock, Coins } from 'lucide-react';
 import { useTranslation } from '@/i18n';
-import type { FeatureRoiConfig } from '../types/feature-teaser.types';
+import type { FeatureRoiConfig } from '@/modules/feature-teaser/types/feature-teaser.types';
 
 interface FeatureRoiWidgetProps {
   roiConfig?: FeatureRoiConfig;

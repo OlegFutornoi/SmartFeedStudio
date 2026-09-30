@@ -2,9 +2,9 @@
 
 import React, { useState } from 'react';
 import { Plus, Trash2, Pencil, Check, X } from 'lucide-react';
-import { Input } from '../ui/input';
-import { Button } from '../ui/button';
-import { Label } from '../ui/label';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
 
 interface PlanFeatureListProps {
   featuresUk: string[];
@@ -123,7 +123,7 @@ export function PlanFeatureList({
                     size="sm"
                     data-testid={`plan-feature-save-btn-${idx}`}
                     onClick={() => handleSaveEdit(idx)}
-                    className="h-7 w-7 p-0 shrink-0 bg-emerald-600 hover:bg-emerald-700 text-white"
+                    className="h-7 w-7 p-0 shrink-0 bg-primary hover:bg-primary/90 text-primary-foreground"
                     title={isUk ? 'Зберегти' : 'Save'}
                   >
                     <Check className="size-3.5" />

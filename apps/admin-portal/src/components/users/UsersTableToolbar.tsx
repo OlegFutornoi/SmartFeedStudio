@@ -13,11 +13,11 @@ import {
   RefreshCw,
   UserPlus,
 } from 'lucide-react';
-import { Input } from '../ui/input';
-import { Button } from '../ui/button';
-import { Badge } from '../ui/badge';
-import { FacetedFilter, FacetedOption } from '../ui/faceted-filter';
-import { useLanguage } from '../../contexts/LanguageContext';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { FacetedFilter, FacetedOption } from '@/components/ui/faceted-filter';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface UsersTableToolbarProps {
   search: string;

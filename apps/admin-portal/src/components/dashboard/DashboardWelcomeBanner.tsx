@@ -3,10 +3,10 @@
 import React from 'react';
 import Link from 'next/link';
 import { Users, Key } from 'lucide-react';
-import { Badge } from '../ui/badge';
-import { Button } from '../ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { UserProfile } from '@smartfeed/shared';
-import { useLanguage } from '../../contexts/LanguageContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface DashboardWelcomeBannerProps {
   user: UserProfile | null;

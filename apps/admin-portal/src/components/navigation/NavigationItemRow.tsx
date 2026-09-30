@@ -2,11 +2,11 @@
 
 import React from 'react';
 import { Edit2, Trash2, Eye, EyeOff, MoveUp, MoveDown, Crown, Monitor, Shield } from 'lucide-react';
-import { NavigationItemDto, PlanType, TargetApp } from '@smartfeed/shared';
-import { Button } from '../ui/button';
-import { Badge } from '../ui/badge';
+import { NavigationItemDto, TargetApp } from '@smartfeed/shared';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { getIconComponent } from './constants';
-import { cn } from '../../lib/utils';
+import { cn } from '@/lib/utils';
 
 interface NavigationItemRowProps {
   item: NavigationItemDto;
@@ -88,12 +88,7 @@ export const NavigationItemRow = React.memo(function NavigationItemRow({
         {/* Target App Badge */}
         <Badge
           variant="outline"
-          className={cn(
-            'text-[10px] uppercase font-mono px-2 py-0.5 gap-1',
-            item.targetApp === TargetApp.DESKTOP
-              ? 'border-blue-500/30 text-blue-500 bg-blue-500/5'
-              : 'border-primary/30 text-primary bg-primary/5',
-          )}
+          className="text-[10px] uppercase font-mono px-2 py-0.5 gap-1 border-primary/20 text-primary bg-primary/5"
         >
           {item.targetApp === TargetApp.DESKTOP ? (
             <Monitor className="h-2.5 w-2.5" />
@@ -108,12 +103,9 @@ export const NavigationItemRow = React.memo(function NavigationItemRow({
           variant="outline"
           className={cn(
             'text-[10px] font-mono px-2 py-0.5 gap-1',
-            !item.requiredPlan && 'border-muted text-muted-foreground',
-            item.requiredPlan === PlanType.GROWTH && 'border-sky-500/40 text-sky-400 bg-sky-500/10',
-            item.requiredPlan === PlanType.PRO &&
-              'border-indigo-500/40 text-indigo-400 bg-indigo-500/10',
-            item.requiredPlan === PlanType.ENTERPRISE &&
-              'border-amber-500/40 text-amber-400 bg-amber-500/10',
+            !item.requiredPlan
+              ? 'border-border text-muted-foreground bg-muted/30'
+              : 'border-primary/30 text-primary bg-primary/10',
           )}
         >
           {item.requiredPlan && <Crown className="h-2.5 w-2.5" />}
@@ -129,7 +121,7 @@ export const NavigationItemRow = React.memo(function NavigationItemRow({
           title={item.isVisible ? 'Hide item' : 'Show item'}
         >
           {item.isVisible ? (
-            <Eye className="h-4 w-4 text-emerald-500" />
+            <Eye className="h-4 w-4 text-primary" />
           ) : (
             <EyeOff className="h-4 w-4 text-muted-foreground" />
           )}

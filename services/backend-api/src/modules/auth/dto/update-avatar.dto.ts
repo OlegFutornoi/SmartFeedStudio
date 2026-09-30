@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional, IsString, MaxLength, ValidateIf } from 'class-validator';
+import { IsString, MaxLength, ValidateIf } from 'class-validator';
 
 export class UpdateAvatarDto {
   @ApiProperty({

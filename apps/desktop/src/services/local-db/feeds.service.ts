@@ -1,8 +1,8 @@
 import type { FeedSourceDto, CategorySummaryDto } from '@smartfeed/shared';
 import { FeedFormat, FeedSourceType } from '@smartfeed/shared';
 import { formatFeedTitle } from '@/lib/formatters';
-import type { RawParsedProduct } from '../feed-engine/stream-parser';
-import { feedEngine } from '../feed-engine';
+import type { RawParsedProduct } from '@/services/feed-engine/stream-parser';
+import { feedEngine } from '@/services/feed-engine';
 import { invokeLocalDb } from './client';
 
 export interface AnalyzeFeedResult {

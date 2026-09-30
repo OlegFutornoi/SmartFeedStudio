@@ -2,10 +2,10 @@
 
 import React from 'react';
 import { TargetApp, NavigationItemDto } from '@smartfeed/shared';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { NavigationItemRow } from './NavigationItemRow';
-import { useLanguage } from '../../contexts/LanguageContext';
-import { cn } from '../../lib/utils';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { cn } from '@/lib/utils';
 
 interface NavigationItemListProps {
   items: NavigationItemDto[];

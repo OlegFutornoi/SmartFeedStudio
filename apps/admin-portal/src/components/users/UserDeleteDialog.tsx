@@ -8,11 +8,11 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-} from '../ui/dialog';
-import { Button } from '../ui/button';
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
 import { UserListItemDto } from '@smartfeed/shared';
 import { AlertTriangle, Loader2 } from 'lucide-react';
-import { useLanguage } from '../../contexts/LanguageContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface UserDeleteDialogProps {
   open: boolean;

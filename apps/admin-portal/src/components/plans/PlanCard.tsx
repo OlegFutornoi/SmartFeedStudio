@@ -2,9 +2,16 @@
 
 import React from 'react';
 import { Check, X, Sparkles, Pencil, Trash2, Box, Users, Share2, Bot } from 'lucide-react';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '../ui/card';
-import { Badge } from '../ui/badge';
-import { Button } from '../ui/button';
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+} from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { TariffPlanDto } from '@smartfeed/shared';
 
 interface PlanCardProps {
@@ -110,7 +117,7 @@ export function PlanCard({ plan, isUk, onEdit, onDelete }: PlanCardProps) {
                 <span data-testid={`plan-price-yearly-${codeKey}`}>
                   {plan.priceYearly} {currencySymbol} {isUk ? '/рік' : '/yr'}
                 </span>
-                <span className="text-[10px] font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded">
+                <span className="text-[10px] font-medium bg-primary/10 text-primary border border-primary/20 px-1.5 py-0.5 rounded">
                   {isUk ? '-20% знижка' : '-20% discount'}
                 </span>
               </div>
@@ -203,7 +210,7 @@ export function PlanCard({ plan, isUk, onEdit, onDelete }: PlanCardProps) {
               <div data-testid={`plan-features-list-${codeKey}`} className="flex flex-col gap-1.5">
                 {features.map((feat, idx) => (
                   <div key={idx} className="flex items-start gap-2 text-xs text-foreground">
-                    <Check className="size-3.5 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
+                    <Check className="size-3.5 text-primary shrink-0 mt-0.5" />
                     <span>{feat}</span>
                   </div>
                 ))}

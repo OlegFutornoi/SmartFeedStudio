@@ -18,7 +18,7 @@ export interface FeatureCategory {
 /** Reusable cell renderer for boolean check/minus features */
 function boolCell(condition: boolean, isUk: boolean): React.ReactNode {
   return condition ? (
-    <span className="inline-flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-medium">
+    <span className="inline-flex items-center gap-1 text-primary font-medium">
       <Check className="size-4 shrink-0" />
       <span>{isUk ? 'Включено' : 'Included'}</span>
     </span>
@@ -30,7 +30,7 @@ function boolCell(condition: boolean, isUk: boolean): React.ReactNode {
 /** Reusable cell renderer for "within quota" check */
 function quotaCheckCell(isUk: boolean): React.ReactNode {
   return (
-    <span className="inline-flex items-center gap-1 text-emerald-600 dark:text-emerald-400">
+    <span className="inline-flex items-center gap-1 text-primary">
       <Check className="size-4 shrink-0" />
       <span className="text-[11px] text-muted-foreground">
         {isUk ? '(в межах ліміту)' : '(within quota)'}
@@ -153,7 +153,7 @@ export function buildComparisonCategories(isUk: boolean): FeatureCategory[] {
           labelUk: 'Кастомний XML / CSV (Власний мапінг тегів)',
           labelEn: 'Custom XML / CSV (Custom Tag Mapping)',
           getValue: () => (
-            <span className="inline-flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-medium">
+            <span className="inline-flex items-center gap-1 text-primary font-medium">
               <Check className="size-4 shrink-0" />
               <span className="text-[11px] text-muted-foreground">
                 {isUk ? '(в межах ліміту)' : '(within quota)'}
@@ -317,9 +317,7 @@ export function buildComparisonCategories(isUk: boolean): FeatureCategory[] {
           labelEn: 'SLA Uptime Guarantee',
           getValue: (p) =>
             p.slaUptimePercent ? (
-              <span className="font-semibold text-emerald-600 dark:text-emerald-400">
-                {p.slaUptimePercent}% Uptime
-              </span>
+              <span className="font-semibold text-primary">{p.slaUptimePercent}% Uptime</span>
             ) : (
               <span className="text-xs text-muted-foreground">Standard</span>
             ),

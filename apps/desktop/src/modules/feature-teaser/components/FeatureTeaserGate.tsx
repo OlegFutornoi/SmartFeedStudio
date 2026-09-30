@@ -1,5 +1,5 @@
 import React from 'react';
-import { useFeatureAccess } from '../hooks/useFeatureAccess';
+import { useFeatureAccess } from '@/modules/feature-teaser/hooks/useFeatureAccess';
 import { FeatureTeaserView } from './FeatureTeaserView';
 
 interface FeatureTeaserGateProps {

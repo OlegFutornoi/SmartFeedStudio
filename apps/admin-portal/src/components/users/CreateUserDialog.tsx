@@ -9,9 +9,9 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-} from '../ui/dialog';
-import { Button } from '../ui/button';
-import { Input } from '../ui/input';
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { AccountType, Role, UserListItemDto } from '@smartfeed/shared';
 import { RoleSelector } from './RoleSelector';
 import { AccountTypeSelector } from './AccountTypeSelector';

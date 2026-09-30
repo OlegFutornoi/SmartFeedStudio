@@ -3,7 +3,7 @@
 import React from 'react';
 import { Shield, User } from 'lucide-react';
 import { Role } from '@smartfeed/shared';
-import { cn } from '../../lib/utils';
+import { cn } from '@/lib/utils';
 
 interface RoleSelectorProps {
   selected: Role;

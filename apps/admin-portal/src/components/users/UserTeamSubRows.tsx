@@ -2,9 +2,9 @@
 
 import React from 'react';
 import { UserListItemDto } from '@smartfeed/shared';
-import { TableRow, TableCell } from '../ui/table';
-import { Badge } from '../ui/badge';
-import { useLanguage } from '../../contexts/LanguageContext';
+import { TableRow, TableCell } from '@/components/ui/table';
+import { Badge } from '@/components/ui/badge';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { UserRowActions } from './UserRowActions';
 import { CornerDownRight, KeyRound } from 'lucide-react';
 
@@ -85,10 +85,10 @@ export const UserTeamSubRows = React.memo(function UserTeamSubRows({
                       ownerUser.license.planType === 'ENTERPRISE'
                         ? 'bg-primary/15 text-primary border-primary/30 text-xs font-semibold'
                         : ownerUser.license.planType === 'PRO'
-                          ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20 text-xs font-semibold'
+                          ? 'bg-muted text-foreground border-border text-xs font-semibold'
                           : ownerUser.license.planType === 'GROWTH'
-                            ? 'bg-blue-500/10 text-blue-400 border-blue-500/20 text-xs font-semibold'
-                            : 'bg-muted text-muted-foreground border-border text-xs font-medium'
+                            ? 'bg-secondary text-secondary-foreground border-border text-xs font-semibold'
+                            : 'bg-muted/50 text-muted-foreground border-border text-xs font-medium'
                     }
                   >
                     <KeyRound className="h-3 w-3 mr-1" />
@@ -107,7 +107,7 @@ export const UserTeamSubRows = React.memo(function UserTeamSubRows({
                 variant="outline"
                 className={
                   isActive
-                    ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20 text-xs'
+                    ? 'border-border text-foreground font-normal text-xs'
                     : 'bg-destructive/10 text-destructive border-destructive/20 text-xs'
                 }
               >

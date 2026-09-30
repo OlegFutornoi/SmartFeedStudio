@@ -3,14 +3,14 @@
 import React, { useState, useCallback } from 'react';
 import { Users } from 'lucide-react';
 import { UserListItemDto } from '@smartfeed/shared';
-import { Card, CardContent } from '../ui/card';
-import { Table, TableBody, TableHead, TableHeader, TableRow } from '../ui/table';
+import { Card, CardContent } from '@/components/ui/card';
+import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { UserTableRow } from './UserTableRow';
 import { UserTeamSubRows } from './UserTeamSubRows';
 import { UsersTableToolbar } from './UsersTableToolbar';
-import { TablePagination } from '../ui/table-pagination';
-import { usePagination } from '../../hooks/usePagination';
-import { useLanguage } from '../../contexts/LanguageContext';
+import { TablePagination } from '@/components/ui/table-pagination';
+import { usePagination } from '@/hooks/usePagination';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface UsersTableProps {
   users: UserListItemDto[];

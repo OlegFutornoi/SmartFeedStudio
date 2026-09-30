@@ -19,6 +19,7 @@ export function initSentry(): void {
 
   Sentry.init({
     dsn,
+    enabled: Boolean(import.meta.env.PROD && !isTest),
     integrations: [
       Sentry.browserTracingIntegration(),
       Sentry.replayIntegration({
@@ -31,7 +32,7 @@ export function initSentry(): void {
     // Replay
     replaysSessionSampleRate: 0.1,
     replaysOnErrorSampleRate: 1.0,
-    environment: import.meta.env.MODE || 'development',
+    environment: import.meta.env.MODE || 'production',
     initialScope: {
       tags: {
         app: 'desktop',
@@ -40,7 +41,7 @@ export function initSentry(): void {
     },
     // Prevent unhandled errors from breaking the local-first experience
     beforeSend(event) {
-      if (isTest) return null; // Do not spam Sentry during automated e2e runs
+      if (isTest || !import.meta.env.PROD) return null; // Do not spam Sentry during dev or e2e runs
       return event;
     },
   });
@@ -52,6 +53,10 @@ export function captureException(
   error: unknown,
   context?: Record<string, unknown>,
 ): string | undefined {
+  if (!import.meta.env.PROD) {
+    console.warn('[Sentry Dev Suppressed]', error, context);
+    return undefined;
+  }
   if (!isInitialized) {
     console.error('[Sentry Desktop Fallback]', error, context);
     return undefined;

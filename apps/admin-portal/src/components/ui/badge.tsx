@@ -1,5 +1,5 @@
 import React from 'react';
-import { cn } from '../../lib/utils';
+import { cn } from '@/lib/utils';
 
 export interface BadgeProps extends React.HTMLAttributes<HTMLDivElement> {
   variant?: 'default' | 'secondary' | 'outline' | 'success' | 'warning' | 'destructive';
@@ -10,8 +10,8 @@ export function Badge({ className, variant = 'default', ...props }: BadgeProps) 
     default: 'bg-primary text-primary-foreground border-transparent',
     secondary: 'bg-secondary text-secondary-foreground border-transparent',
     outline: 'text-foreground border-border',
-    success: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30',
-    warning: 'bg-amber-500/15 text-amber-400 border-amber-500/30',
+    success: 'bg-primary/10 text-primary border-primary/20',
+    warning: 'bg-muted text-muted-foreground border-border',
     destructive: 'bg-destructive text-destructive-foreground border-transparent',
   };
 

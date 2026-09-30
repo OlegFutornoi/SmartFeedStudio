@@ -7,6 +7,7 @@ import {
   ApiError,
   fetchWithAuth,
 } from './client';
+import { captureException } from '@/lib/sentry';
 
 export interface LoginCredentials {
   email: string;
@@ -32,67 +33,103 @@ export interface InvitationDetails {
 }
 
 export async function loginUser(credentials: LoginCredentials): Promise<AuthResponseDto> {
-  const response = await fetch(`${API_BASE_URL}/auth/login`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(credentials),
-  });
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(credentials),
+    });
 
-  const data = await response.json().catch(() => ({}));
+    const data = await response.json().catch(() => ({}));
 
-  if (!response.ok) {
-    const message = Array.isArray(data.message)
-      ? data.message.join(', ')
-      : data.message || 'Помилка авторизації. Перевірте введені дані.';
-    throw new ApiError(message, response.status, data);
-  }
-
-  const authData = data as AuthResponseDto;
-  if (authData.tokens?.accessToken) {
-    localStorage.setItem(TOKEN_KEY, authData.tokens.accessToken);
-    if (authData.tokens.refreshToken) {
-      localStorage.setItem(REFRESH_TOKEN_KEY, authData.tokens.refreshToken);
+    if (!response.ok) {
+      const message = Array.isArray(data.message)
+        ? data.message.join(', ')
+        : data.message || 'Помилка авторизації. Перевірте введені дані.';
+      const apiErr = new ApiError(message, response.status, data);
+      captureException(apiErr, {
+        endpoint: '/auth/login',
+        email: credentials.email,
+        statusCode: response.status,
+        apiUrl: API_BASE_URL,
+      });
+      throw apiErr;
     }
-    if (authData.user) {
-      localStorage.setItem(USER_KEY, JSON.stringify(authData.user));
-    }
-  }
 
-  return authData;
+    const authData = data as AuthResponseDto;
+    if (authData.tokens?.accessToken) {
+      localStorage.setItem(TOKEN_KEY, authData.tokens.accessToken);
+      if (authData.tokens.refreshToken) {
+        localStorage.setItem(REFRESH_TOKEN_KEY, authData.tokens.refreshToken);
+      }
+      if (authData.user) {
+        localStorage.setItem(USER_KEY, JSON.stringify(authData.user));
+      }
+    }
+
+    return authData;
+  } catch (err) {
+    if (!(err instanceof ApiError)) {
+      captureException(err, {
+        endpoint: '/auth/login',
+        email: credentials.email,
+        apiUrl: API_BASE_URL,
+      });
+    }
+    throw err;
+  }
 }
 
 export async function registerUser(credentials: RegisterCredentials): Promise<AuthResponseDto> {
-  const response = await fetch(`${API_BASE_URL}/auth/register`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(credentials),
-  });
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth/register`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(credentials),
+    });
 
-  const data = await response.json().catch(() => ({}));
+    const data = await response.json().catch(() => ({}));
 
-  if (!response.ok) {
-    const message = Array.isArray(data.message)
-      ? data.message.join(', ')
-      : data.message || 'Помилка реєстрації. Перевірте введені дані.';
-    throw new ApiError(message, response.status, data);
-  }
-
-  const authData = data as AuthResponseDto;
-  if (authData.tokens?.accessToken) {
-    localStorage.setItem(TOKEN_KEY, authData.tokens.accessToken);
-    if (authData.tokens.refreshToken) {
-      localStorage.setItem(REFRESH_TOKEN_KEY, authData.tokens.refreshToken);
+    if (!response.ok) {
+      const message = Array.isArray(data.message)
+        ? data.message.join(', ')
+        : data.message || 'Помилка реєстрації. Перевірте введені дані.';
+      const apiErr = new ApiError(message, response.status, data);
+      captureException(apiErr, {
+        endpoint: '/auth/register',
+        email: credentials.email,
+        statusCode: response.status,
+        apiUrl: API_BASE_URL,
+      });
+      throw apiErr;
     }
-    if (authData.user) {
-      localStorage.setItem(USER_KEY, JSON.stringify(authData.user));
-    }
-  }
 
-  return authData;
+    const authData = data as AuthResponseDto;
+    if (authData.tokens?.accessToken) {
+      localStorage.setItem(TOKEN_KEY, authData.tokens.accessToken);
+      if (authData.tokens.refreshToken) {
+        localStorage.setItem(REFRESH_TOKEN_KEY, authData.tokens.refreshToken);
+      }
+      if (authData.user) {
+        localStorage.setItem(USER_KEY, JSON.stringify(authData.user));
+      }
+    }
+
+    return authData;
+  } catch (err) {
+    if (!(err instanceof ApiError)) {
+      captureException(err, {
+        endpoint: '/auth/register',
+        email: credentials.email,
+        apiUrl: API_BASE_URL,
+      });
+    }
+    throw err;
+  }
 }
 
 export async function getCurrentUser(token?: string): Promise<UserProfile> {

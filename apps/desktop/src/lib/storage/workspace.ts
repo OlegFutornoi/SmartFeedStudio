@@ -1,6 +1,6 @@
 import type { WorkspaceInfoDto } from '@smartfeed/shared';
-import { fetchWithAuth } from '../api';
-import { isTauri } from '../runtime';
+import { fetchWithAuth } from '@/lib/api';
+import { isTauri } from '@/lib/runtime';
 import {
   LOCAL_STORAGE_WORKSPACE_KEY,
   LOCAL_STORAGE_WORKSPACE_INIT_KEY,

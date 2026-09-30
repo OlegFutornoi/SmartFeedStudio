@@ -1,9 +1,10 @@
 'use client';
 
 import React, { useRef, useState, useCallback } from 'react';
-import { User, Upload, Trash2, Loader2 } from 'lucide-react';
+import { User, Camera, Trash2, Loader2, Copy, Check } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -97,6 +98,15 @@ export const ProfileInfoCard = React.memo(function ProfileInfoCard({ user }: Pro
     [updateAvatar, t],
   );
 
+  const [isCopied, setIsCopied] = useState(false);
+
+  const handleCopyId = useCallback(() => {
+    if (!user?.id) return;
+    navigator.clipboard.writeText(user.id);
+    setIsCopied(true);
+    setTimeout(() => setIsCopied(false), 2000);
+  }, [user?.id]);
+
   const handleRemoveAvatar = useCallback(async () => {
     setIsUploading(true);
     setErrorMsg(null);
@@ -110,117 +120,184 @@ export const ProfileInfoCard = React.memo(function ProfileInfoCard({ user }: Pro
     }
   }, [updateAvatar, t]);
 
+  const isUk = t('common', 'save') === 'Зберегти';
+
   return (
     <Card
       data-testid="profile-info-card"
       className="border-border/80 bg-card/60 backdrop-blur-sm shadow-md"
     >
-      <CardHeader>
-        <div className="flex items-center space-x-3">
-          <div className="h-10 w-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
-            <User className="h-5 w-5" />
+      <CardHeader className="pb-4">
+        <div className="flex items-center gap-2">
+          <User className="size-4 text-muted-foreground" />
+          <CardTitle className="text-base font-semibold">
+            {t('settings', 'profile_card_title')}
+          </CardTitle>
+        </div>
+        <CardDescription className="text-xs text-muted-foreground">
+          {t('settings', 'profile_card_desc')}
+        </CardDescription>
+      </CardHeader>
+
+      <CardContent className="space-y-5">
+        {/* Modern Avatar & Identity Header Row */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl border border-border/70 bg-muted/20">
+          <div className="flex items-center gap-3.5 min-w-0">
+            <Avatar className="size-14 border-2 border-border shadow-xs shrink-0">
+              <AvatarImage
+                src={user?.avatarUrl || undefined}
+                alt={user?.fullName || 'Admin'}
+                data-testid="profile-avatar-img"
+              />
+              <AvatarFallback className="bg-primary/10 text-primary font-bold text-base">
+                {getInitials(user?.fullName, user?.email)}
+              </AvatarFallback>
+            </Avatar>
+
+            <div className="space-y-1 min-w-0">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span
+                  data-testid="profile-name"
+                  className="text-sm font-semibold text-foreground truncate"
+                >
+                  {user?.fullName || 'Super Administrator'}
+                </span>
+                <Badge
+                  data-testid="profile-role"
+                  variant="outline"
+                  className="bg-primary/10 text-primary border-primary/20 text-[10px] font-medium py-0 px-2 h-5"
+                >
+                  {user?.role === 'SUPER_ADMIN'
+                    ? t('users', 'role_super_admin')
+                    : user?.role === 'ADMIN'
+                      ? t('users', 'role_admin')
+                      : t('users', 'role_user')}
+                </Badge>
+              </div>
+              <p
+                data-testid="profile-email"
+                className="font-mono text-xs text-muted-foreground truncate"
+              >
+                {user?.email || 'admin@smartfeed.studio'}
+              </p>
+            </div>
           </div>
-          <div>
-            <CardTitle className="text-lg">{t('settings', 'profile_card_title')}</CardTitle>
-            <CardDescription>{t('settings', 'profile_card_desc')}</CardDescription>
+
+          {/* Avatar Actions */}
+          <div className="flex items-center gap-2 shrink-0">
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/png,image/jpeg,image/webp"
+              onChange={handleFileChange}
+              className="hidden"
+              data-testid="avatar-file-input"
+            />
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              disabled={isUploading}
+              onClick={() => fileInputRef.current?.click()}
+              data-testid="change-avatar-btn"
+              className="h-8 text-xs gap-1.5"
+            >
+              {isUploading ? (
+                <Loader2 className="size-3.5 animate-spin" />
+              ) : (
+                <Camera className="size-3.5 text-muted-foreground" />
+              )}
+              <span>{t('settings', 'change_avatar')}</span>
+            </Button>
+
+            {user?.avatarUrl && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                disabled={isUploading}
+                onClick={handleRemoveAvatar}
+                data-testid="remove-avatar-btn"
+                className="h-8 px-2 text-xs text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                title={t('settings', 'remove_avatar')}
+              >
+                <Trash2 className="size-3.5" />
+              </Button>
+            )}
           </div>
         </div>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {/* Avatar Section */}
-        <div className="p-3 rounded-xl border border-border/80 bg-muted/20 flex items-center gap-4">
-          <Avatar className="h-16 w-16 border-2 border-border shadow-xs shrink-0">
-            <AvatarImage
-              src={user?.avatarUrl || undefined}
-              alt={user?.fullName || 'Admin'}
-              data-testid="profile-avatar-img"
-            />
-            <AvatarFallback className="bg-primary/20 text-primary font-bold text-base">
-              {getInitials(user?.fullName, user?.email)}
-            </AvatarFallback>
-          </Avatar>
 
-          <div className="space-y-1.5 flex-1 min-w-0">
-            <div className="flex items-center gap-2 flex-wrap">
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/png,image/jpeg,image/webp"
-                onChange={handleFileChange}
-                className="hidden"
-                data-testid="avatar-file-input"
+        {errorMsg && <p className="text-xs text-destructive font-medium">{errorMsg}</p>}
+
+        {/* Clean Shadcn Form Fields */}
+        <div className="space-y-4">
+          {/* Full Name */}
+          <div className="space-y-1.5">
+            <Label htmlFor="profile-fullname" className="text-xs font-medium text-foreground">
+              {t('settings', 'full_name')}
+            </Label>
+            <Input
+              id="profile-fullname"
+              value={user?.fullName || 'Super Administrator'}
+              readOnly
+              className="h-9 text-xs bg-muted/20 border-border"
+            />
+            <p className="text-[11px] text-muted-foreground">{t('settings', 'avatar_hint')}</p>
+          </div>
+
+          {/* Email */}
+          <div className="space-y-1.5">
+            <Label htmlFor="profile-email-input" className="text-xs font-medium text-foreground">
+              {t('settings', 'email')}
+            </Label>
+            <Input
+              id="profile-email-input"
+              value={user?.email || 'admin@smartfeed.studio'}
+              disabled
+              readOnly
+              className="h-9 text-xs font-mono bg-muted/40 border-border cursor-not-allowed text-muted-foreground"
+            />
+            <p className="text-[11px] text-muted-foreground">
+              {isUk
+                ? 'Основна електронна адреса для входу в панель керування.'
+                : 'Primary email address for logging into the control panel.'}
+            </p>
+          </div>
+
+          {/* User ID */}
+          <div className="space-y-1.5">
+            <Label className="text-xs font-medium text-foreground">
+              {t('settings', 'user_id')}
+            </Label>
+            <div className="flex items-center gap-2">
+              <Input
+                value={user?.id || '—'}
+                readOnly
+                className="h-9 text-xs font-mono bg-muted/20 border-border select-all"
               />
               <Button
                 type="button"
                 variant="outline"
                 size="sm"
-                disabled={isUploading}
-                onClick={() => fileInputRef.current?.click()}
-                data-testid="change-avatar-btn"
-                className="h-8 text-xs gap-1.5"
+                onClick={handleCopyId}
+                className="h-9 px-3 shrink-0 text-xs gap-1.5"
               >
-                {isUploading ? (
-                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                {isCopied ? (
+                  <>
+                    <Check className="size-3.5 text-primary" />
+                    <span className="text-primary font-medium">
+                      {isUk ? 'Скопійовано' : 'Copied'}
+                    </span>
+                  </>
                 ) : (
-                  <Upload className="h-3.5 w-3.5" />
+                  <>
+                    <Copy className="size-3.5 text-muted-foreground" />
+                    <span>{isUk ? 'Копіювати' : 'Copy'}</span>
+                  </>
                 )}
-                <span>{t('settings', 'change_avatar')}</span>
               </Button>
-
-              {user?.avatarUrl && (
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  disabled={isUploading}
-                  onClick={handleRemoveAvatar}
-                  data-testid="remove-avatar-btn"
-                  className="h-8 text-xs gap-1 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
-                >
-                  <Trash2 className="h-3.5 w-3.5" />
-                  <span>{t('settings', 'remove_avatar')}</span>
-                </Button>
-              )}
             </div>
-            <p className="text-[11px] text-muted-foreground">{t('settings', 'avatar_hint')}</p>
-            {errorMsg && <p className="text-xs text-destructive font-medium">{errorMsg}</p>}
           </div>
-        </div>
-
-        <div className="space-y-1">
-          <Label className="text-xs text-muted-foreground">{t('settings', 'full_name')}</Label>
-          <div data-testid="profile-name" className="font-semibold text-foreground text-sm">
-            {user?.fullName || 'Super Administrator'}
-          </div>
-        </div>
-
-        <div className="space-y-1">
-          <Label className="text-xs text-muted-foreground">{t('settings', 'email')}</Label>
-          <div data-testid="profile-email" className="font-mono text-foreground text-sm">
-            {user?.email || 'admin@gmail.com'}
-          </div>
-        </div>
-
-        <div className="space-y-1">
-          <Label className="text-xs text-muted-foreground">{t('settings', 'role')}</Label>
-          <div>
-            <Badge
-              data-testid="profile-role"
-              variant="outline"
-              className="bg-primary/10 text-primary border-primary/30"
-            >
-              {user?.role === 'SUPER_ADMIN'
-                ? t('users', 'role_super_admin')
-                : user?.role === 'ADMIN'
-                  ? t('users', 'role_admin')
-                  : t('users', 'role_user')}
-            </Badge>
-          </div>
-        </div>
-
-        <div className="space-y-1">
-          <Label className="text-xs text-muted-foreground">{t('settings', 'user_id')}</Label>
-          <div className="font-mono text-xs text-muted-foreground break-all">{user?.id || '—'}</div>
         </div>
       </CardContent>
     </Card>

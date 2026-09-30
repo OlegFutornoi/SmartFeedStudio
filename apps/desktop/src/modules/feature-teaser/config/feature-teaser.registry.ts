@@ -1,5 +1,5 @@
 import { PlanType } from '@smartfeed/shared';
-import type { FeatureTeaserConfig } from '../types/feature-teaser.types';
+import type { FeatureTeaserConfig } from '@/modules/feature-teaser/types/feature-teaser.types';
 
 export const PLAN_LEVEL: Record<PlanType, number> = {
   [PlanType.STARTER]: 1,

@@ -64,9 +64,9 @@ export function AiEnrichmentPage() {
           </CardContent>
         </Card>
 
-        <Card className="border-border/80 bg-card/60 backdrop-blur-md hover:border-blue-500/40 transition-colors">
+        <Card className="border-border/80 bg-card/60 backdrop-blur-md hover:border-primary/40 transition-colors">
           <CardHeader>
-            <div className="p-2.5 w-fit rounded-xl bg-blue-500/10 text-blue-400 mb-2">
+            <div className="p-2.5 w-fit rounded-xl bg-primary/10 text-primary mb-2">
               <Sliders className="h-5 w-5" />
             </div>
             <CardTitle className="text-base">{t('ai:specsTitle')}</CardTitle>
@@ -80,9 +80,9 @@ export function AiEnrichmentPage() {
           </CardContent>
         </Card>
 
-        <Card className="border-border/80 bg-card/60 backdrop-blur-md hover:border-emerald-500/40 transition-colors">
+        <Card className="border-border/80 bg-card/60 backdrop-blur-md hover:border-primary/40 transition-colors">
           <CardHeader>
-            <div className="p-2.5 w-fit rounded-xl bg-emerald-500/10 text-emerald-400 mb-2">
+            <div className="p-2.5 w-fit rounded-xl bg-primary/10 text-primary mb-2">
               <Bot className="h-5 w-5" />
             </div>
             <CardTitle className="text-base">{t('ai:translateTitle')}</CardTitle>

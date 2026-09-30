@@ -2,7 +2,7 @@ import React from 'react';
 import { Sparkles, Lock } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { useTranslation } from '@/i18n';
-import type { FeatureTeaserConfig } from '../types/feature-teaser.types';
+import type { FeatureTeaserConfig } from '@/modules/feature-teaser/types/feature-teaser.types';
 
 interface FeatureHeroSectionProps {
   config: FeatureTeaserConfig;

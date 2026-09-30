@@ -10,8 +10,8 @@ import type {
   PriceSimulationRequestDto,
   PriceSimulationResultDto,
 } from '@smartfeed/shared';
-import { localDb } from '../../services/local-db';
-import { isTauri } from '../runtime';
+import { localDb } from '@/services/local-db';
+import { isTauri } from '@/lib/runtime';
 import { ApiError, fetchWithAuth } from './client';
 
 export async function getSupplierPricingRules(

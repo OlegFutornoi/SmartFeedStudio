@@ -2,14 +2,14 @@
 
 import React, { useEffect, useState, useCallback } from 'react';
 import dynamic from 'next/dynamic';
-import { api } from '../../lib/api';
+import { api } from '@/lib/api';
 import { UserListItemDto, UsersStatsDto } from '@smartfeed/shared';
-import { useAuth } from '../../contexts/AuthContext';
-import { DashboardWelcomeBanner } from '../../components/dashboard/DashboardWelcomeBanner';
-import { DashboardStatsGrid } from '../../components/dashboard/DashboardStatsGrid';
-import { AdminActivityChart } from '../../components/dashboard/AdminActivityChart';
-import { DashboardRecentUsersTable } from '../../components/dashboard/DashboardRecentUsersTable';
-import { DashboardQuickActions } from '../../components/dashboard/DashboardQuickActions';
+import { useAuth } from '@/contexts/AuthContext';
+import { DashboardWelcomeBanner } from '@/components/dashboard/DashboardWelcomeBanner';
+import { DashboardStatsGrid } from '@/components/dashboard/DashboardStatsGrid';
+import { AdminActivityChart } from '@/components/dashboard/AdminActivityChart';
+import { DashboardRecentUsersTable } from '@/components/dashboard/DashboardRecentUsersTable';
+import { DashboardQuickActions } from '@/components/dashboard/DashboardQuickActions';
 
 const ChangePasswordDialog = dynamic(
   () =>

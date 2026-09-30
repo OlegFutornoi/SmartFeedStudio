@@ -3,14 +3,14 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { Plus, RefreshCw, Layers, KeyRound, LayoutGrid, TableProperties } from 'lucide-react';
-import { Button } from '../../../components/ui/button';
-import { api } from '../../../lib/api';
-import { useLanguage } from '../../../contexts/LanguageContext';
+import { Button } from '@/components/ui/button';
+import { api } from '@/lib/api';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { TariffPlanDto, CreateTariffPlanDto, UpdateTariffPlanDto } from '@smartfeed/shared';
-import { PlanCard } from '../../../components/plans/PlanCard';
-import { PlanComparisonTable } from '../../../components/plans/PlanComparisonTable';
-import { PlanDialog } from '../../../components/plans/PlanDialog';
-import { PlanDeleteDialog } from '../../../components/plans/PlanDeleteDialog';
+import { PlanCard } from '@/components/plans/PlanCard';
+import { PlanComparisonTable } from '@/components/plans/PlanComparisonTable';
+import { PlanDialog } from '@/components/plans/PlanDialog';
+import { PlanDeleteDialog } from '@/components/plans/PlanDeleteDialog';
 
 type ViewMode = 'cards' | 'comparison';
 

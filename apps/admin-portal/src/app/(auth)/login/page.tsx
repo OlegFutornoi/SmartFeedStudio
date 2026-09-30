@@ -2,13 +2,13 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '../../../contexts/AuthContext';
-import { useLanguage } from '../../../contexts/LanguageContext';
-import { translateError } from '../../../lib/errors';
-import { Input } from '../../../components/ui/input';
-import { Label } from '../../../components/ui/label';
-import { Button } from '../../../components/ui/button';
-import { LanguageToggle } from '../../../components/ui/language-toggle';
+import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { translateError } from '@/lib/errors';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
+import { LanguageToggle } from '@/components/ui/language-toggle';
 import {
   Card,
   CardContent,
@@ -16,7 +16,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '../../../components/ui/card';
+} from '@/components/ui/card';
 import { Layers, ShieldCheck, Lock, Mail, AlertCircle, Loader2 } from 'lucide-react';
 
 export default function AdminLoginPage() {
@@ -57,7 +57,7 @@ export default function AdminLoginPage() {
 
       {/* Ambient background glows */}
       <div className="absolute -top-32 -left-32 w-[32rem] h-[32rem] bg-primary/20 rounded-full blur-[140px] pointer-events-none opacity-80 animate-pulse duration-1000" />
-      <div className="absolute -bottom-32 -right-32 w-[32rem] h-[32rem] bg-blue-600/15 rounded-full blur-[140px] pointer-events-none opacity-80" />
+      <div className="absolute -bottom-32 -right-32 w-[32rem] h-[32rem] bg-primary/10 rounded-full blur-[140px] pointer-events-none opacity-80" />
 
       {/* Subtle grid pattern overlay */}
       <div className="absolute inset-0 bg-[radial-gradient(hsl(var(--muted-foreground)/0.08)_1px,transparent_1px)] [background-size:24px_24px] pointer-events-none opacity-60" />

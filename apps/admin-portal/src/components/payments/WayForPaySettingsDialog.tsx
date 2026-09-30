@@ -8,13 +8,13 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-} from '../ui/dialog';
-import { Button } from '../ui/button';
-import { Input } from '../ui/input';
-import { Label } from '../ui/label';
-import { Switch } from '../ui/switch';
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
 import { PaymentSettingDto, PaymentProvider } from '@smartfeed/shared';
-import { api } from '../../lib/api';
+import { api } from '@/lib/api';
 import { KeyRound, Globe, Shield, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
 
 interface WayForPaySettingsDialogProps {
@@ -108,7 +108,7 @@ export function WayForPaySettingsDialog({
         )}
 
         {success && (
-          <div className="flex items-center gap-2 p-3 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs">
+          <div className="flex items-center gap-2 p-3 rounded-lg bg-primary/10 text-primary border border-primary/20 text-xs">
             <CheckCircle2 className="size-4 shrink-0" />
             <span>{isUk ? 'Налаштування успішно збережено!' : 'Settings saved successfully!'}</span>
           </div>

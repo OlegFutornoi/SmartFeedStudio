@@ -2,13 +2,13 @@
 
 import React, { useEffect, useState, useCallback, useRef, useMemo } from 'react';
 import { Users } from 'lucide-react';
-import { api } from '../../../lib/api';
+import { api } from '@/lib/api';
 import { UserListItemDto } from '@smartfeed/shared';
-import { UsersTable } from '../../../components/users/UsersTable';
-import { CreateUserDialog } from '../../../components/users/CreateUserDialog';
-import { UserDeleteDialog } from '../../../components/users/UserDeleteDialog';
-import { TeamMembersDialog } from '../../../components/users/TeamMembersDialog';
-import { useLanguage } from '../../../contexts/LanguageContext';
+import { UsersTable } from '@/components/users/UsersTable';
+import { CreateUserDialog } from '@/components/users/CreateUserDialog';
+import { UserDeleteDialog } from '@/components/users/UserDeleteDialog';
+import { TeamMembersDialog } from '@/components/users/TeamMembersDialog';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function UsersManagementPage() {
   const { t } = useLanguage();
@@ -176,7 +176,7 @@ export default function UsersManagementPage() {
       {successMessage && (
         <div
           data-testid="create-user-success-toast"
-          className="fixed bottom-5 right-5 z-50 flex items-center gap-2 px-4 py-2.5 rounded-lg bg-emerald-500 text-white text-xs font-medium shadow-lg animate-in slide-in-from-bottom-2 duration-300"
+          className="fixed bottom-5 right-5 z-50 flex items-center gap-2 px-4 py-2.5 rounded-lg bg-primary text-primary-foreground border border-primary/20 text-xs font-medium shadow-lg animate-in slide-in-from-bottom-2 duration-300"
         >
           {successMessage}
         </div>

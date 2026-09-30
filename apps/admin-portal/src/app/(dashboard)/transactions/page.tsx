@@ -2,13 +2,13 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { Receipt, Download } from 'lucide-react';
-import { Button } from '../../../components/ui/button';
-import { useLanguage } from '../../../contexts/LanguageContext';
-import { api } from '../../../lib/api';
+import { Button } from '@/components/ui/button';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { api } from '@/lib/api';
 import { PaymentTransactionDto, PaymentStatsDto } from '@smartfeed/shared';
-import { TransactionStatsCards } from '../../../components/transactions/TransactionStatsCards';
-import { TransactionsFilterToolbar } from '../../../components/transactions/TransactionsFilterToolbar';
-import { TransactionsTable } from '../../../components/transactions/TransactionsTable';
+import { TransactionStatsCards } from '@/components/transactions/TransactionStatsCards';
+import { TransactionsFilterToolbar } from '@/components/transactions/TransactionsFilterToolbar';
+import { TransactionsTable } from '@/components/transactions/TransactionsTable';
 
 export default function TransactionsPage() {
   const { locale } = useLanguage();

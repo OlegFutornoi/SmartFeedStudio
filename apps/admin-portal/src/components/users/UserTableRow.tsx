@@ -10,10 +10,10 @@ import {
   ChevronDown,
 } from 'lucide-react';
 import { UserListItemDto } from '@smartfeed/shared';
-import { TableRow, TableCell } from '../ui/table';
-import { Badge } from '../ui/badge';
-import { Button } from '../ui/button';
-import { useLanguage } from '../../contexts/LanguageContext';
+import { TableRow, TableCell } from '@/components/ui/table';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { UserRowActions } from './UserRowActions';
 
 interface UserTableRowProps {
@@ -93,7 +93,7 @@ export const UserTableRow = React.memo(function UserTableRow({
           <Badge
             data-testid="user-row-role-admin"
             variant="outline"
-            className="bg-blue-500/10 text-blue-400 border-blue-500/30 text-xs font-medium"
+            className="bg-primary/10 text-primary border-primary/20 text-xs font-medium"
           >
             <Shield className="h-3 w-3 mr-1" />
             {t('users', 'role_admin')}
@@ -125,7 +125,7 @@ export const UserTableRow = React.memo(function UserTableRow({
                 <Badge
                   data-testid="user-row-role-owner"
                   variant="outline"
-                  className="bg-amber-500/10 text-amber-500 border-amber-500/30 text-[10px] font-medium py-0 px-1.5"
+                  className="bg-muted text-muted-foreground border-border text-[10px] font-medium py-0 px-1.5"
                 >
                   <Building2 className="h-2.5 w-2.5 mr-0.5" />
                   {t('users', 'team_owner')}
@@ -160,9 +160,9 @@ export const UserTableRow = React.memo(function UserTableRow({
               variant="outline"
               className={
                 user.license.planType === 'ENTERPRISE'
-                  ? 'bg-amber-500/10 text-amber-400 border-amber-500/30'
+                  ? 'bg-primary text-primary-foreground font-semibold'
                   : user.license.planType === 'PRO'
-                    ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
+                    ? 'bg-primary/10 text-primary border-primary/20'
                     : 'bg-secondary text-secondary-foreground'
               }
             >
@@ -184,13 +184,13 @@ export const UserTableRow = React.memo(function UserTableRow({
           variant="outline"
           className={
             isActive
-              ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20 text-xs'
+              ? 'bg-primary/10 text-primary border-primary/20 text-xs font-medium'
               : 'bg-destructive/10 text-destructive border-destructive/20 text-xs'
           }
         >
           <span
             className={`h-1.5 w-1.5 rounded-full mr-1.5 ${
-              isActive ? 'bg-emerald-500 animate-pulse' : 'bg-destructive'
+              isActive ? 'bg-primary animate-pulse' : 'bg-destructive'
             }`}
           />
           {isActive ? t('users', 'status_active') : t('users', 'status_suspended')}

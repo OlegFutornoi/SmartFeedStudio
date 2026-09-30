@@ -1,4 +1,4 @@
-import { isTauri } from '../../lib/runtime';
+import { isTauri } from '@/lib/runtime';
 import { mockDatabaseDriver } from './mock-driver';
 import type { LocalDbCommandMap } from './types';
 

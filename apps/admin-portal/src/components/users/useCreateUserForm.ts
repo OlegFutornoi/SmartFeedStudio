@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { AccountType, PlanType, Role, UserListItemDto } from '@smartfeed/shared';
-import { api } from '../../lib/api';
-import { useLanguage } from '../../contexts/LanguageContext';
+import { api } from '@/lib/api';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export interface OwnerOption {
   organizationId: string;

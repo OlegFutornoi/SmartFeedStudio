@@ -9,14 +9,14 @@ import {
   Role,
   TargetApp,
 } from '@smartfeed/shared';
-import { api } from '../../../lib/api';
-import { translateError } from '../../../lib/errors';
-import { useLanguage } from '../../../contexts/LanguageContext';
-import { useNavigation } from '../../../contexts/NavigationContext';
-import { NavigationHeader } from '../../../components/navigation/NavigationHeader';
-import { NavigationItemList } from '../../../components/navigation/NavigationItemList';
-import { NavigationLivePreview } from '../../../components/navigation/NavigationLivePreview';
-import type { NavigationFormData } from '../../../components/navigation/NavigationItemDialog';
+import { api } from '@/lib/api';
+import { translateError } from '@/lib/errors';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { useNavigation } from '@/contexts/NavigationContext';
+import { NavigationHeader } from '@/components/navigation/NavigationHeader';
+import { NavigationItemList } from '@/components/navigation/NavigationItemList';
+import { NavigationLivePreview } from '@/components/navigation/NavigationLivePreview';
+import type { NavigationFormData } from '@/components/navigation/NavigationItemDialog';
 import { AlertCircle, Check, Loader2 } from 'lucide-react';
 
 const NavigationItemDialog = dynamic(
@@ -235,7 +235,7 @@ export default function NavigationManagementPage() {
 
       {/* Success Alert */}
       {successMessage && (
-        <div className="flex items-center gap-2 p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-emerald-500 text-xs font-medium animate-in fade-in">
+        <div className="flex items-center gap-2 p-3 bg-primary/10 border border-primary/20 rounded-xl text-primary text-xs font-medium animate-in fade-in">
           <Check className="h-4 w-4" />
           <span>{successMessage}</span>
         </div>

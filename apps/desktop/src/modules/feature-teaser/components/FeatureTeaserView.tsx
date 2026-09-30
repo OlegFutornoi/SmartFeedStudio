@@ -1,5 +1,5 @@
 import React from 'react';
-import { FEATURE_TEASER_REGISTRY } from '../config/feature-teaser.registry';
+import { FEATURE_TEASER_REGISTRY } from '@/modules/feature-teaser/config/feature-teaser.registry';
 import { FeatureHeroSection } from './FeatureHeroSection';
 import { FeatureBenefitsGrid } from './FeatureBenefitsGrid';
 import { FeatureRoiWidget } from './FeatureRoiWidget';

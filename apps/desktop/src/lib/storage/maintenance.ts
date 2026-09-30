@@ -4,8 +4,8 @@ import type {
   DatabaseMaintenanceResultDto,
   ClearStorageCacheResultDto,
 } from '@smartfeed/shared';
-import { fetchWithAuth } from '../api';
-import { isTauri } from '../runtime';
+import { fetchWithAuth } from '@/lib/api';
+import { isTauri } from '@/lib/runtime';
 import { LOCAL_STORAGE_WORKSPACE_KEY } from './constants';
 
 export async function getStorageStats(workspacePath?: string): Promise<StorageStatsDto> {

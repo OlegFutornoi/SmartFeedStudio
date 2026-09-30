@@ -1,14 +1,27 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '../ui/dialog';
-import { Button } from '../ui/button';
-import { Badge } from '../ui/badge';
-import { Input } from '../ui/input';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import { UserListItemDto } from '@smartfeed/shared';
 import { Users, Search, Building2 } from 'lucide-react';
-import { useLanguage } from '../../contexts/LanguageContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { UserRowActions } from './UserRowActions';
 
 interface TeamMembersDialogProps {
@@ -61,7 +74,7 @@ export function TeamMembersDialog({
               </DialogTitle>
               <DialogDescription className="text-xs text-muted-foreground mt-0.5">
                 <span className="inline-flex items-center gap-1 font-medium text-foreground">
-                  <Building2 className="size-3 text-amber-500" />
+                  <Building2 className="size-3 text-muted-foreground" />
                   {ownerUser.fullName || ownerUser.email}
                 </span>{' '}
                 • {t('users', 'team_dialog_plan')}:{' '}
@@ -150,7 +163,7 @@ export function TeamMembersDialog({
                           variant="outline"
                           className={
                             isActive
-                              ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20 text-[10px] h-5'
+                              ? 'border-border text-foreground font-normal text-[10px] h-5'
                               : 'bg-destructive/10 text-destructive border-destructive/20 text-[10px] h-5'
                           }
                         >

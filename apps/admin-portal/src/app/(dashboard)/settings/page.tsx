@@ -2,22 +2,19 @@
 
 import React from 'react';
 import { Settings } from 'lucide-react';
-import { useAuth } from '../../../contexts/AuthContext';
-import { useLanguage } from '../../../contexts/LanguageContext';
-import { ThemeCustomizer } from '../../../components/theme/theme-customizer';
-import { ProfileInfoCard } from '../../../components/profile/ProfileInfoCard';
-import { InfrastructureStatusCard } from '../../../components/profile/InfrastructureStatusCard';
-import { ChangePasswordCard } from '../../../components/profile/ChangePasswordCard';
+import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { ThemeCustomizer } from '@/components/theme/theme-customizer';
+import { ProfileInfoCard } from '@/components/profile/ProfileInfoCard';
+import { InfrastructureStatusCard } from '@/components/profile/InfrastructureStatusCard';
+import { ChangePasswordCard } from '@/components/profile/ChangePasswordCard';
 
 export default function SettingsPage() {
   const { user } = useAuth();
   const { t } = useLanguage();
 
   return (
-    <div
-      data-testid="settings-page"
-      className="space-y-8 max-w-4xl animate-in fade-in duration-300"
-    >
+    <div data-testid="settings-page" className="space-y-6 w-full animate-in fade-in duration-300">
       {/* Sleek Minimalist Page Header */}
       <div>
         <h1
@@ -32,17 +29,20 @@ export default function SettingsPage() {
         </p>
       </div>
 
-      {/* 1. Theme and Appearance Customizer */}
-      <ThemeCustomizer />
+      {/* Balanced 2-Column Grid Layout: Account & Security | Appearance & System */}
+      <div className="grid gap-6 lg:grid-cols-2 items-start">
+        {/* Left Column: Account Profile & Security */}
+        <div className="space-y-6">
+          <ProfileInfoCard user={user} />
+          <ChangePasswordCard />
+        </div>
 
-      {/* 2. Admin Profile & Infrastructure */}
-      <div className="grid gap-6 md:grid-cols-2">
-        <ProfileInfoCard user={user} />
-        <InfrastructureStatusCard />
+        {/* Right Column: Appearance, Theming & Cloud Infrastructure */}
+        <div className="space-y-6">
+          <ThemeCustomizer />
+          <InfrastructureStatusCard />
+        </div>
       </div>
-
-      {/* 3. Change Password Card */}
-      <ChangePasswordCard />
     </div>
   );
 }

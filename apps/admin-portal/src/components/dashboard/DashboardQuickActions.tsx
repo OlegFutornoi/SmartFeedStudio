@@ -3,9 +3,9 @@
 import React from 'react';
 import Link from 'next/link';
 import { Users, KeyRound, Key, Sparkles, ShieldCheck } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
-import { Button } from '../ui/button';
-import { useLanguage } from '../../contexts/LanguageContext';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface DashboardQuickActionsProps {
   totalUsers: number;
@@ -35,9 +35,9 @@ export const DashboardQuickActions = React.memo(function DashboardQuickActions({
             <Button
               data-testid="action-btn-users"
               variant="outline"
-              className="w-full justify-start text-xs h-9 border-border hover:bg-muted/80"
+              className="w-full justify-start text-xs h-9 border-border hover:bg-muted/80 text-foreground"
             >
-              <Users className="h-4 w-4 mr-2 text-primary" />
+              <Users className="h-4 w-4 mr-2 text-muted-foreground" />
               <span>{t('dashboard', 'view_all_users', { count: totalUsers })}</span>
             </Button>
           </Link>
@@ -45,31 +45,28 @@ export const DashboardQuickActions = React.memo(function DashboardQuickActions({
             <Button
               data-testid="action-btn-licenses"
               variant="outline"
-              className="w-full justify-start text-xs h-9 border-border hover:bg-muted/80"
+              className="w-full justify-start text-xs h-9 border-border hover:bg-muted/80 text-foreground"
             >
-              <KeyRound className="h-4 w-4 mr-2 text-emerald-400" />
+              <KeyRound className="h-4 w-4 mr-2 text-muted-foreground" />
               <span>{t('dashboard', 'manage_licenses')}</span>
             </Button>
           </Link>
           <Button
             data-testid="action-btn-change-pwd"
             variant="outline"
-            className="w-full justify-start text-xs h-9 border-border hover:bg-muted/80"
+            className="w-full justify-start text-xs h-9 border-border hover:bg-muted/80 text-foreground"
             onClick={onOpenPasswordDialog}
           >
-            <Key className="h-4 w-4 mr-2 text-amber-400" />
+            <Key className="h-4 w-4 mr-2 text-muted-foreground" />
             <span>{t('dashboard', 'change_my_password')}</span>
           </Button>
         </CardContent>
       </Card>
 
-      <Card
-        data-testid="dashboard-security-notice"
-        className="border-border/80 bg-gradient-to-b from-card/80 to-card/40 backdrop-blur-sm p-4"
-      >
+      <Card data-testid="dashboard-security-notice" className="border-border bg-card p-4 shadow-xs">
         <div className="flex items-center space-x-3">
-          <div className="h-10 w-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
-            <ShieldCheck className="h-5 w-5" />
+          <div className="h-9 w-9 rounded-lg bg-muted text-muted-foreground flex items-center justify-center shrink-0">
+            <ShieldCheck className="h-4 w-4" />
           </div>
           <div>
             <h4

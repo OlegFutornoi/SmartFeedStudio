@@ -2,15 +2,9 @@
 
 import React, { useEffect, useState } from 'react';
 import * as Sentry from '@sentry/nextjs';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '../../../components/ui/card';
-import { Button } from '../../../components/ui/button';
-import { Badge } from '../../../components/ui/badge';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { AlertCircle, CheckCircle2, Bug, ExternalLink, Activity } from 'lucide-react';
 
 export default function SentryExamplePage() {
@@ -68,7 +62,7 @@ export default function SentryExamplePage() {
         <Badge variant={isConnected ? 'outline' : 'destructive'} className="gap-1.5 py-1 px-3">
           {isConnected ? (
             <>
-              <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
+              <CheckCircle2 className="h-3.5 w-3.5 text-primary" />
               Sentry SDK Підключено
             </>
           ) : (
@@ -115,7 +109,7 @@ export default function SentryExamplePage() {
           </div>
 
           {hasSentError && (
-            <div className="flex items-center gap-2 p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-lg text-emerald-600 dark:text-emerald-400 text-sm">
+            <div className="flex items-center gap-2 p-3 bg-primary/10 border border-primary/20 rounded-lg text-primary text-sm">
               <CheckCircle2 className="h-4 w-4 shrink-0" />
               <span>
                 Тестову подію успішно зафіксовано та надіслано в Sentry! Перевірте Issues у панелі

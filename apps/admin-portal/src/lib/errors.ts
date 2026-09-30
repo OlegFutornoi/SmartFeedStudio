@@ -1,6 +1,6 @@
-import { Locale } from '../i18n/types';
-import ukErrors from '../i18n/locales/uk/errors.json';
-import enErrors from '../i18n/locales/en/errors.json';
+import { Locale } from '@/i18n/types';
+import ukErrors from '@/i18n/locales/uk/errors.json';
+import enErrors from '@/i18n/locales/en/errors.json';
 
 const ERROR_MAP: Record<Locale, Record<string, string>> = {
   uk: ukErrors,

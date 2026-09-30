@@ -3,10 +3,10 @@
 import React, { useState } from 'react';
 import { PlanType, TargetApp, NavigationItemDto } from '@smartfeed/shared';
 import { Monitor } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { getIconComponent } from './constants';
-import { useLanguage } from '../../contexts/LanguageContext';
-import { cn } from '../../lib/utils';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { cn } from '@/lib/utils';
 
 const PLAN_HIERARCHY: Record<PlanType, number> = {
   [PlanType.STARTER]: 1,

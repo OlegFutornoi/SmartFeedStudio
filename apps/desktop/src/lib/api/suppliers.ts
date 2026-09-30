@@ -1,6 +1,6 @@
 import type { SupplierDto, CreateSupplierDto, UpdateSupplierDto } from '@smartfeed/shared';
-import { localDb } from '../../services/local-db';
-import { isTauri } from '../runtime';
+import { localDb } from '@/services/local-db';
+import { isTauri } from '@/lib/runtime';
 import { ApiError, fetchWithAuth } from './client';
 
 export async function getSuppliers(token?: string, search?: string): Promise<SupplierDto[]> {

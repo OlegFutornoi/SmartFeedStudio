@@ -3,10 +3,10 @@
 import React from 'react';
 import { LucideIcon, ShieldCheck, X, KeyRound, LogOut } from 'lucide-react';
 import { UserProfile } from '@smartfeed/shared';
-import { Avatar, AvatarFallback } from '../ui/avatar';
-import { Button } from '../ui/button';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
 import { SidebarNavItem } from './SidebarNavItem';
-import { useLanguage } from '../../contexts/LanguageContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface NavItem {
   name: string;

@@ -99,12 +99,12 @@ export function HomePage() {
             <div className="flex items-center gap-1.5">
               <Badge
                 variant="outline"
-                className="text-[11px] font-medium px-1.5 py-0 rounded-md border-emerald-500/30 text-emerald-500 bg-emerald-500/5 flex items-center gap-1"
+                className="text-[11px] font-medium px-1.5 py-0 rounded-md border-primary/30 text-primary bg-primary/5 flex items-center gap-1"
               >
                 <TrendingUp className="size-3" />
                 <span>+100%</span>
               </Badge>
-              <div className="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-500">
+              <div className="p-1.5 rounded-lg bg-primary/10 text-primary">
                 <Package className="size-4" />
               </div>
             </div>
@@ -125,7 +125,7 @@ export function HomePage() {
             <CardTitle className="text-sm font-medium text-muted-foreground">
               {t('totalSuppliers')}
             </CardTitle>
-            <div className="p-1.5 rounded-lg bg-blue-500/10 text-blue-500">
+            <div className="p-1.5 rounded-lg bg-primary/10 text-primary">
               <Building2 className="size-4" />
             </div>
           </CardHeader>
@@ -231,7 +231,7 @@ export function HomePage() {
                     </div>
                     <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
                       <span className="flex items-center gap-1.5">
-                        <Package className="size-3.5 text-emerald-500" />
+                        <Package className="size-3.5 text-primary" />
                         {t('productsCount', { count: supplier.productsCount ?? 0 })}
                       </span>
                       <span className="flex items-center gap-1.5">
@@ -245,7 +245,7 @@ export function HomePage() {
                     {supplier.isActive ? (
                       <Badge
                         variant="secondary"
-                        className="text-xs bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
+                        className="text-xs bg-primary/10 text-primary border border-primary/20"
                       >
                         <CheckCircle2 className="size-3 mr-1" />
                         {t('statusActive')}

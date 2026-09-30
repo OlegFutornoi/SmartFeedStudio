@@ -2,10 +2,10 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { Moon, Sun, Laptop, Check, ChevronDown, Sliders } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
-import { Badge } from '../ui/badge';
-import { useTheme, ACCENT_OPTIONS, ThemeMode } from '../../contexts/ThemeContext';
-import { useLanguage } from '../../contexts/LanguageContext';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { useTheme, ACCENT_OPTIONS, ThemeMode } from '@/contexts/ThemeContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export function ThemeCustomizer() {
   const { themeMode, setThemeMode, accentColor, setAccentColor } = useTheme();
@@ -40,15 +40,15 @@ export function ThemeCustomizer() {
   ];
 
   return (
-    <Card className="border-border bg-card shadow-sm overflow-visible">
+    <Card className="relative z-20 border-border/80 bg-card/60 backdrop-blur-sm shadow-md overflow-visible">
       <CardHeader className="pb-4">
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-2">
           <Sliders className="size-4 text-muted-foreground" />
-          <CardTitle className="text-sm font-medium">
+          <CardTitle className="text-base font-semibold">
             {isUk ? 'Оформлення та кольорова схема' : 'Appearance & Themes'}
           </CardTitle>
         </div>
-        <CardDescription className="text-xs">
+        <CardDescription className="text-xs text-muted-foreground">
           {isUk
             ? 'Налаштуйте режим підсвічування та офіційну палітру кольорів'
             : 'Configure dark/light mode and official shadcn color theme'}

@@ -8,8 +8,8 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-} from '../ui/dialog';
-import { Button } from '../ui/button';
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
 import { TariffPlanDto, CreateTariffPlanDto, UpdateTariffPlanDto } from '@smartfeed/shared';
 import { Layers, Info, Sliders, ShieldCheck, ListPlus } from 'lucide-react';
 import { PlanFeatureList } from './PlanFeatureList';

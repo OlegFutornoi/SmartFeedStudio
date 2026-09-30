@@ -1,4 +1,4 @@
-import { isTauri } from '../lib/runtime';
+import { isTauri } from '@/lib/runtime';
 export { isTauri };
 
 export async function storeRefreshToken(token: string): Promise<void> {

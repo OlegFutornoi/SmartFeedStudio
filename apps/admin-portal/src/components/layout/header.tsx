@@ -74,9 +74,9 @@ export function Header() {
 
           <Badge
             variant="outline"
-            className="text-[11px] bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30 flex items-center gap-1 px-2 py-0.5"
+            className="text-[11px] bg-primary/10 text-primary border-primary/20 flex items-center gap-1.5 px-2 py-0.5 font-medium"
           >
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
             <span>{t('common', 'system_online')}</span>
           </Badge>
         </div>
@@ -113,11 +113,7 @@ export function Header() {
           onClick={toggleTheme}
           title="Toggle theme"
         >
-          {resolvedMode === 'dark' ? (
-            <Sun className="h-4 w-4 text-amber-400" />
-          ) : (
-            <Moon className="h-4 w-4 text-primary" />
-          )}
+          {resolvedMode === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
         </Button>
 
         {/* Link to Settings */}
