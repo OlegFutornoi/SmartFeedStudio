@@ -181,6 +181,15 @@ test.describe('Admin Portal — Тарифні плани та порівнял�
         return;
       }
 
+      if (method === 'GET') {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify(mockPlans),
+        });
+        return;
+      }
+
       await route.continue();
     });
   });

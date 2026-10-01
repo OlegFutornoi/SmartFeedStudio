@@ -40,7 +40,7 @@ export default function PlansPage() {
       isFetchingRef.current = true;
       setIsLoading(true);
       setError(null);
-      const plansData = await api.getAdminTariffPlans().catch(() => api.getTariffPlans());
+      const plansData = await api.getAdminTariffPlans();
       setPlans(plansData);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Не вдалося завантажити тарифні плани';

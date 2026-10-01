@@ -6,7 +6,6 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { ThemeCustomizer } from '@/components/theme/theme-customizer';
 import { ProfileInfoCard } from '@/components/profile/ProfileInfoCard';
-import { InfrastructureStatusCard } from '@/components/profile/InfrastructureStatusCard';
 import { ChangePasswordCard } from '@/components/profile/ChangePasswordCard';
 
 export default function SettingsPage() {
@@ -29,19 +28,16 @@ export default function SettingsPage() {
         </p>
       </div>
 
-      {/* Balanced 2-Column Grid Layout: Account & Security | Appearance & System */}
-      <div className="grid gap-6 lg:grid-cols-2 items-start">
-        {/* Left Column: Account Profile & Security */}
-        <div className="space-y-6">
-          <ProfileInfoCard user={user} />
-          <ChangePasswordCard />
-        </div>
+      {/* Top Section: Executive Administrator Profile Card */}
+      <ProfileInfoCard user={user} />
 
-        {/* Right Column: Appearance, Theming & Cloud Infrastructure */}
-        <div className="space-y-6">
-          <ThemeCustomizer />
-          <InfrastructureStatusCard />
-        </div>
+      {/* Bottom Section: 2 Balanced Columns for Security & Appearance */}
+      <div className="grid gap-6 lg:grid-cols-2 items-start">
+        {/* Left Column: Account Security & Password */}
+        <ChangePasswordCard />
+
+        {/* Right Column: Appearance & Theming */}
+        <ThemeCustomizer />
       </div>
     </div>
   );

@@ -18,12 +18,6 @@ export class AdminSettingsPage extends BasePage {
   readonly profileEmail: Locator;
   readonly profileRole: Locator;
 
-  // Infrastructure selectors
-  readonly infraCard: Locator;
-  readonly infraBadgePostgres: Locator;
-  readonly infraBadgeRedis: Locator;
-  readonly infraBadgeS3: Locator;
-
   // Password card selectors
   readonly changePasswordCard: Locator;
   readonly currentPasswordInput: Locator;
@@ -50,11 +44,6 @@ export class AdminSettingsPage extends BasePage {
     this.profileName = page.getByTestId('profile-name');
     this.profileEmail = page.getByTestId('profile-email');
     this.profileRole = page.getByTestId('profile-role');
-
-    this.infraCard = page.getByTestId('infrastructure-status-card');
-    this.infraBadgePostgres = page.getByTestId('infra-badge-postgres');
-    this.infraBadgeRedis = page.getByTestId('infra-badge-redis');
-    this.infraBadgeS3 = page.getByTestId('infra-badge-s3');
 
     this.changePasswordCard = page.getByTestId('change-password-card');
     this.currentPasswordInput = page.getByTestId('current-password-input');

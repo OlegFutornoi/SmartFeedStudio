@@ -36,7 +36,7 @@ export const SidebarNavItem = React.memo(function SidebarNavItem({
       title={isCollapsed ? name : undefined}
       data-testid={dataTestId}
       className={cn(
-        'flex items-center rounded-xl font-medium transition-all group relative',
+        'flex items-center rounded-xl font-medium transition-all group relative outline-none focus:outline-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary/20',
         isSubItem ? 'text-xs py-2' : 'text-sm py-2.5',
         isCollapsed
           ? 'justify-center h-10 w-10 mx-auto px-0'

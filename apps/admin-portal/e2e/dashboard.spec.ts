@@ -43,7 +43,7 @@ test.describe('Admin Portal — Головний Дашборд та Інтер�
       });
     });
 
-    await page.route('**/api/users?limit=5*', async (route) => {
+    await page.route('**/api/users*', async (route) => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -51,11 +51,34 @@ test.describe('Admin Portal — Головний Дашборд та Інтер�
       });
     });
 
-    await page.route('**/api/users', async (route) => {
+    await page.route('**/api/payments/stats*', async (route) => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify(mockRecentUsers),
+        body: JSON.stringify({
+          totalRevenueUah: 18450,
+          successfulCount: 12,
+          pendingCount: 1,
+          declinedCount: 0,
+          averageCheckUah: 1537.5,
+          successRatePercent: 100,
+        }),
+      });
+    });
+
+    await page.route('**/api/payments/transactions*', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ transactions: [], total: 0 }),
+      });
+    });
+
+    await page.route('**/api/licenses/admin*', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify([]),
       });
     });
   });
@@ -65,17 +88,16 @@ test.describe('Admin Portal — Головний Дашборд та Інтер�
   }) => {
     await dashboardPage.goto();
 
-    // 1. Привітальний банер
-    await expect(dashboardPage.welcomeBanner).toBeVisible();
-    await expect(dashboardPage.welcomeTitle).toContainText('Вітаємо');
-
-    // 2. Картки метрик
+    // 1. Картки метрик (shadcn dashboard-01)
     await expect(dashboardPage.statValueTotalUsers).toContainText('42');
     await expect(dashboardPage.statValueActiveLicenses).toContainText('38');
     await expect(dashboardPage.statCardStorage).toBeVisible();
     await expect(dashboardPage.statCardDatabase).toBeVisible();
 
-    // 3. Таблиця останніх користувачів
+    // 2. Графік активності
+    await expect(dashboardPage.page.getByTestId('admin-activity-chart-card')).toBeVisible();
+
+    // 3. Таблиця останніх користувачів (повна ширина)
     await expect(dashboardPage.recentUsersCard).toBeVisible();
     await expect(dashboardPage.recentUsersTitle).toHaveText('Останні зареєстровані користувачі');
     await expect(dashboardPage.page.getByTestId('recent-user-row-usr-01')).toContainText(
@@ -84,10 +106,6 @@ test.describe('Admin Portal — Головний Дашборд та Інтер�
     await expect(dashboardPage.page.getByTestId('recent-user-row-usr-02')).toContainText(
       'Марина Шевченко',
     );
-
-    // 4. Швидкі дії
-    await expect(dashboardPage.quickActionsPanel).toBeVisible();
-    await expect(dashboardPage.securityNotice).toBeVisible();
   });
 
   test('динамічне перемикання мови дашборду UA ⇄ EN та перевірка перекладу всіх елементів', async ({
@@ -96,44 +114,56 @@ test.describe('Admin Portal — Головний Дашборд та Інтер�
     await dashboardPage.goto();
 
     // 1. Початковий стан: Українська
-    await expect(dashboardPage.welcomeSubtitle).toHaveText(
-      'Огляд активності користувачів, ліцензій та хмарного сховища SmartFeed Studio',
-    );
     await expect(dashboardPage.statCardTotalUsers).toContainText('Всього користувачів');
     await expect(dashboardPage.statCardActiveLicenses).toContainText('Активні ліцензії');
-    await expect(dashboardPage.actionBtnLicenses).toContainText('Керування ліцензіями');
-    await expect(dashboardPage.actionBtnChangePwd).toContainText('Змінити мій пароль');
+    await expect(dashboardPage.recentUsersTitle).toHaveText('Останні зареєстровані користувачі');
+    await expect(dashboardPage.page.getByRole('button', { name: /Користувачі/ })).toBeVisible();
+    await expect(
+      dashboardPage.page.getByRole('button', { name: /Останні транзакції/ }),
+    ).toBeVisible();
+    await expect(dashboardPage.page.getByRole('button', { name: /Ліцензії/ })).toBeVisible();
 
     // 2. Перемикаємо на Англійську
     await dashboardPage.toggleLanguage();
 
     // 3. Перевірка оновлення всіх елементів англійською
-    await expect(dashboardPage.welcomeTitle).toContainText('Welcome');
-    await expect(dashboardPage.welcomeSubtitle).toHaveText(
-      'Overview of users activity, customer licenses, and SmartFeed Studio cloud storage',
-    );
     await expect(dashboardPage.statCardTotalUsers).toContainText('Total Users');
     await expect(dashboardPage.statCardActiveLicenses).toContainText('Active Licenses');
     await expect(dashboardPage.recentUsersTitle).toHaveText('Recently Registered Users');
-    await expect(dashboardPage.actionBtnLicenses).toContainText('Manage licenses');
-    await expect(dashboardPage.actionBtnChangePwd).toContainText('Change my password');
-    await expect(dashboardPage.securityNoticeTitle).toHaveText('Admin Security');
+    await expect(dashboardPage.page.getByRole('button', { name: /Users/ })).toBeVisible();
+    await expect(
+      dashboardPage.page.getByRole('button', { name: /Recent Transactions/ }),
+    ).toBeVisible();
+    await expect(dashboardPage.page.getByRole('button', { name: /Licenses/ })).toBeVisible();
 
     // 4. Повернення на Українську
     await dashboardPage.toggleLanguage();
-    await expect(dashboardPage.welcomeTitle).toContainText('Вітаємо');
+    await expect(dashboardPage.statCardTotalUsers).toContainText('Всього користувачів');
     await expect(dashboardPage.recentUsersTitle).toHaveText('Останні зареєстровані користувачі');
   });
 
-  test('відкриття діалогу зміни пароля з блоку швидких дій', async ({ dashboardPage }) => {
+  test('динамічне перемикання вкладок дашборду (Користувачі ⇄ Транзакції ⇄ Ліцензії)', async ({
+    dashboardPage,
+  }) => {
     await dashboardPage.goto();
 
-    // Клік по кнопці "Змінити мій пароль"
-    await dashboardPage.actionBtnChangePwd.click();
-    await expect(dashboardPage.changePasswordModal).toBeVisible();
+    // 1. Початковий стан — Користувачі
+    await expect(dashboardPage.page.getByTestId('recent-user-row-usr-01')).toBeVisible();
 
-    // Закриття діалогу
-    await dashboardPage.page.getByRole('button', { name: 'Скасувати' }).click();
-    await expect(dashboardPage.changePasswordModal).not.toBeVisible();
+    // 2. Перемикання на Транзакції
+    await dashboardPage.page.getByRole('button', { name: /Останні транзакції/ }).click();
+    await expect(dashboardPage.page.getByTestId('recent-users-title')).toHaveText(
+      'Останні транзакції',
+    );
+
+    // 3. Перемикання на Ліцензії
+    await dashboardPage.page.getByRole('button', { name: /Ліцензії/ }).click();
+    await expect(dashboardPage.page.getByTestId('recent-users-title')).toHaveText(
+      'Активні ліцензії',
+    );
+
+    // 4. Повернення на Користувачів
+    await dashboardPage.page.getByRole('button', { name: /Користувачі/ }).click();
+    await expect(dashboardPage.page.getByTestId('recent-user-row-usr-01')).toBeVisible();
   });
 });

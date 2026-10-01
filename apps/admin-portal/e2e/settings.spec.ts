@@ -1,7 +1,7 @@
 import { test, expect } from './fixtures/test';
 
 test.describe('Admin Portal — Налаштування, Профіль та Валідація (POM E2E)', () => {
-  test('відображення профілю адміністратора та карток інфраструктури', async ({ settingsPage }) => {
+  test('відображення профілю адміністратора та налаштувань теми', async ({ settingsPage }) => {
     await settingsPage.goto();
 
     // 1. Заголовок
@@ -11,13 +11,11 @@ test.describe('Admin Portal — Налаштування, Профіль та В
     await expect(settingsPage.profileCard).toBeVisible();
     await expect(settingsPage.profileName).toContainText('Super Admin');
     await expect(settingsPage.profileEmail).toContainText('admin@smartfeed.studio');
-    await expect(settingsPage.profileRole).toContainText('Власник');
+    await expect(settingsPage.profileRole).toContainText('Адміністратор');
 
-    // 3. Інфраструктура
-    await expect(settingsPage.infraCard).toBeVisible();
-    await expect(settingsPage.infraBadgePostgres).toHaveText('Підключено');
-    await expect(settingsPage.infraBadgeRedis).toHaveText('Підключено');
-    await expect(settingsPage.infraBadgeS3).toHaveText('Підключено');
+    // 3. Налаштування теми
+    await expect(settingsPage.darkModeBtn).toBeVisible();
+    await expect(settingsPage.lightModeBtn).toBeVisible();
   });
 
   test('валідація форми зміни пароля (короткий пароль та невідповідність)', async ({
@@ -47,7 +45,7 @@ test.describe('Admin Portal — Налаштування, Профіль та В
 
     // 1. Початковий стан: Українська
     await expect(settingsPage.headerTitle).toHaveText('Налаштування акаунту та безпеки');
-    await expect(settingsPage.infraBadgePostgres).toHaveText('Підключено');
+    await expect(settingsPage.darkModeBtn).toContainText('Темна');
 
     // 2. Перемикаємо на Англійську
     await settingsPage.toggleLanguage();
@@ -57,9 +55,7 @@ test.describe('Admin Portal — Налаштування, Профіль та В
     await expect(settingsPage.headerSubtitle).toHaveText(
       'Manage administrator profile, password, color theme, and system parameters',
     );
-    await expect(settingsPage.infraBadgePostgres).toHaveText('Connected');
-    await expect(settingsPage.infraBadgeRedis).toHaveText('Connected');
-    await expect(settingsPage.infraBadgeS3).toHaveText('Connected');
+    await expect(settingsPage.darkModeBtn).toContainText('Dark');
 
     // Перевірка валідації пароля англійською мовою
     await settingsPage.submitChangePassword('old_pass_123', '123', '123');
@@ -70,6 +66,6 @@ test.describe('Admin Portal — Налаштування, Профіль та В
     // 4. Повернення на Українську
     await settingsPage.toggleLanguage();
     await expect(settingsPage.headerTitle).toHaveText('Налаштування акаунту та безпеки');
-    await expect(settingsPage.infraBadgePostgres).toHaveText('Підключено');
+    await expect(settingsPage.darkModeBtn).toContainText('Темна');
   });
 });

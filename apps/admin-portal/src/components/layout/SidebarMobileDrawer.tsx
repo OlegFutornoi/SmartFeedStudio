@@ -1,11 +1,11 @@
 'use client';
 
 import React from 'react';
-import { LucideIcon, ShieldCheck, X, KeyRound, LogOut } from 'lucide-react';
+import { LucideIcon, ShieldCheck, X } from 'lucide-react';
 import { UserProfile } from '@smartfeed/shared';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { SidebarNavItem } from './SidebarNavItem';
+import { SidebarUserProfile } from './SidebarUserProfile';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 interface NavItem {
@@ -41,18 +41,6 @@ export const SidebarMobileDrawer = React.memo(function SidebarMobileDrawer({
   const isUk = locale === 'uk';
 
   if (!isOpen) return null;
-
-  const getInitials = (name?: string | null, email?: string) => {
-    if (name) {
-      const parts = name.trim().split(' ');
-      if (parts.length >= 2) return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
-      return name.slice(0, 2).toUpperCase();
-    }
-    if (email) {
-      return email.slice(0, 2).toUpperCase();
-    }
-    return 'AD';
-  };
 
   return (
     <div className="fixed inset-0 z-50 md:hidden flex">
@@ -127,48 +115,16 @@ export const SidebarMobileDrawer = React.memo(function SidebarMobileDrawer({
           </nav>
         </div>
 
-        {/* Footer */}
-        <div className="pt-4 border-t border-border flex items-center justify-between gap-2">
-          <div className="flex items-center space-x-2.5 min-w-0 flex-1">
-            <Avatar className="h-9 w-9 border border-border shrink-0">
-              <AvatarFallback className="bg-primary/20 text-primary font-bold text-xs">
-                {getInitials(user?.fullName, user?.email)}
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex-1 min-w-0">
-              <p className="text-xs font-semibold text-foreground truncate">
-                {user?.fullName || 'Адміністратор'}
-              </p>
-              <p className="text-[10px] text-muted-foreground truncate font-mono">{user?.email}</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-1 shrink-0">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => {
-                onClose();
-                onOpenPasswordDialog();
-              }}
-              className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground rounded-md"
-              title={t('common', 'change_password')}
-              aria-label={t('common', 'change_password')}
-            >
-              <KeyRound className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onLogout}
-              className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-md"
-              title={t('common', 'logout')}
-              aria-label={t('common', 'logout')}
-            >
-              <LogOut className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
+        {/* Footer User Profile */}
+        <SidebarUserProfile
+          user={user}
+          isCollapsed={false}
+          onOpenPasswordDialog={() => {
+            onClose();
+            onOpenPasswordDialog();
+          }}
+          onLogout={onLogout}
+        />
       </aside>
     </div>
   );

@@ -207,7 +207,7 @@ test.describe('Admin Portal — Navigation & Access Control (POM)', () => {
 
   test('should navigate via main menu to separated Plans and Licenses pages', async ({ page }) => {
     await page.goto('/');
-    await expect(page.locator('h1')).toBeVisible();
+    await expect(page.getByTestId('dashboard-overview-page')).toBeVisible();
 
     // 1. Verify and click Тарифи in Main Menu
     const mainPlansNav = page.locator('aside').getByTestId('nav-item-plans');
@@ -231,7 +231,7 @@ test.describe('Admin Portal — Navigation & Access Control (POM)', () => {
   }) => {
     await page.goto('/');
     await page.waitForLoadState('networkidle');
-    await expect(page.locator('h1')).toBeVisible();
+    await expect(page.getByTestId('dashboard-overview-page')).toBeVisible();
 
     // Click Налаштування in bottom sidebar
     const profileNav = page.locator('aside').getByTestId('nav-item-settings-profile');

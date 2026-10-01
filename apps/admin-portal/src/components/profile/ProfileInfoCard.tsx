@@ -1,10 +1,8 @@
 'use client';
 
 import React, { useRef, useState, useCallback } from 'react';
-import { User, Camera, Trash2, Loader2, Copy, Check } from 'lucide-react';
+import { User, Camera, Trash2, Loader2, Mail } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -98,15 +96,6 @@ export const ProfileInfoCard = React.memo(function ProfileInfoCard({ user }: Pro
     [updateAvatar, t],
   );
 
-  const [isCopied, setIsCopied] = useState(false);
-
-  const handleCopyId = useCallback(() => {
-    if (!user?.id) return;
-    navigator.clipboard.writeText(user.id);
-    setIsCopied(true);
-    setTimeout(() => setIsCopied(false), 2000);
-  }, [user?.id]);
-
   const handleRemoveAvatar = useCallback(async () => {
     setIsUploading(true);
     setErrorMsg(null);
@@ -119,8 +108,6 @@ export const ProfileInfoCard = React.memo(function ProfileInfoCard({ user }: Pro
       setIsUploading(false);
     }
   }, [updateAvatar, t]);
-
-  const isUk = t('common', 'save') === 'Зберегти';
 
   return (
     <Card
@@ -139,166 +126,101 @@ export const ProfileInfoCard = React.memo(function ProfileInfoCard({ user }: Pro
         </CardDescription>
       </CardHeader>
 
-      <CardContent className="space-y-5">
-        {/* Modern Avatar & Identity Header Row */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl border border-border/70 bg-muted/20">
-          <div className="flex items-center gap-3.5 min-w-0">
-            <Avatar className="size-14 border-2 border-border shadow-xs shrink-0">
+      <CardContent className="space-y-4">
+        {/* Modern Executive Identity Row */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 p-4 rounded-xl border border-border/70 bg-muted/20">
+          <div className="flex items-center gap-4 min-w-0">
+            <Avatar className="size-16 border-2 border-border shadow-xs shrink-0">
               <AvatarImage
                 src={user?.avatarUrl || undefined}
                 alt={user?.fullName || 'Admin'}
                 data-testid="profile-avatar-img"
               />
-              <AvatarFallback className="bg-primary/10 text-primary font-bold text-base">
+              <AvatarFallback className="bg-primary/10 text-primary font-bold text-lg">
                 {getInitials(user?.fullName, user?.email)}
               </AvatarFallback>
             </Avatar>
 
-            <div className="space-y-1 min-w-0">
-              <div className="flex items-center gap-2 flex-wrap">
+            <div className="space-y-1.5 min-w-0">
+              <div className="flex items-center gap-2.5 flex-wrap">
                 <span
                   data-testid="profile-name"
-                  className="text-sm font-semibold text-foreground truncate"
+                  className="text-base font-semibold text-foreground truncate"
                 >
                   {user?.fullName || 'Super Administrator'}
                 </span>
                 <Badge
                   data-testid="profile-role"
                   variant="outline"
-                  className="bg-primary/10 text-primary border-primary/20 text-[10px] font-medium py-0 px-2 h-5"
+                  className="bg-primary/10 text-primary border-primary/20 text-xs font-medium py-0.5 px-2.5"
                 >
-                  {user?.role === 'SUPER_ADMIN'
-                    ? t('users', 'role_super_admin')
-                    : user?.role === 'ADMIN'
-                      ? t('users', 'role_admin')
-                      : t('users', 'role_user')}
+                  {user?.role === 'SUPER_ADMIN' || user?.role === 'ADMIN'
+                    ? t('users', 'role_admin')
+                    : t('users', 'role_user')}
                 </Badge>
               </div>
-              <p
-                data-testid="profile-email"
-                className="font-mono text-xs text-muted-foreground truncate"
-              >
-                {user?.email || 'admin@smartfeed.studio'}
-              </p>
+
+              <div className="flex items-center gap-4 text-xs text-muted-foreground flex-wrap">
+                <div className="flex items-center gap-1.5">
+                  <Mail className="size-3.5" />
+                  <span data-testid="profile-email" className="font-mono">
+                    {user?.email || 'admin@smartfeed.studio'}
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* Avatar Actions */}
-          <div className="flex items-center gap-2 shrink-0">
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/png,image/jpeg,image/webp"
-              onChange={handleFileChange}
-              className="hidden"
-              data-testid="avatar-file-input"
-            />
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              disabled={isUploading}
-              onClick={() => fileInputRef.current?.click()}
-              data-testid="change-avatar-btn"
-              className="h-8 text-xs gap-1.5"
-            >
-              {isUploading ? (
-                <Loader2 className="size-3.5 animate-spin" />
-              ) : (
-                <Camera className="size-3.5 text-muted-foreground" />
-              )}
-              <span>{t('settings', 'change_avatar')}</span>
-            </Button>
-
-            {user?.avatarUrl && (
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                disabled={isUploading}
-                onClick={handleRemoveAvatar}
-                data-testid="remove-avatar-btn"
-                className="h-8 px-2 text-xs text-muted-foreground hover:text-destructive hover:bg-destructive/10"
-                title={t('settings', 'remove_avatar')}
-              >
-                <Trash2 className="size-3.5" />
-              </Button>
-            )}
-          </div>
-        </div>
-
-        {errorMsg && <p className="text-xs text-destructive font-medium">{errorMsg}</p>}
-
-        {/* Clean Shadcn Form Fields */}
-        <div className="space-y-4">
-          {/* Full Name */}
-          <div className="space-y-1.5">
-            <Label htmlFor="profile-fullname" className="text-xs font-medium text-foreground">
-              {t('settings', 'full_name')}
-            </Label>
-            <Input
-              id="profile-fullname"
-              value={user?.fullName || 'Super Administrator'}
-              readOnly
-              className="h-9 text-xs bg-muted/20 border-border"
-            />
-            <p className="text-[11px] text-muted-foreground">{t('settings', 'avatar_hint')}</p>
-          </div>
-
-          {/* Email */}
-          <div className="space-y-1.5">
-            <Label htmlFor="profile-email-input" className="text-xs font-medium text-foreground">
-              {t('settings', 'email')}
-            </Label>
-            <Input
-              id="profile-email-input"
-              value={user?.email || 'admin@smartfeed.studio'}
-              disabled
-              readOnly
-              className="h-9 text-xs font-mono bg-muted/40 border-border cursor-not-allowed text-muted-foreground"
-            />
-            <p className="text-[11px] text-muted-foreground">
-              {isUk
-                ? 'Основна електронна адреса для входу в панель керування.'
-                : 'Primary email address for logging into the control panel.'}
-            </p>
-          </div>
-
-          {/* User ID */}
-          <div className="space-y-1.5">
-            <Label className="text-xs font-medium text-foreground">
-              {t('settings', 'user_id')}
-            </Label>
+          {/* Avatar Actions & Format Hint */}
+          <div className="flex flex-col items-start sm:items-end gap-1.5 shrink-0">
             <div className="flex items-center gap-2">
-              <Input
-                value={user?.id || '—'}
-                readOnly
-                className="h-9 text-xs font-mono bg-muted/20 border-border select-all"
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/png,image/jpeg,image/webp"
+                onChange={handleFileChange}
+                className="hidden"
+                data-testid="avatar-file-input"
               />
               <Button
                 type="button"
                 variant="outline"
                 size="sm"
-                onClick={handleCopyId}
-                className="h-9 px-3 shrink-0 text-xs gap-1.5"
+                disabled={isUploading}
+                onClick={() => fileInputRef.current?.click()}
+                data-testid="change-avatar-btn"
+                className="h-8 text-xs gap-1.5"
               >
-                {isCopied ? (
-                  <>
-                    <Check className="size-3.5 text-primary" />
-                    <span className="text-primary font-medium">
-                      {isUk ? 'Скопійовано' : 'Copied'}
-                    </span>
-                  </>
+                {isUploading ? (
+                  <Loader2 className="size-3.5 animate-spin" />
                 ) : (
-                  <>
-                    <Copy className="size-3.5 text-muted-foreground" />
-                    <span>{isUk ? 'Копіювати' : 'Copy'}</span>
-                  </>
+                  <Camera className="size-3.5 text-muted-foreground" />
                 )}
+                <span>{t('settings', 'change_avatar')}</span>
               </Button>
+
+              {user?.avatarUrl && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  disabled={isUploading}
+                  onClick={handleRemoveAvatar}
+                  data-testid="remove-avatar-btn"
+                  className="h-8 px-2 text-xs text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                  title={t('settings', 'remove_avatar')}
+                >
+                  <Trash2 className="size-3.5" />
+                </Button>
+              )}
             </div>
+            <span className="text-[11px] text-muted-foreground">
+              {t('settings', 'avatar_hint')}
+            </span>
           </div>
         </div>
+
+        {errorMsg && <p className="text-xs text-destructive font-medium">{errorMsg}</p>}
       </CardContent>
     </Card>
   );
