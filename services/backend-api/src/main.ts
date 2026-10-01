@@ -40,16 +40,44 @@ async function bootstrap() {
     }),
   );
 
-  // CORS Configuration
-  const corsOrigins = process.env.CORS_ORIGIN
+  // CORS Configuration (Dynamic whitelist supporting Tauri v2 macOS/Windows/Linux & Web)
+  const configuredOrigins = process.env.CORS_ORIGIN
     ? process.env.CORS_ORIGIN.split(',')
-    : ['http://localhost:3000', 'http://localhost:1420', 'tauri://localhost'];
+        .map((o) => o.trim())
+        .filter(Boolean)
+    : [];
+
+  const defaultAllowedOrigins = new Set([
+    'http://localhost:3000',
+    'http://localhost:1420',
+    'http://127.0.0.1:3000',
+    'http://127.0.0.1:1420',
+    'tauri://localhost',
+    'http://tauri.localhost',
+    'https://tauri.localhost',
+    ...configuredOrigins,
+  ]);
 
   app.enableCors({
-    origin: corsOrigins,
+    origin: (origin, callback) => {
+      // Allow requests with no origin (mobile/desktop native HTTP) or null (WebKit opaque origins)
+      if (!origin || origin === 'null') {
+        return callback(null, true);
+      }
+      if (
+        defaultAllowedOrigins.has(origin) ||
+        origin.startsWith('tauri://') ||
+        origin.endsWith('.localhost') ||
+        origin.endsWith('.up.railway.app') ||
+        origin.endsWith('.smartfeed.studio')
+      ) {
+        return callback(null, true);
+      }
+      callback(null, false);
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
   });
 
   // Swagger Documentation Setup

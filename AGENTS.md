@@ -22,7 +22,7 @@ All domain rules are modularized (max 12k chars per file):
 5. [wiki_and_documentation.md](.agents/rules/wiki_and_documentation.md) — WIKI & test coverage sync
 6. [postgres_skills.md](.agents/rules/postgres_skills.md) — PostgreSQL indexes & schema rules
 7. [frontend_network_dedup.md](.agents/rules/frontend_network_dedup.md) — Zero-duplicate API calls
-8. [commands.md](.agents/rules/commands.md) — CLI commands, ports, credentials
+8. [commands.md](.agents/rules/commands.md) — CLI commands, ports, credentials, 100% MCP auto-approval policy
 9. [design_system_and_theming.md](.agents/rules/design_system_and_theming.md) — 100% theme harmony, semantic tokens & zero off-scheme colors (no ad-hoc purple/pink), zero duplicate action buttons
 10. [engineering_discipline_and_planning.md](.agents/rules/engineering_discipline_and_planning.md) — Architecture & scalability first, quality over naive simplicity ("working" is not enough), zero God-files (<250-300 lines), mutex concurrency, safe OS execution, pre-planned domain modularity
 11. [Master Skills Guide](.agents/AGENTS.md) — Повний каталог та диспетчер 79 скілів (4 майстер-оркестратори, 75 підскілів за 8 напрямками)

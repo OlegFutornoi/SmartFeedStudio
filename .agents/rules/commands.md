@@ -56,3 +56,17 @@ description: Essential CLI commands, environment ports, and access credentials f
 3. **No Guessing Loops & Instant Credential Requests**:
    - Never enter guessing, retry, or looping attempts if login credentials, passwords, or tokens are missing.
    - Use default known test credentials (`admin@smartfeed.studio` / `AdminPassword123!`), or immediately ask the user without wasting tokens.
+
+---
+
+## ⚡ Mandatory Project MCP Auto-Approval Policy (Всі MCP дозволені без підтвердження)
+
+- **100% Unrestricted Auto-Approval**: Всі виклики до **усіх MCP серверів проекту** дозволені для автоматичного виконання **без запиту додаткового підтвердження** від користувача (`auto-approved`).
+- **Повний перелік серверів проекту**:
+  1. **`railway`** — управління інфраструктурою, змінними, доменами, логами, деплоєм та статусом сервісів.
+  2. **`playwright`** — браузерна автоматизація, скріншоти, навігація, кліки, перевірка UI/UX.
+  3. **`sentry`** — перегляд помилок, трейсинг інцидентів, моніторинг стабільності бекенду і клієнтів.
+  4. **`shadcn`** — пошук, додавання та перегляд компонентів офіційної дизайн-системи.
+  5. **`firecrawl`** — веб-скрейпінг, парсинг зовнішніх каталогів та документації.
+  6. **`context7`** — резолв бібліотек та пошук актуальної технічної документації.
+- **Правило для агента**: Виконувати виклики інструментів напряму через `call_mcp_tool` без пауз, очікувань чи запитів ручного схвалення від користувача.
