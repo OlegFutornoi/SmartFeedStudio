@@ -108,7 +108,7 @@ export const TeamSeatsQuotaCard: React.FC<TeamSeatsQuotaCardProps> = ({
           <div className="h-2 w-full overflow-hidden rounded-full bg-muted/60">
             <div
               className={`h-full transition-all duration-500 rounded-full ${
-                isLimitReached ? 'bg-amber-500' : 'bg-primary'
+                isLimitReached ? 'bg-destructive' : 'bg-primary'
               }`}
               style={{ width: `${percentage}%` }}
             />
@@ -143,16 +143,16 @@ export const TeamSeatsQuotaCard: React.FC<TeamSeatsQuotaCardProps> = ({
 
         {isLimitReached && !isSoloPlan && (
           <div
-            className="flex items-start gap-2 p-3 rounded-xl border border-amber-500/20 bg-amber-500/[0.05] text-xs text-muted-foreground"
+            className="flex items-start gap-2 p-3 rounded-xl border border-border bg-muted/30 text-xs text-muted-foreground"
             data-testid="limit-reached-notice"
           >
-            <AlertCircle className="h-4 w-4 text-amber-500 shrink-0 mt-0.5" />
+            <AlertCircle className="h-4 w-4 text-foreground shrink-0 mt-0.5" />
             <div className="flex-1">
               <span className="font-medium text-foreground">{t('team.limitReachedDesc')}</span>
               <button
                 type="button"
                 onClick={onOpenUpgrade}
-                className="ml-1.5 text-amber-600 dark:text-amber-400 hover:underline font-semibold"
+                className="ml-1.5 text-foreground hover:underline font-semibold"
               >
                 Оновити до ENTERPRISE →
               </button>

@@ -7,7 +7,6 @@ import { useLicense } from '@/hooks/useLicense';
 import { useTranslation } from '@/i18n';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { LanguageToggle } from '@/components/ui/language-toggle';
 import { CommandSearchDialog } from './CommandSearchDialog';
@@ -163,37 +162,10 @@ export const Header = React.memo(function Header() {
         </button>
       </div>
 
-      {/* Right side: Language, Theme, User badge */}
+      {/* Right side: Language & Theme Controls */}
       <div className="flex items-center gap-2 sm:gap-3">
         <LanguageToggle />
         <ThemeToggle />
-
-        <div className="h-4 w-px bg-border hidden sm:block" />
-
-        <div
-          data-testid="user-profile-badge"
-          className="flex items-center gap-2 px-2.5 py-1 rounded-xl border border-border/80 text-xs text-muted-foreground bg-secondary/30"
-        >
-          <Avatar className="size-5 border border-primary/30 shrink-0">
-            <AvatarImage src={user?.avatarUrl || undefined} alt={user?.fullName || 'User'} />
-            <AvatarFallback className="bg-primary/20 text-primary text-[9px] font-bold">
-              {user?.fullName
-                ? user.fullName
-                    .split(' ')
-                    .map((n) => n[0])
-                    .join('')
-                    .slice(0, 2)
-                    .toUpperCase()
-                : 'US'}
-            </AvatarFallback>
-          </Avatar>
-          <span
-            data-testid="user-email"
-            className="font-medium text-foreground max-w-[160px] truncate"
-          >
-            {user?.email || 'user@smartfeed.studio'}
-          </span>
-        </div>
       </div>
 
       {/* Global Command Palette Dialog */}

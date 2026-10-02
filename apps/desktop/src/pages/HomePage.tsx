@@ -4,10 +4,10 @@ import {
   Building2,
   Package,
   Rss,
-  Plus,
   CheckCircle2,
   XCircle,
   TrendingUp,
+  Minus,
   Layers,
   Sparkles,
 } from 'lucide-react';
@@ -15,7 +15,6 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useQuotas } from '@/contexts/QuotasContext';
 import { useTranslation } from '@/i18n';
 import { useDataSync } from '@/lib/syncEvents';
-import { Button } from '@/components/ui/button';
 import {
   Card,
   CardHeader,
@@ -30,7 +29,7 @@ import { getSuppliers } from '@/lib/api';
 import { FeedSyncActivityChart } from '@/components/dashboard/FeedSyncActivityChart';
 
 export function HomePage() {
-  const { user, token } = useAuth();
+  const { token } = useAuth();
   const { quotas } = useQuotas();
   const { t, language } = useTranslation(['home', 'common']);
   const navigate = useNavigate();
@@ -67,31 +66,10 @@ export function HomePage() {
       data-testid="home-page"
       className="max-w-6xl mx-auto space-y-8 animate-in fade-in duration-300"
     >
-      {/* Welcome Banner */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-border/40">
-        <div className="space-y-1">
-          <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-            {t('dashboardTitle')}
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            {t('welcomeBack', { name: user?.fullName || user?.email || 'User' })}
-          </p>
-        </div>
-
-        <Button
-          onClick={() => navigate('/suppliers')}
-          data-testid="add-supplier-button"
-          className="gap-2 shadow-xs self-start sm:self-auto"
-        >
-          <Plus className="size-4" />
-          <span>{t('addSupplier')}</span>
-        </Button>
-      </div>
-
       {/* Stats Grid: dashboard-01 4-Column Metric Cards */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {/* 1. Total Products */}
-        <Card className="border-border/80 bg-gradient-to-t from-primary/5 to-card dark:bg-card shadow-xs hover:border-primary/40 transition-all">
+        <Card className="border-border/80 bg-card shadow-xs hover:border-border transition-all">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
               {t('totalProducts')}
@@ -99,10 +77,14 @@ export function HomePage() {
             <div className="flex items-center gap-1.5">
               <Badge
                 variant="outline"
-                className="text-[11px] font-medium px-1.5 py-0 rounded-md border-primary/30 text-primary bg-primary/5 flex items-center gap-1"
+                className="flex items-center gap-1 font-semibold text-xs py-0.5 px-2 bg-muted/50 border-border text-foreground"
               >
-                <TrendingUp className="size-3" />
-                <span>+100%</span>
+                {productsCount > 0 ? (
+                  <TrendingUp className="h-3.5 w-3.5 text-emerald-500" />
+                ) : (
+                  <Minus className="h-3.5 w-3.5 text-muted-foreground" />
+                )}
+                <span>{productsCount > 0 ? '+100%' : '0%'}</span>
               </Badge>
               <div className="p-1.5 rounded-lg bg-primary/10 text-primary">
                 <Package className="size-4" />
@@ -120,7 +102,7 @@ export function HomePage() {
         </Card>
 
         {/* 2. Total Suppliers */}
-        <Card className="border-border/80 bg-gradient-to-t from-primary/5 to-card dark:bg-card shadow-xs hover:border-primary/40 transition-all">
+        <Card className="border-border/80 bg-card shadow-xs hover:border-border transition-all">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
               {t('totalSuppliers')}
@@ -140,7 +122,7 @@ export function HomePage() {
         </Card>
 
         {/* 3. Export Feeds */}
-        <Card className="border-border/80 bg-gradient-to-t from-primary/5 to-card dark:bg-card shadow-xs hover:border-primary/40 transition-all">
+        <Card className="border-border/80 bg-card shadow-xs hover:border-border transition-all">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
               {t('totalFeeds')}
@@ -160,7 +142,7 @@ export function HomePage() {
         </Card>
 
         {/* 4. SKU Quota Usage */}
-        <Card className="border-border/80 bg-gradient-to-t from-primary/5 to-card dark:bg-card shadow-xs hover:border-primary/40 transition-all">
+        <Card className="border-border/80 bg-card shadow-xs hover:border-border transition-all">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
               {t('skuUtilization')}
@@ -168,9 +150,13 @@ export function HomePage() {
             <div className="flex items-center gap-1.5">
               <Badge
                 variant="outline"
-                className="text-[11px] font-medium px-1.5 py-0 rounded-md border-primary/30 text-primary bg-primary/5 flex items-center gap-1"
+                className="flex items-center gap-1 font-semibold text-xs py-0.5 px-2 bg-muted/50 border-border text-foreground"
               >
-                <Sparkles className="size-3" />
+                {skuPercent > 0 ? (
+                  <Sparkles className="h-3.5 w-3.5 text-emerald-500" />
+                ) : (
+                  <Minus className="h-3.5 w-3.5 text-muted-foreground" />
+                )}
                 <span>{skuPercent}%</span>
               </Badge>
               <div className="p-1.5 rounded-lg bg-primary/10 text-primary">

@@ -109,13 +109,13 @@ export const UpgradeTeamSeatsDialog: React.FC<UpgradeTeamSeatsDialogProps> = ({
           <div className="flex flex-col justify-between rounded-xl border border-primary/30 bg-primary/[0.03] p-4">
             <div>
               <div className="flex items-center justify-between gap-2 mb-2">
-                <span className="text-xs font-bold text-primary flex items-center gap-1.5">
-                  <Crown className="h-4 w-4 text-amber-500" />
+                <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                  <Crown className="h-4 w-4 text-foreground" />
                   <span>ENTERPRISE</span>
                 </span>
                 <Badge
                   variant="default"
-                  className="text-[9px] uppercase tracking-wider bg-amber-500 hover:bg-amber-600"
+                  className="text-[9px] uppercase tracking-wider bg-foreground text-background hover:bg-foreground/90"
                 >
                   ∞ місць
                 </Badge>

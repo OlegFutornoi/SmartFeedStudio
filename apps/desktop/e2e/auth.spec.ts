@@ -103,13 +103,11 @@ test.describe('Desktop App — Авторизація, Реєстрація, М�
     // Verify successful redirect to home page
     await expect(page.getByTestId('home-page')).toBeVisible();
 
-    // Verify add supplier button is present
-    await expect(page.getByTestId('add-supplier-button')).toBeVisible();
-
     // Verify latest suppliers section is rendered
     await expect(page.getByTestId('latest-suppliers-section')).toBeVisible();
 
-    // Verify logout functionality
+    // Verify logout functionality via user dropdown
+    await page.getByTestId('sidebar-user-trigger').click();
     await page.getByTestId('logout-button').click();
     await expect(page.getByTestId('login-page')).toBeVisible();
   });

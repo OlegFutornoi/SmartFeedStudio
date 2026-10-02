@@ -61,36 +61,51 @@ import {
   restoreMockDbFromStorage,
   attachStorageHooks,
   MUTATING_METHODS,
-  STORAGE_KEY,
+  getStorageKey,
+  clearLegacyMockDbStorage,
 } from './mock';
 
 export class MockDatabaseDriver {
   private state: MockDbState = createInitialState();
+  private currentUserId: string | null = null;
 
   constructor() {
     this.checkAndSeedIfEnabled();
   }
 
   public saveToStorage(): void {
-    saveMockDbToStorage(this.state);
+    saveMockDbToStorage(this.state, this.currentUserId);
   }
 
-  public checkAndSeedIfEnabled(): void {
+  public checkAndSeedIfEnabled(userId?: string | null): void {
     if (typeof window !== 'undefined') {
-      const saved = window.localStorage?.getItem(STORAGE_KEY);
+      clearLegacyMockDbStorage();
+      if (userId !== undefined) {
+        this.currentUserId = userId;
+      }
+      const storageKey = getStorageKey(this.currentUserId);
+      const saved = window.localStorage?.getItem(storageKey);
       if (saved) {
         restoreMockDbFromStorage(this.state, saved);
         return;
       }
+      this.state = createInitialState();
       if (window.localStorage?.getItem('smartfeed_e2e_seed') === 'true') {
         this.seedDefaultData();
       }
     }
   }
 
+  public switchUser(userId: string | null): void {
+    this.currentUserId = userId;
+    this.state = createInitialState();
+    this.checkAndSeedIfEnabled(userId);
+    this.saveToStorage();
+  }
+
   public reset(): void {
     this.state = createInitialState();
-    this.checkAndSeedIfEnabled();
+    this.saveToStorage();
   }
 
   public seedDefaultData(): void {

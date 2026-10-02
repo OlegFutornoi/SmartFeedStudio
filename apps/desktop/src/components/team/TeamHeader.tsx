@@ -30,11 +30,11 @@ export const TeamHeader: React.FC<TeamHeaderProps> = ({
   const getPlanBadgeColor = (plan: string) => {
     switch (plan.toUpperCase()) {
       case 'ENTERPRISE':
-        return 'bg-amber-500 hover:bg-amber-600 text-white border-amber-600';
+        return 'bg-foreground text-background hover:bg-foreground/90 border-foreground';
       case 'PRO':
         return 'bg-primary hover:bg-primary/90 text-primary-foreground border-primary';
       case 'GROWTH':
-        return 'bg-blue-600 hover:bg-blue-700 text-white border-blue-700';
+        return 'bg-secondary text-secondary-foreground border-border hover:bg-secondary/80';
       default:
         return 'bg-secondary text-secondary-foreground border-border';
     }
@@ -74,7 +74,9 @@ export const TeamHeader: React.FC<TeamHeaderProps> = ({
               data-testid="team-plan-badge"
               className={`text-[10px] font-bold tracking-wide uppercase px-2 py-0.5 shadow-sm ${getPlanBadgeColor(planType)}`}
             >
-              {planType === 'ENTERPRISE' && <Crown className="h-3 w-3 mr-1 inline-block" />}
+              {planType === 'ENTERPRISE' && (
+                <Crown className="h-3 w-3 mr-1 inline-block text-background" />
+              )}
               <span>{planType}</span>
             </Badge>
 

@@ -185,31 +185,26 @@ export function Sidebar() {
       >
         <div className="flex flex-col flex-1 min-h-0">
           {/* Top Brand Header */}
-          <div className="p-4 flex items-center">
-            <div className="flex items-center">
+          <div className="px-3.5 py-3 flex items-center border-b border-border/40">
+            <div className="flex items-center w-full">
               <button
                 type="button"
                 data-testid="sidebar-brand-button"
                 onClick={() => navigate('/')}
-                className="flex items-center space-x-3 w-full overflow-hidden text-left group cursor-pointer"
+                className="flex items-center gap-2.5 w-full overflow-hidden text-left group cursor-pointer"
               >
-                <div className="h-9 w-9 rounded-xl bg-primary/20 border border-primary/40 flex items-center justify-center text-primary group-hover:scale-105 transition-transform shrink-0 shadow-xs">
-                  <Layers className="h-5 w-5" />
-                </div>
+                <Layers className="h-5 w-5 text-foreground shrink-0 transition-colors group-hover:text-primary" />
                 {!isCollapsed && (
-                  <div className="min-w-0 flex-1">
-                    <div className="font-bold text-sm text-foreground flex items-center gap-1.5 whitespace-nowrap">
-                      <span>SmartFeed</span>
-                      <Badge
-                        variant="secondary"
-                        className="text-[10px] px-1 py-0 h-4 uppercase font-semibold text-primary bg-primary/10 border-primary/20"
-                      >
-                        Studio
-                      </Badge>
-                    </div>
-                    <div className="text-[11px] text-muted-foreground truncate font-normal">
-                      Catalog Manager
-                    </div>
+                  <div className="min-w-0 flex-1 flex items-center justify-between">
+                    <span className="font-semibold text-sm text-foreground tracking-tight">
+                      SmartFeed
+                    </span>
+                    <Badge
+                      variant="outline"
+                      className="text-[10px] px-1.5 py-0 h-4 uppercase font-medium text-muted-foreground border-border/60"
+                    >
+                      Studio
+                    </Badge>
                   </div>
                 )}
               </button>
@@ -218,7 +213,7 @@ export function Sidebar() {
 
           {/* Navigation Links */}
           <nav
-            className="space-y-1.5 flex-1 overflow-y-auto overflow-x-hidden py-2"
+            className="space-y-0.5 flex-1 overflow-y-auto overflow-x-hidden px-2 py-2"
             data-testid="desktop-sidebar-nav"
           >
             {primaryNavItems.map((item) => (

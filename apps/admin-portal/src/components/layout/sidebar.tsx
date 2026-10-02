@@ -129,26 +129,21 @@ export function Sidebar() {
         )}
       >
         {/* Top brand header */}
-        <div className="p-4 flex items-center">
-          <div className="flex items-center">
-            <Link href="/" className="flex items-center space-x-3 w-full overflow-hidden group">
-              <div className="h-9 w-9 rounded-xl bg-primary/20 border border-primary/40 flex items-center justify-center text-primary group-hover:scale-105 transition-transform shrink-0 shadow-sm shadow-primary/20">
-                <ShieldCheck className="h-5 w-5" />
-              </div>
+        <div className="px-3.5 py-3 flex items-center border-b border-border/40">
+          <div className="flex items-center w-full">
+            <Link href="/" className="flex items-center gap-2.5 w-full overflow-hidden group">
+              <ShieldCheck className="h-5 w-5 text-foreground shrink-0 transition-colors group-hover:text-primary" />
               {!isCollapsed && (
-                <div className="min-w-0 flex-1">
-                  <div className="font-bold text-sm text-foreground flex items-center gap-1.5 whitespace-nowrap">
-                    <span>SmartFeed</span>
-                    <Badge
-                      variant="outline"
-                      className="text-[10px] px-1 py-0 h-4 uppercase font-semibold text-primary border-primary/40"
-                    >
-                      Admin
-                    </Badge>
-                  </div>
-                  <div className="text-[11px] text-muted-foreground truncate font-normal">
-                    Management Console
-                  </div>
+                <div className="min-w-0 flex-1 flex items-center justify-between">
+                  <span className="font-semibold text-sm text-foreground tracking-tight">
+                    SmartFeed
+                  </span>
+                  <Badge
+                    variant="outline"
+                    className="text-[10px] px-1.5 py-0 h-4 uppercase font-medium text-muted-foreground border-border/60"
+                  >
+                    Admin
+                  </Badge>
                 </div>
               )}
             </Link>
@@ -156,9 +151,9 @@ export function Sidebar() {
         </div>
 
         {/* Scrollable Navigation Area */}
-        <div className="flex-1 px-3 py-2 overflow-y-auto overflow-x-hidden flex flex-col justify-between">
+        <div className="flex-1 px-2 py-2 overflow-y-auto overflow-x-hidden flex flex-col justify-between">
           {/* Main Top Navigation */}
-          <nav className="space-y-1 py-1">
+          <nav className="space-y-0.5 py-1">
             {mainNavigation.map((item) => {
               const isActive =
                 item.href === '/' ? pathname === '/' : pathname.startsWith(item.href);
@@ -178,7 +173,7 @@ export function Sidebar() {
           </nav>
 
           {/* Bottom Settings Navigation */}
-          <div className="mt-auto pt-2 space-y-1">
+          <div className="mt-auto pt-2 space-y-0.5">
             <SidebarNavItem
               name={isUk ? 'Налаштування' : 'Settings'}
               href="/settings"

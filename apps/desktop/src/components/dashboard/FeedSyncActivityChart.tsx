@@ -18,11 +18,11 @@ interface FeedSyncActivityChartProps {
 const chartConfig = {
   products: {
     label: 'Товари',
-    color: 'hsl(var(--primary))',
+    color: 'hsl(var(--foreground))',
   },
   syncs: {
     label: 'Синхронізації',
-    color: 'hsl(var(--primary) / 0.4)',
+    color: 'hsl(var(--muted-foreground))',
   },
 } satisfies ChartConfig;
 
@@ -34,13 +34,11 @@ export const FeedSyncActivityChart = React.memo(function FeedSyncActivityChart({
   const isUk = language === 'uk';
   const [timeRange, setTimeRange] = useState<'30d' | '7d'>('30d');
 
+  // Strictly real database data: Zero fake sine wave or invented numbers
   const chartData = useMemo(() => {
     const days = timeRange === '30d' ? 30 : 7;
     const data = [];
     const now = new Date();
-
-    const baseProducts = Math.max(10, Math.round(productsCount * 0.8));
-    const baseSyncs = Math.max(2, Math.round(feedsCount * 1.5));
 
     for (let i = days - 1; i >= 0; i--) {
       const d = new Date(now);
@@ -50,34 +48,44 @@ export const FeedSyncActivityChart = React.memo(function FeedSyncActivityChart({
         day: 'numeric',
       });
 
-      const progress = (days - i) / days;
-      const productVal = Math.round(baseProducts + (productsCount - baseProducts) * progress);
-      const syncVal = Math.round(baseSyncs + Math.sin(i) * 2 + feedsCount * 2 * progress);
-
+      // Real database numbers: 0 when empty
       data.push({
         date: dateStr,
-        products: Math.max(0, productVal),
-        syncs: Math.max(1, syncVal),
+        products: productsCount,
+        syncs: feedsCount,
       });
     }
 
     return data;
   }, [timeRange, productsCount, feedsCount, isUk]);
 
+  const rangeSubtitle = useMemo(() => {
+    if (productsCount === 0 && feedsCount === 0) {
+      return isUk
+        ? 'У базі даних наразі немає товарів та синхронізацій (0 SKU)'
+        : 'No products or feed syncs in the database yet (0 SKUs)';
+    }
+    if (timeRange === '30d') {
+      return isUk ? 'Дані за останні 30 днів' : 'Total for the last 30 days';
+    }
+    return isUk ? 'Дані за останні 7 днів' : 'Total for the last 7 days';
+  }, [timeRange, productsCount, feedsCount, isUk]);
+
+  const maxVal = Math.max(productsCount, feedsCount);
+  const yDomain: [number, number | string] = maxVal === 0 ? [0, 5] : [0, 'auto'];
+
   return (
     <Card
       data-testid="feed-sync-activity-chart-card"
-      className="border-border/80 bg-gradient-to-t from-primary/5 to-card dark:bg-card shadow-xs"
+      className="border-border/80 bg-card shadow-xs"
     >
-      <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 gap-4">
+      <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 px-6 pt-5 gap-4">
         <div>
           <CardTitle className="text-base font-semibold text-foreground">
             {isUk ? 'Активність каталогів та синхронізацій' : 'Catalog & Feed Sync Activity'}
           </CardTitle>
           <CardDescription className="text-xs text-muted-foreground mt-0.5">
-            {isUk
-              ? 'Динаміка оброблених SKU та щоденних оновлень фідів'
-              : 'Daily processed SKUs and automated feed update volumes'}
+            {rangeSubtitle}
           </CardDescription>
         </div>
 
@@ -102,17 +110,17 @@ export const FeedSyncActivityChart = React.memo(function FeedSyncActivityChart({
         </div>
       </CardHeader>
 
-      <CardContent className="px-2 sm:px-6 pb-4">
-        <ChartContainer config={chartConfig} className="aspect-auto h-[240px] w-full">
-          <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+      <CardContent className="px-2 sm:px-6 pb-4 pt-0">
+        <ChartContainer config={chartConfig} className="aspect-auto h-[170px] w-full">
+          <AreaChart data={chartData} margin={{ top: 8, right: 10, left: -20, bottom: 0 }}>
             <defs>
               <linearGradient id="fillDesktopProducts" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="var(--color-products)" stopOpacity={0.8} />
-                <stop offset="95%" stopColor="var(--color-products)" stopOpacity={0.05} />
+                <stop offset="5%" stopColor="var(--color-products)" stopOpacity={0.4} />
+                <stop offset="95%" stopColor="var(--color-products)" stopOpacity={0.02} />
               </linearGradient>
               <linearGradient id="fillDesktopSyncs" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="var(--color-syncs)" stopOpacity={0.5} />
-                <stop offset="95%" stopColor="var(--color-syncs)" stopOpacity={0.02} />
+                <stop offset="5%" stopColor="var(--color-syncs)" stopOpacity={0.3} />
+                <stop offset="95%" stopColor="var(--color-syncs)" stopOpacity={0.01} />
               </linearGradient>
             </defs>
             <CartesianGrid vertical={false} strokeDasharray="3 3" className="stroke-border/40" />
@@ -125,6 +133,8 @@ export const FeedSyncActivityChart = React.memo(function FeedSyncActivityChart({
               className="text-[11px] fill-muted-foreground"
             />
             <YAxis
+              domain={yDomain}
+              allowDecimals={false}
               tickLine={false}
               axisLine={false}
               tickMargin={8}

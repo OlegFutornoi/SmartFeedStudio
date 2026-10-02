@@ -32,6 +32,10 @@ export class DesktopNavigationPage {
   }
 
   async logout(): Promise<void> {
+    const trigger = this.page.getByTestId('sidebar-user-trigger');
+    if (await trigger.isVisible()) {
+      await trigger.click();
+    }
     await this.logoutButton.click();
   }
 }

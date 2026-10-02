@@ -1,9 +1,37 @@
 import type { MockDbState } from './mock-state';
 import { syncCounters } from './mock-state';
 
-export const STORAGE_KEY = 'smartfeed_mock_db';
+export const LEGACY_STORAGE_KEY = 'smartfeed_mock_db';
+export const STORAGE_PREFIX = 'smartfeed_mock_db_';
+export const STORAGE_KEY = LEGACY_STORAGE_KEY;
 
-export function saveMockDbToStorage(state: MockDbState): void {
+export function getCurrentStorageUserId(): string | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const raw = window.localStorage?.getItem('smartfeed_user_profile');
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    return parsed?.id || null;
+  } catch {
+    return null;
+  }
+}
+
+export function getStorageKey(userId?: string | null): string {
+  const resolvedId = userId !== undefined ? userId : getCurrentStorageUserId();
+  return resolvedId ? `${STORAGE_PREFIX}${resolvedId}` : `${STORAGE_PREFIX}guest`;
+}
+
+export function clearLegacyMockDbStorage(): void {
+  if (typeof window === 'undefined') return;
+  try {
+    window.localStorage?.removeItem(LEGACY_STORAGE_KEY);
+  } catch {
+    // ignore
+  }
+}
+
+export function saveMockDbToStorage(state: MockDbState, userId?: string | null): void {
   if (typeof window === 'undefined') return;
   syncCounters(state);
   try {
@@ -16,7 +44,9 @@ export function saveMockDbToStorage(state: MockDbState): void {
       feedSources: Array.from(state.feedSources.entries()),
       counters: state.counters,
     };
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    const key = getStorageKey(userId);
+    window.localStorage.setItem(key, JSON.stringify(data));
+    clearLegacyMockDbStorage();
   } catch (err) {
     console.warn('Failed to save mock db to localStorage', err);
   }

@@ -103,7 +103,7 @@ export const AdminActivityChart = React.memo(function AdminActivityChart({
       data-testid="admin-activity-chart-card"
       className="border border-border/60 bg-card rounded-2xl shadow-xs transition-all"
     >
-      <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 gap-4 px-6 pt-6">
+      <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 gap-4 px-6 pt-5">
         <div className="space-y-1">
           <CardTitle className="text-base font-semibold text-foreground">
             {isUk ? 'Динаміка активності та ліцензій' : 'Total Visitors & Licenses'}
@@ -142,9 +142,9 @@ export const AdminActivityChart = React.memo(function AdminActivityChart({
         </div>
       </CardHeader>
 
-      <CardContent className="px-2 sm:px-6 pb-6 pt-0">
-        <ChartContainer config={chartConfig} className="aspect-auto h-[260px] w-full">
-          <AreaChart data={chartData} margin={{ top: 12, right: 0, left: 0, bottom: 0 }}>
+      <CardContent className="px-2 sm:px-6 pb-4 pt-0">
+        <ChartContainer config={chartConfig} className="aspect-auto h-[170px] w-full">
+          <AreaChart data={chartData} margin={{ top: 8, right: 0, left: 0, bottom: 0 }}>
             <defs>
               {/* Layer 1: Darker smooth topographical gradient */}
               <linearGradient id="fillUsers" x1="0" y1="0" x2="0" y2="1">

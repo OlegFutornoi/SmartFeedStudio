@@ -51,10 +51,10 @@ export const PendingInvitationsList: React.FC<PendingInvitationsListProps> = ({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <CardTitle className="text-sm font-bold flex items-center gap-2">
-              <Clock className="h-4 w-4 text-amber-500" />
+              <Clock className="h-4 w-4 text-muted-foreground" />
               <span>{t('team.pendingInvitationsTitle')}</span>
             </CardTitle>
-            <Badge variant="outline" className="text-[10px] text-amber-500 border-amber-500/30">
+            <Badge variant="outline" className="text-[10px] text-muted-foreground border-border">
               {invitations.length}
             </Badge>
           </div>
@@ -79,7 +79,7 @@ export const PendingInvitationsList: React.FC<PendingInvitationsListProps> = ({
                 className="flex flex-col sm:flex-row sm:items-center justify-between p-3 gap-3 bg-muted/10 hover:bg-muted/30 transition-colors"
               >
                 <div className="flex items-center gap-3">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-amber-500/10 text-amber-500 border border-amber-500/20 shrink-0">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-muted text-muted-foreground border border-border shrink-0">
                     <Mail className="h-4 w-4" />
                   </div>
                   <div>

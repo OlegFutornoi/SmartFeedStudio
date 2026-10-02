@@ -38,8 +38,11 @@ export const TeamMemberRow: React.FC<TeamMemberRowProps> = ({
     switch (role) {
       case 'OWNER':
         return (
-          <Badge className="bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20 text-[10px] gap-1 font-semibold">
-            <Crown className="h-3 w-3" />
+          <Badge
+            variant="outline"
+            className="bg-muted text-foreground border-border text-[10px] gap-1 font-semibold"
+          >
+            <Crown className="h-3 w-3 text-foreground" />
             <span>{t('team.ownerRole')}</span>
           </Badge>
         );

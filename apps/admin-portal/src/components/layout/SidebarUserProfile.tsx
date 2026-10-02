@@ -54,14 +54,14 @@ export const SidebarUserProfile = React.memo(function SidebarUserProfile({
           <button
             type="button"
             data-testid="sidebar-user-trigger"
-            className={`w-full flex items-center gap-2.5 p-2 rounded-lg transition-colors text-left outline-none focus-visible:ring-1 focus-visible:ring-ring hover:bg-muted/70 data-[state=open]:bg-muted/80 ${
+            className={`w-full flex items-center gap-2 p-1.5 rounded-md transition-colors text-left outline-none focus-visible:ring-1 focus-visible:ring-ring hover:bg-muted/70 data-[state=open]:bg-muted/80 ${
               isCollapsed ? 'justify-center p-1.5' : ''
             }`}
             title={isCollapsed ? displayName : undefined}
           >
-            <Avatar className="h-8 w-8 rounded-lg border border-border shrink-0">
+            <Avatar className="h-7 w-7 rounded-md border border-border shrink-0">
               <AvatarImage src={user?.avatarUrl || undefined} alt={displayName} />
-              <AvatarFallback className="bg-primary/20 text-primary font-bold text-xs rounded-lg">
+              <AvatarFallback className="bg-primary/20 text-primary font-bold text-xs rounded-md">
                 {getInitials(user?.fullName, user?.email)}
               </AvatarFallback>
             </Avatar>
@@ -69,10 +69,10 @@ export const SidebarUserProfile = React.memo(function SidebarUserProfile({
             {!isCollapsed && (
               <>
                 <div className="flex-1 min-w-0">
-                  <p className="text-xs font-semibold text-foreground truncate leading-tight">
+                  <p className="text-xs font-medium text-foreground truncate leading-tight">
                     {displayName}
                   </p>
-                  <p className="text-[10px] text-muted-foreground truncate font-mono leading-tight">
+                  <p className="text-[11px] text-muted-foreground truncate leading-tight">
                     {displayEmail}
                   </p>
                 </div>

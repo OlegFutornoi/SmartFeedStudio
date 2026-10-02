@@ -14,6 +14,8 @@ import {
 } from '@/lib/api';
 import { setSentryUser } from '@/lib/sentry';
 import { getLocalAvatar, saveLocalAvatar } from '@/services/localUserProfile';
+import { mockDatabaseDriver } from '@/services/local-db/mock-driver';
+import { emitDataSync } from '@/lib/syncEvents';
 
 interface AuthContextType {
   user: UserProfile | null;
@@ -42,7 +44,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const saved = localStorage.getItem(USER_KEY);
     if (saved) {
       try {
-        return JSON.parse(saved) as UserProfile;
+        const parsed = JSON.parse(saved) as UserProfile;
+        if (parsed?.id) {
+          mockDatabaseDriver.switchUser(parsed.id);
+        }
+        return parsed;
       } catch (e) {
         console.warn('[AuthContext] Failed to parse saved user profile:', e);
         return null;
@@ -59,6 +65,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(REFRESH_TOKEN_KEY);
     localStorage.removeItem(USER_KEY);
+    mockDatabaseDriver.switchUser(null);
+    emitDataSync(['suppliers', 'feeds', 'products', 'quotas', 'all']);
     setToken(null);
     setUser(null);
   }, []);
@@ -78,6 +86,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       } else if (localAvatar) {
         profile.avatarUrl = localAvatar;
       }
+      mockDatabaseDriver.switchUser(profile.id);
       setUser(profile);
       localStorage.setItem(USER_KEY, JSON.stringify(profile));
       // In case token was silently refreshed during getCurrentUser
@@ -146,6 +155,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
       localStorage.setItem(USER_KEY, JSON.stringify(userProfile));
 
+      mockDatabaseDriver.switchUser(userProfile.id);
+      emitDataSync(['suppliers', 'feeds', 'products', 'quotas', 'all']);
+
       setToken(accessToken);
       setUser(userProfile);
     },
@@ -164,6 +176,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         localStorage.setItem(REFRESH_TOKEN_KEY, authResponse.tokens.refreshToken);
       }
       localStorage.setItem(USER_KEY, JSON.stringify(userProfile));
+
+      mockDatabaseDriver.switchUser(userProfile.id);
+      emitDataSync(['suppliers', 'feeds', 'products', 'quotas', 'all']);
 
       setToken(accessToken);
       setUser(userProfile);
@@ -184,6 +199,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         localStorage.setItem(REFRESH_TOKEN_KEY, authResponse.tokens.refreshToken);
       }
       localStorage.setItem(USER_KEY, JSON.stringify(userProfile));
+
+      mockDatabaseDriver.switchUser(userProfile.id);
+      emitDataSync(['suppliers', 'feeds', 'products', 'quotas', 'all']);
 
       setToken(accessToken);
       setUser(userProfile);
