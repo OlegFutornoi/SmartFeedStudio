@@ -51,7 +51,7 @@ export const WizardDialogHeader: React.FC<WizardDialogHeaderProps> = ({ step, on
                 step === s
                   ? 'bg-primary text-primary-foreground shadow-sm'
                   : i < STEPS.indexOf(step)
-                    ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                    ? 'bg-foreground/15 text-foreground border border-border'
                     : 'bg-secondary text-muted-foreground'
               }`}
             >

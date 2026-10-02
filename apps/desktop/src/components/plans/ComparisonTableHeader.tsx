@@ -58,7 +58,7 @@ export function ComparisonTableHeader({
             className={cn(
               'p-4 min-w-[170px] text-center align-top transition-colors',
               isPro && 'bg-primary/[0.04] relative',
-              isCurrent && !isExpired && 'bg-emerald-500/[0.02]',
+              isCurrent && !isExpired && 'bg-muted/30',
             )}
           >
             {isPro && (

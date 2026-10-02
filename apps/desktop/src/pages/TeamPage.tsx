@@ -155,7 +155,7 @@ export const TeamPage: React.FC = () => {
       {successMessage && (
         <div
           data-testid="team-success-alert"
-          className="flex items-center justify-between gap-3 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3.5 text-emerald-600 dark:text-emerald-400 text-xs font-medium"
+          className="flex items-center justify-between gap-3 rounded-xl border border-border bg-muted/60 p-3.5 text-foreground text-xs font-medium"
         >
           <div className="flex items-center gap-2">
             <CheckCircle2 className="h-4 w-4 shrink-0" />

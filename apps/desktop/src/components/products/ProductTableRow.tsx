@@ -85,7 +85,7 @@ export const ProductTableRow: React.FC<ProductTableRowProps> = ({
             title={t('catalogs:copySkuSuccess')}
             className="p-1 rounded text-muted-foreground hover:text-foreground hover:bg-muted transition-colors opacity-0 group-hover:opacity-100"
           >
-            {copied ? <Check className="h-3 w-3 text-emerald-500" /> : <Copy className="h-3 w-3" />}
+            {copied ? <Check className="h-3 w-3 text-primary" /> : <Copy className="h-3 w-3" />}
           </button>
         </div>
         {product.barcode && (
@@ -145,8 +145,8 @@ export const ProductTableRow: React.FC<ProductTableRowProps> = ({
       <td className="py-3 px-3">
         {marginDiff > 0 ? (
           <Badge
-            variant="outline"
-            className="text-[11px] font-medium tabular-nums bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30"
+            variant="secondary"
+            className="text-[11px] font-medium tabular-nums bg-muted text-foreground border-border"
           >
             +{marginPercent}% (+{Math.round(marginDiff)} ₴)
           </Badge>
@@ -159,8 +159,8 @@ export const ProductTableRow: React.FC<ProductTableRowProps> = ({
       <td className="py-3 px-3">
         {product.inStock ? (
           <div className="flex items-center gap-1.5">
-            <span className="h-2 w-2 rounded-full bg-emerald-500 shrink-0" />
-            <span className="text-xs font-medium tabular-nums text-emerald-600 dark:text-emerald-400">
+            <span className="h-2 w-2 rounded-full bg-foreground shrink-0" />
+            <span className="text-xs font-medium tabular-nums text-foreground">
               {product.stockQuantity !== undefined
                 ? `${product.stockQuantity} шт`
                 : t('catalogs:statusInStock')}
@@ -168,8 +168,8 @@ export const ProductTableRow: React.FC<ProductTableRowProps> = ({
           </div>
         ) : (
           <div className="flex items-center gap-1.5">
-            <span className="h-2 w-2 rounded-full bg-red-500 shrink-0" />
-            <span className="text-xs font-medium text-red-500">
+            <span className="h-2 w-2 rounded-full bg-destructive shrink-0" />
+            <span className="text-xs font-medium text-destructive">
               {t('catalogs:statusOutOfStock')}
             </span>
           </div>

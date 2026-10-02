@@ -85,7 +85,7 @@ export const ConnectedFeedsList: React.FC<ConnectedFeedsListProps> = ({
         <Card className="border-border/80 bg-card/60 backdrop-blur-md">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">{t('catalogs:totalSkus')}</CardTitle>
-            <FileText className="size-4 text-emerald-400" />
+            <FileText className="size-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-foreground">
@@ -99,7 +99,7 @@ export const ConnectedFeedsList: React.FC<ConnectedFeedsListProps> = ({
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">{t('catalogs:lastSynced')}</CardTitle>
             <CheckCircle2
-              className={`size-4 ${feeds.length > 0 ? 'text-emerald-400' : 'text-muted-foreground'}`}
+              className={`size-4 ${feeds.length > 0 ? 'text-foreground' : 'text-muted-foreground'}`}
             />
           </CardHeader>
           <CardContent>
@@ -108,7 +108,7 @@ export const ConnectedFeedsList: React.FC<ConnectedFeedsListProps> = ({
                 {feeds.length > 0 ? t('catalogs:statusSynced') : t('catalogs:statusIdle')}
               </span>
               {feeds.length > 0 && (
-                <span className="size-2 rounded-full bg-emerald-400 animate-pulse" />
+                <span className="size-2 rounded-full bg-foreground animate-pulse" />
               )}
             </div>
             <p className="text-xs text-muted-foreground mt-1">
@@ -225,7 +225,7 @@ export const ConnectedFeedsList: React.FC<ConnectedFeedsListProps> = ({
                       className="text-xs flex items-center gap-1"
                     >
                       {catalog.lastSyncStatus === 'SUCCESS' && (
-                        <CheckCircle2 className="h-3 w-3 text-emerald-400" />
+                        <CheckCircle2 className="h-3 w-3 text-foreground" />
                       )}
                       {syncingId === catalog.id && (
                         <RefreshCw className="h-3 w-3 animate-spin text-primary" />

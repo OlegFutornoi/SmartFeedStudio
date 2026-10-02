@@ -161,7 +161,7 @@ export function WizardStepSupplier({
             <Badge
               variant="outline"
               data-testid="wizard-selected-supplier-markup"
-              className="text-[11px] text-emerald-400 bg-emerald-500/10 border-emerald-500/20"
+              className="text-[11px] text-foreground bg-secondary border-border"
             >
               <Percent className="size-3 mr-1 text-primary" />
               {hasMarkup ? (

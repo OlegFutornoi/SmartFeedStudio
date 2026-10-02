@@ -45,7 +45,7 @@ export function PlanActionButton({
           variant="outline"
           disabled
           data-testid={`comparison-select-btn-${plan.code.toLowerCase()}`}
-          className="h-7 px-2 text-[11px] w-full border-emerald-500/50 text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 font-semibold cursor-default"
+          className="h-7 px-2 text-[11px] w-full border-border text-foreground bg-muted font-semibold cursor-default"
         >
           <Check className="size-3 mr-1" />
           <span>{t('plans.currentPlan')}</span>
@@ -56,7 +56,7 @@ export function PlanActionButton({
           data-testid={`comparison-select-btn-${plan.code.toLowerCase()}`}
           onClick={() => onSelect(plan.code, billingInterval)}
           disabled={isLoading}
-          className="h-7 px-2 text-[11px] w-full bg-amber-600 hover:bg-amber-700 text-white font-semibold gap-1"
+          className="h-7 px-2 text-[11px] w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold gap-1"
         >
           {isLoading ? (
             <Loader2 className="size-3 animate-spin" />

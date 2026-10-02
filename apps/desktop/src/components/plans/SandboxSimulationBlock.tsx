@@ -24,12 +24,12 @@ export function SandboxSimulationBlock({
       className={
         compact
           ? 'flex flex-col sm:flex-row gap-2 pt-1'
-          : 'rounded-xl border border-amber-500/30 bg-amber-500/5 p-3.5 space-y-2.5'
+          : 'rounded-xl border border-border bg-muted/40 p-3.5 space-y-2.5'
       }
     >
       {!compact && (
         <>
-          <div className="flex items-center gap-1.5 text-xs font-semibold text-amber-600 dark:text-amber-400">
+          <div className="flex items-center gap-1.5 text-xs font-semibold text-foreground">
             <Sparkles className="size-3.5 shrink-0" />
             <span>{t('plans.sandboxTestingTitle')}</span>
           </div>
@@ -47,7 +47,7 @@ export function SandboxSimulationBlock({
           data-testid={successTestId}
           onClick={() => onSimulate('Approved')}
           disabled={isDisabled}
-          className="flex-1 h-auto min-h-[38px] py-1.5 px-2.5 text-xs leading-snug text-center whitespace-normal break-words border-emerald-500/40 bg-emerald-500/10 text-emerald-400 dark:text-emerald-400 hover:bg-emerald-500/20 hover:text-emerald-300 font-medium transition-colors cursor-pointer flex items-center justify-center gap-1.5"
+          className="flex-1 h-auto min-h-[38px] py-1.5 px-2.5 text-xs leading-snug text-center whitespace-normal break-words border-border bg-secondary hover:bg-secondary/80 text-foreground font-medium transition-colors cursor-pointer flex items-center justify-center gap-1.5"
         >
           <CheckCircle2 className="size-3.5 shrink-0" />
           <span>{t('plans.simulateSuccessBtn')}</span>

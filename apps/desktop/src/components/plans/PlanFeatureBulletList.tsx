@@ -96,7 +96,7 @@ export const PlanFeatureBulletList: React.FC<PlanFeatureBulletListProps> = ({ pl
         >
           {features.map((feat, idx) => (
             <li key={idx} className="flex items-start gap-2">
-              <Check className="size-3.5 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
+              <Check className="size-3.5 text-foreground shrink-0 mt-0.5" />
               <span className="leading-tight">{feat}</span>
             </li>
           ))}

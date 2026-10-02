@@ -63,7 +63,7 @@ export const FeatureRoiWidget: React.FC<FeatureRoiWidgetProps> = ({ roiConfig, f
       className="space-y-4 rounded-xl border border-border/80 bg-card p-5 shadow-xs"
     >
       <div className="flex items-center gap-2">
-        <div className="h-8 w-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+        <div className="h-8 w-8 rounded-lg bg-muted border border-border text-foreground flex items-center justify-center">
           <Calculator className="h-4 w-4" />
         </div>
         <div>
@@ -122,15 +122,15 @@ export const FeatureRoiWidget: React.FC<FeatureRoiWidgetProps> = ({ roiConfig, f
           </div>
         </div>
 
-        <div className="p-3.5 rounded-lg border border-emerald-500/30 bg-emerald-500/5 flex items-center gap-3">
-          <div className="h-9 w-9 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+        <div className="p-3.5 rounded-lg border border-border bg-muted/40 flex items-center gap-3">
+          <div className="h-9 w-9 rounded-lg bg-muted border border-border text-foreground flex items-center justify-center shrink-0">
             <Coins className="h-5 w-5" />
           </div>
           <div>
             <div className="text-[11px] text-muted-foreground">{t(roiKeys.moneySavedLabel)}</div>
             <div
               data-testid="roi-money-saved-result"
-              className="text-lg font-bold text-emerald-600 dark:text-emerald-400"
+              className="text-lg font-bold text-foreground font-mono"
             >
               ~{monthlyMoneySaved.toLocaleString()} {t('featureTeaser.common.currencyPerMonth')}
             </div>

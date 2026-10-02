@@ -73,7 +73,11 @@ export async function optimizeAvatarImage(file: File): Promise<string> {
         try {
           const dataUrl = canvas.toDataURL('image/webp', 0.85);
           resolve(dataUrl);
-        } catch {
+        } catch (err) {
+          console.warn(
+            '[localUserProfile] WebP canvas export not supported, falling back to JPEG:',
+            err,
+          );
           resolve(canvas.toDataURL('image/jpeg', 0.85));
         }
       };

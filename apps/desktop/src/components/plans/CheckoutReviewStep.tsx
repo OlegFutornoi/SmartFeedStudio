@@ -111,15 +111,15 @@ export function CheckoutReviewStep({
             <span>{plan.maxXmlLimit.toLocaleString()} SKU</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <Zap className="size-3.5 text-amber-500" />
+            <Zap className="size-3.5 text-primary" />
             <span>{plan.aiCredits.toLocaleString()} AI credits</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <Clock className="size-3.5 text-blue-500" />
+            <Clock className="size-3.5 text-muted-foreground" />
             <span>{t('plans.durationFormat', { count: daysCount })}</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <ShieldCheck className="size-3.5 text-emerald-500" />
+            <ShieldCheck className="size-3.5 text-foreground" />
             <span>SSL & WayForPay</span>
           </div>
         </div>
@@ -135,7 +135,7 @@ export function CheckoutReviewStep({
               {price.toLocaleString()} грн
             </span>
             {isYearly && (
-              <div className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium">
+              <div className="text-[10px] text-foreground font-medium">
                 {t('plans.saveYearlyDiscount')}
               </div>
             )}
@@ -147,9 +147,7 @@ export function CheckoutReviewStep({
       {checkoutData && (
         <div className="flex items-center justify-between px-2 text-[11px] text-muted-foreground font-mono">
           <span>{checkoutData.orderReference}</span>
-          <span className="text-emerald-600 dark:text-emerald-400 font-semibold">
-            Sandbox test_merch_n1
-          </span>
+          <span className="text-foreground font-semibold">Sandbox test_merch_n1</span>
         </div>
       )}
 
@@ -169,7 +167,7 @@ export function CheckoutReviewStep({
             </>
           ) : (
             <>
-              <Lock className="size-4 text-emerald-400" />
+              <Lock className="size-4" />
               <span>{t('plans.payWithWayForPay')}</span>
               <ExternalLink className="size-3.5 ml-auto opacity-70" />
             </>

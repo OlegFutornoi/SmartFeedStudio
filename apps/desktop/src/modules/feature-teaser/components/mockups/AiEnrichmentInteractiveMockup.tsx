@@ -135,7 +135,7 @@ export const AiEnrichmentInteractiveMockup: React.FC = () => {
 
             <div className="p-2.5 rounded-lg bg-background border border-primary/25 text-xs text-foreground space-y-1.5">
               <div className="font-semibold text-foreground flex items-center gap-1.5">
-                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
+                <CheckCircle2 className="h-3.5 w-3.5 text-foreground shrink-0" />
                 {activeTab === 'rozetka' && t('featureTeaser.aiEnrichment.mockup.samples.rozetka')}
                 {activeTab === 'prom' && t('featureTeaser.aiEnrichment.mockup.samples.prom')}
                 {activeTab === 'specs' && t('featureTeaser.aiEnrichment.mockup.samples.specs')}
@@ -149,7 +149,7 @@ export const AiEnrichmentInteractiveMockup: React.FC = () => {
                 </Badge>
                 <Badge
                   variant="outline"
-                  className="text-[9px] bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                  className="text-[9px] bg-secondary text-secondary-foreground border-border"
                 >
                   {t('featureTeaser.aiEnrichment.mockup.tags.keywords')}
                 </Badge>
@@ -201,15 +201,15 @@ export const AiEnrichmentInteractiveMockup: React.FC = () => {
 
             <div className="space-y-2 py-1">
               <div className="flex items-center gap-2 text-xs text-foreground">
-                <Check className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
+                <Check className="h-3.5 w-3.5 text-foreground shrink-0" />
                 <span>{t('featureTeaser.aiEnrichment.dialog.benefit1')}</span>
               </div>
               <div className="flex items-center gap-2 text-xs text-foreground">
-                <Check className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
+                <Check className="h-3.5 w-3.5 text-foreground shrink-0" />
                 <span>{t('featureTeaser.aiEnrichment.dialog.benefit2')}</span>
               </div>
               <div className="flex items-center gap-2 text-xs text-foreground">
-                <Check className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
+                <Check className="h-3.5 w-3.5 text-foreground shrink-0" />
                 <span>{t('featureTeaser.aiEnrichment.dialog.benefit3')}</span>
               </div>
             </div>

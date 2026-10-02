@@ -69,7 +69,7 @@ export function CurrentLicenseBanner({ currentLicense }: CurrentLicenseBannerPro
 
         <div className="p-4 rounded-xl bg-muted/40 border border-border/50">
           <div className="text-xs text-muted-foreground">{t('plans.cloudBackup')}</div>
-          <div className="text-lg font-bold text-emerald-500 mt-0.5">
+          <div className="text-lg font-bold text-foreground mt-0.5">
             {currentLicense.canCloudBackup ? 'S3 MinIO / AWS' : 'Ні'}
           </div>
         </div>

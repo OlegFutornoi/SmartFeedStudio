@@ -55,7 +55,7 @@ export const PricingRulesList: React.FC<PricingRulesListProps> = ({
                 ) : (
                   <Badge
                     variant="outline"
-                    className="bg-emerald-500/10 text-emerald-400 border-emerald-500/20 shrink-0 font-mono"
+                    className="bg-secondary text-secondary-foreground border-border shrink-0 font-mono"
                   >
                     Діапазон: {rule.minPrice != null ? `${rule.minPrice} ₴` : '0'} —{' '}
                     {rule.maxPrice != null ? `${rule.maxPrice} ₴` : '∞'}

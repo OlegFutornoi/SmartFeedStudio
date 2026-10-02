@@ -188,12 +188,12 @@ export const QuotaCategoriesTab: React.FC<QuotaCategoriesTabProps> = ({
           <div className="text-[11px] text-muted-foreground mt-1 flex items-center gap-1.5">
             <span>{isUk ? 'Залишок після видалення:' : 'Remaining after delete:'}</span>
             <span
-              className={`font-mono font-bold ${isProjectedValid ? 'text-emerald-500' : 'text-amber-500'}`}
+              className={`font-mono font-bold ${isProjectedValid ? 'text-foreground' : 'text-muted-foreground'}`}
             >
               {projectedRemainingProducts.toLocaleString()} / {maxProductsLimit.toLocaleString()}{' '}
               SKU
             </span>
-            {isProjectedValid && <ShieldCheck className="h-3.5 w-3.5 text-emerald-500 inline" />}
+            {isProjectedValid && <ShieldCheck className="h-3.5 w-3.5 text-foreground inline" />}
           </div>
         </div>
 

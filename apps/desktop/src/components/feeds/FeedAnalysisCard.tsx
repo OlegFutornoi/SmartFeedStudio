@@ -17,11 +17,11 @@ interface FeedAnalysisCardProps {
 }
 
 const FORMAT_COLORS: Record<string, string> = {
-  XML_ROZETKA: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
-  YML: 'bg-primary/10 text-primary border-primary/20',
-  GOOGLE_SHOPPING_RSS: 'bg-amber-500/10 text-amber-500 border-amber-500/20',
-  CSV: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
-  XML: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
+  XML_ROZETKA: 'bg-secondary text-secondary-foreground border-border',
+  YML: 'bg-secondary text-secondary-foreground border-border',
+  GOOGLE_SHOPPING_RSS: 'bg-secondary text-secondary-foreground border-border',
+  CSV: 'bg-secondary text-secondary-foreground border-border',
+  XML: 'bg-secondary text-secondary-foreground border-border',
 };
 
 const FORMAT_LABELS: Record<string, string> = {
@@ -58,10 +58,10 @@ export function FeedAnalysisCard({ analysis }: FeedAnalysisCardProps) {
   const formatLabel = FORMAT_LABELS[formatKey] || analysis.format;
 
   return (
-    <div className="mt-4 rounded-xl border border-emerald-500/25 bg-emerald-500/5 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-300">
+    <div className="mt-4 rounded-xl border border-border bg-card overflow-hidden animate-in fade-in slide-in-from-top-2 duration-300">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-2.5 border-b border-emerald-500/15 bg-emerald-500/8">
-        <div className="flex items-center gap-2 text-xs font-semibold text-emerald-400">
+      <div className="flex items-center justify-between px-4 py-2.5 border-b border-border bg-muted/40">
+        <div className="flex items-center gap-2 text-xs font-semibold text-foreground">
           <CheckCircle2 className="size-3.5" />
           {t('suppliers:analysisSuccess', { defaultValue: 'Фід успішно проаналізовано' })}
         </div>

@@ -61,7 +61,7 @@ export const CloudSyncInteractiveMockup: React.FC = () => {
 
         <Badge
           variant="secondary"
-          className="text-xs px-2.5 py-1 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30 self-start sm:self-auto flex items-center gap-1.5"
+          className="text-xs px-2.5 py-1 bg-muted text-foreground border border-border self-start sm:self-auto flex items-center gap-1.5"
         >
           <CheckCircle2 className="h-3.5 w-3.5" />
           <span>S3 Cloud Active</span>
@@ -167,11 +167,11 @@ export const CloudSyncInteractiveMockup: React.FC = () => {
 
             <div className="space-y-2 py-2">
               <div className="flex items-center gap-2 text-xs text-foreground">
-                <Check className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
+                <Check className="h-3.5 w-3.5 text-foreground shrink-0" />
                 <span>{t('featureTeaser.cloudSync.dialog.benefit1')}</span>
               </div>
               <div className="flex items-center gap-2 text-xs text-foreground">
-                <Check className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
+                <Check className="h-3.5 w-3.5 text-foreground shrink-0" />
                 <span>{t('featureTeaser.cloudSync.dialog.benefit2')}</span>
               </div>
             </div>

@@ -120,12 +120,12 @@ export const ProductsToolbar: React.FC<ProductsToolbarProps> = ({
             onClick={() => onInStockOnlyChange(!inStockOnly)}
             className={`h-9 text-xs transition-colors ${
               inStockOnly
-                ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30 font-medium'
+                ? 'bg-muted text-foreground border-border font-medium'
                 : 'text-muted-foreground'
             }`}
           >
             <span
-              className={`mr-1.5 h-2 w-2 rounded-full ${inStockOnly ? 'bg-emerald-500' : 'bg-muted-foreground/40'}`}
+              className={`mr-1.5 h-2 w-2 rounded-full ${inStockOnly ? 'bg-foreground' : 'bg-muted-foreground/40'}`}
             />
             {t('catalogs:inStockOnly')}
           </Button>

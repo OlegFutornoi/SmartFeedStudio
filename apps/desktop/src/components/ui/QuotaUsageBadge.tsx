@@ -14,7 +14,7 @@ export function QuotaUsageBadge({ quota, unit, className = '' }: QuotaUsageBadge
     return (
       <Badge
         variant="secondary"
-        className={`text-[11px] font-mono font-medium text-emerald-400 bg-emerald-500/10 border-emerald-500/20 ${className}`}
+        className={`text-[11px] font-mono font-medium text-foreground bg-muted border-border ${className}`}
       >
         {quota.used.toLocaleString()} / ∞ {unit}
       </Badge>
@@ -24,11 +24,11 @@ export function QuotaUsageBadge({ quota, unit, className = '' }: QuotaUsageBadge
   const isCritical = quota.percentUsed >= 100 || quota.isExceeded;
   const isWarning = quota.percentUsed >= 80 && !isCritical;
 
-  let colorClasses = 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20';
+  let colorClasses = 'text-foreground bg-muted border-border';
   if (isCritical) {
-    colorClasses = 'text-emerald-400 bg-emerald-500/15 border-emerald-500/30 font-semibold';
+    colorClasses = 'text-destructive bg-destructive/10 border-destructive/30 font-semibold';
   } else if (isWarning) {
-    colorClasses = 'text-amber-400 bg-amber-500/10 border-amber-500/25';
+    colorClasses = 'text-foreground bg-muted/80 border-border font-medium';
   }
 
   return (

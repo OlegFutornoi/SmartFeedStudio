@@ -93,9 +93,9 @@ export function ResetPasswordForm({ className, ...props }: React.ComponentPropsW
               {successMessage && (
                 <Alert
                   data-testid="success-alert"
-                  className="py-2.5 border-emerald-500/50 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"
+                  className="py-2.5 border-border bg-muted/60 text-foreground"
                 >
-                  <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                  <CheckCircle2 className="h-4 w-4 text-foreground" />
                   <AlertDescription data-testid="success-message">
                     {successMessage}
                   </AlertDescription>

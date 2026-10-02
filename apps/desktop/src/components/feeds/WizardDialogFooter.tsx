@@ -53,7 +53,7 @@ export const WizardDialogFooter: React.FC<WizardDialogFooterProps> = ({
       <div className="p-4 border-t border-border bg-card flex items-center justify-between gap-2 shrink-0">
         <div className="w-full flex items-center justify-between gap-2">
           <div className="text-xs text-muted-foreground flex items-center gap-1.5">
-            <Radio className="size-3.5 text-emerald-400 animate-pulse" />
+            <Radio className="size-3.5 text-foreground animate-pulse" />
             <span>Імпорт виконується у фоновому режимі (BullMQ)</span>
           </div>
 
@@ -169,7 +169,7 @@ export const WizardDialogFooter: React.FC<WizardDialogFooterProps> = ({
           className={`text-xs flex items-center gap-1.5 shadow-sm transition-all ${
             isQuotaExceeded || totalSelectedSkus === 0 || isFeedLimitReached
               ? 'bg-muted text-muted-foreground border border-border cursor-not-allowed opacity-60'
-              : 'bg-emerald-600 hover:bg-emerald-500 text-white'
+              : 'bg-primary text-primary-foreground hover:bg-primary/90'
           }`}
         >
           <Check className="size-3.5" />

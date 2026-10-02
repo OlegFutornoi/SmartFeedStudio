@@ -61,7 +61,7 @@ export const StorageActionsPanel: React.FC<StorageActionsPanelProps> = ({
         <div className="p-4 rounded-xl border border-border bg-card shadow-xs flex flex-col justify-between gap-3">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <Sparkles className="size-4 text-emerald-400" />
+              <Sparkles className="size-4 text-primary" />
               <span className="text-xs font-bold text-foreground">{t('storage:vacuumDb')}</span>
             </div>
             <p className="text-[11px] text-muted-foreground leading-relaxed">

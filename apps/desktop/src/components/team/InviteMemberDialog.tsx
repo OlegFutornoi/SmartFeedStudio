@@ -109,7 +109,7 @@ export const InviteMemberDialog: React.FC<InviteMemberDialogProps> = ({
           /* Success Screen: Copy Link */
           <div className="space-y-4 pt-1 animate-in fade-in-50 duration-200">
             <div className="flex items-center gap-3">
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 shrink-0">
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-muted text-foreground border border-border shrink-0">
                 <Check className="h-5 w-5" />
               </div>
               <div>
@@ -142,7 +142,7 @@ export const InviteMemberDialog: React.FC<InviteMemberDialogProps> = ({
                 >
                   {isCopied ? (
                     <>
-                      <Check className="h-3.5 w-3.5 text-emerald-400" />
+                      <Check className="h-3.5 w-3.5" />
                       <span>{t('team.copied')}</span>
                     </>
                   ) : (

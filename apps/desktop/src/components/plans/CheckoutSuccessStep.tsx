@@ -20,7 +20,7 @@ export function CheckoutSuccessStep({
 }: CheckoutSuccessStepProps) {
   return (
     <div className="py-6 flex flex-col items-center justify-center text-center space-y-5 animate-in zoom-in-95 duration-200">
-      <div className="size-16 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 ring-8 ring-emerald-500/5">
+      <div className="size-16 rounded-2xl bg-muted border border-border flex items-center justify-center text-foreground ring-8 ring-muted/50">
         <CheckCircle2 className="size-9" />
       </div>
 
@@ -33,9 +33,9 @@ export function CheckoutSuccessStep({
         </p>
       </div>
 
-      <div className="w-full rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-3 text-xs flex items-center justify-between">
+      <div className="w-full rounded-xl border border-border bg-muted/40 p-3 text-xs flex items-center justify-between">
         <span className="text-muted-foreground">{t('plans.active')}</span>
-        <Badge className="bg-emerald-600 text-white font-mono font-bold">
+        <Badge className="bg-primary text-primary-foreground font-mono font-bold">
           {plan.code} — {t('plans.durationFormat', { count: daysCount })}
         </Badge>
       </div>

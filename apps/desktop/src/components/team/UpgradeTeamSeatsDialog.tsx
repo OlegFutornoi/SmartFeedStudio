@@ -122,15 +122,15 @@ export const UpgradeTeamSeatsDialog: React.FC<UpgradeTeamSeatsDialogProps> = ({
               </div>
               <ul className="space-y-2 text-[11px] text-muted-foreground">
                 <li className="flex items-center gap-1.5">
-                  <Check className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
+                  <Check className="h-3.5 w-3.5 text-foreground shrink-0" />
                   <span>{t('team.enterpriseBenefit1')}</span>
                 </li>
                 <li className="flex items-center gap-1.5">
-                  <Check className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
+                  <Check className="h-3.5 w-3.5 text-foreground shrink-0" />
                   <span>{t('team.enterpriseBenefit2')}</span>
                 </li>
                 <li className="flex items-center gap-1.5">
-                  <Check className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
+                  <Check className="h-3.5 w-3.5 text-foreground shrink-0" />
                   <span>{t('team.enterpriseBenefit3')}</span>
                 </li>
               </ul>

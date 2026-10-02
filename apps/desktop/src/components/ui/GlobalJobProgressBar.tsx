@@ -33,7 +33,7 @@ export function GlobalJobProgressBar() {
 
     const getTaskIcon = () => {
       if (isCompleted) {
-        return <CheckCircle2 className="size-3.5 text-emerald-500 shrink-0" />;
+        return <CheckCircle2 className="size-3.5 text-foreground shrink-0" />;
       }
       if (isFailed) {
         return <AlertCircle className="size-3.5 text-destructive shrink-0" />;
@@ -62,7 +62,7 @@ export function GlobalJobProgressBar() {
               <div
                 className={`size-7 rounded-lg flex items-center justify-center shrink-0 ${
                   isCompleted
-                    ? 'bg-emerald-500/10 text-emerald-500'
+                    ? 'bg-muted text-foreground'
                     : isFailed
                       ? 'bg-destructive/10 text-destructive'
                       : 'bg-primary/10 text-primary'
@@ -109,7 +109,7 @@ export function GlobalJobProgressBar() {
             <div
               className={`h-full transition-all duration-300 ease-out rounded-full ${
                 isCompleted
-                  ? 'bg-emerald-500 w-full'
+                  ? 'bg-foreground w-full'
                   : isFailed
                     ? 'bg-destructive w-full'
                     : 'bg-primary animate-pulse w-full'
@@ -160,7 +160,7 @@ export function GlobalJobProgressBar() {
             </div>
             <div className="min-w-0">
               <div className="text-xs font-semibold text-foreground truncate flex items-center gap-1.5">
-                <Radio className="size-3 text-emerald-400 shrink-0" />
+                <Radio className="size-3 text-primary shrink-0" />
                 <span className="truncate">{feedDisplayName}</span>
               </div>
               <div className="text-[10px] text-muted-foreground font-mono">

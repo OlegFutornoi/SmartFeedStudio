@@ -13,6 +13,12 @@ import {
 } from '@/lib/api';
 import type { ProductCategorySummaryDto, SupplierDto } from '@smartfeed/shared';
 import { useDataSync } from '@/lib/syncEvents';
+import {
+  buildQuotaState,
+  filterCategories,
+  computeSelectedProductsCount,
+  computeProjectedRemaining,
+} from './reconciliationCalculator';
 
 export type TabType = 'CATEGORIES' | 'FEEDS' | 'SUPPLIERS';
 
@@ -86,31 +92,22 @@ export function useQuotaReconciliation(isOpen: boolean, isUk: boolean) {
   });
 
   // Quotas calculations
-  const currentProductsUsed = quotas?.products?.used || 0;
-  const maxProductsLimit = quotas?.products?.max || 1000;
-  const currentFeedsUsed = quotas?.feeds?.used || 0;
-  const maxFeedsLimit = quotas?.feeds?.max || 1;
+  const { currentProductsUsed, maxProductsLimit, currentFeedsUsed, maxFeedsLimit } =
+    buildQuotaState(quotas);
 
-  const filteredCategories = useMemo(() => {
-    if (!categorySearch.trim()) return categories;
-    const q = categorySearch.toLowerCase().trim();
-    return categories.filter(
-      (c) =>
-        c.nameUk.toLowerCase().includes(q) ||
-        (c.nameEn && c.nameEn.toLowerCase().includes(q)) ||
-        (c.supplierName && c.supplierName.toLowerCase().includes(q)),
-    );
-  }, [categories, categorySearch]);
+  const filteredCategories = useMemo(
+    () => filterCategories(categories, categorySearch),
+    [categories, categorySearch],
+  );
 
-  const selectedProductsToDeleteCount = useMemo(() => {
-    return categories
-      .filter((c) => selectedCategoryIds.includes(c.id))
-      .reduce((acc, c) => acc + c.productCount, 0);
-  }, [categories, selectedCategoryIds]);
+  const selectedProductsToDeleteCount = useMemo(
+    () => computeSelectedProductsCount(categories, selectedCategoryIds),
+    [categories, selectedCategoryIds],
+  );
 
-  const projectedRemainingProducts = Math.max(
-    0,
-    currentProductsUsed - selectedProductsToDeleteCount,
+  const projectedRemainingProducts = computeProjectedRemaining(
+    currentProductsUsed,
+    selectedProductsToDeleteCount,
   );
   const isProjectedValid = projectedRemainingProducts <= maxProductsLimit;
 

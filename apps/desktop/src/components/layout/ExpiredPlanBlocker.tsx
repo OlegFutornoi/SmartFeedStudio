@@ -41,9 +41,9 @@ export const ExpiredPlanBlocker: React.FC<ExpiredPlanBlockerProps> = ({ featureN
       className="flex min-h-[60vh] w-full items-center justify-center p-4 animate-in fade-in-50 duration-300"
       data-testid="expired-plan-blocker"
     >
-      <Card className="max-w-md w-full border-amber-500/30 bg-card/95 backdrop-blur shadow-xl shadow-amber-500/5">
+      <Card className="max-w-md w-full border-border bg-card/95 backdrop-blur shadow-xl">
         <CardHeader className="text-center pb-2">
-          <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-amber-500/10 text-amber-500 ring-8 ring-amber-500/5">
+          <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-muted text-foreground ring-8 ring-muted/50">
             {hasNoLicense ? (
               <ShieldAlert className="h-7 w-7" />
             ) : (

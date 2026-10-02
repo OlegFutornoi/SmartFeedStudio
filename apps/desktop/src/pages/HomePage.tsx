@@ -80,7 +80,7 @@ export function HomePage() {
                 className="flex items-center gap-1 font-semibold text-xs py-0.5 px-2 bg-muted/50 border-border text-foreground"
               >
                 {productsCount > 0 ? (
-                  <TrendingUp className="h-3.5 w-3.5 text-emerald-500" />
+                  <TrendingUp className="h-3.5 w-3.5 text-foreground" />
                 ) : (
                   <Minus className="h-3.5 w-3.5 text-muted-foreground" />
                 )}
@@ -153,7 +153,7 @@ export function HomePage() {
                 className="flex items-center gap-1 font-semibold text-xs py-0.5 px-2 bg-muted/50 border-border text-foreground"
               >
                 {skuPercent > 0 ? (
-                  <Sparkles className="h-3.5 w-3.5 text-emerald-500" />
+                  <Sparkles className="h-3.5 w-3.5 text-foreground" />
                 ) : (
                   <Minus className="h-3.5 w-3.5 text-muted-foreground" />
                 )}

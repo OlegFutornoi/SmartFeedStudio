@@ -39,25 +39,25 @@ export function QuotaMetricCard({ title, icon: Icon, quota, unit, testId }: Quot
   let badgeColor = 'text-muted-foreground';
 
   if (isCritical) {
-    progressColor = 'bg-emerald-500';
-    badgeColor = 'text-emerald-400 font-semibold';
+    progressColor = 'bg-destructive';
+    badgeColor = 'text-destructive font-semibold';
   } else if (isWarning) {
-    progressColor = 'bg-amber-500';
-    badgeColor = 'text-amber-400 font-semibold';
+    progressColor = 'bg-primary/80';
+    badgeColor = 'text-foreground font-semibold';
   } else if (!isUnlimited) {
-    progressColor = 'bg-emerald-500';
+    progressColor = 'bg-primary';
   }
 
   return (
     <Card
       data-testid={testId}
       className={`border-border/80 bg-card/60 backdrop-blur-md transition-all duration-200 ${
-        isCritical ? 'border-emerald-500/30 shadow-xs' : ''
+        isCritical ? 'border-destructive/40 shadow-xs' : ''
       }`}
     >
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium text-foreground">{title}</CardTitle>
-        <Icon className={`size-4 ${isCritical ? 'text-emerald-400' : 'text-primary'}`} />
+        <Icon className={`size-4 ${isCritical ? 'text-destructive' : 'text-primary'}`} />
       </CardHeader>
 
       <CardContent className="space-y-2.5">
@@ -89,12 +89,12 @@ export function QuotaMetricCard({ title, icon: Icon, quota, unit, testId }: Quot
         {/* Footer Subtext or Upgrade Prompt */}
         <div className="flex items-center justify-between text-xs pt-0.5">
           {isUnlimited ? (
-            <span className="text-emerald-400 text-[11px] font-medium">
+            <span className="text-foreground text-[11px] font-medium">
               {t('common:unlimitedPlan', { defaultValue: 'Безлімітний тариф' })}
             </span>
           ) : isCritical ? (
             <div className="flex items-center justify-between w-full">
-              <span className="text-emerald-400 text-[11px] font-medium">
+              <span className="text-destructive text-[11px] font-medium">
                 {t('common:limitExceeded', { defaultValue: 'Ліміт вичерпано' })}
               </span>
               <Link
@@ -107,7 +107,7 @@ export function QuotaMetricCard({ title, icon: Icon, quota, unit, testId }: Quot
             </div>
           ) : isWarning ? (
             <div className="flex items-center justify-between w-full">
-              <span className="text-amber-400 text-[11px]">
+              <span className="text-foreground text-[11px]">
                 {t('common:remaining', { defaultValue: 'Залишилось' })}: {quota.remaining}
               </span>
               <Link

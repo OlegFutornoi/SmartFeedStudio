@@ -34,7 +34,7 @@ export const QuotaReconciliationFooter: React.FC<QuotaReconciliationFooterProps>
           <span className="text-muted-foreground">{isUk ? 'Після видалення:' : 'After:'}</span>
           <span
             className={`font-mono font-bold ${
-              isProjectedValid ? 'text-emerald-400' : 'text-amber-400'
+              isProjectedValid ? 'text-foreground' : 'text-muted-foreground'
             }`}
           >
             {projectedRemainingProducts.toLocaleString()} SKU
@@ -42,7 +42,7 @@ export const QuotaReconciliationFooter: React.FC<QuotaReconciliationFooterProps>
           {isProjectedValid && (
             <Badge
               variant="outline"
-              className="bg-emerald-500/10 text-emerald-400 border-emerald-500/20 text-[10px]"
+              className="bg-secondary text-secondary-foreground border-border text-[10px]"
             >
               {isUk ? 'В межах ліміту' : 'Within limit'}
             </Badge>

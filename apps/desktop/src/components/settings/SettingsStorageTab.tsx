@@ -98,11 +98,11 @@ export const SettingsStorageTab: React.FC = () => {
       {/* Success Alert */}
       {actionSuccessMessage && (
         <div
-          className="flex items-center justify-between p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs text-emerald-400 animate-in fade-in duration-150"
+          className="flex items-center justify-between p-3.5 rounded-xl bg-muted/60 border border-border text-xs text-foreground animate-in fade-in duration-150"
           data-testid="storage-action-success-alert"
         >
           <div className="flex items-center gap-2.5">
-            <CheckCircle2 className="size-4 shrink-0 text-emerald-400" />
+            <CheckCircle2 className="size-4 shrink-0 text-foreground" />
             <span className="font-medium">{actionSuccessMessage}</span>
           </div>
           <button
@@ -127,8 +127,8 @@ export const SettingsStorageTab: React.FC = () => {
                   {t('storage:activeWorkspace')}
                 </h4>
                 <Badge
-                  variant="outline"
-                  className="text-[10px] gap-1 text-emerald-500 border-emerald-500/30 bg-emerald-500/10 font-mono"
+                  variant="secondary"
+                  className="text-[10px] gap-1 text-foreground border-border bg-muted font-mono"
                 >
                   <ShieldCheck className="size-3" />
                   <span>{t('storage:encryptionStatus')}</span>
@@ -176,11 +176,7 @@ export const SettingsStorageTab: React.FC = () => {
             className="size-7 text-muted-foreground hover:text-foreground shrink-0"
             title={t('storage:copyPath')}
           >
-            {copied ? (
-              <Check className="size-3.5 text-emerald-400" />
-            ) : (
-              <Copy className="size-3.5" />
-            )}
+            {copied ? <Check className="size-3.5 text-primary" /> : <Copy className="size-3.5" />}
           </Button>
         </div>
       </div>

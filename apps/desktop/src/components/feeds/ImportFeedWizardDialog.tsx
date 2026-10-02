@@ -83,8 +83,8 @@ export function ImportFeedWizardDialog({
         {/* Content Body */}
         <div className="p-6 overflow-y-auto flex-1 bg-card">
           {isFeedLimitReached && (
-            <div className="mb-4 p-3.5 rounded-xl border border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400 text-xs flex items-center gap-2.5">
-              <AlertCircle className="size-4 shrink-0 text-amber-500" />
+            <div className="mb-4 p-3.5 rounded-xl border border-border bg-muted/60 text-foreground text-xs flex items-center gap-2.5">
+              <AlertCircle className="size-4 shrink-0 text-foreground" />
               <div className="flex-1">
                 <span className="font-semibold">
                   {t('suppliers:feedLimitReachedTitle', {

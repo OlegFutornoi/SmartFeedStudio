@@ -53,7 +53,7 @@ export function WizardStepProgress({ isImporting, result, error }: WizardStepPro
     return (
       <div className="py-4 space-y-4">
         <div className="text-center space-y-2">
-          <div className="size-12 rounded-full bg-emerald-500/10 text-emerald-400 flex items-center justify-center mx-auto">
+          <div className="size-12 rounded-full bg-muted border border-border text-foreground flex items-center justify-center mx-auto">
             <CheckCircle2 className="size-6" />
           </div>
           <div className="text-sm font-semibold text-foreground">
@@ -69,7 +69,7 @@ export function WizardStepProgress({ isImporting, result, error }: WizardStepPro
         {/* Results Grid */}
         <div className="grid grid-cols-3 gap-2.5 pt-2">
           <div className="p-3 rounded-lg bg-secondary/30 border border-border/50 text-center">
-            <ShoppingBag className="size-4 text-emerald-400 mx-auto mb-1" />
+            <ShoppingBag className="size-4 text-foreground mx-auto mb-1" />
             <div className="text-[11px] text-muted-foreground">Створено товарів</div>
             <div className="text-base font-bold text-foreground font-mono mt-0.5">
               +{result.createdItems}

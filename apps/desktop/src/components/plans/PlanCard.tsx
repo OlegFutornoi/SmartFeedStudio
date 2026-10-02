@@ -63,8 +63,8 @@ export const PlanCard: React.FC<PlanCardProps> = ({
       className={cn(
         'relative flex flex-col justify-between border-border bg-card transition-all duration-200',
         plan.isPopular && 'border-primary shadow-md ring-1 ring-primary/40',
-        isCurrent && !isExpired && 'border-emerald-500/60 bg-emerald-500/[0.02]',
-        isCurrent && isExpired && 'border-amber-500/60 bg-amber-500/[0.02]',
+        isCurrent && !isExpired && 'border-border bg-muted/20',
+        isCurrent && isExpired && 'border-destructive/60 bg-destructive/[0.02]',
       )}
     >
       {/* Top Badges */}
@@ -81,7 +81,7 @@ export const PlanCard: React.FC<PlanCardProps> = ({
         {isCurrent && !isExpired && (
           <Badge
             data-testid={`plan-current-badge-${codeKey}`}
-            className="bg-emerald-600 text-white text-[10px] font-semibold px-2.5 py-0.5 flex items-center gap-1 shadow-sm"
+            className="bg-foreground text-background text-[10px] font-semibold px-2.5 py-0.5 flex items-center gap-1 shadow-sm"
           >
             <Zap className="size-2.5" />
             <span>{t('plans.currentPlan')}</span>
@@ -90,7 +90,7 @@ export const PlanCard: React.FC<PlanCardProps> = ({
         {isCurrent && isExpired && (
           <Badge
             data-testid={`plan-expired-badge-${codeKey}`}
-            className="bg-amber-600 text-white text-[10px] font-semibold px-2.5 py-0.5 flex items-center gap-1 shadow-sm"
+            className="bg-destructive text-destructive-foreground text-[10px] font-semibold px-2.5 py-0.5 flex items-center gap-1 shadow-sm"
           >
             <AlertTriangle className="size-2.5" />
             <span>{t('plans.expiredBadge')}</span>
@@ -136,7 +136,7 @@ export const PlanCard: React.FC<PlanCardProps> = ({
             {/* Trial badge for STARTER */}
             {plan.code === 'STARTER' && (
               <div className="mt-0.5">
-                <span className="text-[10px] font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded">
+                <span className="text-[10px] font-medium text-foreground bg-muted px-1.5 py-0.5 rounded">
                   {isUk ? '7 днів тріалу при реєстрації' : '7-day trial on signup'}
                 </span>
               </div>
@@ -153,7 +153,7 @@ export const PlanCard: React.FC<PlanCardProps> = ({
                   </span>
                 </div>
                 {yearlySavingAmount > 0 && (
-                  <span className="text-[10px] font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded self-start">
+                  <span className="text-[10px] font-medium text-foreground bg-muted px-1.5 py-0.5 rounded self-start">
                     {t('plans.yearlySavingNote', {
                       amount: yearlySavingAmount.toLocaleString(),
                     })}
@@ -165,7 +165,7 @@ export const PlanCard: React.FC<PlanCardProps> = ({
                 <span data-testid={`plan-price-yearly-${codeKey}`}>
                   {plan.priceYearly} {currencySymbol} {isUk ? '/рік' : '/yr'}
                 </span>
-                <span className="text-[10px] font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded">
+                <span className="text-[10px] font-medium text-foreground bg-muted px-1.5 py-0.5 rounded">
                   {t('plans.save20Badge')}
                 </span>
               </div>
@@ -173,7 +173,7 @@ export const PlanCard: React.FC<PlanCardProps> = ({
 
             {/* Remaining days if active */}
             {isCurrent && !isExpired && daysRemaining !== null && daysRemaining !== undefined && (
-              <div className="mt-1.5 flex items-center gap-1.5 text-xs text-emerald-600 dark:text-emerald-400 font-medium">
+              <div className="mt-1.5 flex items-center gap-1.5 text-xs text-foreground font-medium">
                 <Clock className="size-3.5" />
                 <span>{t('plans.daysRemaining', { count: daysRemaining })}</span>
               </div>
@@ -201,7 +201,7 @@ export const PlanCard: React.FC<PlanCardProps> = ({
             variant="outline"
             disabled
             data-testid={`plan-select-btn-${codeKey}`}
-            className="w-full h-8 text-xs border-emerald-500/50 text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 font-semibold cursor-default"
+            className="w-full h-8 text-xs border-border text-foreground bg-muted font-semibold cursor-default"
           >
             <Check className="size-3.5 mr-1.5" />
             <span>
@@ -218,7 +218,7 @@ export const PlanCard: React.FC<PlanCardProps> = ({
             data-testid={`plan-select-btn-${codeKey}`}
             onClick={() => onSelect(plan.code, billingInterval)}
             disabled={isLoading}
-            className="w-full h-8 text-xs bg-amber-600 hover:bg-amber-700 text-white font-semibold gap-1.5"
+            className="w-full h-8 text-xs bg-primary hover:bg-primary/90 text-primary-foreground font-semibold gap-1.5"
           >
             {isLoading ? (
               <Loader2 className="size-3.5 animate-spin" />

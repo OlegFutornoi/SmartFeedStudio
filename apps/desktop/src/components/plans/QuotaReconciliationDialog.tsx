@@ -140,7 +140,7 @@ export const QuotaReconciliationDialog: React.FC<QuotaReconciliationDialogProps>
 
         {/* Notifications */}
         {successMessage && (
-          <div className="mx-6 mt-3 p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs flex items-center gap-2">
+          <div className="mx-6 mt-3 p-2.5 rounded-xl bg-muted border border-border text-foreground text-xs flex items-center gap-2">
             <CheckCircle2 className="h-4 w-4 shrink-0" />
             <span>{successMessage}</span>
           </div>

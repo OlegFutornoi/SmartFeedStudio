@@ -91,7 +91,7 @@ export const MarginEconomicsSimulator: React.FC<MarginEconomicsSimulatorProps> =
           <span className="text-[10px] text-muted-foreground block">
             {t('export:shelfPriceLabel')}
           </span>
-          <span className="text-xs font-bold font-mono text-emerald-400 mt-0.5 block">
+          <span className="text-xs font-bold font-mono text-foreground mt-0.5 block">
             {simulation.shelfPrice} ₴
           </span>
         </div>

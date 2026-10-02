@@ -65,7 +65,7 @@ export const FeatureComparisonCard: React.FC<FeatureComparisonCardProps> = ({ co
                 key={idx}
                 className="flex items-start gap-2.5 text-xs font-medium text-foreground"
               >
-                <Check className="h-3.5 w-3.5 text-emerald-500 shrink-0 mt-0.5" />
+                <Check className="h-3.5 w-3.5 text-foreground shrink-0 mt-0.5" />
                 <span>{t(key)}</span>
               </div>
             ))}

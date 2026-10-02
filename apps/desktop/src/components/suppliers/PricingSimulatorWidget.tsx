@@ -88,7 +88,7 @@ export const PricingSimulatorWidget: React.FC<PricingSimulatorWidgetProps> = ({
             Розрахована ціна продажу:
           </span>
           <div className="flex items-center gap-2 mt-0.5">
-            <span className="text-base font-bold text-emerald-400 font-mono">
+            <span className="text-base font-bold text-foreground font-mono">
               {simulationResult?.sellingPrice ?? 0} ₴
             </span>
             <span className="text-[11px] text-muted-foreground font-mono">

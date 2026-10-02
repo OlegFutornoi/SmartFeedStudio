@@ -82,10 +82,10 @@ export const SidebarUserProfile = React.memo(function SidebarUserProfile({
                     </p>
                   )}
                   <p
-                    data-testid="sidebar-user-email user-email"
+                    data-testid="user-email"
                     className="text-[10px] text-muted-foreground truncate font-mono leading-tight"
                   >
-                    {displayEmail}
+                    <span data-testid="sidebar-user-email">{displayEmail}</span>
                   </p>
                 </div>
                 <MoreVertical className="h-4 w-4 text-muted-foreground shrink-0 ml-auto" />

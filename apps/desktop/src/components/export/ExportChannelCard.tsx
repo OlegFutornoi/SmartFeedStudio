@@ -33,19 +33,8 @@ export function ExportChannelCard({ channel, onEdit, onDelete }: ExportChannelCa
     window.open(fullFeedUrl, '_blank');
   };
 
-  const getMarketplaceBadgeColor = (code: string) => {
-    switch (code) {
-      case 'ROZETKA':
-        return 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20';
-      case 'PROM':
-        return 'bg-primary/10 text-primary border-primary/20';
-      case 'EPICENTR':
-        return 'bg-blue-500/10 text-blue-400 border-blue-500/20';
-      case 'HOTLINE':
-        return 'bg-amber-500/10 text-amber-400 border-amber-500/20';
-      default:
-        return 'bg-primary/10 text-primary border-primary/20';
-    }
+  const getMarketplaceBadgeColor = (_code: string) => {
+    return 'bg-secondary text-secondary-foreground border-border';
   };
 
   return (
@@ -74,11 +63,9 @@ export function ExportChannelCard({ channel, onEdit, onDelete }: ExportChannelCa
           </div>
 
           <Badge
-            variant={channel.isActive ? 'secondary' : 'outline'}
+            variant={channel.isActive ? 'default' : 'outline'}
             className={`text-[10px] shrink-0 font-medium px-2 py-0.5 ${
-              channel.isActive
-                ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20'
-                : 'text-muted-foreground'
+              channel.isActive ? 'bg-foreground text-background' : 'text-muted-foreground'
             }`}
           >
             {channel.isActive ? t('export:statusActive') : t('export:statusDisabled')}
@@ -137,7 +124,7 @@ export function ExportChannelCard({ channel, onEdit, onDelete }: ExportChannelCa
               data-testid={`copy-feed-url-btn-${channel.id}`}
             >
               {isCopied ? (
-                <Check className="size-3 text-emerald-400" />
+                <Check className="size-3 text-foreground" />
               ) : (
                 <Copy className="size-3" />
               )}

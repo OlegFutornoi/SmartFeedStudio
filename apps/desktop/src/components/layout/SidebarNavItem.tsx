@@ -95,11 +95,11 @@ export const SidebarNavItem = React.memo(function SidebarNavItem({
         <div className="flex items-center justify-between flex-1 min-w-0">
           <span className="truncate">{label}</span>
           {isRestrictedWhenExpired ? (
-            <Lock className="size-3 text-amber-500/70 shrink-0 ml-1" />
+            <Lock className="size-3 text-muted-foreground shrink-0 ml-1" />
           ) : isPlansLink && isExpired ? (
             <Badge
               variant="default"
-              className="text-[9px] px-1.5 py-0 ml-1 bg-amber-600 text-white font-semibold animate-pulse shadow-xs"
+              className="text-[9px] px-1.5 py-0 ml-1 bg-primary text-primary-foreground font-semibold shadow-xs"
             >
               {currentLang === 'uk' ? 'Обрати' : 'Select'}
             </Badge>

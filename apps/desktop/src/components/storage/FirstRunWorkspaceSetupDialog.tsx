@@ -120,7 +120,7 @@ export const FirstRunWorkspaceSetupDialog: React.FC = () => {
                   <span className="text-xs font-semibold text-foreground">
                     {t('storage:defaultPathLabel')}
                   </span>
-                  <span className="text-[10px] font-medium text-emerald-500 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-md">
+                  <span className="text-[10px] font-medium text-foreground bg-muted border border-border px-2 py-0.5 rounded-md">
                     Рекомендовано
                   </span>
                 </div>
@@ -193,15 +193,15 @@ export const FirstRunWorkspaceSetupDialog: React.FC = () => {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] text-muted-foreground font-mono">
               <div className="flex items-center gap-2 p-2 rounded-lg bg-card border border-border/40">
-                <Database className="size-3.5 text-blue-400 shrink-0" />
+                <Database className="size-3.5 text-muted-foreground shrink-0" />
                 <span className="truncate">database/catalog.db</span>
               </div>
               <div className="flex items-center gap-2 p-2 rounded-lg bg-card border border-border/40">
-                <DownloadCloud className="size-3.5 text-blue-500 shrink-0" />
+                <DownloadCloud className="size-3.5 text-muted-foreground shrink-0" />
                 <span className="truncate">feeds/ (XML/CSV)</span>
               </div>
               <div className="flex items-center gap-2 p-2 rounded-lg bg-card border border-border/40">
-                <FileSpreadsheet className="size-3.5 text-emerald-500 shrink-0" />
+                <FileSpreadsheet className="size-3.5 text-muted-foreground shrink-0" />
                 <span className="truncate">exports/ (Prom, Rozetka)</span>
               </div>
               <div className="flex items-center gap-2 p-2 rounded-lg bg-card border border-border/40">

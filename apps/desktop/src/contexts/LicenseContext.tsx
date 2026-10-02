@@ -30,7 +30,8 @@ export function LicenseProvider({ children }: { children: React.ReactNode }) {
     try {
       const saved = localStorage.getItem('smartfeed_license');
       return saved ? (JSON.parse(saved) as LicenseEntity) : null;
-    } catch {
+    } catch (err) {
+      console.warn('[LicenseContext] Failed to parse cached license from localStorage:', err);
       return null;
     }
   });

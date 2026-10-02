@@ -39,7 +39,7 @@ export const FeatureStickyCtaBar: React.FC<FeatureStickyCtaBarProps> = ({ config
             <span className="text-xs text-muted-foreground">({config.badge})</span>
           </div>
           <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground mt-0.5">
-            <ShieldCheck className="h-3.5 w-3.5 text-emerald-500" />
+            <ShieldCheck className="h-3.5 w-3.5 text-foreground" />
             <span>{t('featureTeaser.common.guaranteeNotice')}</span>
           </div>
         </div>

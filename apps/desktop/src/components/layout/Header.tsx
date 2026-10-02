@@ -91,14 +91,14 @@ export const Header = React.memo(function Header() {
             className={cn(
               'group flex items-center gap-1.5 px-2.5 py-1 rounded-lg border text-xs font-semibold transition-all cursor-pointer shadow-xs',
               isExpired
-                ? 'bg-amber-500/10 border-amber-500/40 text-amber-500 hover:bg-amber-500/20'
+                ? 'bg-destructive/10 border-destructive/30 text-destructive hover:bg-destructive/20'
                 : planCode === 'PRO' || planCode === 'ENTERPRISE'
                   ? 'bg-primary/10 border-primary/30 text-primary hover:bg-primary/20 hover:border-primary/50'
                   : 'bg-secondary/70 border-border hover:bg-secondary text-foreground',
             )}
           >
             {isExpired ? (
-              <AlertTriangle className="size-3.5 text-amber-500 shrink-0" />
+              <AlertTriangle className="size-3.5 text-destructive shrink-0" />
             ) : planCode === 'PRO' || planCode === 'GROWTH' ? (
               <Zap className="size-3.5 text-primary shrink-0 group-hover:scale-110 transition-transform" />
             ) : planCode === 'ENTERPRISE' ? (
@@ -114,7 +114,7 @@ export const Header = React.memo(function Header() {
             <span
               className={cn(
                 'text-[11px]',
-                isExpired ? 'text-amber-500 font-bold' : 'text-muted-foreground',
+                isExpired ? 'text-destructive font-bold' : 'text-muted-foreground',
               )}
             >
               {isExpired
@@ -134,9 +134,9 @@ export const Header = React.memo(function Header() {
           {/* System Online Status Indicator */}
           <Badge
             variant="outline"
-            className="text-[11px] bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30 hidden lg:inline-flex items-center gap-1 px-2 py-0.5"
+            className="text-[11px] bg-secondary text-secondary-foreground border-border hidden lg:inline-flex items-center gap-1.5 px-2 py-0.5"
           >
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="h-1.5 w-1.5 rounded-full bg-foreground animate-pulse" />
             <span>{isUk ? 'Онлайн' : 'Online'}</span>
           </Badge>
         </div>

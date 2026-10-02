@@ -30,15 +30,16 @@ graph LR
 
 ### 🌟 Головний модуль: Каталоги, Товари, Постачальники та Обробка Фідів (Products, Catalogs & Ingestion)
 
-| Файл плану                                                                                              | Призначення та ключові теми                                                                 |      Рівень       |
-| :------------------------------------------------------------------------------------------------------ | :------------------------------------------------------------------------------------------ | :---------------: |
-| [`00_master_products_and_catalogs_plan.md`](active/00_master_products_and_catalogs_plan.md)             | **Головний Генеральний План**: архітектура, візія, зв'язки модулів, дорожня карта 4 релізів |  🌐 Master Plan   |
-| [`01_suppliers_and_database_architecture.md`](active/01_suppliers_and_database_architecture.md)         | **Архітектура БД & Постачальники**: схема PostgreSQL, Prisma, SQLCipher у Tauri, CQRS       |  🏗️ Backend & DB  |
-| [`03_image_storage_and_cdn_strategy.md`](active/03_image_storage_and_cdn_strategy.md)                   | **Стратегія фотографій**: хмарний S3/MinIO пайплайн (WebP Sharp) vs Прямі посилання + кеш   |  🖼️ Media & CDN   |
-| [`05_product_card_and_manual_creation_module.md`](active/05_product_card_and_manual_creation_module.md) | **Картка товару та ручне створення**: Drawer з 5 вкладками, чернетки, генератор SKU         |   🗂️ UI & Logic   |
-| [`06_roadmap_releases_and_testing_strategy.md`](active/06_roadmap_releases_and_testing_strategy.md)     | **Дорожня карта релізів (1-4) & QA**: критерії готовності (DoD), Jest E2E, Playwright       |  🚀 Roadmap & QA  |
-| [`07_tasks_execution_checklist.md`](active/07_tasks_execution_checklist.md)                             | **Чеклист виконання задач**: структурований перелік задач з відмітками `[x]` / `[ ]`        | 📋 Task Execution |
-| [`csv_websklad_import_fix.md`](active/csv_websklad_import_fix.md)                                       | **Виправлення CSV парсингу (Websklad)**: RFC 4180 токенізатор, фікс категорій та цін        |  ⚡ Parser & Fix  |
+| Файл плану                                                                                              | Призначення та ключові теми                                                                                                           |       Рівень       |
+| :------------------------------------------------------------------------------------------------------ | :------------------------------------------------------------------------------------------------------------------------------------ | :----------------: |
+| [`00_master_products_and_catalogs_plan.md`](active/00_master_products_and_catalogs_plan.md)             | **Головний Генеральний План**: архітектура, візія, зв'язки модулів, дорожня карта 4 релізів                                           |   🌐 Master Plan   |
+| [`01_suppliers_and_database_architecture.md`](active/01_suppliers_and_database_architecture.md)         | **Архітектура БД & Постачальники**: схема PostgreSQL, Prisma, SQLCipher у Tauri, CQRS                                                 |  🏗️ Backend & DB   |
+| [`03_image_storage_and_cdn_strategy.md`](active/03_image_storage_and_cdn_strategy.md)                   | **Стратегія фотографій**: хмарний S3/MinIO пайплайн (WebP Sharp) vs Прямі посилання + кеш                                             |   🖼️ Media & CDN   |
+| [`05_product_card_and_manual_creation_module.md`](active/05_product_card_and_manual_creation_module.md) | **Картка товару та ручне створення**: Drawer з 5 вкладками, чернетки, генератор SKU                                                   |   🗂️ UI & Logic    |
+| [`06_roadmap_releases_and_testing_strategy.md`](active/06_roadmap_releases_and_testing_strategy.md)     | **Дорожня карта релізів (1-4) & QA**: критерії готовності (DoD), Jest E2E, Playwright                                                 |  🚀 Roadmap & QA   |
+| [`07_tasks_execution_checklist.md`](active/07_tasks_execution_checklist.md)                             | **Чеклист виконання задач**: структурований перелік задач з відмітками `[x]` / `[ ]`                                                  | 📋 Task Execution  |
+| [`csv_websklad_import_fix.md`](active/csv_websklad_import_fix.md)                                       | **Виправлення CSV парсингу (Websklad)**: RFC 4180 токенізатор, фікс категорій та цін                                                  |  ⚡ Parser & Fix   |
+| [`desktop_user_cabinet_optimization.md`](active/desktop_user_cabinet_optimization.md)                   | **Комплексна оптимізація кабінету користувача**: монохромна тема Zinc, ліміт <250 рядків, ліквідація silent failures, 100% E2E тестів | 💎 Fullstack Audit |
 
 ---
 

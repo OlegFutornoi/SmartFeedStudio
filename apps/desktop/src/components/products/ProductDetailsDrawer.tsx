@@ -113,7 +113,7 @@ export const ProductDetailsDrawer: React.FC<ProductDetailsDrawerProps> = ({
           {/* Pricing Grid */}
           <div className="p-3.5 bg-muted/20 border border-border/60 rounded-xl space-y-3">
             <div className="flex items-center gap-1.5 text-xs font-semibold text-foreground">
-              <DollarSign className="h-4 w-4 text-emerald-500" />
+              <DollarSign className="h-4 w-4 text-primary" />
               {t('catalogs:simulatorTitle')}
             </div>
 
@@ -134,11 +134,11 @@ export const ProductDetailsDrawer: React.FC<ProductDetailsDrawerProps> = ({
                 </div>
               </div>
 
-              <div className="p-2 bg-emerald-500/10 rounded-lg border border-emerald-500/20">
-                <div className="text-[10px] text-emerald-600 dark:text-emerald-400">
+              <div className="p-2 bg-muted/60 rounded-lg border border-border">
+                <div className="text-[10px] text-muted-foreground">
                   {t('catalogs:productMargin')}
                 </div>
-                <div className="text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                <div className="text-xs font-bold text-foreground">
                   +{marginPercent}% (+{Math.round(marginDiff)} ₴)
                 </div>
               </div>

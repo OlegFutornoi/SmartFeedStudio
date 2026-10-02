@@ -12,7 +12,8 @@ export function getCurrentStorageUserId(): string | null {
     if (!raw) return null;
     const parsed = JSON.parse(raw);
     return parsed?.id || null;
-  } catch {
+  } catch (err) {
+    console.warn('[mock-storage] Failed to parse user profile from localStorage:', err);
     return null;
   }
 }
@@ -26,8 +27,8 @@ export function clearLegacyMockDbStorage(): void {
   if (typeof window === 'undefined') return;
   try {
     window.localStorage?.removeItem(LEGACY_STORAGE_KEY);
-  } catch {
-    // ignore
+  } catch (err) {
+    console.warn('[mock-storage] Failed to remove legacy storage key:', err);
   }
 }
 

@@ -59,7 +59,7 @@ export const SupplierFeedsTable: React.FC<SupplierFeedsTableProps> = ({
                 </Badge>
                 <Badge
                   variant="secondary"
-                  className="text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                  className="text-[10px] bg-secondary text-secondary-foreground border border-border"
                 >
                   {source.sourceType}
                 </Badge>
@@ -134,7 +134,7 @@ export const SupplierFeedsTable: React.FC<SupplierFeedsTableProps> = ({
 
             <div className="flex items-center gap-2">
               {source.lastSyncStatus === 'SUCCESS' ? (
-                <span className="flex items-center gap-1 text-emerald-400 font-medium">
+                <span className="flex items-center gap-1 text-foreground font-medium">
                   <CheckCircle2 className="size-3" />
                   <span>{t('suppliers:statusSuccess', { defaultValue: 'Успішно' })}</span>
                 </span>

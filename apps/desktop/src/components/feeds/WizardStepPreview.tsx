@@ -225,7 +225,7 @@ export function WizardStepPreview({
               isQuotaExceeded
                 ? 'bg-destructive/10 border-destructive/30 text-destructive'
                 : selectedCategoryIds.length === 0
-                  ? 'bg-amber-500/10 border-amber-500/30 text-amber-400'
+                  ? 'bg-muted border-border text-muted-foreground'
                   : 'bg-secondary/40 border-border/60 text-foreground'
             }`}
           >
@@ -233,9 +233,9 @@ export function WizardStepPreview({
               {isQuotaExceeded ? (
                 <AlertTriangle className="size-4 text-destructive shrink-0" />
               ) : selectedCategoryIds.length === 0 ? (
-                <AlertTriangle className="size-4 text-amber-400 shrink-0" />
+                <AlertTriangle className="size-4 text-muted-foreground shrink-0" />
               ) : (
-                <CheckCircle2 className="size-4 text-emerald-400 shrink-0" />
+                <CheckCircle2 className="size-4 text-foreground shrink-0" />
               )}
               <span>
                 {selectedCategoryIds.length === 0 ? (

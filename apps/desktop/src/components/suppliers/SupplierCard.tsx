@@ -61,11 +61,9 @@ export function SupplierCard({
           </div>
 
           <Badge
-            variant={supplier.isActive ? 'secondary' : 'outline'}
+            variant={supplier.isActive ? 'default' : 'outline'}
             className={`text-[10px] shrink-0 font-medium px-2 py-0.5 ${
-              supplier.isActive
-                ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20'
-                : 'text-muted-foreground'
+              supplier.isActive ? 'bg-foreground text-background' : 'text-muted-foreground'
             }`}
           >
             {supplier.isActive ? t('suppliers:statusActive') : t('suppliers:statusInactive')}
@@ -128,7 +126,7 @@ export function SupplierCard({
             })}
             data-testid={`view-supplier-feeds-btn-${supplier.id}`}
           >
-            <Radio className="size-3.5 text-emerald-400 shrink-0 group-hover:scale-110 transition-transform" />
+            <Radio className="size-3.5 text-foreground shrink-0 group-hover:scale-110 transition-transform" />
             <div className="truncate min-w-0">
               <div className="text-[10px] text-muted-foreground leading-none truncate group-hover:text-primary transition-colors">
                 {t('suppliers:activeFeeds')}

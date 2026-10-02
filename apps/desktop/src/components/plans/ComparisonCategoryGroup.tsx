@@ -52,7 +52,7 @@ export function ComparisonCategoryGroup({
                 className={cn(
                   'p-3 text-center text-xs',
                   isPro && 'bg-primary/[0.02]',
-                  isCurrent && !isExpired && 'bg-emerald-500/[0.01]',
+                  isCurrent && !isExpired && 'bg-muted/20',
                 )}
               >
                 {row.getValue(plan, isUk)}

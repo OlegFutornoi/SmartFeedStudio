@@ -168,12 +168,12 @@ export const ProductGalleryModal: React.FC<ProductGalleryModalProps> = ({
                 <div className="w-full max-w-2xl mt-3 flex items-center justify-between px-1">
                   <div className="flex items-center gap-2 text-xs">
                     {currentImage.localPath ? (
-                      <span className="inline-flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-medium">
+                      <span className="inline-flex items-center gap-1 text-foreground font-medium">
                         <HardDrive className="h-3.5 w-3.5" />
                         {t('catalogs:imageStatusReady')}
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-1 text-amber-500 font-medium">
+                      <span className="inline-flex items-center gap-1 text-muted-foreground font-medium">
                         <RefreshCw className="h-3.5 w-3.5" />
                         {t('catalogs:imageStatusPending')}
                       </span>

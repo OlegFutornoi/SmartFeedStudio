@@ -14,6 +14,7 @@ import {
 } from '@/lib/api';
 import type { WizardStep } from './WizardDialogHeader';
 import { emitDataSync } from '@/lib/syncEvents';
+import { getFeedAnalysisErrorMessage } from './feedErrorMessages';
 
 interface UseImportFeedWizardOptions {
   isOpen: boolean;
@@ -177,47 +178,7 @@ export function useImportFeedWizard({
       return true;
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
-      let localized = t('suppliers:errorFeedGeneric', {
-        defaultValue:
-          'Помилка аналізу або завантаження фіду. Перевірте URL-адресу або спробуйте завантажити файл безпосередньо.',
-      });
-
-      if (msg === 'FEED_TIMEOUT' || msg.includes('timeout') || msg.includes('504')) {
-        localized = t('suppliers:errorFeedTimeout', {
-          defaultValue:
-            'Час очікування відповіді сервера фіду вичерпано. Сервер постачальника надто довго формує файл або недоступний.',
-        });
-      } else if (msg === 'FEED_NOT_FOUND' || msg.includes('404')) {
-        localized = t('suppliers:errorFeedNotFound', {
-          defaultValue:
-            'Фід за вказаним URL не знайдено (помилка 404). Перевірте правильність посилання.',
-        });
-      } else if (msg === 'FEED_EMPTY' || msg.includes('empty')) {
-        localized = t('suppliers:errorFeedEmpty', {
-          defaultValue: 'Сервер постачальника повернув порожню відповідь. Перевірте URL-адресу.',
-        });
-      } else if (
-        msg === 'FEED_SERVER_ERROR' ||
-        msg.includes('500') ||
-        msg.includes('502') ||
-        msg.includes('503')
-      ) {
-        localized = t('suppliers:errorFeedServerError', {
-          defaultValue:
-            'Сервер постачальника повернув помилку при спробі завантажити фід. Спробуйте пізніше.',
-        });
-      } else if (
-        msg === 'FEED_NETWORK_ERROR' ||
-        msg.includes('Failed to fetch') ||
-        msg.includes('NetworkError')
-      ) {
-        localized = t('suppliers:errorFeedNetwork', {
-          defaultValue:
-            'Не вдалося завантажити фід. Перевірте підключення до інтернету або доступність сервера постачальника.',
-        });
-      }
-
-      setAnalysisError(localized);
+      setAnalysisError(getFeedAnalysisErrorMessage(msg, t));
       return false;
     } finally {
       setIsAnalyzing(false);

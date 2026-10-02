@@ -11,8 +11,7 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(
       default: 'bg-background text-foreground border-border',
       destructive:
         'border-destructive/50 text-destructive dark:border-destructive bg-destructive/10 [&>svg]:text-destructive',
-      success:
-        'border-emerald-500/50 text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 [&>svg]:text-emerald-500',
+      success: 'border-foreground/20 text-foreground bg-muted [&>svg]:text-foreground',
     };
 
     return (

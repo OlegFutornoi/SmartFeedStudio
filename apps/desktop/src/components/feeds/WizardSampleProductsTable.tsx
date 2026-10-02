@@ -106,10 +106,10 @@ export const WizardSampleProductsTable: React.FC<WizardSampleProductsTableProps>
               readyCount > 0 ? (
                 <Badge
                   variant="outline"
-                  className="text-[11px] gap-1.5 font-normal py-0.5 px-2 text-emerald-400 border-emerald-500/30 bg-emerald-500/5"
+                  className="text-[11px] gap-1.5 font-normal py-0.5 px-2 text-foreground border-border bg-secondary"
                   data-testid="preview-photos-ready-badge"
                 >
-                  <CheckCircle2 className="size-3 text-emerald-400" />
+                  <CheckCircle2 className="size-3 text-foreground" />
                   <span>
                     {readyCount === totalWithImages
                       ? t('suppliers:previewPhotosReady', {
@@ -125,10 +125,10 @@ export const WizardSampleProductsTable: React.FC<WizardSampleProductsTableProps>
               ) : (
                 <Badge
                   variant="outline"
-                  className="text-[11px] gap-1.5 font-normal py-0.5 px-2 text-amber-400 border-amber-500/30 bg-amber-500/5"
+                  className="text-[11px] gap-1.5 font-normal py-0.5 px-2 text-muted-foreground border-border bg-muted"
                   data-testid="preview-photos-failed-badge"
                 >
-                  <AlertCircle className="size-3 text-amber-400" />
+                  <AlertCircle className="size-3 text-muted-foreground" />
                   <span>
                     {t('suppliers:previewPhotosFailed', {
                       defaultValue: 'Фото недоступні за посиланням',
@@ -152,7 +152,7 @@ export const WizardSampleProductsTable: React.FC<WizardSampleProductsTableProps>
           </div>
         </div>
 
-        <span className="text-xs text-emerald-400 font-medium flex items-center gap-1">
+        <span className="text-xs text-foreground font-medium flex items-center gap-1">
           <CheckCircle2 className="size-3.5" />
           {t('suppliers:markupCalculatedLive', { defaultValue: 'Націнка врахована' })}
         </span>
@@ -206,7 +206,7 @@ export const WizardSampleProductsTable: React.FC<WizardSampleProductsTableProps>
                       {prod.costPrice.toLocaleString('uk-UA')} ₴
                     </span>
                     <ArrowRight className="size-3 inline text-primary mx-1" />
-                    <span className="font-bold text-emerald-400">
+                    <span className="font-bold text-foreground">
                       {prod.price.toLocaleString('uk-UA')} ₴
                     </span>
                   </td>
@@ -215,7 +215,7 @@ export const WizardSampleProductsTable: React.FC<WizardSampleProductsTableProps>
                       variant={prod.inStock ? 'secondary' : 'outline'}
                       className={`text-[10px] px-2 py-0.5 font-medium ${
                         prod.inStock
-                          ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20'
+                          ? 'text-foreground bg-secondary border-border'
                           : 'text-muted-foreground bg-secondary/50'
                       }`}
                     >

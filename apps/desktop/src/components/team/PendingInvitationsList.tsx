@@ -106,8 +106,8 @@ export const PendingInvitationsList: React.FC<PendingInvitationsListProps> = ({
                   >
                     {isCopied ? (
                       <>
-                        <Check className="h-3.5 w-3.5 text-emerald-500" />
-                        <span className="text-emerald-500">{t('team.copied')}</span>
+                        <Check className="h-3.5 w-3.5 text-foreground" />
+                        <span className="text-foreground font-medium">{t('team.copied')}</span>
                       </>
                     ) : (
                       <>

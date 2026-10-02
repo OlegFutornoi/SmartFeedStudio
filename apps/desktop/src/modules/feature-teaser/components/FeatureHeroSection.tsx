@@ -35,7 +35,7 @@ export const FeatureHeroSection: React.FC<FeatureHeroSectionProps> = ({ config }
           <Badge
             data-testid="feature-hero-interactive-badge"
             variant="outline"
-            className="px-2.5 py-0.5 text-xs font-medium border-amber-500/40 text-amber-600 dark:text-amber-400 bg-amber-500/10 flex items-center gap-1.5"
+            className="px-2.5 py-0.5 text-xs font-medium border-border text-foreground bg-muted flex items-center gap-1.5"
           >
             <Lock className="h-3.5 w-3.5" />
             <span>{t('featureTeaser.common.interactivePreviewBadge')}</span>

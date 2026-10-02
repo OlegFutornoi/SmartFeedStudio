@@ -123,7 +123,7 @@ export function PlansPageHeader({
                 <span>{t('plans.billingYearly')}</span>
                 <Badge
                   data-testid="save-20-badge"
-                  className="bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20 border-emerald-500/30 text-[10px] px-1.5 py-0 font-bold"
+                  className="bg-secondary text-secondary-foreground border-border text-[10px] px-1.5 py-0 font-bold"
                 >
                   {t('plans.save20Badge')}
                 </Badge>
@@ -132,7 +132,7 @@ export function PlansPageHeader({
           </div>
 
           {billingInterval === 'yearly' && (
-            <div className="flex items-center gap-1.5 text-xs text-emerald-600 dark:text-emerald-400 font-medium">
+            <div className="flex items-center gap-1.5 text-xs text-foreground font-medium">
               <Sparkles className="size-3.5 shrink-0" />
               <span>{t('plans.saveYearlyDiscount')}</span>
             </div>

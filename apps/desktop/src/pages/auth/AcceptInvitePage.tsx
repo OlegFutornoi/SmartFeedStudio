@@ -157,7 +157,7 @@ export const AcceptInvitePage: React.FC = () => {
                 /* Existing User Screen */
                 <div className="space-y-3 p-3.5 rounded-xl border border-border/70 bg-muted/20">
                   <div className="flex items-center gap-2 text-xs font-semibold text-foreground">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
+                    <CheckCircle2 className="h-4 w-4 text-foreground shrink-0" />
                     <span>Обліковий запис знайдено</span>
                   </div>
                   <p className="text-xs text-muted-foreground leading-relaxed">

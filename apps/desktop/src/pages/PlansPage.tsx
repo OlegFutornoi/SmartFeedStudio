@@ -73,7 +73,7 @@ export const PlansPage: React.FC = () => {
       {currentLicense?.isExpired && (
         <div
           data-testid="expired-license-banner"
-          className="flex items-center gap-3 p-4 rounded-xl border border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400 animate-in fade-in"
+          className="flex items-center gap-3 p-4 rounded-xl border border-border bg-muted/70 text-foreground animate-in fade-in"
         >
           <AlertTriangle className="h-5 w-5 shrink-0" />
           <div>
@@ -94,7 +94,7 @@ export const PlansPage: React.FC = () => {
       {/* Success Notification Alert */}
       {successMessage && (
         <div
-          className="flex items-center gap-3 p-4 rounded-xl border border-emerald-500/20 bg-emerald-500/10 text-emerald-500 animate-in fade-in"
+          className="flex items-center gap-3 p-4 rounded-xl border border-border bg-muted/70 text-foreground animate-in fade-in"
           data-testid="plans-success-alert"
         >
           <CheckCircle2 className="h-5 w-5 shrink-0" />
