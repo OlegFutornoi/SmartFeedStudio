@@ -233,6 +233,7 @@ model License {
   @@index([organizationId])
   @@index([isActive])
   @@index([createdAt])
+  @@index([licenseKey(ops: raw("gin_trgm_ops"))], type: Gin)
   @@map("licenses")
 }
 

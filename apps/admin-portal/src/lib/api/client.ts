@@ -72,7 +72,32 @@ export class BaseApiClient {
     return this.refreshPromise;
   }
 
+  private inFlightRequests = new Map<string, Promise<unknown>>();
+
   public async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
+    const method = (options.method || 'GET').toUpperCase();
+
+    // Deduplicate concurrent in-flight GET requests
+    if (method === 'GET') {
+      const token = this.getToken();
+      const cacheKey = `${token || 'anon'}:${endpoint}`;
+      const existing = this.inFlightRequests.get(cacheKey);
+      if (existing) {
+        return existing as Promise<T>;
+      }
+
+      const promise = this.executeRequest<T>(endpoint, options).finally(() => {
+        this.inFlightRequests.delete(cacheKey);
+      });
+
+      this.inFlightRequests.set(cacheKey, promise);
+      return promise;
+    }
+
+    return this.executeRequest<T>(endpoint, options);
+  }
+
+  private async executeRequest<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     const token = this.getToken();
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',

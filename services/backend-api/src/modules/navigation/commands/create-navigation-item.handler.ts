@@ -2,10 +2,14 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { ConflictException } from '@nestjs/common';
 import { CreateNavigationItemCommand } from './create-navigation-item.command';
 import { PrismaService } from '../../../prisma/prisma.service';
+import { RedisCacheService } from '../../../common/cache/redis-cache.service';
 
 @CommandHandler(CreateNavigationItemCommand)
 export class CreateNavigationItemHandler implements ICommandHandler<CreateNavigationItemCommand> {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly cache: RedisCacheService,
+  ) {}
 
   async execute(command: CreateNavigationItemCommand) {
     const { dto } = command;
@@ -18,7 +22,7 @@ export class CreateNavigationItemHandler implements ICommandHandler<CreateNaviga
       throw new ConflictException(`Navigation item with key "${dto.key}" already exists`);
     }
 
-    return this.prisma.navigationItem.create({
+    const created = await this.prisma.navigationItem.create({
       data: {
         key: dto.key,
         labelUk: dto.labelUk,
@@ -32,5 +36,8 @@ export class CreateNavigationItemHandler implements ICommandHandler<CreateNaviga
         targetApp: dto.targetApp,
       },
     });
+
+    await this.cache.del('navigation:*');
+    return created;
   }
 }

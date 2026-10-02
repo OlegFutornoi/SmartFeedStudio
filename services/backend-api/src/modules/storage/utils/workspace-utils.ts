@@ -7,6 +7,7 @@ export {
   resolveWorkspacePath,
   validateWorkspacePath,
   calculateDirSizeBytes,
+  calculateDirSizeBytesAsync,
   initWorkspaceOnDisk,
   readWorkspaceInfo,
   openInOsFileManager,

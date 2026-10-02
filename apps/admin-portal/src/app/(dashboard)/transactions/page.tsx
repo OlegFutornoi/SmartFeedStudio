@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Receipt, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -19,33 +19,60 @@ export default function TransactionsPage() {
   const [isLoading, setIsLoading] = useState(true);
 
   const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('ALL');
+  const activeTxRequestRef = useRef(0);
 
-  const loadData = useCallback(async () => {
+  // Debounce search input by 300ms
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 300);
+    return () => clearTimeout(handler);
+  }, [search]);
+
+  // Load global stats once on initial mount
+  useEffect(() => {
+    api
+      .getPaymentStats()
+      .then(setStats)
+      .catch((err) => console.error('Failed to load payment stats:', err));
+  }, []);
+
+  const loadTransactions = useCallback(async () => {
+    const requestId = ++activeTxRequestRef.current;
     try {
       setIsLoading(true);
 
-      const [txRes, statsRes] = await Promise.all([
-        api.getPaymentTransactions({
-          status: statusFilter === 'ALL' ? undefined : statusFilter,
-          search: search.trim() ? search.trim() : undefined,
-          limit: 100,
-        }),
-        api.getPaymentStats(),
-      ]);
+      const txRes = await api.getPaymentTransactions({
+        status: statusFilter === 'ALL' ? undefined : statusFilter,
+        search: debouncedSearch.trim() ? debouncedSearch.trim() : undefined,
+        limit: 100,
+      });
 
-      setTransactions(txRes.transactions);
-      setStats(statsRes);
+      if (requestId === activeTxRequestRef.current) {
+        setTransactions(txRes.transactions);
+      }
     } catch (err) {
       console.error('Failed to load transactions data', err);
     } finally {
-      setIsLoading(false);
+      if (requestId === activeTxRequestRef.current) {
+        setIsLoading(false);
+      }
     }
-  }, [statusFilter, search]);
+  }, [statusFilter, debouncedSearch]);
 
   useEffect(() => {
-    loadData();
-  }, [loadData]);
+    loadTransactions();
+  }, [loadTransactions]);
+
+  const handleManualRefresh = useCallback(() => {
+    api
+      .getPaymentStats()
+      .then(setStats)
+      .catch(() => null);
+    loadTransactions();
+  }, [loadTransactions]);
 
   return (
     <div
@@ -86,7 +113,7 @@ export default function TransactionsPage() {
         onSearchChange={setSearch}
         statusFilter={statusFilter}
         onStatusFilterChange={setStatusFilter}
-        onRefresh={loadData}
+        onRefresh={handleManualRefresh}
         isLoading={isLoading}
         isUk={isUk}
       />

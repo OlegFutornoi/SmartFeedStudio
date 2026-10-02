@@ -97,6 +97,37 @@ export function calculateDirSizeBytes(dirPath: string): number {
   return totalBytes;
 }
 
+export async function calculateDirSizeBytesAsync(dirPath: string): Promise<number> {
+  try {
+    const stat = await fs.promises.stat(dirPath);
+    if (stat.isFile()) {
+      return stat.size;
+    }
+
+    const entries = await fs.promises.readdir(dirPath, { withFileTypes: true });
+    const subPromises: Promise<number>[] = [];
+
+    for (const entry of entries) {
+      const fullPath = path.join(dirPath, entry.name);
+      if (entry.isDirectory()) {
+        subPromises.push(calculateDirSizeBytesAsync(fullPath));
+      } else if (entry.isFile()) {
+        subPromises.push(
+          fs.promises
+            .stat(fullPath)
+            .then((s) => s.size)
+            .catch(() => 0),
+        );
+      }
+    }
+
+    const results = await Promise.all(subPromises);
+    return results.reduce((acc, bytes) => acc + bytes, 0);
+  } catch {
+    return 0;
+  }
+}
+
 export function initWorkspaceOnDisk(targetPath: string): WorkspaceInfoDto {
   const rootPath = resolveWorkspacePath(targetPath);
 

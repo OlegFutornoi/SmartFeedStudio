@@ -1,7 +1,7 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { GetStorageStatsQuery } from './get-storage-stats.query';
 import { StorageStatsDto } from '@smartfeed/shared';
-import { calculateDirSizeBytes, resolveWorkspacePath } from '../utils/workspace-utils';
+import { calculateDirSizeBytesAsync, resolveWorkspacePath } from '../utils/workspace-utils';
 import * as path from 'path';
 import * as fs from 'fs';
 
@@ -10,19 +10,21 @@ export class GetStorageStatsHandler implements IQueryHandler<GetStorageStatsQuer
   async execute(query: GetStorageStatsQuery): Promise<StorageStatsDto> {
     const rootPath = resolveWorkspacePath(query.workspacePath);
 
-    // Calculate real disk sizes
-    const dbSize = calculateDirSizeBytes(path.join(rootPath, 'database'));
-    const feedsSize = calculateDirSizeBytes(path.join(rootPath, 'feeds'));
-    const exportsSize = calculateDirSizeBytes(path.join(rootPath, 'exports'));
-    const backupsSize = calculateDirSizeBytes(path.join(rootPath, 'backups'));
-    const logsSize = calculateDirSizeBytes(path.join(rootPath, 'logs'));
+    // Calculate real disk sizes asynchronously in parallel
+    const [dbSize, feedsSize, exportsSize, backupsSize, logsSize] = await Promise.all([
+      calculateDirSizeBytesAsync(path.join(rootPath, 'database')),
+      calculateDirSizeBytesAsync(path.join(rootPath, 'feeds')),
+      calculateDirSizeBytesAsync(path.join(rootPath, 'exports')),
+      calculateDirSizeBytesAsync(path.join(rootPath, 'backups')),
+      calculateDirSizeBytesAsync(path.join(rootPath, 'logs')),
+    ]);
     const totalSize = dbSize + feedsSize + exportsSize + backupsSize + logsSize;
 
-    // Available disk space
+    // Available disk space non-blocking
     let availableDiskSpaceBytes: number | undefined = undefined;
     try {
-      if (typeof fs.statfsSync === 'function' && fs.existsSync(rootPath)) {
-        const statfs = fs.statfsSync(rootPath);
+      if (typeof fs.promises.statfs === 'function' && fs.existsSync(rootPath)) {
+        const statfs = await fs.promises.statfs(rootPath);
         availableDiskSpaceBytes = statfs.bavail * statfs.bsize;
       }
     } catch {

@@ -8,21 +8,27 @@ export class GetPaymentStatsHandler implements IQueryHandler<GetPaymentStatsQuer
   constructor(private readonly prisma: PrismaService) {}
 
   async execute(): Promise<PaymentStatsDto> {
-    const [successfulTxs, pendingCount, declinedCount] = await Promise.all([
-      this.prisma.paymentTransaction.findMany({
-        where: { status: 'APPROVED' },
-        select: { amount: true },
-      }),
-      this.prisma.paymentTransaction.count({
-        where: { status: 'PENDING' },
-      }),
-      this.prisma.paymentTransaction.count({
-        where: { status: 'DECLINED' },
-      }),
-    ]);
+    const statusGroups = await this.prisma.paymentTransaction.groupBy({
+      by: ['status'],
+      _count: { id: true },
+      _sum: { amount: true },
+    });
 
-    const successfulCount = successfulTxs.length;
-    const totalRevenueUah = successfulTxs.reduce((sum, tx) => sum + Number(tx.amount), 0);
+    let successfulCount = 0;
+    let pendingCount = 0;
+    let declinedCount = 0;
+    let totalRevenueUah = 0;
+
+    for (const group of statusGroups) {
+      if (group.status === 'APPROVED') {
+        successfulCount = group._count.id;
+        totalRevenueUah = Number(group._sum.amount || 0);
+      } else if (group.status === 'PENDING') {
+        pendingCount = group._count.id;
+      } else if (group.status === 'DECLINED') {
+        declinedCount = group._count.id;
+      }
+    }
     const averageCheckUah =
       successfulCount > 0 ? Math.round((totalRevenueUah / successfulCount) * 100) / 100 : 0;
 

@@ -5,6 +5,7 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { BullModule } from '@nestjs/bullmq';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { PrismaModule } from './prisma/prisma.module';
+import { RedisCacheModule } from './common/cache/redis-cache.module';
 import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { OrganizationsModule } from './modules/organizations/organizations.module';
@@ -56,8 +57,9 @@ import { PaymentsModule } from './modules/payments/payments.module';
       inject: [ConfigService],
     }),
 
-    // Database
+    // Database & Caching
     PrismaModule,
+    RedisCacheModule,
 
     // Global Infrastructure Modules
     MailModule,

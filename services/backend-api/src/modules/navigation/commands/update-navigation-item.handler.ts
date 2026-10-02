@@ -2,10 +2,14 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { NotFoundException, ConflictException } from '@nestjs/common';
 import { UpdateNavigationItemCommand } from './update-navigation-item.command';
 import { PrismaService } from '../../../prisma/prisma.service';
+import { RedisCacheService } from '../../../common/cache/redis-cache.service';
 
 @CommandHandler(UpdateNavigationItemCommand)
 export class UpdateNavigationItemHandler implements ICommandHandler<UpdateNavigationItemCommand> {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly cache: RedisCacheService,
+  ) {}
 
   async execute(command: UpdateNavigationItemCommand) {
     const { id, dto } = command;
@@ -27,7 +31,7 @@ export class UpdateNavigationItemHandler implements ICommandHandler<UpdateNaviga
       }
     }
 
-    return this.prisma.navigationItem.update({
+    const updated = await this.prisma.navigationItem.update({
       where: { id },
       data: {
         ...(dto.key !== undefined && { key: dto.key }),
@@ -42,5 +46,8 @@ export class UpdateNavigationItemHandler implements ICommandHandler<UpdateNaviga
         ...(dto.targetApp !== undefined && { targetApp: dto.targetApp }),
       },
     });
+
+    await this.cache.del('navigation:*');
+    return updated;
   }
 }

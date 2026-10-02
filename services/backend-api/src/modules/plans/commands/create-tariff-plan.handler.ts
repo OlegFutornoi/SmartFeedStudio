@@ -2,6 +2,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { ConflictException, Injectable, Logger } from '@nestjs/common';
 import { TariffPlanDto } from '@smartfeed/shared';
 import { PrismaService } from '../../../prisma/prisma.service';
+import { RedisCacheService } from '../../../common/cache/redis-cache.service';
 import { CreateTariffPlanCommand } from './create-tariff-plan.command';
 import { mapTariffPlanToDto } from '../utils/map-tariff-plan-to-dto';
 
@@ -13,7 +14,10 @@ export class CreateTariffPlanHandler implements ICommandHandler<
 > {
   private readonly logger = new Logger(CreateTariffPlanHandler.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly cache: RedisCacheService,
+  ) {}
 
   async execute(command: CreateTariffPlanCommand): Promise<TariffPlanDto> {
     const { dto } = command;
@@ -65,6 +69,7 @@ export class CreateTariffPlanHandler implements ICommandHandler<
     });
 
     this.logger.log(`Created tariff plan: code=${plan.code}, nameUk="${plan.nameUk}"`);
+    await this.cache.del('tariff_plans:*');
 
     return mapTariffPlanToDto(plan);
   }

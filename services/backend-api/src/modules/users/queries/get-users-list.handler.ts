@@ -98,8 +98,8 @@ export class GetUsersListHandler implements IQueryHandler<GetUsersListQuery> {
         },
       },
       orderBy: { createdAt: 'desc' },
-      take: query.limit,
-      skip: query.offset,
+      take: query.limit ?? 50,
+      skip: query.offset ?? 0,
     });
 
     return users.map((u) => {

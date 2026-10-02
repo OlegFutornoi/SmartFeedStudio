@@ -8,17 +8,31 @@ export class GetUsersStatsHandler implements IQueryHandler<GetUsersStatsQuery> {
   constructor(private readonly prisma: PrismaService) {}
 
   async execute(): Promise<UsersStatsDto> {
-    const [totalUsers, activeLicenses, superAdminsCount, standardUsersCount] = await Promise.all([
-      this.prisma.user.count({ where: { role: { not: 'SUPER_ADMIN' } } }),
+    const [userRoleGroups, activeLicenses] = await Promise.all([
+      this.prisma.user.groupBy({
+        by: ['role'],
+        _count: { id: true },
+      }),
       this.prisma.license.count({ where: { isActive: true } }),
-      this.prisma.user.count({ where: { role: 'ADMIN' } }),
-      this.prisma.user.count({ where: { role: 'USER' } }),
     ]);
+
+    let adminsCount = 0;
+    let standardUsersCount = 0;
+
+    for (const group of userRoleGroups) {
+      if (group.role === 'ADMIN') {
+        adminsCount = group._count.id;
+      } else if (group.role === 'USER') {
+        standardUsersCount = group._count.id;
+      }
+    }
+
+    const totalUsers = adminsCount + standardUsersCount;
 
     return {
       totalUsers,
       activeLicenses,
-      superAdminsCount,
+      superAdminsCount: adminsCount,
       standardUsersCount,
     };
   }

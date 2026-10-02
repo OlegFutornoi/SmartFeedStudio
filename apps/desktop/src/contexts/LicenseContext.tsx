@@ -26,7 +26,14 @@ const LicenseContext = createContext<LicenseContextType | undefined>(undefined);
 
 export function LicenseProvider({ children }: { children: React.ReactNode }) {
   const { token, isAuthenticated, user } = useAuth();
-  const [license, setLicense] = useState<LicenseEntity | null>(null);
+  const [license, setLicense] = useState<LicenseEntity | null>(() => {
+    try {
+      const saved = localStorage.getItem('smartfeed_license');
+      return saved ? (JSON.parse(saved) as LicenseEntity) : null;
+    } catch {
+      return null;
+    }
+  });
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isExpired, setIsExpired] = useState<boolean>(false);
   const isFetchingRef = useRef<boolean>(false);
@@ -58,6 +65,9 @@ export function LicenseProvider({ children }: { children: React.ReactNode }) {
       try {
         const lic = await getMyLicense(token);
         setLicense(lic);
+        if (lic) {
+          localStorage.setItem('smartfeed_license', JSON.stringify(lic));
+        }
         const expired = isAdmin ? false : Boolean(!lic || !lic.isActive || lic.isExpired);
         setIsExpired(expired);
         lastFetchedTokenRef.current = token;
@@ -76,7 +86,7 @@ export function LicenseProvider({ children }: { children: React.ReactNode }) {
         setIsLoading(false);
       }
     },
-    [token, isAuthenticated, isAdmin, license],
+    [token, isAuthenticated, isAdmin],
   );
 
   useEffect(() => {

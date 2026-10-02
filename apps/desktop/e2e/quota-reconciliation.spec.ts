@@ -1,8 +1,6 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Desktop App — Узгодження Надлишку Даних при Зниженні Тарифу (Downgrade Reconciliation)', () => {
-  const API = 'http://localhost:4000/api';
-
   const mockUser = {
     id: 'usr_reconcile_123',
     email: 'reconcile.test@smartfeed.local',
@@ -171,44 +169,45 @@ test.describe('Desktop App — Узгодження Надлишку Даних 
       ({ user, license, token }) => {
         localStorage.setItem('smartfeed_user_profile', JSON.stringify(user));
         localStorage.setItem('smartfeed_access_token', token);
+        localStorage.setItem('smartfeed_refresh_token', 'fake_refresh_token_reconcile');
         localStorage.setItem('smartfeed_license', JSON.stringify(license));
         localStorage.setItem('smartfeed_language', 'uk');
       },
       {
         user: mockUser,
         license: mockStarterLicense,
-        token: 'fake_jwt_token_reconcile',
+        token: 'mock-jwt-token-reconcile',
       },
     );
 
-    // Mock API routes - explicitly target backend API (port 4000) to never intercept Vite modules (/src/lib/api/*)
-    await page.route(`${API}/auth/me`, (route) => route.fulfill({ status: 200, json: mockUser }));
-    await page.route(`${API}/licenses/my`, (route) =>
+    // Mock API routes using flexible globs
+    await page.route('**/api/auth/me', (route) => route.fulfill({ status: 200, json: mockUser }));
+    await page.route('**/api/licenses/my', (route) =>
       route.fulfill({ status: 200, json: mockStarterLicense }),
     );
-    await page.route(`${API}/licenses/quotas`, (route) =>
+    await page.route('**/api/licenses/quotas', (route) =>
       route.fulfill({ status: 200, json: mockExcessQuotas }),
     );
-    await page.route(`${API}/suppliers`, (route) => {
+    await page.route('**/api/suppliers', (route) => {
       if (route.request().method() === 'GET') {
         route.fulfill({ status: 200, json: mockSuppliers });
       } else {
         route.continue();
       }
     });
-    await page.route(`${API}/products/categories-summary`, (route) =>
+    await page.route('**/api/products/categories-summary', (route) =>
       route.fulfill({ status: 200, json: mockCategoriesSummary }),
     );
-    await page.route(`${API}/feeds/suppliers/sup_mmm_1/sources`, (route) =>
+    await page.route('**/api/feeds/suppliers/sup_mmm_1/sources', (route) =>
       route.fulfill({ status: 200, json: mockFeedSources }),
     );
-    await page.route(`${API}/products*`, (route) =>
+    await page.route(/\/api\/products(\?|$)/, (route) =>
       route.fulfill({ status: 200, json: { items: [], total: 5102, page: 1, pageSize: 1 } }),
     );
-    await page.route(`${API}/feeds/jobs/active`, (route) =>
+    await page.route('**/api/feeds/jobs/active', (route) =>
       route.fulfill({ status: 200, json: [] }),
     );
-    await page.route(`${API}/navigation`, (route) => route.fulfill({ status: 200, json: [] }));
+    await page.route('**/api/navigation*', (route) => route.fulfill({ status: 200, json: [] }));
   });
 
   test('відображає QuotaExcessBanner коли ліміти тарифу перевищено та відкриває діалог узгодження', async ({
@@ -247,7 +246,7 @@ test.describe('Desktop App — Узгодження Надлишку Даних 
     await expect(dialog).toContainText(/902\s*\/\s*1[, ]?000\s*SKU/);
 
     // 6. Mock bulk delete endpoint
-    await page.route(`${API}/products/bulk-delete`, (route) =>
+    await page.route('**/api/products/bulk-delete', (route) =>
       route.fulfill({
         status: 200,
         json: {
@@ -259,7 +258,7 @@ test.describe('Desktop App — Узгодження Надлишку Даних 
     );
 
     // Mock updated quotas within limit
-    await page.route(`${API}/licenses/quotas`, (route) =>
+    await page.route('**/api/licenses/quotas', (route) =>
       route.fulfill({
         status: 200,
         json: {
@@ -323,7 +322,7 @@ test.describe('Desktop App — Узгодження Надлишку Даних 
     await expect(deleteFeedBtn).toBeVisible();
 
     // Mock delete feed endpoint
-    await page.route(`${API}/feeds/suppliers/sup_mmm_1/sources/feed_1*`, (route) =>
+    await page.route('**/api/feeds/suppliers/sup_mmm_1/sources/feed_1*', (route) =>
       route.fulfill({
         status: 200,
         json: { success: true, deletedProductsCount: 4200 },
@@ -331,7 +330,7 @@ test.describe('Desktop App — Узгодження Надлишку Даних 
     );
 
     // Mock updated feed sources after delete
-    await page.route(`${API}/feeds/suppliers/sup_mmm_1/sources`, (route) =>
+    await page.route('**/api/feeds/suppliers/sup_mmm_1/sources', (route) =>
       route.fulfill({
         status: 200,
         json: [mockFeedSources[1]],
@@ -365,7 +364,7 @@ test.describe('Desktop App — Узгодження Надлишку Даних 
     await expect(deleteSupBtn).toBeVisible();
 
     // Mock delete supplier endpoint
-    await page.route(`${API}/suppliers/sup_mmm_1`, (route) =>
+    await page.route('**/api/suppliers/sup_mmm_1', (route) =>
       route.fulfill({
         status: 200,
         json: { success: true },
@@ -373,7 +372,7 @@ test.describe('Desktop App — Узгодження Надлишку Даних 
     );
 
     // Mock updated suppliers after delete
-    await page.route(`${API}/suppliers`, (route) =>
+    await page.route('**/api/suppliers', (route) =>
       route.fulfill({
         status: 200,
         json: [],
@@ -399,7 +398,7 @@ test.describe('Desktop App — Узгодження Надлишку Даних 
     await selectAllBtn.click();
 
     // Delay the bulk delete response slightly to observe background job widget
-    await page.route(`${API}/products/bulk`, async (route) => {
+    await page.route('**/api/products/bulk', async (route) => {
       await new Promise((resolve) => setTimeout(resolve, 500));
       await route.fulfill({
         status: 200,
@@ -408,7 +407,7 @@ test.describe('Desktop App — Узгодження Надлишку Даних 
     });
 
     // Mock post-delete data
-    await page.route(`${API}/products/categories-summary`, (route) =>
+    await page.route('**/api/products/categories-summary', (route) =>
       route.fulfill({
         status: 200,
         json: [],

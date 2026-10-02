@@ -1,6 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../../prisma/prisma.service';
+import { RedisCacheService } from '../../../common/cache/redis-cache.service';
 import { DeleteTariffPlanCommand } from './delete-tariff-plan.command';
 
 @Injectable()
@@ -11,7 +12,10 @@ export class DeleteTariffPlanHandler implements ICommandHandler<
 > {
   private readonly logger = new Logger(DeleteTariffPlanHandler.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly cache: RedisCacheService,
+  ) {}
 
   async execute(command: DeleteTariffPlanCommand): Promise<{ success: boolean; id: string }> {
     const { id } = command;
@@ -36,6 +40,7 @@ export class DeleteTariffPlanHandler implements ICommandHandler<
     });
 
     this.logger.log(`Deleted tariff plan id=${id}, code=${existing.code}`);
+    await this.cache.del('tariff_plans:*');
 
     return { success: true, id };
   }

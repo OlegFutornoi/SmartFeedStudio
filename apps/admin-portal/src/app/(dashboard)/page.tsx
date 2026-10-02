@@ -34,7 +34,7 @@ export default function DashboardOverviewPage() {
           api.getUsers({ limit: 5 }),
           api.getPaymentStats().catch(() => null),
           api.getPaymentTransactions({ limit: 5 }).catch(() => ({ transactions: [], total: 0 })),
-          api.getAdminLicenses().catch(() => []),
+          api.getAdminLicenses({ limit: 5 }).catch(() => []),
         ]);
         setStats(statsData);
         setRecentUsers(usersData);

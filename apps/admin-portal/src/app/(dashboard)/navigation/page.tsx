@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import dynamic from 'next/dynamic';
 import {
   NavigationItemDto,
@@ -63,6 +63,8 @@ export default function NavigationManagementPage() {
   const [isDeleting, setIsDeleting] = useState(false);
 
   const { t, locale } = useLanguage();
+  const localeRef = useRef(locale);
+  localeRef.current = locale;
 
   const loadItems = useCallback(async () => {
     try {
@@ -71,11 +73,11 @@ export default function NavigationManagementPage() {
       const data = await api.getAdminNavigationItems();
       setItems(data);
     } catch (err: unknown) {
-      setError(translateError(err, locale));
+      setError(translateError(err, localeRef.current));
     } finally {
       setIsLoading(false);
     }
-  }, [locale]);
+  }, []);
 
   useEffect(() => {
     loadItems();

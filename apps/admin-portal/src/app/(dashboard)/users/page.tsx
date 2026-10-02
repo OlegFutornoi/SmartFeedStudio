@@ -33,6 +33,7 @@ export default function UsersManagementPage() {
         search: search.trim() || undefined,
         role: selectedRole === 'ALL' ? undefined : selectedRole,
         orgRoleFilter: selectedOrgRole === 'ALL' ? undefined : selectedOrgRole,
+        limit: 50,
       });
       if (requestId === activeRequestRef.current) {
         setUsers(data);
