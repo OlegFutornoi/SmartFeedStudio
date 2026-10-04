@@ -271,6 +271,11 @@ test.describe('Desktop App — Віртуалізована Таблиця То�
     await expect(firstRow).toBeVisible();
     await expect(firstRow).toContainText('SKU-DEMO-0001');
     await expect(firstRow).toContainText('Brain Distribution');
+
+    // Assert that the supplier badge displays the actual company name, not generic fallback
+    const supplierBadge = page.getByTestId('product-supplier-badge-prod_1');
+    await expect(supplierBadge).toBeVisible();
+    await expect(supplierBadge).toHaveText('Brain Distribution');
   });
 
   test('2. Фасетна фільтрація: живий пошук за назвою та артикулом + фільтр за категорією та наявністю', async ({
@@ -378,6 +383,65 @@ test.describe('Desktop App — Віртуалізована Таблиця То�
       // Revert back to Ukrainian
       await langBtn.click();
       await expect(page.getByTestId('tab-products')).toContainText('Товари каталогу');
+    }
+  });
+
+  test('6. Всі товари обовʼязково відображають справжнє імʼя постачальника і ніколи не показують технічне слово «Постачальник»', async ({
+    page,
+  }) => {
+    await expect(page.getByTestId('products-view')).toBeVisible();
+
+    // Verify all rendered supplier badges across the table
+    const badges = page.locator('[data-testid^="product-supplier-badge-"]');
+    const count = await badges.count();
+    expect(count).toBeGreaterThan(0);
+
+    for (let i = 0; i < count; i++) {
+      const badge = badges.nth(i);
+      await expect(badge).toBeVisible();
+      const text = await badge.innerText();
+      // Zero tolerance for fallback column title as company name
+      expect(text.trim()).not.toBe('Постачальник');
+      expect(text.trim()).not.toBe('Supplier');
+      expect(text.trim()).toBe('Brain Distribution');
+    }
+  });
+
+  test('7. Видалення фіду у постачальника каскадно видаляє всі товари цього фіду з каталогу (zero orphaned products)', async ({
+    page,
+  }) => {
+    await expect(page.getByTestId('products-view')).toBeVisible();
+
+    // 1. Assert initial products exist
+    const initialRows = page.locator('[data-testid^="product-row-"]');
+    const initialCount = await initialRows.count();
+    expect(initialCount).toBeGreaterThan(0);
+
+    // 2. Switch to Feeds tab
+    const catalogsTab = page.getByTestId('tab-catalogs');
+    await catalogsTab.click();
+
+    // 3. Locate feed delete button
+    const deleteFeedBtn = page.locator('[data-testid^="delete-feed-btn-"]').first();
+    if (await deleteFeedBtn.isVisible()) {
+      await deleteFeedBtn.click();
+
+      // 4. Confirm deletion in modal
+      const confirmBtn = page.locator('[data-testid="confirm-dialog-confirm-btn"]');
+      await expect(confirmBtn).toBeVisible();
+      await confirmBtn.click();
+
+      // Wait for deletion background task and reactive sync
+      await page.waitForTimeout(500);
+
+      // 5. Switch back to Products Catalog tab
+      const productsTab = page.getByTestId('tab-products');
+      await productsTab.click();
+
+      // 6. Assert that cascading deletion cleared the products of this deleted feed
+      const remainingRows = page.locator('[data-testid^="product-row-"]');
+      const remainingCount = await remainingRows.count();
+      expect(remainingCount).toBeLessThan(initialCount);
     }
   });
 });

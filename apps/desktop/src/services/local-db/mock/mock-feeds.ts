@@ -106,15 +106,34 @@ export function deleteFeedSource(
     const initialCount = state.products.length;
     const deletedProductIds = new Set<string>();
 
+    const remainingFeeds = state.feedSources.get(supplierId) || [];
+    const remainingFeedIds = new Set(remainingFeeds.map((f) => f.id));
+
     state.products = state.products.filter((p) => {
       const pFeedSourceId =
         (p as unknown as { feedSourceId?: string; feed_source_id?: string }).feedSourceId ||
         (p as unknown as { feedSourceId?: string; feed_source_id?: string }).feed_source_id;
 
+      // 1. Direct match with deleted feed source
       if (pFeedSourceId === sourceId) {
         deletedProductIds.add(p.id);
         return false;
       }
+
+      // 2. If product belongs to the target supplier:
+      if (p.supplierId === supplierId) {
+        // If no other feeds remain for this supplier, all products belonged to this feed
+        if (remainingFeedIds.size === 0) {
+          deletedProductIds.add(p.id);
+          return false;
+        }
+        // If other feeds exist, clean up orphaned products with no matching active feed
+        if (!pFeedSourceId || !remainingFeedIds.has(pFeedSourceId)) {
+          deletedProductIds.add(p.id);
+          return false;
+        }
+      }
+
       return true;
     });
 

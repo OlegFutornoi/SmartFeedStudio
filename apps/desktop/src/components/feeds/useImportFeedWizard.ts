@@ -12,9 +12,9 @@ import {
   type FeedAnalysisResult,
   type ImportFeedResultDto,
 } from '@/lib/api';
-import type { WizardStep } from './WizardDialogHeader';
+import type { WizardStep } from '@/components/feeds/WizardDialogHeader';
 import { emitDataSync } from '@/lib/syncEvents';
-import { getFeedAnalysisErrorMessage } from './feedErrorMessages';
+import { getFeedAnalysisErrorMessage } from '@/components/feeds/feedErrorMessages';
 
 interface UseImportFeedWizardOptions {
   isOpen: boolean;
@@ -160,7 +160,11 @@ export function useImportFeedWizard({
           setIsAnalyzing(false);
           return false;
         }
-        result = await analyzeFeedUrl(targetUrl.trim(), selectedSupplierId || undefined);
+        result = await analyzeFeedUrl(
+          targetUrl.trim(),
+          selectedSupplierId || undefined,
+          token || undefined,
+        );
       } else {
         if (!targetContent) {
           setAnalysisError(

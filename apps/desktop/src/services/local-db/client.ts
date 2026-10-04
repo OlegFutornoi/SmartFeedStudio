@@ -1,11 +1,22 @@
 import { isTauri } from '@/lib/runtime';
-import { mockDatabaseDriver } from './mock-driver';
-import type { LocalDbCommandMap } from './types';
+import { mockDatabaseDriver } from '@/services/local-db/mock-driver';
+import type { LocalDbCommandMap } from '@/services/local-db/types';
 
 function prepareTauriArgs(command: string, args: unknown): Record<string, unknown> {
   const raw = (args || {}) as Record<string, unknown>;
 
   switch (command) {
+    case 'db_get_supplier_by_id':
+      return {
+        id: raw.id,
+      };
+
+    case 'db_get_categories_summary':
+      return {
+        supplierId: raw.supplierId || undefined,
+        supplier_id: raw.supplierId || undefined,
+      };
+
     case 'db_create_supplier':
       return {
         dto: raw.payload || raw.dto || raw,
@@ -65,6 +76,7 @@ function prepareTauriArgs(command: string, args: unknown): Record<string, unknow
 const REGISTERED_TAURI_COMMANDS = new Set([
   'db_get_counters',
   'db_get_suppliers',
+  'db_get_supplier_by_id',
   'db_create_supplier',
   'db_update_supplier',
   'db_delete_supplier',
@@ -72,6 +84,7 @@ const REGISTERED_TAURI_COMMANDS = new Set([
   'db_create_feed_source',
   'db_delete_feed_source',
   'db_get_products',
+  'db_get_categories_summary',
   'db_bulk_upsert_products',
   'db_bulk_delete_products',
   'db_get_product_images',

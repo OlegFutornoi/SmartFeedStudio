@@ -1,10 +1,10 @@
-import { localSuppliersService } from './suppliers.service';
-import { localPricingService } from './pricing.service';
-import { localExportService } from './export.service';
-import { localProductsService } from './products.service';
-import { localFeedsService } from './feeds.service';
-import { localImagesService } from './images.service';
-import { mockDatabaseDriver } from './mock-driver';
+import { localSuppliersService } from '@/services/local-db/suppliers.service';
+import { localPricingService } from '@/services/local-db/pricing.service';
+import { localExportService } from '@/services/local-db/export.service';
+import { localProductsService } from '@/services/local-db/products.service';
+import { localFeedsService } from '@/services/local-db/feeds.service';
+import { localImagesService } from '@/services/local-db/images.service';
+import { mockDatabaseDriver } from '@/services/local-db/mock-driver';
 
 export {
   localSuppliersService,

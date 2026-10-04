@@ -32,6 +32,9 @@ export default tseslint.config(
         Buffer: 'readonly',
         __dirname: 'readonly',
         __filename: 'readonly',
+        module: 'readonly',
+        exports: 'readonly',
+        require: 'readonly',
       },
     },
     plugins: {

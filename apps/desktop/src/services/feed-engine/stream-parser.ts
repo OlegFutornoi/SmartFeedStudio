@@ -1,7 +1,7 @@
 import { FeedFormat, type FeedColumnMapping } from '@smartfeed/shared';
-import { detectFeedFormat } from './format-detector';
-import { xmlFeedParser } from './xml-parser';
-import { csvFeedParser } from './csv-parser';
+import { detectFeedFormat } from '@/services/feed-engine/format-detector';
+import { xmlFeedParser } from '@/services/feed-engine/xml-parser';
+import { csvFeedParser } from '@/services/feed-engine/csv-parser';
 
 export interface ParsedCategory {
   id: string;

@@ -1,6 +1,10 @@
 import { FeedFormat, type FeedColumnMapping } from '@smartfeed/shared';
-import { autoMapColumns } from './auto-mapper';
-import type { ParsedCategory, RawParsedProduct, FeedAnalysisResult } from './stream-parser';
+import { autoMapColumns } from '@/services/feed-engine/auto-mapper';
+import type {
+  ParsedCategory,
+  RawParsedProduct,
+  FeedAnalysisResult,
+} from '@/services/feed-engine/stream-parser';
 
 /**
  * High-performance RFC 4180 compliant streaming CSV parser.

@@ -1,14 +1,14 @@
-export * from './format-detector';
-export * from './auto-mapper';
-export * from './stream-parser';
-export * from './csv-parser';
-export * from './xml-parser';
-export * from './batch-ingester';
+export * from '@/services/feed-engine/format-detector';
+export * from '@/services/feed-engine/auto-mapper';
+export * from '@/services/feed-engine/stream-parser';
+export * from '@/services/feed-engine/csv-parser';
+export * from '@/services/feed-engine/xml-parser';
+export * from '@/services/feed-engine/batch-ingester';
 
-import { feedStreamParser, type RawParsedProduct } from './stream-parser';
-import { batchIngester, type BatchIngestResult } from './batch-ingester';
-import { autoMapColumns } from './auto-mapper';
-import { detectFeedFormat } from './format-detector';
+import { feedStreamParser, type RawParsedProduct } from '@/services/feed-engine/stream-parser';
+import { batchIngester, type BatchIngestResult } from '@/services/feed-engine/batch-ingester';
+import { autoMapColumns } from '@/services/feed-engine/auto-mapper';
+import { detectFeedFormat } from '@/services/feed-engine/format-detector';
 import type { FeedColumnMapping } from '@smartfeed/shared';
 
 export const feedEngine = {

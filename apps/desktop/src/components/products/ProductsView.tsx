@@ -221,6 +221,7 @@ export const ProductsView: React.FC<ProductsViewProps> = ({
           {/* Main Table */}
           <ProductsTable
             products={products}
+            suppliers={suppliers}
             totalItems={total}
             currentPage={page}
             pageSize={limit}
@@ -245,6 +246,7 @@ export const ProductsView: React.FC<ProductsViewProps> = ({
       {/* Drawer */}
       <ProductDetailsDrawer
         product={drawerProduct}
+        suppliers={suppliers}
         onClose={() => setDrawerProduct(null)}
         onProductUpdate={(updated) => {
           setDrawerProduct(updated);

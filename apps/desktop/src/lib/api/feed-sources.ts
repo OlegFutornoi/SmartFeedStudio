@@ -1,8 +1,10 @@
 import { localDb } from '@/services/local-db';
 import { isTauri } from '@/lib/runtime';
 import { emitDataSync } from '@/lib/syncEvents';
-import { fetchWithAuth } from './client';
-import type { ImportFeedResultDto } from './feeds';
+import { feedEngine } from '@/services/feed-engine';
+import { fetchFeedContent } from '@/lib/api/feeds-mutations';
+import { fetchWithAuth } from '@/lib/api/client';
+import type { ImportFeedResultDto } from '@/lib/api/feeds';
 
 export interface FeedSourceItemDto {
   id: string;
@@ -100,7 +102,39 @@ export async function syncSupplierFeedSource(
   supplierId: string,
   sourceId: string,
   token?: string,
-): Promise<{ success: boolean; jobId: string }> {
+): Promise<{ success: boolean; jobId: string; updatedCount?: number }> {
+  // 1. Try local feed synchronization
+  try {
+    const sources = await localDb.feeds.getSupplierFeedSources(supplierId);
+    const feed = sources.find((s) => s.id === sourceId);
+
+    if (feed && feed.sourceUrl) {
+      // 2. Fetch fresh XML/CSV content via our CORS-free pipeline
+      const content = await fetchFeedContent(feed.sourceUrl, token);
+
+      // 3. Re-parse products
+      const rawProducts = feedEngine.parseProducts(content, {
+        supplierId,
+      });
+
+      // 4. Batch ingest to update prices (with markup rules) & stock quantities in SQLite
+      const ingestResult = await feedEngine.ingest(supplierId, rawProducts, feed.id);
+
+      // 5. Emit reactive data sync so all UI tables, cards, and counts refresh instantly
+      emitDataSync(['products', 'feeds', 'suppliers', 'quotas', 'all']);
+
+      return {
+        success: true,
+        jobId: `sync_${Date.now()}`,
+        updatedCount: ingestResult.createdCount,
+      };
+    }
+  } catch (localErr) {
+    console.warn('[feed-sources:syncSupplierFeedSource] Local sync error:', localErr);
+    throw localErr;
+  }
+
+  // Fallback for remote cloud backend
   if (!isTauri()) {
     try {
       const response = await fetchWithAuth(
@@ -115,6 +149,7 @@ export async function syncSupplierFeedSource(
       console.warn('[ApiClient] Remote call failed, using local fallback:', err);
     }
   }
+
   return { success: true, jobId: `job_${Date.now()}` };
 }
 

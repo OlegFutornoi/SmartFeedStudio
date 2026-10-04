@@ -5,8 +5,8 @@
  */
 import { localDb } from '@/services/local-db';
 import { isTauri } from '@/lib/runtime';
-import { fetchWithAuth } from './client';
-import { fetchFeedContent } from './feeds-mutations';
+import { fetchWithAuth } from '@/lib/api/client';
+import { fetchFeedContent } from '@/lib/api/feeds-mutations';
 
 // ──────────────────────────────────────────────────────────────────────────────
 // Shared types
@@ -51,7 +51,7 @@ export interface ImportFeedResultDto {
 }
 
 // ImportJobDto is canonical in feeds-mutations.ts — re-export to keep public API stable
-export type { ImportJobDto } from './feeds-mutations';
+export type { ImportJobDto } from '@/lib/api/feeds-mutations';
 
 // ──────────────────────────────────────────────────────────────────────────────
 // Query functions
@@ -80,12 +80,16 @@ export async function analyzeFeedUrl(
       if (response.ok) {
         return (await response.json()) as FeedAnalysisResult;
       }
+      throw new Error(`FEED_MOCK_ERROR_${response.status}`);
     } catch (err) {
+      if (isAutomatedTest) {
+        throw err;
+      }
       console.warn('[ApiClient] Remote mock call failed, falling back to local analysis:', err);
     }
   }
 
-  const content = await fetchFeedContent(url);
+  const content = await fetchFeedContent(url, token);
   const res = await localDb.feeds.analyzeFeed(content, supplierId);
   return {
     format: res.format,
@@ -120,7 +124,7 @@ export async function analyzeFeedContent(
   token?: string,
 ): Promise<FeedAnalysisResult> {
   if (isTauri()) {
-    const res = await localDb.feeds.analyzeFeed(content);
+    const res = await localDb.feeds.analyzeFeed(content, supplierId);
     return {
       format: res.format,
       totalDetected: res.totalProducts,
@@ -131,8 +135,18 @@ export async function analyzeFeedContent(
         name: c.name,
         productCount: c.productCount,
       })),
-      sampleCategories: res.categories.map((c) => ({ externalId: c.id, name: c.name })),
-      sampleProducts: [],
+      sampleCategories: res.sampleCategories || [],
+      sampleProducts: (res.sampleProducts || []).map((p) => ({
+        sku: p.sku,
+        titleUk: p.titleUk,
+        costPrice: p.costPrice,
+        price: p.price,
+        currency: p.currency || 'UAH',
+        stockQuantity: p.stockQuantity,
+        inStock: p.inStock,
+        categoryName: p.categoryName,
+        images: (p.images || []).map((img: string) => ({ originalUrl: img, isMain: true })),
+      })),
       rawContent: content,
     };
   }
@@ -188,4 +202,4 @@ export {
   getImportJobStatus,
   getActiveImportJobs,
   fetchFeedContent,
-} from './feeds-mutations';
+} from '@/lib/api/feeds-mutations';

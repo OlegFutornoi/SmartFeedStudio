@@ -1,7 +1,7 @@
 import { ProductStatus, type ProductDto, type SupplierPricingRuleDto } from '@smartfeed/shared';
 import { localDb } from '@/services/local-db';
 import { emitDataSync } from '@/lib/syncEvents';
-import type { RawParsedProduct } from './stream-parser';
+import type { RawParsedProduct } from '@/services/feed-engine/stream-parser';
 
 export interface BatchIngestResult {
   totalProcessed: number;
@@ -19,7 +19,12 @@ export class BatchIngester {
     rawProducts: RawParsedProduct[],
     feedSourceId?: string,
   ): Promise<BatchIngestResult> {
-    const supplier = await localDb.suppliers.getSupplierById(supplierId);
+    let supplier = await localDb.suppliers.getSupplierById(supplierId);
+    if (!supplier) {
+      const allSups = await localDb.suppliers.getSuppliers();
+      supplier =
+        allSups.find((s) => s.id === supplierId) || (allSups.length === 1 ? allSups[0] : null);
+    }
     const pricingRules = await localDb.pricing.getPricingRules(supplierId);
 
     const defaultMargin = supplier?.defaultMarginPercent || 0;
@@ -38,8 +43,8 @@ export class BatchIngester {
       return {
         id: `prod_${supplierId}_${raw.sku}_${Date.now()}_${idx}`,
         catalogId: 'cat_local_default',
-        supplierId,
-        supplierName: supplier?.name || 'Постачальник',
+        supplierId: supplier?.id || supplierId,
+        supplierName: supplier?.name || supplier?.code || '',
         supplierCode: supplier?.code,
         feedSourceId: feedSourceId || null,
         sku: raw.sku,

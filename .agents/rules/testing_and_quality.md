@@ -38,7 +38,18 @@ description: Mandatory testing standards, test isolation, data cleanup, git comm
 
 ---
 
-## 📏 4. Rule Files Size Limit & Continuous Modularization Policy (Max 12,000 Chars)
+## 🎯 4. Real Business Invariants in Frontend & E2E Tests (Zero Superficial Assertions)
+
+- **Повна заборона фіктивних «smoke-only» тестів**:
+  - Тести Playwright для клієнтських додатків НЕ мають права обмежуватися лише перевіркою «чи відрендерилась сторінка» або «чи є таблиця».
+  - Тести ЗОБОВ'ЯЗАНІ перевіряти реальну бізнес-логіку та інваріанти даних:
+    1. **Реальні назви сутностей**: обов'язковий `expect` на конкретні дані (наприклад, реальна назва постачальника `Brain Distribution` або `MMM`), і **строгий `expect(text).not.toBe('Постачальник')`** для унеможливлення витоку назв колонок як значень.
+    2. **Каскадне видалення та цілісність**: тести життєвого циклу зобов'язані перевіряти, що після видалення фіду кількість товарів зменшується, товари цього фіду зникають з таблиці, а лічильники та квоти зменшуються.
+    3. **Паритет середовищ**: один і той самий набір бізнес-правил має валідуватися для Mock і Real режимів.
+
+---
+
+## 📏 5. Rule Files Size Limit & Continuous Modularization Policy (Max 12,000 Chars)
 
 - **Hard Limit**: Every rule file in `.agents/rules/*.md` **MUST NEVER exceed 12,000 characters** (Antigravity IDE hard limit).
 - **Continuous Modularization**: Whenever any rule file reaches ~10,000–11,000 characters, the agent **MUST** split the rules or create a new dedicated `.md` file in `.agents/rules/` with `trigger: always_on` (e.g. `testing_and_quality.md`, `commands.md`, `plans_lifecycle.md`, etc.).

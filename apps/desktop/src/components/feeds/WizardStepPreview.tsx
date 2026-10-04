@@ -13,7 +13,7 @@ import {
   AlertTriangle,
 } from 'lucide-react';
 import { useTranslation } from '@/i18n';
-import { WizardSampleProductsTable } from './WizardSampleProductsTable';
+import { WizardSampleProductsTable } from '@/components/feeds/WizardSampleProductsTable';
 
 interface WizardStepPreviewProps {
   analysis: FeedAnalysisResult;

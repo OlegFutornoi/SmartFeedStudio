@@ -200,9 +200,12 @@ pub struct DeleteProductImageResultDto {
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct CreateProductDto {
+    pub id: Option<String>,
     pub catalog_id: Option<String>,
     pub supplier_id: String,
+    pub feed_source_id: Option<String>,
     pub category_id: Option<String>,
+    pub category_name_uk: Option<String>,
     pub sku: String,
     pub external_id: Option<String>,
     pub barcode: Option<String>,
@@ -222,3 +225,12 @@ pub struct CreateProductDto {
     #[serde(default)]
     pub images: Vec<CreateProductImageDto>,
 }
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct CategorySummaryDto {
+    pub id: String,
+    pub name_uk: String,
+    pub product_count: u32,
+}
+

@@ -63,7 +63,7 @@ import {
   MUTATING_METHODS,
   getStorageKey,
   clearLegacyMockDbStorage,
-} from './mock';
+} from '@/services/local-db/mock';
 
 export class MockDatabaseDriver {
   private state: MockDbState = createInitialState();

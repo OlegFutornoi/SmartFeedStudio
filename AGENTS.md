@@ -42,6 +42,13 @@ All domain rules are modularized (max 12k chars per file):
 
 ---
 
+## 🚫 Import Policy (Zero Relative Imports)
+
+- **100% `@/` Path Aliases**: Never use relative imports (`../`, `../../`, `./`).
+- All internal project imports must strictly use `@/` (e.g., `@/components/...`, `@/services/...`, `@/lib/...`, `@/modules/...`) or shared contracts `@smartfeed/shared`. Any `../` import is considered an architectural defect.
+
+---
+
 ## 💬 Communication Policy (Strict)
 
 - **Concise & Direct**: Always answer user questions briefly, clearly, and to the point.

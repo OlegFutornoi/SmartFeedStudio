@@ -3,19 +3,26 @@ import { X, Building2, FolderTree, Barcode, DollarSign, Layers } from 'lucide-re
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useTranslation } from '@/i18n';
-import type { ProductDto, LocalProductImageDto, ProductImageDto } from '@smartfeed/shared';
+import type {
+  ProductDto,
+  LocalProductImageDto,
+  ProductImageDto,
+  SupplierDto,
+} from '@smartfeed/shared';
 import { localImagesService } from '@/services/local-db';
 import { ProductGalleryModal } from './ProductGalleryModal';
 import { ProductDrawerImages } from './ProductDrawerImages';
 
 interface ProductDetailsDrawerProps {
   product: ProductDto | null;
+  suppliers?: SupplierDto[];
   onClose: () => void;
   onProductUpdate?: (updatedProduct: ProductDto) => void;
 }
 
 export const ProductDetailsDrawer: React.FC<ProductDetailsDrawerProps> = ({
   product,
+  suppliers,
   onClose,
   onProductUpdate,
 }) => {
@@ -153,7 +160,13 @@ export const ProductDetailsDrawer: React.FC<ProductDetailsDrawerProps> = ({
                 {t('catalogs:productSupplier')}:
               </span>
               <span className="font-semibold text-foreground">
-                {product.supplierName || product.supplierCode || '—'}
+                {suppliers?.find((s) => s.id === product.supplierId)?.name ||
+                  (product.supplierName && product.supplierName !== 'Постачальник'
+                    ? product.supplierName
+                    : '') ||
+                  product.supplierCode ||
+                  (suppliers?.length === 1 ? suppliers[0].name : '') ||
+                  '—'}
               </span>
             </div>
 

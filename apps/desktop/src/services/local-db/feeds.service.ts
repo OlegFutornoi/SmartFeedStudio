@@ -3,7 +3,7 @@ import { FeedFormat, FeedSourceType } from '@smartfeed/shared';
 import { formatFeedTitle } from '@/lib/formatters';
 import type { RawParsedProduct } from '@/services/feed-engine/stream-parser';
 import { feedEngine } from '@/services/feed-engine';
-import { invokeLocalDb } from './client';
+import { invokeLocalDb } from '@/services/local-db/client';
 
 export interface AnalyzeFeedResult {
   format: string;

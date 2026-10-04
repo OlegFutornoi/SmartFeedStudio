@@ -286,6 +286,12 @@ fn db_get_suppliers() -> Result<Vec<models::SupplierDto>, String> {
 }
 
 #[tauri::command]
+fn db_get_supplier_by_id(id: String) -> Result<Option<models::SupplierDto>, String> {
+    let conn = get_db_conn()?;
+    db::get_supplier_by_id(&conn, &id).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
 fn db_create_supplier(dto: models::CreateSupplierDto) -> Result<models::SupplierDto, String> {
     let conn = get_db_conn()?;
     db::create_supplier(&conn, dto).map_err(|e| e.to_string())
@@ -329,6 +335,12 @@ fn db_delete_feed_source(id: String, delete_products: Option<bool>) -> Result<se
 fn db_get_products() -> Result<Vec<models::ProductDto>, String> {
     let conn = get_db_conn()?;
     db::get_products(&conn).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+fn db_get_categories_summary(supplier_id: Option<String>) -> Result<Vec<models::CategorySummaryDto>, String> {
+    let conn = get_db_conn()?;
+    db::get_categories_summary(&conn, supplier_id.as_deref()).map_err(|e| e.to_string())
 }
 
 #[tauri::command]
@@ -441,6 +453,7 @@ pub fn run() {
             clear_storage_cache,
             db_get_counters,
             db_get_suppliers,
+            db_get_supplier_by_id,
             db_create_supplier,
             db_update_supplier,
             db_delete_supplier,
@@ -448,6 +461,7 @@ pub fn run() {
             db_create_feed_source,
             db_delete_feed_source,
             db_get_products,
+            db_get_categories_summary,
             db_bulk_upsert_products,
             db_bulk_delete_products,
             db_get_product_images,

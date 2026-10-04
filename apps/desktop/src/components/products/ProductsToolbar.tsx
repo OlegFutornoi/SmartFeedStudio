@@ -51,13 +51,13 @@ export const ProductsToolbar: React.FC<ProductsToolbarProps> = ({
       <div className="flex flex-col lg:flex-row gap-3 items-stretch lg:items-center justify-between">
         {/* Search input */}
         <div className="relative flex-1 min-w-[240px]">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
           <Input
             data-testid="products-search-input"
             value={search}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder={t('catalogs:searchProductsPlaceholder')}
-            className="pl-9 bg-card"
+            className="h-9 text-xs pl-9 bg-card border-border/70 placeholder:text-muted-foreground/70"
           />
         </div>
 

@@ -3,8 +3,11 @@ import { ArrowRight, CheckCircle2, Loader2, AlertCircle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { useTranslation } from '@/i18n';
 import type { FeedAnalysisResult } from '@/lib/api';
-import { PreviewProductImage, type PreviewImageStatus } from './PreviewProductImage';
-import { PreviewImageModal } from './PreviewImageModal';
+import {
+  PreviewProductImage,
+  type PreviewImageStatus,
+} from '@/components/feeds/PreviewProductImage';
+import { PreviewImageModal } from '@/components/feeds/PreviewImageModal';
 
 interface WizardSampleProductsTableProps {
   sampleProducts: FeedAnalysisResult['sampleProducts'];
@@ -182,48 +185,59 @@ export const WizardSampleProductsTable: React.FC<WizardSampleProductsTableProps>
               </tr>
             </thead>
             <tbody className="divide-y divide-border/40 bg-card">
-              {previewItems.map((prod) => (
-                <tr key={prod.sku} className="hover:bg-secondary/40 transition-colors">
-                  <td className="p-2.5">
-                    <PreviewProductImage
-                      sku={prod.sku}
-                      originalUrl={prod.images?.[0]?.originalUrl}
-                      productTitle={prod.titleUk}
-                      onStatusChange={handleImageStatusChange}
-                      onOpenModal={handleOpenModal}
-                    />
-                  </td>
-                  <td className="p-2.5 font-mono text-xs font-semibold text-foreground truncate">
-                    {prod.sku}
-                  </td>
-                  <td className="p-2.5 text-foreground font-medium">
-                    <div className="truncate max-w-sm" title={prod.titleUk}>
-                      {prod.titleUk}
-                    </div>
-                  </td>
-                  <td className="p-2.5 text-right whitespace-nowrap font-mono text-xs">
-                    <span className="text-muted-foreground line-through text-[11px] mr-1">
-                      {prod.costPrice.toLocaleString('uk-UA')} ₴
-                    </span>
-                    <ArrowRight className="size-3 inline text-primary mx-1" />
-                    <span className="font-bold text-foreground">
-                      {prod.price.toLocaleString('uk-UA')} ₴
-                    </span>
-                  </td>
-                  <td className="p-2.5 text-center">
-                    <Badge
-                      variant={prod.inStock ? 'secondary' : 'outline'}
-                      className={`text-[10px] px-2 py-0.5 font-medium ${
-                        prod.inStock
-                          ? 'text-foreground bg-secondary border-border'
-                          : 'text-muted-foreground bg-secondary/50'
-                      }`}
-                    >
-                      {prod.inStock ? 'В наявності' : 'Немає'}
-                    </Badge>
+              {previewItems.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="p-8 text-center text-muted-foreground text-xs">
+                    {t('suppliers:noSampleProducts', {
+                      defaultValue:
+                        'Товари для попереднього перегляду очікують завершення аналізу фіду',
+                    })}
                   </td>
                 </tr>
-              ))}
+              ) : (
+                previewItems.map((prod) => (
+                  <tr key={prod.sku} className="hover:bg-secondary/40 transition-colors">
+                    <td className="p-2.5">
+                      <PreviewProductImage
+                        sku={prod.sku}
+                        originalUrl={prod.images?.[0]?.originalUrl}
+                        productTitle={prod.titleUk}
+                        onStatusChange={handleImageStatusChange}
+                        onOpenModal={handleOpenModal}
+                      />
+                    </td>
+                    <td className="p-2.5 font-mono text-xs font-semibold text-foreground truncate">
+                      {prod.sku}
+                    </td>
+                    <td className="p-2.5 text-foreground font-medium">
+                      <div className="truncate max-w-sm" title={prod.titleUk}>
+                        {prod.titleUk}
+                      </div>
+                    </td>
+                    <td className="p-2.5 text-right whitespace-nowrap font-mono text-xs">
+                      <span className="text-muted-foreground line-through text-[11px] mr-1">
+                        {prod.costPrice.toLocaleString('uk-UA')} ₴
+                      </span>
+                      <ArrowRight className="size-3 inline text-primary mx-1" />
+                      <span className="font-bold text-foreground">
+                        {prod.price.toLocaleString('uk-UA')} ₴
+                      </span>
+                    </td>
+                    <td className="p-2.5 text-center">
+                      <Badge
+                        variant={prod.inStock ? 'secondary' : 'outline'}
+                        className={`text-[10px] px-2 py-0.5 font-medium ${
+                          prod.inStock
+                            ? 'text-foreground bg-secondary border-border'
+                            : 'text-muted-foreground bg-secondary/50'
+                        }`}
+                      >
+                        {prod.inStock ? 'В наявності' : 'Немає'}
+                      </Badge>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>

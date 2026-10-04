@@ -3,10 +3,11 @@ import { PackageSearch } from 'lucide-react';
 import { ProductTableRow } from './ProductTableRow';
 import { TablePagination } from '@/components/ui/table-pagination';
 import { useTranslation } from '@/i18n';
-import type { ProductDto } from '@smartfeed/shared';
+import type { ProductDto, SupplierDto } from '@smartfeed/shared';
 
 interface ProductsTableProps {
   products: ProductDto[];
+  suppliers?: SupplierDto[];
   totalItems: number;
   currentPage: number;
   pageSize: number;
@@ -25,6 +26,7 @@ interface ProductsTableProps {
 
 export const ProductsTable: React.FC<ProductsTableProps> = ({
   products,
+  suppliers,
   totalItems,
   currentPage,
   pageSize,
@@ -114,6 +116,7 @@ export const ProductsTable: React.FC<ProductsTableProps> = ({
                 <ProductTableRow
                   key={product.id}
                   product={product}
+                  suppliers={suppliers}
                   isSelected={selectedIds.includes(product.id)}
                   onToggleSelect={onToggleSelect}
                   onViewDetails={onViewDetails}

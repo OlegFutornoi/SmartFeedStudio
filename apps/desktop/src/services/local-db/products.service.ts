@@ -4,7 +4,8 @@ import type {
   BulkDeleteProductsDto,
   BulkDeleteResultDto,
 } from '@smartfeed/shared';
-import { invokeLocalDb } from './client';
+import { invokeLocalDb } from '@/services/local-db/client';
+import { localSuppliersService } from '@/services/local-db/suppliers.service';
 
 export class LocalProductsService {
   async getProducts(
@@ -70,6 +71,8 @@ export class LocalProductsService {
       const startIndex = (page - 1) * limit;
       const items = filtered.slice(startIndex, startIndex + limit);
 
+      await this.hydrateSuppliers(items);
+
       return {
         items,
         total,
@@ -95,6 +98,8 @@ export class LocalProductsService {
     const totalPages =
       typeof obj.totalPages === 'number' ? obj.totalPages : Math.max(1, Math.ceil(total / limit));
 
+    await this.hydrateSuppliers(items);
+
     return {
       items,
       total,
@@ -102,6 +107,28 @@ export class LocalProductsService {
       limit,
       totalPages,
     };
+  }
+
+  private async hydrateSuppliers(items: ProductDto[]): Promise<void> {
+    if (!items.length) return;
+    try {
+      const sups = await localSuppliersService.getSuppliers();
+      if (!Array.isArray(sups) || !sups.length) return;
+      const supMap = new Map(sups.map((s) => [s.id, s]));
+      for (const item of items) {
+        const sup = supMap.get(item.supplierId) || (sups.length === 1 ? sups[0] : undefined);
+        if (sup) {
+          if (!item.supplierName || item.supplierName === 'Постачальник') {
+            item.supplierName = sup.name;
+          }
+          if (!item.supplierCode) {
+            item.supplierCode = sup.code;
+          }
+        }
+      }
+    } catch (e) {
+      console.warn('[LocalProductsService:hydrateSuppliers] Failed to hydrate suppliers:', e);
+    }
   }
 
   async getCategoriesSummary(supplierId?: string): Promise<ProductCategorySummaryDto[]> {

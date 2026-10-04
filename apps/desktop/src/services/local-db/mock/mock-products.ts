@@ -4,7 +4,7 @@ import type {
   BulkDeleteProductsDto,
   BulkDeleteResultDto,
 } from '@smartfeed/shared';
-import type { MockDbState } from './mock-state';
+import type { MockDbState } from '@/services/local-db/mock/mock-state';
 
 export interface GetProductsParams {
   page?: number;
@@ -66,7 +66,21 @@ export function getProducts(
   const total = filtered.length;
   const totalPages = Math.ceil(total / limit);
   const startIndex = (page - 1) * limit;
-  const items = filtered.slice(startIndex, startIndex + limit);
+  const items = filtered.slice(startIndex, startIndex + limit).map((p) => {
+    const sup = state.suppliers.find((s) => s.id === p.supplierId);
+    return {
+      ...p,
+      supplierName:
+        (p.supplierName && p.supplierName !== 'Постачальник' ? p.supplierName : '') ||
+        sup?.name ||
+        (state.suppliers.length === 1 ? state.suppliers[0].name : '') ||
+        '',
+      supplierCode:
+        p.supplierCode ||
+        sup?.code ||
+        (state.suppliers.length === 1 ? state.suppliers[0].code : undefined),
+    };
+  });
 
   return {
     items,

@@ -105,3 +105,17 @@ export const FeedAnalysisResultDtoSchema = z.object({
 });
 
 export type FeedAnalysisResultDto = z.infer<typeof FeedAnalysisResultDtoSchema>;
+
+export const FetchFeedUrlDtoSchema = z.object({
+  url: z.string().url('Invalid URL format'),
+});
+
+export type FetchFeedUrlDto = z.infer<typeof FetchFeedUrlDtoSchema>;
+
+export const FetchFeedResultDtoSchema = z.object({
+  content: z.string(),
+  contentType: z.string().optional(),
+  contentLength: z.number().int().nonnegative().optional(),
+});
+
+export type FetchFeedResultDto = z.infer<typeof FetchFeedResultDtoSchema>;

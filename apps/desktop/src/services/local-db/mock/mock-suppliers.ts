@@ -6,11 +6,19 @@ import type {
   CreateSupplierPricingRuleDto,
   UpdateSupplierPricingRuleDto,
 } from '@smartfeed/shared';
-import type { MockDbState } from './mock-state';
-import { syncCounters } from './mock-state';
+import type { MockDbState } from '@/services/local-db/mock/mock-state';
+import { syncCounters } from '@/services/local-db/mock/mock-state';
 
 export function getSuppliers(state: MockDbState, search?: string): SupplierDto[] {
-  let result = [...state.suppliers];
+  let result = state.suppliers.map((s) => {
+    const productsCount = state.products.filter((p) => p.supplierId === s.id).length;
+    const activeFeedsCount = (state.feedSources.get(s.id) || []).length;
+    return {
+      ...s,
+      productsCount,
+      activeFeedsCount,
+    };
+  });
   if (search) {
     const q = search.toLowerCase();
     result = result.filter(
@@ -21,7 +29,11 @@ export function getSuppliers(state: MockDbState, search?: string): SupplierDto[]
 }
 
 export function getSupplierById(state: MockDbState, id: string): SupplierDto | null {
-  return state.suppliers.find((s) => s.id === id) || null;
+  const s = state.suppliers.find((sup) => sup.id === id);
+  if (!s) return null;
+  const productsCount = state.products.filter((p) => p.supplierId === s.id).length;
+  const activeFeedsCount = (state.feedSources.get(s.id) || []).length;
+  return { ...s, productsCount, activeFeedsCount };
 }
 
 export function createSupplier(state: MockDbState, payload: CreateSupplierDto): SupplierDto {

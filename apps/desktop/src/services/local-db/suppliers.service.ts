@@ -1,5 +1,5 @@
 import type { SupplierDto, CreateSupplierDto, UpdateSupplierDto } from '@smartfeed/shared';
-import { invokeLocalDb } from './client';
+import { invokeLocalDb } from '@/services/local-db/client';
 
 export class LocalSuppliersService {
   async getSuppliers(search?: string): Promise<SupplierDto[]> {
