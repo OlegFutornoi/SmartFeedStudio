@@ -29,7 +29,9 @@ All domain rules are modularized (max 12k chars per file):
 12. [Frontend Agent (agents_frontend)](.agents/agents_frontend.md) — Спеціалізований фронтенд-агент повного циклу (8 етапів: аналіз, планування, дизайн, рев'ю, автотести кожної кнопки/флоу/регресії, дебаг, переведення планів)
 13. [Backend Agent (agents_backend)](.agents/agents_backend.md) — Спеціалізований бекенд-агент повного циклу (8 етапів: аналіз, планування, TDD RED тести спочатку, 4-шарова реалізація GREEN, рев'ю, E2E регресія, дебаг, переведення планів)
 14. [Code Review & Audit Agent (agents_review)](.agents/agents_review.md) — Спеціалізований агент аудиту та якості (8 етапів: розвідка, CQRS аудит, 4-шаровий захист, UX аудит, БД аудит, змагальний стрес-тест, формування плану покращення plans/active/remediation_*.md, фінальний звіт)
-15. [Task Prompt Examples](.agents/task_prompt_examples.md) — Практичні приклади та шаблони постановки задач для фронтенду, бекенду, рев'ю та fullstack
+15. [DevOps & Release Agent (agents_devops)](.agents/agents_devops.md) — Спеціалізований агент DevOps, інфраструктури, безпечних міграцій БД (Expand/Contract, Zero-Downtime), Docker, Railway та релізів
+16. [QA & Performance Agent (agents_qa)](.agents/agents_qa.md) — Спеціалізований агент QA, навантажувальних бенчмарків 100k+ SKU, хаос-тестування гонок пам'яті, mock/real паритету та 100% очищення даних
+17. [Task Prompt Examples](.agents/task_prompt_examples.md) — Практичні приклади та шаблони постановки задач для фронтенду, бекенду, рев'ю, devops, qa та fullstack
 
 ---
 

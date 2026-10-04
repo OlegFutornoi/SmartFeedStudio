@@ -2,7 +2,7 @@
 
 > **Файл розташування:** [`.agents/AGENTS.md`](./AGENTS.md)  
 > **Призначення:** Єдиний центр інтелекту, каталог та диспетчер усіх **99 скілів** SmartFeed Studio (4 майстер-оркестратори та 95 спеціалізованих підскілів).  
-> **Спеціалізовані агенти:** [🎨 Frontend Engineering Agent (`agents_frontend`)](./agents_frontend.md) · [⚙️ Backend Engineering Agent (`agents_backend`)](./agents_backend.md) · [🔍 Code Review & Audit Agent (`agents_review`)](./agents_review.md) · [📋 Приклади задач та промптів](./task_prompt_examples.md)
+> **Спеціалізовані агенти:** [🎨 Frontend Engineering Agent (`agents_frontend`)](./agents_frontend.md) · [⚙️ Backend Engineering Agent (`agents_backend`)](./agents_backend.md) · [🔍 Code Review & Audit Agent (`agents_review`)](./agents_review.md) · [🚀 DevOps & Release Agent (`agents_devops`)](./agents_devops.md) · [🧪 QA & Performance Agent (`agents_qa`)](./agents_qa.md) · [📋 Приклади задач та промптів](./task_prompt_examples.md)
 
 ---
 

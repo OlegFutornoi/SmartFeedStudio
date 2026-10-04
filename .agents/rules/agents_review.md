@@ -6,13 +6,14 @@ Specialized autonomous Code Review, Quality & Security Audit Agent for the entir
 
 ---
 
-## 🧭 The 8-Stage Audit & Review Lifecycle
+## 🧭 The 8-Stage Audit & Review Lifecycle (з автоматичним запуском підскілів)
 
-Whenever invoked or assigned any review, audit, quality inspection, or security assessment task, the agent **MUST** execute the 8 stages in strict sequence:
+Whenever invoked or assigned any review, audit, quality inspection, or security assessment task, the agent **MUST** execute the 8 stages in strict sequence with automatic sub-skills triggering:
 
-1. **Stage 1: Reconnaissance & Scope Discovery**
-   - Identify modified files via git status/diff.
-   - Cross-check against `project-context-map` and `lessons-learned-registry`.
+1. **Stage 1: Reconnaissance & Scope Discovery (Авто-запуск: `task-router` + `lessons-learned-registry`)**
+   - **Авто-тригер `task-router`**: визначити фокус рев'ю, мінімізувати контекстний бюджет (не читати зайві файли повністю).
+   - **Авто-тригер `lessons-learned-registry`**: звірити git diff з реєстром відомих помилок проекту для виявлення прихованих регресій.
+   - **Звірка з `project-context-map`**: уточнити топологію зв'язків та порти змінюваних модулів.
    - Never skip layers: inspect backend, frontend, database, and contracts.
 
 2. **Stage 2: CQRS & Boundary Audit**
@@ -40,7 +41,9 @@ Whenever invoked or assigned any review, audit, quality inspection, or security 
    - All timestamps use `timestamptz`. No OFFSET pagination on large feeds.
    - No N+1 queries. Short transactions without external HTTP/S3 calls.
 
-6. **Stage 6: Adversarial Stress-Test & Concurrency**
+6. **Stage 6: Adversarial Stress-Test & Test Completeness (Авто-запуск: `e2e-scenario-matrix` + `skill-health-audit`)**
+   - **Авто-тригер `e2e-scenario-matrix`**: перевірити повноту тестів за 6 вимірами (відсутні негативні сценарії чи відмови мережі).
+   - **Авто-тригер `skill-health-audit`**: якщо аудит або зміни зачіпають `.agents/rules/` або скіли — валідувати всі 99 скілів та symlinks.
    - Test for TOCTOU race conditions (e.g. concurrent seat claiming).
    - Verify mutex locks on sensitive shared state.
    - Verify complete teardown: `cleanDatabase` in test beforeAll/afterAll.
@@ -49,12 +52,14 @@ Whenever invoked or assigned any review, audit, quality inspection, or security 
    - If architectural or quality defects are found: create a detailed plan in `plans/active/remediation_<target>.md`.
    - Do NOT modify production code during the audit phase without explicit user approval.
 
-8. **Stage 8: Final Review Report**
+8. **Stage 8: Final Review Report & Session Handoff (Авто-запуск: `session-handoff`)**
    - Deliver structured audit report: summary, findings by severity (Critical / High / Medium / Low), and remediation action items.
+   - **Авто-тригер `session-handoff`**: зафіксувати стан аудиту у `plans/active/remediation_<target>.state.md` для передачі інженерному агенту в нову сесію.
 
 ---
 
-## ⚡ Skills Activated by `agents_review`
+## ⚡ Skills Automatically Activated by `agents_review`
 
-- Master: `review` / `fullstack-code-review`
-- Sub-skills: `adver-review`, `postgresql-code-review`, `security-best-practices`, `performance-budget`, `automated-guardrails-ci`, `verification-before-completion`.
+- **Master**: `review` / `fullstack-code-review`
+- **Orchestration & State**: `task-router`, `lessons-learned-registry`, `project-context-map`, `e2e-scenario-matrix`, `skill-health-audit`, `session-handoff`.
+- **Audit & Security**: `adver-review`, `postgresql-code-review`, `security-best-practices`, `performance-budget`, `automated-guardrails-ci`, `verification-before-completion`.
