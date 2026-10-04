@@ -1,5 +1,5 @@
 import { ICommand } from '@nestjs/cqrs';
-import { UpdateTariffPlanDto } from '../dto/update-tariff-plan.dto';
+import { UpdateTariffPlanDto } from '@/modules/plans/dto/update-tariff-plan.dto';
 
 export class UpdateTariffPlanCommand implements ICommand {
   constructor(

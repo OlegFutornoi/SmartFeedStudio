@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useTranslation } from '@/i18n';
 import { FeedAnalysisResult } from '@/lib/api';
-import { FeedAnalysisCard } from './FeedAnalysisCard';
+import { FeedAnalysisCard } from '@/components/feeds/FeedAnalysisCard';
 
 interface WizardStepSourceProps {
   sourceType: 'URL' | 'FILE';

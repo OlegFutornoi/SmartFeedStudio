@@ -12,7 +12,9 @@
     ]
   },
   "moduleNameMapper": {
-    "^@smartfeed/shared$": "<rootDir>/../../packages/shared/dist/index.js"
+    "^@smartfeed/shared$": "<rootDir>/../../packages/shared/dist/index.js",
+    "^@/(.*)$": "<rootDir>/src/$1",
+    "^@test/(.*)$": "<rootDir>/test/$1"
   },
   "testTimeout": 30000
 }

@@ -9,10 +9,10 @@ import {
 import { ConfigService } from '@nestjs/config';
 import * as crypto from 'crypto';
 import { MemberRole } from '@smartfeed/shared';
-import { PrismaService } from '../../../prisma/prisma.service';
-import { MailService } from '../../mail/mail.service';
-import { InviteMemberCommand } from './invite-member.command';
-import { organizationMutex } from '../utils/organization-mutex';
+import { PrismaService } from '@/prisma/prisma.service';
+import { MailService } from '@/modules/mail/mail.service';
+import { InviteMemberCommand } from '@/modules/organizations/commands/invite-member.command';
+import { organizationMutex } from '@/modules/organizations/utils/organization-mutex';
 
 @Injectable()
 @CommandHandler(InviteMemberCommand)

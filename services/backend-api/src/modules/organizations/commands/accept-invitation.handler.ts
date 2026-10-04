@@ -11,9 +11,9 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { Role, MemberRole, JwtPayload, AuthResponseDto } from '@smartfeed/shared';
-import { PrismaService } from '../../../prisma/prisma.service';
-import { AcceptInvitationCommand } from './accept-invitation.command';
-import { organizationMutex } from '../utils/organization-mutex';
+import { PrismaService } from '@/prisma/prisma.service';
+import { AcceptInvitationCommand } from '@/modules/organizations/commands/accept-invitation.command';
+import { organizationMutex } from '@/modules/organizations/utils/organization-mutex';
 
 @Injectable()
 @CommandHandler(AcceptInvitationCommand)

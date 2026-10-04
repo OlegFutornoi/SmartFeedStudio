@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { ProductsToolbar } from './ProductsToolbar';
-import { ProductsBulkActionsBar } from './ProductsBulkActionsBar';
-import { ProductsTable } from './ProductsTable';
-import { ProductDetailsDrawer } from './ProductDetailsDrawer';
-import { ProductsZeroStateCard } from './ProductsZeroStateCard';
+import { ProductsToolbar } from '@/components/products/ProductsToolbar';
+import { ProductsBulkActionsBar } from '@/components/products/ProductsBulkActionsBar';
+import { ProductsTable } from '@/components/products/ProductsTable';
+import { ProductDetailsDrawer } from '@/components/products/ProductDetailsDrawer';
+import { ProductsZeroStateCard } from '@/components/products/ProductsZeroStateCard';
 import { ConfirmDeleteDialog } from '@/components/ui/ConfirmDeleteDialog';
 import { localDb } from '@/services/local-db';
 import { useDataSync } from '@/lib/syncEvents';

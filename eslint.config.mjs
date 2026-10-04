@@ -51,15 +51,33 @@ export default tseslint.config(
       ],
       '@typescript-eslint/explicit-module-boundary-types': 'off',
       '@typescript-eslint/no-empty-function': 'off',
-      'no-empty': ['error', { allowEmptyCatch: true }],
+      'no-empty': ['error', { allowEmptyCatch: false }],
       'react-hooks/rules-of-hooks': 'error',
       'react-hooks/exhaustive-deps': 'warn',
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['../*', './*'],
+              message: 'Use @/ path aliases or @smartfeed/shared instead of relative imports.',
+            },
+          ],
+        },
+      ],
+      'max-lines': ['error', { max: 300, skipBlankLines: true, skipComments: true }],
     },
   },
   {
     files: ['**/e2e/**', '**/test/**', '**/*.spec.ts', '**/*.test.ts', '**/*.e2e-spec.ts'],
     rules: {
       'react-hooks/rules-of-hooks': 'off',
+    },
+  },
+  {
+    files: ['packages/shared/**'],
+    rules: {
+      'no-restricted-imports': 'off',
     },
   },
   prettierConfig,

@@ -1,7 +1,7 @@
 import { test as base } from '@playwright/test';
-import { DesktopLoginPage } from '../pages/login.page';
-import { DesktopRegisterPage } from '../pages/register.page';
-import { DesktopNavigationPage } from '../pages/navigation.page';
+import { DesktopLoginPage } from '@e2e/pages/login.page';
+import { DesktopRegisterPage } from '@e2e/pages/register.page';
+import { DesktopNavigationPage } from '@e2e/pages/navigation.page';
 
 type DesktopFixtures = {
   loginPage: DesktopLoginPage;

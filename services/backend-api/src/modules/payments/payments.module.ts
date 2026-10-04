@@ -1,19 +1,19 @@
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
-import { PrismaModule } from '../../prisma/prisma.module';
-import { PaymentsController } from './payments.controller';
-import { WayForPayService } from './services/wayforpay.service';
+import { PrismaModule } from '@/prisma/prisma.module';
+import { PaymentsController } from '@/modules/payments/payments.controller';
+import { WayForPayService } from '@/modules/payments/services/wayforpay.service';
 
 // Command Handlers
-import { CreatePaymentInvoiceHandler } from './commands/create-payment-invoice.handler';
-import { HandleWayForPayWebhookHandler } from './commands/handle-wayforpay-webhook.handler';
-import { UpdatePaymentSettingsHandler } from './commands/update-payment-settings.handler';
-import { SimulateSandboxWebhookHandler } from './commands/simulate-sandbox-webhook.handler';
+import { CreatePaymentInvoiceHandler } from '@/modules/payments/commands/create-payment-invoice.handler';
+import { HandleWayForPayWebhookHandler } from '@/modules/payments/commands/handle-wayforpay-webhook.handler';
+import { UpdatePaymentSettingsHandler } from '@/modules/payments/commands/update-payment-settings.handler';
+import { SimulateSandboxWebhookHandler } from '@/modules/payments/commands/simulate-sandbox-webhook.handler';
 
 // Query Handlers
-import { GetPaymentTransactionsHandler } from './queries/get-payment-transactions.handler';
-import { GetPaymentStatsHandler } from './queries/get-payment-stats.handler';
-import { GetPaymentSettingsHandler } from './queries/get-payment-settings.handler';
+import { GetPaymentTransactionsHandler } from '@/modules/payments/queries/get-payment-transactions.handler';
+import { GetPaymentStatsHandler } from '@/modules/payments/queries/get-payment-stats.handler';
+import { GetPaymentSettingsHandler } from '@/modules/payments/queries/get-payment-settings.handler';
 
 export const CommandHandlers = [
   CreatePaymentInvoiceHandler,

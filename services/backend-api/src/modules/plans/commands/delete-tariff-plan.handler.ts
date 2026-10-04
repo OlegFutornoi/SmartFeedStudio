@@ -1,8 +1,8 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '../../../prisma/prisma.service';
-import { RedisCacheService } from '../../../common/cache/redis-cache.service';
-import { DeleteTariffPlanCommand } from './delete-tariff-plan.command';
+import { PrismaService } from '@/prisma/prisma.service';
+import { RedisCacheService } from '@/common/cache/redis-cache.service';
+import { DeleteTariffPlanCommand } from '@/modules/plans/commands/delete-tariff-plan.command';
 
 @Injectable()
 @CommandHandler(DeleteTariffPlanCommand)

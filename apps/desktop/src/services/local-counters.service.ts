@@ -1,4 +1,4 @@
-import { invokeLocalDb } from './local-db/client';
+import { invokeLocalDb } from '@/services/local-db/client';
 
 export interface LocalCounts {
   suppliers: number;

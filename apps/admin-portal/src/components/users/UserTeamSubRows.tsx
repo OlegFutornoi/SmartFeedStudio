@@ -5,7 +5,7 @@ import { UserListItemDto } from '@smartfeed/shared';
 import { TableRow, TableCell } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { UserRowActions } from './UserRowActions';
+import { UserRowActions } from '@/components/users/UserRowActions';
 import { CornerDownRight, KeyRound } from 'lucide-react';
 
 interface UserTeamSubRowsProps {

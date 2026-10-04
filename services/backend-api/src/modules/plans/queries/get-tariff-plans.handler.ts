@@ -1,10 +1,10 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { Injectable } from '@nestjs/common';
 import { TariffPlanDto } from '@smartfeed/shared';
-import { PrismaService } from '../../../prisma/prisma.service';
-import { RedisCacheService } from '../../../common/cache/redis-cache.service';
-import { GetTariffPlansQuery } from './get-tariff-plans.query';
-import { mapTariffPlanToDto } from '../utils/map-tariff-plan-to-dto';
+import { PrismaService } from '@/prisma/prisma.service';
+import { RedisCacheService } from '@/common/cache/redis-cache.service';
+import { GetTariffPlansQuery } from '@/modules/plans/queries/get-tariff-plans.query';
+import { mapTariffPlanToDto } from '@/modules/plans/utils/map-tariff-plan-to-dto';
 
 const PLANS_CACHE_KEY = 'tariff_plans:active';
 

@@ -1,13 +1,13 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
-import { PrismaService } from '../../../prisma/prisma.service';
-import { GetPaymentTransactionsQuery } from './get-payment-transactions.query';
+import { PrismaService } from '@/prisma/prisma.service';
+import { GetPaymentTransactionsQuery } from '@/modules/payments/queries/get-payment-transactions.query';
 import {
   PaymentTransactionDto,
   PaymentStatus,
   PaymentProvider,
   PaymentInterval,
 } from '@smartfeed/shared';
-import { Prisma } from '../../../generated/prisma/client';
+import { Prisma } from '@/generated/prisma/client';
 
 @QueryHandler(GetPaymentTransactionsQuery)
 export class GetPaymentTransactionsHandler implements IQueryHandler<GetPaymentTransactionsQuery> {

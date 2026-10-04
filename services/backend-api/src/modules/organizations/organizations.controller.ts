@@ -12,18 +12,18 @@ import {
 } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { CurrentUser } from '../auth/decorators/current-user.decorator';
-import { InviteMemberDto } from './dto/invite-member.dto';
-import { UpdateOrganizationDto } from './dto/update-organization.dto';
-import { InviteMemberCommand } from './commands/invite-member.command';
-import { RemoveMemberCommand } from './commands/remove-member.command';
-import { UpdateOrganizationCommand } from './commands/update-organization.command';
-import { RevokeInvitationCommand } from './commands/revoke-invitation.command';
-import { GetUserOrganizationsQuery } from './queries/get-user-organizations.query';
-import { GetOrganizationByIdQuery } from './queries/get-organization-by-id.query';
-import { GetOrganizationMembersQuery } from './queries/get-organization-members.query';
-import { GetOrganizationInvitationsQuery } from './queries/get-organization-invitations.query';
+import { JwtAuthGuard } from '@/modules/auth/guards/jwt-auth.guard';
+import { CurrentUser } from '@/modules/auth/decorators/current-user.decorator';
+import { InviteMemberDto } from '@/modules/organizations/dto/invite-member.dto';
+import { UpdateOrganizationDto } from '@/modules/organizations/dto/update-organization.dto';
+import { InviteMemberCommand } from '@/modules/organizations/commands/invite-member.command';
+import { RemoveMemberCommand } from '@/modules/organizations/commands/remove-member.command';
+import { UpdateOrganizationCommand } from '@/modules/organizations/commands/update-organization.command';
+import { RevokeInvitationCommand } from '@/modules/organizations/commands/revoke-invitation.command';
+import { GetUserOrganizationsQuery } from '@/modules/organizations/queries/get-user-organizations.query';
+import { GetOrganizationByIdQuery } from '@/modules/organizations/queries/get-organization-by-id.query';
+import { GetOrganizationMembersQuery } from '@/modules/organizations/queries/get-organization-members.query';
+import { GetOrganizationInvitationsQuery } from '@/modules/organizations/queries/get-organization-invitations.query';
 
 @ApiTags('Organizations')
 @ApiBearerAuth()

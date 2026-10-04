@@ -1,6 +1,6 @@
 import { Cpu } from 'lucide-react';
-import type { FeatureCategory } from './shared';
-import { boolCell } from './shared';
+import type { FeatureCategory } from '@/components/plans/categories/shared';
+import { boolCell } from '@/components/plans/categories/shared';
 
 /** Category 3: Resources & Automation */
 export function buildResourcesCategory(isUk: boolean): FeatureCategory {

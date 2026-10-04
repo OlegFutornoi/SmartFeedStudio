@@ -1,4 +1,4 @@
-import { isTauri } from './runtime';
+import { isTauri } from '@/lib/runtime';
 
 let tauriConvertFn: ((filePath: string) => string) | null = null;
 

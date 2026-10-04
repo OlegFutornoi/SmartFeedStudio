@@ -7,8 +7,8 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { Role, PlanType, UserListItemDto } from '@smartfeed/shared';
-import { PrismaService } from '../../../prisma/prisma.service';
-import { UpdateUserStatusCommand } from './update-user-status.command';
+import { PrismaService } from '@/prisma/prisma.service';
+import { UpdateUserStatusCommand } from '@/modules/users/commands/update-user-status.command';
 
 @Injectable()
 @CommandHandler(UpdateUserStatusCommand)

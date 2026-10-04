@@ -1,10 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from '../src/app.module';
-import { PrismaService } from '../src/prisma/prisma.service';
-import { GlobalHttpExceptionFilter } from '../src/common/filters/http-exception.filter';
-import { cleanDatabase } from './utils/teardown.helper';
+import { AppModule } from '@/app.module';
+import { PrismaService } from '@/prisma/prisma.service';
+import { GlobalHttpExceptionFilter } from '@/common/filters/http-exception.filter';
+import { cleanDatabase } from '@test/utils/teardown.helper';
 
 describe('Team Invitations & Mail Service Life-cycle (E2E)', () => {
   let app: INestApplication;

@@ -18,8 +18,8 @@ import {
   simulateFullPricing,
 } from '@smartfeed/shared';
 import { useTranslation } from '@/i18n';
-import { MarketplacePresetsList, MARKETPLACES } from './MarketplacePresetsList';
-import { MarginEconomicsSimulator } from './MarginEconomicsSimulator';
+import { MarketplacePresetsList, MARKETPLACES } from '@/components/export/MarketplacePresetsList';
+import { MarginEconomicsSimulator } from '@/components/export/MarginEconomicsSimulator';
 
 interface CreateExportChannelDialogProps {
   isOpen: boolean;

@@ -1,8 +1,8 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { LicenseEntity, PlanType } from '@smartfeed/shared';
-import { PrismaService } from '../../../prisma/prisma.service';
-import { UpdateLicenseStatusCommand } from './update-license-status.command';
+import { PrismaService } from '@/prisma/prisma.service';
+import { UpdateLicenseStatusCommand } from '@/modules/licenses/commands/update-license-status.command';
 
 @Injectable()
 @CommandHandler(UpdateLicenseStatusCommand)

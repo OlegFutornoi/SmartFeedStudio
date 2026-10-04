@@ -1,9 +1,9 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { Injectable } from '@nestjs/common';
 import { TariffPlanDto } from '@smartfeed/shared';
-import { PrismaService } from '../../../prisma/prisma.service';
-import { GetAllTariffPlansAdminQuery } from './get-all-tariff-plans-admin.query';
-import { mapTariffPlanToDto } from '../utils/map-tariff-plan-to-dto';
+import { PrismaService } from '@/prisma/prisma.service';
+import { GetAllTariffPlansAdminQuery } from '@/modules/plans/queries/get-all-tariff-plans-admin.query';
+import { mapTariffPlanToDto } from '@/modules/plans/utils/map-tariff-plan-to-dto';
 
 @Injectable()
 @QueryHandler(GetAllTariffPlansAdminQuery)

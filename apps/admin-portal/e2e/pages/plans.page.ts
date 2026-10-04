@@ -1,5 +1,5 @@
 import { Page, Locator, expect } from '@playwright/test';
-import { BasePage } from './base.page';
+import { BasePage } from '@e2e/pages/base.page';
 
 export class AdminPlansPage extends BasePage {
   readonly pageTitle: Locator;

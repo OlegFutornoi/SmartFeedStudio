@@ -5,7 +5,7 @@ import type {
   ReorderNavigationItemsDto,
   TargetApp,
 } from '@smartfeed/shared';
-import { baseClient } from './client';
+import { baseClient } from '@/lib/api/client';
 
 export async function getNavigation(app?: TargetApp): Promise<NavigationItemDto[]> {
   const qs = app ? `?app=${app}` : '';

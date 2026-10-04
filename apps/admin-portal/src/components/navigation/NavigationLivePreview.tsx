@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { PlanType, TargetApp, NavigationItemDto } from '@smartfeed/shared';
 import { Monitor } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { getIconComponent } from './constants';
+import { getIconComponent } from '@/components/navigation/constants';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { cn } from '@/lib/utils';
 

@@ -1,5 +1,5 @@
 import type { CreateUserByAdminDto, UserListItemDto, UsersStatsDto } from '@smartfeed/shared';
-import { baseClient } from './client';
+import { baseClient } from '@/lib/api/client';
 
 export interface GetUsersParams {
   search?: string;

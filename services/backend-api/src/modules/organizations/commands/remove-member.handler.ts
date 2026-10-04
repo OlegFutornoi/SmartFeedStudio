@@ -6,8 +6,8 @@ import {
   NotFoundException,
   Logger,
 } from '@nestjs/common';
-import { PrismaService } from '../../../prisma/prisma.service';
-import { RemoveMemberCommand } from './remove-member.command';
+import { PrismaService } from '@/prisma/prisma.service';
+import { RemoveMemberCommand } from '@/modules/organizations/commands/remove-member.command';
 
 @Injectable()
 @CommandHandler(RemoveMemberCommand)

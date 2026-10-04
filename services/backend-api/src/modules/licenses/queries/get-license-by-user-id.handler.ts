@@ -1,10 +1,10 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { Injectable } from '@nestjs/common';
 import { LicenseEntity, PlanType } from '@smartfeed/shared';
-import { PrismaService } from '../../../prisma/prisma.service';
-import { mapTariffPlanToDto } from '../../plans/utils/map-tariff-plan-to-dto';
-import { GetLicenseByUserIdQuery } from './get-license-by-user-id.query';
-import { Prisma } from '../../../generated/prisma/client';
+import { PrismaService } from '@/prisma/prisma.service';
+import { mapTariffPlanToDto } from '@/modules/plans/utils/map-tariff-plan-to-dto';
+import { GetLicenseByUserIdQuery } from '@/modules/licenses/queries/get-license-by-user-id.query';
+import { Prisma } from '@/generated/prisma/client';
 
 @Injectable()
 @QueryHandler(GetLicenseByUserIdQuery)

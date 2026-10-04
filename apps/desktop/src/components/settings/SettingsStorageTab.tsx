@@ -13,8 +13,8 @@ import { Badge } from '@/components/ui/badge';
 import { useTranslation } from '@/i18n';
 import { useWorkspaceStorage } from '@/contexts/WorkspaceStorageContext';
 import { MigrateWorkspaceDialog } from '@/components/storage/MigrateWorkspaceDialog';
-import { StorageMetricsCards } from './StorageMetricsCards';
-import { StorageActionsPanel } from './StorageActionsPanel';
+import { StorageMetricsCards } from '@/components/settings/StorageMetricsCards';
+import { StorageActionsPanel } from '@/components/settings/StorageActionsPanel';
 
 export const SettingsStorageTab: React.FC = () => {
   const { t } = useTranslation(['storage', 'common']);

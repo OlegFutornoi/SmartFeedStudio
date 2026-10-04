@@ -1,7 +1,7 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { ForbiddenException, Injectable } from '@nestjs/common';
-import { PrismaService } from '../../../prisma/prisma.service';
-import { GetOrganizationMembersQuery } from './get-organization-members.query';
+import { PrismaService } from '@/prisma/prisma.service';
+import { GetOrganizationMembersQuery } from '@/modules/organizations/queries/get-organization-members.query';
 
 @Injectable()
 @QueryHandler(GetOrganizationMembersQuery)

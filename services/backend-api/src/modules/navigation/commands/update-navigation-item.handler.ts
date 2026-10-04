@@ -1,8 +1,8 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { NotFoundException, ConflictException } from '@nestjs/common';
-import { UpdateNavigationItemCommand } from './update-navigation-item.command';
-import { PrismaService } from '../../../prisma/prisma.service';
-import { RedisCacheService } from '../../../common/cache/redis-cache.service';
+import { UpdateNavigationItemCommand } from '@/modules/navigation/commands/update-navigation-item.command';
+import { PrismaService } from '@/prisma/prisma.service';
+import { RedisCacheService } from '@/common/cache/redis-cache.service';
 
 @CommandHandler(UpdateNavigationItemCommand)
 export class UpdateNavigationItemHandler implements ICommandHandler<UpdateNavigationItemCommand> {

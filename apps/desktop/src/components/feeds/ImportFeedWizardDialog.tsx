@@ -1,14 +1,14 @@
 import { createPortal } from 'react-dom';
 import type { SupplierDto } from '@smartfeed/shared';
-import { WizardStepSource } from './WizardStepSource';
-import { WizardStepSupplier } from './WizardStepSupplier';
-import { WizardStepPreview } from './WizardStepPreview';
-import { WizardStepProgress } from './WizardStepProgress';
+import { WizardStepSource } from '@/components/feeds/WizardStepSource';
+import { WizardStepSupplier } from '@/components/feeds/WizardStepSupplier';
+import { WizardStepPreview } from '@/components/feeds/WizardStepPreview';
+import { WizardStepProgress } from '@/components/feeds/WizardStepProgress';
 import { CreateSupplierDialog } from '@/components/suppliers/CreateSupplierDialog';
-import { WizardDialogHeader } from './WizardDialogHeader';
-import { WizardDialogFooter } from './WizardDialogFooter';
+import { WizardDialogHeader } from '@/components/feeds/WizardDialogHeader';
+import { WizardDialogFooter } from '@/components/feeds/WizardDialogFooter';
 import { AlertCircle } from 'lucide-react';
-import { useImportFeedWizard } from './useImportFeedWizard';
+import { useImportFeedWizard } from '@/components/feeds/useImportFeedWizard';
 
 interface ImportFeedWizardDialogProps {
   isOpen: boolean;

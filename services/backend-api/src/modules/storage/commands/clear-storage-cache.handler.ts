@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { ClearStorageCacheCommand } from './clear-storage-cache.command';
+import { ClearStorageCacheCommand } from '@/modules/storage/commands/clear-storage-cache.command';
 import { ClearStorageCacheResultDto } from '@smartfeed/shared';
-import { clearCacheOnDisk } from '../utils/workspace-utils';
+import { clearCacheOnDisk } from '@/modules/storage/utils/workspace-utils';
 
 @CommandHandler(ClearStorageCacheCommand)
 export class ClearStorageCacheHandler implements ICommandHandler<ClearStorageCacheCommand> {

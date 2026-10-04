@@ -6,7 +6,7 @@ import {
   USER_KEY,
   ApiError,
   fetchWithAuth,
-} from './client';
+} from '@/lib/api/client';
 import { captureException } from '@/lib/sentry';
 
 export interface LoginCredentials {

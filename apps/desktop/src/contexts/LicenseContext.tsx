@@ -42,6 +42,9 @@ export function LicenseProvider({ children }: { children: React.ReactNode }) {
 
   const isAdmin = user?.role === 'SUPER_ADMIN' || user?.role === 'ADMIN';
 
+  const licenseRef = useRef(license);
+  licenseRef.current = license;
+
   const fetchLicense = useCallback(
     async (force = false) => {
       if (!token || !isAuthenticated) {
@@ -56,7 +59,7 @@ export function LicenseProvider({ children }: { children: React.ReactNode }) {
         setIsLoading(false);
       }
 
-      if (!force && lastFetchedTokenRef.current === token && license) {
+      if (!force && lastFetchedTokenRef.current === token && licenseRef.current) {
         return;
       }
 

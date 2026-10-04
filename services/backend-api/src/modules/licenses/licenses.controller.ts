@@ -19,17 +19,17 @@ import {
   Role,
   UserQuotasDto,
 } from '@smartfeed/shared';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { RolesGuard } from '../auth/guards/roles.guard';
-import { Roles } from '../auth/decorators/roles.decorator';
-import { CurrentUser } from '../auth/decorators/current-user.decorator';
-import { GetLicenseByUserIdQuery } from './queries/get-license-by-user-id.query';
-import { GetAdminLicensesQuery } from './queries/get-admin-licenses.query';
-import { GetUsageQuotasQuery } from './queries/get-usage-quotas.query';
-import { CreateLicenseCommand } from './commands/create-license.command';
-import { SelectTariffPlanCommand } from './commands/select-tariff-plan.command';
-import { UpdateLicenseStatusCommand } from './commands/update-license-status.command';
-import { DeleteLicenseCommand } from './commands/delete-license.command';
+import { JwtAuthGuard } from '@/modules/auth/guards/jwt-auth.guard';
+import { RolesGuard } from '@/modules/auth/guards/roles.guard';
+import { Roles } from '@/modules/auth/decorators/roles.decorator';
+import { CurrentUser } from '@/modules/auth/decorators/current-user.decorator';
+import { GetLicenseByUserIdQuery } from '@/modules/licenses/queries/get-license-by-user-id.query';
+import { GetAdminLicensesQuery } from '@/modules/licenses/queries/get-admin-licenses.query';
+import { GetUsageQuotasQuery } from '@/modules/licenses/queries/get-usage-quotas.query';
+import { CreateLicenseCommand } from '@/modules/licenses/commands/create-license.command';
+import { SelectTariffPlanCommand } from '@/modules/licenses/commands/select-tariff-plan.command';
+import { UpdateLicenseStatusCommand } from '@/modules/licenses/commands/update-license-status.command';
+import { DeleteLicenseCommand } from '@/modules/licenses/commands/delete-license.command';
 import { IsBoolean, IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class SelectPlanDto {

@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { NotFoundException } from '@nestjs/common';
-import { ResetPasswordCommand } from './reset-password.command';
-import { PrismaService } from '../../../prisma/prisma.service';
+import { ResetPasswordCommand } from '@/modules/users/commands/reset-password.command';
+import { PrismaService } from '@/prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
 
 @CommandHandler(ResetPasswordCommand)

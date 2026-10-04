@@ -7,7 +7,7 @@ import { LanguageToggle } from '@/components/ui/language-toggle';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useSidebar } from '@/contexts/SidebarContext';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { AdminCommandSearchDialog } from './AdminCommandSearchDialog';
+import { AdminCommandSearchDialog } from '@/components/layout/AdminCommandSearchDialog';
 
 export function Header() {
   const { setThemeMode, resolvedMode } = useTheme();

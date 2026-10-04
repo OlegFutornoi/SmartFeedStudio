@@ -23,19 +23,19 @@ import {
   UpdatePaymentSettingDto,
   WayForPayWebhookDto,
 } from '@smartfeed/shared';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { RolesGuard } from '../auth/guards/roles.guard';
-import { Roles } from '../auth/decorators/roles.decorator';
-import { CurrentUser } from '../auth/decorators/current-user.decorator';
-import { CreatePaymentInvoiceCommand } from './commands/create-payment-invoice.command';
-import { HandleWayForPayWebhookCommand } from './commands/handle-wayforpay-webhook.command';
-import { SimulateSandboxWebhookCommand } from './commands/simulate-sandbox-webhook.command';
-import { UpdatePaymentSettingsCommand } from './commands/update-payment-settings.command';
-import { GetPaymentTransactionsQuery } from './queries/get-payment-transactions.query';
-import { GetPaymentStatsQuery } from './queries/get-payment-stats.query';
-import { GetPaymentSettingsQuery } from './queries/get-payment-settings.query';
-import { CreateCheckoutDto } from './dto/create-checkout.dto';
-import { SimulateSandboxWebhookDto } from './dto/simulate-sandbox-webhook.dto';
+import { JwtAuthGuard } from '@/modules/auth/guards/jwt-auth.guard';
+import { RolesGuard } from '@/modules/auth/guards/roles.guard';
+import { Roles } from '@/modules/auth/decorators/roles.decorator';
+import { CurrentUser } from '@/modules/auth/decorators/current-user.decorator';
+import { CreatePaymentInvoiceCommand } from '@/modules/payments/commands/create-payment-invoice.command';
+import { HandleWayForPayWebhookCommand } from '@/modules/payments/commands/handle-wayforpay-webhook.command';
+import { SimulateSandboxWebhookCommand } from '@/modules/payments/commands/simulate-sandbox-webhook.command';
+import { UpdatePaymentSettingsCommand } from '@/modules/payments/commands/update-payment-settings.command';
+import { GetPaymentTransactionsQuery } from '@/modules/payments/queries/get-payment-transactions.query';
+import { GetPaymentStatsQuery } from '@/modules/payments/queries/get-payment-stats.query';
+import { GetPaymentSettingsQuery } from '@/modules/payments/queries/get-payment-settings.query';
+import { CreateCheckoutDto } from '@/modules/payments/dto/create-checkout.dto';
+import { SimulateSandboxWebhookDto } from '@/modules/payments/dto/simulate-sandbox-webhook.dto';
 
 @ApiTags('Payments')
 @ApiBearerAuth()

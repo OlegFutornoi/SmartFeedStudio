@@ -1,8 +1,8 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { TargetApp, NavigationItemDto } from '@smartfeed/shared';
-import { GetAllNavigationItemsQuery } from './get-all-navigation-items.query';
-import { PrismaService } from '../../../prisma/prisma.service';
-import { RedisCacheService } from '../../../common/cache/redis-cache.service';
+import { GetAllNavigationItemsQuery } from '@/modules/navigation/queries/get-all-navigation-items.query';
+import { PrismaService } from '@/prisma/prisma.service';
+import { RedisCacheService } from '@/common/cache/redis-cache.service';
 
 @QueryHandler(GetAllNavigationItemsQuery)
 export class GetAllNavigationItemsHandler implements IQueryHandler<GetAllNavigationItemsQuery> {

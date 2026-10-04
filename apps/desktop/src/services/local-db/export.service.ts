@@ -7,7 +7,7 @@ import type {
   PriceSimulationRequestDto,
   PriceSimulationResultDto,
 } from '@smartfeed/shared';
-import { invokeLocalDb } from './client';
+import { invokeLocalDb } from '@/services/local-db/client';
 
 export class LocalExportService {
   async getExportChannels(): Promise<ExportChannelDto[]> {

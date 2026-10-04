@@ -1,4 +1,4 @@
-import { test, expect } from './fixtures/test';
+import { test, expect } from '@e2e/fixtures/test';
 import { TariffPlanDto } from '@smartfeed/shared';
 
 test.describe('Admin Portal — Тарифні плани та порівняльна матриця (POM E2E)', () => {

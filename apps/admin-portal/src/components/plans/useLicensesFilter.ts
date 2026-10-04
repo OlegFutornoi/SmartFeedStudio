@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { AdminLicenseItemDto } from '@smartfeed/shared';
-import { FacetedOption } from './LicensesFacetedFilter';
+import { FacetedOption } from '@/components/plans/LicensesFacetedFilter';
 
 export interface LicensesFilterState {
   searchQuery: string;

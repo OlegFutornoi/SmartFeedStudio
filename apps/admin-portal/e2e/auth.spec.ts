@@ -1,4 +1,4 @@
-import { test, expect } from './fixtures/test';
+import { test, expect } from '@e2e/fixtures/test';
 
 test.describe('Admin Portal — Authentication & Localization (POM)', () => {
   // Clear token for unauthenticated login tests

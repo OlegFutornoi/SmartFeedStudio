@@ -1,6 +1,6 @@
 import React from 'react';
 import { TariffPlanDto } from '@smartfeed/shared';
-import { FeatureCategory } from './comparisonTableConfig';
+import { FeatureCategory } from '@/components/plans/comparisonTableConfig';
 
 interface ComparisonCategoryGroupProps {
   category: FeatureCategory;

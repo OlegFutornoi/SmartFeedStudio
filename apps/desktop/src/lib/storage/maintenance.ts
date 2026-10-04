@@ -6,7 +6,7 @@ import type {
 } from '@smartfeed/shared';
 import { fetchWithAuth } from '@/lib/api';
 import { isTauri } from '@/lib/runtime';
-import { LOCAL_STORAGE_WORKSPACE_KEY } from './constants';
+import { LOCAL_STORAGE_WORKSPACE_KEY } from '@/lib/storage/constants';
 
 export async function getStorageStats(workspacePath?: string): Promise<StorageStatsDto> {
   const activePath = workspacePath || localStorage.getItem(LOCAL_STORAGE_WORKSPACE_KEY) || '';

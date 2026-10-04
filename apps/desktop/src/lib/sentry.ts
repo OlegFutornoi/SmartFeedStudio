@@ -1,5 +1,5 @@
 import * as Sentry from '@sentry/react';
-import { isTauri } from './runtime';
+import { isTauri } from '@/lib/runtime';
 
 const DEFAULT_SENTRY_DSN =
   'https://c8df40cf636191638ce605ebe2ceceac@o4511967544934400.ingest.de.sentry.io/4511967551946832';

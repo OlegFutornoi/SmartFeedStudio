@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
-import { PrismaModule } from '../../prisma/prisma.module';
-import { NavigationController } from './navigation.controller';
-import { CreateNavigationItemHandler } from './commands/create-navigation-item.handler';
-import { UpdateNavigationItemHandler } from './commands/update-navigation-item.handler';
-import { DeleteNavigationItemHandler } from './commands/delete-navigation-item.handler';
-import { ReorderNavigationItemsHandler } from './commands/reorder-navigation-items.handler';
-import { GetAccessibleNavigationHandler } from './queries/get-accessible-navigation.handler';
-import { GetAllNavigationItemsHandler } from './queries/get-all-navigation-items.handler';
+import { PrismaModule } from '@/prisma/prisma.module';
+import { NavigationController } from '@/modules/navigation/navigation.controller';
+import { CreateNavigationItemHandler } from '@/modules/navigation/commands/create-navigation-item.handler';
+import { UpdateNavigationItemHandler } from '@/modules/navigation/commands/update-navigation-item.handler';
+import { DeleteNavigationItemHandler } from '@/modules/navigation/commands/delete-navigation-item.handler';
+import { ReorderNavigationItemsHandler } from '@/modules/navigation/commands/reorder-navigation-items.handler';
+import { GetAccessibleNavigationHandler } from '@/modules/navigation/queries/get-accessible-navigation.handler';
+import { GetAllNavigationItemsHandler } from '@/modules/navigation/queries/get-all-navigation-items.handler';
 
 export const CommandHandlers = [
   CreateNavigationItemHandler,

@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { ForbiddenException, Injectable, NotFoundException, Logger } from '@nestjs/common';
-import { PrismaService } from '../../../prisma/prisma.service';
-import { RevokeInvitationCommand } from './revoke-invitation.command';
+import { PrismaService } from '@/prisma/prisma.service';
+import { RevokeInvitationCommand } from '@/modules/organizations/commands/revoke-invitation.command';
 
 @Injectable()
 @CommandHandler(RevokeInvitationCommand)

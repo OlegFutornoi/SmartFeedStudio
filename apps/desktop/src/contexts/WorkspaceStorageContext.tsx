@@ -4,7 +4,7 @@ import type {
   StorageStatsDto,
   DatabaseMaintenanceResultDto,
 } from '@smartfeed/shared';
-import { useAuth } from './AuthContext';
+import { useAuth } from '@/contexts/AuthContext';
 import {
   getWorkspaceInfo,
   initWorkspace,

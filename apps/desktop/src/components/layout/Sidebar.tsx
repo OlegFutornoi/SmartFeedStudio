@@ -8,10 +8,10 @@ import { useNavigation } from '@/contexts/NavigationContext';
 import { useTranslation } from '@/i18n';
 import { useLicense } from '@/hooks/useLicense';
 import { Badge } from '@/components/ui/badge';
-import { SidebarNavItem } from './SidebarNavItem';
-import { SidebarUserProfile } from './SidebarUserProfile';
-import { SidebarMobileDrawer } from './SidebarMobileDrawer';
-import { SidebarUpsellSection } from './SidebarUpsellSection';
+import { SidebarNavItem } from '@/components/layout/SidebarNavItem';
+import { SidebarUserProfile } from '@/components/layout/SidebarUserProfile';
+import { SidebarMobileDrawer } from '@/components/layout/SidebarMobileDrawer';
+import { SidebarUpsellSection } from '@/components/layout/SidebarUpsellSection';
 import { PLAN_LEVEL, FEATURE_TEASER_REGISTRY } from '@/modules/feature-teaser';
 import { NavigationItemDto, PlanType, Role, TargetApp } from '@smartfeed/shared';
 

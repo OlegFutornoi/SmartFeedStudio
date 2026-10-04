@@ -5,7 +5,7 @@ import {
   LOCAL_STORAGE_WORKSPACE_KEY,
   LOCAL_STORAGE_WORKSPACE_INIT_KEY,
   LOCAL_STORAGE_WORKSPACE_ONBOARDING_KEY,
-} from './constants';
+} from '@/lib/storage/constants';
 
 export async function getWorkspaceInfo(customPath?: string): Promise<WorkspaceInfoDto | null> {
   const isExplicitlyPending =

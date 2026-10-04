@@ -4,17 +4,17 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { CqrsModule } from '@nestjs/cqrs';
 import { BullModule } from '@nestjs/bullmq';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
-import { PrismaModule } from './prisma/prisma.module';
-import { RedisCacheModule } from './common/cache/redis-cache.module';
-import { UsersModule } from './modules/users/users.module';
-import { AuthModule } from './modules/auth/auth.module';
-import { OrganizationsModule } from './modules/organizations/organizations.module';
-import { LicensesModule } from './modules/licenses/licenses.module';
-import { PlansModule } from './modules/plans/plans.module';
-import { StorageModule } from './modules/storage/storage.module';
-import { NavigationModule } from './modules/navigation/navigation.module';
-import { MailModule } from './modules/mail/mail.module';
-import { PaymentsModule } from './modules/payments/payments.module';
+import { PrismaModule } from '@/prisma/prisma.module';
+import { RedisCacheModule } from '@/common/cache/redis-cache.module';
+import { UsersModule } from '@/modules/users/users.module';
+import { AuthModule } from '@/modules/auth/auth.module';
+import { OrganizationsModule } from '@/modules/organizations/organizations.module';
+import { LicensesModule } from '@/modules/licenses/licenses.module';
+import { PlansModule } from '@/modules/plans/plans.module';
+import { StorageModule } from '@/modules/storage/storage.module';
+import { NavigationModule } from '@/modules/navigation/navigation.module';
+import { MailModule } from '@/modules/mail/mail.module';
+import { PaymentsModule } from '@/modules/payments/payments.module';
 import { FeedsModule } from '@/modules/feeds/feeds.module';
 
 @Module({

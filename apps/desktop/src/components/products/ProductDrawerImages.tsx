@@ -3,7 +3,7 @@ import { Images, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from '@/i18n';
 import type { LocalProductImageDto } from '@smartfeed/shared';
-import { ProductImageThumbnail } from './ProductImageThumbnail';
+import { ProductImageThumbnail } from '@/components/products/ProductImageThumbnail';
 
 interface ProductDrawerImagesProps {
   images: LocalProductImageDto[];

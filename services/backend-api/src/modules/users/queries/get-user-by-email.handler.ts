@@ -1,8 +1,8 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { Injectable } from '@nestjs/common';
 import { Role, UserEntity } from '@smartfeed/shared';
-import { PrismaService } from '../../../prisma/prisma.service';
-import { GetUserByEmailQuery } from './get-user-by-email.query';
+import { PrismaService } from '@/prisma/prisma.service';
+import { GetUserByEmailQuery } from '@/modules/users/queries/get-user-by-email.query';
 
 @Injectable()
 @QueryHandler(GetUserByEmailQuery)

@@ -1,6 +1,6 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
-import { GetUsersStatsQuery } from './get-users-stats.query';
-import { PrismaService } from '../../../prisma/prisma.service';
+import { GetUsersStatsQuery } from '@/modules/users/queries/get-users-stats.query';
+import { PrismaService } from '@/prisma/prisma.service';
 import { UsersStatsDto } from '@smartfeed/shared';
 
 @QueryHandler(GetUsersStatsQuery)

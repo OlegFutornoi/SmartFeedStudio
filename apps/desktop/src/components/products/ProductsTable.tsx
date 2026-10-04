@@ -1,6 +1,6 @@
 import React from 'react';
 import { PackageSearch } from 'lucide-react';
-import { ProductTableRow } from './ProductTableRow';
+import { ProductTableRow } from '@/components/products/ProductTableRow';
 import { TablePagination } from '@/components/ui/table-pagination';
 import { useTranslation } from '@/i18n';
 import type { ProductDto, SupplierDto } from '@smartfeed/shared';

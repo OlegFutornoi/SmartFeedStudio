@@ -1,5 +1,5 @@
 import { Page, Locator } from '@playwright/test';
-import { BasePage } from './base.page';
+import { BasePage } from '@e2e/pages/base.page';
 
 export class AdminDashboardPage extends BasePage {
   readonly overviewPage: Locator;

@@ -1,8 +1,8 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { NotFoundException, BadRequestException } from '@nestjs/common';
-import { PrismaService } from '../../../prisma/prisma.service';
-import { CreatePaymentInvoiceCommand } from './create-payment-invoice.command';
-import { WayForPayService } from '../services/wayforpay.service';
+import { PrismaService } from '@/prisma/prisma.service';
+import { CreatePaymentInvoiceCommand } from '@/modules/payments/commands/create-payment-invoice.command';
+import { WayForPayService } from '@/modules/payments/services/wayforpay.service';
 import { CheckoutResponseDto, PaymentProvider, PaymentInterval } from '@smartfeed/shared';
 
 @CommandHandler(CreatePaymentInvoiceCommand)

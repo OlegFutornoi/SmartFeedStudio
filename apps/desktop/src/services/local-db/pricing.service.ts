@@ -3,7 +3,7 @@ import type {
   CreateSupplierPricingRuleDto,
   UpdateSupplierPricingRuleDto,
 } from '@smartfeed/shared';
-import { invokeLocalDb } from './client';
+import { invokeLocalDb } from '@/services/local-db/client';
 
 export class LocalPricingService {
   async getPricingRules(supplierId: string): Promise<SupplierPricingRuleDto[]> {

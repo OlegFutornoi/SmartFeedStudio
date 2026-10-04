@@ -1,4 +1,4 @@
-import { test, expect } from './fixtures/test';
+import { test, expect } from '@e2e/fixtures/test';
 
 test.describe('Admin Portal — Налаштування, Профіль та Валідація (POM E2E)', () => {
   test('відображення профілю адміністратора та налаштувань теми', async ({ settingsPage }) => {

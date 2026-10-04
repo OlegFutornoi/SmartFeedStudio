@@ -1,8 +1,8 @@
 import { Page, Locator, expect } from '@playwright/test';
-import { BasePage } from './base.page';
-import { HeaderComponent } from '../components/header.component';
-import { NavigationSimulatorComponent } from '../components/simulator.component';
-import { NavigationItemDialogComponent } from '../components/dialog.component';
+import { BasePage } from '@e2e/pages/base.page';
+import { HeaderComponent } from '@e2e/components/header.component';
+import { NavigationSimulatorComponent } from '@e2e/components/simulator.component';
+import { NavigationItemDialogComponent } from '@e2e/components/dialog.component';
 import { TargetApp } from '@smartfeed/shared';
 
 export class NavigationPage extends BasePage {

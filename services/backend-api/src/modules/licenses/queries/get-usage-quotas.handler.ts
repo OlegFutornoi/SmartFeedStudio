@@ -1,9 +1,9 @@
 import { IQueryHandler, QueryHandler, QueryBus } from '@nestjs/cqrs';
 import { Injectable } from '@nestjs/common';
 import { UserQuotasDto, QuotaItemDto, PlanType, LicenseEntity } from '@smartfeed/shared';
-import { PrismaService } from '../../../prisma/prisma.service';
-import { GetUsageQuotasQuery } from './get-usage-quotas.query';
-import { GetLicenseByUserIdQuery } from './get-license-by-user-id.query';
+import { PrismaService } from '@/prisma/prisma.service';
+import { GetUsageQuotasQuery } from '@/modules/licenses/queries/get-usage-quotas.query';
+import { GetLicenseByUserIdQuery } from '@/modules/licenses/queries/get-license-by-user-id.query';
 
 @Injectable()
 @QueryHandler(GetUsageQuotasQuery)

@@ -12,7 +12,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import type { TariffPlanDto, CheckoutResponseDto } from '@smartfeed/shared';
-import { SandboxSimulationBlock } from './SandboxSimulationBlock';
+import { SandboxSimulationBlock } from '@/components/plans/SandboxSimulationBlock';
 
 interface CheckoutReviewStepProps {
   plan: TariffPlanDto;

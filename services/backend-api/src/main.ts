@@ -3,8 +3,8 @@ import { ValidationPipe, Logger } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { json, urlencoded } from 'express';
 import helmet from 'helmet';
-import { AppModule } from './app.module';
-import { GlobalHttpExceptionFilter } from './common/filters/http-exception.filter';
+import { AppModule } from '@/app.module';
+import { GlobalHttpExceptionFilter } from '@/common/filters/http-exception.filter';
 
 async function bootstrap() {
   const logger = new Logger('Bootstrap');

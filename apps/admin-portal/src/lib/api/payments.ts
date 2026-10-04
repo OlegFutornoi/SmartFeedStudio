@@ -4,7 +4,7 @@ import type {
   UpdatePaymentSettingDto,
   PaymentStatsDto,
 } from '@smartfeed/shared';
-import { baseClient } from './client';
+import { baseClient } from '@/lib/api/client';
 
 export interface GetPaymentTransactionsParams {
   status?: string;

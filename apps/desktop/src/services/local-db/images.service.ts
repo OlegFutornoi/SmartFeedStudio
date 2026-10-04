@@ -3,7 +3,7 @@ import type {
   UpdateProductImageOrderDto,
   DeleteProductImageResultDto,
 } from '@smartfeed/shared';
-import { invokeLocalDb } from './client';
+import { invokeLocalDb } from '@/services/local-db/client';
 
 export class LocalImagesService {
   async getProductImages(productId: string): Promise<LocalProductImageDto[]> {

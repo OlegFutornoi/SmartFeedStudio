@@ -1,9 +1,9 @@
 import { CommandHandler, ICommandHandler, CommandBus } from '@nestjs/cqrs';
 import { NotFoundException, Logger } from '@nestjs/common';
-import { PrismaService } from '../../../prisma/prisma.service';
-import { SimulateSandboxWebhookCommand } from './simulate-sandbox-webhook.command';
-import { HandleWayForPayWebhookCommand } from './handle-wayforpay-webhook.command';
-import { WayForPayService } from '../services/wayforpay.service';
+import { PrismaService } from '@/prisma/prisma.service';
+import { SimulateSandboxWebhookCommand } from '@/modules/payments/commands/simulate-sandbox-webhook.command';
+import { HandleWayForPayWebhookCommand } from '@/modules/payments/commands/handle-wayforpay-webhook.command';
+import { WayForPayService } from '@/modules/payments/services/wayforpay.service';
 import { PaymentProvider } from '@smartfeed/shared';
 
 @CommandHandler(SimulateSandboxWebhookCommand)

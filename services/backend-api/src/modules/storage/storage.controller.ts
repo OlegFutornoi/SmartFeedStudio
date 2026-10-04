@@ -1,10 +1,10 @@
 import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { RequireActiveLicenseGuard } from '../licenses/guards/require-active-license.guard';
-import { CurrentUser } from '../auth/decorators/current-user.decorator';
-import { GeneratePresignedUploadUrlCommand } from './commands/generate-presigned-url.command';
+import { JwtAuthGuard } from '@/modules/auth/guards/jwt-auth.guard';
+import { RequireActiveLicenseGuard } from '@/modules/licenses/guards/require-active-license.guard';
+import { CurrentUser } from '@/modules/auth/decorators/current-user.decorator';
+import { GeneratePresignedUploadUrlCommand } from '@/modules/storage/commands/generate-presigned-url.command';
 import {
   PresignedUploadUrlResult,
   WorkspaceInfoDto,
@@ -13,25 +13,25 @@ import {
   CreateLocalBackupResultDto,
   ClearStorageCacheResultDto,
 } from '@smartfeed/shared';
-import { GetDefaultWorkspacePathQuery } from './queries/get-default-workspace-path.query';
-import { GetWorkspaceInfoQuery } from './queries/get-workspace-info.query';
-import { GetStorageStatsQuery } from './queries/get-storage-stats.query';
-import { InitWorkspaceCommand } from './commands/init-workspace.command';
-import { OpenWorkspaceFolderCommand } from './commands/open-workspace-folder.command';
-import { CreateLocalBackupCommand } from './commands/create-local-backup.command';
-import { RunDatabaseMaintenanceCommand } from './commands/run-database-maintenance.command';
-import { ClearStorageCacheCommand } from './commands/clear-storage-cache.command';
-import { MigrateWorkspaceCommand } from './commands/migrate-workspace.command';
-import { SelectWorkspaceFolderCommand } from './commands/select-workspace-folder.command';
+import { GetDefaultWorkspacePathQuery } from '@/modules/storage/queries/get-default-workspace-path.query';
+import { GetWorkspaceInfoQuery } from '@/modules/storage/queries/get-workspace-info.query';
+import { GetStorageStatsQuery } from '@/modules/storage/queries/get-storage-stats.query';
+import { InitWorkspaceCommand } from '@/modules/storage/commands/init-workspace.command';
+import { OpenWorkspaceFolderCommand } from '@/modules/storage/commands/open-workspace-folder.command';
+import { CreateLocalBackupCommand } from '@/modules/storage/commands/create-local-backup.command';
+import { RunDatabaseMaintenanceCommand } from '@/modules/storage/commands/run-database-maintenance.command';
+import { ClearStorageCacheCommand } from '@/modules/storage/commands/clear-storage-cache.command';
+import { MigrateWorkspaceCommand } from '@/modules/storage/commands/migrate-workspace.command';
+import { SelectWorkspaceFolderCommand } from '@/modules/storage/commands/select-workspace-folder.command';
 import {
   PresignedUrlDto,
   InitWorkspaceRequestDto,
   OpenFolderRequestDto,
   WorkspaceActionRequestDto,
   MigrateWorkspaceRequestDto,
-} from './dto';
+} from '@/modules/storage/dto';
 
-export * from './dto';
+export * from '@/modules/storage/dto';
 
 @ApiTags('Storage')
 @Controller('storage')

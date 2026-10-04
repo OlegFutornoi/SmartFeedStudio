@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { LanguageToggle } from '@/components/ui/language-toggle';
-import { CommandSearchDialog } from './CommandSearchDialog';
+import { CommandSearchDialog } from '@/components/layout/CommandSearchDialog';
 import { cn } from '@/lib/utils';
 
 export const Header = React.memo(function Header() {

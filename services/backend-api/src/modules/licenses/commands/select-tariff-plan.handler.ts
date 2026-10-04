@@ -2,10 +2,10 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { ForbiddenException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { LicenseEntity, PlanType, PLAN_LIMITS_MAP, Role } from '@smartfeed/shared';
 import * as crypto from 'crypto';
-import { PrismaService } from '../../../prisma/prisma.service';
-import { mapTariffPlanToDto } from '../../plans/utils/map-tariff-plan-to-dto';
-import { SelectTariffPlanCommand } from './select-tariff-plan.command';
-import { organizationMutex } from '../../organizations/utils/organization-mutex';
+import { PrismaService } from '@/prisma/prisma.service';
+import { mapTariffPlanToDto } from '@/modules/plans/utils/map-tariff-plan-to-dto';
+import { SelectTariffPlanCommand } from '@/modules/licenses/commands/select-tariff-plan.command';
+import { organizationMutex } from '@/modules/organizations/utils/organization-mutex';
 
 @Injectable()
 @CommandHandler(SelectTariffPlanCommand)

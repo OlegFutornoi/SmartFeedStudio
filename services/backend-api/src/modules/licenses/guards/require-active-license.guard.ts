@@ -1,6 +1,6 @@
 import { Injectable, CanActivate, ExecutionContext, ForbiddenException } from '@nestjs/common';
 import { QueryBus } from '@nestjs/cqrs';
-import { GetLicenseByUserIdQuery } from '../queries/get-license-by-user-id.query';
+import { GetLicenseByUserIdQuery } from '@/modules/licenses/queries/get-license-by-user-id.query';
 
 @Injectable()
 export class RequireActiveLicenseGuard implements CanActivate {

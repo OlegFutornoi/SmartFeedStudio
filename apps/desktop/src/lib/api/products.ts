@@ -7,7 +7,7 @@ import type {
 } from '@smartfeed/shared';
 import { localDb } from '@/services/local-db';
 import { isTauri } from '@/lib/runtime';
-import { fetchWithAuth } from './client';
+import { fetchWithAuth } from '@/lib/api/client';
 
 export interface GetProductsParams {
   page?: number;

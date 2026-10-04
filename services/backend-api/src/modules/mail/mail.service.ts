@@ -1,7 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as nodemailer from 'nodemailer';
-import { generateInvitationEmailHtml, InvitationEmailData } from './templates/invitation-email';
+import {
+  generateInvitationEmailHtml,
+  InvitationEmailData,
+} from '@/modules/mail/templates/invitation-email';
 
 @Injectable()
 export class MailService {

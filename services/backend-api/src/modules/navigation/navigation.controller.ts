@@ -19,17 +19,17 @@ import {
   ReorderNavigationItemsDto,
   PlanType,
 } from '@smartfeed/shared';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { RolesGuard } from '../auth/guards/roles.guard';
-import { Roles } from '../auth/decorators/roles.decorator';
-import { CurrentUser } from '../auth/decorators/current-user.decorator';
-import { GetAccessibleNavigationQuery } from './queries/get-accessible-navigation.query';
-import { GetAllNavigationItemsQuery } from './queries/get-all-navigation-items.query';
-import { CreateNavigationItemCommand } from './commands/create-navigation-item.command';
-import { UpdateNavigationItemCommand } from './commands/update-navigation-item.command';
-import { DeleteNavigationItemCommand } from './commands/delete-navigation-item.command';
-import { ReorderNavigationItemsCommand } from './commands/reorder-navigation-items.command';
-import { GetLicenseByUserIdQuery } from '../licenses/queries/get-license-by-user-id.query';
+import { JwtAuthGuard } from '@/modules/auth/guards/jwt-auth.guard';
+import { RolesGuard } from '@/modules/auth/guards/roles.guard';
+import { Roles } from '@/modules/auth/decorators/roles.decorator';
+import { CurrentUser } from '@/modules/auth/decorators/current-user.decorator';
+import { GetAccessibleNavigationQuery } from '@/modules/navigation/queries/get-accessible-navigation.query';
+import { GetAllNavigationItemsQuery } from '@/modules/navigation/queries/get-all-navigation-items.query';
+import { CreateNavigationItemCommand } from '@/modules/navigation/commands/create-navigation-item.command';
+import { UpdateNavigationItemCommand } from '@/modules/navigation/commands/update-navigation-item.command';
+import { DeleteNavigationItemCommand } from '@/modules/navigation/commands/delete-navigation-item.command';
+import { ReorderNavigationItemsCommand } from '@/modules/navigation/commands/reorder-navigation-items.command';
+import { GetLicenseByUserIdQuery } from '@/modules/licenses/queries/get-license-by-user-id.query';
 
 @ApiTags('Navigation')
 @Controller('navigation')

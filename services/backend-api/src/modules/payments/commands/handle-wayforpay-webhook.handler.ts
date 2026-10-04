@@ -1,10 +1,10 @@
 import { CommandHandler, ICommandHandler, CommandBus } from '@nestjs/cqrs';
 import { BadRequestException, NotFoundException, Logger } from '@nestjs/common';
-import { PrismaService } from '../../../prisma/prisma.service';
-import { Prisma } from '../../../generated/prisma/client';
-import { HandleWayForPayWebhookCommand } from './handle-wayforpay-webhook.command';
-import { WayForPayService } from '../services/wayforpay.service';
-import { SelectTariffPlanCommand } from '../../licenses/commands/select-tariff-plan.command';
+import { PrismaService } from '@/prisma/prisma.service';
+import { Prisma } from '@/generated/prisma/client';
+import { HandleWayForPayWebhookCommand } from '@/modules/payments/commands/handle-wayforpay-webhook.command';
+import { WayForPayService } from '@/modules/payments/services/wayforpay.service';
+import { SelectTariffPlanCommand } from '@/modules/licenses/commands/select-tariff-plan.command';
 import { PaymentProvider } from '@smartfeed/shared';
 
 @CommandHandler(HandleWayForPayWebhookCommand)

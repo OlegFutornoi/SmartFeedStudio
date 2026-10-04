@@ -1,8 +1,8 @@
 # 🤖 SmartFeed Studio — Master Skills & Multi-Domain Agent Guide
 
 > **Файл розташування:** [`.agents/AGENTS.md`](./AGENTS.md)  
-> **Призначення:** Єдиний центр інтелекту, каталог та диспетчер усіх **79 скілів** SmartFeed Studio (4 майстер-оркестратори та 75 спеціалізованих підскілів).  
-> **Спеціалізовані агенти:** [🎨 Frontend Engineering Agent (`agents_frontend`)](./agents_frontend.md) · [⚙️ Backend Engineering Agent (`agents_backend`)](./agents_backend.md) · [🔍 Code Review & Audit Agent (`agents_review`)](./agents_review.md)
+> **Призначення:** Єдиний центр інтелекту, каталог та диспетчер усіх **99 скілів** SmartFeed Studio (4 майстер-оркестратори та 95 спеціалізованих підскілів).  
+> **Спеціалізовані агенти:** [🎨 Frontend Engineering Agent (`agents_frontend`)](./agents_frontend.md) · [⚙️ Backend Engineering Agent (`agents_backend`)](./agents_backend.md) · [🔍 Code Review & Audit Agent (`agents_review`)](./agents_review.md) · [📋 Приклади задач та промптів](./task_prompt_examples.md)
 
 ---
 
@@ -12,7 +12,7 @@
 
 1. **Майстер-оркестратори (Master Skills)** — розташовані безпосередньо в [`.agents/skills/`](skills/). Керують повними інженерними життєвими циклами (7 етапів для бекенду і фронтенду, релізи, мета-генерація скілів) та автоматично залучають підскіли.
 2. **Спеціалізовані підскіли (Sub-Skills)** — розташовані в [`.agents/skills/sub-skills/`](skills/sub-skills/). Виконують точкові інженерні завдання: перевірка схем БД, патерни компонентів, мікроанімації, аналіз граничних умов, ліквідація гонок пам'яті, безпековий аудит.
-3. **Синхронізація з Claude Code**: Усі 79 сумісних скілів дзеркалюються через відносні символічні посилання у [`.claude/skills/`](../.claude/skills/), які валідовані та резолвляться без жодного битого посилання.
+3. **Синхронізація з Claude Code**: Усі 95 підскілів та 4 майстер-скіли дзеркалюються через відносні символічні посилання у [`.claude/skills/`](../.claude/skills/), які валідовані та резолвляться без жодного битого посилання.
 
 ```text
                                  ┌──────────────────────────────────────────────┐
@@ -27,29 +27,29 @@
            │                        │                                    │                        │
            ▼                        ▼                                    ▼                        ▼
  ┌──────────────────────────────────────────────────────────────────────────────────────────────────────┐
- │                              .agents/skills/sub-skills/ (75 Sub-Skills)                              │
+ │                              .agents/skills/sub-skills/ (95 Sub-Skills)                              │
  │  ⚙️ Backend & DB  │  💻 Frontend & UI  │  🔍 Code Review  │  🐞 Debug  │  🧠 Analysis  │  📋 Plans  │  🛠 DevOps  │  🔒 Security  │
  └──────────────────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 🗺 2. Навігаційна матриця за напрямками (8 напрямків, 79 скілів)
+## 🗺 2. Навігаційна матриця за напрямками (8 напрямків, 99 скілів)
 
 | Напрямок                               | Кількість | Майстер-скіли                                                                                | Ключові підскіли                                                                                                                                                |
 | :------------------------------------- | :-------: | :------------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **1. ⚙️ Backend & Бази Даних**         |    19     | [`backend`](skills/backend/SKILL.md)                                                         | `nestjs-best-practices`, `supabase-postgres-best-practices`, `prisma-client-api`, `postgresql-code-review`, `postgresql-optimization`, `subscription-lifecycle` |
-| **2. 💻 Frontend & UI/UX Дизайн**      |    18     | [`frontend`](skills/frontend/SKILL.md)                                                       | `ui-ux-pro-max`, `shadcn`, `tailwind-design-system`, `vercel-react-best-practices`, `image`, `emil-design-eng`, `design-taste-frontend`                         |
+| **1. ⚙️ Backend & Бази Даних**         |    23     | [`backend`](skills/backend/SKILL.md)                                                         | `streaming-large-feeds`, `idempotency-and-outbox`, `db-migrations-zero-downtime`, `contract-first-api`, `nestjs-best-practices`                                 |
+| **2. 💻 Frontend & UI/UX Дизайн**      |    18     | [`frontend`](skills/frontend/SKILL.md)                                                       | `accessibility-testing`, `ui-ux-pro-max`, `shadcn`, `tailwind-design-system`, `vercel-react-best-practices`, `image`, `emil-design-eng`                         |
 | **3. 🔍 Код-Ревью, Аудит & Якість**    |     7     | —                                                                                            | `fullstack-code-review`, `adver-review`, `postgresql-code-review`, `requesting-code-review`, `code-review-reception`, `verification-before-completion`          |
-| **4. 🐞 Дебаг, Трейсинг & Тестування** |     8     | —                                                                                            | `systematic-debugging`, `root-cause-tracing`, `playwright-best-practices`, `test-driven-development-tdd`, `condition-based-waiting`                             |
+| **4. 🐞 Дебаг, Трейсинг & Тестування** |    14     | —                                                                                            | `seed-and-fixtures-factory`, `performance-budget`, `visual-regression-testing`, `observability-opentelemetry`, `property-based-and-mutation-testing`            |
 | **5. 🧠 Системний Аналіз & Стратегія** |     9     | —                                                                                            | `inversion-exercise`, `scale-game`, `collision-zone-thinking`, `meta-pattern-recognition`, `simplification-cascades`                                            |
-| **6. 📋 Планування & Оркестрація**     |     5     | —                                                                                            | `writing-plans`, `executing-plans`, `subagent-driven-development`, `dispatching-parallel-agents`, `remembering-conversations`                                   |
-| **7. 🛠 Монорепо, Типи, Git & Скіли**   |    13     | [`git-commit`](skills/git-commit/SKILL.md), [`skill-creator`](skills/skill-creator/SKILL.md) | `turborepo`, `typescript-advanced-types`, `ai-sdk`, `firecrawl-parse`, `using-git-worktrees`, `writing-skills`                                                  |
-| **8. 🔒 Безпека & Аудит**              |     6     | —                                                                                            | `api-security-best-practices`, `api-security-testing`, `better-auth-security-best-practices`, `security-best-practices`, `firebase-security-rules-auditor`      |
+| **6. 📋 Планування & Оркестрація**     |     8     | —                                                                                            | `fullstack-feature-orchestrator`, `session-handoff`, `invariant-checklist-generator`, `writing-plans`, `executing-plans`                                        |
+| **7. 🛠 Монорепо, Типи, Git & Скіли**   |    20     | [`git-commit`](skills/git-commit/SKILL.md), [`skill-creator`](skills/skill-creator/SKILL.md) | `release-and-rollback`, `task-router`, `lessons-learned-registry`, `project-context-map`, `automated-guardrails-ci`, `turborepo`                                |
+| **8. 🔒 Безпека & Аудит**              |     6     | —                                                                                            | `tauri-v2-security-and-ipc`, `api-security-best-practices`, `better-auth-security-best-practices`, `security-best-practices`, `firebase-security-rules-auditor` |
 
 ---
 
-## ⚙️ Напрямок 1: Backend Architecture, APIs & Бази Даних (18 скілів)
+## ⚙️ Напрямок 1: Backend Architecture, APIs & Бази Даних (23 скіли)
 
 ### 👑 Майстер-скіл
 
@@ -116,10 +116,22 @@
 19. [**`postgresql-code-review`**](skills/sub-skills/postgresql-code-review/SKILL.md)
     - **Призначення:** Спеціалізований аудит коду PostgreSQL: валідація JSONB операцій та GIN індексів, ефективність масивів (`@>`), дизайн схеми (CITEXT, TIMESTAMPTZ, ENUM, CHECK констрейнти), оптимізація тригерів і функцій PL/pgSQL, перевірка розширень та безпека RLS.
     - **Коли застосовувати:** Написання, оптимізація та рев'ю запитів PostgreSQL, міграцій, схеми `schema.prisma` та констрейнтів.
+20. [**`contract-first-api`**](skills/sub-skills/contract-first-api/SKILL.md)
+    - **Призначення:** Єдине джерело істини для API контрактів: Zod схеми та TypeScript DTO у `@smartfeed/shared`, сувора типізація клієнт-сервер, детекція breaking changes до деплою.
+    - **Коли застосовувати:** Додавання або модифікація API ендпоінтів, DTO, схем валідації між NestJS та React/Tauri.
+21. [**`streaming-large-feeds`**](skills/sub-skills/streaming-large-feeds/SKILL.md)
+    - **Призначення:** Потоковий подієвий SAX-парсинг XML/CSV на 100k+ SKU, backpressure контролювання пам'яті, чанкований імпорт через BullMQ, захист від OOM.
+    - **Коли застосовувати:** Імпорт та парсинг великих каталогів товарів, потокове читання з S3 чи локального диска, бекграунд-воркери.
+22. [**`idempotency-and-outbox`**](skills/sub-skills/idempotency-and-outbox/SKILL.md)
+    - **Призначення:** Захист мутацій через `X-Idempotency-Key` у Redis, Transactional Outbox патерн у Prisma для надійної публікації подій, BullMQ retry з jitter та DLQ.
+    - **Коли застосовувати:** Будь-які критичні CQRS операції (створення замовлень, імпорт фіду, списання кредитів, асинхронні повідомлення).
+23. [**`db-migrations-zero-downtime`**](skills/sub-skills/db-migrations-zero-downtime/SKILL.md)
+    - **Призначення:** Безпечні міграції БД без простою системи: 3-фазний патерн Expand/Contract, запобігання блокуванням через `lock_timeout`, `CREATE INDEX CONCURRENTLY`, чанковий курсорний бекфіл даних.
+    - **Коли застосовувати:** Будь-які зміни `schema.prisma`, додавання, перейменування або видалення колонок/таблиць, міграції великих обсягів даних.
 
 ---
 
-## 💻 Напрямок 2: Frontend Engineering & UI/UX Дизайн (17 скілів)
+## 💻 Напрямок 2: Frontend Engineering & UI/UX Дизайн (18 підскілів, 1 майстер)
 
 ### 👑 Майстер-скіл
 
@@ -144,42 +156,42 @@
 5. [**`design-taste-frontend-v1`**](skills/sub-skills/design-taste-frontend-v1/SKILL.md)
    - **Призначення:** Базова версія правил естетичного оформлення інтерфейсів для специфічних проектних компонентів.
    - **Коли застосовувати:** Редизайн застарілих форм або карток із збереженням консервативного стилю.
-6. [**`beautiful-desing`**](skills/sub-skills/beautiful-desing/SKILL.md)
+6. [**`beautiful-design`**](skills/sub-skills/beautiful-design/SKILL.md)
    - **Призначення:** Створення WOW-ефекту: плавні градієнти, м'які тіні, glassmorphism, стан наведення (hover), живі інтерактивні елементи.
    - **Коли застосовувати:** Полірування інтерфейсу, фінальний шліф перед демонстрацією користувачу.
 7. [**`frontend-design`**](skills/sub-skills/frontend-design/SKILL.md)
    - **Призначення:** Візуальна ідентичність додатку: правила шрифтових пар, контрастності тексту, відступів та пропорцій.
    - **Коли застосовувати:** Проектування нових модулів чи екранів з нуля.
-8. [**`frontend-desing`**](skills/sub-skills/frontend-desing/SKILL.md)
-   - **Призначення:** Поглиблені принципи компонування сучасного Web та Desktop UI (Tauri).
-   - **Коли застосовувати:** Інтеграція десктопних нативних вікон, панелей інструментів та сайдбарів.
-9. [**`emil-design-eng`**](skills/sub-skills/emil-design-eng/SKILL.md)
+8. [**`emil-design-eng`**](skills/sub-skills/emil-design-eng/SKILL.md)
    - **Призначення:** Інженерія мікро-деталей від Еміля Ковальські: фізика пружин (spring animations), оптимістичні оновлення інтерфейсу, тактильний відгук на кліки.
    - **Коли застосовувати:** Анімація розкриття модалок, перетягування (drag-and-drop), акордеонів, тостів.
-10. [**`canvas-design`**](skills/sub-skills/canvas-design/SKILL.md)
-    - **Призначення:** Робота з Canvas 2D: відмальовка графіків, бейджів, генерація зображень попереднього перегляду фідів.
-    - **Коли застосовувати:** Графічні компоненти, прев'ю товарних карток, генерація банерів.
-11. [**`vercel-react-best-practices`**](skills/sub-skills/vercel-react-best-practices/SKILL.md)
+9. [**`canvas-design`**](skills/sub-skills/canvas-design/SKILL.md)
+   - **Призначення:** Робота з Canvas 2D: відмальовка графіків, бейджів, генерація зображень попереднього перегляду фідів.
+   - **Коли застосовувати:** Графічні компоненти, прев'ю товарних карток, генерація банерів.
+10. [**`vercel-react-best-practices`**](skills/sub-skills/vercel-react-best-practices/SKILL.md)
     - **Призначення:** Продуктивність React 18/19 та Next.js: усунення зайвих ререндерів, hoisting констант, мемоізація селекторів, усунення подвійного монтування `React.StrictMode` у dev.
     - **Коли застосовувати:** Оптимізація продуктивності сторінок, списків з тисячами товарів, усунення лагів.
-12. [**`vercel-composition-patterns`**](skills/sub-skills/vercel-composition-patterns/SKILL.md)
+11. [**`vercel-composition-patterns`**](skills/sub-skills/vercel-composition-patterns/SKILL.md)
     - **Призначення:** Масштабована композиція React: патерн Compound Components, передача `children` замість пропсів-конфігурацій на 30 полів, уникнення boolean-props пекла.
     - **Коли застосовувати:** Рефакторинг великих компонентів (наприклад, майстрів імпорту чи таблиць каталогів).
-13. [**`modern-web-guidance`**](skills/sub-skills/modern-web-guidance/SKILL.md)
+12. [**`modern-web-guidance`**](skills/sub-skills/modern-web-guidance/SKILL.md)
     - **Призначення:** Сучасні стандарти вебу: семантична розмітка HTML5, доступність (a11y), валідація, прогресивне завантаження.
-    - **Коли застосовувати:** Аудит розмітки та приведення сторінок до стандартів W3C / WCAG.
-14. [**`web-design-guidelines`**](skills/sub-skills/web-design-guidelines/SKILL.md)
+    - **Коли застосовувати:** Написання семантичного HTML5 коду, доступність інтерфейсів.
+13. [**`web-design-guidelines`**](skills/sub-skills/web-design-guidelines/SKILL.md)
     - **Призначення:** Контроль стандартів Web Interface Guidelines: видимий фокус клавіатури, табуляція цифр (`font-variant-numeric: tabular-nums`), автозаповнення та валідація форм.
     - **Коли застосовувати:** Перевірка форм вводу, фінансових даних, списків цін і лічильників.
-15. [**`image`**](skills/sub-skills/image/SKILL.md)
+14. [**`image`**](skills/sub-skills/image/SKILL.md)
     - **Призначення:** Створення та оптимізація зображень: hero images, соціальна графіка, мокапи продуктів, банери, OG-зображення, WebP оптимізація.
     - **Коли застосовувати:** Генерація графічних асетів для лендінгів, маркетингових матеріалів, прев'ю фідів.
-16. [**`brainstorming-ideas-into-designs`**](skills/sub-skills/brainstorming-ideas-into-designs/SKILL.md)
+15. [**`brainstorming-ideas-into-designs`**](skills/sub-skills/brainstorming-ideas-into-designs/SKILL.md)
     - **Призначення:** Структурований мозковий штурм: перетворення нечіткої ідеї користувача на інженерні специфікації через сокративське опитування та дослідження альтернатив.
     - **Коли застосовувати:** Початковий етап нової великої фічі, дизайн-спрінти, прототипування UI.
-17. [**`webapp-testing`**](skills/sub-skills/webapp-testing/SKILL.md)
+16. [**`webapp-testing`**](skills/sub-skills/webapp-testing/SKILL.md)
     - **Призначення:** Тестування локальних веб-додатків через Playwright скрипти: запуск серверів, знімки, інспекція DOM, дебаг UI.
     - **Коли застосовувати:** Інструментальне дослідження локального сайту через браузерний стек.
+17. [**`accessibility-testing`**](skills/sub-skills/accessibility-testing/SKILL.md)
+    - **Призначення:** Стандарти доступності WCAG 2.1 AA: автоматизовані скани `@axe-core/playwright`, валідація колірного контрасту (≥ 4.5:1), Tab-фокус, перевірка фокус-пасток діалогів і ARIA ролей.
+    - **Коли застосовувати:** Верстка та аудит форм, таблиць, модальних вікон, навігації додатку.
 
 ---
 
@@ -209,7 +221,7 @@
 
 ---
 
-## 🐞 Напрямок 4: Дебаг, Трейсинг & Тестування (8 скілів)
+## 🐞 Напрямок 4: Дебаг, Трейсинг & Тестування (14 скілів)
 
 1. [**`systematic-debugging`**](skills/sub-skills/systematic-debugging/SKILL.md)
    - **Призначення:** 4-фазний системний дебаг: 1. Відтворити баг ізольованим мінімальним тестом; 2. Простежити першопричину назад; 3. Внести структурне архітектурне виправлення; 4. Перевірити 100% тестів.
@@ -221,20 +233,38 @@
    - **Призначення:** Заміна випадкових `sleep(2000)` та флакі-таймаутів на очікування конкретних предикатів або подій (`expect.poll`, `page.waitForResponse`, `waitForSelector`).
    - **Коли застосовувати:** Будь-які асинхронні E2E тести Playwright або Jest інтеграційні перевірки.
 4. [**`test-driven-development`**](skills/sub-skills/test-driven-development/SKILL.md)
-   - **Призначення:** Фундаментальна філософія TDD: тест пишеться до коду, підтверджується падіння (RED), пишеться мінімальний код для проходження (GREEN), після чого проводиться рефакторинг.
+   - **Призначення:** Фундаментальна філософія TDD: тест пишеться до коду, підтверджується падіння (RED), пишеться мінімальний код для проходження (GREEN), після чого проводиться рефакторинг контрактів `@smartfeed/shared` та CQRS команд.
    - **Коли застосовувати:** Розробка нового функціоналу або усунення багів.
-5. [**`test-driven-development-tdd`**](skills/sub-skills/test-driven-development-tdd/SKILL.md)
-   - **Призначення:** Практичне застосування TDD для контрактів `@smartfeed/shared` та CQRS команд.
-   - **Коли застосовувати:** Створення нових бізнес-правил та DTO.
-6. [**`playwright-best-practices`**](skills/sub-skills/playwright-best-practices/SKILL.md)
+5. [**`playwright-best-practices`**](skills/sub-skills/playwright-best-practices/SKILL.md)
    - **Призначення:** Майстер тестування інтерфейсів у SmartFeed Studio: Page Object Model (POM), стійкі `data-testid` селектори, перевірка перемикання локалей (UA ⇄ EN), перевірка network dedup (`requestCount === 1`).
    - **Коли застосовувати:** Написання E2E тестів для Desktop (`apps/desktop`) та Admin Portal (`apps/admin-portal`).
-7. [**`webapp-testing`**](skills/sub-skills/webapp-testing/SKILL.md)
+6. [**`webapp-testing`**](skills/sub-skills/webapp-testing/SKILL.md)
    - **Призначення:** Утиліти взаємодії з веб-додатками: запуск локальних серверів, зняття логів консолі, дослідження DOM.
    - **Коли застосовувати:** Інструментальне дослідження локального сайту через браузерний стек.
-8. [**`testing-skills-with-subagents`**](skills/sub-skills/testing-skills-with-subagents/SKILL.md)
+7. [**`testing-skills-with-subagents`**](skills/sub-skills/testing-skills-with-subagents/SKILL.md)
    - **Призначення:** TDD для процесів та документації: перевірка поведінки моделі до і після впровадження нових скілів або правил.
    - **Коли застосовувати:** Тестування та оптимізація інструкцій у `.agents/skills/` чи `.agents/rules/`.
+8. [**`mock-real-parity-testing`**](skills/sub-skills/mock-real-parity-testing/SKILL.md)
+   - **Призначення:** 100% поведінковий та структурний паритет між локальним режимом (`mockDatabaseDriver` у браузері, SQLCipher у Tauri) та реальним сервером (`NestJS` + PostgreSQL).
+   - **Коли застосовувати:** Розробка або тестування клієнтських сервісів товарів, постачальників, фідів, перевірка відсутності витоку назв колонок замість значень.
+9. [**`e2e-scenario-matrix`**](skills/sub-skills/e2e-scenario-matrix/SKILL.md)
+   - **Призначення:** 4D матриця сценаріїв E2E тестування: Сутність × Операція (Create, Filter, Cascade Delete) × Режим (Mock/Real) × Мова (UA/EN).
+   - **Коли застосовувати:** Планування тестового покриття нових модулів, повне усунення формальних "smoke-only" тестів.
+10. [**`property-based-and-mutation-testing`**](skills/sub-skills/property-based-and-mutation-testing/SKILL.md)
+    - **Призначення:** Перевірка якості тестів через мутаційне тестування (Stryker) та генеративне тестування інваріантів (`fast-check`), фаззинг парсерів XML/CSV на екстремальних даних.
+    - **Коли застосовувати:** Валідація бізнес-логіки обчислення цін, перевірка парсерів фідів, оцінка стійкості тестового набору до багів.
+11. [**`visual-regression-testing`**](skills/sub-skills/visual-regression-testing/SKILL.md)
+    - **Призначення:** Візуальне регресійне тестування скріншотами (Playwright `toHaveScreenshot`), перевірка 100% Solid Sticky Headers таблиць, гармонія Dark/Light тем, заморозка CSS-анімацій.
+    - **Коли застосовувати:** Створення нових сторінок, редизайн таблиць, перевірка відсутності артефактів скролу.
+12. [**`observability-opentelemetry`**](skills/sub-skills/observability-opentelemetry/SKILL.md)
+    - **Призначення:** Наскрізне трасування запитів (W3C traceparent), структуроване JSON логування з Pino, маскування конфіденційних даних, зв'язування помилок у Sentry з OpenTelemetry Spans.
+    - **Коли застосовувати:** Розподілені операції, відстеження довготривалих задач BullMQ, розслідування рантайм-інцидентів.
+13. [**`performance-budget`**](skills/sub-skills/performance-budget/SKILL.md)
+    - **Призначення:** Системний контроль бюджетів продуктивності: бандл (<200KB JS), Web Vitals (LCP < 2.5s, INP < 200ms), ліміт API-запитів (≤1 на view), та бенчмарки парсингу великих фідів (100k SKU < 5 хв, RAM < 512MB).
+    - **Коли застосовувати:** Архітектура сторінок, оптимізація рендеру, імпорт каталогів, регресійний CI контроль.
+14. [**`seed-and-fixtures-factory`**](skills/sub-skills/seed-and-fixtures-factory/SKILL.md)
+    - **Призначення:** Фабрики тестових даних: генератори XML/CSV каталогів (до 100k SKU), зв'язаних сутностей БД (User, Org, License, Feed, Product), та залізний авто-teardown (`cleanDatabase`) без осиротілих рядків.
+    - **Коли застосовувати:** Підготовка фікстур для E2E тестів, навантажувального тестування парсерів та тестування паритету даних.
 
 ---
 
@@ -270,7 +300,7 @@
 
 ---
 
-## 📋 Напрямок 6: Планування, Оркестрація & Декомпозиція (5 скілів)
+## 📋 Напрямок 6: Планування, Оркестрація & Декомпозиція (8 скілів)
 
 1. [**`writing-plans`**](skills/sub-skills/writing-plans/SKILL.md)
    - **Призначення:** Створення детермінованих планів у [`plans/active/<feature>.md`](../plans/active/): обов'язкове врахування контрактів `@smartfeed/shared`, 4 рівнів валідації, ліміту файлів (<250 рядків) та сценаріїв збоїв мережі.
@@ -287,10 +317,19 @@
 5. [**`remembering-conversations`**](skills/sub-skills/remembering-conversations/SKILL.md)
    - **Призначення:** Пошук у збережених сесіях діалогів: знаходження раніше узгоджених рішень, нюансів бізнес-логіки та технічних вимог.
    - **Коли застосовувати:** Коли користувач посилається на попередні обговорення або потрібно відновити забутий контекст.
+6. [**`session-handoff`**](skills/sub-skills/session-handoff/SKILL.md)
+   - **Призначення:** Стиснення поточної задачі у файл стану `plans/active/<feature>.state.md` для збереження контексту між сесіями та після компакції без повторного читання репозиторію.
+   - **Коли застосовувати:** Довгі сесії, наближення компакції, перерви в роботі, передача задачі іншому агенту.
+7. [**`invariant-checklist-generator`**](skills/sub-skills/invariant-checklist-generator/SKILL.md)
+   - **Призначення:** Генерація точного чеклиста обов'язкових бізнес-інваріантів перед початком кодування (каскади, лічильники, відсутність заглушок, паритет mock/real, @/ імпорти) та їх перевірка доказами після завершення.
+   - **Коли застосовувати:** Старт і фініш кожної задачі на бекенді або фронтенді.
+8. [**`fullstack-feature-orchestrator`**](skills/sub-skills/fullstack-feature-orchestrator/SKILL.md)
+   - **Призначення:** Наскрізний оркестратор повного життєвого циклу фічі (5 фаз): 1. Контракти `@smartfeed/shared` → 2. Бекенд CQRS (TDD + cleanDatabase) → 3. Фронтенд UI (`ui-ux-pro-max` + i18n) → 4. Паритет mock/real та каскади → 5. Змагальне рев'ю (`adver-review`) та перевірка DoD.
+   - **Коли застосовувати:** Будь-яка наскрізна розробка нової фічі, яка охоплює контракти, бекенд і клієнтську частину.
 
 ---
 
-## 🛠 Напрямок 7: Монорепозиторій, Типізація, Git & Управління Скілами (14 скілів)
+## 🛠 Напрямок 7: Монорепозиторій, Типізація, Git & Управління Скілами (20 скілів)
 
 ### 👑 Майстер-скіли
 
@@ -334,10 +373,31 @@
 11. [**`pulling-updates-from-skills-repository`**](skills/sub-skills/pulling-updates-from-skills-repository/SKILL.md)
     - **Призначення:** Підтягування оновлень скілів із зовнішніх джерел з перевіркою конфліктів.
     - **Коли застосовувати:** Синхронізація з upstream-репозиторіями.
+12. [**`testing-skills-with-subagents`**](skills/sub-skills/testing-skills-with-subagents/SKILL.md)
+    - **Призначення:** RED-GREEN-REFACTOR для інструкцій і документації: тестування поведінки субагента без скіла (RED), формулювання інструкції (GREEN), закриття прогалин (REFACTOR).
+    - **Коли застосовувати:** Валідація нових скілів та правил перед їх затвердженням в ядрі.
+13. [**`release-and-rollback`**](skills/sub-skills/release-and-rollback/SKILL.md)
+    - **Призначення:** Управління релізами монорепозиторію: семантичне версіонування (SemVer), генерація CHANGELOG, обов'язковий пост-деплойний smoke-контроль (`/api/health`), та план миттєвого відкату без пошкодження даних БД.
+    - **Коли застосовувати:** Підготовка нових релізів, тегування версій, розгортання в Staging/Production та реагування на інциденти.
+14. [**`task-router`**](skills/sub-skills/task-router/SKILL.md)
+    - **Призначення:** Диспетчер задач та вибір спеціалізованого агента (Frontend, Backend, Review), формування мінімального набору скілів, контекстних правил та фінального Done-чеклиста.
+    - **Коли застосовувати:** Старт будь-якої задачі перед початком дослідження чи написання коду.
+15. [**`lessons-learned-registry`**](skills/sub-skills/lessons-learned-registry/SKILL.md)
+    - **Призначення:** Реєстр вивчених уроків та архітектурних інваріантів проекту, запобігання повторним помилкам та регресіям на основі зафіксованого досвіду.
+    - **Коли застосовувати:** Аналіз помилок, додавання нових інваріантів перед початком розробки.
+16. [**`project-context-map`**](skills/sub-skills/project-context-map/SKILL.md)
+    - **Призначення:** Карта ключових файлів, сервісів, контролерів та зв'язків проекту для миттєвої навігації без зайвого сканування всього репозиторію.
+    - **Коли застосовувати:** Орієнтація в архітектурі монорепозиторію та пошук точок входу.
+17. [**`automated-guardrails-ci`**](skills/sub-skills/automated-guardrails-ci/SKILL.md)
+    - **Призначення:** Автоматизований контроль архітектурних правил через лінтери (ESLint, Prettier, git-hooks, CI): заборона відносних імпортів `../`, ліміт на розмір файлів, захист від порожніх `catch {}`.
+    - **Коли застосовувати:** Налаштування правил статичного аналізу, CI/CD перевірок та пре-комміт хуків.
+18. [**`skill-health-audit`**](skills/sub-skills/skill-health-audit/SKILL.md)
+    - **Призначення:** Системний аудит здоров'я бази скілів: виявлення дублікатів, перевірка цілісності symlink у `.claude/skills/`, моніторинг ліміту символів (<12 000) для `.agents/rules/*.md`.
+    - **Коли застосовувати:** Додавання нових скілів, рефакторинг бази знань та регулярний аудит цілісності.
 
 ---
 
-## 🔒 Напрямок 8: Безпека & Аудит (7 скілів)
+## 🔒 Напрямок 8: Безпека & Аудит (6 скілів)
 
 1. [**`api-security-best-practices`**](skills/sub-skills/api-security-best-practices/SKILL.md)
    - **Призначення:** OWASP API Security Top 10: JWT з фіксованим алгоритмом, авторизація ресурсів/тенантів, input validation, rate limiting, SSRF захист.
@@ -354,12 +414,15 @@
 5. [**`firebase-security-rules-auditor`**](skills/sub-skills/firebase-security-rules-auditor/SKILL.md)
    - **Призначення:** Аудит правил безпеки Firebase/Firestore: перевірка прав доступу, тенант-ізоляція, валідація схем.
    - **Коли застосовувати:** Аудит інфраструктурної безпеки та правил доступу.
-6. [**`api-security-testing`**](skills/sub-skills/api-security-testing/SKILL.md) — вже описаний вище.
-7. [**`postgresql-optimization`**](skills/sub-skills/postgresql-optimization/SKILL.md) — крос-доменний скіл, також використовується в Напрямку 1.
+6. [**`tauri-v2-security-and-ipc`**](skills/sub-skills/tauri-v2-security-and-ipc/SKILL.md)
+   - **Призначення:** Безпека десктопу (Tauri v2): налаштування capabilities, ізоляція IPC команд, шифрування SQLCipher та збереження ключів/токенів у системному Keychain (`keyring-rs`), захист від Path Traversal.
+   - **Коли застосовувати:** Будь-які модифікації нативного десктопного бекенду в Rust, IPC команд або локальної бази даних.
 
 ---
 
 ## 🚦 3. Протокол авто-маршрутизації агента (Automatic Routing Engine)
+
+**Крок 0 (завжди):** state-файл [`session-handoff`](skills/sub-skills/session-handoff/SKILL.md) (якщо є) → [`task-router`](skills/sub-skills/task-router/SKILL.md) → `grep` у [`lessons-learned-registry`](skills/sub-skills/lessons-learned-registry/references/registry.md) → пошук коду через [`project-context-map`](skills/sub-skills/project-context-map/references/map.md). Нові правила закріплюються через [`automated-guardrails-ci`](skills/sub-skills/automated-guardrails-ci/SKILL.md).
 
 Коли агент отримує запит від користувача, він **зобов'язаний діяти за цим маршрутизатором**:
 
@@ -405,3 +468,37 @@ graph TD
 - **Префікс `@/`**: Усі внутрішні імпорти файлів виконуються строго через `@/` (наприклад, `@/components/...`, `@/lib/...`, `@/services/...`, `@/modules/...`, `@/prisma/...`).
 - **Спільні контракти**: Імпортуються виключно через пакет `@smartfeed/shared`.
 - Будь-який `../` вважається архітектурним дефектом і блокує прийом задачі.
+
+---
+
+## 🧬 6. Двигун безперервного самопрокачування агентів (Continuous Agent Self-Evolution & Skill Synthesis Engine)
+
+У SmartFeed Studio кожен агент (`agents_backend`, `agents_frontend`, `agents_review`) — це **самонавчальний автономний інженер**. Якщо агент стикається з проблемою, антипатерном, крайовим випадком, специфікою бібліотеки чи зауваженням користувача, **які ще не кодифіковані у правилах чи скілах**, він запускає 5-кроковий цикл самопрокачування:
+
+```mermaid
+flowchart TD
+    D["1. Детекція: виявлення нового дефекту / антипатерну / вимоги"] --> R["2. Ретроспектива: кореневий аналіз (root-cause-tracing)"]
+    R --> C["3. Кодифікація знань: skill-creator + writing-skills"]
+    C --> T["4. Тестовий замок: створення регресійного тесту (TDD)"]
+    T --> S["5. Синхронізація: миттєве оновлення всіх агентів (.agents/AGENTS.md)"]
+```
+
+### 🛠️ 5 кроків самопрокачування:
+
+1. **Детекція сигналу (Signal Detection)**:
+   - Виявлення нового дефекту, який пройшов тести або рев'ю (наприклад, осиротілі товари в базі даних після видалення фіду, витік назви колонки в таблицю, зсув верстки, SSRF дірка, чи заборона `../`).
+   - Отримання критичного зауваження від користувача щодо архітектури, безпеки чи коду.
+2. **Ретроспективний синтез (Root Cause Synthesis)**:
+   - Застосування [`root-cause-tracing`](skills/sub-skills/root-cause-tracing/SKILL.md) та [`systematic-debugging`](skills/sub-skills/systematic-debugging/SKILL.md).
+   - Чому правила або тести дозволили цій помилці з'явитися? Якого саме інваріанту бракувало в системі?
+3. **Кодифікація через [`skill-creator`](skills/skill-creator/SKILL.md) та [`writing-skills`](skills/sub-skills/writing-skills/SKILL.md)**:
+   - **Доменне правило**: якщо це глобальний інженерний закон — оновити відповідне правило в `.agents/rules/*.md` (з дотриманням жорсткого ліміту 12k символів на файл).
+   - **Технологічний підскіл**: оновити існуючий підскіл у `.agents/skills/sub-skills/<skill>/SKILL.md` або створити новий підскіл через `skill-creator`, додавши валідний відносний симлінк у `.claude/skills/`.
+   - **Антипатерн**: додати опис у таблицю `Anti-Patterns` у відповідний майстер-скіл та спеціалізований гід.
+4. **Тестовий замок (Automated Test Lock-In)**:
+   - Написати регресійний автотест (Jest E2E або Playwright UI), який обов'язково перевіряє новий закон (наприклад, `expect(badgeText).not.toBe('Постачальник')` або каскадне видалення зв'язаних сутностей).
+   - Жодна регресія більше не пройде nepomiченою!
+5. **Миттєве поширення знання (Cross-Agent Broadcast)**:
+   - Оновити операційні таблиці в [`agents_backend.md`](agents_backend.md), [`agents_frontend.md`](agents_frontend.md) та [`agents_review.md`](agents_review.md).
+   - Оновити центральний навігатор у [`.agents/AGENTS.md`](AGENTS.md).
+   - Відтепер **ВСІ три агенти** автоматично знають нове правило і ніколи не повторять цієї помилки.

@@ -1,4 +1,4 @@
-import { test, expect } from './fixtures/test';
+import { test, expect } from '@e2e/fixtures/test';
 import { UserListItemDto, UsersStatsDto, Role, PlanType } from '@smartfeed/shared';
 
 test.describe('Admin Portal — Головний Дашборд та Інтернаціоналізація (POM E2E)', () => {

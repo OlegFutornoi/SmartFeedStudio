@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useTranslation } from '@/i18n';
 import type { ProductDto, SupplierDto } from '@smartfeed/shared';
-import { ProductImageThumbnail } from './ProductImageThumbnail';
+import { ProductImageThumbnail } from '@/components/products/ProductImageThumbnail';
 
 interface ProductTableRowProps {
   product: ProductDto;

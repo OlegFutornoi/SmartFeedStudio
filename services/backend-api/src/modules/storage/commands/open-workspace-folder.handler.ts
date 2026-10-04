@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { OpenWorkspaceFolderCommand } from './open-workspace-folder.command';
-import { openInOsFileManager } from '../utils/workspace-utils';
+import { OpenWorkspaceFolderCommand } from '@/modules/storage/commands/open-workspace-folder.command';
+import { openInOsFileManager } from '@/modules/storage/utils/workspace-utils';
 
 @CommandHandler(OpenWorkspaceFolderCommand)
 export class OpenWorkspaceFolderHandler implements ICommandHandler<OpenWorkspaceFolderCommand> {

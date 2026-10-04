@@ -10,19 +10,19 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
-import { AuthService } from './auth.service';
-import { RegisterDto } from './dto/register.dto';
-import { LoginDto } from './dto/login.dto';
-import { RefreshTokenDto } from './dto/refresh-token.dto';
-import { ForgotPasswordDto } from './dto/forgot-password.dto';
-import { ResetPasswordDto } from './dto/reset-password.dto';
-import { UpdateAvatarDto } from './dto/update-avatar.dto';
-import { JwtAuthGuard } from './guards/jwt-auth.guard';
-import { CurrentUser } from './decorators/current-user.decorator';
+import { AuthService } from '@/modules/auth/auth.service';
+import { RegisterDto } from '@/modules/auth/dto/register.dto';
+import { LoginDto } from '@/modules/auth/dto/login.dto';
+import { RefreshTokenDto } from '@/modules/auth/dto/refresh-token.dto';
+import { ForgotPasswordDto } from '@/modules/auth/dto/forgot-password.dto';
+import { ResetPasswordDto } from '@/modules/auth/dto/reset-password.dto';
+import { UpdateAvatarDto } from '@/modules/auth/dto/update-avatar.dto';
+import { JwtAuthGuard } from '@/modules/auth/guards/jwt-auth.guard';
+import { CurrentUser } from '@/modules/auth/decorators/current-user.decorator';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
-import { GetUserByIdQuery } from '../users/queries/get-user-by-id.query';
-import { ChangePasswordCommand } from '../users/commands/change-password.command';
-import { UpdateUserAvatarCommand } from '../users/commands/update-user-avatar.command';
+import { GetUserByIdQuery } from '@/modules/users/queries/get-user-by-id.query';
+import { ChangePasswordCommand } from '@/modules/users/commands/change-password.command';
+import { UpdateUserAvatarCommand } from '@/modules/users/commands/update-user-avatar.command';
 import {
   ChangePasswordDto,
   ForgotPasswordResponseDto,

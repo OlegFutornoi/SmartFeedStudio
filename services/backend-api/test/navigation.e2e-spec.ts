@@ -1,10 +1,10 @@
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
-import { AppModule } from '../src/app.module';
-import { PrismaService } from '../src/prisma/prisma.service';
+import { AppModule } from '@/app.module';
+import { PrismaService } from '@/prisma/prisma.service';
 import { Role, PlanType, TargetApp } from '@smartfeed/shared';
-import { cleanDatabase } from './utils/teardown.helper';
+import { cleanDatabase } from '@test/utils/teardown.helper';
 
 describe('Navigation & Dynamic Access Control (E2E)', () => {
   let app: INestApplication;

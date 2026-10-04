@@ -16,7 +16,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useQuotas } from '@/hooks/useQuotas';
 import { ConfirmDeleteDialog } from '@/components/ui/ConfirmDeleteDialog';
 import { emitDataSync } from '@/lib/syncEvents';
-import { SupplierFeedsTable } from './SupplierFeedsTable';
+import { SupplierFeedsTable } from '@/components/suppliers/SupplierFeedsTable';
 
 interface SupplierFeedsModalProps {
   isOpen: boolean;

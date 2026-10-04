@@ -1,5 +1,5 @@
 import { TariffPlanDto } from '@smartfeed/shared';
-import { TariffPlan } from '../../../generated/prisma/client';
+import { TariffPlan } from '@/generated/prisma/client';
 
 export function mapTariffPlanToDto(plan: TariffPlan): TariffPlanDto {
   return {

@@ -13,17 +13,17 @@ import {
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { Role, TariffPlanDto } from '@smartfeed/shared';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { RolesGuard } from '../auth/guards/roles.guard';
-import { Roles } from '../auth/decorators/roles.decorator';
-import { CreateTariffPlanDto } from './dto/create-tariff-plan.dto';
-import { UpdateTariffPlanDto } from './dto/update-tariff-plan.dto';
-import { CreateTariffPlanCommand } from './commands/create-tariff-plan.command';
-import { UpdateTariffPlanCommand } from './commands/update-tariff-plan.command';
-import { DeleteTariffPlanCommand } from './commands/delete-tariff-plan.command';
-import { GetTariffPlansQuery } from './queries/get-tariff-plans.query';
-import { GetAllTariffPlansAdminQuery } from './queries/get-all-tariff-plans-admin.query';
-import { GetTariffPlanByIdQuery } from './queries/get-tariff-plan-by-id.query';
+import { JwtAuthGuard } from '@/modules/auth/guards/jwt-auth.guard';
+import { RolesGuard } from '@/modules/auth/guards/roles.guard';
+import { Roles } from '@/modules/auth/decorators/roles.decorator';
+import { CreateTariffPlanDto } from '@/modules/plans/dto/create-tariff-plan.dto';
+import { UpdateTariffPlanDto } from '@/modules/plans/dto/update-tariff-plan.dto';
+import { CreateTariffPlanCommand } from '@/modules/plans/commands/create-tariff-plan.command';
+import { UpdateTariffPlanCommand } from '@/modules/plans/commands/update-tariff-plan.command';
+import { DeleteTariffPlanCommand } from '@/modules/plans/commands/delete-tariff-plan.command';
+import { GetTariffPlansQuery } from '@/modules/plans/queries/get-tariff-plans.query';
+import { GetAllTariffPlansAdminQuery } from '@/modules/plans/queries/get-all-tariff-plans-admin.query';
+import { GetTariffPlanByIdQuery } from '@/modules/plans/queries/get-tariff-plan-by-id.query';
 
 @ApiTags('Tariff Plans')
 @Controller('plans')

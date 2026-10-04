@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { getActiveImportJobs, getImportJobStatus, ImportJobDto } from '@/lib/api';
-import { useAuth } from './AuthContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { useQuotas } from '@/hooks/useQuotas';
 import { emitDataSync } from '@/lib/syncEvents';
 

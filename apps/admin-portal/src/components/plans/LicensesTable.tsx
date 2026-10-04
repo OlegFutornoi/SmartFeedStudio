@@ -13,10 +13,10 @@ import {
 } from '@/components/ui/table';
 import { AdminLicenseItemDto } from '@smartfeed/shared';
 import { SearchX } from 'lucide-react';
-import { LicensesTableToolbar } from './LicensesTableToolbar';
-import { LicensesTableRow } from './LicensesTableRow';
-import { LicenseDeleteDialog } from './LicenseDeleteDialog';
-import { useLicensesFilter, LicensesFilterState } from './useLicensesFilter';
+import { LicensesTableToolbar } from '@/components/plans/LicensesTableToolbar';
+import { LicensesTableRow } from '@/components/plans/LicensesTableRow';
+import { LicenseDeleteDialog } from '@/components/plans/LicenseDeleteDialog';
+import { useLicensesFilter, LicensesFilterState } from '@/components/plans/useLicensesFilter';
 import { TablePagination } from '@/components/ui/table-pagination';
 import { usePagination } from '@/hooks/usePagination';
 import { api } from '@/lib/api';

@@ -1,9 +1,9 @@
 import type { FeedSourceDto } from '@smartfeed/shared';
 import { FeedFormat, FeedSourceType } from '@smartfeed/shared';
 import { formatFeedTitle } from '@/lib/formatters';
-import type { MockDbState } from './mock-state';
-import { syncCounters } from './mock-state';
-import { getSupplierById } from './mock-suppliers';
+import type { MockDbState } from '@/services/local-db/mock/mock-state';
+import { syncCounters } from '@/services/local-db/mock/mock-state';
+import { getSupplierById } from '@/services/local-db/mock/mock-suppliers';
 
 export interface CreateFeedSourcePayload {
   id?: string;

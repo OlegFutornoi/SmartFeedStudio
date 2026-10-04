@@ -18,7 +18,7 @@ import {
   filterCategories,
   computeSelectedProductsCount,
   computeProjectedRemaining,
-} from './reconciliationCalculator';
+} from '@/hooks/reconciliationCalculator';
 
 export type TabType = 'CATEGORIES' | 'FEEDS' | 'SUPPLIERS';
 

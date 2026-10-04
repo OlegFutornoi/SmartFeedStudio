@@ -7,8 +7,8 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { Role } from '@smartfeed/shared';
-import { PrismaService } from '../../../prisma/prisma.service';
-import { DeleteUserCommand } from './delete-user.command';
+import { PrismaService } from '@/prisma/prisma.service';
+import { DeleteUserCommand } from '@/modules/users/commands/delete-user.command';
 
 @Injectable()
 @CommandHandler(DeleteUserCommand)

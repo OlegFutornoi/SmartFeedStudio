@@ -2,7 +2,7 @@ import React from 'react';
 import { ArrowLeft, ArrowRight, Check, Loader2, Radio } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from '@/i18n';
-import { WizardStep } from './WizardDialogHeader';
+import { WizardStep } from '@/components/feeds/WizardDialogHeader';
 import { FeedAnalysisResult } from '@/lib/api';
 
 interface WizardDialogFooterProps {

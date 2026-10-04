@@ -1,14 +1,14 @@
 // Central API Facade: modular sub-APIs for SmartFeed Studio desktop client
 
-export * from './client';
-export * from './auth';
-export * from './licenses';
-export * from './organizations';
-export * from './suppliers';
-export * from './feeds';
-export * from './feed-sources';
-export * from './products';
-export * from './pricing';
+export * from '@/lib/api/client';
+export * from '@/lib/api/auth';
+export * from '@/lib/api/licenses';
+export * from '@/lib/api/organizations';
+export * from '@/lib/api/suppliers';
+export * from '@/lib/api/feeds';
+export * from '@/lib/api/feed-sources';
+export * from '@/lib/api/products';
+export * from '@/lib/api/pricing';
 
 // Re-export common shared contracts for seamless backwards compatibility
 export type {

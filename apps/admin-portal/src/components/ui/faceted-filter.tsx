@@ -2,8 +2,8 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { ChevronDown, Check, LucideIcon } from 'lucide-react';
-import { Button } from './button';
-import { Badge } from './badge';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 
 export interface FacetedOption {
   value: string;

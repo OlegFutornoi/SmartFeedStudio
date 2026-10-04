@@ -1,9 +1,9 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { TariffPlanDto } from '@smartfeed/shared';
-import { PrismaService } from '../../../prisma/prisma.service';
-import { GetTariffPlanByIdQuery } from './get-tariff-plan-by-id.query';
-import { mapTariffPlanToDto } from '../utils/map-tariff-plan-to-dto';
+import { PrismaService } from '@/prisma/prisma.service';
+import { GetTariffPlanByIdQuery } from '@/modules/plans/queries/get-tariff-plan-by-id.query';
+import { mapTariffPlanToDto } from '@/modules/plans/utils/map-tariff-plan-to-dto';
 
 @Injectable()
 @QueryHandler(GetTariffPlanByIdQuery)

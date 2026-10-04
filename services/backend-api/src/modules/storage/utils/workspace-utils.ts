@@ -12,8 +12,12 @@ export {
   readWorkspaceInfo,
   openInOsFileManager,
   migrateWorkspaceOnDisk,
-} from './workspace-disk';
+} from '@/modules/storage/utils/workspace-disk';
 
-export { createBackupFileOnDisk, clearCacheOnDisk, runMaintenanceOnDisk } from './workspace-backup';
+export {
+  createBackupFileOnDisk,
+  clearCacheOnDisk,
+  runMaintenanceOnDisk,
+} from '@/modules/storage/utils/workspace-backup';
 
-export { selectFolderDialog } from './workspace-dialogs';
+export { selectFolderDialog } from '@/modules/storage/utils/workspace-dialogs';

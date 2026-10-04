@@ -4,10 +4,10 @@ import * as request from 'supertest';
 import * as path from 'path';
 import * as fs from 'fs';
 import * as os from 'os';
-import { AppModule } from '../src/app.module';
-import { PrismaService } from '../src/prisma/prisma.service';
+import { AppModule } from '@/app.module';
+import { PrismaService } from '@/prisma/prisma.service';
 import { Role } from '@smartfeed/shared';
-import { cleanDatabase } from './utils/teardown.helper';
+import { cleanDatabase } from '@test/utils/teardown.helper';
 
 describe('Storage & Workspace Management (E2E)', () => {
   let app: INestApplication;

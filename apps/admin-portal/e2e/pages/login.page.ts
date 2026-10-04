@@ -1,6 +1,6 @@
 import { Page, Locator, expect } from '@playwright/test';
-import { BasePage } from './base.page';
-import { HeaderComponent } from '../components/header.component';
+import { BasePage } from '@e2e/pages/base.page';
+import { HeaderComponent } from '@e2e/components/header.component';
 
 export class LoginPage extends BasePage {
   readonly emailInput: Locator;

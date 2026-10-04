@@ -18,7 +18,8 @@
     "noFallthroughCasesInSwitch": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["src/*"],
+      "@e2e/*": ["e2e/*"]
     }
   },
   "include": ["src", "e2e", "playwright.config.ts"],

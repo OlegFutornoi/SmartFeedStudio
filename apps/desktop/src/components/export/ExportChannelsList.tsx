@@ -15,8 +15,8 @@ import {
   updateExportChannel,
   deleteExportChannel,
 } from '@/lib/api';
-import { ExportChannelCard } from './ExportChannelCard';
-import { CreateExportChannelDialog } from './CreateExportChannelDialog';
+import { ExportChannelCard } from '@/components/export/ExportChannelCard';
+import { CreateExportChannelDialog } from '@/components/export/CreateExportChannelDialog';
 import { ConfirmDeleteDialog } from '@/components/ui/ConfirmDeleteDialog';
 
 interface ExportChannelsListProps {

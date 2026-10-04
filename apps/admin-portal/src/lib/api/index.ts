@@ -1,18 +1,18 @@
-import { baseClient } from './client';
-import * as auth from './auth';
-import * as users from './users';
-import * as navigation from './navigation';
-import * as plans from './plans';
-import * as licenses from './licenses';
-import * as payments from './payments';
+import { baseClient } from '@/lib/api/client';
+import * as auth from '@/lib/api/auth';
+import * as users from '@/lib/api/users';
+import * as navigation from '@/lib/api/navigation';
+import * as plans from '@/lib/api/plans';
+import * as licenses from '@/lib/api/licenses';
+import * as payments from '@/lib/api/payments';
 
-export * from './client';
-export * from './auth';
-export * from './users';
-export * from './navigation';
-export * from './plans';
-export * from './licenses';
-export * from './payments';
+export * from '@/lib/api/client';
+export * from '@/lib/api/auth';
+export * from '@/lib/api/users';
+export * from '@/lib/api/navigation';
+export * from '@/lib/api/plans';
+export * from '@/lib/api/licenses';
+export * from '@/lib/api/payments';
 
 export const api = {
   // Client token controls

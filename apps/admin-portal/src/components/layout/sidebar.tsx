@@ -12,13 +12,13 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useNavigation } from '@/contexts/NavigationContext';
 import { getLucideIcon } from '@/components/navigation/constants';
 import { Badge } from '@/components/ui/badge';
-import { SidebarNavItem } from './SidebarNavItem';
-import { SidebarUserProfile } from './SidebarUserProfile';
-import { SidebarMobileDrawer } from './SidebarMobileDrawer';
+import { SidebarNavItem } from '@/components/layout/SidebarNavItem';
+import { SidebarUserProfile } from '@/components/layout/SidebarUserProfile';
+import { SidebarMobileDrawer } from '@/components/layout/SidebarMobileDrawer';
 
 const ChangePasswordDialog = dynamic(
   () =>
-    import('../profile/change-password-dialog').then((m) => ({
+    import('@/components/profile/change-password-dialog').then((m) => ({
       default: m.ChangePasswordDialog,
     })),
   { ssr: false },

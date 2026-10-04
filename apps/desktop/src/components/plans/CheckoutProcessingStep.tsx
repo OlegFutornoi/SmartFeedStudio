@@ -1,7 +1,7 @@
 import { Loader2, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import type { CheckoutResponseDto } from '@smartfeed/shared';
-import { SandboxSimulationBlock } from './SandboxSimulationBlock';
+import { SandboxSimulationBlock } from '@/components/plans/SandboxSimulationBlock';
 
 interface CheckoutProcessingStepProps {
   checkoutData: CheckoutResponseDto | null;

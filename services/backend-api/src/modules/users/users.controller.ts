@@ -13,12 +13,12 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { RolesGuard } from '../auth/guards/roles.guard';
-import { Roles } from '../auth/decorators/roles.decorator';
-import { CurrentUser } from '../auth/decorators/current-user.decorator';
-import { GetUsersListQuery } from './queries/get-users-list.query';
-import { GetUsersStatsQuery } from './queries/get-users-stats.query';
+import { JwtAuthGuard } from '@/modules/auth/guards/jwt-auth.guard';
+import { RolesGuard } from '@/modules/auth/guards/roles.guard';
+import { Roles } from '@/modules/auth/decorators/roles.decorator';
+import { CurrentUser } from '@/modules/auth/decorators/current-user.decorator';
+import { GetUsersListQuery } from '@/modules/users/queries/get-users-list.query';
+import { GetUsersStatsQuery } from '@/modules/users/queries/get-users-stats.query';
 import {
   CreateUserByAdminDto,
   CreateUserByAdminDtoSchema,
@@ -28,10 +28,10 @@ import {
   UserListItemDto,
   UsersStatsDto,
 } from '@smartfeed/shared';
-import { CreateUserByAdminCommand } from './commands/create-user-by-admin.command';
-import { UpdateUserStatusCommand } from './commands/update-user-status.command';
-import { DeleteUserCommand } from './commands/delete-user.command';
-import { CreateUserByAdminRequestDto, UpdateUserStatusRequestDto } from './dto';
+import { CreateUserByAdminCommand } from '@/modules/users/commands/create-user-by-admin.command';
+import { UpdateUserStatusCommand } from '@/modules/users/commands/update-user-status.command';
+import { DeleteUserCommand } from '@/modules/users/commands/delete-user.command';
+import { CreateUserByAdminRequestDto, UpdateUserStatusRequestDto } from '@/modules/users/dto';
 
 @ApiTags('Users')
 @Controller('users')

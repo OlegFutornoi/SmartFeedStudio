@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { CreateLocalBackupCommand } from './create-local-backup.command';
+import { CreateLocalBackupCommand } from '@/modules/storage/commands/create-local-backup.command';
 import { CreateLocalBackupResultDto } from '@smartfeed/shared';
-import { createBackupFileOnDisk } from '../utils/workspace-utils';
+import { createBackupFileOnDisk } from '@/modules/storage/utils/workspace-utils';
 
 @CommandHandler(CreateLocalBackupCommand)
 export class CreateLocalBackupHandler implements ICommandHandler<CreateLocalBackupCommand> {

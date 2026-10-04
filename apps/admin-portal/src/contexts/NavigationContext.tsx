@@ -10,7 +10,7 @@ import React, {
   useRef,
 } from 'react';
 import { NavigationItemDto, Role, TargetApp } from '@smartfeed/shared';
-import { useAuth } from './AuthContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { api } from '@/lib/api';
 
 export const DEFAULT_ADMIN_NAVIGATION_ITEMS: NavigationItemDto[] = [

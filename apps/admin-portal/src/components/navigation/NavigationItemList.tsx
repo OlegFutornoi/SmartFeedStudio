@@ -3,7 +3,7 @@
 import React from 'react';
 import { TargetApp, NavigationItemDto } from '@smartfeed/shared';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { NavigationItemRow } from './NavigationItemRow';
+import { NavigationItemRow } from '@/components/navigation/NavigationItemRow';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { cn } from '@/lib/utils';
 

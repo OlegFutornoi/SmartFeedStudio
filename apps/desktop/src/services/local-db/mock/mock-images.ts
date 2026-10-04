@@ -5,7 +5,7 @@ import type {
   DeleteProductImageResultDto,
 } from '@smartfeed/shared';
 import { ImageDownloadStatus, ImageSyncStatus } from '@smartfeed/shared';
-import type { MockDbState } from './mock-state';
+import type { MockDbState } from '@/services/local-db/mock/mock-state';
 
 export function getProductImages(state: MockDbState, productId: string): LocalProductImageDto[] {
   const product = state.products.find((p) => p.id === productId);

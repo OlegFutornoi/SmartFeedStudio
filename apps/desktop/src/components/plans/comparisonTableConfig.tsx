@@ -4,13 +4,13 @@
  */
 
 // Re-export shared types so consumers don't need to change imports
-export type { FeatureRow, FeatureCategory } from './categories/shared';
+export type { FeatureRow, FeatureCategory } from '@/components/plans/categories/shared';
 
-import { buildInputQuotasCategory } from './categories/inputQuotas';
-import { buildOutputChannelsCategory } from './categories/outputChannels';
-import { buildResourcesCategory } from './categories/resources';
-import { buildEnterpriseCategory } from './categories/enterprise';
-import type { FeatureCategory } from './categories/shared';
+import { buildInputQuotasCategory } from '@/components/plans/categories/inputQuotas';
+import { buildOutputChannelsCategory } from '@/components/plans/categories/outputChannels';
+import { buildResourcesCategory } from '@/components/plans/categories/resources';
+import { buildEnterpriseCategory } from '@/components/plans/categories/enterprise';
+import type { FeatureCategory } from '@/components/plans/categories/shared';
 
 export function buildComparisonCategories(isUk: boolean): FeatureCategory[] {
   return [

@@ -3,7 +3,7 @@ import { Users, Loader2 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useTranslation } from '@/i18n';
-import { TeamMemberRow } from './TeamMemberRow';
+import { TeamMemberRow } from '@/components/team/TeamMemberRow';
 
 import type { OrganizationMemberDto } from '@smartfeed/shared';
 

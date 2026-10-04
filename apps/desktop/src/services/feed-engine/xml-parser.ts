@@ -1,5 +1,9 @@
 import { FeedFormat } from '@smartfeed/shared';
-import type { ParsedCategory, RawParsedProduct, FeedAnalysisResult } from './stream-parser';
+import type {
+  ParsedCategory,
+  RawParsedProduct,
+  FeedAnalysisResult,
+} from '@/services/feed-engine/stream-parser';
 
 /**
  * Fast regex-based XML / YML feed parser.

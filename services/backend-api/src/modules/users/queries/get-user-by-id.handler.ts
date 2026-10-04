@@ -1,8 +1,8 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Role, UserProfile, MemberRole } from '@smartfeed/shared';
-import { PrismaService } from '../../../prisma/prisma.service';
-import { GetUserByIdQuery } from './get-user-by-id.query';
+import { PrismaService } from '@/prisma/prisma.service';
+import { GetUserByIdQuery } from '@/modules/users/queries/get-user-by-id.query';
 
 @Injectable()
 @QueryHandler(GetUserByIdQuery)

@@ -1,10 +1,10 @@
 import { Controller, Get, Post, Param, Body, HttpCode, HttpStatus } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { CurrentUser } from '../auth/decorators/current-user.decorator';
-import { AcceptInvitationDto } from './dto/accept-invitation.dto';
-import { GetInvitationByTokenQuery } from './queries/get-invitation-by-token.query';
-import { AcceptInvitationCommand } from './commands/accept-invitation.command';
+import { CurrentUser } from '@/modules/auth/decorators/current-user.decorator';
+import { AcceptInvitationDto } from '@/modules/organizations/dto/accept-invitation.dto';
+import { GetInvitationByTokenQuery } from '@/modules/organizations/queries/get-invitation-by-token.query';
+import { AcceptInvitationCommand } from '@/modules/organizations/commands/accept-invitation.command';
 
 @ApiTags('Invitations')
 @Controller('invitations')

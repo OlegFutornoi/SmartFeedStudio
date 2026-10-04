@@ -4,10 +4,10 @@ import { X } from 'lucide-react';
 import { useTranslation } from '@/i18n';
 import type { TariffPlanDto, BillingInterval } from '@smartfeed/shared';
 import { useCheckoutFlow } from '@/hooks/useCheckoutFlow';
-import { CheckoutReviewStep } from './CheckoutReviewStep';
-import { CheckoutProcessingStep } from './CheckoutProcessingStep';
-import { CheckoutSuccessStep } from './CheckoutSuccessStep';
-import { CheckoutDeclinedStep } from './CheckoutDeclinedStep';
+import { CheckoutReviewStep } from '@/components/plans/CheckoutReviewStep';
+import { CheckoutProcessingStep } from '@/components/plans/CheckoutProcessingStep';
+import { CheckoutSuccessStep } from '@/components/plans/CheckoutSuccessStep';
+import { CheckoutDeclinedStep } from '@/components/plans/CheckoutDeclinedStep';
 
 interface PaymentCheckoutModalProps {
   isOpen: boolean;

@@ -1,6 +1,6 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
-import { PrismaService } from '../../../prisma/prisma.service';
-import { GetPaymentSettingsQuery } from './get-payment-settings.query';
+import { PrismaService } from '@/prisma/prisma.service';
+import { GetPaymentSettingsQuery } from '@/modules/payments/queries/get-payment-settings.query';
 import { PaymentSettingDto, PaymentProvider } from '@smartfeed/shared';
 
 @QueryHandler(GetPaymentSettingsQuery)

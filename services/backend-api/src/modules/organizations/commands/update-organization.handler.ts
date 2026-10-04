@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { ForbiddenException, Injectable, Logger } from '@nestjs/common';
-import { PrismaService } from '../../../prisma/prisma.service';
-import { UpdateOrganizationCommand } from './update-organization.command';
+import { PrismaService } from '@/prisma/prisma.service';
+import { UpdateOrganizationCommand } from '@/modules/organizations/commands/update-organization.command';
 
 @Injectable()
 @CommandHandler(UpdateOrganizationCommand)

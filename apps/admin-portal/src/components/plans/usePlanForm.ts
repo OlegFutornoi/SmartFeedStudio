@@ -1,6 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import type { TariffPlanDto, CreateTariffPlanDto, UpdateTariffPlanDto } from '@smartfeed/shared';
-import { getDefaultPlanFormFields, buildPlanSubmitPayload } from './planFormDefaults';
+import {
+  getDefaultPlanFormFields,
+  buildPlanSubmitPayload,
+} from '@/components/plans/planFormDefaults';
 
 interface UsePlanFormProps {
   initialData?: TariffPlanDto | null;

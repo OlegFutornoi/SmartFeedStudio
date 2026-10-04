@@ -4,11 +4,11 @@ import { AlertTriangle, CheckCircle2, FolderTree, Radio, Building2, Loader2 } fr
 import { Badge } from '@/components/ui/badge';
 import { useTranslation } from '@/i18n';
 import { useNavigate } from 'react-router-dom';
-import { QuotaCategoriesTab } from './QuotaCategoriesTab';
-import { QuotaFeedsTab } from './QuotaFeedsTab';
-import { QuotaSuppliersTab } from './QuotaSuppliersTab';
-import { QuotaReconciliationHeader } from './QuotaReconciliationHeader';
-import { QuotaReconciliationFooter } from './QuotaReconciliationFooter';
+import { QuotaCategoriesTab } from '@/components/plans/QuotaCategoriesTab';
+import { QuotaFeedsTab } from '@/components/plans/QuotaFeedsTab';
+import { QuotaSuppliersTab } from '@/components/plans/QuotaSuppliersTab';
+import { QuotaReconciliationHeader } from '@/components/plans/QuotaReconciliationHeader';
+import { QuotaReconciliationFooter } from '@/components/plans/QuotaReconciliationFooter';
 import { useQuotaReconciliation } from '@/hooks/useQuotaReconciliation';
 
 interface QuotaReconciliationDialogProps {

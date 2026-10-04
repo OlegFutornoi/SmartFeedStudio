@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils';
 import type { TariffPlanDto } from '@smartfeed/shared';
-import type { FeatureCategory } from './comparisonTableConfig';
+import type { FeatureCategory } from '@/components/plans/comparisonTableConfig';
 
 interface ComparisonCategoryGroupProps {
   category: FeatureCategory;

@@ -1,10 +1,10 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { ConflictException, Injectable, Logger } from '@nestjs/common';
 import { TariffPlanDto } from '@smartfeed/shared';
-import { PrismaService } from '../../../prisma/prisma.service';
-import { RedisCacheService } from '../../../common/cache/redis-cache.service';
-import { CreateTariffPlanCommand } from './create-tariff-plan.command';
-import { mapTariffPlanToDto } from '../utils/map-tariff-plan-to-dto';
+import { PrismaService } from '@/prisma/prisma.service';
+import { RedisCacheService } from '@/common/cache/redis-cache.service';
+import { CreateTariffPlanCommand } from '@/modules/plans/commands/create-tariff-plan.command';
+import { mapTariffPlanToDto } from '@/modules/plans/utils/map-tariff-plan-to-dto';
 
 @Injectable()
 @CommandHandler(CreateTariffPlanCommand)

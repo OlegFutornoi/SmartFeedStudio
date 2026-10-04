@@ -10,8 +10,8 @@ import type {
   SupplierDto,
 } from '@smartfeed/shared';
 import { localImagesService } from '@/services/local-db';
-import { ProductGalleryModal } from './ProductGalleryModal';
-import { ProductDrawerImages } from './ProductDrawerImages';
+import { ProductGalleryModal } from '@/components/products/ProductGalleryModal';
+import { ProductDrawerImages } from '@/components/products/ProductDrawerImages';
 
 interface ProductDetailsDrawerProps {
   product: ProductDto | null;

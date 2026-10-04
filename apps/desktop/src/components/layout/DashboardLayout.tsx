@@ -1,11 +1,11 @@
 import React from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
-import { Sidebar } from './Sidebar';
-import { Header } from './Header';
+import { Sidebar } from '@/components/layout/Sidebar';
+import { Header } from '@/components/layout/Header';
 import { SidebarProvider } from '@/contexts/SidebarContext';
 import { NavigationProvider } from '@/contexts/NavigationContext';
 import { useLicense } from '@/hooks/useLicense';
-import { ExpiredPlanBlocker } from './ExpiredPlanBlocker';
+import { ExpiredPlanBlocker } from '@/components/layout/ExpiredPlanBlocker';
 import { GlobalJobProgressBar } from '@/components/ui/GlobalJobProgressBar';
 import { FirstRunWorkspaceSetupDialog } from '@/components/storage/FirstRunWorkspaceSetupDialog';
 

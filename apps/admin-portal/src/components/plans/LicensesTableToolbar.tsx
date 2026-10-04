@@ -14,7 +14,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { LicensesFacetedFilter, FacetedOption } from './LicensesFacetedFilter';
+import { LicensesFacetedFilter, FacetedOption } from '@/components/plans/LicensesFacetedFilter';
 
 interface LicensesTableToolbarProps {
   searchQuery: string;

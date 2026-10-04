@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import type { SupplierDto } from '@smartfeed/shared';
 import type { FeedSourceItemDto } from '@/lib/api';
-import { formatFeedDisplay } from './quota-reconciliation.utils';
+import { formatFeedDisplay } from '@/components/plans/quota-reconciliation.utils';
 
 interface QuotaFeedsTabProps {
   feedSources: { supplier: SupplierDto; feed: FeedSourceItemDto }[];

@@ -12,7 +12,7 @@ import type {
 } from '@smartfeed/shared';
 import { localDb } from '@/services/local-db';
 import { isTauri } from '@/lib/runtime';
-import { ApiError, fetchWithAuth } from './client';
+import { ApiError, fetchWithAuth } from '@/lib/api/client';
 
 export async function getSupplierPricingRules(
   supplierId: string,

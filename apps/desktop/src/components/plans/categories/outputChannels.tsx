@@ -1,6 +1,6 @@
 import { Check, Share2 } from 'lucide-react';
-import type { FeatureCategory } from './shared';
-import { boolCell, quotaCheckCell } from './shared';
+import type { FeatureCategory } from '@/components/plans/categories/shared';
+import { boolCell, quotaCheckCell } from '@/components/plans/categories/shared';
 
 /** Category 2: Output Export Channels */
 export function buildOutputChannelsCategory(isUk: boolean): FeatureCategory {

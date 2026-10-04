@@ -1,8 +1,8 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { PrismaService } from '../../../prisma/prisma.service';
-import { UpdatePaymentSettingsCommand } from './update-payment-settings.command';
+import { PrismaService } from '@/prisma/prisma.service';
+import { UpdatePaymentSettingsCommand } from '@/modules/payments/commands/update-payment-settings.command';
 import { PaymentSettingDto, PaymentProvider } from '@smartfeed/shared';
-import { PaymentProvider as PrismaPaymentProvider } from '../../../generated/prisma/enums';
+import { PaymentProvider as PrismaPaymentProvider } from '@/generated/prisma/enums';
 
 @CommandHandler(UpdatePaymentSettingsCommand)
 export class UpdatePaymentSettingsHandler implements ICommandHandler<UpdatePaymentSettingsCommand> {

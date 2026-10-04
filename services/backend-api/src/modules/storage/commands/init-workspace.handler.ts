@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { InitWorkspaceCommand } from './init-workspace.command';
+import { InitWorkspaceCommand } from '@/modules/storage/commands/init-workspace.command';
 import { WorkspaceInfoDto } from '@smartfeed/shared';
-import { initWorkspaceOnDisk } from '../utils/workspace-utils';
+import { initWorkspaceOnDisk } from '@/modules/storage/utils/workspace-utils';
 
 @CommandHandler(InitWorkspaceCommand)
 export class InitWorkspaceHandler implements ICommandHandler<InitWorkspaceCommand> {

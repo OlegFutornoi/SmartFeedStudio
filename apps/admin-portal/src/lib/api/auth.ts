@@ -1,5 +1,5 @@
 import type { AuthResponseDto, ChangePasswordDto, LoginDto, UserProfile } from '@smartfeed/shared';
-import { baseClient } from './client';
+import { baseClient } from '@/lib/api/client';
 
 export async function login(dto: LoginDto): Promise<AuthResponseDto> {
   const res = await baseClient.request<AuthResponseDto>('/auth/login', {

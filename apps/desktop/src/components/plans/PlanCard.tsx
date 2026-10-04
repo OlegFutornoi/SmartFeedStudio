@@ -15,7 +15,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useTranslation } from '@/i18n';
 import type { TariffPlanDto, BillingInterval } from '@smartfeed/shared';
-import { PlanFeatureBulletList } from './PlanFeatureBulletList';
+import { PlanFeatureBulletList } from '@/components/plans/PlanFeatureBulletList';
 
 export type PlanItem = TariffPlanDto;
 

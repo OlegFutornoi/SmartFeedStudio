@@ -2,9 +2,9 @@ import { CommandHandler, EventBus, ICommandHandler } from '@nestjs/cqrs';
 import { ConflictException, Injectable, Logger } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { Role, UserProfile, MemberRole } from '@smartfeed/shared';
-import { PrismaService } from '../../../prisma/prisma.service';
-import { CreateUserCommand } from './create-user.command';
-import { UserCreatedEvent } from '../events/user-created.event';
+import { PrismaService } from '@/prisma/prisma.service';
+import { CreateUserCommand } from '@/modules/users/commands/create-user.command';
+import { UserCreatedEvent } from '@/modules/users/events/user-created.event';
 
 @Injectable()
 @CommandHandler(CreateUserCommand)

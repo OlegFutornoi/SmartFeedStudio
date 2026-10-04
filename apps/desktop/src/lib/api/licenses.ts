@@ -1,5 +1,5 @@
 import type { LicenseEntity, TariffPlanDto, CheckoutResponseDto } from '@smartfeed/shared';
-import { API_BASE_URL, ApiError, fetchWithAuth } from './client';
+import { API_BASE_URL, ApiError, fetchWithAuth } from '@/lib/api/client';
 
 export async function getMyLicense(token?: string): Promise<LicenseEntity> {
   const response = await fetchWithAuth('/licenses/my', { method: 'GET' }, token);

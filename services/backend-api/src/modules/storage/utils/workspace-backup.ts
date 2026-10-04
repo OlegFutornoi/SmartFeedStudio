@@ -5,7 +5,10 @@ import {
   CreateLocalBackupResultDto,
   DatabaseMaintenanceResultDto,
 } from '@smartfeed/shared';
-import { resolveWorkspacePath, calculateDirSizeBytes } from './workspace-disk';
+import {
+  resolveWorkspacePath,
+  calculateDirSizeBytes,
+} from '@/modules/storage/utils/workspace-disk';
 
 export function createBackupFileOnDisk(workspacePath: string): CreateLocalBackupResultDto {
   const rootPath = resolveWorkspacePath(workspacePath);

@@ -12,11 +12,11 @@ import {
 import { Button } from '@/components/ui/button';
 import { TariffPlanDto, CreateTariffPlanDto, UpdateTariffPlanDto } from '@smartfeed/shared';
 import { Layers, Info, Sliders, ShieldCheck, ListPlus } from 'lucide-react';
-import { PlanFeatureList } from './PlanFeatureList';
-import { usePlanForm } from './usePlanForm';
-import { PlanDialogBasicTab } from './PlanDialogBasicTab';
-import { PlanDialogQuotasTab } from './PlanDialogQuotasTab';
-import { PlanDialogFlagsTab } from './PlanDialogFlagsTab';
+import { PlanFeatureList } from '@/components/plans/PlanFeatureList';
+import { usePlanForm } from '@/components/plans/usePlanForm';
+import { PlanDialogBasicTab } from '@/components/plans/PlanDialogBasicTab';
+import { PlanDialogQuotasTab } from '@/components/plans/PlanDialogQuotasTab';
+import { PlanDialogFlagsTab } from '@/components/plans/PlanDialogFlagsTab';
 
 interface PlanDialogProps {
   isOpen: boolean;

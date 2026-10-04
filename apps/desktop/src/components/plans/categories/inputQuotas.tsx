@@ -1,6 +1,6 @@
 import { ArrowDownToLine } from 'lucide-react';
-import type { FeatureCategory } from './shared';
-import { boolCell } from './shared';
+import type { FeatureCategory } from '@/components/plans/categories/shared';
+import { boolCell } from '@/components/plans/categories/shared';
 
 /** Category 1: Input Quotas */
 export function buildInputQuotasCategory(isUk: boolean): FeatureCategory {

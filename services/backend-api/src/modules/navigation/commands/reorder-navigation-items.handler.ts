@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { ReorderNavigationItemsCommand } from './reorder-navigation-items.command';
-import { PrismaService } from '../../../prisma/prisma.service';
-import { RedisCacheService } from '../../../common/cache/redis-cache.service';
+import { ReorderNavigationItemsCommand } from '@/modules/navigation/commands/reorder-navigation-items.command';
+import { PrismaService } from '@/prisma/prisma.service';
+import { RedisCacheService } from '@/common/cache/redis-cache.service';
 
 @CommandHandler(ReorderNavigationItemsCommand)
 export class ReorderNavigationItemsHandler implements ICommandHandler<ReorderNavigationItemsCommand> {

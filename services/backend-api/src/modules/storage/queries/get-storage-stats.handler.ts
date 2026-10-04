@@ -1,7 +1,10 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
-import { GetStorageStatsQuery } from './get-storage-stats.query';
+import { GetStorageStatsQuery } from '@/modules/storage/queries/get-storage-stats.query';
 import { StorageStatsDto } from '@smartfeed/shared';
-import { calculateDirSizeBytesAsync, resolveWorkspacePath } from '../utils/workspace-utils';
+import {
+  calculateDirSizeBytesAsync,
+  resolveWorkspacePath,
+} from '@/modules/storage/utils/workspace-utils';
 import * as path from 'path';
 import * as fs from 'fs';
 

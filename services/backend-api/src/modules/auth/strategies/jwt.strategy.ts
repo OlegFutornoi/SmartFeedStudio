@@ -4,7 +4,7 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { ConfigService } from '@nestjs/config';
 import { QueryBus } from '@nestjs/cqrs';
 import { JwtPayload, UserProfile } from '@smartfeed/shared';
-import { GetUserByIdQuery } from '../../users/queries/get-user-by-id.query';
+import { GetUserByIdQuery } from '@/modules/users/queries/get-user-by-id.query';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {

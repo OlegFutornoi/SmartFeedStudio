@@ -1,5 +1,5 @@
-import type { MockDbState } from './mock-state';
-import { syncCounters } from './mock-state';
+import type { MockDbState } from '@/services/local-db/mock/mock-state';
+import { syncCounters } from '@/services/local-db/mock/mock-state';
 
 export const LEGACY_STORAGE_KEY = 'smartfeed_mock_db';
 export const STORAGE_PREFIX = 'smartfeed_mock_db_';

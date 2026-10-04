@@ -5,7 +5,7 @@ import { TableCell, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Cloud, PauseCircle, AlertCircle, KeyRound } from 'lucide-react';
 import { AdminLicenseItemDto } from '@smartfeed/shared';
-import { LicenseRowActions } from './LicenseRowActions';
+import { LicenseRowActions } from '@/components/plans/LicenseRowActions';
 import { cn } from '@/lib/utils';
 
 interface LicensesTableRowProps {

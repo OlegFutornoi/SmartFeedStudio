@@ -1,9 +1,9 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { Injectable } from '@nestjs/common';
 import { AdminLicenseItemDto } from '@smartfeed/shared';
-import { Prisma } from '../../../generated/prisma/client';
-import { PrismaService } from '../../../prisma/prisma.service';
-import { GetAdminLicensesQuery } from './get-admin-licenses.query';
+import { Prisma } from '@/generated/prisma/client';
+import { PrismaService } from '@/prisma/prisma.service';
+import { GetAdminLicensesQuery } from '@/modules/licenses/queries/get-admin-licenses.query';
 
 @Injectable()
 @QueryHandler(GetAdminLicensesQuery)

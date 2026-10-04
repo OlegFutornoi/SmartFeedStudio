@@ -1,7 +1,7 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '../../../prisma/prisma.service';
-import { GetInvitationByTokenQuery } from './get-invitation-by-token.query';
+import { PrismaService } from '@/prisma/prisma.service';
+import { GetInvitationByTokenQuery } from '@/modules/organizations/queries/get-invitation-by-token.query';
 
 @Injectable()
 @QueryHandler(GetInvitationByTokenQuery)

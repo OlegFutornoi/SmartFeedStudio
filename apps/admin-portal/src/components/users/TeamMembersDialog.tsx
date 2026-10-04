@@ -22,7 +22,7 @@ import {
 import { UserListItemDto } from '@smartfeed/shared';
 import { Users, Search, Building2 } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { UserRowActions } from './UserRowActions';
+import { UserRowActions } from '@/components/users/UserRowActions';
 
 interface TeamMembersDialogProps {
   open: boolean;

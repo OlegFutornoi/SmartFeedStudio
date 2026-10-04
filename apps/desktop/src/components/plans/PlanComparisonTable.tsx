@@ -3,9 +3,9 @@
 import React, { useMemo } from 'react';
 import type { TariffPlanDto, BillingInterval } from '@smartfeed/shared';
 import { useTranslation } from '@/i18n';
-import { buildComparisonCategories } from './comparisonTableConfig';
-import { ComparisonTableHeader } from './ComparisonTableHeader';
-import { ComparisonCategoryGroup } from './ComparisonCategoryGroup';
+import { buildComparisonCategories } from '@/components/plans/comparisonTableConfig';
+import { ComparisonTableHeader } from '@/components/plans/ComparisonTableHeader';
+import { ComparisonCategoryGroup } from '@/components/plans/ComparisonCategoryGroup';
 
 interface PlanComparisonTableProps {
   plans: TariffPlanDto[];

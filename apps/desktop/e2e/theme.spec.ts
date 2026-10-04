@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
-import { DesktopLoginPage } from './pages/login.page';
-import { DesktopSettingsPage } from './pages/settings.page';
+import { DesktopLoginPage } from '@e2e/pages/login.page';
+import { DesktopSettingsPage } from '@e2e/pages/settings.page';
 
 test.describe('Desktop App — Сучасні теми shadcn/ui та монохромна схема за замовчуванням (POM)', () => {
   const mockUser = {

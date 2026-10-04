@@ -2,8 +2,8 @@ import { EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { Injectable, Logger } from '@nestjs/common';
 import { PlanType, PLAN_LIMITS_MAP, Role } from '@smartfeed/shared';
 import * as crypto from 'crypto';
-import { PrismaService } from '../../../prisma/prisma.service';
-import { UserCreatedEvent } from '../../users/events/user-created.event';
+import { PrismaService } from '@/prisma/prisma.service';
+import { UserCreatedEvent } from '@/modules/users/events/user-created.event';
 
 @Injectable()
 @EventsHandler(UserCreatedEvent)

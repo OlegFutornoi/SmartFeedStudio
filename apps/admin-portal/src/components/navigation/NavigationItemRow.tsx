@@ -5,7 +5,7 @@ import { Edit2, Trash2, Eye, EyeOff, MoveUp, MoveDown, Crown, Monitor, Shield } 
 import { NavigationItemDto, TargetApp } from '@smartfeed/shared';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { getIconComponent } from './constants';
+import { getIconComponent } from '@/components/navigation/constants';
 import { cn } from '@/lib/utils';
 
 interface NavigationItemRowProps {

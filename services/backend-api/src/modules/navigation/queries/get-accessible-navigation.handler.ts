@@ -1,8 +1,8 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { Role, PlanType, TargetApp, NavigationItemDto } from '@smartfeed/shared';
-import { GetAccessibleNavigationQuery } from './get-accessible-navigation.query';
-import { PrismaService } from '../../../prisma/prisma.service';
-import { RedisCacheService } from '../../../common/cache/redis-cache.service';
+import { GetAccessibleNavigationQuery } from '@/modules/navigation/queries/get-accessible-navigation.query';
+import { PrismaService } from '@/prisma/prisma.service';
+import { RedisCacheService } from '@/common/cache/redis-cache.service';
 
 const PLAN_HIERARCHY: Record<PlanType, number> = {
   [PlanType.STARTER]: 1,

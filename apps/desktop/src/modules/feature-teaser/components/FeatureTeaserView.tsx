@@ -1,13 +1,13 @@
 import React from 'react';
 import { FEATURE_TEASER_REGISTRY } from '@/modules/feature-teaser/config/feature-teaser.registry';
-import { FeatureHeroSection } from './FeatureHeroSection';
-import { FeatureBenefitsGrid } from './FeatureBenefitsGrid';
-import { FeatureRoiWidget } from './FeatureRoiWidget';
-import { FeatureComparisonCard } from './FeatureComparisonCard';
-import { FeatureStickyCtaBar } from './FeatureStickyCtaBar';
-import { TeamInteractiveMockup } from './mockups/TeamInteractiveMockup';
-import { CloudSyncInteractiveMockup } from './mockups/CloudSyncInteractiveMockup';
-import { AiEnrichmentInteractiveMockup } from './mockups/AiEnrichmentInteractiveMockup';
+import { FeatureHeroSection } from '@/modules/feature-teaser/components/FeatureHeroSection';
+import { FeatureBenefitsGrid } from '@/modules/feature-teaser/components/FeatureBenefitsGrid';
+import { FeatureRoiWidget } from '@/modules/feature-teaser/components/FeatureRoiWidget';
+import { FeatureComparisonCard } from '@/modules/feature-teaser/components/FeatureComparisonCard';
+import { FeatureStickyCtaBar } from '@/modules/feature-teaser/components/FeatureStickyCtaBar';
+import { TeamInteractiveMockup } from '@/modules/feature-teaser/components/mockups/TeamInteractiveMockup';
+import { CloudSyncInteractiveMockup } from '@/modules/feature-teaser/components/mockups/CloudSyncInteractiveMockup';
+import { AiEnrichmentInteractiveMockup } from '@/modules/feature-teaser/components/mockups/AiEnrichmentInteractiveMockup';
 
 interface FeatureTeaserViewProps {
   featureKey: string;

@@ -1,5 +1,5 @@
-import { test, expect } from './fixtures/test';
-import { mockNavigationItems } from './fixtures/test-data';
+import { test, expect } from '@e2e/fixtures/test';
+import { mockNavigationItems } from '@e2e/fixtures/test-data';
 import { TargetApp, PlanType } from '@smartfeed/shared';
 
 test.describe('Admin Portal — Navigation & Access Control (POM)', () => {

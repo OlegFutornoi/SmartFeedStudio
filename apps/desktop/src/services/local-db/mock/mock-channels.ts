@@ -8,7 +8,7 @@ import type {
   PriceSimulationResultDto,
 } from '@smartfeed/shared';
 import { FeedFormat } from '@smartfeed/shared';
-import type { MockDbState } from './mock-state';
+import type { MockDbState } from '@/services/local-db/mock/mock-state';
 
 export function getExportChannels(state: MockDbState): ExportChannelDto[] {
   return [...state.exportChannels];

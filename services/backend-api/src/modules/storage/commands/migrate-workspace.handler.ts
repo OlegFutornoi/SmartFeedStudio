@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { MigrateWorkspaceCommand } from './migrate-workspace.command';
+import { MigrateWorkspaceCommand } from '@/modules/storage/commands/migrate-workspace.command';
 import { WorkspaceInfoDto } from '@smartfeed/shared';
-import { migrateWorkspaceOnDisk } from '../utils/workspace-utils';
+import { migrateWorkspaceOnDisk } from '@/modules/storage/utils/workspace-utils';
 
 @CommandHandler(MigrateWorkspaceCommand)
 export class MigrateWorkspaceHandler implements ICommandHandler<MigrateWorkspaceCommand> {

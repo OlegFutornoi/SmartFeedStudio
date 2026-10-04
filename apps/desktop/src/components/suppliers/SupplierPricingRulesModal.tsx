@@ -15,9 +15,9 @@ import {
   deleteSupplierPricingRule,
   getCategoriesSummary,
 } from '@/lib/api';
-import { PricingSimulatorWidget } from './PricingSimulatorWidget';
-import { PricingRuleForm } from './PricingRuleForm';
-import { PricingRulesList } from './PricingRulesList';
+import { PricingSimulatorWidget } from '@/components/suppliers/PricingSimulatorWidget';
+import { PricingRuleForm } from '@/components/suppliers/PricingRuleForm';
+import { PricingRulesList } from '@/components/suppliers/PricingRulesList';
 
 interface SupplierPricingRulesModalProps {
   supplier: SupplierDto | null;

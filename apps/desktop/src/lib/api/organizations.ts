@@ -4,7 +4,7 @@ import type {
   OrganizationMemberDto,
   OrganizationInvitationDto,
 } from '@smartfeed/shared';
-import { ApiError, fetchWithAuth } from './client';
+import { ApiError, fetchWithAuth } from '@/lib/api/client';
 
 export async function getUserOrganizations(token?: string): Promise<UserOrganizationDto[]> {
   const response = await fetchWithAuth('/organizations', { method: 'GET' }, token);

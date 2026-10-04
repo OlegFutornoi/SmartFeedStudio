@@ -9,8 +9,8 @@ import {
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
 import { AccountType, PLAN_LIMITS_MAP, PlanType, Role, UserListItemDto } from '@smartfeed/shared';
-import { PrismaService } from '../../../prisma/prisma.service';
-import { CreateUserByAdminCommand } from './create-user-by-admin.command';
+import { PrismaService } from '@/prisma/prisma.service';
+import { CreateUserByAdminCommand } from '@/modules/users/commands/create-user-by-admin.command';
 
 @Injectable()
 @CommandHandler(CreateUserByAdminCommand)

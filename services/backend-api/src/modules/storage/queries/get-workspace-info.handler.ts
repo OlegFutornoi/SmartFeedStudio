@@ -1,7 +1,7 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
-import { GetWorkspaceInfoQuery } from './get-workspace-info.query';
+import { GetWorkspaceInfoQuery } from '@/modules/storage/queries/get-workspace-info.query';
 import { WorkspaceInfoDto } from '@smartfeed/shared';
-import { readWorkspaceInfo } from '../utils/workspace-utils';
+import { readWorkspaceInfo } from '@/modules/storage/utils/workspace-utils';
 
 @QueryHandler(GetWorkspaceInfoQuery)
 export class GetWorkspaceInfoHandler implements IQueryHandler<GetWorkspaceInfoQuery> {

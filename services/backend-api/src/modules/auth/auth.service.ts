@@ -15,14 +15,14 @@ import {
 } from '@smartfeed/shared';
 import type { SignOptions } from 'jsonwebtoken';
 
-import { RegisterDto } from './dto/register.dto';
-import { LoginDto } from './dto/login.dto';
-import { ForgotPasswordDto } from './dto/forgot-password.dto';
-import { ResetPasswordDto } from './dto/reset-password.dto';
-import { CreateUserCommand } from '../users/commands/create-user.command';
-import { ResetPasswordCommand } from '../users/commands/reset-password.command';
-import { GetUserByEmailQuery } from '../users/queries/get-user-by-email.query';
-import { GetUserByIdQuery } from '../users/queries/get-user-by-id.query';
+import { RegisterDto } from '@/modules/auth/dto/register.dto';
+import { LoginDto } from '@/modules/auth/dto/login.dto';
+import { ForgotPasswordDto } from '@/modules/auth/dto/forgot-password.dto';
+import { ResetPasswordDto } from '@/modules/auth/dto/reset-password.dto';
+import { CreateUserCommand } from '@/modules/users/commands/create-user.command';
+import { ResetPasswordCommand } from '@/modules/users/commands/reset-password.command';
+import { GetUserByEmailQuery } from '@/modules/users/queries/get-user-by-email.query';
+import { GetUserByIdQuery } from '@/modules/users/queries/get-user-by-id.query';
 
 @Injectable()
 export class AuthService {

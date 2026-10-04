@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '../../../prisma/prisma.service';
-import { DeleteLicenseCommand } from './delete-license.command';
+import { PrismaService } from '@/prisma/prisma.service';
+import { DeleteLicenseCommand } from '@/modules/licenses/commands/delete-license.command';
 
 @Injectable()
 @CommandHandler(DeleteLicenseCommand)

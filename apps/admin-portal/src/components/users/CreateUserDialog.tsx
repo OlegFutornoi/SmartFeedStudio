@@ -13,10 +13,10 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { AccountType, Role, UserListItemDto } from '@smartfeed/shared';
-import { RoleSelector } from './RoleSelector';
-import { AccountTypeSelector } from './AccountTypeSelector';
-import { PlanSelector } from './PlanSelector';
-import { useCreateUserForm } from './useCreateUserForm';
+import { RoleSelector } from '@/components/users/RoleSelector';
+import { AccountTypeSelector } from '@/components/users/AccountTypeSelector';
+import { PlanSelector } from '@/components/users/PlanSelector';
+import { useCreateUserForm } from '@/components/users/useCreateUserForm';
 
 interface CreateUserDialogProps {
   open: boolean;

@@ -2,7 +2,7 @@
 
 import React, { useMemo } from 'react';
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
-import { Button } from './button';
+import { Button } from '@/components/ui/button';
 
 export interface TablePaginationProps {
   currentPage: number;

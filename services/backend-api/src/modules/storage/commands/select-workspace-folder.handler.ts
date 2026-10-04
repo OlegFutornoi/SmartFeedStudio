@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { SelectWorkspaceFolderCommand } from './select-workspace-folder.command';
-import { selectFolderDialog } from '../utils/workspace-utils';
+import { SelectWorkspaceFolderCommand } from '@/modules/storage/commands/select-workspace-folder.command';
+import { selectFolderDialog } from '@/modules/storage/utils/workspace-utils';
 
 @CommandHandler(SelectWorkspaceFolderCommand)
 export class SelectWorkspaceFolderHandler implements ICommandHandler<SelectWorkspaceFolderCommand> {

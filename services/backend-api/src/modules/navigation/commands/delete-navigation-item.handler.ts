@@ -1,8 +1,8 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { NotFoundException } from '@nestjs/common';
-import { DeleteNavigationItemCommand } from './delete-navigation-item.command';
-import { PrismaService } from '../../../prisma/prisma.service';
-import { RedisCacheService } from '../../../common/cache/redis-cache.service';
+import { DeleteNavigationItemCommand } from '@/modules/navigation/commands/delete-navigation-item.command';
+import { PrismaService } from '@/prisma/prisma.service';
+import { RedisCacheService } from '@/common/cache/redis-cache.service';
 
 @CommandHandler(DeleteNavigationItemCommand)
 export class DeleteNavigationItemHandler implements ICommandHandler<DeleteNavigationItemCommand> {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useFeatureAccess } from '@/modules/feature-teaser/hooks/useFeatureAccess';
-import { FeatureTeaserView } from './FeatureTeaserView';
+import { FeatureTeaserView } from '@/modules/feature-teaser/components/FeatureTeaserView';
 
 interface FeatureTeaserGateProps {
   featureKey: string;

@@ -21,7 +21,7 @@ import { AlertCircle, Check, Loader2 } from 'lucide-react';
 
 const NavigationItemDialog = dynamic(
   () =>
-    import('../../../components/navigation/NavigationItemDialog').then((m) => ({
+    import('@/components/navigation/NavigationItemDialog').then((m) => ({
       default: m.NavigationItemDialog,
     })),
   { ssr: false },
@@ -29,7 +29,7 @@ const NavigationItemDialog = dynamic(
 
 const NavigationDeleteDialog = dynamic(
   () =>
-    import('../../../components/navigation/NavigationDeleteDialog').then((m) => ({
+    import('@/components/navigation/NavigationDeleteDialog').then((m) => ({
       default: m.NavigationDeleteDialog,
     })),
   { ssr: false },

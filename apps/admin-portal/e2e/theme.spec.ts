@@ -1,4 +1,4 @@
-import { test, expect } from './fixtures/test';
+import { test, expect } from '@e2e/fixtures/test';
 
 test.describe('Admin Portal — Сучасні теми shadcn/ui та монохромна схема за замовчуванням (POM)', () => {
   test.afterEach(async ({ page }) => {

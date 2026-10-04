@@ -2,7 +2,7 @@ import { Sparkles } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import type { TariffPlanDto, BillingInterval } from '@smartfeed/shared';
-import { PlanActionButton } from './PlanActionButton';
+import { PlanActionButton } from '@/components/plans/PlanActionButton';
 
 interface ComparisonTableHeaderProps {
   sortedPlans: TariffPlanDto[];

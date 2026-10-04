@@ -1,12 +1,12 @@
 import { test as base } from '@playwright/test';
-import { LoginPage } from '../pages/login.page';
-import { NavigationPage } from '../pages/navigation.page';
-import { AdminSettingsPage } from '../pages/settings.page';
-import { AdminLicensesPage } from '../pages/licenses.page';
-import { AdminPlansPage } from '../pages/plans.page';
-import { AdminDashboardPage } from '../pages/dashboard.page';
-import { AdminUsersPage } from '../pages/users.page';
-import { mockAdminUser } from './test-data';
+import { LoginPage } from '@e2e/pages/login.page';
+import { NavigationPage } from '@e2e/pages/navigation.page';
+import { AdminSettingsPage } from '@e2e/pages/settings.page';
+import { AdminLicensesPage } from '@e2e/pages/licenses.page';
+import { AdminPlansPage } from '@e2e/pages/plans.page';
+import { AdminDashboardPage } from '@e2e/pages/dashboard.page';
+import { AdminUsersPage } from '@e2e/pages/users.page';
+import { mockAdminUser } from '@e2e/fixtures/test-data';
 
 type AdminPortalFixtures = {
   loginPage: LoginPage;

@@ -3,9 +3,9 @@ import { createPortal } from 'react-dom';
 import { Layers, X, LogOut } from 'lucide-react';
 import { NavigationItemDto, UserProfile } from '@smartfeed/shared';
 import { Button } from '@/components/ui/button';
-import { SidebarNavItem } from './SidebarNavItem';
+import { SidebarNavItem } from '@/components/layout/SidebarNavItem';
 
-import { SidebarUpsellSection } from './SidebarUpsellSection';
+import { SidebarUpsellSection } from '@/components/layout/SidebarUpsellSection';
 
 interface SidebarMobileDrawerProps {
   isOpen: boolean;

@@ -4,9 +4,8 @@ import React from 'react';
 import { LucideIcon, ShieldCheck, X } from 'lucide-react';
 import { UserProfile } from '@smartfeed/shared';
 import { Button } from '@/components/ui/button';
-import { SidebarNavItem } from './SidebarNavItem';
-import { SidebarUserProfile } from './SidebarUserProfile';
-import { useLanguage } from '@/contexts/LanguageContext';
+import { SidebarNavItem } from '@/components/layout/SidebarNavItem';
+import { SidebarUserProfile } from '@/components/layout/SidebarUserProfile';
 
 interface NavItem {
   name: string;
@@ -37,9 +36,6 @@ export const SidebarMobileDrawer = React.memo(function SidebarMobileDrawer({
   onOpenPasswordDialog,
   onLogout,
 }: SidebarMobileDrawerProps) {
-  const { locale, t } = useLanguage();
-  const isUk = locale === 'uk';
-
   if (!isOpen) return null;
 
   return (

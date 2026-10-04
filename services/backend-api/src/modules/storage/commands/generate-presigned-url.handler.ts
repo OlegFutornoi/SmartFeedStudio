@@ -5,7 +5,7 @@ import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { PresignedUploadUrlResult } from '@smartfeed/shared';
 import * as crypto from 'crypto';
-import { GeneratePresignedUploadUrlCommand } from './generate-presigned-url.command';
+import { GeneratePresignedUploadUrlCommand } from '@/modules/storage/commands/generate-presigned-url.command';
 
 @Injectable()
 @CommandHandler(GeneratePresignedUploadUrlCommand)

@@ -1,5 +1,5 @@
 import type { TariffPlanDto, CreateTariffPlanDto, UpdateTariffPlanDto } from '@smartfeed/shared';
-import { baseClient } from './client';
+import { baseClient } from '@/lib/api/client';
 
 export async function getTariffPlans(currency?: string): Promise<TariffPlanDto[]> {
   const qs = currency ? `?currency=${currency}` : '';

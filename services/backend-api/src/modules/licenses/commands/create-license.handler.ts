@@ -2,8 +2,8 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { ForbiddenException, Injectable, Logger } from '@nestjs/common';
 import { LicenseEntity, PlanType, PLAN_LIMITS_MAP, Role } from '@smartfeed/shared';
 import * as crypto from 'crypto';
-import { PrismaService } from '../../../prisma/prisma.service';
-import { CreateLicenseCommand } from './create-license.command';
+import { PrismaService } from '@/prisma/prisma.service';
+import { CreateLicenseCommand } from '@/modules/licenses/commands/create-license.command';
 
 @Injectable()
 @CommandHandler(CreateLicenseCommand)

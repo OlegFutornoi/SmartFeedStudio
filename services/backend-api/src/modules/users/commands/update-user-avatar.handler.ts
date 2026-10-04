@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Injectable, NotFoundException, Logger } from '@nestjs/common';
-import { PrismaService } from '../../../prisma/prisma.service';
-import { UpdateUserAvatarCommand } from './update-user-avatar.command';
+import { PrismaService } from '@/prisma/prisma.service';
+import { UpdateUserAvatarCommand } from '@/modules/users/commands/update-user-avatar.command';
 
 @Injectable()
 @CommandHandler(UpdateUserAvatarCommand)
