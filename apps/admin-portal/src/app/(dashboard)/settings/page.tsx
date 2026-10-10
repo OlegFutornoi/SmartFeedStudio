@@ -2,7 +2,16 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Sliders, CreditCard, Bot, ArrowRight, ShieldCheck, Sparkles } from 'lucide-react';
+import {
+  Sliders,
+  CreditCard,
+  Bot,
+  ArrowRight,
+  ShieldCheck,
+  Sparkles,
+  FileText,
+  FileCheck,
+} from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -32,8 +41,8 @@ export default function SettingsPage() {
         </div>
         <p className="text-xs text-muted-foreground">
           {isUk
-            ? 'Керування оформленням інтерфейсу, платіжними шлюзами та інтеграціями'
-            : 'Configure interface appearance, payment gateways, and system integrations'}
+            ? 'Керування оформленням інтерфейсу, платіжними шлюзами, AI та юридичними документами'
+            : 'Configure interface appearance, payment gateways, AI, and legal documentation'}
         </p>
       </div>
 
@@ -42,8 +51,8 @@ export default function SettingsPage() {
         <ThemeCustomizer />
       </div>
 
-      {/* 2. Platform Integrations: Payments & AI */}
-      <div className="grid gap-6 md:grid-cols-2 items-stretch">
+      {/* 2. Platform Modules: Payments, AI & Legal */}
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 items-stretch">
         {/* Payment Gateways Card */}
         <Card className="border-border/80 bg-card/60 backdrop-blur-xs shadow-xs flex flex-col justify-between">
           <CardHeader className="pb-3">
@@ -108,6 +117,41 @@ export default function SettingsPage() {
                 className="w-full h-8 text-xs gap-1.5 justify-between"
               >
                 <span>{isUk ? 'Налаштувати AI' : 'Configure AI'}</span>
+                <ArrowRight className="size-3.5 text-muted-foreground" />
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+
+        {/* Legal Documents Card */}
+        <Card className="border-border/80 bg-card/60 backdrop-blur-xs shadow-xs flex flex-col justify-between">
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <FileText className="size-4 text-primary" />
+                <CardTitle className="text-sm font-semibold">
+                  {isUk ? 'Юридичні документи' : 'Legal Documents'}
+                </CardTitle>
+              </div>
+              <Badge variant="outline" className="text-[10px] gap-1 font-mono">
+                <FileCheck className="size-2.5 text-blue-500" />
+                <span>{isUk ? 'Публічні угоди' : 'Public Policies'}</span>
+              </Badge>
+            </div>
+            <CardDescription className="text-xs">
+              {isUk
+                ? 'Керування Умовами використання, Політикою конфіденційності та офертою'
+                : 'Manage Terms of Service, Privacy Policy, and platform agreements'}
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="pt-0">
+            <Link href="/settings/legal">
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full h-8 text-xs gap-1.5 justify-between"
+              >
+                <span>{isUk ? 'Редагувати документи' : 'Manage Legal'}</span>
                 <ArrowRight className="size-3.5 text-muted-foreground" />
               </Button>
             </Link>

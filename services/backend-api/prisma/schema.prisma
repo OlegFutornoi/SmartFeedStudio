@@ -315,3 +315,21 @@ model PaymentSetting {
 
   @@map("payment_settings")
 }
+
+model LegalDocument {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  titleUk     String   @map("title_uk")
+  titleEn     String   @map("title_en")
+  contentUk   String   @map("content_uk") @db.Text
+  contentEn   String   @map("content_en") @db.Text
+  isPublished Boolean  @default(true) @map("is_published")
+  version     String   @default("2.0")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@index([slug, isPublished])
+  @@index([createdAt])
+  @@map("legal_documents")
+}
+

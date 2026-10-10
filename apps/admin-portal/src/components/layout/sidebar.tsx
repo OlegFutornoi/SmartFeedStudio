@@ -32,6 +32,7 @@ const TEST_ID_MAP: Record<string, string> = {
   admin_transactions: 'nav-item-transactions',
   admin_payment_settings: 'nav-item-payments',
   admin_navigation: 'nav-item-navigation',
+  admin_legal: 'nav-item-legal',
 };
 
 const DEFAULT_MAIN_NAV = [
@@ -77,6 +78,13 @@ const DEFAULT_MAIN_NAV = [
     labelEn: 'Navigation Menu',
     path: '/navigation',
     icon: 'Compass',
+  },
+  {
+    key: 'admin_legal',
+    labelUk: 'Юридичні документи',
+    labelEn: 'Legal Documents',
+    path: '/settings/legal',
+    icon: 'FileText',
   },
 ];
 

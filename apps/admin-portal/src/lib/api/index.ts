@@ -5,6 +5,7 @@ import * as navigation from '@/lib/api/navigation';
 import * as plans from '@/lib/api/plans';
 import * as licenses from '@/lib/api/licenses';
 import * as payments from '@/lib/api/payments';
+import * as legal from '@/lib/api/legal';
 
 export * from '@/lib/api/client';
 export * from '@/lib/api/auth';
@@ -13,6 +14,7 @@ export * from '@/lib/api/navigation';
 export * from '@/lib/api/plans';
 export * from '@/lib/api/licenses';
 export * from '@/lib/api/payments';
+export * from '@/lib/api/legal';
 
 export const api = {
   // Client token controls
@@ -58,4 +60,12 @@ export const api = {
   getPaymentStats: payments.getPaymentStats,
   getPaymentSettings: payments.getPaymentSettings,
   updatePaymentSetting: payments.updatePaymentSetting,
+
+  // Legal CMS
+  getPublishedLegalDocuments: legal.getPublishedLegalDocuments,
+  getLegalDocumentBySlug: legal.getLegalDocumentBySlug,
+  getAdminLegalDocuments: legal.getAdminLegalDocuments,
+  createLegalDocument: legal.createLegalDocument,
+  updateLegalDocument: legal.updateLegalDocument,
+  deleteLegalDocument: legal.deleteLegalDocument,
 };

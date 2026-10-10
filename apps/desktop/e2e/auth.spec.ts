@@ -206,4 +206,51 @@ test.describe('Desktop App — Авторизація, Реєстрація, М�
     // Verify page remains intact
     await expect(page.getByTestId('login-page')).toBeVisible();
   });
+
+  test('юридичні документи: відкриття модального вікна при кліку на Terms of Service та Privacy Policy (нуль битих посилань)', async ({
+    page,
+  }) => {
+    await page.goto('/auth/login');
+
+    // Click Terms of Service in footer
+    await page.getByRole('button', { name: 'Terms of Service' }).click();
+    await expect(page.getByTestId('legal-document-modal')).toBeVisible();
+    await expect(page.getByTestId('tab-terms-of-service')).toBeVisible();
+
+    // Switch to Privacy Policy tab inside modal
+    await page.getByTestId('tab-privacy-policy').click();
+    await expect(page.getByTestId('legal-document-modal')).toBeVisible();
+
+    // Close modal
+    await page.getByTestId('close-legal-modal').click();
+    await expect(page.getByTestId('legal-document-modal')).not.toBeVisible();
+
+    // Navigate to register and test checkbox legal links
+    await page.goto('/auth/register');
+    await page.getByRole('button', { name: 'Умовами використання' }).click();
+    await expect(page.getByTestId('legal-document-modal')).toBeVisible();
+    await page.getByTestId('confirm-legal-modal-button').click();
+    await expect(page.getByTestId('legal-document-modal')).not.toBeVisible();
+  });
+
+  test('AI-автопілот та діаграми росту: перевірка наявності автономного модуля GrowthShowcaseModule, картки AI-копілота, графіка та воронки', async ({
+    page,
+  }) => {
+    await page.goto('/auth/register');
+
+    // Verify main isolated showcase container
+    await expect(page.getByTestId('growth-showcase-module')).toBeVisible();
+
+    // Verify AI Copilot card with 24/7 status
+    await expect(page.getByTestId('ai-copilot-card')).toBeVisible();
+
+    // Verify Recharts growth revenue chart
+    await expect(page.getByTestId('growth-revenue-chart')).toBeVisible();
+
+    // Verify 3-stage funnel pipeline cards
+    await expect(page.getByTestId('pipeline-funnel-cards')).toBeVisible();
+
+    // Verify live sales ticker
+    await expect(page.getByTestId('live-sales-ticker')).toBeVisible();
+  });
 });

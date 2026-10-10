@@ -14,6 +14,7 @@ import {
   Compass,
   Receipt,
   CreditCard,
+  FileText,
   LucideIcon,
 } from 'lucide-react';
 
@@ -38,6 +39,7 @@ export const AVAILABLE_ICONS: IconOption[] = [
   { name: 'Shield', icon: Shield, label: 'Безпека / Security' },
   { name: 'Bell', icon: Bell, label: 'Сповіщення / Notifications' },
   { name: 'Compass', icon: Compass, label: 'Навігація / Navigation' },
+  { name: 'FileText', icon: FileText, label: 'Документи / Documents' },
 ];
 
 export function getLucideIcon(iconName: string): LucideIcon {
