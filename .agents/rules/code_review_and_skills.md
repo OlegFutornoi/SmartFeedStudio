@@ -13,55 +13,58 @@ Whenever writing, refactoring, reviewing, or testing code in this monorepo, the 
 
 ## 🛠 1. Mandatory Domain Skills Matrix by Layer
 
-### ⚙️ A. Backend Architecture & CQRS Services (`services/backend-api`)
+### ⚙️ A. Backend Architecture & CQRS Services (`services/backend-api`, Tauri `src-tauri`)
 
-| Skill                                                          | Key Rules & Error Prevention Focus                                                                                                                                                                                                                                     |
-| :------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **`backend`**                                                  | **Full-Cycle Lifecycle Master**: Orchestrates the 7 stages (Analysis → Planning → Architecture → TDD RED → Implementation GREEN with 4-layer defense → Code Review & Audit → Systematic Debugging) with zero-defect security, PostgreSQL indexing, and zero God-files. |
-| **`nestjs-best-practices`**                                    | Strict CQRS decoupling; zero circular imports; DI singletons; centralized exception filters (`GlobalHttpExceptionFilter`); validation pipes with `whitelist: true`.                                                                                                    |
-| **`backend-development`**                                      | Production-ready REST endpoints; stateless JWT auth; Argon2id / bcrypt hashing; rate limiting; OWASP Top 10 security mitigations.                                                                                                                                      |
-| **`backend-patterns`**                                         | Domain-driven structure; repository/service decoupling; Redis caching; async job queues with BullMQ.                                                                                                                                                                   |
-| **`defense-in-depth-validation`**                              | **4-Layer Defense**: Layer 1: DTO validation (Zod); Layer 2: Domain/Quota validation; Layer 3: Environment/Auth guards (`RequireActiveLicenseGuard`); Layer 4: DB foreign keys, transaction rollbacks.                                                                 |
-| **`sentry-backend-bugs`**                                      | Prevention of unhandled promise rejections, missing null checks on relations (`organization`, `members`), race conditions, stream memory leaks, DB connection starvation.                                                                                              |
-| **`supabase-postgres-best-practices`** & **`prisma-postgres`** | **100% Foreign Key Indexes**; `timestamptz` for all timestamps; snake_case DB mapping via `@@map()`; no OFFSET pagination; connection pooling via `@prisma/adapter-pg`; zero N+1 queries.                                                                              |
-| **`subscription-lifecycle`**                                   | Dynamic expiration calculations; grace periods; automatic downgrade fallbacks; quota enforcement across team seats, XML SKUs, AI credits, S3 storage.                                                                                                                  |
-| **`systematic-debugging`** & **`root-cause-tracing`**          | 4-Phase systematic debugging: 1. Reproduce with minimal test; 2. Trace root cause backward; 3. Implement structural fix; 4. Verify 100% test pass.                                                                                                                     |
+| Skill                         | Key Rules & Error Prevention Focus                                                                                                                                                                                   |
+| :---------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`backend`**                 | **Full-Cycle Lifecycle Master**: 7 stages (Analysis → Planning → Architecture → TDD RED → Implementation GREEN with 4-layer defense → Code Review & Audit → Debugging) with zero-defect security and zero God-files. |
+| **`nestjs-best-practices`**   | Strict CQRS decoupling; zero circular imports; DI singletons; centralized exception filters (`GlobalHttpExceptionFilter`); validation pipes with `whitelist: true`.                                                  |
+| **`contract-first-api`**      | Shared DTO contracts, Zod validation schemas, and enum types in `@smartfeed/shared`; zero inline types.                                                                                                              |
+| **`rust-native-backend`**     | Tauri v2 Rust SQLCipher SQLite backend (`db.rs`), atomic transactions (`tx.commit()?`), `thiserror` mapping, cascade deletions, Clippy zero-warnings.                                                                |
+| **`prisma-postgres-mastery`** | **100% Foreign Key Indexes**; `timestamptz` timestamps; snake_case DB mapping via `@@map()`; no OFFSET pagination; connection pooling via `@prisma/adapter-pg`; zero N+1 queries.                                    |
+| **`postgresql-optimization`** | JSONB with GIN indexes; pg_trgm text search; cursor pagination; short transactions without external HTTP calls.                                                                                                      |
+| **`streaming-large-feeds`**   | SAX XML/CSV streaming for 100k+ SKU catalogs with memory backpressure (chunked `bulkUpsert` in batches of 500-1000 items).                                                                                           |
+| **`bullmq-jobs`**             | BullMQ async queue architecture; exponential backoff retries; Dead Letter Queue (DLQ); worker idempotency (`jobId`); memory backpressure.                                                                            |
+| **`idempotency-and-outbox`**  | Redis idempotency keys; Prisma transactional outbox pattern for webhooks and payment events.                                                                                                                         |
+| **`subscription-lifecycle`**  | Dynamic expiration calculations; grace periods; automatic downgrade fallbacks; quota enforcement across team seats, XML SKUs, AI credits, S3 storage.                                                                |
+| **`security-and-hardening`**  | 4-Layer Defense: Layer 1 (DTO Zod/class-validator), Layer 2 (Domain/Quota), Layer 3 (RBAC/Tenant Guard), Layer 4 (DB FK/Transactions); CWE-78 prevention via `execFile`.                                             |
+| **`systematic-debugging`**    | 4-Phase systematic debugging: 1. Reproduce with minimal test; 2. Trace root cause backward; 3. Implement structural fix; 4. Verify 100% test pass.                                                                   |
 
 ---
 
 ### 💻 B. Frontend & UI/UX Design (`apps/desktop`, `apps/admin-portal`)
 
-| Skill                                          | Key Rules & Error Prevention Focus                                                                                                                                                                                                                                                            |
-| :--------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **`frontend`**                                 | **Full-Cycle Lifecycle Master**: Orchestrates the 7 stages (Task/UX Analysis → Planning → Architecture → Playwright TDD RED → Implementation GREEN → Code Review DoD → Systematic Debugging) with 100% theme harmony, solid sticky headers, zero duplicate CTAs/network calls, and 100% i18n. |
-| **`ui-ux-pro-max`**                            | **Visual Inspection & DoD**: High-contrast hierarchy; micro-interactions; zero text clipping; **100% Solid Sticky Headers**: Sticky table headers (`thead.sticky.top-0`) and modals **MUST ALWAYS use 100% solid backgrounds** (`bg-card`, `bg-muted`, `bg-background`).                      |
-| **`vercel-react-best-practices`**              | Eliminate redundant re-renders; no `React.StrictMode` double-mounting in dev; lean `useCallback` dependency arrays; hoist static constants; parallel data fetching (`Promise.all`).                                                                                                           |
-| **`frontend-design`** & **`beautiful-design`** | Editorial, high-contrast, premium visual identity; HSL CSS tokens (`--background`, `--primary`, `--card`); modern typography (Inter); refined micro-animations; zero raw browser defaults.                                                                                                    |
-| **`shadcn`**                                   | Consistent component reuse (`card`, `button`, `badge`, `dialog`, `dropdown-menu`, `table`); Tailwind merge via `cn()`; accessible ARIA attributes; localized placeholders/tooltips.                                                                                                           |
-| **`integrate-backend`**                        | Safe API client integration with TypeScript DTO contracts; in-flight request deduplication with `useRef`; localized error toasts; zero untranslated backend error messages.                                                                                                                   |
+| Skill                             | Key Rules & Error Prevention Focus                                                                                                                                                                        |
+| :-------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`frontend`**                    | **Full-Cycle Lifecycle Master**: 7 stages (Task Analysis → Planning → Architecture → Playwright TDD RED → Implementation GREEN → DoD Review → Debugging) with 100% theme harmony and zero duplicate CTAs. |
+| **`ui-ux-pro-max`**               | **100% Solid Sticky Headers** (`bg-card`, `bg-muted`, `bg-background`); semantic design tokens only; zero duplicate action buttons between toolbar and empty state; <250-300 lines modularity budget.     |
+| **`vercel-react-best-practices`** | Eliminate redundant re-renders; no `React.StrictMode` double-mounting in dev; in-flight request deduplication via `useRef`; lean `useCallback` dependency arrays.                                         |
+| **`i18n-localization`**           | **100% Bilingual Parity**: Zero hardcoded strings; all copy in both `uk` and `en` dictionaries; tooltips (`title={t('...')}`); error mapping via `getErrorMessage`; validated via `pnpm i18n:check`.      |
+| **`emil-design-eng`**             | Editorial spring animations; refined micro-interactions; optimistic UI updates; smooth dialog/dropdown transitions.                                                                                       |
+| **`image`**                       | Asset generation, Sharp WebP compression, lazy loading, and placeholder handling.                                                                                                                         |
+| **`browser-debugging`**           | Playwright MCP interactive inspection of live DOM tree (`browser_snapshot`), console errors, network waterfalls, and screenshots.                                                                         |
 
 ---
 
 ### 🧪 C. Testing, Quality Assurance & Anti-Patterns
 
-| Skill                                | Key Rules & Error Prevention Focus                                                                                                                                 |
-| :----------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **`playwright-best-practices`**      | Page Object Model (POM); resilient `data-testid` selectors; deterministic network idle waits; dedicated bilingual tests (asserting dynamic translation UA ⇄ EN).   |
-| **`test-driven-development-tdd`**    | Strict RED → GREEN → REFACTOR cycle. Write API or UI contract assertions first before implementing changes.                                                        |
-| **`testing-anti-patterns`**          | **3 Iron Laws**: 1. NEVER test mock behavior; 2. NEVER add test-only methods to production classes; 3. NEVER mock without fully understanding dependencies.        |
-| **`condition-based-waiting`**        | Replace arbitrary timeouts/sleeps with condition polling (e.g. `waitForResponse`, `expect.poll`, `waitForSelector`).                                               |
-| **`verification-before-completion`** | Always run full static typecheck (`tsc --noEmit`), build shared contracts (`pnpm build:shared`), and execute complete test suites before claiming task completion. |
+| Skill                         | Key Rules & Error Prevention Focus                                                                                                                                                          |
+| :---------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **`playwright-automation`**   | Page Object Model (POM); resilient `data-testid` selectors; deterministic network idle waits; dedicated bilingual tests (UA ⇄ EN); single-request verification (`requestCount === 1`).      |
+| **`test-driven-development`** | Strict RED → GREEN → REFACTOR cycle; 100% test isolation with centralized `cleanDatabase` teardown in `beforeAll` and `afterAll`; zero orphan DB records.                                   |
+| **`mock-real-parity`**        | **100% Behavioral Parity**: Local in-memory mock (`mockDatabaseDriver`), Tauri SQLite, and NestJS PostgreSQL return identical data relations (`supplierName`), cascade deletes, and errors. |
+| **`automated-guardrails-ci`** | ESLint zero-errors (`max-lines: 300`, `no-restricted-imports`); TypeScript strict typecheck (`tsc --noEmit`); contract builds.                                                              |
 
 ---
 
 ### 🔍 D. Code Review & Engineering Protocol
 
-| Skill                                       | Key Rules & Error Prevention Focus                                                                                                                       |
-| :------------------------------------------ | :------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **`fullstack-code-review`**                 | **Master Orchestrator**: Comprehensive review inspecting CQRS boundaries, React performance, PostgreSQL schema, 100% i18n, and test isolation.           |
-| **`requesting-code-review`**                | Dispatch self-review or review checks after completing major tasks to catch issues before they cascade.                                                  |
-| **`code-review-reception`**                 | Receive and evaluate feedback with technical rigor; verify against codebase reality; zero performative agreement; test every single fix individually.    |
-| **`writing-plans`** & **`executing-plans`** | Create bite-sized, deterministic implementation plans in `plans/<feature>.md` with clear review checkpoints and explicit user approval before execution. |
+| Skill                                        | Key Rules & Error Prevention Focus                                                                                                                              |
+| :------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`review`** & **`code-review-and-quality`** | **Master Reviewers**: 5-axis review (correctness, architecture, security, readability, performance) + CQRS boundaries, zero N+1, and 100% i18n.                 |
+| **`doubt-driven-development`**               | Adversarial stress-testing of non-trivial architectural decisions, TOCTOU race conditions, and quota edge cases.                                                |
+| **`planning-and-lifecycle`**                 | Create bite-sized, deterministic implementation plans in `plans/active/<feature>.md` with clear review checkpoints and explicit user approval before execution. |
+| **`incremental-implementation`**             | Slice tasks into thin vertical slices (<250 lines budget per component) and verify each slice incrementally.                                                    |
 
 ---
 
@@ -81,3 +84,4 @@ Before reporting completion to the user or preparing any changes:
 10. ✅ **Zero Off-Scheme Palette Colors**: Strict semantic tokens (`primary`, `border`, `card`, `muted`, `background`). Hardcoded palette colors (`purple-*`, `violet-*`, `fuchsia-*`, `pink-*`) are strictly prohibited.
 11. ✅ **Zero Duplicate CTA Buttons**: Eliminate duplicate buttons across toolbar/header/empty states.
 12. ✅ **100% `@/` Path Aliases & Zero Relative Imports (`../`)**: All internal project imports strictly use `@/` or `@smartfeed/shared`. Relative imports (`../`, `./`) are strictly prohibited.
+13. ✅ **Zero File Dumping in Chat**: Never dump or rewrite entire file contents in chat. Brief summary in chat, all full content into files/artifacts.

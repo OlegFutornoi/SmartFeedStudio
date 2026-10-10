@@ -1,95 +1,71 @@
 ---
 name: git-commit
-description: 'Execute automated end-to-end git commit workflow: pre-commit build and typecheck verification (Zero-Broken-Build), intelligent staging, conventional commit generation, automatic SemVer release version tagging, and push with tags to remote. Use when user asks to commit changes, create a git commit, or mentions "/git-commit" or "/commit".'
+description: 'Execute automated git commit & push workflow: pre-commit verification (verify:build), conventional commit, and safe remote push. By default, pushes code WITHOUT creating a new version or triggering release actions. When invoked with --release [patch|minor|major], performs automated SemVer bumping, file synchronization, git tag creation, and push with tags to trigger release workflows. Use when user asks to commit, push, or mentions "/git-commit", "/commit", or release requests.'
 license: MIT
 allowed-tools: Bash
 ---
 
-# Git Commit with Conventional Commits, Automated Release Tagging & Push
+# Git Commit: Controlled Push & On-Demand Release Workflow
 
-## Overview
+## 📌 Overview & Operating Modes
 
-Execute the complete, automated end-to-end git release workflow upon explicit user request (`/git-commit` or `/commit`):
+The `git-commit` workflow supports two distinct modes to prevent accidental app version bumps and unnecessary CI/CD release builds:
 
-0. **Pre-Commit Verification Gate**: Run `pnpm verify:build` to guarantee contracts, Prisma schema, TypeScript across all packages, backend NestJS, Desktop frontend, and Rust/Tauri compile cleanly with 0 errors before staging.
-1. **Analyze & Stage**: Stage modified and untracked files safely (`git add .`).
-2. **Conventional Commit**: Generate and execute semantic Conventional Commit message based on the diff.
-3. **Automated SemVer Tagging**: Calculate the next version tag and create an annotated tag (`git tag -a vX.Y.Z -m "Release vX.Y.Z: ..."`).
-4. **Push with Tags**: Automatically push both the commit and all tags to remote (`git push origin <branch> --tags`).
+1. **Regular Mode (Default — No Action / No Version Bump)**:
+   - Invocation: `/git-commit`, `/commit`, _"закоміть"_, _"вивантаж"_, _"зроби коміт"_.
+   - Runs `pnpm verify:build` → stages changes → generates Conventional Commit → pushes strictly to branch (`git push origin <branch>`).
+   - **NO git tags are created** and **NO `--tags` are pushed**.
+   - **Result**: GitHub Actions `release.yml` and `docker.yml` **DO NOT trigger**. No new app version is created.
 
----
+2. **Release Mode (On-Demand — Version Bump & Release Action)**:
+   - Invocation: `/git-commit --release` (or `-r`), `/git-commit --release [patch|minor|major]`, `/git-commit --version <x.y.z>`, or explicit user request (_"випусти реліз"_, _"створи нову версію додатку"_, _"закоміть з релізом"_).
+   - Runs `pnpm verify:build` → bumps & syncs version across `package.json`, `Cargo.toml`, `tauri.conf.json` → commits release → creates annotated tag `vX.Y.Z` → pushes branch and tag.
+   - **Result**: Pushing tag `v*` triggers GitHub Actions `Release Desktop App` (`release.yml`) and `Publish Docker Images` (`docker.yml`).
 
-## Conventional Commit Format
-
-```text
-<type>[optional scope]: <description>
-
-[optional body]
-
-[optional footer(s)]
-```
+3. **Optional Flag `--skip-ci`**:
+   - Invocation: `/git-commit --skip-ci` or _"вивантаж без CI"_.
+   - Appends `[skip ci]` to the commit message so GitHub Actions bypasses even standard CI verification runners.
 
 ---
 
-## Commit Types & SemVer Impact
+## 🎛️ Command Parameters & Syntax
 
-| Type       | Purpose                        | SemVer Impact | Version Bump Example |
-| :--------- | :----------------------------- | :------------ | :------------------- |
-| `feat`     | New feature                    | MINOR         | `v1.8.0` → `v1.9.0`  |
-| `fix`      | Bug fix                        | PATCH         | `v1.8.0` → `v1.8.1`  |
-| `refactor` | Code refactor (no feature/fix) | PATCH         | `v1.8.0` → `v1.8.1`  |
-| `perf`     | Performance improvement        | PATCH         | `v1.8.0` → `v1.8.1`  |
-| `docs`     | Documentation only             | PATCH         | `v1.8.0` → `v1.8.1`  |
-| `style`    | Formatting/style (no logic)    | PATCH         | `v1.8.0` → `v1.8.1`  |
-| `test`     | Add/update tests               | PATCH         | `v1.8.0` → `v1.8.1`  |
-| `build`    | Build system/dependencies      | PATCH         | `v1.8.0` → `v1.8.1`  |
-| `ci`       | CI/config changes              | PATCH         | `v1.8.0` → `v1.8.1`  |
-| `chore`    | Maintenance/misc               | PATCH         | `v1.8.0` → `v1.8.1`  |
-
-> **Breaking Changes** (`feat!` or `BREAKING CHANGE:` footer) trigger a **MAJOR** version bump: `v1.8.0` → `v2.0.0`.
+| Command / Flag                 | Mode    | SemVer Bump    | Creates Git Tag? | Triggers Release Action? |
+| :----------------------------- | :------ | :------------- | :--------------- | :----------------------- |
+| `/git-commit`                  | Regular | None           | ❌ No            | ❌ No                    |
+| `/commit`                      | Regular | None           | ❌ No            | ❌ No                    |
+| `/git-commit --skip-ci`        | Regular | None           | ❌ No            | ❌ No (Skips all CI)     |
+| `/git-commit --release`        | Release | Auto (PATCH)   | ✅ Yes (`v*`)    | ✅ Yes (`release.yml`)   |
+| `/git-commit --release patch`  | Release | PATCH (+0.0.1) | ✅ Yes (`v*`)    | ✅ Yes (`release.yml`)   |
+| `/git-commit --release minor`  | Release | MINOR (+0.1.0) | ✅ Yes (`v*`)    | ✅ Yes (`release.yml`)   |
+| `/git-commit --release major`  | Release | MAJOR (+1.0.0) | ✅ Yes (`v*`)    | ✅ Yes (`release.yml`)   |
+| `/git-commit --version 1.20.0` | Release | Exact Version  | ✅ Yes (`v*`)    | ✅ Yes (`release.yml`)   |
 
 ---
 
-## ⚡ Mandatory 5-Step Automated Execution Pipeline
+## 🚀 Execution Pipelines
 
-Whenever the user invokes `/git-commit` (or `/commit`), execute all 5 steps sequentially without stopping midway:
+### 🅰️ Pipeline 1: Regular Mode (Default / Simply Push Without Action)
 
-### 0. Pre-Commit Build & Integrity Gate (Zero-Broken-Build Policy)
+Execute sequentially when `/git-commit` is called without release flags:
 
-Before staging (`git add`) or committing any changes, **ALWAYS** run the full integrity check:
+#### 0. Pre-Commit Integrity Gate
 
 ```bash
 pnpm verify:build
 ```
 
-This gate runs:
+> If any compilation, typing, or build error occurs — **STOP**, fix root cause, and re-run.
 
-1. `pnpm build:shared`: Verifies `@smartfeed/shared` contracts and TypeScript types.
-2. `pnpm prisma:generate`: Syncs Prisma Client with `schema.prisma`.
-3. `tsc --noEmit` across all 3 packages:
-   - `@smartfeed/backend-api`
-   - `@smartfeed/desktop`
-   - `admin-portal`
-4. Monorepo builds:
-   - `pnpm build:backend` (NestJS production build)
-   - `pnpm build:desktop` (Vite desktop production bundle)
-5. `pnpm verify:rust`: Runs `cargo check --manifest-path apps/desktop/src-tauri/Cargo.toml` if Cargo is present, catching Rust errors (like missing struct fields or invalid crate functions) before GitHub Actions runs.
-
-> 🛑 **Hard Stop on Verification Failure**:
-> If `pnpm verify:build` fails with any compilation, typing, or build error:
->
-> - **DO NOT PROCEED** to `git add` or `git commit`.
-> - Analyze the exact error output, investigate the root cause, fix the code, and re-run `pnpm verify:build` until it exits with code 0.
-
-### 1. Stage Modified Files
+#### 1. Stage Modified Files Safely
 
 ```bash
 git add .
 ```
 
-_(Verify that secrets such as `.env`, certificates, or credentials are not staged)._
+_(Verify that secrets such as `.env` are excluded)._
 
-### 2. Generate & Execute Conventional Commit
+#### 2. Generate Conventional Commit
 
 ```bash
 git commit -m "$(cat <<'EOF'
@@ -100,57 +76,77 @@ EOF
 )"
 ```
 
-### 3. Determine Next SemVer Version & Create Annotated Tag
+_(If `--skip-ci` was requested, append `[skip ci]` to the first line or footer)._
 
-Check the latest tag:
-
-```bash
-git tag -l --sort=-v:refname | head -5
-```
-
-Calculate the next version (`vX.Y.Z`) based on the highest SemVer impact from the commit type:
-
-- **MAJOR** if breaking change (`feat!`)
-- **MINOR** if new feature (`feat`)
-- **PATCH** if bug fix, refactoring, quality hardening, or docs (`fix`, `refactor`, `perf`, `docs`)
-
-Create the annotated tag:
+#### 3. Plain Push to Remote (Zero Tags)
 
 ```bash
-git tag -a vX.Y.Z -m "Release vX.Y.Z: <Short description of release>"
+git push origin <current-branch>
 ```
 
-_Example:_
+> 🛑 **CRITICAL**: Do NOT run `git tag` and do NOT pass `--tags`. This guarantees no release action runs.
+
+---
+
+### 🅱️ Pipeline 2: Release Mode (`--release` / `--version`)
+
+Execute sequentially when the user passes `--release`, `--version`, or requests a version bump:
+
+#### 0. Pre-Commit Integrity Gate
 
 ```bash
-git tag -a v1.8.1 -m "Release v1.8.1: Navigation & upsell refinement, API modularization and quality hardening"
+pnpm verify:build
 ```
 
-### 4. Push Commit and All Tags to Remote
+#### 1. Calculate Next Version & Synchronize Configuration
+
+Run the automated version synchronization script:
 
 ```bash
-git push origin <current-branch> --tags
+node scripts/bump-version.mjs [patch|minor|major|<version>]
 ```
 
-_Example for main branch:_
+This automatically updates:
+
+- `apps/desktop/src-tauri/tauri.conf.json` (`version`)
+- `apps/desktop/src-tauri/Cargo.toml` (`version = "..."`)
+- `apps/desktop/package.json` (`version`)
+- Root `package.json` (`version`)
+
+#### 2. Stage All Changes (Including Updated Configs)
 
 ```bash
-git push origin main --tags
+git add .
 ```
 
-> **Single-Command Pipeline Example:**
->
-> ```bash
-> git tag -a v1.8.1 -m "Release v1.8.1: Navigation & upsell refinement, API modularization and quality hardening" && git push origin main --tags
-> ```
+#### 3. Commit Release Bump
+
+```bash
+git commit -m "chore(release): bump version to vX.Y.Z
+
+- Release SmartFeed Studio vX.Y.Z
+- Synchronized package.json, Cargo.toml, and tauri.conf.json"
+```
+
+#### 4. Create Annotated Git Tag
+
+```bash
+git tag -a vX.Y.Z -m "Release vX.Y.Z: <Release Summary>"
+```
+
+#### 5. Push Branch and Release Tag to Remote
+
+```bash
+git push origin <current-branch> && git push origin vX.Y.Z
+```
+
+> 🚀 Pushing the `v*` tag activates GitHub Actions `Release Desktop App` (`release.yml`) to build multi-platform installers (.dmg, .exe, .msi, .deb) and `Publish Docker Images` (`docker.yml`).
 
 ---
 
 ## 🛡️ Git Safety Protocol
 
-- NEVER run git commit or git push autonomously without explicit user invocation (`/git-commit`, `/commit`, _"вивантаж"_, _"закоміть"_).
-- When `/git-commit` IS invoked, ALWAYS perform the complete sequence: Commit → Tag → Push with tags.
-- NEVER update git config without permission.
-- NEVER run destructive commands (`--force`, `reset --hard`) without explicit request.
-- NEVER skip hooks (`--no-verify`) unless explicitly asked.
-- If pre-push verification fails, investigate the root cause, fix the compilation/test issue, and re-run.
+1. **Explicit Invocation Only**: NEVER run `git commit` or `git push` autonomously without explicit user prompt (`/git-commit`, `/commit`, _"закоміть"_, _"вивантаж"_).
+2. **Tag Prohibition in Regular Mode**: NEVER create or push tags during regular commits. Tags are reserved strictly for `--release`.
+3. **No Destructive Operations**: NEVER run `--force`, `reset --hard`, or rebase shared branches without permission.
+4. **Pre-Push Gate Zero Bypass**: NEVER bypass `pnpm verify:build` with `--no-verify`.

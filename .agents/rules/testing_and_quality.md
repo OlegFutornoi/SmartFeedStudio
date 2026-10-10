@@ -10,6 +10,9 @@ description: Mandatory testing standards, test isolation, data cleanup, git comm
 - **Strict Prohibition**: The agent must **NEVER** automatically perform `git commit` or `git push` immediately after making changes or fixes.
 - All changes must be tested and verified locally, and presented to the user.
 - Staging, committing, and pushing must occur **strictly** upon the user's explicit request (e.g., `/git-commit`, `/commit`, _"вивантаж"_, _"закоміть"_).
+- **Commit Modes**:
+  - Regular (`/git-commit` / `/commit`): pushes code directly to remote without tags, version bumps, or triggering release actions.
+  - Release (`/git-commit --release [patch|minor|major]`): bumps version, creates annotated git tag `v*`, and pushes with tag to trigger GitHub Action release builds.
 
 ---
 

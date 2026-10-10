@@ -2,20 +2,20 @@
 name: backend
 description: >-
   Enterprise full-cycle backend engineering master skill for SmartFeed Studio (NestJS 11 CQRS,
-  Prisma ORM, PostgreSQL, Redis, BullMQ). Consolidates ALL backend skills: architecture
-  (nestjs-best-practices, backend-development, backend-patterns), security (defense-in-depth-validation,
-  sentry-backend-bugs, OWASP Top 10), database (supabase-postgres-best-practices, prisma-cli,
-  prisma-client-api, prisma-postgres, prisma-upgrade-v7), business logic (subscription-lifecycle),
-  planning (writing-plans, executing-plans, subagent-driven-development, dispatching-parallel-agents),
-  and review (requesting-code-review, code-review-reception, verification-before-completion).
+  Prisma ORM, PostgreSQL, Redis, BullMQ, Tauri v2 Rust native SQLite). Consolidates ALL backend skills: architecture
+  (nestjs-best-practices, contract-first-api, rust-native-backend), database (prisma-postgres-mastery,
+  postgresql-optimization, streaming-large-feeds), queue & background jobs (bullmq-jobs, idempotency-and-outbox),
+  business logic & security (subscription-lifecycle, security-and-hardening), planning (planning-and-lifecycle,
+  spec-driven-development, incremental-implementation), QA & testing (test-driven-development, mock-real-parity,
+  systematic-debugging), and review (code-review-and-quality, review).
   Guides the complete 7-stage backend lifecycle: 1. Task Analysis, 2. Architecture Planning,
-  3. Solution Exploration, 4. Test-Driven Development (TDD), 5. Implementation with 4-Layer Defense,
+  3. Solution Exploration, 4. Test-Driven Development (TDD RED), 5. Implementation with 4-Layer Defense GREEN,
   6. Code Review & Verification, 7. Systematic Debugging. Enforces zero-defect security,
   PostgreSQL indexing, 100% test isolation with cleanDatabase, zero God-files (<250-300 lines),
   and strict CQRS boundaries. Use whenever designing, implementing, refactoring, securing, testing,
-  reviewing, or planning backend services, controllers, handlers, database schemas, or background jobs.
-  Triggers on any NestJS, Prisma, PostgreSQL, Redis, BullMQ, CQRS, API, authentication, migration, or
-  backend architecture task.
+  reviewing, or planning backend services, controllers, handlers, database schemas, background jobs, or Tauri Rust commands.
+  Triggers on any NestJS, Prisma, PostgreSQL, Redis, BullMQ, CQRS, API, authentication, migration,
+  Rust native SQLite, or backend architecture task.
 ---
 
 # 🛡️ Enterprise Backend Engineering Lifecycle (SmartFeed Studio)
@@ -26,88 +26,41 @@ A comprehensive, full-cycle backend engineering **master skill** for SmartFeed S
 
 ## 🧭 1. Consolidated Skills Architecture
 
-This master skill synthesizes and enforces ALL project backend skills and ```text
-┌────────────────────────────────────┐
-│ backend (Master Skill) │
-└───────────────┬────────────────────┘
-┌──────────────┬──────────────┬───────────┴────────┬────────────────┬────────────────┐
-▼ ▼ ▼ ▼ ▼ ▼
-┌──────────┐ ┌──────────┐ ┌──────────────┐ ┌──────────────┐ ┌──────────────┐ ┌──────────────┐
-│Arch & │ │Security &│ │DB & Prisma │ │Planning & │ │QA & Debug │ │Review & │
-│CQRS │ │Validation│ │ │ │Execution │ │ │ │Self-Evolution│
-├──────────┤ ├──────────┤ ├──────────────┤ ├──────────────┤ ├──────────────┤ ├──────────────┤
-│nestjs-bp │ │defense-4l│ │supabase-pg-bp│ │writing-plans │ │tdd-cycle │ │fullstack-cr │
-│backend- │ │sentry-bug│ │prisma-cli │ │executing- │ │testing-anti │ │adver-review │
-│patterns │ │OWASP Top │ │prisma-client │ │plans │ │condition-wait│ │verification │
-│subscription│api-sec-bp│ │prisma-postgre│ │subagent-dev │ │systematic- │ │skill-creator │
-│ai-sdk │ │better-ath│ │prisma-upgr-v7│ │parallel-agts │ │debug & trace │ │writing-skills│
-│rules.md │ │CWE-78 │ │neon-postgres │ │simplification│ │when-stuck │ │gardening-wiki│
-│eng-disc │ │mutex-lock│ │pg-opt & rev │ │collision-zone│ │typescript-adv│ │worktrees │
-└──────────┘ └──────────┘ └──────────────┘ └──────────────┘ └──────────────┘ └──────────────┘
-
+```text
+                               ┌────────────────────────────────────┐
+                               │       backend (Master Skill)       │
+                               └─────────────────┬──────────────────┘
+           ┌──────────────────────┬──────────────┴─────┬──────────────────────┬──────────────────────┐
+           ▼                      ▼                    ▼                      ▼                      ▼
+┌──────────────────────┐ ┌──────────────────┐ ┌──────────────────┐ ┌──────────────────┐ ┌──────────────────┐
+│   Architecture/API   │ │    DB & Prisma   │ │ Queues & Security│ │  Planning & TDD  │ │ Review & Quality │
+├──────────────────────┤ ├──────────────────┤ ├──────────────────┤ ├──────────────────┤ ├──────────────────┤
+│ nestjs-best-practices│ │ prisma-pg-mastery│ │ bullmq-jobs      │ │ plan-lifecycle   │ │ code-review-qual │
+│ contract-first-api   │ │ postgresql-opt   │ │ security-harden  │ │ tdd-cycle        │ │ code-simplify    │
+│ rust-native-backend  │ │ stream-large-feed│ │ idempotency-box  │ │ mock-real-parity │ │ doubt-driven-dev │
+│ turborepo            │ │ subscribe-life   │ │                  │ │ spec-driven-dev  │ │                  │
+└──────────────────────┘ └──────────────────┘ └──────────────────┘ └──────────────────┘ └──────────────────┘
 ```
 
-### 📋 Операційна матриця підскілів бекенду (Що робить, Коли активується, В яких випадках)
+### 📋 Операційна матриця підскілів бекенду
 
-| Підскіл | Що робить (Функціонал) | Коли активується (Фаза/Тригер) | В яких конкретних випадках застосовується |
-| :--- | :--- | :--- | :--- |
-| **`nestjs-best-practices`** | Стандарти NestJS 11: CQRS, нуль циклічних залежностей, DI синглтони, ValidationPipe | Фаза 1-3, 5; модулі та хендлери | Створення модулів, розділення `UsersModule` і `AuthModule`, конфігурація `GlobalHttpExceptionFilter`. |
-| **`backend-development`** | REST API стандарти, OWASP Top 10, stateless JWT auth, Argon2id/bcrypt, rate limiting | Фаза 3, 5; публічні/приватні API | Дизайн ендпоінтів `/auth/*`, `/plans`, захист від брутфорсу через `ThrottlerGuard`, безпечні заголовки. |
-| **`backend-patterns`** | Патерни DDD, ізоляція сервісів від репозиторіїв, Redis кешування, черги BullMQ | Фаза 2, 3; асинхронні потоки | Важкий парсинг XML/CSV на 50,000 товарів, фонова генерація фідів, черги завдань, кешування. |
-| **`defense-in-depth-validation`** | 4-шаровий захист (DTO -> Domain/Квоти -> Guards/RBAC -> DB FK/Trx) | Фаза 2, 5; мутації даних | Створення сутностей, списання кредитів, перевірка ліцензій, захист від підробки параметрів. |
-| **`sentry-backend-bugs`** | Захист від критичних багів: unhandled rejections, null-посилання, витоки пам'яті | Фаза 1, 5; асинхронні ланцюжки | Обробка стрімів великих файлів, читання реляцій Prisma (`user.organization?.name`), пул з'єднань. |
-| **`subscription-lifecycle`** | Білінг, квоти тарифів, терміни дії, grace-періоди, авто-даунгрейди | Фаза 1, 3; управління ліцензіями | Запрошення користувачів (seats), імпорт товарів (SKU limit), нарахування AI-кредитів, S3 ліміти. |
-| **`supabase-postgres-best-practices`** | Залізні стандарти PostgreSQL: 100% FK індекси, snake_case, timestamptz, курсорна пагінація | Фаза 3, 5; зміна БД та запити | Створення моделей у `schema.prisma`, виключення OFFSET пагінації, усунення N+1 запитів. |
-| **`neon-postgres`** | Serverless Postgres: налаштування пулу, cold starts, повнотекстовий пошук, pgvector | Фаза 3; хмарна БД та пошук | Конфігурація триграмних індексів `pg_trgm` для пошуку товарів, налаштування векторних ембеддінгів. |
-| **`prisma-client-api`** | Безпечні запити Prisma Client (`findMany`, `$transaction`, `upsert`, виключення `as any`) | Фаза 5; репозиторії та сервіси | Типізовані вибірки `Prisma.*WhereInput`, атомарні транзакції для запобігання неконсистентності. |
-| **`prisma-cli`** | CLI команди Prisma: безпечне виконання `prisma generate`, `db push`, `migrate dev`, `studio` | Фаза 3, 5; міграції схеми | Накачування міграцій, генерація типізованого клієнта, робота з локальною структурою БД. |
-| **`prisma-postgres`** | Оптимізація Prisma + PostgreSQL: пул `pg.Pool`, адаптер `@prisma/adapter-pg` | Фаза 3; конфігурація сервісу | Налаштування `PrismaService`, запобігання вичерпанню ліміту відкритих з'єднань PostgreSQL. |
-| **`prisma-upgrade-v7`** | Керівництво з міграції та сумісності з Prisma v7: `prisma.config.ts`, адаптери | При оновленні ORM чи помилках | Розв'язання breaking changes при оновленні версій Prisma, міграція конфігурацій. |
-| **`prisma-compute`** | Розгортання та хостинг compute середовищ для сервісів з Prisma | Фаза 3; хмарна інфраструктура | Налаштування середовища виконання бекенд-сервісу та автоматичного масштабування. |
-| **`postgresql-optimization`** | JSONB з GIN індексами, масиви (`@>`), повнотекстовий пошук `tsvector`, віконні функції | Фаза 3; оптимізація продуктивності | Збереження сирих параметрів товарів у JSONB, агрегація статистики, партиціонування таблиць. |
-| **`postgresql-code-review`** | Поглиблений аудит SQL/Prisma коду: RLS, CHECK констрейнти, тригери, безпека | Фаза 6; аудит БД | Перевірка правильності композитних індексів, каскадних видалень `ON DELETE CASCADE`. |
-| **`integrate-backend`** | Контракти DTO, синхронізація статусів помилок, узгодження з фронтендом | Фаза 2, 3; API дизайн | Формування стандартизованих кодів помилок (`QUOTA_EXCEEDED`), єдині DTO у `@smartfeed/shared`. |
-| **`api-security-best-practices`** | OWASP API Security: фіксовані алгоритми JWT, SSRF захист, валідація URL | Фаза 1, 3, 5; мережеві функції | Завантаження фідів за URL (блокування приватних/loopback IP), захист від BOLA/IDOR. |
-| **`better-auth-security-best-practices`** | Безпека ключів (≥120 біт ентропії), CSRF токени, trusted origins, cookie security | Фаза 3; конфігурація авторизації | Захист JWT секретів, валідація походження запитів, ротація рефреш-токенів у БД. |
-| **`api-security-testing`** | Автоматизоване тестування безпеки: фаззінг, спроби ін'єкцій, байпасів ролей | Фаза 4, 6; безпекові тести | Написання E2E тестів на спробу доступу звичайного користувача до ендпоінтів `SUPER_ADMIN`. |
-| **`firebase-security-rules-auditor`** | Аудит політик сховища та хмарних правил доступу | Фаза 3; S3/MinIO інтеграції | Перевірка безпеки presigned URL у `StorageModule`, запобігання публічному витоку каталогів. |
-| **`security-best-practices`** | Мовно-специфічний аналіз безпеки NestJS/TypeScript, нуль CWE-78 | Фаза 5, 6; безпековий аудит | Заборона `exec` з конкатенацією рядків, заміна на `execFile(binary, [args], { shell: false })`. |
-| **`ai-sdk`** | Інтеграція Vercel AI SDK для бекенд-пайплайнів генерації та валідації | Фаза 3, 5; AI сервіси | Автоматичне збагачення товарних даних, нормалізація категорій через AI-моделі. |
-| **`inversion-exercise`** | Моделювання відмов: "Що станеться при аварійному вимкненні сервера/БД?" | Фаза 1; моделювання ризиків | Перевірка транзакційної цілісності при обриві з'єднання посеред пакетного імпорту. |
-| **`scale-game`** | Тестування екстремальних навантажень бекенду (100k товарів, 100 паралельних запитів) | Фаза 1, 3; навантаження | Проектування черг BullMQ для запобігання переповненню RAM при імпорті гігабайтних фідів. |
-| **`collision-zone-thinking`** | Аналіз меж: Desktop нативний SQLite (Tauri) vs Cloud NestJS API | Фаза 1; архітектурні межі | Сувора заборона прокидання локальних операцій товарного каталогу десктопу в NestJS API. |
-| **`simplification-cascades`** | Архітектурне спрощення: заміна надлишкових сервісів на чисті CQRS хендлери | Фаза 2; планування | Видалення проміжних сервісів-проксі на користь прямої обробки у `*Handler`. |
-| **`meta-pattern-recognition`** | Уніфікація патернів між сервісами (ідентичні підходи до кешування, черг) | Фаза 2; архітектура | Єдиний стандарт підключення Redis та обробки ретраїв у всіх воркерах BullMQ. |
-| **`preserving-productive-tensions`** | Баланс між суворою консистентністю (ACID) та асинхронною швидкодією | Фаза 3; проектування | Виділення критичних операцій балансу в транзакції, а імпорту товарів — в асинхронні задачі. |
-| **`writing-plans`** & **`executing-plans`** | Складання плану у `plans/active/` з 4-шаровим захистом та покрокове виконання | Фаза 2; планування | Будь-яка зміна бекенду понад 1 файл: затвердження архітектури до написання коду. |
-| **`subagent-driven-development`** | Делегування незалежних завдань бекенду (DTO, Handler, E2E тест) субагентам | Фаза 2, 5; паралельні задачі | Розподіл завдань між спеціалізованими субагентами для прискорення розробки. |
-| **`dispatching-parallel-agents`** | Конкурентний аудит та виправлення помилок у різних модулях бекенду | Фаза 7; дебаг інцидентів | Одночасне дослідження логів Redis та блокувань PostgreSQL при навантаженні. |
-| **`remembering-conversations`** | Пошук рішень щодо структури БД, угод найменування та бізнес-правил | Фаза 1; пам'ять проекту | Згадування причини введення CUID замість UUID або специфіки налаштування `@prisma/adapter-pg`. |
-| **`test-driven-development-tdd`** | Залізний цикл TDD: E2E тест падає (RED) -> мінімальна реалізація (GREEN) | Фаза 4, 5; TDD розробка | Написання тесту з Supertest та реальним підключенням до БД до створення бізнес-логіки. |
-| **`test-driven-development`** | Розробка через тестування для виправлення виявлених дефектів | Фаза 4; багфікси | Написання тесту, який надійно відтворює знайдений баг до внесення будь-яких правок у код. |
-| **`testing-anti-patterns`** | Заборона тестування моків; обов'язковий `cleanDatabase` з FK-ієрархією | Фаза 4; якість тестів | Очищення БД у `beforeAll` та `afterAll`, виключення витоку тестових даних між сьютами. |
-| **`condition-based-waiting`** | Очікування завершення асинхронних задач через опитування умов замість `sleep` | Фаза 4; E2E тести | Очікування появи результатів обробки черги BullMQ через циклічний `expect.poll`. |
-| **`systematic-debugging`** & **`root-cause-tracing`** | 4-фазний дебаг: відтворення тестом -> трейсинг до першопричини -> чистий фікс | Фаза 7; усунення багів | Розслідування падіння транзакції або блокування пулу з'єднань під навантаженням. |
-| **`when-stuck-problem-solving-dispatch`** | Алгоритм виходу з глухого кута при зависанні тестів або складних збоях | Фаза 7; критичний глухий кут | Діагностика взаємних блокувань (deadlocks) у PostgreSQL транзакціях. |
-| **`typescript-advanced-types`** | Generics, Conditional/Mapped types, Type Guards у DTO та хендлерах | Фаза 2; контракти | Сувора типізація фільтрів, безпечні вибірки, повне усунення небезпечного `as any`. |
-| **`turborepo`** | Оптимізація пайплайнів білду та кешування бекенду у монорепо | Фаза 6; збірка та CI | Перевірка чистоти збірки через `pnpm --filter @smartfeed/backend-api build`. |
-| **`using-git-worktrees`** | Ізольовані робочі дерева Git для безпечного тестування міграцій | Фаза 3; експерименти | Перевірка руйнівних міграцій бази даних в окремому ізольованому worktree. |
-| **`finishing-a-development-branch`** | Фіналізація гілки: підготовка чистого злиття, контроль тегів версій | Фаза 6; реліз | Підготовка бекенд-модуля до злиття в `main` та синхронізація версій. |
-| **`firecrawl-parse`** | Дослідження структури зовнішніх постачальників для генерації парсерів | Фаза 1; інтеграції | Парсинг зразків XML/CSV каталогів для створення точних схем імпорту. |
-| **`fullstack-code-review`** | Комплексний аудит архітектури, CQRS меж, безпеки та стилю коду | Фаза 6; перед здачею | Контроль ліміту <250–300 рядків на файл, відсутність inline-типів, перевірка DTO. |
-| **`adver-review`** | Змагальний стрес-тест: симуляція TOCTOU гонок та спроб обходу квот | Фаза 6; стрес-тест | 10 паралельних запитів на запрошення в команду для перевірки `OrganizationMutex`. |
-| **`requesting-code-review`** & **`code-review-reception`** | Самоперевірка за чеклистом та професійне реагування на зауваження | Фаза 6; фіналізація | Виконання 11 пунктів обов'язкового чек-листа до звітування користувачу. |
-| **`verification-before-completion`** | Фінальна верифікація: тайпчек, білд shared, повний прогін E2E | Фаза 6; фінішний гейт | `pnpm --filter @smartfeed/backend-api exec tsc --noEmit` + повний запуск E2E тестів. |
-g-anti  │ │code-review-  │
-│developm  │ │backend-  │ │prisma-client │     │subagent-     │ │patterns      │ │reception     │
-│backend-  │ │bugs      │ │-api          │     │driven-dev    │ │condition-    │ │verification- │
-│patterns  │ │OWASP     │ │prisma-postgr │     │dispatching-  │ │based-waiting │ │before-compl  │
-│rules.md  │ │Top 10    │ │es            │     │parallel-agts │ │systematic-   │ │              │
-│eng-disc  │ │subscribe-│ │prisma-       │     │              │ │debugging     │ │              │
-│planning  │ │lifecycle │ │upgrade-v7    │     │              │ │root-cause    │ │              │
-│          │ │CWE-78    │ │postgres_skls │     │              │ │tracing       │ │              │
-└──────────┘ └──────────┘ └──────────────┘     └──────────────┘ └──────────────┘ └──────────────┘
-```
+| Підскіл                       | Що робить (Функціонал)                                                              | Коли активується | Застосування в SmartFeed Studio                                                          |
+| :---------------------------- | :---------------------------------------------------------------------------------- | :--------------- | :--------------------------------------------------------------------------------------- |
+| **`nestjs-best-practices`**   | Стандарти NestJS 11: CQRS, нуль циклічних залежностей, DI синглтони, ValidationPipe | Фази 1–3, 5      | Модулі, хендлери, розділення `UsersModule` та `AuthModule`, `GlobalHttpExceptionFilter`. |
+| **`contract-first-api`**      | Спільні DTO, Zod-схеми, єдині типи контрактів у `@smartfeed/shared`                 | Фази 2, 5        | Контракти API між клієнтами та бекендом, виключення дублювання типів.                    |
+| **`rust-native-backend`**     | Нативний Rust SQLCipher бекенд у Tauri v2 (`db.rs`), транзакції, міграції, Clippy   | Фази 3, 5        | Локальний каталог товарів, шифрування SQLite, IPC команди та Keychain токени.            |
+| **`prisma-postgres-mastery`** | 100% FK індексів, snake_case мапінг (`@@map`), pooling (`@prisma/adapter-pg`), CUID | Фази 3, 5        | Робота зі `schema.prisma`, безпечні транзакції, відсутність N+1 запитів.                 |
+| **`postgresql-optimization`** | JSONB з GIN індексами, pg_trgm пошук, курсорна пагінація замість OFFSET             | Фази 3, 5        | Повнотекстовий пошук товарів, великі каталоги, оптимізація повільних запитів.            |
+| **`streaming-large-feeds`**   | Потоковий SAX XML/CSV парсинг з бекпрешером пам'яті для 100k+ SKU                   | Фази 3, 5        | Фоновий імпорт фідів постачальників без переповнення пам'яті Node.js (OOM).              |
+| **`bullmq-jobs`**             | Черги BullMQ, експоненційний backoff, DLQ, воркери, захист від OOM                  | Фази 3, 5        | Асинхронний імпорт фідів, черга листів `MailModule`, обробка зображень.                  |
+| **`subscription-lifecycle`**  | Quotas, grace-періоди, авто-даунгрейди, підрахунок лімітів ліцензій                 | Фази 1, 3        | Запрошення користувачів (seats), імпорт товарів (SKU limits), ліміти S3.                 |
+| **`idempotency-and-outbox`**  | Redis idempotency keys, Prisma transactional outbox pattern                         | Фази 3, 5        | Вебхуки WayForPay, асинхронні повідомлення, захист від повторних списань.                |
+| **`security-and-hardening`**  | 4-шаровий захист, OWASP Top 10, JWT безпека, безпечне виконання `execFile`          | Фази 3, 5        | Захист від CWE-78, валідація вхідних URL (SSRF захист), Argon2id хешування.              |
+| **`planning-and-lifecycle`**  | Детерміновані плани в `plans/active/`, інваріанти, архітектура перед кодом          | Фаза 2           | Усі нетривіальні зміни бекенду; фіксація DoD та переведення в `completed/`.              |
+| **`test-driven-development`** | Цикл TDD RED → GREEN, повне очищення даних через `cleanDatabase`                    | Фази 4, 5        | Supertest E2E тести, відсутність витоку даних, захист від регресій.                      |
+| **`mock-real-parity`**        | 100% паритет між локальним Mock, SQLite та сервером NestJS                          | Фази 4, 6        | Перевірка ідентичності гідратації зв'язків (`supplierName`), квот та каскадних видалень. |
+| **`systematic-debugging`**    | 4-фазний дебаг: відтворення тестом → трейсинг до першопричини → чистий фікс         | Фаза 7           | Розслідування падіння транзакцій, блокування пулу чи помилок воркерів.                   |
+| **`code-review-and-quality`** | 5-осьовий аудит, ліміт <250-300 рядків, нуль dead code, 100% перевірка DTO          | Фаза 6           | Фінальна верифікація перед здачею задачі, запуск `tsc --noEmit`.                         |
 
 ### 💎 Iron Laws of Backend Engineering
 
@@ -121,6 +74,8 @@ g-anti  │ │code-review-  │
 8. **Always Validated DTOs**: Never accept untyped `@Body() body: unknown`. Every property must be decorated with `class-validator` and `@ApiProperty()`.
 9. **Zero Test Data Leftovers**: Every test uses `cleanDatabase` in `beforeAll` AND `afterAll` with FK-safe teardown.
 10. **Zero Inline Types**: All DTOs, Zod schemas, enums in `@smartfeed/shared`. Never duplicate types between backend and client.
+11. **Upfront Research via `context7` & MCPs**: Before implementing features or designing architecture, refresh library APIs and official docs via `context7` (`resolve-library-id`, `query-docs`) and relevant MCPs (`postgres`, `redis`).
+12. **Strict Zero Plan Dumping in Chat**: Write all detailed plans into `plans/active/<task>.md`. Chat responses must contain ONLY a concise 1-2 sentence summary, status, and clickable file link `[План](file:///...)`.
 
 ---
 
@@ -259,7 +214,7 @@ Before any code or schema modification:
 ### 📋 Phase 2: Task Planning & Shared Contracts
 
 _Rules: [plans_lifecycle.md](../../rules/plans_lifecycle.md) · [engineering_discipline_and_planning.md](../../rules/engineering_discipline_and_planning.md)_
-_Skills: [writing-plans](../sub-skills/writing-plans/SKILL.md) · [executing-plans](../sub-skills/executing-plans/SKILL.md) · [dispatching-parallel-agents](../sub-skills/dispatching-parallel-agents/SKILL.md) · [subagent-driven-development](../sub-skills/subagent-driven-development/SKILL.md)_
+_Skills: [planning-and-lifecycle](../planning-and-lifecycle/SKILL.md) · [contract-first-api](../contract-first-api/SKILL.md) · [spec-driven-development](../spec-driven-development/SKILL.md) · [incremental-implementation](../incremental-implementation/SKILL.md)_
 
 1. **Shared Contracts First (`packages/shared`)**:
    - Define TypeScript interfaces, Zod schemas, and Enums BEFORE backend handlers.
@@ -283,7 +238,7 @@ _Skills: [writing-plans](../sub-skills/writing-plans/SKILL.md) · [executing-pla
 > 💡 **MCP at this phase**: Use `context7` for Prisma/NestJS/BullMQ API docs. Use `firecrawl_search` for PostgreSQL index strategies and security patterns.
 
 _Read [references/architecture-patterns.md](references/architecture-patterns.md) · [references/api-design-and-security.md](references/api-design-and-security.md) · Rules: [postgres_skills.md](../../rules/postgres_skills.md)_
-_Skills: [prisma-cli](../sub-skills/prisma-cli/SKILL.md) · [prisma-client-api](../sub-skills/prisma-client-api/SKILL.md) · [prisma-upgrade-v7](../sub-skills/prisma-upgrade-v7/SKILL.md) · [supabase-postgres-best-practices](../sub-skills/supabase-postgres-best-practices/SKILL.md)_
+_Skills: [prisma-postgres-mastery](../prisma-postgres-mastery/SKILL.md) · [postgresql-optimization](../postgresql-optimization/SKILL.md) · [nestjs-best-practices](../nestjs-best-practices/SKILL.md) · [bullmq-jobs](../bullmq-jobs/SKILL.md) · [rust-native-backend](../rust-native-backend/SKILL.md)_
 
 1. **CQRS Boundaries** (`nestjs-best-practices`):
    - `UsersModule`: Pure data layer via Prisma. Zero JWT/Auth imports.
@@ -317,7 +272,7 @@ _Skills: [prisma-cli](../sub-skills/prisma-cli/SKILL.md) · [prisma-client-api](
 
 ### 🧪 Phase 4: TDD — RED Phase
 
-_Skills: [test-driven-development-tdd](../sub-skills/test-driven-development-tdd/SKILL.md) · [testing-anti-patterns](../sub-skills/testing-anti-patterns/SKILL.md) · [condition-based-waiting](../sub-skills/condition-based-waiting/SKILL.md)_
+_Skills: [test-driven-development](../test-driven-development/SKILL.md) · [mock-real-parity](../mock-real-parity/SKILL.md)_
 _Rules: [testing_and_quality.md](../../rules/testing_and_quality.md)_
 
 1. **Iron Law**: **NO PRODUCTION CODE WITHOUT A FAILING TEST FIRST.**
@@ -346,7 +301,7 @@ _Rules: [testing_and_quality.md](../../rules/testing_and_quality.md)_
 
 ### 💻 Phase 5: Implementation & 4-Layer Defense — GREEN Phase
 
-_Skills: [defense-in-depth-validation](../sub-skills/defense-in-depth-validation/SKILL.md) · [sentry-backend-bugs](../sub-skills/sentry-backend-bugs/SKILL.md)_
+_Skills: [security-and-hardening](../security-and-hardening/SKILL.md) · [idempotency-and-outbox](../idempotency-and-outbox/SKILL.md) · [subscription-lifecycle](../subscription-lifecycle/SKILL.md) · [streaming-large-feeds](../streaming-large-feeds/SKILL.md)_
 
 #### Layer 1: Entry Point & DTO Validation
 
@@ -385,7 +340,7 @@ pnpm --filter @smartfeed/backend-api test:e2e -- <feature>.e2e-spec.ts
 
 ### 🔍 Phase 6: Code Review & Pre-Commit Audit
 
-_Skills: [requesting-code-review](../sub-skills/requesting-code-review/SKILL.md) · [code-review-reception](../sub-skills/code-review-reception/SKILL.md) · [verification-before-completion](../sub-skills/verification-before-completion/SKILL.md)_
+_Skills: [code-review-and-quality](../code-review-and-quality/SKILL.md) · [code-simplification](../code-simplification/SKILL.md) · [doubt-driven-development](../doubt-driven-development/SKILL.md)_
 
 **Step 1 — Dispatch Self-Review** (`requesting-code-review`): Before claiming complete, dispatch review subagent.
 
@@ -420,7 +375,7 @@ _Skills: [requesting-code-review](../sub-skills/requesting-code-review/SKILL.md)
 
 ### 🛠️ Phase 7: Systematic Debugging & Error Remediation
 
-_Skills: [systematic-debugging](../sub-skills/systematic-debugging/SKILL.md) · [root-cause-tracing](../sub-skills/root-cause-tracing/SKILL.md)_
+_Skills: [systematic-debugging](../systematic-debugging/SKILL.md) · [observability-and-instrumentation](../observability-and-instrumentation/SKILL.md)_
 
 ```text
 NO FIXES WITHOUT ROOT CAUSE INVESTIGATION FIRST
@@ -456,18 +411,16 @@ NO FIXES WITHOUT ROOT CAUSE INVESTIGATION FIRST
                                             │
     ┌───────────────────────────────────────▼───────────────────────────────────────┐
     │ 2. СИНТЕЗ КОРЕНЕВОЇ ПРИЧИНИ (ROOT CAUSE SYNTHESIS)                            │
-    │    • Скіли: systematic-debugging, root-cause-tracing, inversion-exercise      │
+    │    • Скіли: systematic-debugging, doubt-driven-development, lessons-learned   │
     │    • Чому база або сервіс дозволили цей стан? Якого шару валідації бракувало? │
     │    • Як вирішити системно (ON DELETE CASCADE, Mutex, execFile)?               │
     └───────────────────────────────────────┬───────────────────────────────────────┘
                                             │
     ┌───────────────────────────────────────▼───────────────────────────────────────┐
-    │ 3. КОДИФІКАЦІЯ ЧЕРЕЗ SKILL-CREATOR & WRITING-SKILLS                           │
-    │    • Оновлення підскіла або створення нового через skill-creator + writing    │
-    │    • Тестування інструкцій: testing-skills-with-subagents (RED/GREEN валідація)│
-    │    • Догляд за базою: gardening-skills-wiki (перевірка симлінків, лінків)     │
-    │    • Онбординг і синк: getting-started-with-skills, pulling-updates, sharing  │
-    │    • Оновлення правил: додати інваріант у .agents/rules/*.md (<12k символів)  │
+    │ 3. КОДИФІКАЦІЯ ТА ЗБЕРЕЖЕННЯ ІНВАРІАНТУ                                       │
+    │    • Оновлення інваріантів у lessons-learned-registry та automated-guardrails │
+    │    • Створення або вдосконалення скіла через skill-creator                   │
+    │    • Оновлення правил проекту у .agents/rules/*.md (<12k символів)            │
     └───────────────────────────────────────┬───────────────────────────────────────┘
                                             │
     ┌───────────────────────────────────────▼───────────────────────────────────────┐
@@ -479,7 +432,7 @@ NO FIXES WITHOUT ROOT CAUSE INVESTIGATION FIRST
                                             │
     ┌───────────────────────────────────────▼───────────────────────────────────────┐
     │ 5. СИНХРОНІЗАЦІЯ З КОМАНДОЮ АГЕНТІВ                                           │
-    │    • Оновлення таблиці Anti-Patterns у backend/SKILL.md та agents_backend.md  │
+    │    • Оновлення таблиці Anti-Patterns у backend/SKILL.md                       │
     │    • Повідомлення agents_review для включення в чеклист аудиту                │
     │    • Оновлення навігаційної матриці в .agents/AGENTS.md                       │
     └───────────────────────────────────────────────────────────────────────────────┘
@@ -495,18 +448,22 @@ NO FIXES WITHOUT ROOT CAUSE INVESTIGATION FIRST
 | [references/architecture-patterns.md](references/architecture-patterns.md)     | CQRS, BullMQ, transactional boundaries, S3               |
 | [references/api-design-and-security.md](references/api-design-and-security.md) | REST conventions, HTTP codes, OpenAPI, data sanitization |
 
-**Related Project Rules** (always active):
+**Related Project Rules & Playbooks** (always active / load on-demand):
 
+- [agents_backend.md](../../references/agents_backend.md) — Повний 86КБ інженерний плейбук бекенду (детальні CQRS специфікації, DTO шаблони, E2E Jest приклади)
 - [rules.md](../../rules/rules.md) — Architecture, CQRS, Native vs Cloud backend
 - [postgres_skills.md](../../rules/postgres_skills.md) — PostgreSQL index checklist
 - [engineering_discipline_and_planning.md](../../rules/engineering_discipline_and_planning.md) — Zero God-files, mutex, safe OS exec
 - [testing_and_quality.md](../../rules/testing_and_quality.md) — cleanDatabase, 100% i18n, Git policy
 - [plans_lifecycle.md](../../rules/plans_lifecycle.md) — Plans lifecycle management
 
-**Related Prisma Skills** (load as needed):
+**Related Backend Skills** (load as needed):
 
-- [prisma-cli](../sub-skills/prisma-cli/SKILL.md) — `prisma generate`, `db push`, `migrate`, `studio`
-- [prisma-client-api](../sub-skills/prisma-client-api/SKILL.md) — `findMany`, `create`, `$transaction` query patterns
-- [prisma-postgres](../sub-skills/prisma-postgres/SKILL.md) — Prisma Postgres setup & operations
-- [prisma-upgrade-v7](../sub-skills/prisma-upgrade-v7/SKILL.md) — v6→v7 migration guidance
-- [supabase-postgres-best-practices](../sub-skills/supabase-postgres-best-practices/SKILL.md) — Full PostgreSQL schema rules
+- [bullmq-jobs](../bullmq-jobs/SKILL.md) — Асинхронні черги BullMQ, експоненційний backoff, DLQ, memory backpressure
+- [rust-native-backend](../rust-native-backend/SKILL.md) — Нативний Rust SQLCipher SQLite бекенд у Tauri v2, транзакції, Clippy
+- [mock-real-parity](../mock-real-parity/SKILL.md) — 100% поведінковий паритет між локальним Mock, SQLite та PostgreSQL
+- [prisma-postgres-mastery](../prisma-postgres-mastery/SKILL.md) — 100% FK indexes, pooling, CUID, migrations
+- [postgresql-optimization](../postgresql-optimization/SKILL.md) — GIN pg_trgm, JSONB, tsvector, EXPLAIN
+- [streaming-large-feeds](../streaming-large-feeds/SKILL.md) — SAX XML/CSV streaming for 100k+ SKU catalogs
+- [idempotency-and-outbox](../idempotency-and-outbox/SKILL.md) — Redis idempotency keys, transactional outbox pattern
+- [contract-first-api](../contract-first-api/SKILL.md) — Shared contracts, DTOs & Zod in `@smartfeed/shared`

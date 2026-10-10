@@ -95,7 +95,10 @@ description: Core architecture, tech stack, and module boundaries for SmartFeed 
 
 ---
 
-## 💬 9. Communication Policy (Strict)
+## 💬 9. Communication Policy, Zero Plan Dumping & Upfront Research (Strict)
 
-- **Concise & Direct**: Always answer user questions briefly, clearly, and to the point.
-- **Zero Text Walls**: Never generate long essay-style walls of text, repetitive recaps, or boilerplate unless explicitly requested.
+- **Concise & Direct (Token Economy)**: Always answer user questions briefly, clearly, and to the point.
+- **Zero Plan & File Dumping in Chat**: КАТЕГОРИЧНО ЗАБОРОНЕНО переписувати чи цитувати повний вміст планів та файлів у повідомленнях чату. Увесь детальний зміст плану пишеться ВИКЛЮЧНО в `plans/active/<feature>.md`, а код — у файли проєкту. У чаті надається виключно стисле резюме (1–2 речення) з клікабельними лінками (`file:///...`).
+- **Reliability & Quality > "Working is Enough"**: Код пишеться не за принципом "аби працювало", а шляхом аналізу та вибору найбільш ефективного, надійного та масштабованого способу.
+- **Upfront Research via `context7` & MCPs**: Перед проектуванням оновлювати знання через `context7` (`resolve-library-id`, `query-docs`) та профільні MCP.
+- **Детальний регламент**: див. [communication_and_research.md](communication_and_research.md).

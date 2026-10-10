@@ -1,6 +1,6 @@
 [package]
 name = "smartfeed-desktop"
-version = "1.16.2"
+version = "1.19.0"
 description = "SmartFeed Studio Desktop Client"
 authors = ["SmartFeed Studio Team"]
 edition = "2021"

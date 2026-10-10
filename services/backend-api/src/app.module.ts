@@ -3,6 +3,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { CqrsModule } from '@nestjs/cqrs';
 import { BullModule } from '@nestjs/bullmq';
+import { SentryModule } from '@sentry/nestjs/setup';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { PrismaModule } from '@/prisma/prisma.module';
 import { RedisCacheModule } from '@/common/cache/redis-cache.module';
@@ -19,6 +20,9 @@ import { FeedsModule } from '@/modules/feeds/feeds.module';
 
 @Module({
   imports: [
+    // Error Monitoring (no-op when SENTRY_DSN is not configured)
+    SentryModule.forRoot(),
+
     // Configuration
     ConfigModule.forRoot({
       isGlobal: true,

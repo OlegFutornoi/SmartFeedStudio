@@ -40,6 +40,14 @@ So please pay attention to context cues to understand how to phrase your communi
 
 It's OK to briefly explain terms if you're in doubt, and feel free to clarify terms with a short definition if you're unsure if the user will get it.
 
+### Strict Rule: Zero Plan & File Dumping in Chat (Token Economy)
+
+Never dump, rewrite, or duplicate entire file contents, implementation plans, task checklists, or skill drafts into chat messages. All detailed plans MUST be written directly to `plans/active/<feature>.md`, and skill drafts to `.agents/skills/<skill>/`. In the chat, provide strictly brief, concise summaries (1–2 sentences) with clickable markdown links (`file:///...`).
+
+### Strict Principle: Engineering Quality & Reliability Over "Working is Enough"
+
+Never create skills or instruct agents to write code under the naive mindset "головне щоб працювало" ("as long as it works"). Skills must instruct agents to analyze problems deeply and select the most reliable, performant, and scalable approach. To ensure this, agents must first update their knowledge using `context7` (`resolve-library-id`, `query-docs`) and project MCPs before writing or refining code.
+
 ---
 
 ## Creating a skill
@@ -55,18 +63,54 @@ Start by understanding the user's intent. The current conversation might already
 
 ### Interview and Research
 
-Proactively ask questions about edge cases, input/output formats, example files, success criteria, and dependencies. Wait to write test prompts until you've got this part ironed out.
+Proactively ask questions about edge cases, input/output formats, example files, success criteria, and dependencies. If requirements are ambiguous, leverage the `interview-me` pattern (1 focused question at a time with confidence scoring) before locking down the scope.
 
-Check available MCPs - if useful for research (searching docs, finding similar skills, looking up best practices), research in parallel via subagents if available, otherwise inline. Come prepared with context to reduce burden on the user.
+#### Mandatory MCP & Source Grounding Pipeline (Zero Guesswork)
+
+Never write skills based on assumed or hallucinated API surfaces. Use project MCPs and partner skills:
+
+1. **`context7` (Authoritative Library Docs)**:
+   - For any library, framework, or npm package (NestJS, React, Prisma, BullMQ, Tailwind, etc.), call `call_mcp_tool` with `ServerName: "context7"`:
+     - `resolve-library-id` to identify the official library context.
+     - `query-docs` to fetch exact method signatures, types, and authoritative patterns.
+2. **`firecrawl` (Web Research & Official Specs)**:
+   - For web standards, RFCs, cloud APIs, or external catalog schemas, use `firecrawl_search` and `firecrawl_scrape` to pull authoritative documentation.
+3. **`shadcn` (Design System Components)**:
+   - For frontend/UI skills, use `search_items_in_registries` and `view_items_in_registries` to align with official shadcn/ui components and tokens.
+4. **`sentry` (Real-World Error Telemetry)**:
+   - For debugging, resilience, or exception-handling skills, inspect actual failure modes via `list_sentry_issues` and `get_sentry_issue`.
+5. **`source-driven-development` Protocol**:
+   - Strictly follow the **DETECT → FETCH → IMPLEMENT → CITE** cycle. Always ground instructions in verified documentation.
+
+#### Project Invariants & Memory Check
+
+Before drafting, cross-reference against:
+
+- **`lessons-learned-registry`** (`references/registry.md`): Ensure the new skill enforces known project invariants and doesn't repeat past mistakes.
+- **`.agents/rules/`**: Respect all architectural boundaries (zero God-files, 100% `@/` path aliases, zero relative imports, no silent `catch {}`, solid sticky headers, cleanDatabase teardown).
 
 ### Write the SKILL.md
 
-Based on the user interview, fill in these components:
+Based on the interview and grounded research, fill in these components:
 
-- **name**: Skill identifier
-- **description**: When to trigger, what it does. This is the primary triggering mechanism - include both what the skill does AND specific contexts for when to use it. All "when to use" info goes here, not in the body. Note: currently Claude has a tendency to "undertrigger" skills -- to not use them when they'd be useful. To combat this, please make the skill descriptions a little bit "pushy". So for instance, instead of "How to build a simple fast dashboard to display internal Anthropic data.", you might write "How to build a simple fast dashboard to display internal Anthropic data. Make sure to use this skill whenever the user mentions dashboards, data visualization, internal metrics, or wants to display any kind of company data, even if they don't explicitly ask for a 'dashboard.'"
-- **compatibility**: Required tools, dependencies (optional, rarely needed)
+- **name**: Skill identifier (kebab-case, e.g. `streaming-large-feeds`).
+- **description**: When to trigger, what it does. This is the primary triggering mechanism - include both what the skill does AND specific contexts for when to use it. All "when to use" info goes here, not in the body. Note: models have a tendency to "undertrigger" skills -- to not use them when they'd be useful. To combat this, make skill descriptions proactive and include explicit keyword triggers.
+- **compatibility**: Required tools, dependencies (optional, rarely needed).
 - **the rest of the skill :)**
+
+#### Quality & Adversarial Review Gates
+
+Before finalizing the skill:
+
+1. **Doubt-Driven Adversarial Gate (`doubt-driven-development`)**:
+   - Stress-test the triggers: Will it falsely trigger on unrelated queries? Will it fail to fire on subtle phrasing?
+   - Stress-test the instructions: What are the failure modes if an agent follows them literally?
+2. **Context Engineering Budget Gate (`context-engineering`)**:
+   - Keep `SKILL.md` body concise (<250–300 lines ideal, max 500 lines for complex master orchestrators).
+   - Offload large tables, extensive reference code, or domain variants into `references/<topic>.md`.
+   - Zero redundant boilerplate or filler text.
+3. **Guardrails Gate (`automated-guardrails-ci`)**:
+   - If the skill introduces an invariant (e.g. naming convention, lint rule, test pattern), link it to automated test assertions or lint rules.
 
 ### Skill Writing Guide
 

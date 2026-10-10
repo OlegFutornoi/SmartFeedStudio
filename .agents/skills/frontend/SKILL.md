@@ -3,19 +3,18 @@ name: frontend
 description: >-
   Enterprise full-cycle frontend engineering master skill for SmartFeed Studio (React 18/19, Next.js 14,
   Tauri v2, Tailwind CSS, shadcn/ui, Playwright). Consolidates ALL frontend skills: UI/UX design
-  (ui-ux-pro-max, beautiful-design, frontend-design, design-taste-frontend, modern-web-guidance,
-  web-design-guidelines, shadcn), performance (vercel-react-best-practices, frontend-network-dedup),
-  API integration (integrate-backend), planning (writing-plans, executing-plans,
-  subagent-driven-development, dispatching-parallel-agents), and review (requesting-code-review,
-  code-review-reception). Guides the complete 7-stage frontend lifecycle: 1. Task & UX Analysis,
-  2. Planning & Component Decomposition, 3. Solution & UI/UX Architecture, 4. Automated UI Testing
-  (Playwright TDD), 5. Implementation & UI Polish, 6. Rigorous Code Review & DoD Verification,
-  7. Systematic Debugging. Enforces Web Interface Guidelines (accessibility, visible focus, forms UX,
-  tabular numbers), 100% theme harmony (zero off-scheme colors), 100% solid sticky headers, zero
-  duplicate CTA buttons, zero duplicate network requests (useRef guarding), 100% bilingual i18n
-  (UA/EN), and strict component modularity (<250-300 lines). Use whenever building, refactoring,
-  styling, reviewing, planning, or testing pages, components, dialogs, or hooks in apps/desktop or
-  apps/admin-portal. Triggers on any frontend, UI, design, React, Next.js, Tauri, component, hook,
+  (ui-ux-pro-max, emil-design-eng, image), localization (i18n-localization), performance (vercel-react-best-practices,
+  performance-optimization), testing & automation (playwright-automation, browser-debugging, mock-real-parity),
+  contracts & API (contract-first-api), planning (planning-and-lifecycle, spec-driven-development, incremental-implementation),
+  and review (code-review-and-quality, review). Guides the complete 7-stage frontend lifecycle:
+  1. Task & UX Analysis, 2. Planning & Component Decomposition, 3. Solution & UI/UX Architecture,
+  4. Automated UI Testing (Playwright TDD RED), 5. Implementation & UI Polish GREEN,
+  6. Rigorous Code Review & DoD Verification, 7. Systematic Debugging. Enforces Web Interface Guidelines
+  (accessibility, visible focus, forms UX, tabular numbers), 100% theme harmony (zero off-scheme colors),
+  100% solid sticky headers, zero duplicate CTA buttons, zero duplicate network requests (useRef guarding),
+  100% bilingual i18n (UA/EN), and strict component modularity (<250-300 lines). Use whenever building,
+  refactoring, styling, reviewing, planning, or testing pages, components, dialogs, or hooks in
+  apps/desktop or apps/admin-portal. Triggers on any frontend, UI, design, React, Next.js, Tauri, component, hook,
   animation, styling, localization, or Playwright task.
 ---
 
@@ -27,81 +26,39 @@ A comprehensive, full-cycle frontend engineering **master skill** for SmartFeed 
 
 ## 🧭 1. Consolidated Skills Architecture
 
-This master skill synthesizes and enforces ALL project frontend skills and ru```text
-┌────────────────────────────────────┐
-│ frontend (Master Skill) │
-└───────────────┬────────────────────┘
-┌──────────────┬──────────────┬───────────┴────────┬────────────────┬────────────────┐
-▼ ▼ ▼ ▼ ▼ ▼
-┌──────────┐ ┌──────────┐ ┌──────────────┐ ┌──────────────┐ ┌──────────────┐ ┌──────────────┐
-│Design & │ │Perf & │ │Architecture │ │Planning & │ │Testing & │ │Review & │
-│Visual │ │Network │ │& i18n │ │Execution │ │Quality │ │Self-Evolution│
-├──────────┤ ├──────────┤ ├──────────────┤ ├──────────────┤ ├──────────────┤ ├──────────────┤
-│ui-ux-pro │ │vercel- │ │100% i18n │ │writing-plans │ │playwright- │ │requesting-cr │
-│shadcn │ │react-bp │ │shared cntrct │ │executing- │ │best-pract │ │code-reception│
-│tailwind │ │compos-pat│ │zero God-files│ │plans │ │tdd-cycle │ │verification │
-│beautiful │ │frontend- │ │typescript-adv│ │subagent-dev │ │condition-wait│ │fullstack-cr │
-│emil-desig│ │network │ │rules.md │ │parallel-agts │ │systematic- │ │skill-creator │
-│canvas-des│ │useRef │ │eng-disc.md │ │simplification│ │debug & trace │ │writing-skills│
-│web-guidln│ │lean deps │ │design_sys.md │ │collision-zone│ │when-stuck │ │gardening-wiki│
-└──────────┘ └──────────┘ └──────────────┘ └──────────────┘ └──────────────┘ └──────────────┘
-
+```text
+                               ┌────────────────────────────────────┐
+                               │       frontend (Master Skill)      │
+                               └─────────────────┬──────────────────┘
+           ┌──────────────────────┬──────────────┴─────┬──────────────────────┬──────────────────────┐
+           ▼                      ▼                    ▼                      ▼                      ▼
+┌──────────────────────┐ ┌──────────────────┐ ┌──────────────────┐ ┌──────────────────┐ ┌──────────────────┐
+│   UI/UX & Design     │ │React Performance │ │ Testing & Autom. │ │  Planning & SDD  │ │ Review & Quality │
+├──────────────────────┤ ├──────────────────┤ ├──────────────────┤ ├──────────────────┤ ├──────────────────┤
+│ ui-ux-pro-max        │ │ vercel-react-bp  │ │ playwright-auto  │ │ plan-lifecycle   │ │ code-review-qual │
+│ emil-design-eng      │ │ perform-optimize │ │ browser-debugging│ │ spec-driven-dev  │ │ code-simplify    │
+│ image                │ │ contract-first   │ │ mock-real-parity │ │ incremental-impl │ │ doubt-driven-dev │
+│ i18n-localization    │ │                  │ │ tdd-cycle        │ │                  │ │                  │
+└──────────────────────┘ └──────────────────┘ └──────────────────┘ └──────────────────┘ └──────────────────┘
 ```
 
-### 📋 Операційна матриця підскілів фронтенду (Що робить, Коли активується, В яких випадках)
+### 📋 Операційна матриця підскілів фронтенду
 
-| Підскіл | Що робить (Функціонал) | Коли активується (Фаза/Тригер) | В яких конкретних випадках застосовується |
-| :--- | :--- | :--- | :--- |
-| **`ui-ux-pro-max`** | Забезпечує преміальний вигляд, 100% Solid Sticky Headers, усуває дублі кнопок | Фаза 3, 5; перед здачею UI | Верстка таблиць каталогів, модалок, липких тулбарів, виключення накладання прозорого фону. |
-| **`shadcn`** | Надає еталонні accessible компоненти та утиліту `cn()` | Фаза 3, 5; створення компонентів | Побудова діалогів, селектів, дропдаунів, табів, бейджів зі збереженням ARIA і фокус-станів. |
-| **`tailwind-design-system`** | Керує семантичними токенами `--background`, `--primary`, `--card` | Фаза 3, 5; стилізація | Повна заборона хардкодних кольорів (`purple-*`, `violet-*`, `pink-*`); гармонія Dark/Light тем. |
-| **`design-taste-frontend`** | Анти-шаблонний підхід до UI: вишукана типографіка, сітка, контраст | Фаза 1, 3; проектування екранів | Створення головних сторінок, вітрин, аналітичних віджетів без "дефолтного AI вигляду". |
-| **`design-taste-frontend-v1`** | Консервативні правила оформлення для строгих інтерфейсів | Фаза 3; редизайн старих форм | Класичні адміністративні таблиці та форми конфігурації без зайвих візуальних ефектів. |
-| **`beautiful-design`** | Створює WOW-ефект: плавні градієнти, м'які тіні, glassmorphism | Фаза 5; фінальне полірування | Оформлення карток планів підписки, статусних банерів, акцентних елементів інтерфейсу. |
-| **`frontend-design`** | Контролює шрифтові пари, контрастність, відступи і пропорції | Фаза 1, 3; закладання стилю | Налаштування базової типографіки, підбір висоти рядків (`leading`), ієрархії заголовків. |
-| **`emil-design-eng`** | Інженерія мікродеталей (spring-анімації, тактильність, оптимістичний UI) | Фаза 5; динамічні елементи | Анімація розкриття акордеонів, модалок, тостів, перетягування колонок (drag-and-drop). |
-| **`canvas-design`** | Робота з 2D Canvas: динамічні прев'ю товарів, графіки, бейджі | Фаза 3, 5; робота з медіа | Рендеринг товарних бейджів, міні-графіків динаміки цін, генерація картинок попереднього перегляду. |
-| **`image`** | Оптимізація та підготовка зображень (WebP, retina, mockups) | Фаза 3, 5; медіа-асети | Підготовка ілюстрацій для порожніх станів (Empty States), заглушок товарів та банерів. |
-| **`vercel-react-best-practices`** | Ліквідує зайві ререндери, мемоізує селектори, забороняє double-mount | Фаза 3, 5; рефакторинг | Рендеринг списків на 10,000+ товарів, усунення лагів при введенні тексту в пошуковий рядок. |
-| **`vercel-composition-patterns`** | Патерн Compound Components, усунення пропс-пекла (children over props) | Фаза 2, 3; архітектура UI | Декомпозиція складних візардів імпорту фідів, таблиць товарів та багатокрокових форм. |
-| **`modern-web-guidance`** | Нативні сучасні CSS/JS API замість важких зовнішніх бібліотек | Фаза 3; стилізація та розмітка | Використання `:has()`, Container Queries, `text-wrap: balance`, Subgrid замість JS-скриптів. |
-| **`web-design-guidelines`** | Дотримання Web Interface Guidelines: tabular-nums, a11y, видимий фокус | Фаза 3, 5; форми та таблиці | Відображення цін та артикулів (`tabular-nums`), валідація інпутів, відкритий буфер обміну (paste). |
-| **`integrate-backend`** | Дедуплікація запитів (`useRef`), контракти DTO, локалізація помилок | Фаза 2, 3, 5; мережева взаємодія | Підключення React/Tauri до API, показ локалізованих тостів замість сирих англійських рядків. |
-| **`brainstorming-ideas-into-designs`** | Перетворення абстрактної ідеї користувача на інженерні мокапи й вимоги | Фаза 1; нові фічі | Користувач каже "хочу візуальний маппінг колонок" -> створення чітких кроків візарду. |
-| **`inversion-exercise`** | Аналіз від зворотного: моделювання точок відмови та збоїв | Фаза 1; аналіз ризиків | "Що станеться при збої мережі під час збереження?", "Що покаже UI, якщо фід містить 0 товарів?". |
-| **`scale-game`** | Тестування екстремальних навантажень інтерфейсу (0 vs 50k елементів) | Фаза 1; масштабованість | Перевірка віртуалізації списків при 50,000 товарів, назвах у 300 символів, відсутності фото. |
-| **`collision-zone-thinking`** | Аналіз меж систем: локальний нативний SQLite (Tauri) проти Cloud API | Фаза 1, 2; системний аналіз | Запобігання витоку операцій локального каталогу десктопу в хмарне NestJS API. |
-| **`simplification-cascades`** | Пошук одного інсайту, що скорочує зайві субкомпоненти | Фаза 2; планування | Об'єднання розрізнених модалок створення/редагування в єдиний параметризований компонент. |
-| **`meta-pattern-recognition`** | Виявлення крос-доменних патернів для повторного використання | Фаза 1, 2; проектування | Уніфікація черги UI-повідомлень з принципами бекенд-воркерів (FIFO, idempotency). |
-| **`writing-plans`** & **`executing-plans`** | Формування та поетапне виконання планів у `plans/active/` з DoD | Фаза 2; обов'язково перед кодом | Будь-яка зміна фронтенду понад 1 файл: планування декомпозиції до першого рядка коду. |
-| **`subagent-driven-development`** | Делегування незалежних завдань плану автономним субагентам | Фаза 2, 5; паралельні задачі | Розподіл завдань: один агент робить DTO, інший — хук даних, третій — верстку таблиці. |
-| **`dispatching-parallel-agents`** | Конкурентне виправлення незалежних дефектів UI | Фаза 7; швидкий дебаг | Одночасне виправлення контрастності в 4 різних модулях адмін-порталу. |
-| **`remembering-conversations`** | Пошук контексту минулих сесій та затверджених бізнес-правил | Фаза 1; відновлення пам'яті | Згадування затвердженого формату бейджів постачальників або кольорової гами тем. |
-| **`playwright-best-practices`** | Надійні E2E тести з POM, `data-testid`, очікуваннями мережі та двомовністю | Фаза 4; TDD RED | Написання тестів, що перевіряють переклад UA ⇄ EN та відсутність дублів запитів (`requestCount === 1`). |
-| **`webapp-testing`** | Інтерактивна верифікація поведінки веб-додатку в реальному часі | Фаза 5, 7; жива перевірка | Інспекція локально запущеного додатку через Playwright MCP без потреби у `browser_subagent`. |
-| **`test-driven-development-tdd`** | Залізний цикл TDD: падаючий тест спочатку -> код -> зелений тест | Фаза 4, 5; розробка | Написання тесту форми або таблиці до створення компонентів для гарантії покриття. |
-| **`testing-anti-patterns`** | Захист від фіктивних тестів: перевірка реальних інваріантів | Фаза 4; якість тестів | Перевірка конкретних назв (`MMM`), сувора заборона `expect(text).not.toBe('Постачальник')`. |
-| **`condition-based-waiting`** | Очікування умов (`waitForResponse`, `expect.poll`) замість `sleep` | Фаза 4, 5; стабільність тестів | Детерміноване очікування завантаження списку товарів без флаків і штучних пауз. |
-| **`systematic-debugging`** & **`root-cause-tracing`** | 4-фазний дебаг: відтворення -> трейсинг до джерела -> фікс -> тест | Фаза 7; дебаг помилок | Пошук джерела раптового скидання фільтрів або подвійного спрацьовування кліку. |
-| **`when-stuck-problem-solving-dispatch`** | Алгоритм виходу з глухого кута при незрозумілих поломках | Фаза 7; критичний ступор | Зависання UI через циклічний ререндер або конфлікт z-index у модалках. |
-| **`typescript-advanced-types`** | Generics, Mapped/Conditional types у клієнтських сервісах | Фаза 2; контракти | Сувора типізація колонок таблиць, мапінгу фідів та виключення `any`. |
-| **`turborepo`** | Керування графом залежностей та кешем збірок монорепозиторію | Фаза 6; збірка | Перевірка впливу змін у `@smartfeed/shared` на клієнтські додатки через `turbo run build`. |
-| **`firecrawl-parse`** | Дослідження структури зовнішніх веб-сторінок і парсинг документації | Фаза 1; аналіз референсів | Дослідження розмітки каталогів постачальників для підготовки парсерів і маперів. |
-| **`ai-sdk`** | Інтеграція стрімінгових UI компонентів Vercel AI SDK | Фаза 3, 5; AI функції | Додавання AI-помічника генерації описів товарів, потоковий вивід тексту. |
-| **`fullstack-code-review`** | Комплексна перевірка якості та DoD перед здачею | Фаза 6; аудит коду | Перевірка відсутності монолітів >300 рядків, нуль dead code, 100% i18n, тайпчек. |
-| **`requesting-code-review`** & **`code-review-reception`** | Дисципліна подачі та обробки зауважень рев'ю | Фаза 6; здача задачі | Формування чеклиста готовності та індивідуальна верифікація кожного виправлення. |
-| **`verification-before-completion`** | Фінальний залізний бар'єр: тайпчек, білд, тести перед звітом | Фаза 6; фініш | Запуск `tsc --noEmit` у `desktop` та `admin-portal`, `pnpm format`, перевірка успіху. |
--   │ │fullstack-    │
-│taste-fe  │ │no StrictM│ │network-dedup │     │              │ │debugging     │ │code-review   │
-│shadcn    │ │          │ │              │     │              │ │root-cause    │ │              │
-│modern-   │ │          │ │              │     │              │ │tracing       │ │              │
-│web-guide │ │          │ │              │     │              │ │              │ │              │
-│web-desig-│ │          │ │              │     │              │ │              │ │              │
-│guidelines│ │          │ │              │     │              │ │              │ │              │
-│integrate-│ │          │ │              │     │              │ │              │ │              │
-│backend   │ │          │ │              │     │              │ │              │ │              │
-└──────────┘ └──────────┘ └──────────────┘     └──────────────┘ └──────────────┘ └──────────────┘
-```
+| Підскіл                           | Що робить (Функціонал)                                                                | Коли активується | Застосування в SmartFeed Studio                                                      |
+| :-------------------------------- | :------------------------------------------------------------------------------------ | :--------------- | :----------------------------------------------------------------------------------- |
+| **`ui-ux-pro-max`**               | 100% Solid Sticky Headers, семантичні токени теми, нуль дублів CTA, ліміт <250 рядків | Фази 3, 5, 6     | Верстка каталогів, таблиць товарів, модалок, виключення напівпрозорих шапок.         |
+| **`vercel-react-best-practices`** | Ліквідація дублів запитів через `useRef`, відсутність `StrictMode` double-mount       | Фази 3, 5        | Підключення API, таблиці 10k+ SKU, мемоізація хуків, оптимізація ре-рендерів.        |
+| **`i18n-localization`**           | 100% паритет словників `uk` ⇄ `en`, нуль хардкоду, перевірка через `pnpm i18n:check`  | Фази 3, 5, 6     | Локалізація форм, модалок, тостів, тултіпів, помилок бекенду (`getErrorMessage`).    |
+| **`emil-design-eng`**             | Spring-анімації, мікродеталі, плавні переходи, тактильність, оптимістичний UI         | Фаза 5           | Анімація випадаючих меню, тостів, перемикачів тарифів, drag-and-drop.                |
+| **`image`**                       | Оптимізація та стиснення медіа-асетів (Sharp, WebP, плейсхолдери)                     | Фази 3, 5        | Аватари користувачів, ілюстрації порожніх станів (Empty State), фото товарів.        |
+| **`playwright-automation`**       | Автотести E2E з Page Object Model, перевірка двомовності UA ⇄ EN                      | Фази 4, 6        | Перевірка відсутності дублів запитів (`requestCount === 1`), тести інтерфейсу.       |
+| **`browser-debugging`**           | Жива інспекція DOM, мережі та консолі браузера через Playwright MCP                   | Фази 5, 7        | Візуальний аудит, перевірка відсутності помилок консолі та рендерингу.               |
+| **`mock-real-parity`**            | 100% паритет між браузерним Mock (`mockDatabaseDriver`), SQLite та реальним API       | Фази 4, 6        | Перевірка повноти гідратації зв'язаних сутностей у таблицях та лічильниках квот.     |
+| **`contract-first-api`**          | Спільні DTO, Zod-схеми, єдині типи контрактів у `@smartfeed/shared`                   | Фази 2, 5        | Інтеграція клієнтських форм з бекендом, безпечна типізація пропсів.                  |
+| **`planning-and-lifecycle`**      | Детерміновані плани в `plans/active/`, декомпозиція екранів до початку коду           | Фаза 2           | Декомпозиція великих модалок (Header, Footer, Content), контроль ліміту <250 рядків. |
+| **`test-driven-development`**     | Цикл TDD RED → GREEN, написання поведінкових тестів перед кодом                       | Фаза 4           | Перевірка логіки фільтрів, сортування та мапінгу до написання компонентів.           |
+| **`systematic-debugging`**        | 4-фазний дебаг: відтворення тестом → трейсинг до першопричини → чистий фікс           | Фаза 7           | Пошук джерел нескінченних циклів ререндеру, розривів станів чи помилок UI.           |
+| **`code-review-and-quality`**     | 5-осьовий аудит, перевірка DoD, відсутність `any`, 100% переклади i18n                | Фаза 6           | Фінальна верифікація перед здачею задачі, запуск `tsc --noEmit`.                     |
 
 ### 💎 Iron Laws of Frontend Engineering
 
@@ -113,7 +70,9 @@ This master skill synthesizes and enforces ALL project frontend skills and ru```
 6. **Zero Silent Failures (`catch {}`)**: NEVER write empty `catch {}` or ignore errors silently. Any `catch` block MUST either display a localized toast (`toast.error(getErrorMessage(err, t))`) or log structured diagnostics (`console.warn('[Module:Context] Description:', err)`).
 7. **100% Bilingual Internationalization (i18n)**: Zero hardcoded strings. All labels, toasts, modals, tooltips, placeholders, and HTML titles (`title={t('...')}`) in both `locales/uk/*.json` and `locales/en/*.json`. Numerical metrics like percentages must be formatted cleanly (`Math.round(percent)`).
 8. **No Arbitrary Timeouts**: Playwright tests use condition-based waiting (`waitForResponse`, `waitForSelector`, `expect.poll`).
-9. **Architecture > Speed**: Correct modular design from day one. "Working" is not enough.
+9. **Architecture & Reliability > Speed ("Working" is Not Enough)**: Correct modular design from day one. Never write code to "just make it work" with quick hacks. Analyze deeply and pick the most robust, performant pattern.
+10. **Upfront Research via `context7` & MCPs**: Before implementing features or designing architecture, refresh library APIs and official docs via `context7` (`resolve-library-id`, `query-docs`) and `shadcn` MCP.
+11. **Strict Zero Plan Dumping in Chat**: Write all detailed plans into `plans/active/<feature>.md`. Chat responses must contain ONLY a concise 1-2 sentence summary, status, and clickable file link `[План](file:///...)`.
 
 ---
 
@@ -289,7 +248,7 @@ Before writing any component, analyze user journeys, layout states, and platform
 > 💡 **MCP at this phase**: Use `context7` to verify latest shadcn/Next.js/Tailwind API before planning component structure.
 
 _Rules: [plans_lifecycle.md](../../rules/plans_lifecycle.md) · [engineering_discipline_and_planning.md](../../rules/engineering_discipline_and_planning.md)_
-_Skills: [writing-plans](../sub-skills/writing-plans/SKILL.md) · [executing-plans](../sub-skills/executing-plans/SKILL.md) · [dispatching-parallel-agents](../sub-skills/dispatching-parallel-agents/SKILL.md) · [subagent-driven-development](../sub-skills/subagent-driven-development/SKILL.md)_
+_Skills: [planning-and-lifecycle](../planning-and-lifecycle/SKILL.md) · [spec-driven-development](../spec-driven-development/SKILL.md) · [incremental-implementation](../incremental-implementation/SKILL.md) · [contract-first-api](../contract-first-api/SKILL.md)_
 
 1. **Component Modularity Budgeting**: Plan decomposition immediately. No file > **250–300 lines**.
    ```text
@@ -343,7 +302,7 @@ _Read [references/ui-ux-design-system.md](references/ui-ux-design-system.md) · 
 
 ### 🧪 Phase 4: Playwright TDD — RED Phase
 
-_Read [references/playwright-testing.md](references/playwright-testing.md) · Skill: [playwright-best-practices](../sub-skills/playwright-best-practices/SKILL.md)_
+_Read [references/playwright-testing.md](references/playwright-testing.md) · Skills: [playwright-automation](../playwright-automation/SKILL.md) · [test-driven-development](../test-driven-development/SKILL.md) · [mock-real-parity](../mock-real-parity/SKILL.md)_
 
 > [!WARNING]
 > **NEVER** call `browser_subagent` or `open_browser_url`. Always use:
@@ -367,7 +326,7 @@ _Read [references/playwright-testing.md](references/playwright-testing.md) · Sk
 
 > 💡 **MCP at this phase**: Use `playwright` MCP (`browser_take_screenshot`, `browser_snapshot`) to visually verify UI after implementation before running full test suite.
 
-_Skills: [shadcn](../sub-skills/shadcn/SKILL.md) · [ui-ux-pro-max](../sub-skills/ui-ux-pro-max/SKILL.md) · [beautiful-design](../sub-skills/beautiful-design/SKILL.md)_
+_Skills: [ui-ux-pro-max](../ui-ux-pro-max/SKILL.md) · [vercel-react-best-practices](../vercel-react-best-practices/SKILL.md) · [i18n-localization](../i18n-localization/SKILL.md) · [emil-design-eng](../emil-design-eng/SKILL.md) · [browser-debugging](../browser-debugging/SKILL.md)_
 
 1. **Decomposed Subcomponents**: Each file within modularity budget (<250 lines).
 2. **100% i18n Completeness**: Keys in both `locales/uk/<ns>.json` and `locales/en/<ns>.json`. Use `const { t } = useTranslation('<namespace>')`. Format percentages cleanly (`Math.round(percent)`). HTML titles: `title={t('common:edit')}`.
@@ -384,7 +343,7 @@ _Skills: [shadcn](../sub-skills/shadcn/SKILL.md) · [ui-ux-pro-max](../sub-skill
 
 ### 🔍 Phase 6: Code Review & DoD Verification
 
-_Read [references/checklist.md](references/checklist.md) · Skills: [requesting-code-review](../sub-skills/requesting-code-review/SKILL.md) · [code-review-reception](../sub-skills/code-review-reception/SKILL.md) · [verification-before-completion](../sub-skills/verification-before-completion/SKILL.md)_
+_Read [references/checklist.md](references/checklist.md) · Skills: [code-review-and-quality](../code-review-and-quality/SKILL.md) · [code-simplification](../code-simplification/SKILL.md) · [doubt-driven-development](../doubt-driven-development/SKILL.md)_
 
 **Step 1 — Dispatch Self-Review** (`requesting-code-review`): Before claiming complete, dispatch a review subagent against the implementation.
 
@@ -418,7 +377,7 @@ _Read [references/checklist.md](references/checklist.md) · Skills: [requesting-
 
 ### 🛠️ Phase 7: Systematic Debugging & Error Remediation
 
-_Skills: [systematic-debugging](../sub-skills/systematic-debugging/SKILL.md) · [root-cause-tracing](../sub-skills/root-cause-tracing/SKILL.md)_
+_Skills: [systematic-debugging](../systematic-debugging/SKILL.md) · [browser-debugging](../browser-debugging/SKILL.md)_
 
 ```text
 NO FIXES WITHOUT ROOT CAUSE INVESTIGATION FIRST
@@ -453,30 +412,28 @@ NO FIXES WITHOUT ROOT CAUSE INVESTIGATION FIRST
                                             │
     ┌───────────────────────────────────────▼───────────────────────────────────────┐
     │ 2. СИНТЕЗ КОРЕНЕВОЇ ПРИЧИНИ (ROOT CAUSE SYNTHESIS)                            │
-    │    • Скіли: systematic-debugging, root-cause-tracing, inversion-exercise      │
+    │    • Скіли: systematic-debugging, doubt-driven-development, lessons-learned   │
     │    • Чому виник дефект? Який інваріант був порушений?                         │
     │    • Як системно запобігти повторенню на рівні архітектури, а не костиля?     │
     └───────────────────────────────────────┬───────────────────────────────────────┘
                                             │
     ┌───────────────────────────────────────▼───────────────────────────────────────┐
-    │ 3. КОДИФІКАЦІЯ ЧЕРЕЗ SKILL-CREATOR & WRITING-SKILLS                           │
-    │    • Оновлення підскіла або створення нового через skill-creator + writing    │
-    │    • Тестування інструкцій: testing-skills-with-subagents (RED/GREEN валідація)│
-    │    • Догляд за базою: gardening-skills-wiki (перевірка симлінків, лінків)     │
-    │    • Онбординг і синк: getting-started-with-skills, pulling-updates, sharing  │
-    │    • Оновлення правил: додати інваріант у .agents/rules/*.md (<12k символів)  │
+    │ 3. КОДИФІКАЦІЯ ТА ЗБЕРЕЖЕННЯ ІНВАРІАНТУ                                       │
+    │    • Оновлення інваріантів у lessons-learned-registry та automated-guardrails │
+    │    • Створення або вдосконалення скіла через skill-creator                   │
+    │    • Оновлення правил проекту у .agents/rules/*.md (<12k символів)            │
     └───────────────────────────────────────┬───────────────────────────────────────┘
                                             │
     ┌───────────────────────────────────────▼───────────────────────────────────────┐
     │ 4. ЗАКРІПЛЕННЯ АВТОТЕСТОМ (TEST LOCK-IN)                                      │
-    │    • Написання E2E тесту Playwright (playwright-best-practices, testing-anti) │
+    │    • Написання E2E тесту Playwright (playwright-automation, tdd-cycle)        │
     │    • Перевірка реального значення (not.toBe('Постачальник'), count === 1)     │
     │    • Тепер регресія неможлива — тест впаде при спробі повторити помилку!      │
     └───────────────────────────────────────┬───────────────────────────────────────┘
                                             │
     ┌───────────────────────────────────────▼───────────────────────────────────────┐
     │ 5. СИНХРОНІЗАЦІЯ З КОМАНДОЮ АГЕНТІВ                                           │
-    │    • Оновлення таблиці Anti-Patterns у frontend/SKILL.md та agents_frontend.md│
+    │    • Оновлення таблиці Anti-Patterns у frontend/SKILL.md                      │
     │    • Повідомлення agents_review для включення в чеклист аудиту                │
     │    • Оновлення навігаційної матриці в .agents/AGENTS.md                       │
     └───────────────────────────────────────────────────────────────────────────────┘
@@ -486,17 +443,28 @@ NO FIXES WITHOUT ROOT CAUSE INVESTIGATION FIRST
 
 ## 📚 Bundled References
 
-| File                                                                   | Purpose                                                      |
-| ---------------------------------------------------------------------- | ------------------------------------------------------------ |
-| [references/checklist.md](references/checklist.md)                     | Pre-commit Frontend & UI/UX Checklist                        |
-| [references/ui-ux-design-system.md](references/ui-ux-design-system.md) | Semantic tokens, solid headers, modularity                   |
-| [references/playwright-testing.md](references/playwright-testing.md)   | POM, bilingual tests, network dedup assertions               |
-| [references/ui-ux-design-system.md](references/ui-ux-design-system.md) | Anti-templated design, editorial hierarchy, micro-animations |
+| File                                                                   | Purpose                                        |
+| ---------------------------------------------------------------------- | ---------------------------------------------- |
+| [references/checklist.md](references/checklist.md)                     | Pre-commit Frontend & UI/UX Checklist          |
+| [references/ui-ux-design-system.md](references/ui-ux-design-system.md) | Semantic tokens, solid headers, modularity     |
+| [references/playwright-testing.md](references/playwright-testing.md)   | POM, bilingual tests, network dedup assertions |
 
-**Related Project Rules** (always active):
+**Related Project Rules & Playbooks** (always active / load on-demand):
 
+- [agents_frontend.md](../../references/agents_frontend.md) — Повний 84КБ інженерний плейбук фронтенду (детальні UI/UX специфікації, Playwright POM шаблони, bilingual matrix)
 - [design_system_and_theming.md](../../rules/design_system_and_theming.md) — 100% theme harmony
 - [frontend_network_dedup.md](../../rules/frontend_network_dedup.md) — Zero duplicate API calls
 - [engineering_discipline_and_planning.md](../../rules/engineering_discipline_and_planning.md) — Architecture > Speed
 - [plans_lifecycle.md](../../rules/plans_lifecycle.md) — Plans lifecycle management
 - [testing_and_quality.md](../../rules/testing_and_quality.md) — i18n testing, teardown policy
+
+**Related Frontend Skills** (load as needed):
+
+- [i18n-localization](../i18n-localization/SKILL.md) — 100% паритет словників `uk` ⇄ `en`, скрипт `pnpm i18n:check`
+- [browser-debugging](../browser-debugging/SKILL.md) — Інспекція живого DOM, консолі та мережі через Playwright MCP
+- [mock-real-parity](../mock-real-parity/SKILL.md) — 100% паритет між браузерним Mock, SQLite та реальним API
+- [ui-ux-pro-max](../ui-ux-pro-max/SKILL.md) — 100% solid sticky headers, semantic design tokens, zero duplicate CTAs
+- [vercel-react-best-practices](../vercel-react-best-practices/SKILL.md) — React 18 performance, request deduplication via `useRef`
+- [emil-design-eng](../emil-design-eng/SKILL.md) — Spring animations, micro-interactions, optimistic updates
+- [image](../image/SKILL.md) — Asset generation, WebP Sharp optimization
+- [playwright-automation](../playwright-automation/SKILL.md) — POM, bilingual tests, network dedup assertions

@@ -36,6 +36,7 @@
     "@nestjs/throttler": "^6.5.0",
     "@prisma/adapter-pg": "^7.6.0",
     "@prisma/client": "^7.10.0",
+    "@sentry/nestjs": "^10.74.0",
     "@smartfeed/shared": "workspace:*",
     "bcrypt": "^5.1.1",
     "bullmq": "^5.34.12",

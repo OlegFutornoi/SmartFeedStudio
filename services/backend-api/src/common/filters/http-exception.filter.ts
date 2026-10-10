@@ -7,6 +7,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
+import * as Sentry from '@sentry/nestjs';
 import { Prisma } from '@/generated/prisma/client';
 
 @Catch()
@@ -76,6 +77,15 @@ export class GlobalHttpExceptionFilter implements ExceptionFilter {
     } else {
       this.logger.error(`Unknown Exception on ${request.method} ${request.url}`, String(exception));
       message = 'Internal server error';
+    }
+
+    // Report only unexpected server-side failures (5xx). Client errors (4xx) and
+    // mapped Prisma constraint violations are expected behaviour, not incidents.
+    // No-op when Sentry is not initialized (missing SENTRY_DSN or NODE_ENV=test).
+    if (status >= HttpStatus.INTERNAL_SERVER_ERROR) {
+      Sentry.captureException(exception, {
+        tags: { method: request.method, route: request.route?.path ?? 'unknown' },
+      });
     }
 
     response.status(status).json({

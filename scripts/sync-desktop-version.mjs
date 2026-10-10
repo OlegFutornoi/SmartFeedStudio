@@ -63,4 +63,15 @@ if (fs.existsSync(pkgJsonPath)) {
   console.warn(`⚠️ File not found: ${pkgJsonPath}`);
 }
 
+// 4. Update root package.json
+const rootPkgJsonPath = path.join(rootDir, 'package.json');
+if (fs.existsSync(rootPkgJsonPath)) {
+  const rootPkg = JSON.parse(fs.readFileSync(rootPkgJsonPath, 'utf8'));
+  rootPkg.version = version;
+  fs.writeFileSync(rootPkgJsonPath, JSON.stringify(rootPkg, null, 2) + '\n', 'utf8');
+  console.log(`✅ Updated ${rootPkgJsonPath} -> version: "${version}"`);
+} else {
+  console.warn(`⚠️ File not found: ${rootPkgJsonPath}`);
+}
+
 console.log(`🎉 Version synchronization complete for v${version}`);
