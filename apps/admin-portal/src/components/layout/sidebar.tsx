@@ -129,29 +129,46 @@ export function Sidebar() {
         )}
       >
         {/* Top brand header */}
-        <div className="px-3.5 py-3 flex items-center border-b border-border/40">
-          <div className="flex items-center w-full">
-            <Link href="/" className="flex items-center gap-2.5 w-full overflow-hidden group">
-              <ShieldCheck className="h-5 w-5 text-foreground shrink-0 transition-colors group-hover:text-primary" />
-              {!isCollapsed && (
-                <div className="min-w-0 flex-1 flex items-center justify-between">
-                  <span className="font-semibold text-sm text-foreground tracking-tight">
-                    SmartFeed
-                  </span>
-                  <Badge
-                    variant="outline"
-                    className="text-[10px] px-1.5 py-0 h-4 uppercase font-medium text-muted-foreground border-border/60"
-                  >
-                    Admin
-                  </Badge>
-                </div>
-              )}
-            </Link>
-          </div>
+        <div
+          className={cn(
+            'flex items-center pt-3.5 pb-2',
+            isCollapsed ? 'justify-center px-0' : 'px-3.5',
+          )}
+        >
+          <Link
+            href="/"
+            className={cn(
+              'flex items-center overflow-hidden group transition-colors',
+              isCollapsed
+                ? 'justify-center h-10 w-10 mx-auto rounded-lg hover:bg-muted/40'
+                : 'gap-2.5 w-full text-left',
+            )}
+            title={isCollapsed ? 'SmartFeed Admin' : undefined}
+          >
+            <ShieldCheck className="h-6 w-6 text-foreground shrink-0 transition-colors group-hover:text-primary" />
+            {!isCollapsed && (
+              <div className="min-w-0 flex-1 flex items-center justify-between">
+                <span className="font-semibold text-sm text-foreground tracking-tight">
+                  SmartFeed
+                </span>
+                <Badge
+                  variant="outline"
+                  className="text-[10px] px-1.5 py-0 h-4 uppercase font-medium text-muted-foreground border-border/60"
+                >
+                  Admin
+                </Badge>
+              </div>
+            )}
+          </Link>
         </div>
 
         {/* Scrollable Navigation Area */}
-        <div className="flex-1 px-2 py-2 overflow-y-auto overflow-x-hidden flex flex-col justify-between">
+        <div
+          className={cn(
+            'flex-1 py-2 overflow-y-auto overflow-x-hidden flex flex-col justify-between',
+            isCollapsed ? 'px-0' : 'px-2',
+          )}
+        >
           {/* Main Top Navigation */}
           <nav className="space-y-0.5 py-1">
             {mainNavigation.map((item) => {

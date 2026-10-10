@@ -17,6 +17,13 @@ import { RoleSelector } from '@/components/users/RoleSelector';
 import { AccountTypeSelector } from '@/components/users/AccountTypeSelector';
 import { PlanSelector } from '@/components/users/PlanSelector';
 import { useCreateUserForm } from '@/components/users/useCreateUserForm';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 interface CreateUserDialogProps {
   open: boolean;
@@ -215,20 +222,21 @@ export function CreateUserDialog({ open, onOpenChange, onCreated }: CreateUserDi
                       {t('users', 'field_organization_loading')}
                     </div>
                   ) : (
-                    <select
-                      data-testid="create-user-org-select"
-                      value={selectedOrgId}
-                      onChange={(e) => setSelectedOrgId(e.target.value)}
-                      required
-                      className="flex h-8 w-full rounded-md border border-input bg-background px-3 py-1 text-xs shadow-sm transition-colors focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-                    >
-                      <option value="">{t('users', 'field_organization_placeholder')}</option>
-                      {owners.map((o) => (
-                        <option key={o.organizationId} value={o.organizationId}>
-                          {o.organizationName} ({o.ownerFullName || o.ownerEmail})
-                        </option>
-                      ))}
-                    </select>
+                    <Select value={selectedOrgId} onValueChange={setSelectedOrgId}>
+                      <SelectTrigger
+                        data-testid="create-user-org-select"
+                        className="h-8 w-full text-xs"
+                      >
+                        <SelectValue placeholder={t('users', 'field_organization_placeholder')} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {owners.map((o) => (
+                          <SelectItem key={o.organizationId} value={o.organizationId}>
+                            {o.organizationName} ({o.ownerFullName || o.ownerEmail})
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   )}
                 </div>
               )}

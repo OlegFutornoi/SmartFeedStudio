@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useEffect, useState, useCallback, useRef, useMemo } from 'react';
-import { Users } from 'lucide-react';
 import { api } from '@/lib/api';
 import { UserListItemDto } from '@smartfeed/shared';
 import { UsersTable } from '@/components/users/UsersTable';
@@ -159,20 +158,6 @@ export default function UsersManagementPage() {
       data-testid="users-page"
       className="flex flex-col space-y-4 animate-in fade-in duration-300 flex-1 min-h-[calc(100vh-8rem)]"
     >
-      {/* Sleek Minimalist Page Header */}
-      <div>
-        <h1
-          data-testid="users-header-title"
-          className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl flex items-center gap-2.5"
-        >
-          <Users className="size-6 text-primary shrink-0" />
-          <span>{t('users', 'title')}</span>
-        </h1>
-        <p data-testid="users-header-subtitle" className="text-sm text-muted-foreground mt-0.5">
-          {t('users', 'subtitle')}
-        </p>
-      </div>
-
       {/* Success toast */}
       {successMessage && (
         <div

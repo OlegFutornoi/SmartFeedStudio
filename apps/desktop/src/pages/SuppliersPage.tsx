@@ -169,7 +169,7 @@ export function SuppliersPage() {
   }
 
   return (
-    <div className="p-6 space-y-6" data-testid="suppliers-page">
+    <div className="space-y-4 max-w-7xl mx-auto" data-testid="suppliers-page">
       {/* Excess Data Alert Banner (Downgrade Reconciliation) */}
       <QuotaExcessBanner
         quotas={quotas}
@@ -184,20 +184,18 @@ export function SuppliersPage() {
         <SuppliersToolbar
           search={search}
           isSupplierLimitReached={isSupplierLimitReached}
-          isFeedLimitReached={isFeedLimitReached}
           onSearchChange={setSearch}
           onOpenCreate={handleOpenCreate}
-          onOpenImportWizard={() => handleOpenImportWizard()}
         />
       )}
 
       {/* Main Content Area */}
       {isLoading ? (
-        <div className="flex items-center justify-center h-64">
+        <div className="flex items-center justify-center h-48">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
       ) : filteredSuppliers.length === 0 ? (
-        <Card className="p-12 text-center border-dashed border-border/80 bg-card/40">
+        <Card className="p-8 text-center border-dashed border-border/80 bg-card/40">
           <div className="flex flex-col items-center justify-center gap-3">
             <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">
               <Building2 className="h-6 w-6" />
@@ -232,7 +230,7 @@ export function SuppliersPage() {
         </Card>
       ) : (
         <div className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
             {paginatedItems.map((supplier) => (
               <SupplierCard
                 key={supplier.id}
@@ -250,14 +248,16 @@ export function SuppliersPage() {
             ))}
           </div>
 
-          <TablePagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            pageSize={pageSize}
-            totalItems={totalItems}
-            onPageChange={setPage}
-            onPageSizeChange={setPageSize}
-          />
+          {totalPages > 1 && (
+            <TablePagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              pageSize={pageSize}
+              totalItems={totalItems}
+              onPageChange={setPage}
+              onPageSizeChange={setPageSize}
+            />
+          )}
         </div>
       )}
 

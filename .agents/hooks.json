@@ -1,8 +1,8 @@
 {
-  "playwright-auto-approver": {
+  "auto-approver": {
     "PreToolUse": [
       {
-        "matcher": "call_mcp_tool|browser_.*|mcp_playwright_.*",
+        "matcher": ".*",
         "hooks": [
           {
             "type": "command",

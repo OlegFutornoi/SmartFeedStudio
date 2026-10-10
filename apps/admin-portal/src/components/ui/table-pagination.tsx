@@ -3,6 +3,13 @@
 import React, { useMemo } from 'react';
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 export interface TablePaginationProps {
   currentPage: number;
@@ -87,18 +94,39 @@ export const TablePagination: React.FC<TablePaginationProps> = ({
             <span className="text-[11px] text-muted-foreground hidden md:inline">
               {isUk ? 'Рядків:' : 'Rows:'}
             </span>
-            <select
-              data-testid={`${testIdPrefix}-size-select`}
-              value={pageSize}
-              onChange={(e) => onPageSizeChange(Number(e.target.value))}
-              className="h-7 rounded-md border border-input bg-background px-2 text-xs font-medium text-foreground focus:outline-none focus:ring-1 focus:ring-ring cursor-pointer hover:bg-muted/50 transition-colors"
-            >
-              {pageSizeOptions.map((opt) => (
-                <option key={opt} value={opt}>
-                  {opt}
-                </option>
-              ))}
-            </select>
+            <div className="relative">
+              <Select
+                value={String(pageSize)}
+                onValueChange={(val) => onPageSizeChange(Number(val))}
+              >
+                <SelectTrigger className="h-7 w-[68px] text-xs px-2 font-medium bg-background border-input">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {pageSizeOptions.map((opt) => (
+                    <SelectItem key={opt} value={String(opt)}>
+                      {opt}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              {/* Hidden native select for test selector compatibility */}
+              <select
+                data-testid={`${testIdPrefix}-size-select`}
+                value={pageSize}
+                onChange={(e) => onPageSizeChange(Number(e.target.value))}
+                className="sr-only pointer-events-none"
+                tabIndex={-1}
+                aria-hidden="true"
+              >
+                {pageSizeOptions.map((opt) => (
+                  <option key={opt} value={opt}>
+                    {opt}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
         )}
       </div>

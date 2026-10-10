@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
-import { Plus, RefreshCw, Layers, KeyRound, LayoutGrid, TableProperties } from 'lucide-react';
+import { Plus, RefreshCw, KeyRound, LayoutGrid, TableProperties } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { api } from '@/lib/api';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -106,58 +106,46 @@ export default function PlansPage() {
       data-testid="plans-management-page"
       className="flex flex-col space-y-6 animate-in fade-in duration-300"
     >
-      {/* Sleek Minimalist Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1
-            data-testid="plans-header-title"
-            className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl flex items-center gap-2.5"
+      {/* Plans Action Toolbar */}
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        {/* Left: Segmented View Switcher */}
+        <div
+          data-testid="plans-view-switcher"
+          className="flex items-center p-0.5 rounded-lg border border-border bg-secondary/50"
+        >
+          <button
+            type="button"
+            data-testid="plans-view-cards-btn"
+            onClick={() => setViewMode('cards')}
+            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium transition-all ${
+              viewMode === 'cards'
+                ? 'bg-card text-foreground shadow-xs'
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
+            title={t('plans', 'cardsView')}
           >
-            <Layers className="size-6 text-primary shrink-0" />
-            <span>{t('plans', 'title')}</span>
-          </h1>
-          <p data-testid="plans-header-subtitle" className="text-sm text-muted-foreground mt-0.5">
-            {t('plans', 'subtitle')}
-          </p>
+            <LayoutGrid className="size-3.5" />
+            <span>{t('plans', 'cardsView')}</span>
+          </button>
+
+          <button
+            type="button"
+            data-testid="plans-view-comparison-btn"
+            onClick={() => setViewMode('comparison')}
+            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium transition-all ${
+              viewMode === 'comparison'
+                ? 'bg-card text-foreground shadow-xs'
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
+            title={t('plans', 'comparisonView')}
+          >
+            <TableProperties className="size-3.5" />
+            <span>{t('plans', 'comparisonView')}</span>
+          </button>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2 shrink-0">
-          {/* Segmented View Switcher */}
-          <div
-            data-testid="plans-view-switcher"
-            className="flex items-center p-0.5 rounded-lg border border-border bg-secondary/50"
-          >
-            <button
-              type="button"
-              data-testid="plans-view-cards-btn"
-              onClick={() => setViewMode('cards')}
-              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium transition-all ${
-                viewMode === 'cards'
-                  ? 'bg-card text-foreground shadow-xs'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-              title={t('plans', 'cardsView')}
-            >
-              <LayoutGrid className="size-3.5" />
-              <span>{t('plans', 'cardsView')}</span>
-            </button>
-
-            <button
-              type="button"
-              data-testid="plans-view-comparison-btn"
-              onClick={() => setViewMode('comparison')}
-              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium transition-all ${
-                viewMode === 'comparison'
-                  ? 'bg-card text-foreground shadow-xs'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-              title={t('plans', 'comparisonView')}
-            >
-              <TableProperties className="size-3.5" />
-              <span>{t('plans', 'comparisonView')}</span>
-            </button>
-          </div>
-
+        {/* Right: Actions */}
+        <div className="flex items-center gap-2">
           <Link
             href="/licenses"
             data-testid="go-to-licenses-btn"

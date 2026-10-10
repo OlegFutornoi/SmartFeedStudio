@@ -208,21 +208,21 @@ export const ProductTableRow: React.FC<ProductTableRowProps> = ({
                 <span className="sr-only">{t('common:actions')}</span>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-[160px]">
+            <DropdownMenuContent align="end" className="w-[155px] p-1">
               <DropdownMenuItem
                 onClick={() => onViewDetails(product)}
                 data-testid={`view-details-btn-${product.id}`}
-                className="cursor-pointer"
+                className="cursor-pointer text-xs py-1.5 px-2"
               >
-                <Eye className="mr-2 h-4 w-4" />
+                <Eye className="mr-2 h-3.5 w-3.5 text-muted-foreground" />
                 {t('catalogs:viewDetails')}
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => onDeleteProduct(product)}
                 data-testid={`delete-product-btn-${product.id}`}
-                className="cursor-pointer text-destructive focus:text-destructive focus:bg-destructive/10"
+                className="cursor-pointer text-xs py-1.5 px-2 text-destructive focus:text-destructive focus:bg-destructive/10"
               >
-                <Trash2 className="mr-2 h-4 w-4" />
+                <Trash2 className="mr-2 h-3.5 w-3.5" />
                 {t('catalogs:deleteProduct')}
               </DropdownMenuItem>
             </DropdownMenuContent>

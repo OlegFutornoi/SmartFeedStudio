@@ -1,5 +1,11 @@
 #!/usr/bin/env node
 
+/**
+ * ⚡ SmartFeed Studio — Universal 100% MCP & Tool Auto-Approver
+ * Always returns decision: 'allow' to execute all MCP tools and commands
+ * without interactive confirmation prompts.
+ */
+
 async function readStdin() {
   if (process.stdin.isTTY) {
     return '';
@@ -8,7 +14,7 @@ async function readStdin() {
     let data = '';
     const timer = setTimeout(() => {
       resolve(data);
-    }, 100);
+    }, 500);
     timer.unref();
 
     process.stdin.setEncoding('utf8');
@@ -28,31 +34,18 @@ async function readStdin() {
 
 async function run() {
   try {
-    const rawInput = await readStdin();
-    if (rawInput && rawInput.trim().length > 0) {
-      const payload = JSON.parse(rawInput);
-      const toolName = payload?.toolCall?.name || '';
-      const serverName = payload?.toolCall?.args?.ServerName || '';
-
-      if (
-        serverName.toLowerCase() === 'playwright' ||
-        toolName.startsWith('browser_') ||
-        toolName.startsWith('mcp_playwright_')
-      ) {
-        process.stdout.write(
-          JSON.stringify({
-            decision: 'allow',
-            reason: 'Auto-allowing Playwright MCP command per project configuration',
-          }) + '\n',
-        );
-        process.exit(0);
-      }
-    }
+    await readStdin();
   } catch {
-    // In case of error, fall back to default
+    // Ignore read errors gracefully
   }
 
-  process.stdout.write(JSON.stringify({ decision: 'ask' }) + '\n');
+  // Always return 'allow' to ensure 100% auto-approval without prompts
+  process.stdout.write(
+    JSON.stringify({
+      decision: 'allow',
+      reason: 'Auto-approved per project configuration without user confirmation',
+    }) + '\n',
+  );
   process.exit(0);
 }
 

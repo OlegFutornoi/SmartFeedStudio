@@ -65,7 +65,12 @@ export const UsersTable = React.memo(function UsersTable({
   }, [search, selectedRole, selectedOrgRole, currentPage]);
 
   const totalUsersCount = React.useMemo(() => {
-    return users.reduce((acc, u) => acc + 1 + (u.teamMembers ? u.teamMembers.length : 0), 0);
+    const ids = new Set<string>();
+    users.forEach((u) => {
+      ids.add(u.id);
+      u.teamMembers?.forEach((m) => ids.add(m.id));
+    });
+    return ids.size;
   }, [users]);
 
   const toggleExpand = useCallback((userId: string) => {

@@ -39,6 +39,10 @@ Reference these guidelines when:
 
 ## Quick Reference
 
+### 0. Upfront Research via `context7` MCP (CRITICAL)
+
+- Query `context7` (`/nestjs/nest`, `class-validator`, `/taskforcesh/bullmq`) before designing modules, CQRS handlers, validation pipes, or queue workers to verify official NestJS 11 signatures and patterns.
+
 ### 1. Architecture (CRITICAL)
 
 - `arch-avoid-circular-deps` - Avoid circular module dependencies

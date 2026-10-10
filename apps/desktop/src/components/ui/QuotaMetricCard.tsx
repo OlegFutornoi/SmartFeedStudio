@@ -24,7 +24,7 @@ export function QuotaMetricCard({ title, icon: Icon, quota, unit, testId }: Quot
           <Icon className="size-4 text-primary" />
         </CardHeader>
         <CardContent>
-          <div className="text-3xl font-bold text-foreground">...</div>
+          <div className="text-2xl font-bold tracking-tight tabular-nums text-foreground">...</div>
         </CardContent>
       </Card>
     );
@@ -55,30 +55,30 @@ export function QuotaMetricCard({ title, icon: Icon, quota, unit, testId }: Quot
         isCritical ? 'border-destructive/40 shadow-xs' : ''
       }`}
     >
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium text-foreground">{title}</CardTitle>
-        <Icon className={`size-4 ${isCritical ? 'text-destructive' : 'text-primary'}`} />
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 p-3.5 pb-1.5">
+        <CardTitle className="text-xs font-medium text-muted-foreground">{title}</CardTitle>
+        <Icon className={`size-3.5 ${isCritical ? 'text-destructive' : 'text-primary'}`} />
       </CardHeader>
 
-      <CardContent className="space-y-2.5">
+      <CardContent className="space-y-1.5 p-3.5 pt-0">
         <div className="flex items-baseline justify-between">
           <div className="flex items-baseline gap-1.5 font-mono">
-            <span className="text-3xl font-bold text-foreground">
+            <span className="text-xl font-bold tracking-tight tabular-nums text-foreground">
               {quota.used.toLocaleString()}
             </span>
-            <span className="text-sm text-muted-foreground font-medium">
+            <span className="text-xs text-muted-foreground font-medium">
               / {isUnlimited ? '∞' : quota.max.toLocaleString()} {unit}
             </span>
           </div>
 
           {!isUnlimited && (
-            <span className={`text-xs font-mono ${badgeColor}`}>{displayPercent}%</span>
+            <span className={`text-[11px] font-mono ${badgeColor}`}>{displayPercent}%</span>
           )}
         </div>
 
         {/* Animated Progress Bar */}
         {!isUnlimited && (
-          <div className="w-full bg-secondary/50 rounded-full h-1.5 overflow-hidden">
+          <div className="w-full bg-secondary/50 rounded-full h-1 overflow-hidden">
             <div
               className={`h-full rounded-full transition-all duration-500 ${progressColor}`}
               style={{ width: `${Math.min(100, displayPercent)}%` }}

@@ -92,7 +92,7 @@ export function HomePage() {
             </div>
           </CardHeader>
           <CardContent className="pb-2">
-            <div className="text-3xl font-semibold tabular-nums tracking-tight text-foreground">
+            <div className="text-2xl font-bold tabular-nums tracking-tight text-foreground">
               {new Intl.NumberFormat(language === 'uk' ? 'uk-UA' : 'en-US').format(productsCount)}
             </div>
           </CardContent>
@@ -112,7 +112,7 @@ export function HomePage() {
             </div>
           </CardHeader>
           <CardContent className="pb-2">
-            <div className="text-3xl font-semibold tabular-nums tracking-tight text-foreground">
+            <div className="text-2xl font-bold tabular-nums tracking-tight text-foreground">
               {suppliersCount}
             </div>
           </CardContent>
@@ -132,7 +132,7 @@ export function HomePage() {
             </div>
           </CardHeader>
           <CardContent className="pb-2">
-            <div className="text-3xl font-semibold tabular-nums tracking-tight text-foreground">
+            <div className="text-2xl font-bold tabular-nums tracking-tight text-foreground">
               {feedsCount}
             </div>
           </CardContent>
@@ -165,7 +165,7 @@ export function HomePage() {
             </div>
           </CardHeader>
           <CardContent className="pb-2">
-            <div className="text-3xl font-semibold tabular-nums tracking-tight text-foreground">
+            <div className="text-2xl font-bold tabular-nums tracking-tight text-foreground">
               {skuPercent}%
             </div>
           </CardContent>

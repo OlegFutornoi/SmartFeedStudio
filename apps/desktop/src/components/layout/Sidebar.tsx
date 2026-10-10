@@ -185,35 +185,47 @@ export function Sidebar() {
       >
         <div className="flex flex-col flex-1 min-h-0">
           {/* Top Brand Header */}
-          <div className="px-3.5 py-3 flex items-center border-b border-border/40">
-            <div className="flex items-center w-full">
-              <button
-                type="button"
-                data-testid="sidebar-brand-button"
-                onClick={() => navigate('/')}
-                className="flex items-center gap-2.5 w-full overflow-hidden text-left group cursor-pointer"
-              >
-                <Layers className="h-5 w-5 text-foreground shrink-0 transition-colors group-hover:text-primary" />
-                {!isCollapsed && (
-                  <div className="min-w-0 flex-1 flex items-center justify-between">
-                    <span className="font-semibold text-sm text-foreground tracking-tight">
-                      SmartFeed
-                    </span>
-                    <Badge
-                      variant="outline"
-                      className="text-[10px] px-1.5 py-0 h-4 uppercase font-medium text-muted-foreground border-border/60"
-                    >
-                      Studio
-                    </Badge>
-                  </div>
-                )}
-              </button>
-            </div>
+          <div
+            className={cn(
+              'flex items-center pt-3.5 pb-2',
+              isCollapsed ? 'justify-center px-0' : 'px-3.5',
+            )}
+          >
+            <button
+              type="button"
+              data-testid="sidebar-brand-button"
+              onClick={() => navigate('/')}
+              className={cn(
+                'flex items-center overflow-hidden group cursor-pointer transition-colors',
+                isCollapsed
+                  ? 'justify-center h-10 w-10 mx-auto rounded-lg hover:bg-muted/40'
+                  : 'gap-2.5 w-full text-left',
+              )}
+              title={isCollapsed ? 'SmartFeed Studio' : undefined}
+            >
+              <Layers className="h-6 w-6 text-foreground shrink-0 transition-colors group-hover:text-primary" />
+              {!isCollapsed && (
+                <div className="min-w-0 flex-1 flex items-center justify-between">
+                  <span className="font-semibold text-sm text-foreground tracking-tight">
+                    SmartFeed
+                  </span>
+                  <Badge
+                    variant="outline"
+                    className="text-[10px] px-1.5 py-0 h-4 uppercase font-medium text-muted-foreground border-border/60"
+                  >
+                    Studio
+                  </Badge>
+                </div>
+              )}
+            </button>
           </div>
 
           {/* Navigation Links */}
           <nav
-            className="space-y-0.5 flex-1 overflow-y-auto overflow-x-hidden px-2 py-2"
+            className={cn(
+              'space-y-0.5 flex-1 overflow-y-auto overflow-x-hidden py-2',
+              isCollapsed ? 'px-0' : 'px-2',
+            )}
             data-testid="desktop-sidebar-nav"
           >
             {primaryNavItems.map((item) => (

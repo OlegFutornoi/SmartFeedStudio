@@ -124,94 +124,79 @@ export function CatalogsPage() {
       data-testid="catalogs-page"
       className="max-w-6xl mx-auto space-y-6 animate-in fade-in duration-300"
     >
-      {/* Header Banner */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-border/40">
-        <div>
-          <div className="flex items-center space-x-2.5">
-            <div className="p-2 bg-primary/10 rounded-xl text-primary border border-primary/20">
-              <Layers className="h-6 w-6" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-                {t('catalogs:title')}
-              </h1>
-              <p className="text-sm text-muted-foreground">{t('catalogs:description')}</p>
-            </div>
-          </div>
+      {/* Top Toolbar: Tabs Navigation Bar + Import Action Button */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        {/* Tabs Navigation Bar */}
+        <div className="flex flex-wrap items-center gap-1.5 p-1 bg-secondary/30 border border-border/80 rounded-xl w-fit">
+          {/* Products Grid Tab */}
+          <button
+            type="button"
+            onClick={() => setActiveTab('products')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold transition-all ${
+              activeTab === 'products'
+                ? 'bg-card text-foreground shadow-sm border border-border/60'
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
+            data-testid="tab-products"
+          >
+            <Package className="size-4 text-primary" />
+            <span>{t('catalogs:tabProducts')}</span>
+          </button>
+
+          {/* Feed Sources Tab */}
+          <button
+            type="button"
+            onClick={() => setActiveTab('catalogs')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold transition-all ${
+              activeTab === 'catalogs'
+                ? 'bg-card text-foreground shadow-sm border border-border/60'
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
+            data-testid="tab-catalogs"
+          >
+            <Layers className="size-4 text-primary" />
+            <span>{t('catalogs:tabCatalogs')}</span>
+            <Badge variant="secondary" className="text-xs px-2 py-0.5 h-5 font-semibold">
+              {feeds.length}
+            </Badge>
+          </button>
+
+          {/* Export Channels Tab */}
+          <button
+            type="button"
+            onClick={() => setActiveTab('channels')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold transition-all ${
+              activeTab === 'channels'
+                ? 'bg-card text-foreground shadow-sm border border-border/60'
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
+            data-testid="tab-export-channels"
+          >
+            <Store className="size-4 text-primary" />
+            <span>{t('catalogs:tabChannels')}</span>
+            <Badge
+              variant="outline"
+              className="text-xs px-2 py-0.5 h-5 font-medium bg-primary/10 text-primary border-primary/20"
+            >
+              {t('catalogs:reverseMargin')}
+            </Badge>
+          </button>
         </div>
 
-        {/* Only show header button if there are already feeds/products or on other tabs */}
+        {/* Import Action Button */}
         {!(activeTab === 'products' && totalProductsCount === 0 && feeds.length === 0) && (
-          <div className="flex items-center gap-2.5">
-            <Button
-              onClick={() => setIsImportWizardOpen(true)}
-              disabled={isFeedLimitReached}
-              title={isFeedLimitReached ? t('catalogs:feedLimitReachedTooltip') : undefined}
-              className="flex items-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90 font-medium text-xs px-3.5 py-2 rounded-xl shadow-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-              data-testid="catalogs-import-feed-btn"
-            >
-              <Plus className="size-4" />
-              <span>{t('catalogs:importButton')}</span>
-            </Button>
-          </div>
-        )}
-      </div>
-
-      {/* Tabs Navigation Bar */}
-      <div className="flex flex-wrap items-center gap-2 p-1 bg-secondary/30 border border-border/80 rounded-xl w-fit">
-        {/* Products Grid Tab */}
-        <button
-          type="button"
-          onClick={() => setActiveTab('products')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold transition-all ${
-            activeTab === 'products'
-              ? 'bg-card text-foreground shadow-sm border border-border/60'
-              : 'text-muted-foreground hover:text-foreground'
-          }`}
-          data-testid="tab-products"
-        >
-          <Package className="size-4 text-primary" />
-          <span>{t('catalogs:tabProducts')}</span>
-        </button>
-
-        {/* Feed Sources Tab */}
-        <button
-          type="button"
-          onClick={() => setActiveTab('catalogs')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold transition-all ${
-            activeTab === 'catalogs'
-              ? 'bg-card text-foreground shadow-sm border border-border/60'
-              : 'text-muted-foreground hover:text-foreground'
-          }`}
-          data-testid="tab-catalogs"
-        >
-          <Layers className="size-4 text-primary" />
-          <span>{t('catalogs:tabCatalogs')}</span>
-          <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4">
-            {feeds.length}
-          </Badge>
-        </button>
-
-        {/* Export Channels Tab */}
-        <button
-          type="button"
-          onClick={() => setActiveTab('channels')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold transition-all ${
-            activeTab === 'channels'
-              ? 'bg-card text-foreground shadow-sm border border-border/60'
-              : 'text-muted-foreground hover:text-foreground'
-          }`}
-          data-testid="tab-export-channels"
-        >
-          <Store className="size-4 text-primary" />
-          <span>{t('catalogs:tabChannels')}</span>
-          <Badge
-            variant="outline"
-            className="text-[10px] px-1.5 py-0 h-4 bg-primary/10 text-primary border-primary/20"
+          <Button
+            size="sm"
+            onClick={() => setIsImportWizardOpen(true)}
+            disabled={isFeedLimitReached}
+            title={isFeedLimitReached ? t('catalogs:feedLimitReachedTooltip') : undefined}
+            className="flex items-center gap-1.5 bg-primary text-primary-foreground hover:bg-primary/90 font-medium text-xs px-3.5 h-9 rounded-lg shadow-xs transition-all disabled:opacity-50 disabled:cursor-not-allowed self-start sm:self-auto"
+            data-testid="catalogs-import-feed-btn"
           >
-            {t('catalogs:reverseMargin')}
-          </Badge>
-        </button>
+            <Plus className="size-3.5" />
+            <span>{t('catalogs:importButton')}</span>
+          </Button>
+        )}
       </div>
 
       {/* Tab 1: Products Grid */}

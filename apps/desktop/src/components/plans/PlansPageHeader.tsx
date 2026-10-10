@@ -1,4 +1,4 @@
-import { CreditCard, RefreshCw, LayoutGrid, TableProperties, Sparkles } from 'lucide-react';
+import { RefreshCw, LayoutGrid, TableProperties, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useTranslation } from '@/i18n';
@@ -26,65 +26,55 @@ export function PlansPageHeader({
   const { t } = useTranslation(['plans', 'common']);
 
   return (
-    <div className="flex flex-col gap-6 border-b border-border/60 pb-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground flex items-center gap-3">
-            <CreditCard className="h-7 w-7 sm:h-8 sm:w-8 text-primary shrink-0" />
-            <span data-testid="plans-header-title">{t('plans.title')}</span>
-          </h1>
-          <p className="text-xs sm:text-sm text-muted-foreground mt-1">{t('plans.subtitle')}</p>
-        </div>
-
-        <div className="flex items-center gap-2 self-start sm:self-auto">
-          {/* Segmented View Switcher */}
-          <div
-            data-testid="plans-view-switcher"
-            className="flex items-center bg-secondary/50 p-1 rounded-lg border border-border/60 shadow-xs"
-          >
-            <Button
-              type="button"
-              variant={viewMode === 'cards' ? 'secondary' : 'ghost'}
-              size="sm"
-              data-testid="plans-view-cards-btn"
-              onClick={() => setViewMode('cards')}
-              className={`h-8 px-3 text-xs gap-1.5 transition-all ${
-                viewMode === 'cards'
-                  ? 'bg-background shadow-xs font-semibold text-foreground'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              <LayoutGrid className="size-3.5" />
-              <span className="hidden md:inline">{t('plans.cardsView')}</span>
-            </Button>
-            <Button
-              type="button"
-              variant={viewMode === 'comparison' ? 'secondary' : 'ghost'}
-              size="sm"
-              data-testid="plans-view-comparison-btn"
-              onClick={() => setViewMode('comparison')}
-              className={`h-8 px-3 text-xs gap-1.5 transition-all ${
-                viewMode === 'comparison'
-                  ? 'bg-background shadow-xs font-semibold text-foreground'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              <TableProperties className="size-3.5" />
-              <span className="hidden md:inline">{t('plans.comparisonView')}</span>
-            </Button>
-          </div>
-
+    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border/40 pb-3">
+      {/* View Switcher & Refresh */}
+      <div className="flex items-center gap-2">
+        <div
+          data-testid="plans-view-switcher"
+          className="flex items-center bg-secondary/50 p-1 rounded-lg border border-border/60 shadow-xs"
+        >
           <Button
-            variant="outline"
+            type="button"
+            variant={viewMode === 'cards' ? 'secondary' : 'ghost'}
             size="sm"
-            onClick={onRefresh}
-            disabled={isLoading}
-            className="h-8 px-2.5 text-xs shadow-xs"
-            data-testid="refresh-plans-btn"
+            data-testid="plans-view-cards-btn"
+            onClick={() => setViewMode('cards')}
+            className={`h-8 px-3 text-xs gap-1.5 transition-all ${
+              viewMode === 'cards'
+                ? 'bg-background shadow-xs font-semibold text-foreground'
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
           >
-            <RefreshCw className={`h-3.5 w-3.5 ${isLoading ? 'animate-spin' : ''}`} />
+            <LayoutGrid className="size-3.5" />
+            <span className="hidden md:inline">{t('plans.cardsView')}</span>
+          </Button>
+          <Button
+            type="button"
+            variant={viewMode === 'comparison' ? 'secondary' : 'ghost'}
+            size="sm"
+            data-testid="plans-view-comparison-btn"
+            onClick={() => setViewMode('comparison')}
+            className={`h-8 px-3 text-xs gap-1.5 transition-all ${
+              viewMode === 'comparison'
+                ? 'bg-background shadow-xs font-semibold text-foreground'
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            <TableProperties className="size-3.5" />
+            <span className="hidden md:inline">{t('plans.comparisonView')}</span>
           </Button>
         </div>
+
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={onRefresh}
+          disabled={isLoading}
+          className="h-8 px-2.5 text-xs shadow-xs"
+          data-testid="refresh-plans-btn"
+        >
+          <RefreshCw className={`h-3.5 w-3.5 ${isLoading ? 'animate-spin' : ''}`} />
+        </Button>
       </div>
 
       {/* Billing Cycle Switcher */}

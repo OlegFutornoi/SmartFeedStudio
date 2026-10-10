@@ -45,7 +45,6 @@ test.describe('Desktop App — Авторизація, Реєстрація, М�
     await page.getByTestId('password-input').fill('WrongPass123!');
     await page.getByTestId('login-button').click();
 
-    // Verify error alert appears with localized Ukrainian message
     await expect(page.getByTestId('error-alert')).toBeVisible();
     await expect(page.getByTestId('error-message')).toHaveText('Невірний email або пароль');
 

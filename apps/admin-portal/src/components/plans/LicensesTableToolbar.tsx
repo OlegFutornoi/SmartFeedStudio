@@ -14,6 +14,13 @@ import {
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { LicensesFacetedFilter, FacetedOption } from '@/components/plans/LicensesFacetedFilter';
 
 interface LicensesTableToolbarProps {
@@ -154,18 +161,22 @@ export const LicensesTableToolbar = React.memo(function LicensesTableToolbar({
             <ArrowUpDown className="size-3" />
             <span className="hidden sm:inline">{isUk ? 'Сортування:' : 'Sort:'}</span>
           </div>
-          <select
-            data-testid="licenses-sort-select"
-            value={sortBy}
-            onChange={(e) => onSortChange(e.target.value)}
-            className="h-8 rounded-md border border-border/80 bg-background/80 px-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
-          >
-            {sortOptions.map((opt) => (
-              <option key={opt.value} value={opt.value}>
-                {opt.label}
-              </option>
-            ))}
-          </select>
+
+          <Select value={sortBy} onValueChange={onSortChange}>
+            <SelectTrigger
+              data-testid="licenses-sort-select"
+              className="h-8 w-[140px] sm:w-[170px] text-xs bg-background/80 border-border/80"
+            >
+              <SelectValue placeholder={isUk ? 'Сортування' : 'Sort by'} />
+            </SelectTrigger>
+            <SelectContent>
+              {sortOptions.map((opt) => (
+                <SelectItem key={opt.value} value={opt.value}>
+                  {opt.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
 
           <Badge
             data-testid="licenses-results-count"
@@ -195,83 +206,6 @@ export const LicensesTableToolbar = React.memo(function LicensesTableToolbar({
           )}
         </div>
       </div>
-
-      {/* Active filter pills when filtered */}
-      {isFiltered && (
-        <div className="flex flex-wrap items-center gap-1.5 pt-1 text-xs">
-          <Badge variant="outline" className="text-[10px] py-0 px-1.5 font-normal border-border/60">
-            {isUk ? 'Фільтри активні:' : 'Filters Active:'}
-          </Badge>
-
-          {searchQuery && (
-            <Badge
-              variant="secondary"
-              className="text-[10px] gap-1 px-1.5 py-0 font-normal"
-              data-testid="active-filter-search"
-            >
-              <span>{`"${searchQuery}"`}</span>
-              <button
-                type="button"
-                onClick={() => onSearchChange('')}
-                className="hover:text-foreground cursor-pointer"
-              >
-                <X className="size-2.5" />
-              </button>
-            </Badge>
-          )}
-
-          {selectedTier !== 'ALL' && (
-            <Badge
-              variant="secondary"
-              className="text-[10px] gap-1 px-1.5 py-0 font-normal"
-              data-testid="active-filter-tier"
-            >
-              <span>{`Тариф: ${selectedTier}`}</span>
-              <button
-                type="button"
-                onClick={() => onTierChange('ALL')}
-                className="hover:text-foreground cursor-pointer"
-              >
-                <X className="size-2.5" />
-              </button>
-            </Badge>
-          )}
-
-          {selectedStatus !== 'ALL' && (
-            <Badge
-              variant="secondary"
-              className="text-[10px] gap-1 px-1.5 py-0 font-normal"
-              data-testid="active-filter-status"
-            >
-              <span>{`Статус: ${selectedStatus}`}</span>
-              <button
-                type="button"
-                onClick={() => onStatusChange('ALL')}
-                className="hover:text-foreground cursor-pointer"
-              >
-                <X className="size-2.5" />
-              </button>
-            </Badge>
-          )}
-
-          {selectedCloud !== 'ALL' && (
-            <Badge
-              variant="secondary"
-              className="text-[10px] gap-1 px-1.5 py-0 font-normal"
-              data-testid="active-filter-cloud"
-            >
-              <span>{selectedCloud === 'WITH_CLOUD' ? 'S3 Активний' : 'Без S3'}</span>
-              <button
-                type="button"
-                onClick={() => onCloudChange('ALL')}
-                className="hover:text-foreground cursor-pointer"
-              >
-                <X className="size-2.5" />
-              </button>
-            </Badge>
-          )}
-        </div>
-      )}
     </div>
   );
 });

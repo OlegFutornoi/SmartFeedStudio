@@ -40,13 +40,16 @@ description: Mandatory rules for strict chat brevity, zero plan dumping in chat 
 Перед проектуванням архітектури, зміною конфігурацій чи написанням коду для будь-яких бібліотек/фреймворків:
 
 1. **Не кодити за застарілою пам'яттю (Zero Guesswork & Hallucination)**:
-   - Тренувальні дані моделей застарівають, API змінюються, з'являються нові рекомендовані практики (Next.js 14 App Router, Tauri v2, React 18/19, Prisma, BullMQ, Tailwind v4 тощо).
-2. **Обов'язковий пошук через `context7` MCP**:
-   - При роботі з будь-якою зовнішньою бібліотекою чи SDK викликати `context7` MCP (`call_mcp_tool` з `ServerName: "context7"`):
-     - `resolve-library-id` — отримати актуальний ідентифікатор бібліотеки.
-     - `query-docs` — отримати свіжі офіційні сигнатури, приклади використання та рекомендації авторів.
+   - Тренувальні дані моделей застарівають, API змінюються, з'являються нові рекомендовані практики (Next.js 14 App Router, Tauri v2, React 18/19, Prisma 6, BullMQ, Tailwind v4 тощо).
+2. **Обов'язковий пошук через `context7` MCP для ВСІХ доменів (не лише 2 скіли!)**:
+   - Заборонено обмежувати `context7` лише двома мастер-скілами. Всі профільні доменні навички зобов'язані підключати `context7` (`resolve-library-id`, `query-docs`):
+     - **💻 Фронтенд & UI/UX** (`ui-ux-pro-max`, `frontend`, `vercel-react-best-practices`): актуальні доки `/shadcn-ui/ui`, `/vercel/next.js`, `/tailwindlabs/tailwindcss`, `/radix-ui/primitives`, `/lucide-icons/lucide`.
+     - **⚙️ Бекенд & CQRS** (`backend`, `nestjs-best-practices`, `bullmq-jobs`): актуальні доки `/nestjs/nest`, `class-validator`, `/taskforcesh/bullmq`, Redis.
+     - **🐘 Бази даних & ORM** (`prisma-postgres-mastery`, `postgresql-optimization`): актуальні доки `/prisma/prisma`, `/postgresql/postgresql`.
+     - **🧪 Тестування & Інфра** (`playwright-automation`, `security-and-hardening`): актуальні доки `/microsoft/playwright`, Jest, Docker.
 3. **Профільні MCP проекту за призначенням**:
    - **`postgres`** — перевірка реальних планів запитів (`EXPLAIN ANALYZE`), індексів та системних каталогів.
    - **`shadcn`** — перевірка офіційних компонентів, варіантів та токенів дизайн-системи.
    - **`firecrawl`** — актуальні веб-стандарти, специфікації маркетплейсів чи сторонніх XML/CSV фідів.
    - **`sentry`** — перевірка реальних стек-трейсів помилок перед фіксом.
+   - **`redis`** — стан черг BullMQ та ключів ідемпотентності.

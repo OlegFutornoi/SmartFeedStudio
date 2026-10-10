@@ -32,6 +32,9 @@ const AiEnrichmentPage = lazy(() =>
 const CloudSyncPage = lazy(() =>
   import('@/pages/CloudSyncPage').then((m) => ({ default: m.CloudSyncPage })),
 );
+const ProfilePage = lazy(() =>
+  import('@/pages/ProfilePage').then((m) => ({ default: m.ProfilePage })),
+);
 const SettingsPage = lazy(() =>
   import('@/pages/SettingsPage').then((m) => ({ default: m.SettingsPage })),
 );
@@ -98,6 +101,7 @@ export default function App() {
                 </FeatureTeaserGate>
               }
             />
+            <Route path="/profile" element={<ProfilePage />} />
             <Route path="/settings" element={<SettingsPage />} />
           </Route>
 

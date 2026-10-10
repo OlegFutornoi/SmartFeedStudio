@@ -14,7 +14,7 @@ import {
   Compass,
   Settings,
   ArrowRight,
-  X,
+  User,
 } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 
@@ -83,8 +83,14 @@ export function AdminCommandSearchDialog({ isOpen, onClose }: AdminCommandSearch
         icon: Compass,
       },
       {
+        id: 'nav-profile',
+        title: isUk ? 'Профіль адміністратора' : 'Administrator Profile',
+        path: '/profile',
+        icon: User,
+      },
+      {
         id: 'nav-settings',
-        title: isUk ? 'Налаштування теми та системи' : 'Theme & System Settings',
+        title: isUk ? 'Налаштування платформи' : 'Platform Settings',
         path: '/settings',
         icon: Settings,
       },
@@ -135,37 +141,32 @@ export function AdminCommandSearchDialog({ isOpen, onClose }: AdminCommandSearch
       role="dialog"
       aria-modal="true"
       data-testid="admin-command-dialog"
-      className="fixed inset-0 z-50 flex items-start justify-center pt-24 px-4 bg-black/50 backdrop-blur-sm animate-in fade-in-0 duration-150"
+      className="fixed inset-0 z-50 flex items-start justify-center pt-16 sm:pt-20 px-4 bg-black/40 backdrop-blur-xs animate-in fade-in-0 duration-150"
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-lg overflow-hidden rounded-2xl border border-border bg-card shadow-2xl animate-in zoom-in-95 duration-150"
+        className="relative w-full max-w-md overflow-hidden rounded-xl border border-border/80 bg-card shadow-2xl animate-in zoom-in-95 duration-150"
         onClick={(e) => e.stopPropagation()}
         onKeyDown={handleKeyDown}
       >
-        {/* Search Input Bar */}
-        <div className="flex items-center px-4 border-b border-border bg-card">
-          <Search className="h-4 w-4 text-muted-foreground shrink-0 mr-3" />
+        {/* Search Input Bar (matching user's design) */}
+        <div className="flex items-center px-3.5 py-2.5 border-b border-border/60 bg-card">
+          <Search className="h-4 w-4 text-muted-foreground shrink-0 mr-2.5" />
           <input
             ref={inputRef}
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder={
-              isUk
-                ? 'Швидкий перехід по розділах адмін-панелі (⌘K)...'
-                : 'Search admin sections (⌘K)...'
-            }
-            className="w-full bg-transparent py-4 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
+            placeholder={isUk ? 'Пошук...' : 'Search....'}
+            className="w-full bg-transparent text-xs text-foreground placeholder:text-muted-foreground focus:outline-none"
           />
-          <button
-            type="button"
+          <kbd
             onClick={onClose}
-            aria-label={t('common', 'close')}
-            className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors ml-2"
+            className="inline-flex items-center px-1.5 py-0.5 text-[10px] font-mono font-medium text-muted-foreground bg-muted/80 border border-border/80 rounded cursor-pointer hover:bg-muted ml-2 shrink-0 select-none"
+            title="Escape"
           >
-            <X className="h-4 w-4" />
-          </button>
+            ESC
+          </kbd>
         </div>
 
         {/* Results List */}

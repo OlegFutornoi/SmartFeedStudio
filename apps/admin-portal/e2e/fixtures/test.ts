@@ -31,6 +31,14 @@ export const test = base.extend<AdminPortalFixtures>({
         });
       });
 
+      await page.route('**/api/navigation/admin*', async (route) => {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify([]),
+        });
+      });
+
       await page.addInitScript(() => {
         localStorage.setItem('smartfeed_admin_token', 'mock_admin_token_for_playwright_test');
       });

@@ -1,4 +1,4 @@
-import { Sparkles, Wand2, Bot, Zap, Sliders, ArrowRight } from 'lucide-react';
+import { Wand2, Bot, Zap, Sliders, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -17,29 +17,15 @@ export function AiEnrichmentPage() {
   return (
     <div
       data-testid="ai-enrichment-page"
-      className="max-w-6xl mx-auto space-y-8 animate-in fade-in duration-300"
+      className="max-w-6xl mx-auto space-y-4 animate-in fade-in duration-300"
     >
-      {/* Header Banner */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-border/40">
-        <div>
-          <div className="flex items-center space-x-2.5">
-            <div className="p-2 bg-primary/10 rounded-xl text-primary border border-primary/20">
-              <Sparkles className="h-6 w-6" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-                {t('ai:title')}
-              </h1>
-              <p className="text-sm text-muted-foreground">{t('ai:description')}</p>
-            </div>
-          </div>
-        </div>
-
+      {/* Top Action Toolbar */}
+      <div className="flex items-center justify-end">
         <Badge
           variant="outline"
-          className="text-xs bg-primary/10 text-primary border-primary/20 px-3 py-1.5 gap-1.5 self-start sm:self-auto"
+          className="text-xs bg-primary/10 text-primary border-primary/20 px-2.5 py-1 gap-1.5 font-mono shadow-xs"
         >
-          <Zap className="h-3.5 w-3.5" />
+          <Zap className="h-3 w-3" />
           <span>
             {aiCredits} {t('ai:creditsRemaining')}
           </span>
@@ -47,49 +33,64 @@ export function AiEnrichmentPage() {
       </div>
 
       {/* AI Features Grid */}
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        <Card className="border-border/80 bg-card/60 backdrop-blur-md hover:border-primary/40 transition-colors">
-          <CardHeader>
-            <div className="p-2.5 w-fit rounded-xl bg-primary/10 text-primary mb-2">
-              <Wand2 className="h-5 w-5" />
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <Card className="border-border/80 bg-card shadow-xs hover:border-border transition-colors">
+          <CardHeader className="pb-3">
+            <div className="p-2 w-fit rounded-lg bg-primary/10 text-primary mb-1">
+              <Wand2 className="h-4 w-4" />
             </div>
-            <CardTitle className="text-base">{t('ai:seoTitle')}</CardTitle>
-            <CardDescription className="text-xs">{t('ai:seoDesc')}</CardDescription>
+            <CardTitle className="text-sm font-semibold tracking-tight">
+              {t('ai:seoTitle')}
+            </CardTitle>
+            <CardDescription className="text-xs text-muted-foreground">
+              {t('ai:seoDesc')}
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button className="w-full text-xs gap-1.5 bg-primary hover:bg-primary/90 text-primary-foreground shadow-xs">
+            <Button
+              size="sm"
+              className="w-full text-xs h-8 gap-1.5 bg-primary hover:bg-primary/90 text-primary-foreground shadow-xs"
+            >
               <span>{t('ai:startBatch')}</span>
               <ArrowRight className="h-3.5 w-3.5" />
             </Button>
           </CardContent>
         </Card>
 
-        <Card className="border-border/80 bg-card/60 backdrop-blur-md hover:border-primary/40 transition-colors">
-          <CardHeader>
-            <div className="p-2.5 w-fit rounded-xl bg-primary/10 text-primary mb-2">
-              <Sliders className="h-5 w-5" />
+        <Card className="border-border/80 bg-card shadow-xs hover:border-border transition-colors">
+          <CardHeader className="pb-3">
+            <div className="p-2 w-fit rounded-lg bg-primary/10 text-primary mb-1">
+              <Sliders className="h-4 w-4" />
             </div>
-            <CardTitle className="text-base">{t('ai:specsTitle')}</CardTitle>
-            <CardDescription className="text-xs">{t('ai:specsDesc')}</CardDescription>
+            <CardTitle className="text-sm font-semibold tracking-tight">
+              {t('ai:specsTitle')}
+            </CardTitle>
+            <CardDescription className="text-xs text-muted-foreground">
+              {t('ai:specsDesc')}
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button variant="outline" className="w-full text-xs gap-1.5">
+            <Button size="sm" variant="outline" className="w-full text-xs h-8 gap-1.5">
               <span>{t('ai:generationSettings')}</span>
               <ArrowRight className="h-3.5 w-3.5" />
             </Button>
           </CardContent>
         </Card>
 
-        <Card className="border-border/80 bg-card/60 backdrop-blur-md hover:border-primary/40 transition-colors">
-          <CardHeader>
-            <div className="p-2.5 w-fit rounded-xl bg-primary/10 text-primary mb-2">
-              <Bot className="h-5 w-5" />
+        <Card className="border-border/80 bg-card shadow-xs hover:border-border transition-colors">
+          <CardHeader className="pb-3">
+            <div className="p-2 w-fit rounded-lg bg-primary/10 text-primary mb-1">
+              <Bot className="h-4 w-4" />
             </div>
-            <CardTitle className="text-base">{t('ai:translateTitle')}</CardTitle>
-            <CardDescription className="text-xs">{t('ai:translateDesc')}</CardDescription>
+            <CardTitle className="text-sm font-semibold tracking-tight">
+              {t('ai:translateTitle')}
+            </CardTitle>
+            <CardDescription className="text-xs text-muted-foreground">
+              {t('ai:translateDesc')}
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button variant="outline" className="w-full text-xs gap-1.5">
+            <Button size="sm" variant="outline" className="w-full text-xs h-8 gap-1.5">
               <span>{t('ai:customPrompt')}</span>
               <ArrowRight className="h-3.5 w-3.5" />
             </Button>

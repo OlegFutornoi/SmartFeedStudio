@@ -16,6 +16,13 @@ import { Label } from '@/components/ui/label';
 import { AVAILABLE_ICONS } from '@/components/navigation/constants';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { cn } from '@/lib/utils';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 export interface NavigationFormData {
   key: string;
@@ -91,17 +98,21 @@ export function NavigationItemDialog({
 
             <div className="space-y-1.5">
               <Label className="text-xs">{t('navigation', 'target_app_label')}</Label>
-              <select
+              <Select
                 value={formData.targetApp}
-                onChange={(e) =>
-                  setFormData((prev) => ({ ...prev, targetApp: e.target.value as TargetApp }))
+                onValueChange={(val) =>
+                  setFormData((prev) => ({ ...prev, targetApp: val as TargetApp }))
                 }
-                className="w-full h-9 rounded-md border border-border bg-card/60 px-3 text-xs focus:outline-none focus:ring-2 focus:ring-primary/50"
               >
-                <option value={TargetApp.DESKTOP}>Desktop Client</option>
-                <option value={TargetApp.ADMIN_PORTAL}>Admin Portal</option>
-                <option value={TargetApp.ALL}>All Applications</option>
-              </select>
+                <SelectTrigger className="w-full h-9 text-xs">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={TargetApp.DESKTOP}>Desktop Client</SelectItem>
+                  <SelectItem value={TargetApp.ADMIN_PORTAL}>Admin Portal</SelectItem>
+                  <SelectItem value={TargetApp.ALL}>All Applications</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
 
@@ -193,20 +204,24 @@ export function NavigationItemDialog({
 
             <div className="space-y-2">
               <Label className="text-xs">{t('navigation', 'min_plan_label')}</Label>
-              <select
-                value={formData.requiredPlan || ''}
-                onChange={(e) =>
+              <Select
+                value={formData.requiredPlan || 'NONE'}
+                onValueChange={(val) =>
                   setFormData((prev) => ({
                     ...prev,
-                    requiredPlan: e.target.value ? (e.target.value as PlanType) : null,
+                    requiredPlan: val === 'NONE' ? null : (val as PlanType),
                   }))
                 }
-                className="w-full h-9 rounded-md border border-border bg-card/60 px-3 text-xs focus:outline-none focus:ring-2 focus:ring-primary/50"
               >
-                <option value="">FREE (Усі користувачі)</option>
-                <option value={PlanType.PRO}>PRO (Платний тариф)</option>
-                <option value={PlanType.ENTERPRISE}>ENTERPRISE (Корпоративний)</option>
-              </select>
+                <SelectTrigger className="w-full h-9 text-xs">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="NONE">FREE (Усі користувачі)</SelectItem>
+                  <SelectItem value={PlanType.PRO}>PRO (Платний тариф)</SelectItem>
+                  <SelectItem value={PlanType.ENTERPRISE}>ENTERPRISE (Корпоративний)</SelectItem>
+                </SelectContent>
+              </Select>
 
               <div className="pt-2">
                 <label className="flex items-center gap-2 text-xs text-foreground cursor-pointer">

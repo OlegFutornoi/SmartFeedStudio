@@ -35,5 +35,6 @@
   "navCatalogs": "Product Catalogs",
   "navSuppliers": "Suppliers",
   "navPlans": "Subscription Plans",
-  "navSettings": "Theme & Profile Settings"
+  "navProfile": "User Profile",
+  "navSettings": "Platform Settings"
 }

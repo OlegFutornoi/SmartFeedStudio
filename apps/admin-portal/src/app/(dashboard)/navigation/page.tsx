@@ -13,7 +13,6 @@ import { api } from '@/lib/api';
 import { translateError } from '@/lib/errors';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useNavigation } from '@/contexts/NavigationContext';
-import { NavigationHeader } from '@/components/navigation/NavigationHeader';
 import { NavigationItemList } from '@/components/navigation/NavigationItemList';
 import { NavigationLivePreview } from '@/components/navigation/NavigationLivePreview';
 import type { NavigationFormData } from '@/components/navigation/NavigationItemDialog';
@@ -233,8 +232,6 @@ export default function NavigationManagementPage() {
 
   return (
     <div className="max-w-6xl mx-auto space-y-6 animate-in fade-in duration-300">
-      <NavigationHeader onAddItem={handleOpenCreate} />
-
       {/* Success Alert */}
       {successMessage && (
         <div className="flex items-center gap-2 p-3 bg-primary/10 border border-primary/20 rounded-xl text-primary text-xs font-medium animate-in fade-in">
@@ -271,6 +268,7 @@ export default function NavigationManagementPage() {
               onToggleActive={handleToggleActive}
               onEdit={handleOpenEdit}
               onDelete={handleDelete}
+              onAddItem={handleOpenCreate}
             />
           </div>
 

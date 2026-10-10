@@ -2,8 +2,9 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { KeyRound, LogOut, MoreVertical, BadgeCheck, CreditCard } from 'lucide-react';
+import { KeyRound, LogOut, MoreVertical, BadgeCheck, CreditCard, Settings } from 'lucide-react';
 import { UserProfile } from '@smartfeed/shared';
+import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   DropdownMenu,
@@ -48,15 +49,21 @@ export const SidebarUserProfile = React.memo(function SidebarUserProfile({
   const displayEmail = user?.email || 'admin@smartfeed.studio';
 
   return (
-    <div className="p-2 mt-auto border-t border-border/40">
+    <div
+      className={cn(
+        'py-2 mt-auto border-t border-border/40',
+        isCollapsed ? 'px-0 flex justify-center' : 'px-2',
+      )}
+    >
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <button
             type="button"
             data-testid="sidebar-user-trigger"
-            className={`w-full flex items-center gap-2 p-1.5 rounded-md transition-colors text-left outline-none focus-visible:ring-1 focus-visible:ring-ring hover:bg-muted/70 data-[state=open]:bg-muted/80 ${
-              isCollapsed ? 'justify-center p-1.5' : ''
-            }`}
+            className={cn(
+              'flex items-center rounded-md transition-colors text-left outline-none focus-visible:ring-1 focus-visible:ring-ring hover:bg-muted/70 data-[state=open]:bg-muted/80 cursor-pointer',
+              isCollapsed ? 'justify-center h-8 w-8 mx-auto p-0' : 'w-full gap-2 p-1.5',
+            )}
             title={isCollapsed ? displayName : undefined}
           >
             <Avatar className="h-7 w-7 rounded-md border border-border shrink-0">
@@ -108,14 +115,29 @@ export const SidebarUserProfile = React.memo(function SidebarUserProfile({
           <DropdownMenuSeparator className="my-1 -mx-1" />
 
           <DropdownMenuGroup>
-            <Link href="/settings">
-              <DropdownMenuItem className="cursor-pointer gap-2 text-xs py-1.5">
+            <Link href="/profile">
+              <DropdownMenuItem
+                data-testid="sidebar-profile-link"
+                className="cursor-pointer gap-2 text-xs py-1.5"
+              >
                 <BadgeCheck className="h-3.5 w-3.5 text-muted-foreground" />
-                <span>{isUk ? 'Акаунт' : 'Account'}</span>
+                <span>{isUk ? 'Профіль' : 'Profile'}</span>
+              </DropdownMenuItem>
+            </Link>
+            <Link href="/settings">
+              <DropdownMenuItem
+                data-testid="sidebar-settings-link"
+                className="cursor-pointer gap-2 text-xs py-1.5"
+              >
+                <Settings className="h-3.5 w-3.5 text-muted-foreground" />
+                <span>{isUk ? 'Налаштування' : 'Settings'}</span>
               </DropdownMenuItem>
             </Link>
             <Link href="/plans">
-              <DropdownMenuItem className="cursor-pointer gap-2 text-xs py-1.5">
+              <DropdownMenuItem
+                data-testid="sidebar-plans-link"
+                className="cursor-pointer gap-2 text-xs py-1.5"
+              >
                 <CreditCard className="h-3.5 w-3.5 text-muted-foreground" />
                 <span>{isUk ? 'Тарифи' : 'Billing'}</span>
               </DropdownMenuItem>

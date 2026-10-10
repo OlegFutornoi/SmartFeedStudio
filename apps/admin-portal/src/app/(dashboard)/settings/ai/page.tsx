@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Sparkles, Bot, ArrowLeft, Cpu, ShieldCheck, ExternalLink } from 'lucide-react';
+import { Bot, ArrowLeft, Cpu, ShieldCheck, ExternalLink } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -50,31 +50,15 @@ export default function AiSettingsPage() {
       data-testid="ai-settings-page"
       className="flex flex-col gap-8 max-w-5xl animate-in fade-in duration-300"
     >
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-border">
-        <div>
-          <div className="flex items-center gap-2 mb-1.5">
-            <Link
-              href="/settings"
-              className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors"
-            >
-              <ArrowLeft className="size-3.5" />
-              <span>{isUk ? 'Налаштування' : 'Settings'}</span>
-            </Link>
-          </div>
-          <h1
-            data-testid="ai-header-title"
-            className="text-2xl font-semibold tracking-tight text-foreground flex items-center gap-2.5"
-          >
-            <Sparkles className="size-6 text-primary" />
-            <span>{isUk ? 'Налаштування AI' : 'AI Provider Settings'}</span>
-          </h1>
-          <p className="text-xs text-muted-foreground mt-1">
-            {isUk
-              ? 'Конфігурація провайдерів штучного інтелекту, лімітів токенів та моделей AI Асистента'
-              : 'Configure AI model providers, monthly token quotas, and AI Assistant models'}
-          </p>
-        </div>
+      {/* Top Back Navigation Toolbar */}
+      <div className="flex items-center justify-between pb-1">
+        <Link
+          href="/settings"
+          className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1.5 transition-colors"
+        >
+          <ArrowLeft className="size-3.5" />
+          <span>{isUk ? 'До налаштувань' : 'Back to Settings'}</span>
+        </Link>
       </div>
 
       {/* Info Banner */}

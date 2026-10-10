@@ -13,6 +13,7 @@ description: 'UI/UX design intelligence for web, mobile, and desktop. This skill
 4. **Component Size Budget (<250-300 Lines)**: Every React component must stay under 250–300 lines. Decompose into sub-components (`Header`, `Footer`, `ItemRow`, `useDialogState`).
 5. **100% Bilingual i18n**: All user-visible strings must use `t('key')` with entries in both `uk` and `en` JSON dictionaries.
 6. **100% Path Aliases (`@/`)**: Never use relative imports (`../`, `./`). Always import via `@/components/...` or `@smartfeed/shared`.
+7. **Upfront Research via `context7` & `shadcn` MCP**: Before designing components, layout, or styles, always query `context7` (`/shadcn-ui/ui`, `/tailwindlabs/tailwindcss`, `/radix-ui/primitives`) and `shadcn` MCP to obtain authoritative signatures, variants, and tokens rather than hallucinating.
 
 ## When to Apply
 

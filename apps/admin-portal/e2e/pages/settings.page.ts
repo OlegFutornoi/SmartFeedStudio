@@ -39,6 +39,7 @@ export class AdminSettingsPage extends BasePage {
 
     this.headerTitle = page.getByTestId('settings-header-title');
     this.headerSubtitle = page.getByTestId('settings-header-subtitle');
+    this.profileHeaderTitle = page.getByTestId('profile-header-title');
 
     this.profileCard = page.getByTestId('profile-info-card');
     this.profileName = page.getByTestId('profile-name');
@@ -56,9 +57,16 @@ export class AdminSettingsPage extends BasePage {
     this.langToggleBtn = page.getByTestId('language-toggle-btn');
   }
 
+  readonly profileHeaderTitle: Locator;
+
   async goto(): Promise<void> {
     await this.page.goto('/settings');
     await this.headerTitle.waitFor({ state: 'visible', timeout: 15000 });
+  }
+
+  async gotoProfile(): Promise<void> {
+    await this.page.goto('/profile');
+    await this.profileHeaderTitle.waitFor({ state: 'visible', timeout: 15000 });
   }
 
   async selectAccentColor(colorKey: string): Promise<void> {

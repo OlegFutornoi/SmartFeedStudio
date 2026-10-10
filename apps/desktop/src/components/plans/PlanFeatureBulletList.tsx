@@ -42,46 +42,66 @@ export const PlanFeatureBulletList: React.FC<PlanFeatureBulletListProps> = ({ pl
     unavailableFeatures.push(isUk ? 'Журнал аудиту дій команди' : 'Team Audit Trail Log');
   }
 
+  const channelsLabel =
+    plan.maxChannelsLimit >= 1000
+      ? isUk
+        ? 'Безліміт'
+        : 'Unlimited'
+      : `${plan.maxChannelsLimit} ${
+          isUk
+            ? plan.maxChannelsLimit === 1
+              ? 'канал'
+              : plan.maxChannelsLimit < 5
+                ? 'канали'
+                : 'каналів'
+            : 'channels'
+        }`;
+
+  const teamSeatsLabel =
+    plan.maxTeamSeats === 1
+      ? isUk
+        ? 'Соло (1)'
+        : 'Solo (1)'
+      : `${plan.maxTeamSeats} ${isUk ? (plan.maxTeamSeats < 5 ? 'місця' : 'місць') : 'seats'}`;
+
   return (
     <div className="flex flex-col gap-4">
       {/* Key Quotas Grid */}
       <div
         data-testid={`plan-quotas-${codeKey}`}
-        className="grid grid-cols-2 gap-2 text-xs text-muted-foreground bg-muted/30 p-2.5 rounded-lg border border-border/40"
+        className="grid grid-cols-2 gap-x-2 gap-y-1.5 text-[11px] leading-snug text-muted-foreground bg-muted/30 p-2.5 rounded-lg border border-border/40"
       >
-        <div className="flex items-center gap-1.5 min-w-0">
-          <Box className="size-3.5 text-primary shrink-0" />
-          <div className="truncate">
-            <span className="font-semibold text-foreground">
-              {plan.maxXmlLimit.toLocaleString()}
-            </span>{' '}
-            <span>SKU</span>
-          </div>
+        <div
+          className="flex items-center gap-1.5 min-w-0"
+          title={`${plan.maxXmlLimit.toLocaleString()} SKU`}
+        >
+          <Box className="size-3 text-primary shrink-0" />
+          <span className="font-medium text-foreground whitespace-nowrap">
+            <strong className="font-semibold">{plan.maxXmlLimit.toLocaleString()}</strong>{' '}
+            <span className="text-[10px] text-muted-foreground">SKU</span>
+          </span>
         </div>
-        <div className="flex items-center gap-1.5 min-w-0">
-          <Users className="size-3.5 text-primary shrink-0" />
-          <div className="truncate">
-            <span className="font-semibold text-foreground">
-              {plan.maxTeamSeats === 1
-                ? isUk
-                  ? 'Соло (1)'
-                  : 'Solo (1)'
-                : `${plan.maxTeamSeats} ${isUk ? 'місць' : 'seats'}`}
-            </span>
-          </div>
+        <div className="flex items-center gap-1.5 min-w-0" title={teamSeatsLabel}>
+          <Users className="size-3 text-primary shrink-0" />
+          <span className="font-medium text-foreground whitespace-nowrap">
+            <strong className="font-semibold">{teamSeatsLabel}</strong>
+          </span>
         </div>
-        <div className="flex items-center gap-1.5 min-w-0">
-          <Share2 className="size-3.5 text-primary shrink-0" />
-          <div className="truncate">
-            <span className="font-semibold text-foreground">{plan.maxChannelsLimit}</span>{' '}
-            <span>{isUk ? 'каналів' : 'channels'}</span>
-          </div>
+        <div className="flex items-center gap-1.5 min-w-0" title={channelsLabel}>
+          <Share2 className="size-3 text-primary shrink-0" />
+          <span className="font-medium text-foreground whitespace-nowrap">
+            <strong className="font-semibold">{channelsLabel}</strong>
+          </span>
         </div>
-        <div className="flex items-center gap-1.5 min-w-0">
-          <Bot className="size-3.5 text-primary shrink-0" />
-          <div className="truncate">
-            <span className="font-semibold text-foreground">{plan.aiCredits}</span> <span>AI</span>
-          </div>
+        <div
+          className="flex items-center gap-1.5 min-w-0"
+          title={`${plan.aiCredits.toLocaleString()} AI`}
+        >
+          <Bot className="size-3 text-primary shrink-0" />
+          <span className="font-medium text-foreground whitespace-nowrap">
+            <strong className="font-semibold">{plan.aiCredits.toLocaleString()}</strong>{' '}
+            <span className="text-[10px] text-muted-foreground">AI</span>
+          </span>
         </div>
       </div>
 

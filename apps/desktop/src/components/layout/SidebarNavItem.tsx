@@ -71,13 +71,15 @@ export const SidebarNavItem = React.memo(function SidebarNavItem({
       title={isCollapsed ? label : undefined}
       data-testid={`nav-item-${item.key}`}
       className={cn(
-        'flex items-center text-sm font-medium transition-colors group relative rounded-md outline-none focus-visible:ring-1 focus-visible:ring-ring',
-        isCollapsed ? 'justify-center h-8 w-8 mx-auto px-0' : 'gap-2.5 mx-1 px-2.5 h-8',
+        'flex items-center text-xs font-medium transition-colors group relative rounded-lg outline-none focus-visible:ring-1 focus-visible:ring-ring/40 border',
+        isCollapsed
+          ? 'justify-center h-8 w-8 mx-auto px-0 border-transparent'
+          : 'gap-2.5 mx-1 px-3 h-8',
         isActive
-          ? 'bg-muted text-foreground font-medium'
+          ? 'bg-muted/70 text-foreground font-semibold border-border/50 shadow-xs'
           : isRestrictedWhenExpired
-            ? 'text-muted-foreground/60 hover:text-foreground hover:bg-muted/30 opacity-75'
-            : 'text-muted-foreground hover:text-foreground hover:bg-muted/60',
+            ? 'text-muted-foreground/60 hover:text-foreground hover:bg-muted/30 opacity-75 border-transparent'
+            : 'text-muted-foreground hover:text-foreground hover:bg-muted/40 border-transparent',
       )}
     >
       {renderItemIcon(
@@ -85,10 +87,10 @@ export const SidebarNavItem = React.memo(function SidebarNavItem({
         cn(
           'h-4 w-4 shrink-0',
           isActive
-            ? 'text-foreground'
+            ? 'text-primary'
             : isRestrictedWhenExpired
               ? 'text-muted-foreground/50'
-              : 'text-muted-foreground group-hover:text-foreground',
+              : 'text-muted-foreground/80 group-hover:text-foreground',
         ),
       )}
       {!isCollapsed && (

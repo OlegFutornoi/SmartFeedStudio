@@ -1,8 +1,6 @@
 'use client';
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Receipt, Download } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { api } from '@/lib/api';
 import { PaymentTransactionDto, PaymentStatsDto } from '@smartfeed/shared';
@@ -79,31 +77,6 @@ export default function TransactionsPage() {
       data-testid="transactions-page"
       className="flex flex-col gap-6 max-w-7xl animate-in fade-in duration-300"
     >
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-border">
-        <div>
-          <h1
-            data-testid="transactions-header-title"
-            className="text-2xl font-semibold tracking-tight text-foreground flex items-center gap-2.5"
-          >
-            <Receipt className="size-6 text-primary" />
-            <span>{isUk ? 'Журнал транзакцій' : 'Payment Transactions'}</span>
-          </h1>
-          <p className="text-xs text-muted-foreground mt-1">
-            {isUk
-              ? 'Історія всіх оплат, виставлених рахунків, статусів WayForPay та фінансової аналітики'
-              : 'Audit log of all client invoices, WayForPay transactions, payment statuses, and revenue analytics'}
-          </p>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" disabled className="h-8 text-xs gap-1.5 opacity-60">
-            <Download className="size-3.5" />
-            <span>{isUk ? 'Експорт CSV' : 'Export CSV'}</span>
-          </Button>
-        </div>
-      </div>
-
       {/* Stats Cards */}
       <TransactionStatsCards stats={stats} isUk={isUk} />
 

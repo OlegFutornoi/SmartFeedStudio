@@ -7,7 +7,6 @@ import { PlanCard } from '@/components/plans/PlanCard';
 import { PlanComparisonTable } from '@/components/plans/PlanComparisonTable';
 import { PaymentCheckoutModal } from '@/components/plans/PaymentCheckoutModal';
 import { PlansPageHeader } from '@/components/plans/PlansPageHeader';
-import { CurrentLicenseBanner } from '@/components/plans/CurrentLicenseBanner';
 import { Badge } from '@/components/ui/badge';
 import { usePlansPageData } from '@/hooks/usePlansPageData';
 
@@ -112,9 +111,6 @@ export const PlansPage: React.FC = () => {
           <p className="text-sm font-medium">{errorMessage}</p>
         </div>
       )}
-
-      {/* Current License Status Dashboard Banner */}
-      {currentLicense && <CurrentLicenseBanner currentLicense={currentLicense} />}
 
       {/* Main Content: Loader OR (Cards View / Comparison Table) */}
       {isLoading && plans.length === 0 ? (

@@ -1,6 +1,6 @@
 {
   "name": "smartfeed-studio-monorepo",
-  "version": "1.19.0",
+  "version": "1.19.1",
   "private": true,
   "description": "SmartFeed Studio Monorepo - Tauri v2, Next.js Admin Portal, NestJS CQRS API, and Shared Packages",
   "packageManager": "pnpm@9.15.4",

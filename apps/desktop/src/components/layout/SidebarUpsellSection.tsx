@@ -76,8 +76,8 @@ export const SidebarUpsellSection: React.FC<SidebarUpsellSectionProps> = ({
               data-testid={`nav-item-${item.key}`}
               data-upsell-item={item.key}
               className={cn(
-                'flex items-center text-sm font-medium transition-all group relative rounded-lg',
-                isCollapsed ? 'justify-center h-9 w-9 mx-auto px-0' : 'space-x-3 mx-2 px-3 py-2',
+                'flex items-center text-xs font-medium transition-all group relative rounded-lg',
+                isCollapsed ? 'justify-center h-8 w-8 mx-auto px-0' : 'gap-2.5 mx-1 px-3 h-8',
                 isActive
                   ? 'bg-accent text-accent-foreground font-semibold'
                   : 'text-muted-foreground/80 hover:text-foreground hover:bg-accent/40',

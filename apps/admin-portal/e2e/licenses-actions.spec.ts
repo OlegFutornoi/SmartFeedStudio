@@ -28,6 +28,10 @@ test.describe('Admin Portal — Дії та Модалки Ліцензій (E2E
     });
 
     await page.route(/\/api\/licenses\/[^/]+$/, async (route) => {
+      if (route.request().url().includes('/licenses/admin')) {
+        await route.fallback();
+        return;
+      }
       if (route.request().method() === 'DELETE') {
         const id = route.request().url().split('/')[5];
         licensesList = licensesList.filter((l) => l.id !== id);
@@ -36,7 +40,9 @@ test.describe('Admin Portal — Дії та Модалки Ліцензій (E2E
           contentType: 'application/json',
           body: JSON.stringify({ success: true }),
         });
+        return;
       }
+      await route.fallback();
     });
   });
 

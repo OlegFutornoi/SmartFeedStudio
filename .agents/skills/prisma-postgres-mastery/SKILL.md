@@ -20,6 +20,7 @@ Enterprise database engineering standard for PostgreSQL 16 + Prisma ORM in NestJ
 3. **Time-Ordered CUID Primary Keys**: Use `@id @default(cuid())` to prevent B-tree fragmentation during high-volume feed imports.
 4. **Timezone-Aware Timestamps**: All timestamps must be `DateTime` in Prisma mapped to `timestamptz` in PostgreSQL (`@default(now())`).
 5. **Composite & Filtered Indexes**: Composite indexes must align with actual query filters (e.g. `@@index([userId, isActive])`, `@@index([targetApp, isVisible, order])`).
+6. **Upfront Research via `context7` & `postgres` MCP**: Before changing schema or writing complex queries, verify Prisma API signatures via `context7` (`/prisma/prisma`) and execution plans via `postgres` MCP (`explain_query`).
 
 ## ⚙️ 2. Connection Pooling & Transaction Safety
 

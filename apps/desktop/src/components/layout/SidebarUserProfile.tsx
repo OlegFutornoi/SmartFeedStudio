@@ -1,7 +1,8 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LogOut, Building2, MoreVertical, BadgeCheck, CreditCard } from 'lucide-react';
+import { LogOut, MoreVertical, BadgeCheck, CreditCard, Settings } from 'lucide-react';
 import { UserProfile } from '@smartfeed/shared';
+import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   DropdownMenu,
@@ -45,18 +46,24 @@ export const SidebarUserProfile = React.memo(function SidebarUserProfile({
   const displayEmail = user?.email || 'user@smartfeed.studio';
 
   return (
-    <div className="p-2 mt-auto border-t border-border/40">
+    <div
+      className={cn(
+        'py-2 mt-auto border-t border-border/40',
+        isCollapsed ? 'px-0 flex justify-center' : 'px-2',
+      )}
+    >
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <button
             type="button"
             data-testid="sidebar-user-trigger"
-            className={`w-full flex items-center gap-2 p-1.5 rounded-md transition-colors text-left outline-none focus-visible:ring-1 focus-visible:ring-ring hover:bg-muted/70 data-[state=open]:bg-muted/80 ${
-              isCollapsed ? 'justify-center p-1.5' : ''
-            }`}
+            className={cn(
+              'flex items-center rounded-md transition-colors text-left outline-none focus-visible:ring-1 focus-visible:ring-ring hover:bg-muted/70 data-[state=open]:bg-muted/80 cursor-pointer',
+              isCollapsed ? 'justify-center h-8 w-8 mx-auto p-0' : 'w-full gap-2.5 p-1.5',
+            )}
             title={isCollapsed ? displayName : undefined}
           >
-            <Avatar className="h-7 w-7 rounded-md border border-border shrink-0">
+            <Avatar className="h-8 w-8 rounded-md border border-border shrink-0">
               <AvatarImage src={user?.avatarUrl || undefined} alt={displayName} />
               <AvatarFallback className="bg-primary/20 text-primary font-bold text-xs rounded-md">
                 {getInitials(user?.fullName, user?.email)}
@@ -68,25 +75,21 @@ export const SidebarUserProfile = React.memo(function SidebarUserProfile({
                 <div className="flex-1 min-w-0">
                   <p
                     data-testid="sidebar-user-fullname"
-                    className="text-xs font-medium text-foreground truncate leading-tight"
+                    className="text-xs font-semibold text-foreground truncate leading-tight"
                   >
                     {displayName}
                   </p>
-                  {user?.organization && (
-                    <p
-                      data-testid="sidebar-user-organization"
-                      className="text-[10px] text-primary/90 font-medium truncate flex items-center gap-1 leading-tight"
-                    >
-                      <Building2 className="size-2.5 shrink-0" />
-                      <span className="truncate">{user.organization.name}</span>
-                    </p>
-                  )}
                   <p
                     data-testid="user-email"
-                    className="text-[10px] text-muted-foreground truncate font-mono leading-tight"
+                    className="text-[11px] text-muted-foreground truncate leading-tight mt-0.5"
                   >
                     <span data-testid="sidebar-user-email">{displayEmail}</span>
                   </p>
+                  {user?.organization && (
+                    <span data-testid="sidebar-user-organization" className="hidden">
+                      {user.organization.name}
+                    </span>
+                  )}
                 </div>
                 <MoreVertical className="h-4 w-4 text-muted-foreground shrink-0 ml-auto" />
               </>
@@ -110,22 +113,31 @@ export const SidebarUserProfile = React.memo(function SidebarUserProfile({
               </Avatar>
               <div className="grid flex-1 text-left text-xs leading-tight min-w-0">
                 <span className="truncate font-semibold text-foreground">{displayName}</span>
-                <span className="truncate text-[10px] text-muted-foreground font-mono">
-                  {displayEmail}
-                </span>
+                <span className="truncate text-[11px] text-muted-foreground">{displayEmail}</span>
               </div>
             </div>
           </DropdownMenuLabel>
+
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
             <DropdownMenuItem
-              onClick={() => navigate('/settings')}
+              data-testid="sidebar-profile-link"
+              onClick={() => navigate('/profile')}
               className="flex items-center gap-2 cursor-pointer text-xs"
             >
               <BadgeCheck className="h-3.5 w-3.5 text-muted-foreground" />
-              <span>{isUk ? 'Обліковий запис' : 'Account'}</span>
+              <span>{isUk ? 'Профіль' : 'Profile'}</span>
             </DropdownMenuItem>
             <DropdownMenuItem
+              data-testid="sidebar-settings-link"
+              onClick={() => navigate('/settings')}
+              className="flex items-center gap-2 cursor-pointer text-xs"
+            >
+              <Settings className="h-3.5 w-3.5 text-muted-foreground" />
+              <span>{isUk ? 'Налаштування' : 'Settings'}</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              data-testid="sidebar-plans-link"
               onClick={() => navigate('/plans')}
               className="flex items-center gap-2 cursor-pointer text-xs"
             >

@@ -48,7 +48,7 @@ export async function inviteOrganizationMember(
   payload: { email: string; role?: string },
 ): Promise<{ success?: boolean; inviteUrl?: string; [key: string]: unknown }> {
   const response = await fetchWithAuth(
-    `/organizations/${id}/members`,
+    `/organizations/${id}/invitations`,
     {
       method: 'POST',
       headers: {

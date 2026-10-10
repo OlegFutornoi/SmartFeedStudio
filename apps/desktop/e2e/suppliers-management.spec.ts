@@ -21,7 +21,6 @@ test.describe('Desktop App — Постачальники та ліміти', ()
     await expect(page.getByTestId('products-quota-card')).toBeVisible();
     await expect(page.getByTestId('feeds-quota-card')).toBeVisible();
 
-    // Verify supplier card
     await expect(page.getByText('Livolo Офіційний')).toBeVisible();
     await expect(page.getByText('+25% +100 ₴')).toBeVisible();
 
@@ -110,17 +109,16 @@ test.describe('Desktop App — Постачальники та ліміти', ()
       'Ліміт постачальників вичерпано. Підвищіть тариф або видаліть зайвих постачальників.',
     );
 
-    // Import feed header button should be disabled
-    const importFeedBtn = page.getByTestId('import-feed-header-btn');
-    await expect(importFeedBtn).toBeDisabled();
-    await expect(importFeedBtn).toHaveAttribute(
+    // Import feed button should not exist in toolbar (zero duplicate CTA)
+    await expect(page.getByTestId('import-feed-header-btn')).not.toBeVisible();
+
+    // Supplier card import button should be disabled with feed limit tooltip
+    const cardImportBtn = page.getByTestId('supplier-card-import-btn-sup_test_1');
+    await expect(cardImportBtn).toBeDisabled();
+    await expect(cardImportBtn).toHaveAttribute(
       'title',
       'Ліміт джерел фідів вичерпано. Підвищіть тариф або видаліть зайві фіди.',
     );
-
-    // Supplier card import button should be disabled
-    const cardImportBtn = page.getByTestId('supplier-card-import-btn-sup_test_1');
-    await expect(cardImportBtn).toBeDisabled();
   });
 
   test('модальне вікно підтвердження видалення фіду ConfirmDeleteDialog замість системного confirm()', async ({

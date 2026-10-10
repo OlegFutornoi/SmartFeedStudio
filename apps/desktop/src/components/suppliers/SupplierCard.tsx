@@ -40,17 +40,17 @@ export function SupplierCard({
     (supplier.defaultMarginPercent || 0) > 0 || (supplier.defaultFixedMarkup || 0) > 0;
 
   return (
-    <Card className="border-border/80 bg-card/60 backdrop-blur-md hover:border-primary/40 transition-all duration-200 shadow-sm flex flex-col justify-between overflow-hidden">
-      <CardHeader className="pb-3">
+    <Card className="border-border/70 bg-card hover:border-primary/40 transition-all duration-200 shadow-xs flex flex-col justify-between overflow-hidden">
+      <CardHeader className="p-4 pb-2.5">
         <div className="flex items-start justify-between gap-2">
-          <div className="space-y-1 min-w-0 flex-1">
+          <div className="space-y-0.5 min-w-0 flex-1">
             <div className="flex items-center gap-2 flex-wrap">
-              <CardTitle className="text-base font-semibold text-foreground truncate max-w-[160px]">
+              <CardTitle className="text-sm font-semibold text-foreground truncate max-w-[160px]">
                 {supplier.name}
               </CardTitle>
               <Badge
                 variant="outline"
-                className="text-[10px] font-mono tracking-wider bg-secondary/50 shrink-0"
+                className="text-[10px] font-mono tracking-wider bg-muted/50 shrink-0"
               >
                 {supplier.code}
               </Badge>
@@ -71,23 +71,23 @@ export function SupplierCard({
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-4 pt-0">
-        {/* Pricing Markup Pill */}
+      <CardContent className="space-y-2.5 p-4 pt-0">
+        {/* Pricing Markup Row */}
         <button
           type="button"
           onClick={() => onPricingRules && onPricingRules(supplier)}
-          className="w-full p-2.5 rounded-lg bg-secondary/30 border border-border/50 flex items-center justify-between text-xs hover:border-primary/40 hover:bg-secondary/60 transition-colors text-left group cursor-pointer"
+          className="w-full px-2.5 py-1.5 rounded-md bg-muted/40 border border-border/40 flex items-center justify-between text-xs hover:border-primary/40 hover:bg-muted/70 transition-colors text-left group cursor-pointer"
           title={t('suppliers:pricingRulesTooltip', {
             defaultValue: 'Налаштувати правила націнки за категоріями та діапазонами цін',
           })}
           data-testid={`supplier-pricing-rules-btn-${supplier.id}`}
         >
-          <span className="text-muted-foreground flex items-center gap-1.5 font-medium group-hover:text-primary transition-colors">
-            <Percent className="size-3.5 text-primary shrink-0" />
+          <span className="text-muted-foreground flex items-center gap-1.5 font-medium group-hover:text-primary transition-colors text-xs">
+            <Percent className="size-3 text-primary shrink-0" />
             {t('suppliers:markup')}:
           </span>
           <div className="flex items-center gap-1.5 truncate ml-2">
-            <span className="font-semibold text-foreground font-mono truncate">
+            <span className="font-semibold text-foreground font-mono text-xs truncate">
               {hasMarkup ? (
                 <>
                   {supplier.defaultMarginPercent > 0 && `+${supplier.defaultMarginPercent}% `}
@@ -105,13 +105,13 @@ export function SupplierCard({
 
         {/* Stats Row */}
         <div className="grid grid-cols-2 gap-2 text-xs">
-          <div className="flex items-center gap-2 p-2 rounded-md bg-background/40 border border-border/40 min-w-0">
+          <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-md bg-muted/20 border border-border/40 min-w-0">
             <ShoppingBag className="size-3.5 text-primary shrink-0" />
             <div className="truncate min-w-0">
               <div className="text-[10px] text-muted-foreground leading-none truncate">
                 {t('suppliers:totalProducts')}
               </div>
-              <div className="font-semibold text-foreground mt-0.5 font-mono truncate">
+              <div className="font-semibold text-foreground mt-0.5 font-mono truncate text-xs">
                 {supplier.productsCount ?? 0}
               </div>
             </div>
@@ -120,18 +120,18 @@ export function SupplierCard({
           <button
             type="button"
             onClick={() => onViewFeeds && onViewFeeds(supplier)}
-            className="flex items-center gap-2 p-2 rounded-md bg-background/40 border border-border/40 min-w-0 text-left hover:bg-secondary/60 hover:border-primary/40 transition-colors cursor-pointer group"
+            className="flex items-center gap-2 px-2.5 py-1.5 rounded-md bg-muted/20 border border-border/40 min-w-0 text-left hover:bg-muted/50 hover:border-primary/40 transition-colors cursor-pointer group"
             title={t('suppliers:viewConnectedFeedsTooltip', {
               defaultValue: 'Переглянути підключені фіди',
             })}
             data-testid={`view-supplier-feeds-btn-${supplier.id}`}
           >
-            <Radio className="size-3.5 text-foreground shrink-0 group-hover:scale-110 transition-transform" />
+            <Radio className="size-3.5 text-foreground shrink-0 group-hover:scale-105 transition-transform" />
             <div className="truncate min-w-0">
               <div className="text-[10px] text-muted-foreground leading-none truncate group-hover:text-primary transition-colors">
                 {t('suppliers:activeFeeds')}
               </div>
-              <div className="font-semibold text-foreground mt-0.5 font-mono truncate">
+              <div className="font-semibold text-foreground mt-0.5 font-mono truncate text-xs">
                 {supplier.activeFeedsCount ?? 0}
               </div>
             </div>
@@ -139,33 +139,35 @@ export function SupplierCard({
         </div>
 
         {/* Contact Links */}
-        <div className="space-y-1 text-[11px] text-muted-foreground pt-1 border-t border-border/40">
-          {supplier.contactEmail && (
-            <div className="flex items-center gap-1.5 truncate">
-              <Mail className="size-3 shrink-0" />
-              <span className="truncate">{supplier.contactEmail}</span>
-            </div>
-          )}
-          {supplier.contactPhone && (
-            <div className="flex items-center gap-1.5 truncate">
-              <Phone className="size-3 shrink-0" />
-              <span className="truncate">{supplier.contactPhone}</span>
-            </div>
-          )}
-          {supplier.website && (
-            <div className="flex items-center gap-1.5 truncate">
-              <Globe className="size-3 shrink-0" />
-              <a
-                href={supplier.website}
-                target="_blank"
-                rel="noreferrer"
-                className="text-primary hover:underline truncate"
-              >
-                {supplier.website.replace(/^https?:\/\//, '')}
-              </a>
-            </div>
-          )}
-        </div>
+        {(supplier.contactEmail || supplier.contactPhone || supplier.website) && (
+          <div className="space-y-1 text-[11px] text-muted-foreground pt-1 border-t border-border/40">
+            {supplier.contactEmail && (
+              <div className="flex items-center gap-1.5 truncate">
+                <Mail className="size-3 shrink-0" />
+                <span className="truncate">{supplier.contactEmail}</span>
+              </div>
+            )}
+            {supplier.contactPhone && (
+              <div className="flex items-center gap-1.5 truncate">
+                <Phone className="size-3 shrink-0" />
+                <span className="truncate">{supplier.contactPhone}</span>
+              </div>
+            )}
+            {supplier.website && (
+              <div className="flex items-center gap-1.5 truncate">
+                <Globe className="size-3 shrink-0" />
+                <a
+                  href={supplier.website}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-primary hover:underline truncate"
+                >
+                  {supplier.website.replace(/^https?:\/\//, '')}
+                </a>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Action Footer Bar */}
         <div className="flex items-center gap-2 pt-2 border-t border-border/40">
@@ -173,7 +175,7 @@ export function SupplierCard({
             <Button
               variant="outline"
               size="sm"
-              className="flex-1 text-xs h-8 bg-primary/10 border-primary/20 text-primary hover:bg-primary/20 hover:text-primary font-medium flex items-center justify-center gap-1.5 truncate disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 text-xs h-8 font-medium flex items-center justify-center gap-1.5 truncate hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed"
               onClick={() => onImportFeed(supplier)}
               disabled={isFeedLimitReached}
               title={
@@ -186,7 +188,7 @@ export function SupplierCard({
               }
               data-testid={`supplier-card-import-btn-${supplier.id}`}
             >
-              <Radio className="size-3.5 shrink-0" />
+              <Radio className="size-3.5 shrink-0 text-primary" />
               <span className="truncate">
                 {t('suppliers:importFeedBtn', { defaultValue: 'Підключити фід' })}
               </span>
@@ -198,7 +200,7 @@ export function SupplierCard({
               <Button
                 variant="ghost"
                 size="icon"
-                className="size-8 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-lg"
+                className="size-8 text-muted-foreground hover:text-primary hover:bg-muted rounded-lg"
                 onClick={() => onPricingRules(supplier)}
                 title={t('suppliers:pricingRulesButtonTooltip', {
                   defaultValue: 'Правила націнки',
@@ -212,7 +214,7 @@ export function SupplierCard({
               <Button
                 variant="ghost"
                 size="icon"
-                className="size-8 text-muted-foreground hover:text-foreground rounded-lg hover:bg-secondary/60"
+                className="size-8 text-muted-foreground hover:text-foreground rounded-lg hover:bg-muted"
                 onClick={() => onEdit(supplier)}
                 title={t('common:edit', { defaultValue: 'Редагувати' })}
               >

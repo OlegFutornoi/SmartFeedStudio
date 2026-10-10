@@ -24,5 +24,17 @@
   "avatar": "Profile Avatar",
   "changeAvatar": "Change photo",
   "removeAvatar": "Remove",
-  "avatarHint": "Image is automatically optimized and stored locally"
+  "avatarHint": "Image is automatically optimized and stored locally",
+  "profileTitle": "User Profile",
+  "profileSubtitle": "Personal details, avatar and account security",
+  "settingsDesc": "Configure interface appearance, storage and platform preferences",
+  "appearanceTab": "Appearance",
+  "subscriptionTitle": "Subscription & Status",
+  "activePlan": "Active Plan",
+  "systemStatus": "Connection Status",
+  "online": "Online",
+  "unlimited": "Unlimited",
+  "expired": "Expired",
+  "daysRemaining": "{{days}} days",
+  "managePlans": "Manage Plans"
 }

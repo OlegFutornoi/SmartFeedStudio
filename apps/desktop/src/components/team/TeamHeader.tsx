@@ -42,18 +42,18 @@ export const TeamHeader: React.FC<TeamHeaderProps> = ({
 
   return (
     <div
-      className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-border"
+      className="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-4 border-b border-border/40"
       data-testid="team-header"
     >
-      <div className="flex items-center gap-3.5">
-        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-secondary text-foreground border border-border shadow-sm shrink-0">
-          <Building2 className="h-6 w-6 text-primary" />
+      <div className="flex items-center gap-3">
+        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-secondary/80 text-foreground border border-border/80 shadow-xs shrink-0">
+          <Building2 className="h-4.5 w-4.5 text-primary" />
         </div>
         <div>
           <div className="flex items-center gap-2 flex-wrap">
             <h1
               data-testid="company-title"
-              className="text-2xl font-bold tracking-tight text-foreground"
+              className="text-lg font-semibold tracking-tight text-foreground"
             >
               {organizationName}
             </h1>

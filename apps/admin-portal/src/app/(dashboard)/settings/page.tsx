@@ -1,43 +1,118 @@
 'use client';
 
 import React from 'react';
-import { Settings } from 'lucide-react';
-import { useAuth } from '@/contexts/AuthContext';
+import Link from 'next/link';
+import { Sliders, CreditCard, Bot, ArrowRight, ShieldCheck, Sparkles } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { ThemeCustomizer } from '@/components/theme/theme-customizer';
-import { ProfileInfoCard } from '@/components/profile/ProfileInfoCard';
-import { ChangePasswordCard } from '@/components/profile/ChangePasswordCard';
 
 export default function SettingsPage() {
-  const { user } = useAuth();
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
+  const isUk = locale === 'uk';
 
   return (
-    <div data-testid="settings-page" className="space-y-6 w-full animate-in fade-in duration-300">
-      {/* Sleek Minimalist Page Header */}
-      <div>
-        <h1
-          data-testid="settings-header-title"
-          className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl flex items-center gap-2.5"
-        >
-          <Settings className="size-6 text-primary shrink-0" />
-          <span>{t('settings', 'title')}</span>
-        </h1>
-        <p data-testid="settings-header-subtitle" className="text-sm text-muted-foreground mt-0.5">
-          {t('settings', 'subtitle')}
+    <div
+      data-testid="settings-page"
+      className="space-y-6 w-full animate-in fade-in duration-300 max-w-5xl"
+    >
+      <span data-testid="settings-header-subtitle" className="sr-only">
+        {t('settings', 'subtitle')}
+      </span>
+
+      {/* Top Header Section */}
+      <div className="flex flex-col gap-1 pb-2 border-b border-border/40">
+        <div className="flex items-center gap-2">
+          <Sliders className="size-5 text-muted-foreground" />
+          <h1 className="text-lg font-semibold tracking-tight text-foreground">
+            {isUk ? 'Налаштування платформи' : 'Platform Settings'}
+          </h1>
+        </div>
+        <p className="text-xs text-muted-foreground">
+          {isUk
+            ? 'Керування оформленням інтерфейсу, платіжними шлюзами та інтеграціями'
+            : 'Configure interface appearance, payment gateways, and system integrations'}
         </p>
       </div>
 
-      {/* Top Section: Executive Administrator Profile Card */}
-      <ProfileInfoCard user={user} />
-
-      {/* Bottom Section: 2 Balanced Columns for Security & Appearance */}
-      <div className="grid gap-6 lg:grid-cols-2 items-start">
-        {/* Left Column: Account Security & Password */}
-        <ChangePasswordCard />
-
-        {/* Right Column: Appearance & Theming */}
+      {/* 1. Theme & Appearance Section */}
+      <div className="w-full">
         <ThemeCustomizer />
+      </div>
+
+      {/* 2. Platform Integrations: Payments & AI */}
+      <div className="grid gap-6 md:grid-cols-2 items-stretch">
+        {/* Payment Gateways Card */}
+        <Card className="border-border/80 bg-card/60 backdrop-blur-xs shadow-xs flex flex-col justify-between">
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <CreditCard className="size-4 text-primary" />
+                <CardTitle className="text-sm font-semibold">
+                  {isUk ? 'Платіжні системи' : 'Payment Gateways'}
+                </CardTitle>
+              </div>
+              <Badge variant="outline" className="text-[10px] gap-1 font-mono">
+                <ShieldCheck className="size-2.5 text-emerald-500" />
+                <span>WayForPay</span>
+              </Badge>
+            </div>
+            <CardDescription className="text-xs">
+              {isUk
+                ? 'Налаштування онлайн-оплат, мерчантів, валюти та Webhook-сповіщень'
+                : 'Configure merchant keys, payment webhooks, and billing providers'}
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="pt-0">
+            <Link href="/settings/payments">
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full h-8 text-xs gap-1.5 justify-between"
+              >
+                <span>{isUk ? 'Керувати платежами' : 'Manage Payments'}</span>
+                <ArrowRight className="size-3.5 text-muted-foreground" />
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+
+        {/* AI Providers Card */}
+        <Card className="border-border/80 bg-card/60 backdrop-blur-xs shadow-xs flex flex-col justify-between">
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Bot className="size-4 text-primary" />
+                <CardTitle className="text-sm font-semibold">
+                  {isUk ? 'AI Інтеграції & Моделі' : 'AI Integrations & Models'}
+                </CardTitle>
+              </div>
+              <Badge variant="outline" className="text-[10px] gap-1 font-mono">
+                <Sparkles className="size-2.5 text-amber-500" />
+                <span>3 {isUk ? 'провайдери' : 'providers'}</span>
+              </Badge>
+            </div>
+            <CardDescription className="text-xs">
+              {isUk
+                ? 'Провайдери OpenAI GPT-4o, Anthropic Claude та Google Gemini'
+                : 'Configure OpenAI, Anthropic Claude, and Google Gemini API keys'}
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="pt-0">
+            <Link href="/settings/ai">
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full h-8 text-xs gap-1.5 justify-between"
+              >
+                <span>{isUk ? 'Налаштувати AI' : 'Configure AI'}</span>
+                <ArrowRight className="size-3.5 text-muted-foreground" />
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

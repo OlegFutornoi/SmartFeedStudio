@@ -5,9 +5,9 @@ description: Mandatory PostgreSQL & Prisma database skills and checklist — app
 
 # 🐘 SmartFeed Studio — Mandatory PostgreSQL & Database Skills Policy
 
-## Rule: Load ALL Database Skills Before ANY DB Work
+## Rule: Load ALL Database Skills & Update via `context7` Before ANY DB Work
 
-The agent MUST load and apply ALL of the following skills BEFORE making ANY change that touches the database layer — including `schema.prisma` modifications, new Prisma queries/mutations, migrations, index additions, or Prisma handler logic.
+The agent MUST load and apply ALL of the following skills and update official documentation via **`context7`** (`/prisma/prisma`, `/postgresql/postgresql`) and **`postgres`** MCP BEFORE making ANY change that touches the database layer — including `schema.prisma` modifications, new Prisma queries/mutations, migrations, index additions, or Prisma handler logic.
 
 ---
 
