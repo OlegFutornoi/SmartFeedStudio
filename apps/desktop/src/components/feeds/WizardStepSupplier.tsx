@@ -9,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Building2, Plus, Percent, RefreshCw, Layers } from 'lucide-react';
+import { Truck, Plus, Percent, RefreshCw, Layers } from 'lucide-react';
 import { useTranslation } from '@/i18n';
 
 interface WizardStepSupplierProps {
@@ -76,7 +76,7 @@ export function WizardStepSupplier({
             className="p-5 rounded-xl border border-dashed border-border bg-muted/20 flex flex-col items-center text-center space-y-3 animate-in fade-in duration-150"
           >
             <div className="size-10 rounded-full bg-primary/10 text-primary flex items-center justify-center">
-              <Building2 className="size-5" />
+              <Truck className="size-5" />
             </div>
             <div className="space-y-1">
               <h4 className="text-xs font-semibold text-foreground">

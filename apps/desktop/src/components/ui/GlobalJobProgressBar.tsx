@@ -4,7 +4,7 @@ import {
   Trash2,
   CheckCircle2,
   AlertCircle,
-  Building2,
+  Truck,
   FolderTree,
   X,
 } from 'lucide-react';
@@ -43,7 +43,7 @@ export function GlobalJobProgressBar() {
         case 'DELETE_CATEGORIES':
           return <Trash2 className="size-3.5 text-destructive shrink-0" />;
         case 'DELETE_SUPPLIER':
-          return <Building2 className="size-3.5 text-destructive shrink-0" />;
+          return <Truck className="size-3.5 text-destructive shrink-0" />;
         case 'SYNC':
           return <Radio className="size-3.5 text-primary shrink-0" />;
         default:

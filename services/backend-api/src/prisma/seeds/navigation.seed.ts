@@ -33,7 +33,7 @@ export const navigationItemsSeedData = [
     labelUk: 'Постачальники',
     labelEn: 'Suppliers',
     path: '/suppliers',
-    icon: 'Building2',
+    icon: 'Truck',
     order: 3,
     isVisible: true,
     requiredRoles: [Role.USER, Role.ADMIN, Role.SUPER_ADMIN],

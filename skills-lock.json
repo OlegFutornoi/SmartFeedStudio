@@ -239,6 +239,11 @@
       "sourceType": "local",
       "skillPath": "skills/browser-debugging/SKILL.md"
     },
+    "bullmq-jobs": {
+      "source": "local",
+      "sourceType": "local",
+      "skillPath": "skills/bullmq-jobs/SKILL.md"
+    },
     "canvas-design": {
       "source": "anthropics/skills",
       "sourceType": "github",
@@ -317,6 +322,12 @@
       "skillPath": "skills/emil-design-eng/SKILL.md",
       "computedHash": "51f2537e04d15911b41d78e2de24c36a0e26d41beae15e82a954fe5496a5eda9"
     },
+    "find-skills": {
+      "source": "vercel-labs/skills",
+      "sourceType": "github",
+      "skillPath": "skills/find-skills/SKILL.md",
+      "computedHash": "b146008599c31057cef1c145774cea5d5afb30e8f43fa802e47a4b461419aaaf"
+    },
     "firebase-security-rules-auditor": {
       "source": "firebase/agent-skills",
       "sourceType": "github",
@@ -359,6 +370,11 @@
       "skillPath": "skills/git-workflow-and-versioning/SKILL.md",
       "computedHash": "e8e0d1cc98c0a6b81d2979442ae92addae32cd5194fb5c4eac4ac5228b408770"
     },
+    "i18n-localization": {
+      "source": "local",
+      "sourceType": "local",
+      "skillPath": "skills/i18n-localization/SKILL.md"
+    },
     "idea-refine": {
       "source": "addyosmani/agent-skills",
       "sourceType": "github",
@@ -388,6 +404,11 @@
       "sourceType": "github",
       "skillPath": "skills/interview-me/SKILL.md",
       "computedHash": "4229002dd862e6e037c8a01c3e31d9af097465c58b2c3611912edb2af005f303"
+    },
+    "mock-real-parity": {
+      "source": "local",
+      "sourceType": "local",
+      "skillPath": "skills/mock-real-parity/SKILL.md"
     },
     "modern-web-guidance": {
       "source": "googlechrome/modern-web-guidance",
@@ -478,6 +499,11 @@
       "sourceType": "github",
       "skillPath": "skills/requesting-code-review/SKILL.md",
       "computedHash": "2abaeac1de432c76abda0ca7ba618901d2e94f8817b3650f9c523acea2d224f5"
+    },
+    "rust-native-backend": {
+      "source": "local",
+      "sourceType": "local",
+      "skillPath": "skills/rust-native-backend/SKILL.md"
     },
     "security-and-hardening": {
       "source": "addyosmani/agent-skills",
@@ -610,26 +636,6 @@
       "sourceType": "github",
       "skillPath": "skills/webapp-testing/SKILL.md",
       "computedHash": "ad5b1fc52807e9afa4635e59218a026b164dc58b6c3f41b0f7c644dcd6ccf572"
-    },
-    "i18n-localization": {
-      "source": "local",
-      "sourceType": "local",
-      "skillPath": "skills/i18n-localization/SKILL.md"
-    },
-    "rust-native-backend": {
-      "source": "local",
-      "sourceType": "local",
-      "skillPath": "skills/rust-native-backend/SKILL.md"
-    },
-    "mock-real-parity": {
-      "source": "local",
-      "sourceType": "local",
-      "skillPath": "skills/mock-real-parity/SKILL.md"
-    },
-    "bullmq-jobs": {
-      "source": "local",
-      "sourceType": "local",
-      "skillPath": "skills/bullmq-jobs/SKILL.md"
     }
   }
 }

@@ -8,9 +8,13 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { TableRow, TableCell } from '@/components/ui/table';
 import { useTranslation } from '@/i18n';
 import type { ProductDto, SupplierDto } from '@smartfeed/shared';
 import { ProductImageThumbnail } from '@/components/products/ProductImageThumbnail';
+
+export type ProductColumnId =
+  'select' | 'image' | 'sku' | 'title' | 'supplier' | 'price' | 'margin' | 'stock' | 'actions';
 
 interface ProductTableRowProps {
   product: ProductDto;
@@ -19,6 +23,7 @@ interface ProductTableRowProps {
   onToggleSelect: (id: string) => void;
   onViewDetails: (product: ProductDto) => void;
   onDeleteProduct: (product: ProductDto) => void;
+  visibleColumns?: Record<ProductColumnId, boolean>;
 }
 
 export const ProductTableRow: React.FC<ProductTableRowProps> = ({
@@ -28,6 +33,7 @@ export const ProductTableRow: React.FC<ProductTableRowProps> = ({
   onToggleSelect,
   onViewDetails,
   onDeleteProduct,
+  visibleColumns,
 }) => {
   const { t } = useTranslation(['catalogs', 'common']);
   const [copied, setCopied] = useState(false);
@@ -60,36 +66,38 @@ export const ProductTableRow: React.FC<ProductTableRowProps> = ({
   })();
 
   return (
-    <tr
+    <TableRow
       data-testid={`product-row-${product.id}`}
       className={`group hover:bg-muted/40 transition-colors border-b border-border/40 ${
         isSelected ? 'bg-primary/5' : ''
       }`}
     >
       {/* Selection checkbox */}
-      <td className="py-3 px-3 w-10 text-center">
+      <TableCell className="px-3 py-2 w-10 text-center">
         <input
           type="checkbox"
           data-testid={`product-checkbox-${product.id}`}
           checked={isSelected}
           onChange={() => onToggleSelect(product.id)}
-          className="rounded border-input accent-primary focus:ring-primary h-4 w-4 cursor-pointer"
+          className="rounded border-input accent-primary focus:ring-primary h-3.5 w-3.5 cursor-pointer"
         />
-      </td>
+      </TableCell>
 
       {/* Image Thumbnail */}
-      <td className="py-3 px-2 w-14 text-center">
-        <ProductImageThumbnail
-          image={mainImage}
-          alt={product.titleUk}
-          size="md"
-          dataTestId={`product-thumbnail-${product.id}`}
-          imageClassName="group-hover:scale-105 transition-transform duration-200"
-        />
-      </td>
+      {visibleColumns?.image !== false && (
+        <TableCell className="px-2 py-2 w-14 text-center">
+          <ProductImageThumbnail
+            image={mainImage}
+            alt={product.titleUk}
+            size="md"
+            dataTestId={`product-thumbnail-${product.id}`}
+            imageClassName="group-hover:scale-105 transition-transform duration-200"
+          />
+        </TableCell>
+      )}
 
       {/* SKU & Code */}
-      <td className="py-3 px-3 min-w-[120px]">
+      <TableCell className="px-3 py-2 min-w-[120px]">
         <div className="flex items-center gap-1.5">
           <span className="font-mono text-xs font-semibold text-foreground">{product.sku}</span>
           <button
@@ -103,14 +111,14 @@ export const ProductTableRow: React.FC<ProductTableRowProps> = ({
           </button>
         </div>
         {product.barcode && (
-          <span className="font-mono text-xs text-muted-foreground/80 block mt-0.5">
+          <span className="font-mono text-[11px] text-muted-foreground/80 block mt-0.5">
             {product.barcode}
           </span>
         )}
-      </td>
+      </TableCell>
 
       {/* Title & Category */}
-      <td className="py-3 px-3 max-w-[280px]">
+      <TableCell className="px-3 py-2 max-w-[280px]">
         <div
           onClick={() => onViewDetails(product)}
           className="font-medium text-xs text-foreground truncate hover:text-primary cursor-pointer transition-colors leading-relaxed"
@@ -118,93 +126,101 @@ export const ProductTableRow: React.FC<ProductTableRowProps> = ({
         >
           {product.titleUk}
         </div>
-        <div className="flex items-center gap-1.5 mt-1">
+        <div className="flex items-center gap-1.5 mt-0.5">
           {product.categoryNameUk ? (
             <Badge
               variant="outline"
-              className="text-xs font-normal py-0 px-2 bg-secondary/50 text-muted-foreground border-border/50"
+              className="text-[10px] h-4.5 font-normal py-0 px-1.5 bg-secondary/50 text-muted-foreground border-border/50"
             >
               {product.categoryNameUk}
             </Badge>
           ) : null}
           {product.vendor ? (
-            <span className="text-xs text-muted-foreground/80">{product.vendor}</span>
+            <span className="text-[11px] text-muted-foreground/80">{product.vendor}</span>
           ) : null}
         </div>
-      </td>
+      </TableCell>
 
       {/* Supplier */}
-      <td className="py-3 px-3">
-        <Badge
-          variant="outline"
-          data-testid={`product-supplier-badge-${product.id}`}
-          className="text-xs font-medium bg-secondary/40 text-foreground border-border/60 max-w-[140px] truncate"
-        >
-          {resolvedSupplierName}
-        </Badge>
-      </td>
+      {visibleColumns?.supplier !== false && (
+        <TableCell className="px-3 py-2">
+          <Badge
+            variant="outline"
+            data-testid={`product-supplier-badge-${product.id}`}
+            className="text-[10px] h-5 px-1.5 font-medium bg-secondary/40 text-foreground border-border/60 max-w-[140px] truncate"
+          >
+            {resolvedSupplierName}
+          </Badge>
+        </TableCell>
+      )}
 
       {/* Cost & Retail Price */}
-      <td className="py-3 px-3">
-        <div className="space-y-0.5">
-          <div className="text-xs font-semibold text-foreground tabular-nums">
-            {product.price?.toLocaleString()} {product.currency || 'UAH'}
-          </div>
-          {product.costPrice !== undefined && product.costPrice > 0 && (
-            <div className="text-xs text-muted-foreground/80 tabular-nums">
-              {t('catalogs:colCostPrice')}: {product.costPrice.toLocaleString()}{' '}
-              {product.currency || 'UAH'}
+      {visibleColumns?.price !== false && (
+        <TableCell className="px-3 py-2">
+          <div className="space-y-0.5">
+            <div className="text-xs font-semibold text-foreground tabular-nums">
+              {product.price?.toLocaleString()} {product.currency || 'UAH'}
             </div>
-          )}
-        </div>
-      </td>
+            {product.costPrice !== undefined && product.costPrice > 0 && (
+              <div className="text-[11px] text-muted-foreground/80 tabular-nums">
+                {t('catalogs:colCostPrice')}: {product.costPrice.toLocaleString()}{' '}
+                {product.currency || 'UAH'}
+              </div>
+            )}
+          </div>
+        </TableCell>
+      )}
 
       {/* Margin badge */}
-      <td className="py-3 px-3">
-        {marginDiff > 0 ? (
-          <Badge
-            variant="secondary"
-            className="text-xs font-medium tabular-nums bg-secondary text-secondary-foreground border border-border/50"
-          >
-            +{marginPercent}% (+{Math.round(marginDiff)} ₴)
-          </Badge>
-        ) : (
-          <span className="text-xs text-muted-foreground">—</span>
-        )}
-      </td>
+      {visibleColumns?.margin !== false && (
+        <TableCell className="px-3 py-2">
+          {marginDiff > 0 ? (
+            <Badge
+              variant="secondary"
+              className="text-[10px] h-5 px-1.5 font-medium tabular-nums bg-secondary text-secondary-foreground border border-border/50"
+            >
+              +{marginPercent}% (+{Math.round(marginDiff)} ₴)
+            </Badge>
+          ) : (
+            <span className="text-xs text-muted-foreground">—</span>
+          )}
+        </TableCell>
+      )}
 
       {/* Stock quantity */}
-      <td className="py-3 px-3">
-        {product.inStock ? (
-          <div className="flex items-center gap-1.5">
-            <span className="h-1.5 w-1.5 rounded-full bg-foreground shrink-0" />
-            <span className="text-xs font-medium tabular-nums text-foreground">
-              {product.stockQuantity !== undefined
-                ? `${product.stockQuantity} шт`
-                : t('catalogs:statusInStock')}
-            </span>
-          </div>
-        ) : (
-          <div className="flex items-center gap-1.5">
-            <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground/50 shrink-0" />
-            <span className="text-xs font-medium text-muted-foreground">
-              {t('catalogs:statusOutOfStock')}
-            </span>
-          </div>
-        )}
-      </td>
+      {visibleColumns?.stock !== false && (
+        <TableCell className="px-3 py-2">
+          {product.inStock ? (
+            <div className="flex items-center gap-1.5">
+              <span className="h-1.5 w-1.5 rounded-full bg-primary shrink-0 animate-pulse" />
+              <span className="text-xs font-medium tabular-nums text-foreground">
+                {product.stockQuantity !== undefined
+                  ? `${product.stockQuantity} шт`
+                  : t('catalogs:statusInStock')}
+              </span>
+            </div>
+          ) : (
+            <div className="flex items-center gap-1.5">
+              <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground/50 shrink-0" />
+              <span className="text-xs font-medium text-muted-foreground">
+                {t('catalogs:statusOutOfStock')}
+              </span>
+            </div>
+          )}
+        </TableCell>
+      )}
 
       {/* Actions */}
-      <td className="py-3 px-3 text-right">
+      <TableCell className="px-3 py-2 text-right">
         <div className="flex items-center justify-end">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
-                className="h-8 w-8 p-0 data-[state=open]:bg-muted"
+                className="h-7 w-7 p-0 data-[state=open]:bg-muted rounded-md"
                 data-testid={`product-actions-${product.id}`}
               >
-                <MoreHorizontal className="h-4 w-4" />
+                <MoreHorizontal className="h-3.5 w-3.5" />
                 <span className="sr-only">{t('common:actions')}</span>
               </Button>
             </DropdownMenuTrigger>
@@ -228,7 +244,7 @@ export const ProductTableRow: React.FC<ProductTableRowProps> = ({
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-      </td>
-    </tr>
+      </TableCell>
+    </TableRow>
   );
 };

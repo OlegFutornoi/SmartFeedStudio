@@ -1,5 +1,5 @@
 import React from 'react';
-import { PackagePlus, Building2 } from 'lucide-react';
+import { PackagePlus, Truck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useTranslation } from '@/i18n';
@@ -59,7 +59,7 @@ export const ProductsZeroStateCard: React.FC<ProductsZeroStateCardProps> = ({
             data-testid="zero-state-go-to-suppliers-btn"
             className="flex items-center gap-2 text-xs sm:text-sm px-4 py-2.5 rounded-xl border-border hover:bg-secondary transition-all"
           >
-            <Building2 className="size-4 text-muted-foreground" />
+            <Truck className="size-4 text-muted-foreground" />
             <span>{t('catalogs:zeroProductsSupplierBtn')}</span>
           </Button>
         </div>

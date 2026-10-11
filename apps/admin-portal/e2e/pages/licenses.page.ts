@@ -27,7 +27,7 @@ export class AdminLicensesPage extends BasePage {
     this.cloudFilterBtn = page.getByTestId('licenses-filter-cloud');
     this.sortSelect = page.getByTestId('licenses-sort-select');
     this.resetFiltersBtn = page.getByTestId('licenses-reset-filters-btn');
-    this.resultsCount = page.getByTestId('licenses-results-count');
+    this.resultsCount = page.getByTestId('licenses-pagination-range-text');
     this.emptyRow = page.getByTestId('licenses-empty-row');
   }
 

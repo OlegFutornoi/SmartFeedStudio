@@ -59,3 +59,10 @@ All domain rules are modularized (max 12k chars per file):
 - **Zero Plan & File Dumping in Chat**: Never rewrite, dump, or duplicate full plans, task breakdowns, or file contents into chat messages. All detailed plans MUST be written directly to `plans/active/<feature>.md`. Chat responses must contain ONLY concise summaries (1-2 sentences) with clickable markdown file links (`file:///...`).
 - **Reliability & Quality > "Working is Enough"**: Never write code to "just make it work" with quick hacks. Analyze deeply and pick the most efficient, robust, scalable, and reliable approach.
 - **Upfront Research via `context7` & MCPs**: Before implementing features or designing architecture, refresh library APIs and official docs via `context7` (`resolve-library-id`, `query-docs`) and relevant MCPs.
+
+---
+
+## 🎯 Targeted Feature Testing Policy (Zero Redundant Full-Suite Runs)
+
+- **Targeted Scope Only**: When implementing or fixing a specific feature, run **strictly** the tests covering that feature/page (e.g. `pnpm exec playwright test e2e/<feature>.spec.ts`).
+- **Zero Redundant Full Runs**: Never run the entire global test suite (all 99+ desktop specs or all backend E2E suites) during feature work. Full suites are executed ONLY upon explicit user command or during release verification.

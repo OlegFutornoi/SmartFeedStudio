@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Building2, Percent, X, AlertCircle } from 'lucide-react';
+import { Truck, Percent, X, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { SupplierDto, CreateSupplierDto } from '@smartfeed/shared';
 import { useTranslation, getErrorMessage } from '@/i18n';
@@ -100,7 +100,7 @@ export function CreateSupplierDialog({
         <div className="flex items-center justify-between p-5 border-b border-border/60">
           <div className="flex items-center gap-2.5">
             <div className="p-2 rounded-xl bg-primary/10 text-primary border border-primary/20">
-              <Building2 className="size-5" />
+              <Truck className="size-5" />
             </div>
             <div>
               <h2 className="text-lg font-bold text-foreground">

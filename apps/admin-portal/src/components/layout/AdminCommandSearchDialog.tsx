@@ -31,7 +31,7 @@ interface CommandItem {
 }
 
 export function AdminCommandSearchDialog({ isOpen, onClose }: AdminCommandSearchDialogProps) {
-  const { t, locale } = useLanguage();
+  const { locale } = useLanguage();
   const router = useRouter();
   const [query, setQuery] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);

@@ -1,6 +1,6 @@
 import React from 'react';
 import { createPortal } from 'react-dom';
-import { AlertTriangle, CheckCircle2, FolderTree, Radio, Building2, Loader2 } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, FolderTree, Radio, Truck, Loader2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { useTranslation } from '@/i18n';
 import { useNavigate } from 'react-router-dom';
@@ -130,7 +130,7 @@ export const QuotaReconciliationDialog: React.FC<QuotaReconciliationDialogProps>
                 : 'border-transparent text-muted-foreground hover:text-foreground'
             }`}
           >
-            <Building2 className="h-3.5 w-3.5" />
+            <Truck className="h-3.5 w-3.5" />
             {isUk ? 'Постачальники' : 'Suppliers'}
             <Badge variant="secondary" className="text-[10px] px-1 py-0 font-mono">
               {suppliers.length}

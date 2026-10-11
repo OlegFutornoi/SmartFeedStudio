@@ -166,20 +166,20 @@ export const WizardSampleProductsTable: React.FC<WizardSampleProductsTableProps>
         <div className="max-h-72 overflow-y-auto">
           <table className="w-full text-left text-xs border-collapse">
             <thead className="bg-muted sticky top-0 z-20 [box-shadow:0_1px_0_hsl(var(--border))]">
-              <tr className="text-foreground text-[11px] font-semibold uppercase tracking-wider">
-                <th className="p-2.5 w-14 bg-muted">
+              <tr className="text-foreground text-xs font-semibold">
+                <th className="h-9 px-3 py-2 w-14 bg-muted">
                   {t('suppliers:colPhoto', { defaultValue: 'Фото' })}
                 </th>
-                <th className="p-2.5 w-28 bg-muted">
+                <th className="h-9 px-3 py-2 w-28 bg-muted font-mono">
                   {t('suppliers:colSku', { defaultValue: 'Артикул / SKU' })}
                 </th>
-                <th className="p-2.5 bg-muted">
+                <th className="h-9 px-3 py-2 bg-muted">
                   {t('suppliers:colTitle', { defaultValue: 'Назва товару' })}
                 </th>
-                <th className="p-2.5 text-right w-44 bg-muted">
+                <th className="h-9 px-3 py-2 text-right w-44 bg-muted">
                   {t('suppliers:colPrice', { defaultValue: 'Закупка → Продаж' })}
                 </th>
-                <th className="p-2.5 text-center w-28 bg-muted">
+                <th className="h-9 px-3 py-2 text-center w-28 bg-muted">
                   {t('suppliers:colStock', { defaultValue: 'Наявність' })}
                 </th>
               </tr>
@@ -187,7 +187,7 @@ export const WizardSampleProductsTable: React.FC<WizardSampleProductsTableProps>
             <tbody className="divide-y divide-border/40 bg-card">
               {previewItems.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="p-8 text-center text-muted-foreground text-xs">
+                  <td colSpan={5} className="px-3 py-8 text-center text-muted-foreground text-xs">
                     {t('suppliers:noSampleProducts', {
                       defaultValue:
                         'Товари для попереднього перегляду очікують завершення аналізу фіду',
@@ -196,8 +196,11 @@ export const WizardSampleProductsTable: React.FC<WizardSampleProductsTableProps>
                 </tr>
               ) : (
                 previewItems.map((prod) => (
-                  <tr key={prod.sku} className="hover:bg-secondary/40 transition-colors">
-                    <td className="p-2.5">
+                  <tr
+                    key={prod.sku}
+                    className="hover:bg-secondary/40 transition-colors border-b border-border/40 text-xs"
+                  >
+                    <td className="px-3 py-2">
                       <PreviewProductImage
                         sku={prod.sku}
                         originalUrl={prod.images?.[0]?.originalUrl}
@@ -206,15 +209,15 @@ export const WizardSampleProductsTable: React.FC<WizardSampleProductsTableProps>
                         onOpenModal={handleOpenModal}
                       />
                     </td>
-                    <td className="p-2.5 font-mono text-xs font-semibold text-foreground truncate">
+                    <td className="px-3 py-2 font-mono text-xs font-semibold text-foreground truncate">
                       {prod.sku}
                     </td>
-                    <td className="p-2.5 text-foreground font-medium">
+                    <td className="px-3 py-2 text-foreground font-medium">
                       <div className="truncate max-w-sm" title={prod.titleUk}>
                         {prod.titleUk}
                       </div>
                     </td>
-                    <td className="p-2.5 text-right whitespace-nowrap font-mono text-xs">
+                    <td className="px-3 py-2 text-right whitespace-nowrap font-mono text-xs">
                       <span className="text-muted-foreground line-through text-[11px] mr-1">
                         {prod.costPrice.toLocaleString('uk-UA')} ₴
                       </span>
@@ -223,7 +226,7 @@ export const WizardSampleProductsTable: React.FC<WizardSampleProductsTableProps>
                         {prod.price.toLocaleString('uk-UA')} ₴
                       </span>
                     </td>
-                    <td className="p-2.5 text-center">
+                    <td className="px-3 py-2 text-center">
                       <Badge
                         variant={prod.inStock ? 'secondary' : 'outline'}
                         className={`text-[10px] px-2 py-0.5 font-medium ${

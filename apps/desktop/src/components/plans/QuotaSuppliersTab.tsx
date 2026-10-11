@@ -1,5 +1,5 @@
 import React from 'react';
-import { Building2, Trash2, Loader2 } from 'lucide-react';
+import { Truck, Trash2, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import type { SupplierDto } from '@smartfeed/shared';
@@ -28,7 +28,7 @@ export const QuotaSuppliersTab: React.FC<QuotaSuppliersTabProps> = ({
       <div className="space-y-2">
         {suppliers.length === 0 ? (
           <div className="p-8 text-center border border-dashed border-border rounded-xl text-muted-foreground text-xs">
-            <Building2 className="h-6 w-6 mx-auto mb-2 opacity-50" />
+            <Truck className="h-6 w-6 mx-auto mb-2 opacity-50" />
             {isUk ? 'Немає постачальників' : 'No suppliers'}
           </div>
         ) : (
@@ -44,7 +44,7 @@ export const QuotaSuppliersTab: React.FC<QuotaSuppliersTabProps> = ({
               >
                 <div className="min-w-0 flex-1 space-y-0.5">
                   <div className="flex items-center gap-2">
-                    <Building2 className="h-3.5 w-3.5 text-primary shrink-0" />
+                    <Truck className="h-3.5 w-3.5 text-primary shrink-0" />
                     <span className="font-semibold text-xs text-foreground truncate">
                       {sup.name}
                     </span>

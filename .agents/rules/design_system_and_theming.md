@@ -88,3 +88,25 @@ Any match must be structurally replaced with semantic tokens before presenting c
      - ALL creation buttons (`[ + Підключити фід ]`, `[ + Імпортувати фід ]`) across headers, toolbars, and empty states **MUST** be disabled with a clear, localized tooltip explaining the limit.
      - Multi-step wizards (e.g. `ImportFeedWizardDialog`) **MUST** display an alert banner and disable progression steps ("Далі", "Почати імпорт").
      - Business logic and submit handlers **MUST** reject execution with a localized error message if a quota is exceeded.
+
+---
+
+## 📊 7. shadcn Data Table Standards, Compact Typography & Customize Columns Policy
+
+1. **Source of Truth is 100% official `shadcn/ui` Data Table Architecture**:
+   - All tables across Desktop Client and Admin Portal must strictly adhere to official `shadcn/ui` table patterns (`@radix-ui/react-dropdown-menu`, `Table`, `TableHeader`, `TableHead`, `TableRow`, `TableCell`, `TableBody`).
+   - Every enterprise entity table MUST provide a `Customize Columns` (`DataTableViewOptions`) dropdown menu allowing users to toggle visible columns with persistent state in `localStorage`.
+
+2. **Strict Compact Typography & Spacing Standard (Zero Bloat / Zero Large Fonts)**:
+   - **Table Font Size**: Strictly `text-xs` (12px) base table typography across all cells, headers, badges, and filters. No `text-sm` or `text-base` in table content.
+   - **Table Headers (`TableHead`)**: Height `h-8.5` to `h-9`, padding `px-3 py-2`, font size `text-xs font-semibold text-muted-foreground`.
+   - **Table Cells (`TableCell`)**: Compact padding `px-3 py-2 text-xs text-foreground` (NEVER bloated `p-4`).
+   - **Badges in Tables**: Ultra-compact `text-[10px] h-5 px-1.5 py-0 font-medium`.
+   - **Avatars in Tables**: Compact `size-7 text-[10px]` with `text-[11px]` secondary email text.
+   - **Toolbars & Inputs**: Compact `h-8 text-xs px-2.5`, matching standard shadcn toolbar proportions.
+
+3. **Toolbar Cleanliness & Zero Clutter**:
+   - **No Duplicate Counters**: Never place redundant item counts in the top toolbar (counts belong strictly in the bottom `TablePagination` footer).
+   - **Faceted Filters**: Use clean `DataTableFacetedFilter` buttons with option counts.
+   - **Column Customization**: Place `[ ◫ Налаштувати стовпці ∨ ]` on the right side of the toolbar next to actions/refresh.
+   - **Default Column Visibility**: Secondary detail columns (e.g., `xmlLimit`, `aiCredits`, `cloudBackup` in Licenses) MUST be hidden by default and toggleable via `Customize Columns`.

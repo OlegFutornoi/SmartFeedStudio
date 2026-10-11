@@ -1,27 +1,23 @@
 'use client';
 
 import React from 'react';
-import {
-  Search,
-  X,
-  RotateCcw,
-  ArrowUpDown,
-  Layers,
-  CheckCircle2,
-  Cloud,
-  RefreshCw,
-} from 'lucide-react';
+import { Search, X, RotateCcw, Layers, CheckCircle2, Cloud, RefreshCw } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { LicensesFacetedFilter, FacetedOption } from '@/components/plans/LicensesFacetedFilter';
+import { DataTableViewOptions } from '@/components/ui/DataTableViewOptions';
+import type { ColumnOption } from '@/hooks/useColumnVisibility';
+
+export type LicenseColumnId =
+  | 'key'
+  | 'user'
+  | 'tier'
+  | 'status'
+  | 'xmlLimit'
+  | 'aiCredits'
+  | 'cloudBackup'
+  | 'expiresAt'
+  | 'actions';
 
 interface LicensesTableToolbarProps {
   searchQuery: string;
@@ -35,11 +31,9 @@ interface LicensesTableToolbarProps {
   selectedCloud: string;
   onCloudChange: (cloud: string) => void;
   cloudOptions: FacetedOption[];
-  sortBy: string;
-  onSortChange: (sort: string) => void;
-  sortOptions: { value: string; label: string }[];
-  totalCount: number;
-  filteredCount: number;
+  columnOptions: ColumnOption<LicenseColumnId>[];
+  onToggleColumn: (colId: LicenseColumnId, isVisible: boolean) => void;
+  onResetColumns?: () => void;
   isFiltered: boolean;
   onResetFilters: () => void;
   isUk: boolean;
@@ -60,11 +54,9 @@ export const LicensesTableToolbar = React.memo(function LicensesTableToolbar({
   selectedCloud,
   onCloudChange,
   cloudOptions,
-  sortBy,
-  onSortChange,
-  sortOptions,
-  totalCount,
-  filteredCount,
+  columnOptions,
+  onToggleColumn,
+  onResetColumns,
   isFiltered,
   onResetFilters,
   isUk,
@@ -77,7 +69,7 @@ export const LicensesTableToolbar = React.memo(function LicensesTableToolbar({
       data-testid="licenses-table-toolbar"
       className="flex flex-col gap-2.5 p-3 border-b border-border/60 bg-card/40"
     >
-      {/* Main row: Search + Faceted Filters + Reset + Sort + Count Badge + Refresh */}
+      {/* Main row: Search + Faceted Filters + Reset | Customize Columns + Refresh */}
       <div className="flex flex-wrap items-center justify-between gap-2.5">
         {/* Left side: Search input + Faceted Filters + Reset button */}
         <div className="flex flex-wrap items-center gap-2 flex-1 min-w-[280px]">
@@ -155,38 +147,14 @@ export const LicensesTableToolbar = React.memo(function LicensesTableToolbar({
           )}
         </div>
 
-        {/* Right side: Sort selector + Results Count Badge + Refresh Button */}
+        {/* Right side: Customize Columns Dropdown + Refresh Button */}
         <div className="flex items-center gap-2 shrink-0">
-          <div className="flex items-center gap-1 text-xs text-muted-foreground">
-            <ArrowUpDown className="size-3" />
-            <span className="hidden sm:inline">{isUk ? 'Сортування:' : 'Sort:'}</span>
-          </div>
-
-          <Select value={sortBy} onValueChange={onSortChange}>
-            <SelectTrigger
-              data-testid="licenses-sort-select"
-              className="h-8 w-[140px] sm:w-[170px] text-xs bg-background/80 border-border/80"
-            >
-              <SelectValue placeholder={isUk ? 'Сортування' : 'Sort by'} />
-            </SelectTrigger>
-            <SelectContent>
-              {sortOptions.map((opt) => (
-                <SelectItem key={opt.value} value={opt.value}>
-                  {opt.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          <Badge
-            data-testid="licenses-results-count"
-            variant="outline"
-            className="h-7 text-xs font-normal border-border/60 bg-background/60 text-muted-foreground px-2.5 rounded-md font-mono"
-          >
-            {isUk
-              ? `Показано ${filteredCount} з ${totalCount} ліцензій`
-              : `Showing ${filteredCount} of ${totalCount} licenses`}
-          </Badge>
+          <DataTableViewOptions
+            columnOptions={columnOptions}
+            onToggleColumn={onToggleColumn}
+            onResetColumns={onResetColumns}
+            isUk={isUk}
+          />
 
           {onRefresh && (
             <Button

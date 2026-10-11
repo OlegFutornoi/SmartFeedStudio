@@ -14,6 +14,8 @@ import { PaymentTransactionDto } from '@smartfeed/shared';
 import { CheckCircle2, Clock, XCircle, CreditCard } from 'lucide-react';
 import { TablePagination } from '@/components/ui/table-pagination';
 import { usePagination } from '@/hooks/usePagination';
+import { useColumnVisibility, ColumnConfig } from '@/hooks/useColumnVisibility';
+import { DataTableViewOptions } from '@/components/ui/DataTableViewOptions';
 
 interface TransactionsTableProps {
   transactions: PaymentTransactionDto[];
@@ -21,7 +23,36 @@ interface TransactionsTableProps {
   isUk: boolean;
 }
 
+type TxColumnId =
+  'orderRef' | 'customer' | 'plan' | 'interval' | 'amount' | 'status' | 'gateway' | 'date';
+
+const TX_COLUMNS: ColumnConfig<TxColumnId>[] = [
+  {
+    id: 'orderRef',
+    labelUk: 'Номер замовлення',
+    labelEn: 'Order Ref',
+    canHide: false,
+    defaultVisible: true,
+  },
+  { id: 'customer', labelUk: 'Клієнт', labelEn: 'Customer', canHide: false, defaultVisible: true },
+  { id: 'plan', labelUk: 'Тариф', labelEn: 'Plan', canHide: true, defaultVisible: true },
+  { id: 'interval', labelUk: 'Період', labelEn: 'Interval', canHide: true, defaultVisible: true },
+  { id: 'amount', labelUk: 'Сума', labelEn: 'Amount', canHide: false, defaultVisible: true },
+  { id: 'status', labelUk: 'Статус', labelEn: 'Status', canHide: false, defaultVisible: true },
+  {
+    id: 'gateway',
+    labelUk: 'Шлюз / Картка',
+    labelEn: 'Gateway / Card',
+    canHide: true,
+    defaultVisible: true,
+  },
+  { id: 'date', labelUk: 'Дата', labelEn: 'Date', canHide: true, defaultVisible: true },
+];
+
 export function TransactionsTable({ transactions, isLoading, isUk }: TransactionsTableProps) {
+  const { visibleColumns, toggleColumn, resetToDefaults, columnOptions } =
+    useColumnVisibility<TxColumnId>('admin_transactions_columns', TX_COLUMNS, isUk);
+
   const { currentPage, pageSize, totalPages, totalItems, paginatedItems, setPage, setPageSize } =
     usePagination(transactions, {
       initialPageSize: 10,
@@ -115,17 +146,33 @@ export function TransactionsTable({ transactions, isLoading, isUk }: Transaction
 
   return (
     <div className="rounded-xl border border-border bg-card overflow-hidden flex flex-col shadow-sm">
+      {/* Top Toolbar */}
+      <div className="flex items-center justify-end p-2.5 border-b border-border bg-card/40">
+        <DataTableViewOptions<TxColumnId>
+          columnOptions={columnOptions}
+          onToggleColumn={toggleColumn}
+          onResetDefaults={resetToDefaults}
+          isUk={isUk}
+        />
+      </div>
+
       <Table>
         <TableHeader className="bg-card border-b border-border">
           <TableRow className="text-xs">
             <TableHead className="w-[180px]">{isUk ? 'Номер замовлення' : 'Order Ref'}</TableHead>
             <TableHead>{isUk ? 'Клієнт' : 'Customer'}</TableHead>
-            <TableHead>{isUk ? 'Тариф' : 'Plan'}</TableHead>
-            <TableHead>{isUk ? 'Період' : 'Interval'}</TableHead>
+            {visibleColumns.plan !== false && <TableHead>{isUk ? 'Тариф' : 'Plan'}</TableHead>}
+            {visibleColumns.interval !== false && (
+              <TableHead>{isUk ? 'Період' : 'Interval'}</TableHead>
+            )}
             <TableHead className="text-right">{isUk ? 'Сума' : 'Amount'}</TableHead>
             <TableHead className="text-center">{isUk ? 'Статус' : 'Status'}</TableHead>
-            <TableHead>{isUk ? 'Шлюз / Картка' : 'Gateway / Card'}</TableHead>
-            <TableHead className="text-right">{isUk ? 'Дата' : 'Date'}</TableHead>
+            {visibleColumns.gateway !== false && (
+              <TableHead>{isUk ? 'Шлюз / Картка' : 'Gateway / Card'}</TableHead>
+            )}
+            {visibleColumns.date !== false && (
+              <TableHead className="text-right">{isUk ? 'Дата' : 'Date'}</TableHead>
+            )}
           </TableRow>
         </TableHeader>
 
@@ -166,20 +213,24 @@ export function TransactionsTable({ transactions, isLoading, isUk }: Transaction
                 </TableCell>
 
                 {/* Plan */}
-                <TableCell>{renderPlanBadge(tx.planCode)}</TableCell>
+                {visibleColumns.plan !== false && (
+                  <TableCell>{renderPlanBadge(tx.planCode)}</TableCell>
+                )}
 
                 {/* Interval */}
-                <TableCell>
-                  <span className="text-[11px] text-muted-foreground font-medium">
-                    {tx.billingInterval === 'YEARLY'
-                      ? isUk
-                        ? '1 рік (-20%)'
-                        : '1 Year (-20%)'
-                      : isUk
-                        ? '1 місяць'
-                        : '1 Month'}
-                  </span>
-                </TableCell>
+                {visibleColumns.interval !== false && (
+                  <TableCell>
+                    <span className="text-[11px] text-muted-foreground font-medium">
+                      {tx.billingInterval === 'YEARLY'
+                        ? isUk
+                          ? '1 рік (-20%)'
+                          : '1 Year (-20%)'
+                        : isUk
+                          ? '1 місяць'
+                          : '1 Month'}
+                    </span>
+                  </TableCell>
+                )}
 
                 {/* Amount */}
                 <TableCell className="text-right font-bold text-foreground tabular-nums">
@@ -190,28 +241,32 @@ export function TransactionsTable({ transactions, isLoading, isUk }: Transaction
                 <TableCell className="text-center">{renderStatusBadge(tx.status)}</TableCell>
 
                 {/* Gateway / Card */}
-                <TableCell>
-                  <div className="flex flex-col">
-                    <span className="font-medium text-foreground flex items-center gap-1">
-                      <CreditCard className="size-3 text-muted-foreground" />
-                      <span>{tx.provider}</span>
-                    </span>
-                    {tx.cardPan ? (
-                      <span className="text-[10px] text-muted-foreground font-mono">
-                        {tx.cardPan} {tx.cardType ? `(${tx.cardType})` : ''}
+                {visibleColumns.gateway !== false && (
+                  <TableCell>
+                    <div className="flex flex-col">
+                      <span className="font-medium text-foreground flex items-center gap-1">
+                        <CreditCard className="size-3 text-muted-foreground" />
+                        <span>{tx.provider}</span>
                       </span>
-                    ) : (
-                      <span className="text-[10px] text-muted-foreground italic">
-                        {tx.failureReason || '—'}
-                      </span>
-                    )}
-                  </div>
-                </TableCell>
+                      {tx.cardPan ? (
+                        <span className="text-[10px] text-muted-foreground font-mono">
+                          {tx.cardPan} {tx.cardType ? `(${tx.cardType})` : ''}
+                        </span>
+                      ) : (
+                        <span className="text-[10px] text-muted-foreground italic">
+                          {tx.failureReason || '—'}
+                        </span>
+                      )}
+                    </div>
+                  </TableCell>
+                )}
 
                 {/* Date */}
-                <TableCell className="text-right text-muted-foreground font-mono text-[11px] tabular-nums">
-                  {formattedDate}
-                </TableCell>
+                {visibleColumns.date !== false && (
+                  <TableCell className="text-right text-muted-foreground font-mono text-[11px] tabular-nums">
+                    {formattedDate}
+                  </TableCell>
+                )}
               </TableRow>
             );
           })}

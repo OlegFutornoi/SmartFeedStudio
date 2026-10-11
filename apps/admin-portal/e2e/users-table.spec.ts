@@ -183,4 +183,35 @@ test.describe('Admin Portal — Таблиця та Фільтрація Кор�
 
     await page.getByTestId('users-filter-role').click();
   });
+
+  test('налаштування відображення колонок (Customize Columns / DataTableViewOptions)', async ({
+    usersPage,
+    page,
+  }) => {
+    await usersPage.goto();
+
+    // Verify initial presence of team and role columns
+    await expect(usersPage.thRole).toBeVisible();
+    await expect(usersPage.thTeam).toBeVisible();
+
+    // Open Customize Columns dropdown
+    await usersPage.viewOptionsBtn.click();
+    const dropdown = page.getByTestId('data-table-view-options-content');
+    await expect(dropdown).toBeVisible();
+
+    // Toggle Role column off
+    await page.getByTestId('column-toggle-role').click();
+    await page.keyboard.press('Escape');
+
+    // Verify th-role is hidden while th-team is still visible
+    await expect(usersPage.thRole).not.toBeVisible();
+    await expect(usersPage.thTeam).toBeVisible();
+
+    // Reopen dropdown and toggle Role column back on
+    await usersPage.viewOptionsBtn.click();
+    await page.getByTestId('column-toggle-role').click();
+    await page.keyboard.press('Escape');
+
+    await expect(usersPage.thRole).toBeVisible();
+  });
 });

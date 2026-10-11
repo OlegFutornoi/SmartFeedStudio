@@ -120,4 +120,42 @@ test.describe('Desktop App — Тарифні плани, білінгові п�
     await page.getByTestId('billing-cycle-yearly-btn').click();
     await expect(page.getByTestId('plan-card-pro')).toContainText('Pay Annually (-20%)');
   });
+
+  test('5. Взаємне виключення бейджів: користувач на тарифі PRO бачить виключно «Ваш поточний тариф» і ніколи не бачить маркетинговий «Хіт продажу»', async ({
+    page,
+  }) => {
+    // Симулюємо акаунт користувача, у якого активовано тариф PRO
+    licenseStateHolder.current = {
+      ...createInitialLicenseState(),
+      planType: 'PRO',
+      licenseKey: 'SF-PRO-TEST-1234',
+      daysRemaining: 30,
+    };
+
+    await page.goto('/auth/login');
+    await page.getByTestId('email-input').fill(mockUser.email);
+    await page.getByTestId('password-input').fill('Password123!');
+    await page.getByTestId('login-button').click();
+
+    await page.getByTestId('nav-item-plans').click();
+    await expect(page.getByTestId('plans-page')).toBeVisible();
+
+    // 1. На картці PRO відображається ВИКЛЮЧНО статус-бейдж "Ваш поточний тариф"
+    const currentBadgePro = page.getByTestId('plan-current-badge-pro');
+    await expect(currentBadgePro).toBeVisible();
+    await expect(currentBadgePro).toContainText('Ваш поточний тариф');
+
+    // 2. Маркетинговий бейдж "Хіт продажу" КАТЕГОРИЧНО ВІДСУТНІЙ на поточній картці (нуль дублювання чи злипання)
+    const popularBadgePro = page.getByTestId('plan-popular-badge-pro');
+    await expect(popularBadgePro).not.toBeVisible();
+
+    // 3. На картці PRO кнопка вибору має стан активного поточного плану
+    const selectBtnPro = page.getByTestId('plan-select-btn-pro');
+    await expect(selectBtnPro).toBeVisible();
+    await expect(selectBtnPro).toBeDisabled();
+    await expect(selectBtnPro).toContainText('Ваш поточний тариф');
+
+    // 4. На інших картках (STARTER) відсутній бейдж "Ваш поточний тариф"
+    await expect(page.getByTestId('plan-current-badge-starter')).not.toBeVisible();
+  });
 });

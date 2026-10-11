@@ -15,9 +15,11 @@ import {
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { FacetedFilter, FacetedOption } from '@/components/ui/faceted-filter';
+import { DataTableViewOptions, ColumnOption } from '@/components/ui/DataTableViewOptions';
 import { useLanguage } from '@/contexts/LanguageContext';
+
+export type UserColumnId = 'user' | 'role' | 'team' | 'plan' | 'status' | 'created' | 'actions';
 
 interface UsersTableToolbarProps {
   search: string;
@@ -33,6 +35,9 @@ interface UsersTableToolbarProps {
   isRefreshing: boolean;
   onRefresh: () => void;
   onOpenCreateUser: () => void;
+  columnOptions?: ColumnOption<UserColumnId>[];
+  onToggleColumn?: (id: UserColumnId, isVisible: boolean) => void;
+  onResetColumns?: () => void;
 }
 
 export const UsersTableToolbar = React.memo(function UsersTableToolbar({
@@ -44,11 +49,13 @@ export const UsersTableToolbar = React.memo(function UsersTableToolbar({
   onSelectOrgRole,
   onResetFilters,
   isFiltered,
-  totalCount,
   isLoading,
   isRefreshing,
   onRefresh,
   onOpenCreateUser,
+  columnOptions,
+  onToggleColumn,
+  onResetColumns,
 }: UsersTableToolbarProps) {
   const { t, locale } = useLanguage();
 
@@ -69,21 +76,6 @@ export const UsersTableToolbar = React.memo(function UsersTableToolbar({
     ],
     [t],
   );
-
-  const countSuffix = useMemo(() => {
-    if (locale === 'uk') {
-      const mod10 = totalCount % 10;
-      const mod100 = totalCount % 100;
-      if (mod10 === 1 && mod100 !== 11) {
-        return t('users', 'user_count_one');
-      }
-      if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) {
-        return t('users', 'user_count_few') || 'користувачі';
-      }
-      return t('users', 'user_count_many');
-    }
-    return totalCount === 1 ? t('users', 'user_count_one') : t('users', 'user_count_many');
-  }, [totalCount, locale, t]);
 
   return (
     <div
@@ -152,15 +144,26 @@ export const UsersTableToolbar = React.memo(function UsersTableToolbar({
         )}
       </div>
 
-      {/* Right side: Count Badge & Compact Refresh Button */}
+      {/* Right side: Customize Columns (text) + Create User (text) + Refresh (icon on far right) */}
       <div className="flex items-center gap-2 shrink-0">
-        <Badge
-          data-testid="users-count-badge"
-          variant="outline"
-          className="h-7 text-xs font-normal border-border/60 bg-background/60 text-muted-foreground px-2.5 rounded-md"
+        {columnOptions && onToggleColumn && (
+          <DataTableViewOptions
+            columnOptions={columnOptions}
+            onToggleColumn={onToggleColumn}
+            onResetDefaults={onResetColumns}
+            isUk={locale === 'uk'}
+          />
+        )}
+
+        <Button
+          size="sm"
+          data-testid="open-create-user-dialog-btn"
+          onClick={onOpenCreateUser}
+          className="h-8 gap-1.5 px-3 text-xs rounded-md font-medium shadow-sm transition-all"
         >
-          {totalCount} {countSuffix}
-        </Badge>
+          <UserPlus className="size-3.5" />
+          <span>{t('users', 'create_user_button')}</span>
+        </Button>
 
         <Button
           variant="ghost"
@@ -173,15 +176,6 @@ export const UsersTableToolbar = React.memo(function UsersTableToolbar({
           aria-label={t('users', 'refresh_button')}
         >
           <RefreshCw className={`size-3.5 ${isRefreshing ? 'animate-spin' : ''}`} />
-        </Button>
-        <Button
-          size="sm"
-          data-testid="open-create-user-dialog-btn"
-          onClick={onOpenCreateUser}
-          className="h-8 gap-1.5 px-3 text-xs rounded-md font-medium shadow-sm transition-all"
-        >
-          <UserPlus className="size-3.5" />
-          <span>{t('users', 'create_user_button')}</span>
         </Button>
       </div>
     </div>

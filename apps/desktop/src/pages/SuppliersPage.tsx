@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
-import { Building2, Loader2, Plus } from 'lucide-react';
+import { Truck, Loader2, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { TablePagination } from '@/components/ui/table-pagination';
@@ -198,7 +198,7 @@ export function SuppliersPage() {
         <Card className="p-8 text-center border-dashed border-border/80 bg-card/40">
           <div className="flex flex-col items-center justify-center gap-3">
             <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-              <Building2 className="h-6 w-6" />
+              <Truck className="h-6 w-6" />
             </div>
             <h3 className="text-base font-semibold text-foreground">
               {search

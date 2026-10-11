@@ -20,12 +20,13 @@ export class AdminUsersPage extends BasePage {
   readonly thStatus: Locator;
   readonly thCreated: Locator;
   readonly thActions: Locator;
+  readonly viewOptionsBtn: Locator;
 
   constructor(page: Page) {
     super(page);
     this.headerTitle = page.getByTestId('users-header-title');
     this.headerSubtitle = page.getByTestId('users-header-subtitle');
-    this.countBadge = page.getByTestId('users-count-badge');
+    this.countBadge = page.getByTestId('users-pagination-range-text');
     this.refreshBtn = page.getByTestId('refresh-users-btn');
     this.searchInput = page.getByTestId('users-search-input');
     this.roleFilterGroup = page.getByTestId('user-role-filter-group');
@@ -33,6 +34,7 @@ export class AdminUsersPage extends BasePage {
     this.dataTable = page.getByTestId('users-data-table');
     this.emptyState = page.getByTestId('users-empty-state');
     this.langToggleBtn = page.getByTestId('language-toggle-btn');
+    this.viewOptionsBtn = page.getByTestId('customize-columns-btn');
 
     this.thUser = page.getByTestId('th-user');
     this.thRole = page.getByTestId('th-role');

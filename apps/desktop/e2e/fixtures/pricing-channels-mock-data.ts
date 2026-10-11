@@ -174,7 +174,7 @@ export async function setupPricingChannelsRoutes(page: Page, state: PricingChann
           labelUk: 'Постачальники',
           labelEn: 'Suppliers',
           path: '/suppliers',
-          icon: 'Building2',
+          icon: 'Truck',
           isVisible: true,
           targetApp: 'DESKTOP',
         },

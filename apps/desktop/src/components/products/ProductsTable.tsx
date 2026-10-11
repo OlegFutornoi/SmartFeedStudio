@@ -1,6 +1,14 @@
 import React from 'react';
 import { PackageSearch } from 'lucide-react';
-import { ProductTableRow } from '@/components/products/ProductTableRow';
+import { ProductTableRow, ProductColumnId } from '@/components/products/ProductTableRow';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import { TablePagination } from '@/components/ui/table-pagination';
 import { useTranslation } from '@/i18n';
 import type { ProductDto, SupplierDto } from '@smartfeed/shared';
@@ -22,6 +30,7 @@ interface ProductsTableProps {
   onDeleteProduct: (product: ProductDto) => void;
   onResetFilters?: () => void;
   isLoading?: boolean;
+  visibleColumns?: Record<ProductColumnId, boolean>;
 }
 
 export const ProductsTable: React.FC<ProductsTableProps> = ({
@@ -41,8 +50,17 @@ export const ProductsTable: React.FC<ProductsTableProps> = ({
   onDeleteProduct,
   onResetFilters,
   isLoading = false,
+  visibleColumns,
 }) => {
   const { t } = useTranslation(['catalogs', 'common']);
+
+  const activeColCount =
+    4 +
+    (visibleColumns?.image !== false ? 1 : 0) +
+    (visibleColumns?.supplier !== false ? 1 : 0) +
+    (visibleColumns?.price !== false ? 1 : 0) +
+    (visibleColumns?.margin !== false ? 1 : 0) +
+    (visibleColumns?.stock !== false ? 1 : 0);
 
   return (
     <div
@@ -50,44 +68,50 @@ export const ProductsTable: React.FC<ProductsTableProps> = ({
       className="space-y-4 rounded-xl border border-border/60 bg-card shadow-xs overflow-hidden"
     >
       <div className="overflow-x-auto relative min-h-[300px]">
-        <table data-testid="products-table" className="w-full text-left border-collapse">
+        <Table data-testid="products-table">
           {/* 100% Solid Sticky Header */}
-          <thead className="sticky top-0 z-10 bg-card border-b border-border text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-            <tr>
-              <th className="py-3 px-3 w-10 text-center bg-card">
+          <TableHeader className="sticky top-0 z-10 bg-card border-b border-border">
+            <TableRow className="bg-muted/30">
+              <TableHead className="w-10 text-center">
                 <input
                   type="checkbox"
                   data-testid="select-all-products-checkbox"
                   checked={isAllSelected}
                   onChange={onToggleSelectAll}
-                  className="rounded border-input accent-primary focus:ring-primary h-4 w-4 cursor-pointer"
+                  className="rounded border-input accent-primary focus:ring-primary h-3.5 w-3.5 cursor-pointer"
                 />
-              </th>
-              <th className="py-3 px-2 w-12 bg-card">{t('catalogs:colImage')}</th>
-              <th className="py-3 px-3 bg-card">{t('catalogs:colSku')}</th>
-              <th className="py-3 px-3 bg-card">{t('catalogs:colTitle')}</th>
-              <th className="py-3 px-3 bg-card">{t('catalogs:colSupplier')}</th>
-              <th className="py-3 px-3 bg-card">{t('catalogs:colRetailPrice')}</th>
-              <th className="py-3 px-3 bg-card">{t('catalogs:colMargin')}</th>
-              <th className="py-3 px-3 bg-card">{t('catalogs:colStock')}</th>
-              <th className="py-3 px-3 text-right bg-card">{t('catalogs:colActions')}</th>
-            </tr>
-          </thead>
+              </TableHead>
+              {visibleColumns?.image !== false && (
+                <TableHead className="w-14 text-center">{t('catalogs:colImage')}</TableHead>
+              )}
+              <TableHead className="min-w-[120px]">{t('catalogs:colSku')}</TableHead>
+              <TableHead className="max-w-[280px]">{t('catalogs:colTitle')}</TableHead>
+              {visibleColumns?.supplier !== false && (
+                <TableHead>{t('catalogs:colSupplier')}</TableHead>
+              )}
+              {visibleColumns?.price !== false && (
+                <TableHead>{t('catalogs:colRetailPrice')}</TableHead>
+              )}
+              {visibleColumns?.margin !== false && <TableHead>{t('catalogs:colMargin')}</TableHead>}
+              {visibleColumns?.stock !== false && <TableHead>{t('catalogs:colStock')}</TableHead>}
+              <TableHead className="text-right">{t('catalogs:colActions')}</TableHead>
+            </TableRow>
+          </TableHeader>
 
-          <tbody className="divide-y divide-border/40">
+          <TableBody>
             {isLoading ? (
               // Loading skeleton
               Array.from({ length: 5 }).map((_, idx) => (
-                <tr key={idx} className="animate-pulse">
-                  <td colSpan={9} className="py-4 px-4">
+                <TableRow key={idx} className="animate-pulse">
+                  <TableCell colSpan={activeColCount} className="py-4 px-4">
                     <div className="h-6 bg-muted/40 rounded-md w-full" />
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               ))
             ) : (products || []).length === 0 ? (
               // Empty state
-              <tr>
-                <td colSpan={9} className="py-12 px-4 text-center">
+              <TableRow>
+                <TableCell colSpan={activeColCount} className="py-12 px-4 text-center">
                   <div className="flex flex-col items-center justify-center space-y-2">
                     <div className="p-3 bg-muted/30 rounded-full text-muted-foreground">
                       <PackageSearch className="h-8 w-8" />
@@ -109,8 +133,8 @@ export const ProductsTable: React.FC<ProductsTableProps> = ({
                       </button>
                     )}
                   </div>
-                </td>
-              </tr>
+                </TableCell>
+              </TableRow>
             ) : (
               (products || []).map((product) => (
                 <ProductTableRow
@@ -121,11 +145,12 @@ export const ProductsTable: React.FC<ProductsTableProps> = ({
                   onToggleSelect={onToggleSelect}
                   onViewDetails={onViewDetails}
                   onDeleteProduct={onDeleteProduct}
+                  visibleColumns={visibleColumns}
                 />
               ))
             )}
-          </tbody>
-        </table>
+          </TableBody>
+        </Table>
       </div>
 
       {/* Pagination Bar */}

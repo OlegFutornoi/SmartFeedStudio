@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Building2, FolderTree, Barcode, DollarSign, Layers } from 'lucide-react';
+import { X, Truck, FolderTree, Barcode, DollarSign, Layers } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useTranslation } from '@/i18n';
@@ -156,7 +156,7 @@ export const ProductDetailsDrawer: React.FC<ProductDetailsDrawerProps> = ({
           <div className="space-y-2.5 text-xs">
             <div className="flex items-center justify-between py-1.5 border-b border-border/40">
               <span className="text-muted-foreground flex items-center gap-1.5">
-                <Building2 className="h-3.5 w-3.5" />
+                <Truck className="h-3.5 w-3.5" />
                 {t('catalogs:productSupplier')}:
               </span>
               <span className="font-semibold text-foreground">

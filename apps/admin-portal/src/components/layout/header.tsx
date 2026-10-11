@@ -68,7 +68,7 @@ export function Header() {
   const pathname = usePathname();
   const { setThemeMode, resolvedMode } = useTheme();
   const { toggleSidebar, toggleMobileSidebar, isCollapsed } = useSidebar();
-  const { t, locale } = useLanguage();
+  const { locale } = useLanguage();
   const isUk = locale === 'uk';
   const [isCommandOpen, setIsCommandOpen] = useState(false);
 

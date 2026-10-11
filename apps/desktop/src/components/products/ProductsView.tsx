@@ -9,6 +9,38 @@ import { localDb } from '@/services/local-db';
 import { useDataSync } from '@/lib/syncEvents';
 import { useTranslation } from '@/i18n';
 import type { ProductDto, SupplierDto } from '@smartfeed/shared';
+import { ProductColumnId } from '@/components/products/ProductTableRow';
+import { useColumnVisibility, ColumnConfig } from '@/hooks/useColumnVisibility';
+
+const PRODUCT_COLUMNS: ColumnConfig<ProductColumnId>[] = [
+  { id: 'select', labelUk: 'Вибір', labelEn: 'Select', canHide: false, defaultVisible: true },
+  { id: 'image', labelUk: 'Зображення', labelEn: 'Image', canHide: true, defaultVisible: true },
+  { id: 'sku', labelUk: 'Артикул / SKU', labelEn: 'SKU', canHide: false, defaultVisible: true },
+  {
+    id: 'title',
+    labelUk: 'Назва товару',
+    labelEn: 'Product Title',
+    canHide: false,
+    defaultVisible: true,
+  },
+  {
+    id: 'supplier',
+    labelUk: 'Постачальник',
+    labelEn: 'Supplier',
+    canHide: true,
+    defaultVisible: true,
+  },
+  {
+    id: 'price',
+    labelUk: 'Роздрібна ціна',
+    labelEn: 'Retail Price',
+    canHide: true,
+    defaultVisible: true,
+  },
+  { id: 'margin', labelUk: 'Маржа', labelEn: 'Margin', canHide: true, defaultVisible: false },
+  { id: 'stock', labelUk: 'Залишок', labelEn: 'Stock', canHide: true, defaultVisible: false },
+  { id: 'actions', labelUk: 'Дії', labelEn: 'Actions', canHide: false, defaultVisible: true },
+];
 
 interface ProductsViewProps {
   onOpenImportWizard?: () => void;
@@ -19,7 +51,11 @@ export const ProductsView: React.FC<ProductsViewProps> = ({
   onOpenImportWizard,
   isFeedLimitReached = false,
 }) => {
-  const { t } = useTranslation(['catalogs', 'common']);
+  const { t, language } = useTranslation(['catalogs', 'common']);
+  const isUk = language === 'uk';
+
+  const { visibleColumns, toggleColumn, resetToDefaults, columnOptions } =
+    useColumnVisibility<ProductColumnId>('desktop_products_columns', PRODUCT_COLUMNS, isUk);
 
   // Data state
   const [products, setProducts] = useState<ProductDto[]>([]);
@@ -208,6 +244,10 @@ export const ProductsView: React.FC<ProductsViewProps> = ({
             onResetFilters={handleResetFilters}
             hasActiveFilters={hasActiveFilters}
             totalCount={total}
+            columnOptions={columnOptions}
+            onToggleColumn={toggleColumn}
+            onResetColumns={resetToDefaults}
+            isUk={isUk}
           />
 
           {/* Bulk Actions Bar */}
@@ -239,6 +279,7 @@ export const ProductsView: React.FC<ProductsViewProps> = ({
             onDeleteProduct={setProductToDelete}
             onResetFilters={handleResetFilters}
             isLoading={isLoading}
+            visibleColumns={visibleColumns}
           />
         </>
       )}

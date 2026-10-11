@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  Building2,
+  Truck,
   Package,
   Rss,
   CheckCircle2,
@@ -108,7 +108,7 @@ export function HomePage() {
               {t('totalSuppliers')}
             </CardTitle>
             <div className="p-1.5 rounded-lg bg-primary/10 text-primary">
-              <Building2 className="size-4" />
+              <Truck className="size-4" />
             </div>
           </CardHeader>
           <CardContent className="pb-2">

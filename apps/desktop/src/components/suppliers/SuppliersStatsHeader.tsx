@@ -1,5 +1,5 @@
 import React from 'react';
-import { Building2, Radio, ShoppingBag } from 'lucide-react';
+import { Truck, Radio, ShoppingBag } from 'lucide-react';
 import { QuotaMetricCard } from '@/components/ui/QuotaMetricCard';
 import { useTranslation } from '@/i18n';
 import { UserQuotasDto } from '@smartfeed/shared';
@@ -31,7 +31,7 @@ export const SuppliersStatsHeader: React.FC<SuppliersStatsHeaderProps> = ({
         <QuotaMetricCard
           title={t('suppliers:suppliersTitle', { defaultValue: 'Постачальники' })}
           quota={suppliersQuota}
-          icon={Building2}
+          icon={Truck}
           testId="suppliers-quota-card"
         />
         <QuotaMetricCard

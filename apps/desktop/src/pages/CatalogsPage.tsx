@@ -174,12 +174,6 @@ export function CatalogsPage() {
           >
             <Store className="size-4 text-primary" />
             <span>{t('catalogs:tabChannels')}</span>
-            <Badge
-              variant="outline"
-              className="text-xs px-2 py-0.5 h-5 font-medium bg-primary/10 text-primary border-primary/20"
-            >
-              {t('catalogs:reverseMargin')}
-            </Badge>
           </button>
         </div>
 

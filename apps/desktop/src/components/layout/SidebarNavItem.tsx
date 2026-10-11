@@ -15,6 +15,7 @@ import {
   CreditCard,
   Lock,
   Building2,
+  Truck,
 } from 'lucide-react';
 import { NavigationItemDto } from '@smartfeed/shared';
 import { cn } from '@/lib/utils';
@@ -34,9 +35,13 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   Bell,
   CreditCard,
   Building2,
+  Truck,
 };
 
-function renderItemIcon(iconName: string, className?: string) {
+function renderItemIcon(iconName: string, className?: string, itemKey?: string) {
+  if (itemKey === 'suppliers' || iconName === 'Truck') {
+    return <Truck className={className || 'h-4 w-4'} />;
+  }
   const IconComponent = ICON_MAP[iconName] || LayoutDashboard;
   return <IconComponent className={className || 'h-4 w-4'} />;
 }
@@ -92,6 +97,7 @@ export const SidebarNavItem = React.memo(function SidebarNavItem({
               ? 'text-muted-foreground/50'
               : 'text-muted-foreground/80 group-hover:text-foreground',
         ),
+        item.key,
       )}
       {!isCollapsed && (
         <div className="flex items-center justify-between flex-1 min-w-0">

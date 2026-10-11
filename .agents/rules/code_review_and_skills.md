@@ -85,3 +85,5 @@ Before reporting completion to the user or preparing any changes:
 11. ✅ **Zero Duplicate CTA Buttons**: Eliminate duplicate buttons across toolbar/header/empty states.
 12. ✅ **100% `@/` Path Aliases & Zero Relative Imports (`../`)**: All internal project imports strictly use `@/` or `@smartfeed/shared`. Relative imports (`../`, `./`) are strictly prohibited.
 13. ✅ **Zero File Dumping in Chat**: Never dump or rewrite entire file contents in chat. Brief summary in chat, all full content into files/artifacts.
+14. ✅ **shadcn Data Table & Compact Typography DoD**: Strict `text-xs` cells (`px-3 py-2`), `h-9` headers, `Customize Columns` (`DataTableViewOptions`), and zero redundant toolbar counters/sorts.
+15. ✅ **Targeted Feature-Scoped Tests**: Run strictly the tests covering the specific modified feature/page. Full-suite runs are strictly prohibited during feature work.

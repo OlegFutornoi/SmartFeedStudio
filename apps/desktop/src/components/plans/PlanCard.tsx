@@ -67,27 +67,17 @@ export const PlanCard: React.FC<PlanCardProps> = ({
         isCurrent && isExpired && 'border-destructive/60 bg-destructive/[0.02]',
       )}
     >
-      {/* Top Badges */}
-      <div className="absolute -top-2.5 right-4 flex items-center gap-1.5">
-        {plan.isPopular && (
-          <Badge
-            data-testid={`plan-popular-badge-${codeKey}`}
-            className="bg-primary text-primary-foreground text-[10px] font-semibold px-2.5 py-0.5 flex items-center gap-1 shadow-sm"
-          >
-            <Sparkles className="size-2.5" />
-            <span>{t('plans.popular')}</span>
-          </Badge>
-        )}
-        {isCurrent && !isExpired && (
+      {/* Top Badge: Mutually exclusive status or promotional badge */}
+      <div className="absolute -top-2.5 right-4 flex items-center">
+        {isCurrent && !isExpired ? (
           <Badge
             data-testid={`plan-current-badge-${codeKey}`}
-            className="bg-foreground text-background text-[10px] font-semibold px-2.5 py-0.5 flex items-center gap-1 shadow-sm"
+            className="bg-primary text-primary-foreground text-[10px] font-semibold px-2.5 py-0.5 flex items-center gap-1 shadow-sm"
           >
             <Zap className="size-2.5" />
             <span>{t('plans.currentPlan')}</span>
           </Badge>
-        )}
-        {isCurrent && isExpired && (
+        ) : isCurrent && isExpired ? (
           <Badge
             data-testid={`plan-expired-badge-${codeKey}`}
             className="bg-destructive text-destructive-foreground text-[10px] font-semibold px-2.5 py-0.5 flex items-center gap-1 shadow-sm"
@@ -95,7 +85,15 @@ export const PlanCard: React.FC<PlanCardProps> = ({
             <AlertTriangle className="size-2.5" />
             <span>{t('plans.expiredBadge')}</span>
           </Badge>
-        )}
+        ) : plan.isPopular ? (
+          <Badge
+            data-testid={`plan-popular-badge-${codeKey}`}
+            className="bg-primary text-primary-foreground text-[10px] font-semibold px-2.5 py-0.5 flex items-center gap-1 shadow-sm"
+          >
+            <Sparkles className="size-2.5" />
+            <span>{t('plans.popular')}</span>
+          </Badge>
+        ) : null}
       </div>
 
       <div>

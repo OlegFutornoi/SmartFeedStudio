@@ -19,7 +19,10 @@ import { LicenseDeleteDialog } from '@/components/plans/LicenseDeleteDialog';
 import { useLicensesFilter, LicensesFilterState } from '@/components/plans/useLicensesFilter';
 import { TablePagination } from '@/components/ui/table-pagination';
 import { usePagination } from '@/hooks/usePagination';
+import { useColumnVisibility } from '@/hooks/useColumnVisibility';
+import { DataTableColumnHeader } from '@/components/ui/DataTableColumnHeader';
 import { api } from '@/lib/api';
+import { LicenseColumnId, LICENSE_COLUMNS } from '@/components/plans/licensesColumns.config';
 
 interface LicensesTableProps {
   licenses: AdminLicenseItemDto[];
@@ -40,7 +43,10 @@ export function LicensesTable({ licenses, isUk, onRefresh, isLoading }: Licenses
   const [licenseToDelete, setLicenseToDelete] = useState<AdminLicenseItemDto | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const { filteredLicenses, isFiltered, tierOptions, statusOptions, cloudOptions, sortOptions } =
+  const { visibleColumns, toggleColumn, resetToDefaults, columnOptions } =
+    useColumnVisibility<LicenseColumnId>('admin_licenses', LICENSE_COLUMNS, isUk);
+
+  const { filteredLicenses, isFiltered, tierOptions, statusOptions, cloudOptions } =
     useLicensesFilter(licenses, filter, isUk);
 
   const { currentPage, pageSize, totalPages, totalItems, paginatedItems, setPage, setPageSize } =
@@ -59,12 +65,9 @@ export function LicensesTable({ licenses, isUk, onRefresh, isLoading }: Licenses
     });
   }, []);
 
-  // Optimistic status update — no full refresh needed
   const handleStatusChange = useCallback(
     async (id: string, newActive: boolean) => {
       await api.updateLicenseStatus(id, newActive);
-      // Only do a background refresh; the LicenseRowActions already updates locally via optimism.
-      // We still refresh to sync backend truth, but don't block the UI.
       if (onRefresh) {
         onRefresh().catch(console.error);
       }
@@ -84,8 +87,10 @@ export function LicensesTable({ licenses, isUk, onRefresh, isLoading }: Licenses
     }
   }, [licenseToDelete, onRefresh]);
 
-  // Stable now reference for row expiration calculations
   const now = useMemo(() => new Date(), []);
+  const visibleColumnCount = useMemo(() => {
+    return LICENSE_COLUMNS.filter((col) => visibleColumns[col.id] !== false).length;
+  }, [visibleColumns]);
 
   return (
     <Card
@@ -104,11 +109,9 @@ export function LicensesTable({ licenses, isUk, onRefresh, isLoading }: Licenses
         selectedCloud={filter.selectedCloud}
         onCloudChange={(v) => setFilter((f) => ({ ...f, selectedCloud: v }))}
         cloudOptions={cloudOptions}
-        sortBy={filter.sortBy}
-        onSortChange={(v) => setFilter((f) => ({ ...f, sortBy: v }))}
-        sortOptions={sortOptions}
-        totalCount={licenses.length}
-        filteredCount={filteredLicenses.length}
+        columnOptions={columnOptions}
+        onToggleColumn={toggleColumn}
+        onResetColumns={resetToDefaults}
         isFiltered={isFiltered}
         onResetFilters={handleResetFilters}
         isUk={isUk}
@@ -120,21 +123,78 @@ export function LicensesTable({ licenses, isUk, onRefresh, isLoading }: Licenses
         <Table data-testid="licenses-table">
           <TableHeader>
             <TableRow className="bg-muted/30">
-              <TableHead className="text-xs">{isUk ? 'Ліцензійний ключ' : 'License Key'}</TableHead>
-              <TableHead className="text-xs">{isUk ? 'Користувач' : 'User'}</TableHead>
-              <TableHead className="text-xs">{isUk ? 'Тарифний план' : 'Plan Tier'}</TableHead>
-              <TableHead className="text-xs">{isUk ? 'Статус' : 'Status'}</TableHead>
-              <TableHead className="text-xs">{isUk ? 'Ліміт XML' : 'XML Limit'}</TableHead>
-              <TableHead className="text-xs">{isUk ? 'AI Кредити' : 'AI Credits'}</TableHead>
-              <TableHead className="text-xs">{isUk ? 'Хмарний бекап' : 'Cloud Backup'}</TableHead>
-              <TableHead className="text-xs">{isUk ? 'Термін дії' : 'Expires At'}</TableHead>
-              <TableHead className="text-right text-xs">{isUk ? 'Дії' : 'Actions'}</TableHead>
+              <TableHead data-testid="th-key" className="text-xs">
+                {isUk ? 'Ліцензійний ключ' : 'License Key'}
+              </TableHead>
+              <TableHead data-testid="th-user" className="text-xs">
+                {isUk ? 'Користувач' : 'User'}
+              </TableHead>
+              {visibleColumns.tier !== false && (
+                <TableHead data-testid="th-tier" className="text-xs">
+                  {isUk ? 'Тарифний план' : 'Plan Tier'}
+                </TableHead>
+              )}
+              {visibleColumns.status !== false && (
+                <TableHead data-testid="th-status" className="text-xs">
+                  {isUk ? 'Статус' : 'Status'}
+                </TableHead>
+              )}
+              {visibleColumns.xmlLimit !== false && (
+                <TableHead data-testid="th-xml-limit" className="text-xs">
+                  <DataTableColumnHeader
+                    title={isUk ? 'Ліміт XML' : 'XML Limit'}
+                    isSorted={filter.sortBy === 'XML_DESC' ? 'desc' : false}
+                    onToggleSort={() =>
+                      setFilter((f) => ({
+                        ...f,
+                        sortBy: f.sortBy === 'XML_DESC' ? 'NEWEST' : 'XML_DESC',
+                      }))
+                    }
+                  />
+                </TableHead>
+              )}
+              {visibleColumns.aiCredits !== false && (
+                <TableHead data-testid="th-ai-credits" className="text-xs">
+                  <DataTableColumnHeader
+                    title={isUk ? 'AI Кредити' : 'AI Credits'}
+                    isSorted={filter.sortBy === 'AI_DESC' ? 'desc' : false}
+                    onToggleSort={() =>
+                      setFilter((f) => ({
+                        ...f,
+                        sortBy: f.sortBy === 'AI_DESC' ? 'NEWEST' : 'AI_DESC',
+                      }))
+                    }
+                  />
+                </TableHead>
+              )}
+              {visibleColumns.cloudBackup !== false && (
+                <TableHead data-testid="th-cloud-backup" className="text-xs">
+                  {isUk ? 'Хмарний бекап' : 'Cloud Backup'}
+                </TableHead>
+              )}
+              {visibleColumns.expiresAt !== false && (
+                <TableHead data-testid="th-expires" className="text-xs">
+                  <DataTableColumnHeader
+                    title={isUk ? 'Термін дії' : 'Expires At'}
+                    isSorted={filter.sortBy === 'EXPIRY_ASC' ? 'asc' : false}
+                    onToggleSort={() =>
+                      setFilter((f) => ({
+                        ...f,
+                        sortBy: f.sortBy === 'EXPIRY_ASC' ? 'NEWEST' : 'EXPIRY_ASC',
+                      }))
+                    }
+                  />
+                </TableHead>
+              )}
+              <TableHead data-testid="th-actions" className="text-right text-xs">
+                {isUk ? 'Дії' : 'Actions'}
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {filteredLicenses.length === 0 ? (
               <TableRow data-testid="licenses-empty-row">
-                <TableCell colSpan={9} className="text-center py-10">
+                <TableCell colSpan={visibleColumnCount} className="text-center py-10">
                   <div className="flex flex-col items-center justify-center gap-2 max-w-sm mx-auto text-muted-foreground">
                     <SearchX className="size-8 text-muted-foreground/50" />
                     <p className="text-xs font-medium text-foreground">
@@ -169,6 +229,7 @@ export function LicensesTable({ licenses, isUk, onRefresh, isLoading }: Licenses
                   license={lic}
                   isUk={isUk}
                   now={now}
+                  visibleColumns={visibleColumns}
                   onStatusChange={handleStatusChange}
                   onOpenDelete={setLicenseToDelete}
                 />
@@ -178,26 +239,27 @@ export function LicensesTable({ licenses, isUk, onRefresh, isLoading }: Licenses
         </Table>
       </CardContent>
 
-      {/* Pagination Footer */}
-      <TablePagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        pageSize={pageSize}
-        totalItems={totalItems}
-        onPageChange={setPage}
-        onPageSizeChange={setPageSize}
-        pageSizeOptions={[10, 25, 50, 100]}
-        isUk={isUk}
-        testIdPrefix="licenses-pagination"
-      />
+      {totalItems > 0 && (
+        <TablePagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          pageSize={pageSize}
+          totalItems={totalItems}
+          onPageChange={setPage}
+          onPageSizeChange={setPageSize}
+          isUk={isUk}
+          testIdPrefix="licenses-pagination"
+        />
+      )}
 
+      {/* Delete Confirmation Dialog */}
       <LicenseDeleteDialog
         open={Boolean(licenseToDelete)}
         onOpenChange={(open) => !open && setLicenseToDelete(null)}
         license={licenseToDelete}
-        isUk={isUk}
-        onConfirm={handleDeleteConfirm}
         isDeleting={isDeleting}
+        onConfirm={handleDeleteConfirm}
+        isUk={isUk}
       />
     </Card>
   );

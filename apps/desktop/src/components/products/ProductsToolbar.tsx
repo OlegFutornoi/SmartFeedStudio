@@ -1,8 +1,7 @@
 import React from 'react';
-import { Search, FilterX, Building2, FolderTree } from 'lucide-react';
+import { Search, FilterX, Truck, FolderTree } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import {
   Select,
   SelectContent,
@@ -12,6 +11,8 @@ import {
 } from '@/components/ui/select';
 import { useTranslation } from '@/i18n';
 import type { SupplierDto } from '@smartfeed/shared';
+import { ProductColumnId } from '@/components/products/ProductTableRow';
+import { DataTableViewOptions, ColumnOption } from '@/components/ui/DataTableViewOptions';
 
 interface ProductsToolbarProps {
   search: string;
@@ -26,7 +27,11 @@ interface ProductsToolbarProps {
   categories: string[];
   onResetFilters: () => void;
   hasActiveFilters: boolean;
-  totalCount: number;
+  totalCount?: number;
+  columnOptions?: ColumnOption<ProductColumnId>[];
+  onToggleColumn?: (id: ProductColumnId, isVisible: boolean) => void;
+  onResetColumns?: () => void;
+  isUk?: boolean;
 }
 
 export const ProductsToolbar: React.FC<ProductsToolbarProps> = ({
@@ -42,27 +47,32 @@ export const ProductsToolbar: React.FC<ProductsToolbarProps> = ({
   categories,
   onResetFilters,
   hasActiveFilters,
-  totalCount,
+  totalCount: _totalCount,
+  columnOptions,
+  onToggleColumn,
+  onResetColumns,
+  isUk: isUkProp,
 }) => {
-  const { t } = useTranslation(['catalogs', 'common']);
+  const { t, language } = useTranslation(['catalogs', 'common']);
+  const isUk = isUkProp !== undefined ? isUkProp : language === 'uk';
 
   return (
     <div className="space-y-3" data-testid="products-toolbar">
-      <div className="flex flex-col lg:flex-row gap-3 items-stretch lg:items-center justify-between">
-        {/* Search input */}
-        <div className="relative flex-1 min-w-[240px]">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-          <Input
-            data-testid="products-search-input"
-            value={search}
-            onChange={(e) => onSearchChange(e.target.value)}
-            placeholder={t('catalogs:searchProductsPlaceholder')}
-            className="h-9 text-xs pl-9 bg-card border-border/70 placeholder:text-muted-foreground/70"
-          />
-        </div>
+      <div className="flex flex-wrap items-center justify-between gap-2.5">
+        {/* Left side: Search input + Filter controls */}
+        <div className="flex flex-wrap items-center gap-2 flex-1 min-w-[280px]">
+          {/* Compact Search input */}
+          <div className="relative w-full sm:w-64 max-w-xs shrink-0">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+            <Input
+              data-testid="products-search-input"
+              value={search}
+              onChange={(e) => onSearchChange(e.target.value)}
+              placeholder={t('catalogs:searchProductsPlaceholder')}
+              className="h-9 text-xs pl-9 bg-card border-border/70 placeholder:text-muted-foreground/70"
+            />
+          </div>
 
-        {/* Filter controls */}
-        <div className="flex flex-wrap items-center gap-2">
           {/* Supplier filter */}
           <Select
             value={selectedSupplierId || 'all'}
@@ -70,10 +80,10 @@ export const ProductsToolbar: React.FC<ProductsToolbarProps> = ({
           >
             <SelectTrigger
               data-testid="filter-supplier-select"
-              className="h-9 w-[160px] sm:w-[180px] text-xs font-medium"
+              className="h-9 w-[150px] sm:w-[170px] text-xs font-medium"
             >
               <div className="flex items-center gap-2 truncate">
-                <Building2 className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                <Truck className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
                 <SelectValue placeholder={t('catalogs:allSuppliers')} />
               </div>
             </SelectTrigger>
@@ -94,7 +104,7 @@ export const ProductsToolbar: React.FC<ProductsToolbarProps> = ({
           >
             <SelectTrigger
               data-testid="filter-category-select"
-              className="h-9 w-[160px] sm:w-[200px] text-xs font-medium"
+              className="h-9 w-[150px] sm:w-[180px] text-xs font-medium"
             >
               <div className="flex items-center gap-2 truncate">
                 <FolderTree className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
@@ -144,12 +154,19 @@ export const ProductsToolbar: React.FC<ProductsToolbarProps> = ({
               {t('catalogs:resetFilters')}
             </Button>
           )}
-
-          {/* Total Counter Badge */}
-          <Badge variant="outline" className="h-9 px-3 text-xs bg-muted/30 ml-auto lg:ml-2">
-            {t('catalogs:totalProductsCount', { count: totalCount.toLocaleString() })}
-          </Badge>
         </div>
+
+        {/* Right side: Customize Columns Options */}
+        {columnOptions && onToggleColumn && (
+          <div className="shrink-0">
+            <DataTableViewOptions<ProductColumnId>
+              columnOptions={columnOptions}
+              onToggleColumn={onToggleColumn}
+              onResetDefaults={onResetColumns}
+              isUk={isUk}
+            />
+          </div>
+        )}
       </div>
     </div>
   );

@@ -11,6 +11,7 @@ import { UsersTableToolbar } from '@/components/users/UsersTableToolbar';
 import { TablePagination } from '@/components/ui/table-pagination';
 import { usePagination } from '@/hooks/usePagination';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useColumnVisibility, ColumnConfig } from '@/hooks/useColumnVisibility';
 
 interface UsersTableProps {
   users: UserListItemDto[];
@@ -30,6 +31,36 @@ interface UsersTableProps {
   onOpenDelete: (user: UserListItemDto) => void;
   onOpenTeam: (user: UserListItemDto) => void;
 }
+
+type UserColumnId = 'user' | 'role' | 'team' | 'plan' | 'status' | 'created' | 'actions';
+
+const USER_COLUMNS: ColumnConfig<UserColumnId>[] = [
+  { id: 'user', labelUk: 'Користувач', labelEn: 'User', canHide: false, defaultVisible: true },
+  { id: 'role', labelUk: 'Роль', labelEn: 'Role', canHide: true, defaultVisible: true },
+  {
+    id: 'team',
+    labelUk: 'Організація / Команда',
+    labelEn: 'Organization / Team',
+    canHide: true,
+    defaultVisible: true,
+  },
+  {
+    id: 'plan',
+    labelUk: 'Тарифний план',
+    labelEn: 'Plan Tier',
+    canHide: true,
+    defaultVisible: true,
+  },
+  { id: 'status', labelUk: 'Статус', labelEn: 'Status', canHide: true, defaultVisible: true },
+  {
+    id: 'created',
+    labelUk: 'Дата реєстрації',
+    labelEn: 'Registered Date',
+    canHide: true,
+    defaultVisible: true,
+  },
+  { id: 'actions', labelUk: 'Дії', labelEn: 'Actions', canHide: false, defaultVisible: true },
+];
 
 export const UsersTable = React.memo(function UsersTable({
   users,
@@ -52,6 +83,9 @@ export const UsersTable = React.memo(function UsersTable({
   const { t, locale } = useLanguage();
   const isUk = locale === 'uk';
   const [expandedUserIds, setExpandedUserIds] = useState<Set<string>>(new Set());
+
+  const { visibleColumns, toggleColumn, resetToDefaults, columnOptions } =
+    useColumnVisibility<UserColumnId>('admin_users_columns', USER_COLUMNS, isUk);
 
   const { currentPage, pageSize, totalPages, totalItems, paginatedItems, setPage, setPageSize } =
     usePagination(users, {
@@ -105,6 +139,9 @@ export const UsersTable = React.memo(function UsersTable({
         isRefreshing={isRefreshing}
         onRefresh={onRefresh}
         onOpenCreateUser={onOpenCreateUser}
+        columnOptions={columnOptions}
+        onToggleColumn={toggleColumn}
+        onResetColumns={resetToDefaults}
       />
 
       <CardContent className="p-0 flex-1 flex flex-col">
@@ -128,11 +165,21 @@ export const UsersTable = React.memo(function UsersTable({
                 <TableHead data-testid="th-user" className="w-[280px]">
                   {t('users', 'col_user')}
                 </TableHead>
-                <TableHead data-testid="th-role">{t('users', 'col_role')}</TableHead>
-                <TableHead data-testid="th-team">{t('users', 'col_team')}</TableHead>
-                <TableHead data-testid="th-plan">{t('users', 'col_plan')}</TableHead>
-                <TableHead data-testid="th-status">{t('users', 'col_status')}</TableHead>
-                <TableHead data-testid="th-created">{t('users', 'col_created')}</TableHead>
+                {visibleColumns.role !== false && (
+                  <TableHead data-testid="th-role">{t('users', 'col_role')}</TableHead>
+                )}
+                {visibleColumns.team !== false && (
+                  <TableHead data-testid="th-team">{t('users', 'col_team')}</TableHead>
+                )}
+                {visibleColumns.plan !== false && (
+                  <TableHead data-testid="th-plan">{t('users', 'col_plan')}</TableHead>
+                )}
+                {visibleColumns.status !== false && (
+                  <TableHead data-testid="th-status">{t('users', 'col_status')}</TableHead>
+                )}
+                {visibleColumns.created !== false && (
+                  <TableHead data-testid="th-created">{t('users', 'col_created')}</TableHead>
+                )}
                 <TableHead data-testid="th-actions" className="text-right w-[60px]">
                   {t('users', 'col_actions')}
                 </TableHead>
@@ -150,12 +197,14 @@ export const UsersTable = React.memo(function UsersTable({
                       onStatusChange={onStatusChange}
                       onOpenDelete={onOpenDelete}
                       onOpenTeam={onOpenTeam}
+                      visibleColumns={visibleColumns}
                     />
                     {isExpanded && (
                       <UserTeamSubRows
                         ownerUser={u}
                         onStatusChange={onStatusChange}
                         onOpenDelete={onOpenDelete}
+                        visibleColumns={visibleColumns}
                       />
                     )}
                   </React.Fragment>

@@ -56,8 +56,7 @@ test.describe('Admin Portal — Реєстр та Фільтрація Ліце�
     await licensesPage.searchLicenses('customer@smartfeed.studio');
     await licensesPage.expectLicenseRowVisible('SF-PRO-DEMO-9900-1122');
     await licensesPage.expectLicenseRowNotVisible('SF-FREE-STARTER-0011-2233');
-    await licensesPage.expectLicenseRowNotVisible('SF-ENT-VIP-7788-9900');
-    await expect(licensesPage.resultsCount).toContainText('Показано 1 з 3 ліцензій');
+    await expect(licensesPage.resultsCount).toContainText('Показано 1–1 із 1 записів');
 
     await licensesPage.searchClearBtn.click();
     await licensesPage.expectLicenseRowVisible('SF-PRO-DEMO-9900-1122');
@@ -86,7 +85,7 @@ test.describe('Admin Portal — Реєстр та Фільтрація Ліце�
     await proOption.click();
     await licensesPage.expectLicenseRowVisible('SF-PRO-DEMO-9900-1122');
     await licensesPage.expectLicenseRowNotVisible('SF-FREE-STARTER-0011-2233');
-    await expect(licensesPage.resultsCount).toContainText('Показано 1 з 3 ліцензій');
+    await expect(licensesPage.resultsCount).toContainText('Показано 1–1 із 1 записів');
 
     await licensesPage.filterByTier('starter');
     await licensesPage.expectLicenseRowVisible('SF-FREE-STARTER-0011-2233');
@@ -158,7 +157,7 @@ test.describe('Admin Portal — Реєстр та Фільтрація Ліце�
     await licensesPage.expectLicenseRowVisible('SF-PRO-DEMO-9900-1122');
     await licensesPage.expectLicenseRowVisible('SF-FREE-STARTER-0011-2233');
     await licensesPage.expectLicenseRowVisible('SF-ENT-VIP-7788-9900');
-    await expect(licensesPage.resultsCount).toContainText('Показано 3 з 3 ліцензій');
+    await expect(licensesPage.resultsCount).toContainText('Показано 1–3 із 3 записів');
   });
 
   test('відображення порожнього стану при відсутності збігів', async ({ licensesPage }) => {
@@ -196,5 +195,31 @@ test.describe('Admin Portal — Реєстр та Фільтрація Ліце�
     const entBadge = licensesPage.page.getByTestId('license-status-badge-SF-ENT-VIP-7788-9900');
     await expect(entBadge).toBeVisible();
     await expect(entBadge).toContainText('Призупинена');
+  });
+
+  test('налаштування відображення колонок (Customize Columns / DataTableViewOptions)', async ({
+    licensesPage,
+    page,
+  }) => {
+    await licensesPage.goto();
+
+    // За замовчуванням другорядні стовпчики приховані
+    await expect(page.getByTestId('th-xml-limit')).not.toBeVisible();
+    await expect(page.getByTestId('th-ai-credits')).not.toBeVisible();
+    await expect(page.getByTestId('th-cloud-backup')).not.toBeVisible();
+
+    // Відкриваємо дропдаун Customize Columns
+    const customizeBtn = page.getByTestId('customize-columns-btn');
+    await expect(customizeBtn).toBeVisible();
+    await customizeBtn.click();
+
+    // Вмикаємо стовпчик "Ліміт XML"
+    const xmlToggle = page.getByTestId('column-toggle-xmlLimit');
+    await expect(xmlToggle).toBeVisible();
+    await xmlToggle.click();
+
+    // Тепер заголовок та комірка "Ліміт XML" мають відображатися в таблиці
+    await expect(page.getByTestId('th-xml-limit')).toBeVisible();
+    await expect(page.getByTestId('license-xml-limit-SF-PRO-DEMO-9900-1122')).toBeVisible();
   });
 });

@@ -86,10 +86,12 @@ test.describe('Desktop App — Віртуалізована Таблиця То�
         'placeholder',
         'Search by name, SKU, or category...',
       );
+      await expect(page.getByTestId('customize-columns-btn')).toContainText('Customize Columns');
 
       // Revert back to Ukrainian
       await langBtn.click();
       await expect(page.getByTestId('tab-products')).toContainText('Товари каталогу');
+      await expect(page.getByTestId('customize-columns-btn')).toContainText('Налаштувати стовпці');
     }
   });
 
@@ -112,5 +114,46 @@ test.describe('Desktop App — Віртуалізована Таблиця То�
       expect(text.trim()).not.toBe('Supplier');
       expect(text.trim()).toBe('Brain Distribution');
     }
+  });
+
+  test('5. Налаштування видимості колонок (Customize Columns) з динамічним перемиканням, перекладом та відсутністю наїжджання іконок', async ({
+    page,
+  }) => {
+    await expect(page.getByTestId('products-view')).toBeVisible();
+
+    const customizeBtn = page.getByTestId('customize-columns-btn');
+    await expect(customizeBtn).toBeVisible();
+    await expect(customizeBtn).toContainText('Налаштувати стовпці');
+    await customizeBtn.click();
+
+    const menuContent = page.getByTestId('data-table-view-options-content');
+    await expect(menuContent).toBeVisible();
+    await expect(menuContent).toContainText('Відображення стовпців');
+
+    // Verify supplier toggle label in Ukrainian
+    const supplierToggle = page.getByTestId('column-toggle-supplier');
+    await expect(supplierToggle).toBeVisible();
+    await expect(supplierToggle).toContainText('Постачальник');
+
+    // Layout check: Verify text padding does NOT collide with absolute indicator icon (pl-8 >= 24px)
+    const paddingLeft = await supplierToggle.evaluate((el) => {
+      return parseFloat(window.getComputedStyle(el).paddingLeft);
+    });
+    expect(paddingLeft).toBeGreaterThanOrEqual(24);
+
+    // Verify reset to defaults button in Ukrainian
+    const resetBtn = page.getByTestId('columns-reset-defaults-btn');
+    await expect(resetBtn).toBeVisible();
+    await expect(resetBtn).toContainText('Скинути до стандартних');
+
+    // Toggle supplier column off
+    await supplierToggle.click();
+
+    // Verify supplier badge is hidden
+    await expect(page.getByTestId('product-supplier-badge-prod_1')).not.toBeVisible();
+
+    // Toggle back on
+    await supplierToggle.click();
+    await expect(page.getByTestId('product-supplier-badge-prod_1')).toBeVisible();
   });
 });

@@ -52,7 +52,21 @@ description: Mandatory testing standards, test isolation, data cleanup, git comm
 
 ---
 
-## 📏 5. Rule Files Size Limit & Continuous Modularization Policy (Max 12,000 Chars)
+## 🎯 5. Targeted Feature Testing Policy (Zero Redundant Full-Suite Runs)
+
+- **Категорична заборона повного прогону всіх тестів при розробці конкретної фічі**:
+  - При роботі над окремою фічею, компонентом, екраном чи багфіксом агент **ЗОБОВ'ЯЗАНИЙ проганяти ВИКЛЮЧНО цільові тести цієї фічі** та тести сторінки, якої стосуються зміни (Targeted / Feature-Scoped Testing).
+  - **Заборонено запускати повні глобальні набори** (наприклад, усі 99+ тестів десктопу `pnpm test:desktop` або всі бекенд-сьюти `pnpm test:e2e`). Запуск нерелевантних тестів марно витрачає час, системні ресурси та токени, створюючи зайвий шум.
+- **Правило запуску цільових тестів**:
+  - **Desktop Playwright**: `pnpm --filter @smartfeed/desktop exec playwright test e2e/<feature>.spec.ts`
+  - **Admin Portal Playwright**: `pnpm --filter admin-portal exec playwright test e2e/<feature>.spec.ts`
+  - **Backend Jest E2E**: `pnpm --filter @smartfeed/backend-api test:e2e -- test/<feature>.e2e-spec.ts`
+- **Винятки для повного прогону**:
+  - Повний прогін усіх тестів запускається **ВИКЛЮЧНО** за прямою командою користувача (наприклад: _"прожени всі тести"_, _"повний прогін"_) або під час релізного пайплайну (`/git-commit --release`).
+
+---
+
+## 📏 6. Rule Files Size Limit & Continuous Modularization Policy (Max 12,000 Chars)
 
 - **Hard Limit**: Every rule file in `.agents/rules/*.md` **MUST NEVER exceed 12,000 characters** (Antigravity IDE hard limit).
 - **Continuous Modularization**: Whenever any rule file reaches ~10,000–11,000 characters, the agent **MUST** split the rules or create a new dedicated `.md` file in `.agents/rules/` with `trigger: always_on` (e.g. `testing_and_quality.md`, `commands.md`, `plans_lifecycle.md`, etc.).
@@ -60,7 +74,7 @@ description: Mandatory testing standards, test isolation, data cleanup, git comm
 
 ---
 
-## ✅ 5. Mandatory Verification Protocol & Commands
+## ✅ 7. Mandatory Verification Protocol & Commands
 
 Immediately after writing or modifying code in ANY package, execute static typechecking and verification:
 

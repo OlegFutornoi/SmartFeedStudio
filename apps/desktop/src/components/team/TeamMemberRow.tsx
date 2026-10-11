@@ -78,8 +78,8 @@ export const TeamMemberRow: React.FC<TeamMemberRowProps> = ({
       className="flex items-center justify-between gap-3 p-3.5 rounded-xl border border-border/80 bg-muted/10 hover:bg-muted/30 transition-colors"
       data-testid="team-member-row"
     >
-      <div className="flex items-center gap-3 min-w-0 flex-1">
-        <div className="h-9 w-9 rounded-full bg-primary/20 flex items-center justify-center text-primary text-xs font-bold border border-primary/30 shrink-0">
+      <div className="flex items-center gap-2.5 min-w-0 flex-1">
+        <div className="size-7 rounded-full bg-primary/20 flex items-center justify-center text-primary text-[10px] font-bold border border-primary/30 shrink-0">
           {getInitials(memberFullName, memberEmail)}
         </div>
         <div className="flex-1 min-w-0">
