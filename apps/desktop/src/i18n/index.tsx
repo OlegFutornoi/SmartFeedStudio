@@ -40,39 +40,39 @@ const DEFAULT_LANGUAGE: Language = 'uk';
 
 const STATIC_TRANSLATIONS: Record<Language, Record<Namespace, TranslationDict>> = {
   uk: {
-    common: ukCommon as TranslationDict,
-    auth: ukAuth as TranslationDict,
-    home: ukHome as TranslationDict,
-    plans: ukPlans as TranslationDict,
-    team: ukTeam as TranslationDict,
-    catalogs: ukCatalogs as TranslationDict,
-    suppliers: ukSuppliers as TranslationDict,
-    products: ukProducts as TranslationDict,
-    ai: ukAi as TranslationDict,
-    cloud: ukCloud as TranslationDict,
-    settings: ukSettings as TranslationDict,
-    storage: ukStorage as TranslationDict,
-    errors: ukErrors as TranslationDict,
-    featureTeaser: ukFeatureTeaser as TranslationDict,
-    export: ukExport as TranslationDict,
-  },
+    common: ukCommon,
+    auth: ukAuth,
+    home: ukHome,
+    plans: ukPlans,
+    team: ukTeam,
+    catalogs: ukCatalogs,
+    suppliers: ukSuppliers,
+    products: ukProducts,
+    ai: ukAi,
+    cloud: ukCloud,
+    settings: ukSettings,
+    storage: ukStorage,
+    errors: ukErrors,
+    featureTeaser: ukFeatureTeaser,
+    export: ukExport,
+  } as unknown as Record<Namespace, TranslationDict>,
   en: {
-    common: enCommon as TranslationDict,
-    auth: enAuth as TranslationDict,
-    home: enHome as TranslationDict,
-    plans: enPlans as TranslationDict,
-    team: enTeam as TranslationDict,
-    catalogs: enCatalogs as TranslationDict,
-    suppliers: enSuppliers as TranslationDict,
-    products: enProducts as TranslationDict,
-    ai: enAi as TranslationDict,
-    cloud: enCloud as TranslationDict,
-    settings: enSettings as TranslationDict,
-    storage: enStorage as TranslationDict,
-    errors: enErrors as TranslationDict,
-    featureTeaser: enFeatureTeaser as TranslationDict,
-    export: enExport as TranslationDict,
-  },
+    common: enCommon,
+    auth: enAuth,
+    home: enHome,
+    plans: enPlans,
+    team: enTeam,
+    catalogs: enCatalogs,
+    suppliers: enSuppliers,
+    products: enProducts,
+    ai: enAi,
+    cloud: enCloud,
+    settings: enSettings,
+    storage: enStorage,
+    errors: enErrors,
+    featureTeaser: enFeatureTeaser,
+    export: enExport,
+  } as unknown as Record<Namespace, TranslationDict>,
 };
 
 const I18nContext = createContext<I18nContextType | undefined>(undefined);
@@ -135,6 +135,17 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem(STORAGE_KEY, newLang);
     setLanguageState(newLang);
   }, []);
+
+  useEffect(() => {
+    const handleLangChange = (e: Event) => {
+      const customEvent = e as CustomEvent<Language>;
+      if (customEvent.detail === 'uk' || customEvent.detail === 'en') {
+        setLanguage(customEvent.detail);
+      }
+    };
+    window.addEventListener('smartfeed-set-language', handleLangChange);
+    return () => window.removeEventListener('smartfeed-set-language', handleLangChange);
+  }, [setLanguage]);
 
   // Translation lookup function supporting "ns:key", "ns.key", and direct "key"
   const t = useCallback(
@@ -271,74 +282,4 @@ export function useTranslation(requiredNamespaces?: Namespace | Namespace[]) {
   };
 }
 
-export function getErrorMessage(error: unknown, t: (key: string) => string): string {
-  if (!error) return '';
-
-  const rawMessage = error instanceof Error ? error.message : String(error);
-
-  const direct = t(`errors.${rawMessage}`);
-  if (direct && direct !== `errors.${rawMessage}` && direct !== rawMessage) {
-    return direct;
-  }
-
-  const directNoNs = t(rawMessage);
-  if (directNoNs && directNoNs !== rawMessage && directNoNs !== `errors.${rawMessage}`) {
-    return directNoNs;
-  }
-
-  const lower = rawMessage.toLowerCase();
-
-  if (
-    lower.includes('authentication token is missing or invalid') ||
-    lower.includes('jwt expired') ||
-    lower.includes('token expired') ||
-    lower.includes('invalid token') ||
-    lower.includes('unauthorized') ||
-    lower.includes('401')
-  ) {
-    return t('errors.unauthorized');
-  }
-
-  if (
-    lower.includes('invalid email or password') ||
-    lower.includes('invalid credentials') ||
-    lower.includes('wrong password')
-  ) {
-    return t('errors.invalidCredentials');
-  }
-
-  if (lower.includes('already exists') || lower.includes('409')) {
-    return t('errors.userAlreadyExists');
-  }
-
-  if (lower.includes('email must be an email') || lower.includes('invalid email')) {
-    return t('errors.invalidEmail');
-  }
-
-  if (lower.includes('password must be longer') || lower.includes('at least 8')) {
-    return t('errors.passwordTooShort');
-  }
-
-  if (
-    lower.includes('failed to fetch') ||
-    lower.includes('networkerror') ||
-    lower.includes('econnrefused')
-  ) {
-    return t('errors.networkError');
-  }
-
-  if (lower.includes('500') || lower.includes('internal server error')) {
-    return t('errors.serverError');
-  }
-
-  if (
-    lower.includes('password reset instructions') ||
-    lower.includes('not found') ||
-    lower.includes('user not found') ||
-    lower.includes('usernotfound')
-  ) {
-    return t('errors.userNotFound');
-  }
-
-  return rawMessage;
-}
+export { getErrorMessage } from '@/i18n/errors';

@@ -95,13 +95,60 @@ test.describe('Desktop App — Блокування призупиненого �
     // Blocker should activate
     const blocker = page.getByTestId('user-suspended-blocker');
     await expect(blocker).toBeVisible();
-    await expect(page.getByTestId('suspended-title')).toHaveText('Обліковий запис призупинено');
+    // Switch to English language and verify localization
+    await page.evaluate(() => {
+      window.dispatchEvent(new CustomEvent('smartfeed-set-language', { detail: 'en' }));
+    });
+    await expect(page.getByTestId('suspended-title')).toHaveText('Account Suspended');
+    await expect(page.getByTestId('user-suspended-blocker')).toBeVisible();
+  });
 
-    // Switch to English language
-    const langBtn = page.getByTestId('language-toggle');
-    if (await langBtn.isVisible()) {
-      await langBtn.click();
-      await expect(page.getByTestId('suspended-title')).toHaveText('Account Suspended');
-    }
+  test('інтерактивний спотлайт-блюр бекдроп (SpotlightBlurBackdrop) рендерить розмитий фон та активує спотлайт при русі миші', async ({
+    page,
+  }) => {
+    await page.addInitScript(() => {
+      const mockUser = {
+        id: 'user-spotlight-test',
+        email: 'spotlight@store.com',
+        fullName: 'Spotlight Merchant',
+        role: 'USER',
+        isActive: false,
+      };
+      window.localStorage.setItem('smartfeed_access_token', 'mock-token-spotlight');
+      window.localStorage.setItem('smartfeed_user_profile', JSON.stringify(mockUser));
+      window.localStorage.setItem('smartfeed_workspace_initialized', 'true');
+    });
+
+    await page.route('**/api/auth/me', async (route) => {
+      await route.fulfill({
+        status: 403,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          statusCode: 403,
+          code: 'USER_SUSPENDED',
+          message: 'User account has been suspended by administration.',
+        }),
+      });
+    });
+
+    await page.goto('/');
+
+    // 1. Verify SpotlightBlurBackdrop container and frosted blur mask
+    const backdrop = page.getByTestId('spotlight-blur-backdrop');
+    await expect(backdrop).toBeVisible();
+
+    const underlay = page.getByTestId('spotlight-underlay-content');
+    await expect(underlay).toBeVisible();
+    await expect(underlay).toHaveClass(/pointer-events-none/);
+
+    const blurMask = page.getByTestId('spotlight-blur-mask');
+    await expect(blurMask).toBeVisible();
+
+    // 2. Move mouse across backdrop to trigger dynamic spotlight ring
+    await backdrop.hover({ position: { x: 100, y: 100 } });
+    await page.mouse.move(250, 250);
+
+    const ring = page.getByTestId('spotlight-ring');
+    await expect(ring).toBeVisible();
   });
 });
