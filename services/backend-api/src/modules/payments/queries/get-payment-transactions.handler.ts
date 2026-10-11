@@ -48,6 +48,7 @@ export class GetPaymentTransactionsHandler implements IQueryHandler<GetPaymentTr
             select: {
               email: true,
               fullName: true,
+              avatarUrl: true,
             },
           },
         },
@@ -64,6 +65,7 @@ export class GetPaymentTransactionsHandler implements IQueryHandler<GetPaymentTr
       userId: t.userId,
       userEmail: t.user?.email,
       userFullName: t.user?.fullName,
+      userAvatarUrl: t.user?.avatarUrl,
       planCode: t.planCode,
       billingInterval: t.billingInterval as PaymentInterval,
       amount: Number(t.amount),

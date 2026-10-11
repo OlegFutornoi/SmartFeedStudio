@@ -174,27 +174,29 @@ Review Agent детально перевіряє реалізацію 4-рівн
 
 ### 🛡️ Інспекція 4 шарів захисту:
 
-1. **Шар 1 (DTO / Input Validation)**:
+1. **Шар 1 (DTO / Input Validation & Mass Assignment)**:
    - Чи кожна властивість DTO має декоратори `class-validator`?
    - Чи налаштовано `ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })`?
-   - **Дефект**: нетипізований `@Body() body: unknown` або DTO без валідаторів (призводить до тихого видалення полів пайпом).
+   - **Захист від Mass Assignment ([`api-security-testing`](../skills/api-security-testing/SKILL.md))**: заборона підміни системних полів (`role`, `isActive`, `organizationId`) клієнтом.
 2. **Шар 2 (Доменні правила, квоти та м'ютекси)**:
    - Чи перевіряються ліміти підписки організації (seats, SKU, AI credits, S3 storage)?
    - Чи захищені чутливі операції мутацій від **TOCTOU race conditions** за допомогою `OrganizationMutex.runExclusive(...)`?
-3. **Шар 3 (Guards, RBAC & Tenant Scoping)**:
+3. **Шар 3 (Guards, RBAC, BOLA/IDOR & Tenant Scoping)**:
    - Наявність `@UseGuards(JwtAuthGuard, RolesGuard, RequireActiveLicenseGuard)`.
-   - **IDOR / Tenant Isolation**: чи перевіряється, що `resource.organizationId === user.organizationId`? Користувач однієї компанії не має права читати чи змінювати ресурси іншої.
+   - **BOLA / IDOR / Tenant Isolation ([`api-security-testing`](../skills/api-security-testing/SKILL.md))**: чи перевіряється, що `resource.organizationId === user.organizationId`? Користувач однієї компанії не має права читати чи змінювати ресурси іншої.
    - **CWE-78 Command Injection**: перевірка викликів зовнішніх процесів. Тільки `execFile(binary, [args], { shell: false })`. Використання `exec` з конкатенацією рядків — критична вразливість P0!
    - Безпека паролів: тільки Argon2id або bcrypt. Жодного plain-text або MD5/SHA1.
-4. **Шар 4 (Database & Sentry Bug Prevention)**:
+4. **Шар 4 (Database & Secret Leakage Prevention)**:
    - **Zero Silent Failures**: пошук порожніх блоків `catch {}`. Кожен блок зобов'язаний містити структурований лог або викидати доменний HTTP виняток.
    - **Zero `as any`**: пошук приведень до `any`, особливо у `where` блоках Prisma.
    - **Null checks на зв'язках**: захист від `TypeError: Cannot read property of null` на зв'язаних сутностях (`user.organization?.name`).
-   - Відсутність витоку секретів: поле `passwordHash` ніколи не повинно повертатися у відповідях API (використання `@Exclude()` або явних маперів).
+   - **Захист від витоку секретів ([`secret-serialization`](../skills/secret-serialization/SKILL.md))**: поля `passwordHash`, `refreshSecret`, `token`, `api_key` ніколи не повинні повертатися у відповідях API (використання `@Exclude()` або явних маперів) та не повинні серіалізуватися у `JSON.stringify()`, логери чи Sentry-спани.
 
 ### 🛡️ Скіли етапу 3:
 
 - [**`security-and-hardening`**](../skills/security-and-hardening/SKILL.md) — аудит OWASP Top 10, JWT безпеки, захист від CWE-78, tenant isolation.
+- [**`secret-serialization`**](../skills/secret-serialization/SKILL.md) — пошук та блокування витоку чутливих даних у логах, Sentry телеметрії та серіалізаторах об'єктів.
+- [**`api-security-testing`**](../skills/api-security-testing/SKILL.md) — аудит BOLA/IDOR, Mass Assignment, надлишкового розкриття даних (OWASP API Top 10:2023).
 - [**`subscription-lifecycle`**](../skills/subscription-lifecycle/SKILL.md) — контроль квот тарифних планів, лімітів seats/SKU/AI, grace-періодів.
 - [**`tauri-v2-security-and-ipc`**](../skills/tauri-v2-security-and-ipc/SKILL.md) — аудит безпеки десктопу: SQLCipher шифрування, Keychain для токенів, валідація IPC команд.
 

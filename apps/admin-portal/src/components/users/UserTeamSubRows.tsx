@@ -6,6 +6,7 @@ import { TableRow, TableCell } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { UserRowActions } from '@/components/users/UserRowActions';
+import { UserAvatarCell } from '@/components/ui/user-avatar-cell';
 import { CornerDownRight, KeyRound } from 'lucide-react';
 
 interface UserTeamSubRowsProps {
@@ -40,25 +41,19 @@ export const UserTeamSubRows = React.memo(function UserTeamSubRows({
             <TableCell className="pl-6 py-2">
               <div className="flex items-center space-x-2">
                 <CornerDownRight className="size-3 text-primary/60 shrink-0" />
-                <div className="size-6 rounded-full bg-secondary border border-border flex items-center justify-center text-foreground font-semibold text-[9px] uppercase shrink-0">
-                  {member.fullName ? member.fullName.substring(0, 2) : member.email.substring(0, 2)}
-                </div>
-                <div className="min-w-0">
-                  <div className="flex items-center gap-1.5">
-                    <span className="font-medium text-xs text-foreground truncate">
-                      {member.fullName || t('users', 'unnamed_user')}
-                    </span>
-                    <Badge
-                      variant="outline"
-                      className="bg-secondary/60 text-[9px] h-4 px-1 text-muted-foreground border-border/50"
-                    >
-                      {t('users', 'team_member')}
-                    </Badge>
-                  </div>
-                  <div className="text-[11px] text-muted-foreground truncate font-mono">
-                    {member.email}
-                  </div>
-                </div>
+                <UserAvatarCell
+                  fullName={member.fullName}
+                  email={member.email}
+                  avatarUrl={member.avatarUrl}
+                  size="sm"
+                  showEmail
+                />
+                <Badge
+                  variant="outline"
+                  className="bg-secondary/60 text-[9px] h-4 px-1 text-muted-foreground border-border/50 shrink-0"
+                >
+                  {t('users', 'team_member')}
+                </Badge>
               </div>
             </TableCell>
 

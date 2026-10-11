@@ -1,3 +1,4 @@
+import * as dns from 'dns';
 import {
   BadRequestException,
   BadGatewayException,
@@ -18,7 +19,7 @@ export class FetchFeedUrlHandler implements IQueryHandler<FetchFeedUrlQuery, Fet
 
   async execute(query: FetchFeedUrlQuery): Promise<FetchFeedResultDto> {
     const rawUrl = query.url.trim();
-    this.validateUrlSafety(rawUrl);
+    await this.validateUrlSafety(rawUrl);
 
     this.logger.log(`Fetching remote feed from URL: ${rawUrl}`);
 
@@ -94,9 +95,9 @@ export class FetchFeedUrlHandler implements IQueryHandler<FetchFeedUrlQuery, Fet
   }
 
   /**
-   * SSRF Protection: blocks private/loopback/cloud-metadata networks
+   * SSRF Protection: blocks private/loopback/cloud-metadata networks via regex and DNS pre-lookup
    */
-  private validateUrlSafety(targetUrl: string): void {
+  private async validateUrlSafety(targetUrl: string): Promise<void> {
     let parsed: URL;
     try {
       parsed = new URL(targetUrl);
@@ -110,7 +111,7 @@ export class FetchFeedUrlHandler implements IQueryHandler<FetchFeedUrlQuery, Fet
 
     const hostname = parsed.hostname.toLowerCase();
 
-    // Loopback & local
+    // 1. Static Hostname string checks
     if (
       hostname === 'localhost' ||
       hostname.endsWith('.localhost') ||
@@ -127,7 +128,7 @@ export class FetchFeedUrlHandler implements IQueryHandler<FetchFeedUrlQuery, Fet
       throw new BadRequestException('Requests to link-local addresses are prohibited');
     }
 
-    // Private IPv4 ranges
+    // Private IPv4 literal hostnames
     if (
       hostname.startsWith('10.') ||
       hostname.startsWith('192.168.') ||
@@ -135,5 +136,49 @@ export class FetchFeedUrlHandler implements IQueryHandler<FetchFeedUrlQuery, Fet
     ) {
       throw new BadRequestException('Requests to private network addresses are prohibited');
     }
+
+    // 2. DNS Pre-Lookup: resolve actual IP address to defeat DNS rebinding (e.g. *.nip.io)
+    try {
+      const addresses = await dns.promises.lookup(hostname, { all: true });
+      for (const entry of addresses) {
+        if (this.isForbiddenIp(entry.address)) {
+          throw new BadRequestException(
+            'Target hostname resolves to a prohibited private, loopback, or metadata address',
+          );
+        }
+      }
+    } catch (err: unknown) {
+      if (err instanceof BadRequestException) {
+        throw err;
+      }
+      this.logger.warn(`SSRF DNS lookup failed for hostname ${hostname}: ${err}`);
+      throw new BadRequestException(`Cannot resolve hostname "${hostname}"`);
+    }
+  }
+
+  private isForbiddenIp(ip: string): boolean {
+    const cleanIp = ip.toLowerCase().replace(/^::ffff:/, ''); // normalize IPv4-mapped IPv6
+
+    if (
+      cleanIp === '127.0.0.1' ||
+      cleanIp === '0.0.0.0' ||
+      cleanIp === '::1' ||
+      cleanIp.startsWith('127.')
+    ) {
+      return true;
+    }
+    if (cleanIp.startsWith('10.') || cleanIp.startsWith('192.168.')) {
+      return true;
+    }
+    if (/^172\.(1[6-9]|2[0-9]|3[0-1])\./.test(cleanIp)) {
+      return true;
+    }
+    if (cleanIp.startsWith('169.254.')) {
+      return true;
+    }
+    if (cleanIp.startsWith('fc00:') || cleanIp.startsWith('fd') || cleanIp.startsWith('fe80:')) {
+      return true;
+    }
+    return false;
   }
 }

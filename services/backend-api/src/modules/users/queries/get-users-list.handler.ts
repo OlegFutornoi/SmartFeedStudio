@@ -68,6 +68,7 @@ export class GetUsersListHandler implements IQueryHandler<GetUsersListQuery> {
                     id: true,
                     email: true,
                     fullName: true,
+                    avatarUrl: true,
                     licenses: {
                       where: { isActive: true },
                       take: 1,
@@ -82,6 +83,7 @@ export class GetUsersListHandler implements IQueryHandler<GetUsersListQuery> {
                         id: true,
                         email: true,
                         fullName: true,
+                        avatarUrl: true,
                         role: true,
                         isActive: true,
                         createdAt: true,
@@ -114,6 +116,7 @@ export class GetUsersListHandler implements IQueryHandler<GetUsersListQuery> {
             isOwner: primaryMembership.role === 'OWNER',
             ownerEmail: primaryMembership.organization.owner?.email || null,
             ownerFullName: primaryMembership.organization.owner?.fullName || null,
+            ownerAvatarUrl: primaryMembership.organization.owner?.avatarUrl || null,
           }
         : null;
 
@@ -133,6 +136,7 @@ export class GetUsersListHandler implements IQueryHandler<GetUsersListQuery> {
             id: m.user.id,
             email: m.user.email,
             fullName: m.user.fullName,
+            avatarUrl: m.user.avatarUrl,
             role: m.user.role as unknown as SharedRole,
             isActive: m.user.isActive,
             createdAt: m.user.createdAt,
@@ -144,6 +148,7 @@ export class GetUsersListHandler implements IQueryHandler<GetUsersListQuery> {
               isOwner: false,
               ownerEmail: u.email,
               ownerFullName: u.fullName || null,
+              ownerAvatarUrl: u.avatarUrl || null,
             },
             license: u.licenses[0]
               ? {
@@ -166,6 +171,7 @@ export class GetUsersListHandler implements IQueryHandler<GetUsersListQuery> {
         id: u.id,
         email: u.email,
         fullName: u.fullName,
+        avatarUrl: u.avatarUrl,
         role: u.role as unknown as SharedRole,
         isActive: u.isActive,
         createdAt: u.createdAt,

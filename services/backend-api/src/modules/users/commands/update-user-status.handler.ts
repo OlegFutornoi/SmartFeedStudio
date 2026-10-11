@@ -77,6 +77,7 @@ export class UpdateUserStatusHandler implements ICommandHandler<
                     id: true,
                     email: true,
                     fullName: true,
+                    avatarUrl: true,
                   },
                 },
               },
@@ -100,6 +101,7 @@ export class UpdateUserStatusHandler implements ICommandHandler<
           isOwner: primaryMembership.role === 'OWNER',
           ownerEmail: primaryMembership.organization.owner?.email || null,
           ownerFullName: primaryMembership.organization.owner?.fullName || null,
+          ownerAvatarUrl: primaryMembership.organization.owner?.avatarUrl || null,
         }
       : null;
 
@@ -107,6 +109,7 @@ export class UpdateUserStatusHandler implements ICommandHandler<
       id: updated.id,
       email: updated.email,
       fullName: updated.fullName,
+      avatarUrl: updated.avatarUrl,
       role: updated.role as unknown as Role,
       isActive: updated.isActive,
       createdAt: updated.createdAt,

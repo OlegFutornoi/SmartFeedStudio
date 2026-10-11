@@ -25,7 +25,7 @@ interface LicenseContextType {
 const LicenseContext = createContext<LicenseContextType | undefined>(undefined);
 
 export function LicenseProvider({ children }: { children: React.ReactNode }) {
-  const { token, isAuthenticated, user } = useAuth();
+  const { token, isAuthenticated, user, isSuspended } = useAuth();
   const [license, setLicense] = useState<LicenseEntity | null>(() => {
     try {
       const saved = localStorage.getItem('smartfeed_license');
@@ -41,13 +41,14 @@ export function LicenseProvider({ children }: { children: React.ReactNode }) {
   const lastFetchedTokenRef = useRef<string | null>(null);
 
   const isAdmin = user?.role === 'SUPER_ADMIN' || user?.role === 'ADMIN';
+  const isAccountSuspended = isSuspended || user?.isActive === false;
 
   const licenseRef = useRef(license);
   licenseRef.current = license;
 
   const fetchLicense = useCallback(
     async (force = false) => {
-      if (!token || !isAuthenticated) {
+      if (!token || !isAuthenticated || isAccountSuspended) {
         setLicense(null);
         setIsExpired(false);
         setIsLoading(false);
@@ -75,9 +76,15 @@ export function LicenseProvider({ children }: { children: React.ReactNode }) {
         const expired = isAdmin ? false : Boolean(!lic || !lic.isActive || lic.isExpired);
         setIsExpired(expired);
         lastFetchedTokenRef.current = token;
-      } catch (err) {
+      } catch (err: unknown) {
         console.warn('[LicenseContext:fetchLicense] Failed to fetch license:', err);
-        if (isAdmin) {
+        const apiErr = err as { statusCode?: number; data?: { code?: string } };
+        if (
+          isAdmin ||
+          isAccountSuspended ||
+          apiErr?.statusCode === 403 ||
+          apiErr?.data?.code === 'USER_SUSPENDED'
+        ) {
           setIsExpired(false);
         } else if (token.startsWith('mock-')) {
           setIsExpired(false);
@@ -90,7 +97,7 @@ export function LicenseProvider({ children }: { children: React.ReactNode }) {
         setIsLoading(false);
       }
     },
-    [token, isAuthenticated, isAdmin],
+    [token, isAuthenticated, isAdmin, isAccountSuspended],
   );
 
   useEffect(() => {

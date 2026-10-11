@@ -85,6 +85,7 @@ export const DashboardLicensesTableTab = React.memo(function DashboardLicensesTa
               <UserAvatarCell
                 fullName={lic.user?.fullName}
                 email={lic.user?.email}
+                avatarUrl={lic.user?.avatarUrl}
                 size="sm"
                 className="max-w-[140px]"
               />

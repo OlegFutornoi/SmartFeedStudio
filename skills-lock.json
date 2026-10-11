@@ -340,6 +340,12 @@
       "skillPath": "skills/firecrawl-parse/SKILL.md",
       "computedHash": "99dcb9e05f86323fe4601c02a234372ef07815b2d332e941967027a8877a993c"
     },
+    "fix-security-vulnerabilities-with-strix": {
+      "source": "usestrix/strix",
+      "sourceType": "github",
+      "skillPath": "skills/fix-security-vulnerabilities-with-strix/SKILL.md",
+      "computedHash": "f5fcf1365bbaa650b246c9a0e6338db2e40ecc46fba60ff64fd2f6311eed901c"
+    },
     "frontend-design": {
       "source": "anthropics/skills",
       "sourceType": "github",
@@ -434,6 +440,12 @@
       "skillPath": "skills/observability-and-instrumentation/SKILL.md",
       "computedHash": "e5eba32f952a29d20c0383728a9505d0ca2a90f1d8d075603e53804b441b2dd2"
     },
+    "penetration-testing-with-strix": {
+      "source": "usestrix/strix",
+      "sourceType": "github",
+      "skillPath": "skills/penetration-testing-with-strix/SKILL.md",
+      "computedHash": "476406af8b4d3bf8d09873cf6445f66b428e3efa8b5f55e69f52b1d0685f7fe2"
+    },
     "performance-optimization": {
       "source": "addyosmani/agent-skills",
       "sourceType": "github",
@@ -504,6 +516,12 @@
       "source": "local",
       "sourceType": "local",
       "skillPath": "skills/rust-native-backend/SKILL.md"
+    },
+    "secret-serialization": {
+      "source": "getsentry/skills",
+      "sourceType": "github",
+      "skillPath": "skills/secret-serialization/SKILL.md",
+      "computedHash": "c314fb6f92e1a08d94667264edf964b0df9666c11bc451233e97336714361bd6"
     },
     "security-and-hardening": {
       "source": "addyosmani/agent-skills",
@@ -624,6 +642,12 @@
       "sourceType": "github",
       "skillPath": "skills/verification-before-completion/SKILL.md",
       "computedHash": "b529822bdac4b197b180fe12225cff86b930b65910435103c10622df7f041651"
+    },
+    "web-app-penetration-testing": {
+      "source": "usestrix/strix",
+      "sourceType": "github",
+      "skillPath": "skills/web-app-penetration-testing/SKILL.md",
+      "computedHash": "734aaa972fd526b3962ff3ff29ef701c2eae6191f27c8dc479f9c37f9445de69"
     },
     "web-design-guidelines": {
       "source": "vercel-labs/agent-skills",

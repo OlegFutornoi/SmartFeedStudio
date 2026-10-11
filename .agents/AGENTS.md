@@ -2,7 +2,7 @@
 
 > **Location:** [`.agents/AGENTS.md`](./AGENTS.md)  
 > **Purpose:** Central intelligence dispatcher connecting specialized Agents and modular Skills.  
-> **Specialized Agent Playbooks:** [🎨 Frontend Agent](references/agents_frontend.md) · [⚙️ Backend Agent](references/agents_backend.md) · [🔍 Code Review Agent](references/agents_review.md) · [🚀 DevOps Agent](references/agents_devops.md) · [🧪 QA Agent](references/agents_qa.md) · [📋 Prompts](references/task_prompt_examples.md)
+> **Specialized Agent Playbooks:** [🎨 Frontend Agent](references/agents_frontend.md) · [⚙️ Backend Agent](references/agents_backend.md) · [🔍 Code Review Agent](references/agents_review.md) · [🚀 DevOps Agent](references/agents_devops.md) · [🧪 QA Agent](references/agents_qa.md) · [🛡️ Security Agent](references/agents_security.md) · [📋 Prompts](references/task_prompt_examples.md)
 
 ---
 
@@ -10,9 +10,9 @@
 
 In SmartFeed Studio, the hierarchy is strictly role-driven:
 
-1. **АГЕНТИ (Agents)** — це автономні спеціалізовані інженери (`agents_frontend`, `agents_backend`, `agents_review`, `agents_qa`, `agents_devops`). Кожен агент має чіткий **8-етапний життєвий цикл**.
+1. **АГЕНТИ (Agents)** — це автономні спеціалізовані інженери (`agents_frontend`, `agents_backend`, `agents_review`, `agents_qa`, `agents_devops`, `agents_security`). Кожен агент має чіткий **8-етапний життєвий цикл**.
 2. **НА КОЖНОМУ ЕТАПІ** агент чітко визначає: **ЯКІ саме скіли** активуються та **ЯК САМЕ** вони використовуються.
-3. **СКІЛИ (Skills)** — це 46 модульних інструментів та компетенцій, що розташовані безпосередньо в [`.agents/skills/<skill>/SKILL.md`](skills/) (і дзеркаляться в [`.claude/skills/`](../.claude/skills/)). Папки `sub-skills/` не існує — всі скіли рівноправні та модульні.
+3. **СКІЛИ (Skills)** — це 52 модульних інструментів та компетенцій, що розташовані безпосередньо в [`.agents/skills/<skill>/SKILL.md`](skills/) (і дзеркаляться в [`.claude/skills/`](../.claude/skills/)). Папки `sub-skills/` не існує — всі скіли рівноправні та модульні.
 4. **`skill-creator`** — це мета-скіл у [`.agents/skills/skill-creator/SKILL.md`](skills/skill-creator/SKILL.md), який агенти використовують у контурі самопрокачування для синтезу нових правил та навичок.
 
 ```text
@@ -24,17 +24,17 @@ In SmartFeed Studio, the hierarchy is strictly role-driven:
         ▼                                   ▼                                   ▼
  ┌──────────────┐                    ┌──────────────┐                    ┌──────────────┐
  │   FRONTEND   │                    │   BACKEND    │                    │ REVIEW / QA  │
- │    AGENT     │                    │    AGENT     │                    │   / DEVOPS   │
+ │    AGENT     │                    │    AGENT     │                    │ / DEVOPS / SEC│
  └──────┬───────┘                    └──────┬───────┘                    └──────┬───────┘
         │ (8-Stage Lifecycle)               │ (8-Stage Lifecycle)               │ (8-Stage)
         ▼                                   ▼                                   ▼
  ┌──────────────────────────────────────────────────────────────────────────────────────┐
- │                      46 МОДУЛЬНИХ СКІЛІВ (.agents/skills/<skill>/)                   │
+ │                      52 МОДУЛЬНИХ СКІЛІВ (.agents/skills/<skill>/)                   │
  │                                                                                      │
  │  💻 Frontend: ui-ux-pro-max, vercel-react-best-practices, i18n-localization, emil... │
  │  ⚙️ Backend: nestjs-best-practices, prisma-postgres-mastery, postgresql-opt...      │
- │  🧪 Testing: playwright-automation, test-driven-development, mock-real-parity...     │
- │  🛡️ Security: security-and-hardening, tauri-v2-security-and-ipc...                   │
+ │  🛡️ Security: penetration-testing-with-strix, web-app-penetration-testing, fix...   │
+ │  🧪 Testing: playwright-automation, test-driven-development, api-security-test...    │
  │  📋 Planning: planning-and-lifecycle, interview-me, spec-driven-development...       │
  │  🧬 Evolution: skill-creator (мета-контур створення та аудиту скілів)                │
  └──────────────────────────────────────────────────────────────────────────────────────┘
@@ -42,7 +42,7 @@ In SmartFeed Studio, the hierarchy is strictly role-driven:
 
 ---
 
-## 🗺 2. Каталог 46 скілів за категоріями
+## 🗺 2. Каталог 52 скілів за категоріями
 
 ### 👑 Майстер-оркестратори життєвого циклу
 
@@ -75,6 +75,7 @@ In SmartFeed Studio, the hierarchy is strictly role-driven:
 ### 🔍 Якість Коду, Рев'ю та Дебаг
 
 - [`code-review-and-quality`](skills/code-review-and-quality/SKILL.md) — 5-осьовий аудит якості (коректність, архітектура, безпека, читабельність, швидкість).
+- [`secret-serialization`](skills/secret-serialization/SKILL.md) — Пошук та запобігання витоку секретів, токенів, паролів через `JSON.stringify`, логи, Sentry-спани та відповіді.
 - [`code-simplification`](skills/code-simplification/SKILL.md) — Спрощення надлишкової складності без зміни поведінки, тести на кожну зміну.
 - [`systematic-debugging`](skills/systematic-debugging/SKILL.md) — 4-фазний дебаг: відтворення тестом → пошук корінної причини → структурний фікс → верифікація.
 - [`doubt-driven-development`](skills/doubt-driven-development/SKILL.md) — Змагальний критичний аналіз (adversarial review), моделювання гонок (TOCTOU) та обходу квот.
@@ -95,6 +96,10 @@ In SmartFeed Studio, the hierarchy is strictly role-driven:
 
 - [`playwright-automation`](skills/playwright-automation/SKILL.md) — Page Object Model, стабільні селектори, двомовні UA/EN тести, перевірка дедуплікації.
 - [`test-driven-development`](skills/test-driven-development/SKILL.md) — Цикл RED-GREEN-REFACTOR, обов'язковий `cleanDatabase` teardown у `beforeAll`/`afterAll`.
+- [`penetration-testing-with-strix`](skills/penetration-testing-with-strix/SKILL.md) — Автономний пентест веб-додатків, API та репозиторію, доведення експлойтів (OWASP Top 10).
+- [`web-app-penetration-testing`](skills/web-app-penetration-testing/SKILL.md) — Black-box аудит веб-порталу, тестування auth bypass, IDOR, SSRF, XSS з робочими PoC.
+- [`fix-security-vulnerabilities-with-strix`](skills/fix-security-vulnerabilities-with-strix/SKILL.md) — Системна ремедіація вразливостей, ліквідація корінної причини та верифікація закриття дірок.
+- [`api-security-testing`](skills/api-security-testing/SKILL.md) — Автономне тестування API на вразливості OWASP API Security Top 10 (2023): BOLA/IDOR, Mass Assignment, over-exposure, auth bypass.
 - [`mock-real-parity`](skills/mock-real-parity/SKILL.md) — 100% поведінковий паритет між mockDatabaseDriver, нативним SQLite та Real NestJS API.
 - [`performance-optimization`](skills/performance-optimization/SKILL.md) — Бенчмарки продуктивності, контроль p95 latency, профілювання CPU та RAM.
 - [`security-and-hardening`](skills/security-and-hardening/SKILL.md) — 4-шаровий захист, OWASP Top 10, JWT безпека, нуль CWE-78 (тільки `execFile`).
@@ -122,7 +127,7 @@ graph TD
     TypeCheck -->|"Backend / CQRS / Prisma / DB / API"| B["⚙️ Backend Agent (agents_backend)"]
     B --> B_Workflow["8 етапів: contract-first -> prisma-postgres -> TDD RED -> GREEN (4-layer) -> review -> debug -> handoff"]
 
-    TypeCheck -->|"Code Review / Security / Audit"| R["🔍 Review Agent (agents_review)"]
+    TypeCheck -->|"Code Review / Quality / Architecture"| R["🔍 Review Agent (agents_review)"]
     R --> R_Workflow["8 етапів: discovery -> CQRS audit -> 4-layer security -> UX/DoD -> DB audit -> adversarial stress -> remediation plan -> report"]
 
     TypeCheck -->|"QA / Performance / Chaos / Benchmarks"| Q["🧪 QA Agent (agents_qa)"]
@@ -130,6 +135,9 @@ graph TD
 
     TypeCheck -->|"DevOps / Docker / Migration / Release"| O["🚀 DevOps Agent (agents_devops)"]
     O --> O_Workflow["8 етапів: infra recon -> rollback plan -> expand/contract migration -> docker health -> tauri build -> railway -> SemVer release -> report"]
+
+    TypeCheck -->|"Security / Pentest / AppSec / Vulnerabilities"| S["🛡️ Security Agent (agents_security)"]
+    S --> S_Workflow["8 етапів: STRIDE -> attack surface -> white-box -> OWASP pentest -> DB audit -> PoC test -> remediation plan -> verify"]
 ```
 
 ---

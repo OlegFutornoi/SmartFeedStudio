@@ -23,6 +23,7 @@ import { UserListItemDto } from '@smartfeed/shared';
 import { Users, Search, Building2 } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { UserRowActions } from '@/components/users/UserRowActions';
+import { UserAvatarCell } from '@/components/ui/user-avatar-cell';
 
 interface TeamMembersDialogProps {
   open: boolean;
@@ -141,21 +142,13 @@ export function TeamMembersDialog({
                       className="hover:bg-muted/30"
                     >
                       <TableCell className="py-2.5">
-                        <div className="flex items-center space-x-2.5">
-                          <div className="h-8 w-8 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center text-primary font-bold text-xs uppercase shrink-0">
-                            {member.fullName
-                              ? member.fullName.substring(0, 2)
-                              : member.email.substring(0, 2)}
-                          </div>
-                          <div className="min-w-0">
-                            <div className="font-medium text-xs text-foreground truncate">
-                              {member.fullName || t('users', 'unnamed_user')}
-                            </div>
-                            <div className="text-[11px] text-muted-foreground truncate font-mono">
-                              {member.email}
-                            </div>
-                          </div>
-                        </div>
+                        <UserAvatarCell
+                          fullName={member.fullName}
+                          email={member.email}
+                          avatarUrl={member.avatarUrl}
+                          size="md"
+                          showEmail
+                        />
                       </TableCell>
 
                       <TableCell className="py-2.5">

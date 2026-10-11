@@ -4,18 +4,23 @@ import { Sidebar } from '@/components/layout/Sidebar';
 import { Header } from '@/components/layout/Header';
 import { SidebarProvider } from '@/contexts/SidebarContext';
 import { NavigationProvider } from '@/contexts/NavigationContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { useLicense } from '@/hooks/useLicense';
 import { ExpiredPlanBlocker } from '@/components/layout/ExpiredPlanBlocker';
+import { UserSuspendedBlocker } from '@/components/layout/UserSuspendedBlocker';
 import { GlobalJobProgressBar } from '@/components/ui/GlobalJobProgressBar';
 import { FirstRunWorkspaceSetupDialog } from '@/components/storage/FirstRunWorkspaceSetupDialog';
 
 export function DashboardLayout({ children }: { children?: React.ReactNode }) {
+  const { isSuspended, user } = useAuth();
   const { isExpired, isLoading } = useLicense();
   const location = useLocation();
 
+  const isUserSuspended = isSuspended || user?.isActive === false;
+
   // Allow access to /plans and /settings even when license is expired or missing
   const isAllowedPath = ['/plans', '/settings'].includes(location.pathname);
-  const isBlocked = !isLoading && isExpired && !isAllowedPath;
+  const isLicenseBlocked = !isLoading && isExpired && !isAllowedPath;
 
   return (
     <SidebarProvider>
@@ -25,11 +30,17 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
           <div className="flex-1 flex flex-col min-w-0 md:m-2 md:ml-0 md:rounded-xl md:border md:border-border/80 md:shadow-xs bg-background overflow-hidden">
             <Header />
             <main className="flex-1 p-6 md:p-8 overflow-y-auto">
-              {isBlocked ? <ExpiredPlanBlocker /> : children || <Outlet />}
+              {isUserSuspended ? (
+                <UserSuspendedBlocker />
+              ) : isLicenseBlocked ? (
+                <ExpiredPlanBlocker />
+              ) : (
+                children || <Outlet />
+              )}
             </main>
           </div>
           <GlobalJobProgressBar />
-          <FirstRunWorkspaceSetupDialog />
+          {!isUserSuspended && <FirstRunWorkspaceSetupDialog />}
         </div>
       </NavigationProvider>
     </SidebarProvider>

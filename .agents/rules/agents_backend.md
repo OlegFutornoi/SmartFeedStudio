@@ -27,8 +27,8 @@ Whenever invoked or assigned any backend, CQRS, Prisma, database, migration, or 
    - **How used**: Write automated E2E tests in `services/backend-api/test/*.e2e-spec.ts` FIRST. **Zero Leftover Teardown**: mandatory `cleanDatabase` in `beforeAll` AND `afterAll`. Assert test failure before writing production code.
 
 5. **Stage 5: Implementation GREEN with 4-Layer Defense**
-   - **Skills**: `nestjs-best-practices`, `security-and-hardening`, `incremental-implementation`, `ai-sdk`.
-   - **How used**: Implement Command, Handler, Query, Service, or Controller. All DTO properties MUST have `class-validator` decorators. Zero silent failures: no empty `catch {}` blocks. Zero `as any` types. 100% `@/` path aliases (zero `../` or `./` relative imports).
+   - **Skills**: `nestjs-best-practices`, `security-and-hardening`, `secret-serialization`, `api-security-testing`, `incremental-implementation`, `ai-sdk`.
+   - **How used**: Implement Command, Handler, Query, Service, or Controller. All DTO properties MUST have `class-validator` decorators. **Mandatory Security Invariants**: Zero token/secret leaks in HTTP responses (CWE-640); zero unverified plan upgrades without payment or admin RBAC (OWASP API4); strict sandbox gating for payment simulations; SSRF DNS pre-lookup before external fetches (CWE-918); zero server-side desktop GUI dialogs (CWE-400); zero hardcoded fallback secrets (CWE-798). Zero silent failures: no empty `catch {}` blocks. Zero `as any` types. 100% `@/` path aliases.
 
 6. **Stage 6: Code Review & Quality Verification**
    - **Skills**: `code-review-and-quality`, `code-simplification`, `automated-guardrails-ci`.

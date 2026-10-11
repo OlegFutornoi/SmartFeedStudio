@@ -48,7 +48,7 @@
     │    • Ролі (RBAC), тенантність (organizationId), квоти (SKU/seats/S3/AI)       │
     │    • Моделювання відмов, аналіз каскадного видалення та паритету Mock↔Real    │
     │    • Скіли: project-context-map, lessons-learned-registry, subscription-lc,  │
-    │             security-and-hardening, interview-me, doubt-driven-development    │
+    │             security-and-hardening, api-security-testing, interview-me        │
     │    • MCP: context7 (NestJS/Prisma/BullMQ docs), firecrawl (безпека, RFC)     │
     └───────────────────────────────────────┬───────────────────────────────────────┘
                                             │
@@ -65,33 +65,34 @@
     │    • services/backend-api/test/<feature>.e2e-spec.ts (Supertest + реальна БД) │
     │    • cleanDatabase в beforeAll ТА afterAll (нуль сміття в базі даних)         │
     │    • Валідація DTO (400), Auth/Guards (401/403), Quotas, 200/201 Success     │
-    │    • Запуск тесту -> ПЕРЕКОНАТИСЯ В ПАДІННІ (RED) З ОЧІКУВАНОЇ ПРИЧИНИ        │
-    │    • Скіли: test-driven-development, mock-real-parity                         │
+    │    • BOLA/IDOR тести, Mass Assignment перевірка, 0 секретів у відповідях      │
+    │    • Скіли: test-driven-development, api-security-testing, mock-real-parity   │
     └───────────────────────────────────────┬───────────────────────────────────────┘
                                             │
     ┌───────────────────────────────────────▼───────────────────────────────────────┐
     │ 4. ⚙️ РЕАЛІЗАЦІЯ З 4-ШАРОВИМ ЗАХИСТОМ ДО ПРОХОДЖЕННЯ ТЕСТІВ (GREEN PHASE)     │
     │    • Шар 1 (DTO / class-validator), Шар 2 (Domain/Квоти + Mutex)              │
     │    • Шар 3 (Guards/RBAC + CWE-78 execFile), Шар 4 (Prisma FKs/Trx)           │
+    │    • 0 витоків секретів у логи/Sentry спани (secret-serialization захист)     │
     │    • PostgreSQL: 100% FK indexes, snake_case @@map, timestamptz, cuid PK      │
-    │    • Запуск тесту -> ПЕРЕКОНАТИСЯ У 100% УСПІШНОМУ ПРОХОДЖЕННІ (GREEN)        │
     │    • Скіли: nestjs-best-practices, prisma-postgres-mastery, postgresql-opt,  │
-    │             streaming-large-feeds, bullmq-jobs, idempotency-and-outbox        │
+    │             streaming-large-feeds, bullmq-jobs, secret-serialization          │
     └───────────────────────────────────────┬───────────────────────────────────────┘
                                             │
     ┌───────────────────────────────────────▼───────────────────────────────────────┐
     │ 5. 🔍 ПРОМІЖНЕ ІНЖЕНЕРНЕ РЕВ'Ю ТА САМОАУДИТ                                  │
     │    • Самоінспекція: <250 рядків на файл, 0 any, 0 порожніх catch, чисті типи   │
+    │    • Перевірка відсутності серіалізації credentials/хешів у DTO та логах      │
     │    • Статичний тайпчек: pnpm --filter @smartfeed/backend-api exec tsc --noEmit│
-    │    • Скіли: code-review-and-quality, code-simplification, performance-opt    │
+    │    • Скіли: code-review-and-quality, secret-serialization, code-simplification│
     └───────────────────────────────────────┬───────────────────────────────────────┘
                                             │
     ┌───────────────────────────────────────▼───────────────────────────────────────┐
     │ 6. 🛡️ СУЦІЛЬНЕ АВТОТЕСТУВАННЯ ТА РЕГРЕСІЙНИЙ КОНТРОЛЬ                         │
     │    • Повний E2E сьют: pnpm --filter @smartfeed/backend-api test:e2e           │
-    │    • Регресійний контроль: жоден інший модуль не зламався (100% PASS)         │
+    │    • OWASP API Security верифікація (BOLA/IDOR, Mass Assignment, auth bypass) │
     │    • Перевірка Swagger UI через Playwright MCP (БЕЗ browser_subagent)         │
-    │    • Скіли: test-driven-development, doubt-driven-development                 │
+    │    • Скіли: test-driven-development, api-security-testing, doubt-driven-dev   │
     └───────────────────────────────────────┬───────────────────────────────────────┘
                                             │
                         ┌───────────────────┴───────────────────┐
@@ -276,11 +277,17 @@
 - Перевірка лімітів підписки: seats, SKU, credits, S3. При перевищенні — викидати `ForbiddenException('QUOTA_EXCEEDED')`.
 - **Захист від TOCTOU race conditions**: чутливі операції мутацій квот огортаються в `OrganizationMutex.runExclusive(orgId, async () => { ... })` для унеможливлення паралельного вичерпання лімітів.
 
-#### Шар 3: Безпека, RBAC & Guards
+#### Шар 3: Безпека, RBAC, Guards & Непорушні інваріанти
 
 - Захист ендпоінтів декораторами: `@UseGuards(JwtAuthGuard, RolesGuard, RequireActiveLicenseGuard)`.
 - **Tenant Scoping**: кожна вибірка та мутація перевіряє належність ресурсу до організації користувача (`organizationId`).
-- Безпечне хешування паролів: тільки Argon2id або bcrypt.
+- Безпечне хешування паролів: тільки Argon2id або bcrypt (rounds >= 10).
+- **Zero Token/Secret Leaks (CWE-640)**: КАТЕГОРИЧНО заборонено повертати `resetToken`, токени підтвердження чи тимчасові секрети у тілі HTTP-відповідей (`/auth/forgot-password`). Доставка виключно через `MailService`.
+- **Zero Unverified Plan Upgrades (OWASP API4)**: Будь-який апгрейд або зміна тарифу для клієнтів здійснюється виключно через верифіковані платіжні транзакції (підписані вебхуки платіжних систем) або закритий ролями адміністраторів (`Role.ADMIN, Role.SUPER_ADMIN`). Заборонено відкривати прямі ендпоінти видачі тарифів без перевірки оплати.
+- **Strict Sandbox / Production Gating**: Симуляції платежів та тестові вебхуки суворо блокуються у продакшн середовищі (`NODE_ENV === 'production'`) та коли налаштування провайдера не перебувають у режимі `isSandbox`.
+- **SSRF Захист із обов'язковим DNS Pre-lookup (CWE-918)**: Будь-яке завантаження зовнішніх URL (XML/CSV фіди, вебхуки) зобов'язане проводити резолв IP через `dns.promises.lookup` та блокувати всі приватні підмережі (127.0.0.0/8, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 169.254.0.0/16, ::1, 0.0.0.0) до виконання HTTP запиту.
+- **Zero OS GUI Calls on Headless Backend (CWE-400)**: Бекенд-сервер НЕ МАЄ ПРАВА спавнити десктопні діалогові вікна (`osascript`, `powershell`, `zenity`). Будь-який вибір папок клієнта виконується виключно на клієнті через Tauri IPC.
+- **Zero Hardcoded Secrets (CWE-798)**: Відсутність обов'язкових ключів або секретів (JWT, платіжні мерчанти) зобов'язана викидати `InternalServerErrorException`, а не підставляти захардкоджені дефолтні рядки.
 - **Безпечні системні виклики (CWE-78)**: категорично заборонено `exec` з конкатенацією рядків. Тільки `execFile(binary, [args], { shell: false })`.
 
 #### Шар 4: База даних, Prisma & PostgreSQL ([postgres_skills.md](rules/postgres_skills.md))

@@ -29,6 +29,8 @@ export const ownerUser: UserListItemDto = {
   email: 'client@shop.ua',
   fullName: 'Петро Клієнт',
   role: Role.USER,
+  avatarUrl:
+    'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==',
   isActive: true,
   organization: {
     organizationId: 'org-1',

@@ -85,6 +85,7 @@ export const DashboardTransactionsTableTab = React.memo(function DashboardTransa
               <UserAvatarCell
                 fullName={tx.userFullName}
                 email={tx.userEmail}
+                avatarUrl={tx.userAvatarUrl}
                 size="sm"
                 className="max-w-[140px]"
               />

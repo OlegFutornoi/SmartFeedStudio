@@ -47,6 +47,25 @@ export async function refreshAuthSession(): Promise<string | null> {
       });
 
       if (!response.ok) {
+        if (response.status === 403) {
+          const errorData = await response.json().catch(() => ({}));
+          if (errorData?.code === 'USER_SUSPENDED') {
+            const saved = localStorage.getItem(USER_KEY);
+            if (saved) {
+              try {
+                const parsed = JSON.parse(saved);
+                parsed.isActive = false;
+                localStorage.setItem(USER_KEY, JSON.stringify(parsed));
+              } catch (parseErr) {
+                console.warn('[api:refreshToken] Failed to update stored user status:', parseErr);
+              }
+            }
+            if (typeof window !== 'undefined') {
+              window.dispatchEvent(new CustomEvent('smartfeed:user-suspended'));
+            }
+            return null;
+          }
+        }
         // If refresh token is truly expired or invalid, clear stored session
         localStorage.removeItem(TOKEN_KEY);
         localStorage.removeItem(REFRESH_TOKEN_KEY);
@@ -96,6 +115,31 @@ export async function fetchWithAuth(
     ...options,
     headers,
   });
+
+  // If 403 Forbidden with USER_SUSPENDED, broadcast event to activate suspension blocker UI
+  if (response.status === 403) {
+    const clone = response.clone();
+    clone
+      .json()
+      .then((data) => {
+        if (data?.code === 'USER_SUSPENDED') {
+          const saved = localStorage.getItem(USER_KEY);
+          if (saved) {
+            try {
+              const parsed = JSON.parse(saved);
+              parsed.isActive = false;
+              localStorage.setItem(USER_KEY, JSON.stringify(parsed));
+            } catch (parseErr) {
+              console.warn('[api:fetchWithAuth] Failed to update stored user status:', parseErr);
+            }
+          }
+          if (typeof window !== 'undefined') {
+            window.dispatchEvent(new CustomEvent('smartfeed:user-suspended'));
+          }
+        }
+      })
+      .catch(() => {});
+  }
 
   // If 401 Unauthorized, transparently refresh session and retry request
   if (response.status === 401) {

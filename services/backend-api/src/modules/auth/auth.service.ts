@@ -1,9 +1,17 @@
-import { Injectable, UnauthorizedException, BadRequestException, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  ForbiddenException,
+  BadRequestException,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
 import {
+  AuthErrorCode,
   AuthResponseDto,
   AuthTokens,
   ForgotPasswordResponseDto,
@@ -78,6 +86,13 @@ export class AuthService {
       new GetUserByIdQuery(user.id),
     );
 
+    if (userProfile.isActive === false) {
+      throw new ForbiddenException({
+        code: AuthErrorCode.USER_SUSPENDED,
+        message: 'User account has been suspended by administration. Please contact support.',
+      });
+    }
+
     const tokens = await this.generateTokens(userProfile);
 
     return {
@@ -104,13 +119,23 @@ export class AuthService {
         new GetUserByIdQuery(payload.sub),
       );
 
+      if (!user || user.isActive === false) {
+        throw new ForbiddenException({
+          code: AuthErrorCode.USER_SUSPENDED,
+          message: 'User account has been suspended by administration. Please contact support.',
+        });
+      }
+
       const tokens = await this.generateTokens(user);
 
       return {
         user,
         tokens,
       };
-    } catch {
+    } catch (err: unknown) {
+      if (err instanceof ForbiddenException) {
+        throw err;
+      }
       throw new UnauthorizedException('Invalid or expired refresh token');
     }
   }
@@ -136,8 +161,13 @@ export class AuthService {
 
     const resetSecret =
       this.configService.get<string>('JWT_RESET_SECRET') ||
-      this.configService.get<string>('JWT_ACCESS_SECRET') ||
-      'super-secret-reset-token-key-change-in-production';
+      this.configService.get<string>('JWT_ACCESS_SECRET');
+
+    if (!resetSecret && process.env.NODE_ENV === 'production') {
+      throw new InternalServerErrorException('JWT secret is not configured in production');
+    }
+
+    const secretToUse = resetSecret || 'super-secret-reset-token-key-change-in-production';
 
     const resetToken = await this.jwtService.signAsync(
       {
@@ -146,15 +176,18 @@ export class AuthService {
         purpose: 'reset-password',
       },
       {
-        secret: resetSecret,
+        secret: secretToUse,
         expiresIn: '1h',
       },
     );
 
+    // In production, resetToken is NEVER returned in the HTTP response to prevent Account Takeover (CWE-640)
+    const isTestEnvironment = process.env.NODE_ENV === 'test';
+
     return {
       success: true,
       message: 'If this email is registered, password reset instructions have been sent.',
-      resetToken,
+      ...(isTestEnvironment ? { resetToken } : {}),
     };
   }
 
@@ -165,15 +198,20 @@ export class AuthService {
     try {
       const resetSecret =
         this.configService.get<string>('JWT_RESET_SECRET') ||
-        this.configService.get<string>('JWT_ACCESS_SECRET') ||
-        'super-secret-reset-token-key-change-in-production';
+        this.configService.get<string>('JWT_ACCESS_SECRET');
+
+      if (!resetSecret && process.env.NODE_ENV === 'production') {
+        throw new InternalServerErrorException('JWT secret is not configured in production');
+      }
+
+      const secretToUse = resetSecret || 'super-secret-reset-token-key-change-in-production';
 
       const payload = await this.jwtService.verifyAsync<{
         sub: string;
         email: string;
         purpose?: string;
       }>(dto.token, {
-        secret: resetSecret,
+        secret: secretToUse,
       });
 
       if (payload.purpose !== 'reset-password') {

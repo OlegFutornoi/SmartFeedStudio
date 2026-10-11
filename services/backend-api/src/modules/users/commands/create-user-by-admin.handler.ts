@@ -165,7 +165,7 @@ export class CreateUserByAdminHandler implements ICommandHandler<
                   take: 1,
                   orderBy: { createdAt: 'desc' },
                 },
-                owner: { select: { id: true, email: true, fullName: true } },
+                owner: { select: { id: true, email: true, fullName: true, avatarUrl: true } },
               },
             },
           },
@@ -186,6 +186,7 @@ export class CreateUserByAdminHandler implements ICommandHandler<
       id: createdUser.id,
       email: createdUser.email,
       fullName: createdUser.fullName,
+      avatarUrl: createdUser.avatarUrl,
       role: createdUser.role as Role,
       license: effectiveLicense
         ? {
@@ -204,6 +205,7 @@ export class CreateUserByAdminHandler implements ICommandHandler<
             isOwner: membership.role === 'OWNER',
             ownerEmail: membership.organization.owner?.email ?? null,
             ownerFullName: membership.organization.owner?.fullName ?? null,
+            ownerAvatarUrl: membership.organization.owner?.avatarUrl ?? null,
           }
         : null,
       createdAt: createdUser.createdAt,

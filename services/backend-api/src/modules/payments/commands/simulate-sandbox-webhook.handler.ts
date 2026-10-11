@@ -1,5 +1,5 @@
 import { CommandHandler, ICommandHandler, CommandBus } from '@nestjs/cqrs';
-import { NotFoundException, Logger } from '@nestjs/common';
+import { NotFoundException, ForbiddenException, Logger } from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
 import { SimulateSandboxWebhookCommand } from '@/modules/payments/commands/simulate-sandbox-webhook.command';
 import { HandleWayForPayWebhookCommand } from '@/modules/payments/commands/handle-wayforpay-webhook.command';
@@ -19,6 +19,16 @@ export class SimulateSandboxWebhookHandler implements ICommandHandler<SimulateSa
   async execute(command: SimulateSandboxWebhookCommand) {
     const { userId, dto } = command;
 
+    const setting = await this.prisma.paymentSetting.findUnique({
+      where: { provider: PaymentProvider.WAYFORPAY },
+    });
+
+    if (!setting?.isTestMode || process.env.NODE_ENV === 'production') {
+      throw new ForbiddenException(
+        'Sandbox payment simulation is strictly prohibited in live payment mode or production environment',
+      );
+    }
+
     const tx = await this.prisma.paymentTransaction.findUnique({
       where: { orderReference: dto.orderReference },
     });
@@ -26,9 +36,6 @@ export class SimulateSandboxWebhookHandler implements ICommandHandler<SimulateSa
       throw new NotFoundException('Transaction not found or unauthorized');
     }
 
-    const setting = await this.prisma.paymentSetting.findUnique({
-      where: { provider: PaymentProvider.WAYFORPAY },
-    });
     const merchantAccount = setting?.merchantAccount || 'test_merch_n1';
     const secretKey = setting?.merchantSecretKey || 'flk3409refn54t54t*FNJRET';
 

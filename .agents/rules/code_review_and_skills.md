@@ -28,6 +28,7 @@ Whenever writing, refactoring, reviewing, or testing code in this monorepo, the 
 | **`idempotency-and-outbox`**  | Redis idempotency keys; Prisma transactional outbox pattern for webhooks and payment events.                                                                                                                         |
 | **`subscription-lifecycle`**  | Dynamic expiration calculations; grace periods; automatic downgrade fallbacks; quota enforcement across team seats, XML SKUs, AI credits, S3 storage.                                                                |
 | **`security-and-hardening`**  | 4-Layer Defense: Layer 1 (DTO Zod/class-validator), Layer 2 (Domain/Quota), Layer 3 (RBAC/Tenant Guard), Layer 4 (DB FK/Transactions); CWE-78 prevention via `execFile`.                                             |
+| **`secret-serialization`**    | Block credentials/tokens in `JSON.stringify`, logs, Sentry spans, DTO responses via property exclusion.                                                                                                              |
 | **`systematic-debugging`**    | 4-Phase systematic debugging: 1. Reproduce with minimal test; 2. Trace root cause backward; 3. Implement structural fix; 4. Verify 100% test pass.                                                                   |
 
 ---
@@ -52,6 +53,7 @@ Whenever writing, refactoring, reviewing, or testing code in this monorepo, the 
 | :---------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | **`playwright-automation`**   | Page Object Model (POM); resilient `data-testid` selectors; deterministic network idle waits; dedicated bilingual tests (UA ⇄ EN); single-request verification (`requestCount === 1`).      |
 | **`test-driven-development`** | Strict RED → GREEN → REFACTOR cycle; 100% test isolation with centralized `cleanDatabase` teardown in `beforeAll` and `afterAll`; zero orphan DB records.                                   |
+| **`api-security-testing`**    | OWASP API Top 10: BOLA/IDOR tenant boundary tests, Mass Assignment rejection (`forbidNonWhitelisted: true`), zero secret exposure in responses.                                             |
 | **`mock-real-parity`**        | **100% Behavioral Parity**: Local in-memory mock (`mockDatabaseDriver`), Tauri SQLite, and NestJS PostgreSQL return identical data relations (`supplierName`), cascade deletes, and errors. |
 | **`automated-guardrails-ci`** | ESLint zero-errors (`max-lines: 300`, `no-restricted-imports`); TypeScript strict typecheck (`tsc --noEmit`); contract builds.                                                              |
 
@@ -72,18 +74,18 @@ Whenever writing, refactoring, reviewing, or testing code in this monorepo, the 
 
 Before reporting completion to the user or preparing any changes:
 
-1. ✅ **Architectural Integrity**: Does backend code respect CQRS boundaries? Does frontend isolate UI state from data fetchers?
-2. ✅ **Validation at Every Layer**: Is input validated at DTO boundary, service layer, and database constraints?
-3. ✅ **Component Modularity**: Are React components clean and modular (max ~250–300 lines)? Monolithic components (700+ lines) are strictly prohibited.
-4. ✅ **Zero Dead Code**: Are there any unused imports (e.g. from `lucide-react`, React hooks, DTOs), unused variables, or dead types?
-5. ✅ **100% i18n Localization & Zero Untranslated Keys**: Are all labels, toasts, modals, errors, placeholders, and tooltips/titles (`title={t('...')}`) translated in both `uk` and `en` locale files?
+1. ✅ **Architectural Integrity**: Does backend respect CQRS boundaries? Does frontend isolate UI state from data fetchers?
+2. ✅ **Validation & Security at Every Layer**: Validated at DTO boundary, service layer, DB constraints? Zero secret leaks in logs/spans (`secret-serialization`), API protected against BOLA/Mass-Assignment (`api-security-testing`)?
+3. ✅ **Component Modularity**: Are React components clean and modular (max ~250–300 lines)? Monolithic components (500+ lines) prohibited.
+4. ✅ **Zero Dead Code**: Unused imports (`lucide-react`, hooks, DTOs), unused variables, or dead types eliminated?
+5. ✅ **100% i18n Localization & Zero Untranslated Keys**: All labels, toasts, modals, errors, placeholders, titles translated in `uk` and `en`?
 6. ✅ **Zero Leftover Teardown**: Do all automated tests cleanly teardown their data using `cleanDatabase`?
 7. ✅ **Static Typecheck Clean**: Does `tsc --noEmit` pass with **0 errors** across all packages?
 8. ✅ **Auto-Formatting**: Has `pnpm format` been executed?
-9. ✅ **Visual Testing & `ui-ux-pro-max` DoD**: Has the UI been visually tested and verified against all `ui-ux-pro-max` standards before marking the task complete?
-10. ✅ **Zero Off-Scheme Palette Colors**: Strict semantic tokens (`primary`, `border`, `card`, `muted`, `background`). Hardcoded palette colors (`purple-*`, `violet-*`, `fuchsia-*`, `pink-*`) are strictly prohibited.
+9. ✅ **Visual Testing & `ui-ux-pro-max` DoD**: Has the UI been verified against all `ui-ux-pro-max` standards before marking complete?
+10. ✅ **Zero Off-Scheme Colors**: Strict semantic tokens. Hardcoded palette colors (`purple-*`, `violet-*`, `fuchsia-*`, `pink-*`) prohibited.
 11. ✅ **Zero Duplicate CTA Buttons**: Eliminate duplicate buttons across toolbar/header/empty states.
-12. ✅ **100% `@/` Path Aliases & Zero Relative Imports (`../`)**: All internal project imports strictly use `@/` or `@smartfeed/shared`. Relative imports (`../`, `./`) are strictly prohibited.
-13. ✅ **Zero File Dumping in Chat**: Never dump or rewrite entire file contents in chat. Brief summary in chat, all full content into files/artifacts.
-14. ✅ **shadcn Data Table & Compact Typography DoD**: Strict `text-xs` cells (`px-3 py-2`), `h-9` headers, `Customize Columns` (`DataTableViewOptions`), and zero redundant toolbar counters/sorts.
-15. ✅ **Targeted Feature-Scoped Tests**: Run strictly the tests covering the specific modified feature/page. Full-suite runs are strictly prohibited during feature work.
+12. ✅ **100% `@/` Path Aliases & Zero Relative Imports (`../`)**: All internal project imports strictly use `@/` or `@smartfeed/shared`.
+13. ✅ **Zero File Dumping in Chat**: Brief summary in chat, all full content into files/artifacts.
+14. ✅ **shadcn Data Table & Compact Typography DoD**: Strict `text-xs` cells (`px-3 py-2`), `h-9` headers, and `Customize Columns`.
+15. ✅ **Targeted Feature-Scoped Tests**: Run strictly the tests covering the specific modified feature/page. Full-suite runs prohibited.

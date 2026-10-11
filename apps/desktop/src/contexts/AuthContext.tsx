@@ -21,6 +21,7 @@ interface AuthContextType {
   user: UserProfile | null;
   token: string | null;
   isAuthenticated: boolean;
+  isSuspended: boolean;
   isLoading: boolean;
   login: (credentials: LoginCredentials) => Promise<void>;
   register: (credentials: RegisterCredentials) => Promise<void>;
@@ -57,9 +58,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return null;
   });
 
+  const [isSuspended, setIsSuspended] = useState<boolean>(() => {
+    const saved = localStorage.getItem(USER_KEY);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved) as UserProfile;
+        return parsed?.isActive === false;
+      } catch {
+        return false;
+      }
+    }
+    return false;
+  });
+
   const [isLoading, setIsLoading] = useState<boolean>(() => {
     return !!localStorage.getItem(TOKEN_KEY);
   });
+
+  // Listen to global user-suspended events dispatched by API client on 403 Forbidden
+  useEffect(() => {
+    const handleSuspended = () => {
+      setIsSuspended(true);
+      setUser((prev) => (prev ? { ...prev, isActive: false } : prev));
+    };
+    window.addEventListener('smartfeed:user-suspended', handleSuspended);
+    return () => window.removeEventListener('smartfeed:user-suspended', handleSuspended);
+  }, []);
 
   const logout = useCallback(() => {
     localStorage.removeItem(TOKEN_KEY);
@@ -69,6 +93,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     emitDataSync(['suppliers', 'feeds', 'products', 'quotas', 'all']);
     setToken(null);
     setUser(null);
+    setIsSuspended(false);
   }, []);
 
   const refreshProfile = useCallback(async () => {
@@ -80,6 +105,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     try {
       const profile = await getCurrentUser(activeToken);
+      if (profile.isActive === false) {
+        setIsSuspended(true);
+      } else {
+        setIsSuspended(false);
+      }
       const localAvatar = await getLocalAvatar(profile.id);
       if (localAvatar === '') {
         profile.avatarUrl = null;
@@ -94,8 +124,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (currentStoredToken && currentStoredToken !== activeToken) {
         setToken(currentStoredToken);
       }
-    } catch (e) {
+    } catch (e: unknown) {
       console.warn('[AuthContext:refreshProfile] Failed to refresh user profile:', e);
+      // If user is suspended (HTTP 403 / USER_SUSPENDED), keep session state and activate blocker
+      const err = e as { statusCode?: number; data?: { code?: string } };
+      if (err?.statusCode === 403 || err?.data?.code === 'USER_SUSPENDED') {
+        setIsSuspended(true);
+        setUser((prev) => (prev ? { ...prev, isActive: false } : prev));
+        return;
+      }
       // Only logout if even refresh failed
       const refreshToken = localStorage.getItem(REFRESH_TOKEN_KEY);
       if (!refreshToken) {
@@ -160,6 +197,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       setToken(accessToken);
       setUser(userProfile);
+      setIsSuspended(userProfile.isActive === false);
     },
     [],
   );
@@ -182,6 +220,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       setToken(accessToken);
       setUser(userProfile);
+      setIsSuspended(userProfile.isActive === false);
     } finally {
       setIsLoading(false);
     }
@@ -205,6 +244,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       setToken(accessToken);
       setUser(userProfile);
+      setIsSuspended(userProfile.isActive === false);
     } finally {
       setIsLoading(false);
     }
@@ -250,6 +290,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       user,
       token,
       isAuthenticated: !!token && !!user,
+      isSuspended: isSuspended || user?.isActive === false,
       isLoading,
       login,
       register,
@@ -258,7 +299,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       refreshProfile,
       updateAvatar,
     }),
-    [user, token, isLoading, login, register, setAuthSession, logout, refreshProfile, updateAvatar],
+    [
+      user,
+      token,
+      isSuspended,
+      isLoading,
+      login,
+      register,
+      setAuthSession,
+      logout,
+      refreshProfile,
+      updateAvatar,
+    ],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

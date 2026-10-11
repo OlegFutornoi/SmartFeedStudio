@@ -249,4 +249,24 @@ test.describe('Admin Portal — Таблиця та Фільтрація Кор�
     await usersPage.selectStatus('suspended');
     await expect(usersPage.emptyState).toBeVisible();
   });
+
+  test('відображення аватара/лого користувача (UserAvatarCell з AvatarImage та fallback)', async ({
+    usersPage,
+    page,
+  }) => {
+    await usersPage.goto();
+
+    // 1. User with avatarUrl (ownerUser usr-3) should render <img> in its avatar cell
+    const ownerRow = page.getByTestId('user-table-row-usr-3');
+    await expect(ownerRow).toBeVisible();
+    const ownerAvatarImg = ownerRow.locator('[data-testid="user-avatar"] img');
+    await expect(ownerAvatarImg).toBeVisible();
+    await expect(ownerAvatarImg).toHaveAttribute('src', /data:image/);
+
+    // 2. User without avatarUrl (adminUser usr-1) should render initials fallback ("Головний Адміністратор" -> "ГА")
+    const adminRow = page.getByTestId('user-table-row-usr-1');
+    await expect(adminRow).toBeVisible();
+    const adminAvatar = adminRow.locator('[data-testid="user-avatar"]');
+    await expect(adminAvatar).toContainText('ГА');
+  });
 });

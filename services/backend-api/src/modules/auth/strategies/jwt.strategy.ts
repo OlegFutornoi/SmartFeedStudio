@@ -1,9 +1,9 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, ForbiddenException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { ConfigService } from '@nestjs/config';
 import { QueryBus } from '@nestjs/cqrs';
-import { JwtPayload, UserProfile } from '@smartfeed/shared';
+import { JwtPayload, UserProfile, AuthErrorCode } from '@smartfeed/shared';
 import { GetUserByIdQuery } from '@/modules/users/queries/get-user-by-id.query';
 
 @Injectable()
@@ -31,8 +31,15 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
         new GetUserByIdQuery(payload.sub),
       );
 
-      if (!user || user.isActive === false) {
-        throw new UnauthorizedException('User account is deactivated or no longer exists');
+      if (!user) {
+        throw new UnauthorizedException('User account no longer exists');
+      }
+
+      if (user.isActive === false) {
+        throw new ForbiddenException({
+          code: AuthErrorCode.USER_SUSPENDED,
+          message: 'User account has been suspended by administration. Please contact support.',
+        });
       }
 
       return {
@@ -41,7 +48,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
         role: user.role,
       };
     } catch (err: unknown) {
-      if (err instanceof UnauthorizedException) {
+      if (err instanceof UnauthorizedException || err instanceof ForbiddenException) {
         throw err;
       }
       throw new UnauthorizedException('Authentication token is missing or invalid');

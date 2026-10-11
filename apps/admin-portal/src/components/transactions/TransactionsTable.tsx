@@ -161,6 +161,7 @@ export function TransactionsTable({
                       <UserAvatarCell
                         fullName={tx.userFullName}
                         email={tx.userEmail}
+                        avatarUrl={tx.userAvatarUrl}
                         size="md"
                         showEmail
                       />

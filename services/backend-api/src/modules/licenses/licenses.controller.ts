@@ -127,9 +127,12 @@ export class LicensesController {
   }
 
   @Post('upgrade')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.SUPER_ADMIN, Role.ADMIN)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Upgrade user subscription plan' })
+  @ApiOperation({ summary: 'Upgrade user subscription plan (Admin only)' })
+  @ApiResponse({ status: 201, description: 'License upgraded successfully' })
+  @ApiResponse({ status: 403, description: 'Forbidden: Admin access required' })
   async upgradePlan(
     @CurrentUser('id') userId: string,
     @Body() dto: UpgradeLicenseDto,

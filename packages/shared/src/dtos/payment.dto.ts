@@ -37,6 +37,7 @@ export const PaymentTransactionDtoSchema = z.object({
   userId: z.string(),
   userEmail: z.string().optional(),
   userFullName: z.string().nullable().optional(),
+  userAvatarUrl: z.string().nullable().optional(),
   planCode: z.string(),
   billingInterval: z.nativeEnum(PaymentInterval),
   amount: z.number(),

@@ -79,3 +79,7 @@ export enum ImportJobStatus {
   COMPLETED = 'COMPLETED',
   FAILED = 'FAILED',
 }
+
+export enum AuthErrorCode {
+  USER_SUSPENDED = 'USER_SUSPENDED',
+}

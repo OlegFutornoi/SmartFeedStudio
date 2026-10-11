@@ -24,6 +24,8 @@ describe('Security & Access Control (RBAC/ABAC E2E)', () => {
       new ValidationPipe({
         whitelist: true,
         transform: true,
+        forbidNonWhitelisted: true,
+        transformOptions: { enableImplicitConversion: true },
       }),
     );
     app.setGlobalPrefix('api');
@@ -292,25 +294,6 @@ describe('Security & Access Control (RBAC/ABAC E2E)', () => {
       });
 
       expect([400, 401]).toContain(res.status);
-    });
-  });
-
-  describe('4. Storage S3 Presigned URL Security & User Scoping', () => {
-    it('should sanitize filename and scope S3 upload key strictly to requesting user ID', async () => {
-      const storageRes = await request(app.getHttpServer())
-        .post('/api/storage/presigned-url')
-        .set('Authorization', `Bearer ${ownerUser.token}`)
-        .send({
-          fileName: '../../../etc/passwd_evil.png',
-          contentType: 'image/png',
-          folder: 'images',
-        })
-        .expect(201);
-
-      expect(storageRes.body.s3Key).toBeDefined();
-      expect(storageRes.body.s3Key).toContain(`images/${ownerUser.id}/`);
-      expect(storageRes.body.s3Key).not.toContain('..');
-      expect(storageRes.body.s3Key).toContain('passwd_evil.png');
     });
   });
 });

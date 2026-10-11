@@ -40,6 +40,7 @@ export class GetAdminLicensesHandler implements IQueryHandler<
             email: true,
             fullName: true,
             role: true,
+            avatarUrl: true,
           },
         },
         tariffPlan: {
@@ -83,6 +84,7 @@ export class GetAdminLicensesHandler implements IQueryHandler<
         email: lic.user.email,
         fullName: lic.user.fullName,
         role: lic.user.role,
+        avatarUrl: lic.user.avatarUrl,
       },
     }));
   }

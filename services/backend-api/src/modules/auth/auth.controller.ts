@@ -23,8 +23,8 @@ import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { GetUserByIdQuery } from '@/modules/users/queries/get-user-by-id.query';
 import { ChangePasswordCommand } from '@/modules/users/commands/change-password.command';
 import { UpdateUserAvatarCommand } from '@/modules/users/commands/update-user-avatar.command';
+import { ChangePasswordDto } from '@/modules/auth/dto/change-password.dto';
 import {
-  ChangePasswordDto,
   ForgotPasswordResponseDto,
   ResetPasswordResponseDto,
   UserProfile,

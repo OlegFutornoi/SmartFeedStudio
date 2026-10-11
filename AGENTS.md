@@ -25,14 +25,15 @@ All domain rules are modularized (max 12k chars per file):
 8. [commands.md](.agents/rules/commands.md) — CLI commands, ports, credentials, 100% MCP auto-approval policy
 9. [design_system_and_theming.md](.agents/rules/design_system_and_theming.md) — 100% theme harmony, semantic tokens & zero off-scheme colors (no ad-hoc purple/pink), zero duplicate action buttons
 10. [engineering_discipline_and_planning.md](.agents/rules/engineering_discipline_and_planning.md) — Architecture & scalability first, quality over naive simplicity ("working" is not enough), zero God-files (<250-300 lines), mutex concurrency, safe OS execution, pre-planned domain modularity
-11. [Master Intelligence & Skills Dispatcher](.agents/AGENTS.md) — Центральний диспетчер 46 модульних скілів та 5 спеціалізованих агентів
+11. [Master Intelligence & Skills Dispatcher](.agents/AGENTS.md) — Центральний диспетчер 52 модульних скілів та 6 спеціалізованих агентів
 12. [Frontend Agent (agents_frontend)](.agents/references/agents_frontend.md) — Спеціалізований фронтенд-агент (8 етапів: аналіз UX, планування, UI/UX, Playwright TDD RED, реалізація GREEN, рев'ю, дебаг, передача)
 13. [Backend Agent (agents_backend)](.agents/references/agents_backend.md) — Спеціалізований бекенд-агент (8 етапів: аналіз, контракти first, DB архітектура, Jest TDD RED, 4-шарова реалізація GREEN, рев'ю, дебаг, передача)
 14. [Code Review & Audit Agent (agents_review)](.agents/references/agents_review.md) — Спеціалізований агент аудиту та якості (8 етапів: розвідка, CQRS аудит, 4-шаровий захист, UX/DoD, БД аудит, змагальний стрес-тест, план ремедіації, фінальний звіт)
 15. [DevOps & Release Agent (agents_devops)](.agents/references/agents_devops.md) — Спеціалізований агент DevOps, інфраструктури, безпечних міграцій БД (Expand/Contract, Zero-Downtime), Docker, Railway та SemVer релізів
 16. [QA & Performance Agent (agents_qa)](.agents/references/agents_qa.md) — Спеціалізований агент QA, навантажувальних бенчмарків 100k+ SKU, хаос-тестування гонок пам'яті, mock/real паритету та 100% очищення даних
-17. [Task Prompt Examples](.agents/references/task_prompt_examples.md) — Практичні приклади та шаблони постановки задач для фронтенду, бекенду, рев'ю, devops, qa та fullstack
-18. [communication_and_research.md](.agents/rules/communication_and_research.md) — Жорсткий регламент чату: лаконічність, нуль планів у чат, якість понад "аби працювало", upfront context7/MCP research
+17. [Security & Pentest Agent (agents_security)](.agents/references/agents_security.md) — Спеціалізований агент кібербезпеки, пентесту (OWASP Top 10, BOLA/IDOR, SQLi, Mass Assignment, Keychain/IPC), валідації PoC та планів усунення
+18. [Task Prompt Examples](.agents/references/task_prompt_examples.md) — Практичні приклади та шаблони постановки задач для фронтенду, бекенду, рев'ю, devops, qa, security та fullstack
+19. [communication_and_research.md](.agents/rules/communication_and_research.md) — Жорсткий регламент чату: лаконічність, нуль планів у чат, якість понад "аби працювало", upfront context7/MCP research
 
 ---
 

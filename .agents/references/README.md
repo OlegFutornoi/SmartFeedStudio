@@ -24,6 +24,7 @@
 | [**`agents_review.md`**](./agents_review.md)               | **Code Review & Quality Auditor**    | 8-етапний безкомпромісний аудит: CQRS межі, 4-шаровий захист, UX/DoD, PostgreSQL індекси, змагальний стрес-тест на гонки станів, план ремедіації.                     |
 | [**`agents_devops.md`**](./agents_devops.md)               | **DevOps & Infrastructure Engineer** | Безпечні міграції БД (Expand/Contract, Zero-Downtime), Docker Compose, Railway, MinIO S3, Healthchecks, моніторинг стабільності.                                      |
 | [**`agents_qa.md`**](./agents_qa.md)                       | **QA & Performance Engineer**        | Навантажувальне тестування на каталогах 100k+ SKU, хаос-тести пам'яті та гонок, 100% паритет Mock/Real середовищ, суворий `cleanDatabase` teardown.                   |
+| [**`agents_security.md`**](./agents_security.md)           | **Security & Pentest Engineer**      | 8-етапний пентест і AppSec: OWASP Top 10, BOLA/IDOR, Mass Assignment, витоки секретів, SQLi, Desktop IPC/Keychain, створення PoC тестів та планів ремедіації.         |
 | [**`task_prompt_examples.md`**](./task_prompt_examples.md) | **Каталог шаблонів запитів**         | Готові формулювання та практичні приклади завдань для кожної інженерної ролі (новий ендпоінт, редизайн, рефакторинг, багфікс).                                        |
 
 ---

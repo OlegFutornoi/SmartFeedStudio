@@ -29,13 +29,17 @@ export class HandleWayForPayWebhookHandler implements ICommandHandler<HandleWayF
     const setting = await this.prisma.paymentSetting.findUnique({
       where: { provider: PaymentProvider.WAYFORPAY },
     });
-    const secretKey =
-      setting?.merchantSecretKey ||
-      process.env.WAYFORPAY_MERCHANT_SECRET_KEY ||
-      'flk3409refn54t54vk354gh5400ef001';
+    const secretKey = setting?.merchantSecretKey || process.env.WAYFORPAY_MERCHANT_SECRET_KEY;
+
+    if (!secretKey && process.env.NODE_ENV === 'production') {
+      this.logger.error('WayForPay merchant secret key is not configured in production');
+      throw new BadRequestException('Payment gateway configuration is missing');
+    }
+
+    const effectiveSecret = secretKey || 'flk3409refn54t54vk354gh5400ef001';
 
     // 2. Validate Signature
-    const isValid = this.wayforpayService.verifyWebhookSignature(payload, secretKey);
+    const isValid = this.wayforpayService.verifyWebhookSignature(payload, effectiveSecret);
     if (!isValid) {
       this.logger.warn(`Invalid signature for orderReference: ${payload.orderReference}`);
       throw new BadRequestException('Invalid WayForPay signature');

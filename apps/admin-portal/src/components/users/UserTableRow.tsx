@@ -69,7 +69,13 @@ export const UserTableRow = React.memo(function UserTableRow({
             <div className="w-6 shrink-0" />
           )}
 
-          <UserAvatarCell fullName={user.fullName} email={user.email} size="md" showEmail />
+          <UserAvatarCell
+            fullName={user.fullName}
+            email={user.email}
+            avatarUrl={user.avatarUrl}
+            size="md"
+            showEmail
+          />
         </div>
       </TableCell>
 

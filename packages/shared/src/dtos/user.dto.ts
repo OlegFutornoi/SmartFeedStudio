@@ -16,6 +16,7 @@ export interface UserOrganizationSummary {
   isOwner: boolean;
   ownerEmail?: string | null;
   ownerFullName?: string | null;
+  ownerAvatarUrl?: string | null;
 }
 
 export interface UserListItemDto {
@@ -23,6 +24,7 @@ export interface UserListItemDto {
   email: string;
   fullName: string | null;
   role: Role;
+  avatarUrl?: string | null;
   isActive?: boolean;
   license?: UserLicenseSummary | null;
   organization?: UserOrganizationSummary | null;

@@ -283,4 +283,63 @@ describe('Auth — Registration & Login (E2E)', () => {
       expect(resNull.body.avatarUrl).toBeNull();
     });
   });
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // SUSPENDED USER ACCESS CONTROL
+  // ─────────────────────────────────────────────────────────────────────────────
+
+  describe('Suspended User Access Control (HTTP 403 USER_SUSPENDED)', () => {
+    const suspendedEmail = `suspended.test+${Date.now()}@smartfeed.local`;
+    let userTokens: { accessToken: string; refreshToken: string };
+
+    beforeAll(async () => {
+      createdEmails.push(suspendedEmail);
+      const regRes = await request(app.getHttpServer())
+        .post('/api/auth/register')
+        .send({
+          email: suspendedEmail,
+          password: 'TestPassword123!',
+          fullName: 'Suspended Test User',
+        })
+        .expect(201);
+
+      userTokens = regRes.body.tokens;
+
+      // Deactivate user in database (isActive = false)
+      await prisma.user.update({
+        where: { email: suspendedEmail },
+        data: { isActive: false },
+      });
+    });
+
+    it('rejects login with 403 Forbidden and code USER_SUSPENDED', async () => {
+      const res = await request(app.getHttpServer())
+        .post('/api/auth/login')
+        .send({
+          email: suspendedEmail,
+          password: 'TestPassword123!',
+        })
+        .expect(403);
+
+      expect(res.body.code).toBe('USER_SUSPENDED');
+    });
+
+    it('rejects protected endpoint requests with 403 and code USER_SUSPENDED', async () => {
+      const res = await request(app.getHttpServer())
+        .get('/api/auth/me')
+        .set('Authorization', `Bearer ${userTokens.accessToken}`)
+        .expect(403);
+
+      expect(res.body.code).toBe('USER_SUSPENDED');
+    });
+
+    it('rejects token refresh with 403 and code USER_SUSPENDED', async () => {
+      const res = await request(app.getHttpServer())
+        .post('/api/auth/refresh')
+        .send({ refreshToken: userTokens.refreshToken })
+        .expect(403);
+
+      expect(res.body.code).toBe('USER_SUSPENDED');
+    });
+  });
 });

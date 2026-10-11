@@ -223,4 +223,52 @@ describe('Users Profile & Query Endpoints (E2E)', () => {
       authToken = loginRes.body.tokens.accessToken;
     });
   });
+
+  describe('PATCH /api/auth/avatar & GET /api/users avatar synchronization', () => {
+    const testAvatarDataUri =
+      'data:image/webp;base64,UklGRgAMAABXRUJQVlA4WAoAAAAgAAAAxwAAxwAAQUxQSAwAAAARBxAR/Q8AAABWUDgg';
+
+    it('updates user avatar via PATCH /api/auth/avatar and returns avatarUrl in GET /api/users', async () => {
+      const updateRes = await request(app.getHttpServer())
+        .patch('/api/auth/avatar')
+        .set('Authorization', `Bearer ${regularUserToken}`)
+        .send({ avatarUrl: testAvatarDataUri })
+        .expect(200);
+
+      expect(updateRes.body.avatarUrl).toBe(testAvatarDataUri);
+
+      // Verify that admin sees the updated avatarUrl in GET /api/users
+      const usersRes = await request(app.getHttpServer())
+        .get(`/api/users?search=${encodeURIComponent('Regular Client User')}`)
+        .set('Authorization', `Bearer ${authToken}`)
+        .expect(200);
+
+      const targetUser = usersRes.body.find((u: { email: string; avatarUrl?: string }) =>
+        u.email.startsWith('regularuser-'),
+      );
+      expect(targetUser).toBeDefined();
+      expect(targetUser?.avatarUrl).toBe(testAvatarDataUri);
+    });
+
+    it('removes avatar when avatarUrl is null and reflects in GET /api/users', async () => {
+      const removeRes = await request(app.getHttpServer())
+        .patch('/api/auth/avatar')
+        .set('Authorization', `Bearer ${regularUserToken}`)
+        .send({ avatarUrl: null })
+        .expect(200);
+
+      expect(removeRes.body.avatarUrl).toBeNull();
+
+      const usersRes = await request(app.getHttpServer())
+        .get(`/api/users?search=${encodeURIComponent('Regular Client User')}`)
+        .set('Authorization', `Bearer ${authToken}`)
+        .expect(200);
+
+      const targetUser = usersRes.body.find((u: { email: string; avatarUrl?: string }) =>
+        u.email.startsWith('regularuser-'),
+      );
+      expect(targetUser).toBeDefined();
+      expect(targetUser?.avatarUrl).toBeNull();
+    });
+  });
 });

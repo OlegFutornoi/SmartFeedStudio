@@ -15,13 +15,14 @@ pub fn get_or_create_encryption_key() -> std::result::Result<String, String> {
     match entry.get_password() {
         Ok(key) if !key.is_empty() => Ok(key),
         _ => {
-            // Generate a secure random 32-byte hex key
+            // Generate a secure random 32-byte hex key with CSPRNG entropy
             use std::time::SystemTime;
             let time_val = SystemTime::now()
                 .duration_since(SystemTime::UNIX_EPOCH)
                 .unwrap_or_default()
                 .as_nanos();
-            let new_key = format!("sf_enc_key_{:x}_sec_cipher", time_val);
+            let rand_suffix = uuid::Uuid::new_v4().to_string().replace("-", "");
+            let new_key = format!("sf_enc_key_{:x}_{}_sec_cipher", time_val, rand_suffix);
             let _ = entry.set_password(&new_key);
             Ok(new_key)
         }
@@ -729,31 +730,44 @@ pub fn bulk_delete_products(conn: &Connection, ids: Vec<String>) -> Result<()> {
 }
 
 pub fn get_categories_summary(conn: &Connection, supplier_id: Option<&str>) -> Result<Vec<CategorySummaryDto>> {
+    let has_supplier = supplier_id.map(|s| !s.is_empty()).unwrap_or(false);
     let mut query = "SELECT 
         COALESCE(category_id, 'cat_none') AS cat_id,
         COALESCE(category_name_uk, 'Без категорії') AS cat_name,
         COUNT(*) AS cnt
     FROM local_products".to_string();
 
-    if let Some(sup_id) = supplier_id {
-        if !sup_id.is_empty() {
-            query.push_str(&format!(" WHERE supplier_id = '{}'", sup_id.replace('\'', "''")));
-        }
+    if has_supplier {
+        query.push_str(" WHERE supplier_id = ?1");
     }
     query.push_str(" GROUP BY cat_id, cat_name ORDER BY cnt DESC");
 
     let mut stmt = conn.prepare(&query)?;
-    let iter = stmt.query_map([], |row| {
-        Ok(CategorySummaryDto {
-            id: row.get(0)?,
-            name_uk: row.get(1)?,
-            product_count: row.get::<_, u32>(2)?,
-        })
-    })?;
-
     let mut results = Vec::new();
-    for item in iter {
-        results.push(item?);
+
+    if has_supplier {
+        let iter = stmt.query_map(params![supplier_id.unwrap()], |row| {
+            Ok(CategorySummaryDto {
+                id: row.get(0)?,
+                name_uk: row.get(1)?,
+                product_count: row.get::<_, u32>(2)?,
+            })
+        })?;
+        for item in iter {
+            results.push(item?);
+        }
+    } else {
+        let iter = stmt.query_map([], |row| {
+            Ok(CategorySummaryDto {
+                id: row.get(0)?,
+                name_uk: row.get(1)?,
+                product_count: row.get::<_, u32>(2)?,
+            })
+        })?;
+        for item in iter {
+            results.push(item?);
+        }
     }
+
     Ok(results)
 }

@@ -98,6 +98,7 @@ export const DashboardUsersTableTab = React.memo(function DashboardUsersTableTab
               <UserAvatarCell
                 fullName={u.fullName}
                 email={u.email}
+                avatarUrl={u.avatarUrl}
                 size="md"
                 showEmail
                 className="max-w-[200px]"
@@ -128,6 +129,7 @@ export const DashboardUsersTableTab = React.memo(function DashboardUsersTableTab
             <TableCell>
               <UserAvatarCell
                 fullName={u.fullName || 'Admin'}
+                avatarUrl={u.avatarUrl}
                 size="sm"
                 className="max-w-[140px]"
               />

@@ -7,6 +7,7 @@ export const OrganizationMemberDtoSchema = z.object({
   userId: z.string(),
   userEmail: z.string().email(),
   userFullName: z.string().nullable().optional(),
+  userAvatarUrl: z.string().nullable().optional(),
   role: z.nativeEnum(MemberRole),
   joinedAt: z.union([z.date(), z.string()]),
 });

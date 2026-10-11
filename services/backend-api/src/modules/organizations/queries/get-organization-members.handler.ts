@@ -33,6 +33,7 @@ export class GetOrganizationMembersHandler implements IQueryHandler<GetOrganizat
             id: true,
             email: true,
             fullName: true,
+            avatarUrl: true,
           },
         },
       },
@@ -47,6 +48,7 @@ export class GetOrganizationMembersHandler implements IQueryHandler<GetOrganizat
       userEmail: m.user.email,
       fullName: m.user.fullName,
       userFullName: m.user.fullName,
+      userAvatarUrl: m.user.avatarUrl,
       role: m.role,
       joinedAt: m.joinedAt,
     }));

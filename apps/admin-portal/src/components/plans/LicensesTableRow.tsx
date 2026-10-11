@@ -57,7 +57,13 @@ export const LicensesTableRow = React.memo(function LicensesTableRow({
 
       {/* User (always visible) */}
       <TableCell className="text-xs">
-        <UserAvatarCell fullName={lic.user?.fullName} email={lic.user?.email} size="md" showEmail />
+        <UserAvatarCell
+          fullName={lic.user?.fullName}
+          email={lic.user?.email}
+          avatarUrl={lic.user?.avatarUrl}
+          size="md"
+          showEmail
+        />
       </TableCell>
 
       {/* Plan Tier */}

@@ -35,7 +35,7 @@ interface WorkspaceStorageContextType {
 const WorkspaceStorageContext = createContext<WorkspaceStorageContextType | undefined>(undefined);
 
 export const WorkspaceStorageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isSuspended, user } = useAuth();
   const [workspaceInfo, setWorkspaceInfo] = useState<WorkspaceInfoDto | null>(null);
   const [storageStats, setStorageStats] = useState<StorageStatsDto | null>(null);
   const [isInitialized, setIsInitialized] = useState<boolean>(true); // Default true until checked
@@ -44,9 +44,10 @@ export const WorkspaceStorageProvider: React.FC<{ children: React.ReactNode }> =
   const [defaultPath, setDefaultPath] = useState<string>('~/Documents/SmartFeedStudioData');
 
   const isCheckingRef = useRef(false);
+  const isAccountSuspended = isSuspended || user?.isActive === false;
 
   const checkWorkspace = useCallback(async () => {
-    if (!isAuthenticated || isCheckingRef.current) return;
+    if (!isAuthenticated || isCheckingRef.current || isAccountSuspended) return;
     isCheckingRef.current = true;
     setIsLoading(true);
 
@@ -83,17 +84,19 @@ export const WorkspaceStorageProvider: React.FC<{ children: React.ReactNode }> =
       setIsLoading(false);
       isCheckingRef.current = false;
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, isAccountSuspended]);
 
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isAuthenticated && !isAccountSuspended) {
       checkWorkspace();
     } else {
-      setWorkspaceInfo(null);
-      setIsInitialized(false);
       setShowOnboardingModal(false);
+      if (!isAuthenticated) {
+        setWorkspaceInfo(null);
+        setIsInitialized(false);
+      }
     }
-  }, [isAuthenticated, checkWorkspace]);
+  }, [isAuthenticated, isAccountSuspended, checkWorkspace]);
 
   const setupWorkspace = useCallback(async (path: string): Promise<WorkspaceInfoDto> => {
     setIsLoading(true);
