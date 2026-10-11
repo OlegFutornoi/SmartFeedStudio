@@ -1,12 +1,11 @@
 import { useMemo } from 'react';
 import { AdminLicenseItemDto } from '@smartfeed/shared';
-import { FacetedOption } from '@/components/plans/LicensesFacetedFilter';
+import { FacetedOption } from '@/components/ui/faceted-filter';
 
 export interface LicensesFilterState {
   searchQuery: string;
   selectedTier: string;
   selectedStatus: string;
-  selectedCloud: string;
   sortBy: string;
 }
 
@@ -15,7 +14,6 @@ interface UseLicensesFilterResult {
   isFiltered: boolean;
   tierOptions: FacetedOption[];
   statusOptions: FacetedOption[];
-  cloudOptions: FacetedOption[];
   sortOptions: { value: string; label: string }[];
 }
 
@@ -64,16 +62,6 @@ export function useLicensesFilter(
     ];
   }, [licenses, isUk]);
 
-  const cloudOptions: FacetedOption[] = useMemo(() => {
-    const withCloud = licenses.filter((l) => l.canCloudBackup).length;
-    const noCloud = licenses.length - withCloud;
-    return [
-      { value: 'ALL', label: isUk ? 'Всі' : 'All', count: licenses.length },
-      { value: 'WITH_CLOUD', label: isUk ? 'З S3 бекапом' : 'With S3 Backup', count: withCloud },
-      { value: 'NO_CLOUD', label: isUk ? 'Без бекапу' : 'No Backup', count: noCloud },
-    ];
-  }, [licenses, isUk]);
-
   const sortOptions = useMemo(
     () => [
       { value: 'NEWEST', label: isUk ? 'Найновіші' : 'Newest' },
@@ -85,7 +73,7 @@ export function useLicensesFilter(
   );
 
   const filteredLicenses: AdminLicenseItemDto[] = useMemo(() => {
-    const { searchQuery, selectedTier, selectedStatus, selectedCloud, sortBy } = filter;
+    const { searchQuery, selectedTier, selectedStatus, sortBy } = filter;
     const now = new Date();
     const query = searchQuery.toLowerCase().trim();
 
@@ -109,9 +97,6 @@ export function useLicensesFilter(
         if (selectedStatus === 'EXPIRED' && (!lic.isActive || !isExpired)) return false;
         if (selectedStatus === 'LIFETIME' && !isLifetime) return false;
 
-        if (selectedCloud === 'WITH_CLOUD' && !lic.canCloudBackup) return false;
-        if (selectedCloud === 'NO_CLOUD' && lic.canCloudBackup) return false;
-
         return true;
       })
       .sort((a, b) => {
@@ -129,8 +114,7 @@ export function useLicensesFilter(
   const isFiltered =
     Boolean(filter.searchQuery.trim()) ||
     filter.selectedTier !== 'ALL' ||
-    filter.selectedStatus !== 'ALL' ||
-    filter.selectedCloud !== 'ALL';
+    filter.selectedStatus !== 'ALL';
 
-  return { filteredLicenses, isFiltered, tierOptions, statusOptions, cloudOptions, sortOptions };
+  return { filteredLicenses, isFiltered, tierOptions, statusOptions, sortOptions };
 }

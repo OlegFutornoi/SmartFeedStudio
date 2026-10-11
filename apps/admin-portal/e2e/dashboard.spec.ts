@@ -70,7 +70,23 @@ test.describe('Admin Portal — Головний Дашборд та Інтер�
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify({ transactions: [], total: 0 }),
+        body: JSON.stringify({
+          transactions: [
+            {
+              id: 'tx-01',
+              orderReference: 'ORD-9901',
+              amount: 1500,
+              status: 'APPROVED',
+              planCode: 'PRO',
+              billingInterval: 'MONTHLY',
+              provider: 'WayForPay',
+              userFullName: 'Олександр Коваленко',
+              userEmail: 'alex@example.com',
+              createdAt: '2026-08-01T10:00:00.000Z',
+            },
+          ],
+          total: 1,
+        }),
       });
     });
 
@@ -78,7 +94,22 @@ test.describe('Admin Portal — Головний Дашборд та Інтер�
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify([]),
+        body: JSON.stringify([
+          {
+            id: 'lic-01',
+            licenseKey: 'SF-PRO-1234',
+            planType: 'PRO',
+            maxXmlLimit: 50000,
+            aiCredits: 500,
+            isActive: true,
+            createdAt: '2026-08-01T10:00:00.000Z',
+            user: {
+              id: 'usr-01',
+              email: 'alex@example.com',
+              fullName: 'Олександр Коваленко',
+            },
+          },
+        ]),
       });
     });
   });
@@ -165,5 +196,48 @@ test.describe('Admin Portal — Головний Дашборд та Інтер�
     // 4. Повернення на Користувачів
     await dashboardPage.page.getByRole('button', { name: /Користувачі/ }).click();
     await expect(dashboardPage.page.getByTestId('recent-user-row-usr-01')).toBeVisible();
+  });
+
+  test('паритет дизайн-системи: аватари клієнтів, відсутність сирих англійських статусів та смарагдовий колір успіху', async ({
+    dashboardPage,
+  }) => {
+    await dashboardPage.goto();
+
+    // 1. Вкладка "Користувачі"
+    const userRow = dashboardPage.page.getByTestId('recent-user-row-usr-01');
+    await expect(userRow).toBeVisible();
+    await expect(userRow.locator('[data-testid="user-avatar"]').first()).toBeVisible();
+
+    const userStatus = userRow.locator('[data-testid*="status-badge"]');
+    await expect(userStatus).toBeVisible();
+    await expect(userStatus).not.toContainText('Done');
+    await expect(userStatus).not.toContainText('Active');
+    await expect(userStatus).toContainText('Активний');
+    await expect(userStatus).toHaveClass(/emerald/);
+
+    // 2. Вкладка "Транзакції"
+    await dashboardPage.page.getByRole('button', { name: /Останні транзакції/ }).click();
+    const txRow = dashboardPage.page.locator('tbody tr').first();
+    await expect(txRow).toBeVisible();
+    await expect(txRow.locator('[data-testid="user-avatar"]').first()).toBeVisible();
+
+    const txStatus = txRow.locator('[data-testid*="status-badge"]');
+    await expect(txStatus).toBeVisible();
+    await expect(txStatus).not.toContainText('APPROVED');
+    await expect(txStatus).toContainText('Оплачено');
+    await expect(txStatus).toHaveClass(/emerald/);
+
+    // 3. Вкладка "Ліцензії"
+    await dashboardPage.page.getByRole('button', { name: /Ліцензії/ }).click();
+    const licRow = dashboardPage.page.locator('tbody tr').first();
+    await expect(licRow).toBeVisible();
+    await expect(licRow.locator('[data-testid="user-avatar"]').first()).toBeVisible();
+
+    const licStatus = licRow.locator('[data-testid*="status-badge"]');
+    await expect(licStatus).toBeVisible();
+    await expect(licStatus).not.toContainText('Active');
+    await expect(licStatus).not.toContainText('Suspended');
+    await expect(licStatus).toContainText('Активна');
+    await expect(licStatus).toHaveClass(/emerald/);
   });
 });

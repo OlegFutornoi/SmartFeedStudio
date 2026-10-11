@@ -12,6 +12,8 @@ import {
   User,
   RefreshCw,
   UserPlus,
+  CheckCircle2,
+  Layers,
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -28,6 +30,12 @@ interface UsersTableToolbarProps {
   onSelectRole: (role: string) => void;
   selectedOrgRole: 'ALL' | 'OWNERS' | 'MEMBERS';
   onSelectOrgRole: (orgRole: 'ALL' | 'OWNERS' | 'MEMBERS') => void;
+  selectedStatus?: string;
+  onSelectStatus?: (status: string) => void;
+  statusOptions?: FacetedOption[];
+  selectedPlan?: string;
+  onSelectPlan?: (plan: string) => void;
+  planOptions?: FacetedOption[];
   onResetFilters: () => void;
   isFiltered: boolean;
   totalCount: number;
@@ -47,6 +55,12 @@ export const UsersTableToolbar = React.memo(function UsersTableToolbar({
   onSelectRole,
   selectedOrgRole,
   onSelectOrgRole,
+  selectedStatus = 'ALL',
+  onSelectStatus,
+  statusOptions = [],
+  selectedPlan = 'ALL',
+  onSelectPlan,
+  planOptions = [],
   onResetFilters,
   isFiltered,
   isLoading,
@@ -127,6 +141,30 @@ export const UsersTableToolbar = React.memo(function UsersTableToolbar({
           icon={Users}
           dataTestId="users-filter-team"
         />
+
+        {/* User Status Faceted Filter */}
+        {onSelectStatus && statusOptions.length > 0 && (
+          <FacetedFilter
+            title={t('users', 'status_filter_label').replace(':', '')}
+            options={statusOptions}
+            selectedValue={selectedStatus}
+            onSelect={onSelectStatus}
+            icon={CheckCircle2}
+            dataTestId="users-filter-status"
+          />
+        )}
+
+        {/* User Plan Faceted Filter */}
+        {onSelectPlan && planOptions.length > 0 && (
+          <FacetedFilter
+            title={t('users', 'plan_filter_label').replace(':', '')}
+            options={planOptions}
+            selectedValue={selectedPlan}
+            onSelect={onSelectPlan}
+            icon={Layers}
+            dataTestId="users-filter-plan"
+          />
+        )}
 
         {/* Instant Reset Filters Button */}
         {isFiltered && (

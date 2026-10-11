@@ -14,6 +14,8 @@ import {
 } from '@/components/ui/table';
 import { PaymentTransactionDto } from '@smartfeed/shared';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { UserAvatarCell } from '@/components/ui/user-avatar-cell';
+import { StatusBadge } from '@/components/ui/status-badge';
 
 export interface DashboardTransactionsTableTabProps {
   transactions: PaymentTransactionDto[];
@@ -22,7 +24,8 @@ export interface DashboardTransactionsTableTabProps {
 export const DashboardTransactionsTableTab = React.memo(function DashboardTransactionsTableTab({
   transactions,
 }: DashboardTransactionsTableTabProps) {
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
+  const isUk = locale === 'uk';
 
   if (transactions.length === 0) {
     return (
@@ -72,30 +75,19 @@ export const DashboardTransactionsTableTab = React.memo(function DashboardTransa
               </Badge>
             </TableCell>
             <TableCell>
-              <Badge
-                variant="outline"
-                className={`rounded-full px-2.5 py-0.5 text-xs flex items-center gap-1.5 font-normal ${
-                  tx.status === 'APPROVED'
-                    ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20'
-                    : 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20'
-                }`}
-              >
-                <span
-                  className={`h-1.5 w-1.5 rounded-full ${
-                    tx.status === 'APPROVED' ? 'bg-emerald-500' : 'bg-amber-500'
-                  }`}
-                />
-                <span>{tx.status}</span>
-              </Badge>
+              <StatusBadge status={tx.status} isUk={isUk} />
             </TableCell>
             <TableCell className="font-mono text-sm font-semibold text-foreground">
               ₴{tx.amount.toLocaleString()}
             </TableCell>
             <TableCell className="text-xs text-muted-foreground font-mono">{tx.provider}</TableCell>
             <TableCell>
-              <span className="text-xs font-medium text-foreground truncate max-w-[120px]">
-                {tx.userFullName || tx.userEmail || 'Client'}
-              </span>
+              <UserAvatarCell
+                fullName={tx.userFullName}
+                email={tx.userEmail}
+                size="sm"
+                className="max-w-[140px]"
+              />
             </TableCell>
             <TableCell className="pr-4 text-right">
               <Button

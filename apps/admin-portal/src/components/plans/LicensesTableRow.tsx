@@ -3,9 +3,11 @@
 import React from 'react';
 import { TableCell, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Cloud, PauseCircle, AlertCircle, KeyRound } from 'lucide-react';
+import { Cloud, KeyRound } from 'lucide-react';
 import { AdminLicenseItemDto } from '@smartfeed/shared';
 import { LicenseRowActions } from '@/components/plans/LicenseRowActions';
+import { UserAvatarCell } from '@/components/ui/user-avatar-cell';
+import { StatusBadge } from '@/components/ui/status-badge';
 import { cn } from '@/lib/utils';
 
 interface LicensesTableRowProps {
@@ -55,20 +57,7 @@ export const LicensesTableRow = React.memo(function LicensesTableRow({
 
       {/* User (always visible) */}
       <TableCell className="text-xs">
-        <div className="flex flex-col">
-          <span
-            data-testid={`license-user-name-${lic.licenseKey}`}
-            className="font-medium text-foreground"
-          >
-            {lic.user?.fullName || 'User'}
-          </span>
-          <span
-            data-testid={`license-user-email-${lic.licenseKey}`}
-            className="text-[11px] text-muted-foreground font-mono"
-          >
-            {lic.user?.email}
-          </span>
-        </div>
+        <UserAvatarCell fullName={lic.user?.fullName} email={lic.user?.email} size="md" showEmail />
       </TableCell>
 
       {/* Plan Tier */}
@@ -94,34 +83,24 @@ export const LicensesTableRow = React.memo(function LicensesTableRow({
       {/* Status Badge */}
       {visibleColumns.status !== false && (
         <TableCell>
-          {isSuspended ? (
-            <Badge
-              variant="outline"
-              data-testid={`license-status-badge-${lic.licenseKey}`}
-              className="border-border bg-muted/50 text-muted-foreground text-[10px] h-5 gap-1 px-1.5 py-0 font-medium"
-            >
-              <PauseCircle className="size-2.5" />
-              <span>{isUk ? 'Призупинена' : 'Suspended'}</span>
-            </Badge>
-          ) : isExpired ? (
-            <Badge
-              variant="outline"
-              data-testid={`license-status-badge-${lic.licenseKey}`}
-              className="border-destructive/40 bg-destructive/10 text-destructive text-[10px] h-5 gap-1 px-1.5 py-0 font-medium"
-            >
-              <AlertCircle className="size-2.5" />
-              <span>{isUk ? 'Закінчилася' : 'Expired'}</span>
-            </Badge>
-          ) : (
-            <Badge
-              variant="outline"
-              data-testid={`license-status-badge-${lic.licenseKey}`}
-              className="border-border text-foreground text-[10px] h-5 gap-1.5 px-2 py-0 font-normal"
-            >
-              <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
-              <span>{isUk ? 'Активна' : 'Active'}</span>
-            </Badge>
-          )}
+          <StatusBadge
+            status={isSuspended ? 'SUSPENDED' : isExpired ? 'EXPIRED' : 'ACTIVE'}
+            label={
+              isSuspended
+                ? isUk
+                  ? 'Призупинена'
+                  : 'Suspended'
+                : isExpired
+                  ? isUk
+                    ? 'Закінчилася'
+                    : 'Expired'
+                  : isUk
+                    ? 'Активна'
+                    : 'Active'
+            }
+            testId={`license-status-badge-${lic.licenseKey}`}
+            isUk={isUk}
+          />
         </TableCell>
       )}
 

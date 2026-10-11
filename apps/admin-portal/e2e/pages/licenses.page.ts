@@ -9,7 +9,6 @@ export class AdminLicensesPage extends BasePage {
   readonly searchClearBtn: Locator;
   readonly tierFilterBtn: Locator;
   readonly statusFilterBtn: Locator;
-  readonly cloudFilterBtn: Locator;
   readonly sortSelect: Locator;
   readonly resetFiltersBtn: Locator;
   readonly resultsCount: Locator;
@@ -24,7 +23,6 @@ export class AdminLicensesPage extends BasePage {
     this.searchClearBtn = page.getByTestId('licenses-search-clear-btn');
     this.tierFilterBtn = page.getByTestId('licenses-filter-tier');
     this.statusFilterBtn = page.getByTestId('licenses-filter-status');
-    this.cloudFilterBtn = page.getByTestId('licenses-filter-cloud');
     this.sortSelect = page.getByTestId('licenses-sort-select');
     this.resetFiltersBtn = page.getByTestId('licenses-reset-filters-btn');
     this.resultsCount = page.getByTestId('licenses-pagination-range-text');
@@ -49,14 +47,6 @@ export class AdminLicensesPage extends BasePage {
   async filterByStatus(status: string): Promise<void> {
     await this.statusFilterBtn.click();
     const option = this.page.getByTestId(`licenses-filter-status-option-${status.toLowerCase()}`);
-    await option.click();
-  }
-
-  async filterByCloud(cloudOption: string): Promise<void> {
-    await this.cloudFilterBtn.click();
-    const option = this.page.getByTestId(
-      `licenses-filter-cloud-option-${cloudOption.toLowerCase()}`,
-    );
     await option.click();
   }
 

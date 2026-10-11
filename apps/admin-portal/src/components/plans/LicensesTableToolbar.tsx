@@ -1,10 +1,10 @@
 'use client';
 
 import React from 'react';
-import { Search, X, RotateCcw, Layers, CheckCircle2, Cloud, RefreshCw } from 'lucide-react';
+import { Search, X, RotateCcw, Layers, CheckCircle2, RefreshCw } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { LicensesFacetedFilter, FacetedOption } from '@/components/plans/LicensesFacetedFilter';
+import { FacetedFilter, FacetedOption } from '@/components/ui/faceted-filter';
 import { DataTableViewOptions } from '@/components/ui/DataTableViewOptions';
 import type { ColumnOption } from '@/hooks/useColumnVisibility';
 
@@ -28,9 +28,6 @@ interface LicensesTableToolbarProps {
   selectedStatus: string;
   onStatusChange: (status: string) => void;
   statusOptions: FacetedOption[];
-  selectedCloud: string;
-  onCloudChange: (cloud: string) => void;
-  cloudOptions: FacetedOption[];
   columnOptions: ColumnOption<LicenseColumnId>[];
   onToggleColumn: (colId: LicenseColumnId, isVisible: boolean) => void;
   onResetColumns?: () => void;
@@ -51,9 +48,6 @@ export const LicensesTableToolbar = React.memo(function LicensesTableToolbar({
   selectedStatus,
   onStatusChange,
   statusOptions,
-  selectedCloud,
-  onCloudChange,
-  cloudOptions,
   columnOptions,
   onToggleColumn,
   onResetColumns,
@@ -102,7 +96,7 @@ export const LicensesTableToolbar = React.memo(function LicensesTableToolbar({
           </div>
 
           {/* Faceted Filter for Plan Tier */}
-          <LicensesFacetedFilter
+          <FacetedFilter
             title={isUk ? 'Тариф' : 'Plan'}
             options={tierOptions}
             selectedValue={selectedTier}
@@ -112,23 +106,13 @@ export const LicensesTableToolbar = React.memo(function LicensesTableToolbar({
           />
 
           {/* Faceted Filter for Status */}
-          <LicensesFacetedFilter
+          <FacetedFilter
             title={isUk ? 'Статус' : 'Status'}
             options={statusOptions}
             selectedValue={selectedStatus}
             onSelect={onStatusChange}
             icon={CheckCircle2}
             dataTestId="licenses-filter-status"
-          />
-
-          {/* Faceted Filter for Cloud S3 */}
-          <LicensesFacetedFilter
-            title={isUk ? 'S3 Бекап' : 'S3 Backup'}
-            options={cloudOptions}
-            selectedValue={selectedCloud}
-            onSelect={onCloudChange}
-            icon={Cloud}
-            dataTestId="licenses-filter-cloud"
           />
 
           {/* Reset Filters button */}

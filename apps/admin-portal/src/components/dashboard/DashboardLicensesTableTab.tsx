@@ -14,6 +14,8 @@ import {
 } from '@/components/ui/table';
 import { AdminLicenseItemDto } from '@smartfeed/shared';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { UserAvatarCell } from '@/components/ui/user-avatar-cell';
+import { StatusBadge } from '@/components/ui/status-badge';
 
 export interface DashboardLicensesTableTabProps {
   licenses: AdminLicenseItemDto[];
@@ -22,7 +24,8 @@ export interface DashboardLicensesTableTabProps {
 export const DashboardLicensesTableTab = React.memo(function DashboardLicensesTableTab({
   licenses,
 }: DashboardLicensesTableTabProps) {
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
+  const isUk = locale === 'uk';
 
   if (licenses.length === 0) {
     return (
@@ -72,30 +75,19 @@ export const DashboardLicensesTableTab = React.memo(function DashboardLicensesTa
               </Badge>
             </TableCell>
             <TableCell>
-              <Badge
-                variant="outline"
-                className={`rounded-full px-2.5 py-0.5 text-xs flex items-center gap-1.5 font-normal ${
-                  lic.isActive
-                    ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20'
-                    : 'bg-muted text-muted-foreground border-border'
-                }`}
-              >
-                <span
-                  className={`h-1.5 w-1.5 rounded-full ${
-                    lic.isActive ? 'bg-emerald-500' : 'bg-muted-foreground'
-                  }`}
-                />
-                <span>{lic.isActive ? 'Active' : 'Suspended'}</span>
-              </Badge>
+              <StatusBadge status={lic.isActive ? 'ACTIVE' : 'SUSPENDED'} isUk={isUk} />
             </TableCell>
             <TableCell className="font-mono text-sm font-medium text-foreground">
               {(lic.maxXmlLimit / 1000).toFixed(0)}k
             </TableCell>
             <TableCell className="text-sm text-muted-foreground">{lic.aiCredits}</TableCell>
             <TableCell>
-              <span className="text-xs font-medium text-foreground truncate max-w-[120px]">
-                {lic.user?.fullName || lic.user?.email || 'User'}
-              </span>
+              <UserAvatarCell
+                fullName={lic.user?.fullName}
+                email={lic.user?.email}
+                size="sm"
+                className="max-w-[140px]"
+              />
             </TableCell>
             <TableCell className="pr-4 text-right">
               <Button

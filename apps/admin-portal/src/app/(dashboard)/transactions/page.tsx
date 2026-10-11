@@ -1,11 +1,10 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { api } from '@/lib/api';
 import { PaymentTransactionDto, PaymentStatsDto } from '@smartfeed/shared';
 import { TransactionStatsCards } from '@/components/transactions/TransactionStatsCards';
-import { TransactionsFilterToolbar } from '@/components/transactions/TransactionsFilterToolbar';
 import { TransactionsTable } from '@/components/transactions/TransactionsTable';
 
 export default function TransactionsPage() {
@@ -19,6 +18,7 @@ export default function TransactionsPage() {
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('ALL');
+  const [planFilter, setPlanFilter] = useState('ALL');
   const activeTxRequestRef = useRef(0);
 
   // Debounce search input by 300ms
@@ -72,6 +72,21 @@ export default function TransactionsPage() {
     loadTransactions();
   }, [loadTransactions]);
 
+  const isFiltered = useMemo(() => {
+    return Boolean(search.trim()) || statusFilter !== 'ALL' || planFilter !== 'ALL';
+  }, [search, statusFilter, planFilter]);
+
+  const handleResetFilters = useCallback(() => {
+    setSearch('');
+    setStatusFilter('ALL');
+    setPlanFilter('ALL');
+  }, []);
+
+  const filteredTransactions = useMemo(() => {
+    if (planFilter === 'ALL') return transactions;
+    return transactions.filter((tx) => tx.planCode === planFilter);
+  }, [transactions, planFilter]);
+
   return (
     <div
       data-testid="transactions-page"
@@ -80,19 +95,21 @@ export default function TransactionsPage() {
       {/* Stats Cards */}
       <TransactionStatsCards stats={stats} isUk={isUk} />
 
-      {/* Filter Toolbar */}
-      <TransactionsFilterToolbar
+      {/* Unified Transactions Table with Integrated Minimalist Toolbar */}
+      <TransactionsTable
+        transactions={filteredTransactions}
+        isLoading={isLoading}
+        isUk={isUk}
         search={search}
         onSearchChange={setSearch}
         statusFilter={statusFilter}
         onStatusFilterChange={setStatusFilter}
+        planFilter={planFilter}
+        onPlanFilterChange={setPlanFilter}
+        onResetFilters={handleResetFilters}
+        isFiltered={isFiltered}
         onRefresh={handleManualRefresh}
-        isLoading={isLoading}
-        isUk={isUk}
       />
-
-      {/* Transactions Table */}
-      <TransactionsTable transactions={transactions} isLoading={isLoading} isUk={isUk} />
     </div>
   );
 }

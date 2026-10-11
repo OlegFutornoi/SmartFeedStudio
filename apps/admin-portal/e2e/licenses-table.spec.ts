@@ -133,17 +133,15 @@ test.describe('Admin Portal — Реєстр та Фільтрація Ліце�
     expect(popoverBox!.y + popoverBox!.height).toBeLessThanOrEqual(cardBox!.y + cardBox!.height);
   });
 
-  test('фасетна фільтрація за S3 хмарним бекапом', async ({ licensesPage }) => {
+  test('лаконічний тулбар містить лише 2 канонічні фасетні фільтри (Тариф та Статус)', async ({
+    licensesPage,
+    page,
+  }) => {
     await licensesPage.goto();
 
-    await licensesPage.filterByCloud('no_cloud');
-    await licensesPage.expectLicenseRowVisible('SF-FREE-STARTER-0011-2233');
-    await licensesPage.expectLicenseRowNotVisible('SF-PRO-DEMO-9900-1122');
-
-    await licensesPage.filterByCloud('with_cloud');
-    await licensesPage.expectLicenseRowVisible('SF-PRO-DEMO-9900-1122');
-    await licensesPage.expectLicenseRowVisible('SF-ENT-VIP-7788-9900');
-    await licensesPage.expectLicenseRowNotVisible('SF-FREE-STARTER-0011-2233');
+    await expect(licensesPage.tierFilterBtn).toBeVisible();
+    await expect(licensesPage.statusFilterBtn).toBeVisible();
+    await expect(page.getByTestId('licenses-filter-cloud')).not.toBeVisible();
   });
 
   test('скидання всіх фільтрів кнопкою "Скинути фільтри"', async ({ licensesPage }) => {
@@ -185,12 +183,17 @@ test.describe('Admin Portal — Реєстр та Фільтрація Ліце�
     const proBadge = licensesPage.page.getByTestId('license-status-badge-SF-PRO-DEMO-9900-1122');
     await expect(proBadge).toBeVisible();
     await expect(proBadge).toContainText('Активна');
+    await expect(proBadge).toHaveClass(/emerald/);
+
+    const proRow = licensesPage.page.getByTestId('license-row-SF-PRO-DEMO-9900-1122');
+    await expect(proRow.locator('[data-testid="user-avatar"]')).toBeVisible();
 
     const starterBadge = licensesPage.page.getByTestId(
       'license-status-badge-SF-FREE-STARTER-0011-2233',
     );
     await expect(starterBadge).toBeVisible();
     await expect(starterBadge).toContainText('Активна');
+    await expect(starterBadge).toHaveClass(/emerald/);
 
     const entBadge = licensesPage.page.getByTestId('license-status-badge-SF-ENT-VIP-7788-9900');
     await expect(entBadge).toBeVisible();

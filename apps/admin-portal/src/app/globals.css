@@ -177,11 +177,35 @@
   .dark[data-radius='0.75'] {
     --radius: 0.75rem;
   }
+
+  /* Typography Scaling Tokens */
+  :root {
+    --text-table-header: 0.75rem;
+    --text-table-cell: 0.75rem;
+    --text-table-sub: 0.6875rem;
+    --text-badge: 0.625rem;
+  }
 }
 
 @layer utilities {
   .tabular-nums {
     font-variant-numeric: tabular-nums;
+  }
+  .text-table-header {
+    font-size: var(--text-table-header, 0.75rem);
+    line-height: 1rem;
+  }
+  .text-table-cell {
+    font-size: var(--text-table-cell, 0.75rem);
+    line-height: 1rem;
+  }
+  .text-table-sub {
+    font-size: var(--text-table-sub, 0.6875rem);
+    line-height: 0.875rem;
+  }
+  .text-table-badge {
+    font-size: var(--text-badge, 0.625rem);
+    line-height: 0.75rem;
   }
 }
 

@@ -108,5 +108,39 @@ Any match must be structurally replaced with semantic tokens before presenting c
 3. **Toolbar Cleanliness & Zero Clutter**:
    - **No Duplicate Counters**: Never place redundant item counts in the top toolbar (counts belong strictly in the bottom `TablePagination` footer).
    - **Faceted Filters**: Use clean `DataTableFacetedFilter` buttons with option counts.
-   - **Column Customization**: Place `[ ◫ Налаштувати стовпці ∨ ]` on the right side of the toolbar next to actions/refresh.
    - **Default Column Visibility**: Secondary detail columns (e.g., `xmlLimit`, `aiCredits`, `cloudBackup` in Licenses) MUST be hidden by default and toggleable via `Customize Columns`.
+
+---
+
+## 👥 8. Canonical Shared Components: Client Avatars & Universal Status Badges
+
+To prevent UI divergence across pages and dashboard tabs:
+
+1. **Mandatory Universal Client / User Avatar Component (`UserAvatarCell`)**:
+   - All table columns displaying a user or customer (`Клієнт`, `Користувач`, `Автор`) across Admin Portal and Desktop **MUST ALWAYS** use a unified `UserAvatarCell` component:
+     - Includes a standardized circular Avatar (`size-6` on dashboard, `size-7` in full tables) with image or initials fallback (`bg-primary/10 text-primary font-semibold text-[10px]`).
+     - Standardized customer full name (`text-xs font-medium text-foreground`) and optional secondary email (`text-[11px] font-mono text-muted-foreground`).
+     - **Strict Prohibition**: Never render plain text names without avatar bubbles in one tab while rendering avatars in another.
+
+2. **Mandatory Universal Status Badge (`StatusBadge`) & 100% Theme Harmony**:
+   - All entity statuses across all tables and dashboard tabs **MUST ALWAYS** use a single canonical `StatusBadge` component with synchronized semantic tokens:
+     - **Success / Completed / Active / Approved / Synced**: Strictly emerald green (`bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20` with a `bg-emerald-500` dot or `CheckCircle2` icon) on **ALL** pages without exception. Never use primary gray/theme on one page and emerald on another.
+     - **Warning / Pending / Processing**: Amber token (`bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20` with `bg-amber-500` dot or `Clock` icon).
+     - **Destructive / Error / Declined / Expired**: Red token (`bg-destructive/10 text-destructive border-destructive/20` with `bg-destructive` dot or `XCircle` icon).
+     - **Muted / Inactive / Suspended / Draft**: Neutral token (`bg-muted/50 text-muted-foreground border-border`).
+   - **100% Bilingual Localization**: Never render raw English database enums (`APPROVED`, `Active`, `Done`, `Suspended`) in Ukrainian mode. All status copy must be translated via `t()`.
+
+---
+
+## 🔤 9. Unified Typography Tokens & Dynamic Scaling Architecture
+
+To prepare for user-customizable font families and font weights across the entire workspace:
+
+1. **Semantic Typography Tokens**:
+   - Hardcoded arbitrary font utilities (`text-[10px]`, `text-[11px]`) must be consolidated into semantic typography tokens:
+     - `--text-table-head`: `0.75rem` (12px, font-semibold)
+     - `--text-table-cell`: `0.75rem` (12px, font-normal / font-medium)
+     - `--text-table-sub`: `0.6875rem` (11px, font-mono / text-muted-foreground)
+     - `--text-badge`: `0.625rem` (10px, font-medium)
+2. **Global Font-Family & Weight Synchronization**:
+   - Typography settings must be bound to root CSS variables (`--font-sans`, `--font-weight-normal`, `--font-weight-medium`, `--font-weight-bold`) so that a single user preference toggle (`data-font-size`, `data-font-family`, `data-font-weight`) dynamically updates the typography across all pages and tables instantaneously.

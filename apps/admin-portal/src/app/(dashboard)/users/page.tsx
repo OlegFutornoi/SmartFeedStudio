@@ -15,6 +15,8 @@ export default function UsersManagementPage() {
   const [search, setSearch] = useState('');
   const [selectedRole, setSelectedRole] = useState<string>('ALL');
   const [selectedOrgRole, setSelectedOrgRole] = useState<'ALL' | 'OWNERS' | 'MEMBERS'>('ALL');
+  const [selectedStatus, setSelectedStatus] = useState<string>('ALL');
+  const [selectedPlan, setSelectedPlan] = useState<string>('ALL');
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
@@ -55,13 +57,21 @@ export default function UsersManagementPage() {
   }, [fetchUsers]);
 
   const isFiltered = useMemo(() => {
-    return search.trim().length > 0 || selectedRole !== 'ALL' || selectedOrgRole !== 'ALL';
-  }, [search, selectedRole, selectedOrgRole]);
+    return (
+      search.trim().length > 0 ||
+      selectedRole !== 'ALL' ||
+      selectedOrgRole !== 'ALL' ||
+      selectedStatus !== 'ALL' ||
+      selectedPlan !== 'ALL'
+    );
+  }, [search, selectedRole, selectedOrgRole, selectedStatus, selectedPlan]);
 
   const handleResetFilters = useCallback(() => {
     setSearch('');
     setSelectedRole('ALL');
     setSelectedOrgRole('ALL');
+    setSelectedStatus('ALL');
+    setSelectedPlan('ALL');
   }, []);
 
   const handleUserCreated = useCallback(
@@ -178,6 +188,10 @@ export default function UsersManagementPage() {
         onSelectRole={setSelectedRole}
         selectedOrgRole={selectedOrgRole}
         onSelectOrgRole={setSelectedOrgRole}
+        selectedStatus={selectedStatus}
+        onSelectStatus={setSelectedStatus}
+        selectedPlan={selectedPlan}
+        onSelectPlan={setSelectedPlan}
         onResetFilters={handleResetFilters}
         isFiltered={isFiltered}
         isRefreshing={isRefreshing}

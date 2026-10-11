@@ -50,6 +50,22 @@ description: Mandatory testing standards, test isolation, data cleanup, git comm
     2. **Каскадне видалення та цілісність**: тести життєвого циклу зобов'язані перевіряти, що після видалення фіду кількість товарів зменшується, товари цього фіду зникають з таблиці, а лічильники та квоти зменшуються.
     3. **Паритет середовищ**: один і той самий набір бізнес-правил має валідуватися для Mock і Real режимів.
 
+### 4.1. Visual, Avatar & Semantic Status Consistency Testing (Strict)
+
+- **Zero English Enums in UI**: Playwright тести обов'язково перевіряють, що в українській локалі у статусах таблиць (`[data-testid*="status"]`, бейджі) відсутні сирі англійські значення бекенду: `APPROVED`, `Active`, `Done`, `Suspended`, `DECLINED`, `PENDING`.
+  ```typescript
+  await expect(statusCell).not.toContainText('APPROVED');
+  await expect(statusCell).toContainText('Оплачено');
+  ```
+- **Mandatory Client Avatar Assertions**: Колонки «Клієнт» / «Користувач» зобов'язані містити аватар з фото або ініціалами. Тести повинні асертити:
+  ```typescript
+  await expect(row.locator('[data-testid="user-avatar"]')).toBeVisible();
+  ```
+- **Semantic Color Harmony Assertions**: Успішні статуси (`Оплачено`, `Активна`, `Активний`, `Done`) зобов'язані перевірятися на наявність семантичного зеленого класу (`emerald`):
+  ```typescript
+  await expect(statusBadge).toHaveClass(/emerald/);
+  ```
+
 ---
 
 ## 🎯 5. Targeted Feature Testing Policy (Zero Redundant Full-Suite Runs)

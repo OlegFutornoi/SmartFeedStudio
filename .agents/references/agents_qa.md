@@ -113,12 +113,16 @@
 
 ---
 
-### 🌐 Етап 6: 100% i18n & Accessibility (A11y) аудит
+### 🌐 Етап 6: 100% i18n, A11y та візуальний паритет (Visual & Semantic Consistency)
 
-- **Завдання етапу**: Перевірка динамічного перемикання мов без перезавантаження та перевірка доступності елементів керування.
+- **Завдання етапу**: Перевірка динамічного перемикання мов, доступності елементів та візуальної відповідності компонентів дизайн-системі.
+- **Обов'язкові асершени семантичної та візуальної якості**:
+  1. **Zero Raw English Enums**: Тести Playwright зобов'язані перевіряти, що в таблицях немає сирих англійських статусів бекенду (`expect(statusCell).not.toContainText('APPROVED')`, `not.toContainText('Active')`, `not.toContainText('Done')` у локалі `uk`).
+  2. **Mandatory Client Avatar Presence**: Усі клієнтські колонки повинні перевірятися на наявність аватара з фото/ініціалами (`expect(row.locator('[data-testid="user-avatar"]')).toBeVisible()`).
+  3. **Semantic Status Color Harmony**: Успішні статуси зобов'язані містити гармонійний зелений клас (`expect(statusBadge).toHaveClass(/emerald/)`).
 - **Скіли етапу та як вони використовуються**:
   - [**`i18n-localization`**](../skills/i18n-localization/SKILL.md) — автоматизований аудит паритету словників `uk` ⇄ `en`, пошук сирих ключів у DOM (`expect(text).not.toMatch(/^[a-z]+:[a-z_]+$/i)`), мапінг помилок через `getErrorMessage`.
-  - [**`playwright-automation`**](../skills/playwright-automation/SKILL.md) — білінгвальні тести перемикання мови інтерфейсу в реальному часі, клікабельність усіх кнопок та модальних вікон.
+  - [**`playwright-automation`**](../skills/playwright-automation/SKILL.md) — білінгвальні тести перемикання мови інтерфейсу в реальному часі, клікабельність усіх кнопок, перевірка семантичних статусів та аватарів.
 
 ---
 

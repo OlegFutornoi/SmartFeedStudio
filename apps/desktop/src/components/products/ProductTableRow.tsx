@@ -192,7 +192,7 @@ export const ProductTableRow: React.FC<ProductTableRowProps> = ({
         <TableCell className="px-3 py-2">
           {product.inStock ? (
             <div className="flex items-center gap-1.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-primary shrink-0 animate-pulse" />
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0 animate-pulse" />
               <span className="text-xs font-medium tabular-nums text-foreground">
                 {product.stockQuantity !== undefined
                   ? `${product.stockQuantity} шт`

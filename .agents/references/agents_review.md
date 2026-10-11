@@ -200,13 +200,27 @@ Review Agent детально перевіряє реалізацію 4-рівн
 
 ---
 
-## 💻 Етап 4: Фронтенд, UI/UX та мережевий аудит (Frontend, UI/UX & Network)
+### 💻 Чеклист фронтенд-аудиту (Frontend, UI/UX & Network):
+
+1. **100% Theme Harmony & Zero Off-Scheme Colors**:
+   - Жодних `purple-*`, `violet-*`, `pink-*`, `fuchsia-*`.
+2. **Universal Component & Client Avatar Parity**:
+   - Всі колонки клієнта/користувача (`Клієнт`, `Користувач`) зобов'язані використовувати єдиний `UserAvatarCell` з фото або ініціалами. Заборонено виводити простий текст в одних табах і аватар в інших.
+3. **Canonical Status Badges & 100% Bilingual Localization**:
+   - Усі статуси (`APPROVED`, `ACTIVE`, `SUCCESS`, `Done`) зобов'язані використовувати гармонійний зелений токен (`emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20` з крапкою `bg-emerald-500`). Заборонено primary/сірий на одній сторінці і зелений на іншій.
+   - 100% переклад через `t()`: сувора заборона виведення сирих англійських енумів (`APPROVED`, `Active`, `Done`, `Suspended`) в українській локалі.
+4. **Типографічна система та стандартизація шрифтів**:
+   - Заборона хаотичних розмірів `text-[10px]`, `text-[11px]`. Всі компоненти спираються на семантичні токени (`--text-table-head`, `--text-table-cell`, `--text-badge`), що гарантує підтримку динамічної зміни розміру та жирності шрифту в майбутньому налаштуванні.
+5. **100% Solid Sticky Headers & Zero Duplicate CTAs**:
+   - `thead.sticky.top-0` має solid `bg-card`/`bg-background`. Приховування тулбар-кнопок при наявності empty state.
+6. **Дедуплікація запитів (Zero-Duplicate Requests)**:
+   - Обов'язкові `useRef` гарди (`isFetchingRef`, `lastFetchedTokenRef`), нуль подвійних запитів.
 
 ### 💻 Скіли етапу 4:
 
-- [**`ui-ux-pro-max`**](../skills/ui-ux-pro-max/SKILL.md) — 100% Solid Sticky Headers, семантичні токени temi, приховування дублюючих CTA.
+- [**`ui-ux-pro-max`**](../skills/ui-ux-pro-max/SKILL.md) — 100% Solid Sticky Headers, семантичні токени теми, єдині аватари та бейджі.
 - [**`vercel-react-best-practices`**](../skills/vercel-react-best-practices/SKILL.md) — дедуплікація мережевих запитів через `useRef`, виключення зайвих ререндерів.
-- [**`i18n-localization`**](../skills/i18n-localization/SKILL.md) — 100% паритет перекладів UA/EN, перевірка `title={t('...')}`, мапінг помилок.
+- [**`i18n-localization`**](../skills/i18n-localization/SKILL.md) — 100% паритет перекладів UA/EN, нуль сирих англійських енумів у статусах.
 - [**`emil-design-eng`**](../skills/emil-design-eng/SKILL.md) — аудит мікровзаємодій, тактильного відгуку та переходів.
 - [**`image`**](../skills/image/SKILL.md) — перевірка оптимізації зображень, відсутність важких нестиснених асетів.
 

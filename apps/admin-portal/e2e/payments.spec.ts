@@ -100,16 +100,13 @@ test.describe('Admin Portal — Платіжні системи та Журна�
     await expect(page.getByTestId('transaction-stats-grid')).toContainText('7,485 грн');
     await expect(page.getByTestId('transaction-stats-grid')).toContainText('66.7%');
 
-    // 2. Перевірка списку рядків таблиці
-    await expect(page.getByTestId('transaction-row-SF-INV-20260828-A1B2C3')).toBeVisible();
-    await expect(page.getByTestId('transaction-row-SF-INV-20260828-A1B2C3')).toContainText(
-      'Олександр Шевченко',
-    );
-    await expect(page.getByTestId('transaction-row-SF-INV-20260828-A1B2C3')).toContainText(
-      '14,280 UAH',
-    );
-    await expect(page.getByTestId('transaction-row-SF-INV-20260828-A1B2C3')).toContainText(
-      'Оплачено',
+    const paidRow = page.getByTestId('transaction-row-SF-INV-20260828-A1B2C3');
+    await expect(paidRow).toContainText('Олександр Шевченко');
+    await expect(paidRow.locator('[data-testid="user-avatar"]')).toBeVisible();
+    await expect(paidRow).toContainText('14,280 UAH');
+    await expect(paidRow).toContainText('Оплачено');
+    await expect(paidRow.locator('[data-testid="transaction-status-approved"]')).toHaveClass(
+      /emerald/,
     );
 
     await expect(page.getByTestId('transaction-row-SF-INV-20260828-G7H8J9')).toContainText(

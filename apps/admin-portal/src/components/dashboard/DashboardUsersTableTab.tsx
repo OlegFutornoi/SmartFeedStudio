@@ -4,7 +4,6 @@ import React from 'react';
 import { GripVertical, MoreHorizontal } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
   Table,
   TableBody,
@@ -15,6 +14,8 @@ import {
 } from '@/components/ui/table';
 import { UserListItemDto } from '@smartfeed/shared';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { UserAvatarCell } from '@/components/ui/user-avatar-cell';
+import { StatusBadge } from '@/components/ui/status-badge';
 
 export interface DashboardUsersTableTabProps {
   users: UserListItemDto[];
@@ -29,7 +30,8 @@ export const DashboardUsersTableTab = React.memo(function DashboardUsersTableTab
   onToggleSelectRow,
   onToggleSelectAll,
 }: DashboardUsersTableTabProps) {
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
+  const isUk = locale === 'uk';
 
   if (users.length === 0) {
     return (
@@ -93,12 +95,13 @@ export const DashboardUsersTableTab = React.memo(function DashboardUsersTableTab
               <GripVertical className="h-3.5 w-3.5 cursor-grab" />
             </TableCell>
             <TableCell>
-              <div className="font-semibold text-sm text-foreground">
-                {u.fullName || t('dashboard', 'unnamed_user')}
-              </div>
-              <div className="text-xs text-muted-foreground font-mono truncate max-w-[180px]">
-                {u.email}
-              </div>
+              <UserAvatarCell
+                fullName={u.fullName}
+                email={u.email}
+                size="md"
+                showEmail
+                className="max-w-[200px]"
+              />
             </TableCell>
             <TableCell>
               <Badge
@@ -114,13 +117,7 @@ export const DashboardUsersTableTab = React.memo(function DashboardUsersTableTab
               </Badge>
             </TableCell>
             <TableCell>
-              <Badge
-                variant="outline"
-                className="rounded-full px-2.5 py-0.5 text-xs flex items-center gap-1.5 font-normal bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20"
-              >
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0" />
-                <span>Done</span>
-              </Badge>
+              <StatusBadge status="ACTIVE" label={isUk ? 'Активний' : 'Active'} isUk={isUk} />
             </TableCell>
             <TableCell className="font-mono text-sm font-medium text-foreground">
               {u.license?.maxXmlLimit ? `${(u.license.maxXmlLimit / 1000).toFixed(0)}k` : '18'}
@@ -129,16 +126,11 @@ export const DashboardUsersTableTab = React.memo(function DashboardUsersTableTab
               {u.license?.aiCredits !== undefined ? `${u.license.aiCredits}` : '0'}
             </TableCell>
             <TableCell>
-              <div className="flex items-center gap-2">
-                <Avatar className="h-6 w-6 shrink-0 border border-border">
-                  <AvatarFallback className="text-[10px] bg-primary/10 text-primary font-semibold">
-                    {u.fullName ? u.fullName.slice(0, 2).toUpperCase() : 'AD'}
-                  </AvatarFallback>
-                </Avatar>
-                <span className="text-xs font-medium text-foreground truncate max-w-[120px]">
-                  {u.fullName || 'Admin'}
-                </span>
-              </div>
+              <UserAvatarCell
+                fullName={u.fullName || 'Admin'}
+                size="sm"
+                className="max-w-[140px]"
+              />
             </TableCell>
             <TableCell className="pr-4 text-right">
               <Button

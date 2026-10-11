@@ -15,6 +15,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { UserRowActions } from '@/components/users/UserRowActions';
+import { UserAvatarCell } from '@/components/ui/user-avatar-cell';
+import { StatusBadge } from '@/components/ui/status-badge';
 
 interface UserTableRowProps {
   user: UserListItemDto;
@@ -67,25 +69,7 @@ export const UserTableRow = React.memo(function UserTableRow({
             <div className="w-6 shrink-0" />
           )}
 
-          <div className="size-7 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center text-primary font-semibold text-[10px] uppercase shrink-0">
-            {user.fullName
-              ? user.fullName.slice(0, 2).toUpperCase()
-              : user.email.slice(0, 2).toUpperCase()}
-          </div>
-          <div className="min-w-0">
-            <div
-              data-testid="user-row-name"
-              className="font-medium text-foreground truncate text-xs"
-            >
-              {user.fullName || t('users', 'unnamed_user')}
-            </div>
-            <div
-              data-testid="user-row-email"
-              className="text-[11px] text-muted-foreground font-mono truncate"
-            >
-              {user.email}
-            </div>
-          </div>
+          <UserAvatarCell fullName={user.fullName} email={user.email} size="md" showEmail />
         </div>
       </TableCell>
 
@@ -188,22 +172,12 @@ export const UserTableRow = React.memo(function UserTableRow({
       {/* Status */}
       {visibleColumns?.status !== false && (
         <TableCell>
-          <Badge
-            data-testid="user-row-status"
-            variant="outline"
-            className={`text-[10px] h-5 px-1.5 py-0 font-medium ${
-              isActive
-                ? 'bg-primary/10 text-primary border-primary/20'
-                : 'bg-destructive/10 text-destructive border-destructive/20'
-            }`}
-          >
-            <span
-              className={`h-1.5 w-1.5 rounded-full mr-1.5 ${
-                isActive ? 'bg-primary animate-pulse' : 'bg-destructive'
-              }`}
-            />
-            {isActive ? t('users', 'status_active') : t('users', 'status_suspended')}
-          </Badge>
+          <StatusBadge
+            status={isActive ? 'ACTIVE' : 'SUSPENDED'}
+            label={isActive ? t('users', 'status_active') : t('users', 'status_suspended')}
+            testId="user-row-status"
+            isUk={locale === 'uk'}
+          />
         </TableCell>
       )}
 

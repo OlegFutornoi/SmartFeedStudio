@@ -22,6 +22,10 @@ interface UsersTableProps {
   onSelectRole: (role: string) => void;
   selectedOrgRole: 'ALL' | 'OWNERS' | 'MEMBERS';
   onSelectOrgRole: (role: 'ALL' | 'OWNERS' | 'MEMBERS') => void;
+  selectedStatus?: string;
+  onSelectStatus?: (status: string) => void;
+  selectedPlan?: string;
+  onSelectPlan?: (plan: string) => void;
   onResetFilters: () => void;
   isFiltered: boolean;
   isRefreshing: boolean;
@@ -71,6 +75,10 @@ export const UsersTable = React.memo(function UsersTable({
   onSelectRole,
   selectedOrgRole,
   onSelectOrgRole,
+  selectedStatus = 'ALL',
+  onSelectStatus,
+  selectedPlan = 'ALL',
+  onSelectPlan,
   onResetFilters,
   isFiltered,
   isRefreshing,
@@ -87,25 +95,68 @@ export const UsersTable = React.memo(function UsersTable({
   const { visibleColumns, toggleColumn, resetToDefaults, columnOptions } =
     useColumnVisibility<UserColumnId>('admin_users_columns', USER_COLUMNS, isUk);
 
+  const statusOptions = React.useMemo(() => {
+    let activeCount = 0;
+    let suspendedCount = 0;
+    users.forEach((u) => {
+      if (u.isActive === false) suspendedCount++;
+      else activeCount++;
+    });
+    return [
+      { value: 'ALL', label: t('users', 'filter_status_all'), count: users.length },
+      { value: 'ACTIVE', label: t('users', 'status_active'), count: activeCount },
+      { value: 'SUSPENDED', label: t('users', 'status_suspended'), count: suspendedCount },
+    ];
+  }, [users, t]);
+
+  const planOptions = React.useMemo(() => {
+    const counts: Record<string, number> = {};
+    users.forEach((u) => {
+      const plan = u.license?.planType || 'FREE';
+      counts[plan] = (counts[plan] || 0) + 1;
+    });
+    const knownPlans = ['FREE', 'STARTER', 'GROWTH', 'PRO', 'ENTERPRISE'];
+    return [
+      { value: 'ALL', label: t('users', 'filter_plan_all'), count: users.length },
+      ...knownPlans.map((p) => ({
+        value: p,
+        label: p,
+        count: counts[p] || 0,
+      })),
+    ];
+  }, [users, t]);
+
+  const filteredUsers = React.useMemo(() => {
+    return users.filter((u) => {
+      if (selectedStatus === 'ACTIVE' && u.isActive === false) return false;
+      if (selectedStatus === 'SUSPENDED' && u.isActive !== false) return false;
+      if (selectedPlan && selectedPlan !== 'ALL') {
+        const plan = u.license?.planType || 'FREE';
+        if (plan !== selectedPlan) return false;
+      }
+      return true;
+    });
+  }, [users, selectedStatus, selectedPlan]);
+
   const { currentPage, pageSize, totalPages, totalItems, paginatedItems, setPage, setPageSize } =
-    usePagination(users, {
+    usePagination(filteredUsers, {
       initialPageSize: 10,
-      resetDeps: [users],
+      resetDeps: [filteredUsers],
     });
 
   // Reset expanded accordion rows whenever search or filters change
   React.useEffect(() => {
     setExpandedUserIds(new Set());
-  }, [search, selectedRole, selectedOrgRole, currentPage]);
+  }, [search, selectedRole, selectedOrgRole, selectedStatus, selectedPlan, currentPage]);
 
   const totalUsersCount = React.useMemo(() => {
     const ids = new Set<string>();
-    users.forEach((u) => {
+    filteredUsers.forEach((u) => {
       ids.add(u.id);
       u.teamMembers?.forEach((m) => ids.add(m.id));
     });
     return ids.size;
-  }, [users]);
+  }, [filteredUsers]);
 
   const toggleExpand = useCallback((userId: string) => {
     setExpandedUserIds((prev) => {
@@ -132,6 +183,12 @@ export const UsersTable = React.memo(function UsersTable({
         onSelectRole={onSelectRole}
         selectedOrgRole={selectedOrgRole}
         onSelectOrgRole={onSelectOrgRole}
+        selectedStatus={selectedStatus}
+        onSelectStatus={onSelectStatus}
+        statusOptions={statusOptions}
+        selectedPlan={selectedPlan}
+        onSelectPlan={onSelectPlan}
+        planOptions={planOptions}
         onResetFilters={onResetFilters}
         isFiltered={isFiltered}
         totalCount={totalUsersCount}
@@ -152,7 +209,7 @@ export const UsersTable = React.memo(function UsersTable({
           >
             {t('users', 'loading_users')}
           </div>
-        ) : users.length === 0 ? (
+        ) : filteredUsers.length === 0 ? (
           <div data-testid="users-empty-state" className="py-20 text-center space-y-2">
             <Users className="h-10 w-10 text-muted-foreground/50 mx-auto" />
             <p className="text-sm font-medium text-foreground">{t('users', 'empty_users_title')}</p>

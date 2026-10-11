@@ -65,6 +65,18 @@ export class AdminUsersPage extends BasePage {
     await this.page.getByTestId(`users-filter-team-option-${role}`).click();
   }
 
+  async selectStatus(status: 'all' | 'active' | 'suspended'): Promise<void> {
+    await this.page.getByTestId('users-filter-status').click();
+    await this.page.getByTestId(`users-filter-status-option-${status.toLowerCase()}`).click();
+  }
+
+  async selectPlan(
+    plan: 'all' | 'free' | 'starter' | 'growth' | 'pro' | 'enterprise',
+  ): Promise<void> {
+    await this.page.getByTestId('users-filter-plan').click();
+    await this.page.getByTestId(`users-filter-plan-option-${plan.toLowerCase()}`).click();
+  }
+
   async resetFilters(): Promise<void> {
     await this.page.getByTestId('users-reset-filters-btn').click();
   }

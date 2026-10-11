@@ -72,7 +72,12 @@ test.describe('Admin Portal — Таблиця та Фільтрація Кор�
 
     await expect(usersPage.headerTitle).toBeVisible();
     await expect(usersPage.countBadge).toContainText('3');
-    await expect(usersPage.page.getByTestId('user-table-row-usr-1')).toBeVisible();
+    const row1 = usersPage.page.getByTestId('user-table-row-usr-1');
+    await expect(row1).toBeVisible();
+    await expect(row1.locator('[data-testid="user-avatar"]')).toBeVisible();
+    await expect(row1.getByTestId('user-row-status')).toHaveClass(/emerald/);
+    await expect(row1.getByTestId('user-row-status')).toContainText('Активний');
+
     await expect(usersPage.page.getByTestId('user-table-row-usr-3')).toBeVisible();
   });
 
@@ -213,5 +218,35 @@ test.describe('Admin Portal — Таблиця та Фільтрація Кор�
     await page.keyboard.press('Escape');
 
     await expect(usersPage.thRole).toBeVisible();
+  });
+
+  test('фасетна фільтрація користувачів за статусом та тарифом (NexaCRM pattern)', async ({
+    usersPage,
+    page,
+  }) => {
+    await usersPage.goto();
+
+    // Verify filter buttons are visible
+    await expect(page.getByTestId('users-filter-status')).toBeVisible();
+    await expect(page.getByTestId('users-filter-plan')).toBeVisible();
+
+    // Filter by Plan: GROWTH -> should show ownerUser, hide adminUser
+    await usersPage.selectPlan('growth');
+    await expect(usersPage.page.getByTestId('user-table-row-usr-3')).toBeVisible();
+    await expect(usersPage.page.getByTestId('user-table-row-usr-1')).not.toBeVisible();
+
+    // Reset filters
+    await usersPage.resetFilters();
+    await expect(usersPage.page.getByTestId('user-table-row-usr-1')).toBeVisible();
+    await expect(usersPage.page.getByTestId('user-table-row-usr-3')).toBeVisible();
+
+    // Filter by Status: ACTIVE -> all are active
+    await usersPage.selectStatus('active');
+    await expect(usersPage.page.getByTestId('user-table-row-usr-1')).toBeVisible();
+    await expect(usersPage.page.getByTestId('user-table-row-usr-3')).toBeVisible();
+
+    // Filter by Status: SUSPENDED -> none is suspended, shows empty state
+    await usersPage.selectStatus('suspended');
+    await expect(usersPage.emptyState).toBeVisible();
   });
 });

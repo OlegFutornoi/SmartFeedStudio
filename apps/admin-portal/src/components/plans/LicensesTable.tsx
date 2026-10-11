@@ -36,7 +36,6 @@ export function LicensesTable({ licenses, isUk, onRefresh, isLoading }: Licenses
     searchQuery: '',
     selectedTier: 'ALL',
     selectedStatus: 'ALL',
-    selectedCloud: 'ALL',
     sortBy: 'NEWEST',
   });
 
@@ -46,8 +45,11 @@ export function LicensesTable({ licenses, isUk, onRefresh, isLoading }: Licenses
   const { visibleColumns, toggleColumn, resetToDefaults, columnOptions } =
     useColumnVisibility<LicenseColumnId>('admin_licenses', LICENSE_COLUMNS, isUk);
 
-  const { filteredLicenses, isFiltered, tierOptions, statusOptions, cloudOptions } =
-    useLicensesFilter(licenses, filter, isUk);
+  const { filteredLicenses, isFiltered, tierOptions, statusOptions } = useLicensesFilter(
+    licenses,
+    filter,
+    isUk,
+  );
 
   const { currentPage, pageSize, totalPages, totalItems, paginatedItems, setPage, setPageSize } =
     usePagination(filteredLicenses, {
@@ -60,7 +62,6 @@ export function LicensesTable({ licenses, isUk, onRefresh, isLoading }: Licenses
       searchQuery: '',
       selectedTier: 'ALL',
       selectedStatus: 'ALL',
-      selectedCloud: 'ALL',
       sortBy: 'NEWEST',
     });
   }, []);
@@ -106,9 +107,6 @@ export function LicensesTable({ licenses, isUk, onRefresh, isLoading }: Licenses
         selectedStatus={filter.selectedStatus}
         onStatusChange={(v) => setFilter((f) => ({ ...f, selectedStatus: v }))}
         statusOptions={statusOptions}
-        selectedCloud={filter.selectedCloud}
-        onCloudChange={(v) => setFilter((f) => ({ ...f, selectedCloud: v }))}
-        cloudOptions={cloudOptions}
         columnOptions={columnOptions}
         onToggleColumn={toggleColumn}
         onResetColumns={resetToDefaults}
