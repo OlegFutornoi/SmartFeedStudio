@@ -1,3 +1,8 @@
+---
+trigger: always_on
+description: Backend Agent (agents_backend) commanding 8 stages from .agents/references/agents_backend.md
+---
+
 # ⚙️ SmartFeed Studio — Backend Agent Rule (`agents_backend`)
 
 ## 📌 Role & Mission

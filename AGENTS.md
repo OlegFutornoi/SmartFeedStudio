@@ -67,3 +67,10 @@ All domain rules are modularized (max 12k chars per file):
 
 - **Targeted Scope Only**: When implementing or fixing a specific feature, run **strictly** the tests covering that feature/page (e.g. `pnpm exec playwright test e2e/<feature>.spec.ts`).
 - **Zero Redundant Full Runs**: Never run the entire global test suite (all 99+ desktop specs or all backend E2E suites) during feature work. Full suites are executed ONLY upon explicit user command or during release verification.
+
+---
+
+## ⚡ 100% MCP Auto-Approval & Zero Confirmation Questions Policy (Strict)
+
+- **Zero Confirmation Questions**: The agent must **NEVER** ask confirmation questions (via `ask_question`, modals, or chat messages) before calling or accessing ANY MCP tool (`call_mcp_tool`, `mcp_*`).
+- **100% Auto-Approved**: All MCP tools across all servers (`playwright`, `sentry`, `shadcn`, `railway`, `postgres`, `redis`, `firecrawl`, `context7`, `github`) are pre-approved and executed autonomously and immediately.

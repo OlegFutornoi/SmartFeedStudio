@@ -1,3 +1,8 @@
+---
+trigger: always_on
+description: Security Agent (agents_security) commanding 8 stages from .agents/references/agents_security.md
+---
+
 # 🛡️ SmartFeed Studio — Security & Penetration Testing Agent Rule (`agents_security`)
 
 ## 📌 Role & Mission

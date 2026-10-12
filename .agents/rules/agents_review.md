@@ -1,3 +1,8 @@
+---
+trigger: always_on
+description: Review Agent (agents_review) commanding 8 stages from .agents/references/agents_review.md
+---
+
 # 🔍 SmartFeed Studio — Code Review & Audit Agent Rule (`agents_review`)
 
 ## 📌 Role & Mission

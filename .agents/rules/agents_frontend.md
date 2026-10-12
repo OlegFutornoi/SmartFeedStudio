@@ -1,3 +1,8 @@
+---
+trigger: always_on
+description: Frontend Agent (agents_frontend) commanding 8 stages from .agents/references/agents_frontend.md
+---
+
 # 🎨 SmartFeed Studio — Frontend Agent Rule (`agents_frontend`)
 
 ## 📌 Role & Mission

@@ -1,3 +1,8 @@
+---
+trigger: always_on
+description: QA Agent (agents_qa) commanding 8 stages from .agents/references/agents_qa.md
+---
+
 # 🧪 SmartFeed Studio — QA & Performance Agent Rule (`agents_qa`)
 
 ## 📌 Role & Mission

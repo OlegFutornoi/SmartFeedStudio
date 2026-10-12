@@ -1,3 +1,8 @@
+---
+trigger: always_on
+description: DevOps Agent (agents_devops) commanding 8 stages from .agents/references/agents_devops.md
+---
+
 # 🚀 SmartFeed Studio — DevOps & Release Agent Rule (`agents_devops`)
 
 ## 📌 Role & Mission
