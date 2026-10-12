@@ -1,11 +1,10 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import { PresignedUploadUrlResult } from '@smartfeed/shared';
+import { BadRequestException, ForbiddenException, Injectable, Logger } from '@nestjs/common';
+import { PresignedUploadUrlResult, StorageFileCategory } from '@smartfeed/shared';
 import * as crypto from 'crypto';
 import { GeneratePresignedUploadUrlCommand } from '@/modules/storage/commands/generate-presigned-url.command';
+import { PrismaService } from '@/prisma/prisma.service';
+import { S3StorageService } from '@/modules/storage/services/s3-storage.service';
 
 @Injectable()
 @CommandHandler(GeneratePresignedUploadUrlCommand)
@@ -14,31 +13,14 @@ export class GeneratePresignedUploadUrlHandler implements ICommandHandler<
   PresignedUploadUrlResult
 > {
   private readonly logger = new Logger(GeneratePresignedUploadUrlHandler.name);
-  private readonly s3Client: S3Client;
-  private readonly bucketName: string;
 
-  constructor(private readonly configService: ConfigService) {
-    const endpoint = this.configService.get<string>('S3_ENDPOINT') || 'http://localhost:9000';
-    const region = this.configService.get<string>('S3_REGION') || 'us-east-1';
-    const accessKeyId = this.configService.get<string>('S3_ACCESS_KEY_ID') || 'minioadmin';
-    const secretAccessKey =
-      this.configService.get<string>('S3_SECRET_ACCESS_KEY') || 'minioadminpassword';
-    this.bucketName = this.configService.get<string>('S3_BUCKET_NAME') || 'smartfeed-storage';
-    const forcePathStyle = this.configService.get<string>('S3_FORCE_PATH_STYLE', 'true') === 'true';
-
-    this.s3Client = new S3Client({
-      endpoint,
-      region,
-      credentials: {
-        accessKeyId,
-        secretAccessKey,
-      },
-      forcePathStyle,
-    });
-  }
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly s3StorageService: S3StorageService,
+  ) {}
 
   async execute(command: GeneratePresignedUploadUrlCommand): Promise<PresignedUploadUrlResult> {
-    const { userId, fileName, contentType, folder } = command;
+    const { userId, fileName, contentType, folder, fileSize } = command;
 
     const ALLOWED_FOLDERS = new Set(['images', 'snapshots', 'catalogs', 'exports']);
     const targetFolder =
@@ -66,6 +48,36 @@ export class GeneratePresignedUploadUrlHandler implements ICommandHandler<
       );
     }
 
+    // Layer 2 AppSec & Quota pre-check (Prevent presigned hoarding)
+    if (fileSize && fileSize > 0) {
+      const license = await this.prisma.license.findFirst({
+        where: { userId, isActive: true },
+        include: { tariffPlan: true },
+      });
+
+      if (license) {
+        const rawLicenseStorage = license.maxStorageGb ? Number(license.maxStorageGb) : 0;
+        const rawPlanStorage = license.tariffPlan?.maxStorageGb
+          ? Number(license.tariffPlan.maxStorageGb)
+          : 0;
+        const maxStorageGb = rawLicenseStorage > 0 ? rawLicenseStorage : rawPlanStorage;
+        const maxStorageBytes = BigInt(Math.floor(maxStorageGb * 1024 * 1024 * 1024));
+
+        if (maxStorageGb > 0) {
+          const currentUsed = license.usedStorageBytes || BigInt(0);
+          if (currentUsed + BigInt(fileSize) > maxStorageBytes) {
+            throw new ForbiddenException({
+              statusCode: 403,
+              error: 'Forbidden',
+              code: 'STORAGE_QUOTA_EXCEEDED',
+              message:
+                'STORAGE_QUOTA_EXCEEDED: Cannot generate upload URL because this file exceeds your remaining storage quota.',
+            });
+          }
+        }
+      }
+    }
+
     // Path traversal defense: strip any path separators and keep only safe basename
     const baseFileName = fileName.split(/[/\\]/).pop() || 'upload';
     const sanitizedFileName = baseFileName.replace(/[^a-zA-Z0-9._-]/g, '_').slice(0, 100);
@@ -74,24 +86,48 @@ export class GeneratePresignedUploadUrlHandler implements ICommandHandler<
 
     const expiresInSeconds = 60 * 15; // 15 minutes validity
 
-    const putCommand = new PutObjectCommand({
-      Bucket: this.bucketName,
-      Key: s3Key,
-      ContentType: contentType,
-      Metadata: {
+    const uploadUrl = await this.s3StorageService.generatePresignedUploadUrl(
+      s3Key,
+      contentType,
+      {
         userId,
         uploadedAt: new Date().toISOString(),
       },
-    });
+      expiresInSeconds,
+    );
 
-    const uploadUrl = await getSignedUrl(this.s3Client, putCommand, {
-      expiresIn: expiresInSeconds,
-    });
+    const publicUrl = this.s3StorageService.getPublicUrl(s3Key);
 
-    const publicUrl = `${this.configService.get<string>('S3_ENDPOINT') || 'http://localhost:9000'}/${this.bucketName}/${s3Key}`;
+    let category = StorageFileCategory.PRODUCT_IMAGE;
+    if (targetFolder === 'catalogs') category = StorageFileCategory.FEED_CATALOG;
+    else if (targetFolder === 'snapshots') category = StorageFileCategory.SYSTEM_BACKUP;
+    else if (targetFolder === 'exports') category = StorageFileCategory.EXPORT_ARCHIVE;
+
+    const expiresAt = new Date(Date.now() + expiresInSeconds * 1000);
+
+    try {
+      await this.prisma.storageFile.create({
+        data: {
+          userId,
+          category,
+          status: 'PENDING_UPLOAD',
+          bucketName: this.s3StorageService.getBucketName(),
+          s3Key,
+          publicUrl,
+          originalName: sanitizedFileName,
+          mimeType: normalizedContentType,
+          sizeBytes: BigInt(fileSize || 0),
+          expiresAt,
+        },
+      });
+    } catch (err: unknown) {
+      this.logger.warn(
+        `Could not pre-create pending StorageFile record for ${s3Key}: ${(err as Error).message}`,
+      );
+    }
 
     this.logger.log(
-      `Generated presigned upload URL for user=${userId}, key=${s3Key}, contentType=${contentType}`,
+      `Generated presigned upload URL for user=${userId}, key=${s3Key}, contentType=${contentType}, size=${fileSize || 'unknown'}`,
     );
 
     return {

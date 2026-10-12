@@ -14,6 +14,7 @@ description: 'UI/UX design intelligence for web, mobile, and desktop. This skill
 5. **100% Bilingual i18n**: All user-visible strings must use `t('key')` with entries in both `uk` and `en` JSON dictionaries.
 6. **100% Path Aliases (`@/`)**: Never use relative imports (`../`, `./`). Always import via `@/components/...` or `@smartfeed/shared`.
 7. **Upfront Research via `context7` & `shadcn` MCP**: Before designing components, layout, or styles, always query `context7` (`/shadcn-ui/ui`, `/tailwindlabs/tailwindcss`, `/radix-ui/primitives`) and `shadcn` MCP to obtain authoritative signatures, variants, and tokens rather than hallucinating.
+8. **Mandatory Official shadcn Installation & Registry Inventory**: After compiling the list of required components, the agent **MUST ALWAYS install them directly into the project via official CLI (`npx shadcn@latest add <component> -y`)**, NEVER hand-roll base UI primitives from scratch. The agent must maintain an up-to-date registry of installed components in `src/components/ui/COMPONENTS.md`.
 
 ## When to Apply
 

@@ -1,12 +1,17 @@
-import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { JwtAuthGuard } from '@/modules/auth/guards/jwt-auth.guard';
-import { RequireActiveLicenseGuard } from '@/modules/licenses/guards/require-active-license.guard';
+import { RequireStorageQuotaGuard } from '@/modules/storage/guards/require-storage-quota.guard';
 import { CurrentUser } from '@/modules/auth/decorators/current-user.decorator';
 import { GeneratePresignedUploadUrlCommand } from '@/modules/storage/commands/generate-presigned-url.command';
+import { ConfirmUploadCommand } from '@/modules/storage/commands/confirm-upload.command';
+import { DeleteStorageFileCommand } from '@/modules/storage/commands/delete-storage-file.command';
+import { GetStorageQuotaQuery } from '@/modules/storage/queries/get-storage-quota.query';
 import {
   PresignedUploadUrlResult,
+  StorageFileDto,
+  StorageQuotaDto,
   WorkspaceInfoDto,
   StorageStatsDto,
   DatabaseMaintenanceResultDto,
@@ -25,6 +30,7 @@ import { MigrateWorkspaceCommand } from '@/modules/storage/commands/migrate-work
 import { SelectWorkspaceFolderCommand } from '@/modules/storage/commands/select-workspace-folder.command';
 import {
   PresignedUrlDto,
+  ConfirmUploadDto,
   InitWorkspaceRequestDto,
   OpenFolderRequestDto,
   WorkspaceActionRequestDto,
@@ -42,10 +48,16 @@ export class StorageController {
   ) {}
 
   @Post('presigned-url')
-  @UseGuards(JwtAuthGuard, RequireActiveLicenseGuard)
+  @UseGuards(JwtAuthGuard, RequireStorageQuotaGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Generate S3/MinIO presigned upload URL for direct client upload' })
+  @ApiOperation({
+    summary: 'Generate Cloudflare R2 / S3 presigned upload URL with quota enforcement',
+  })
   @ApiResponse({ status: 201, description: 'Presigned URL generated successfully' })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden: Storage access not enabled or quota exceeded',
+  })
   async getPresignedUrl(
     @CurrentUser('id') userId: string,
     @Body() dto: PresignedUrlDto,
@@ -56,8 +68,44 @@ export class StorageController {
         dto.fileName,
         dto.contentType,
         dto.folder || 'images',
+        dto.fileSize,
       ),
     );
+  }
+
+  @Post('confirm-upload')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Confirm completed direct upload to Cloudflare R2 and update storage quota',
+  })
+  @ApiResponse({ status: 200, description: 'Upload confirmed and storage file recorded' })
+  async confirmUpload(
+    @CurrentUser('id') userId: string,
+    @Body() dto: ConfirmUploadDto,
+  ): Promise<StorageFileDto> {
+    return this.commandBus.execute(new ConfirmUploadCommand(userId, dto));
+  }
+
+  @Delete('files/:id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Delete file from Cloudflare R2 and release storage quota' })
+  @ApiResponse({ status: 200, description: 'File deleted and quota released' })
+  async deleteFile(
+    @CurrentUser('id') userId: string,
+    @Param('id') fileId: string,
+  ): Promise<{ success: boolean; freedBytes: number }> {
+    return this.commandBus.execute(new DeleteStorageFileCommand(userId, fileId));
+  }
+
+  @Get('quota')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get current user cloud storage quota limits and disk usage' })
+  @ApiResponse({ status: 200, description: 'Storage quota stats returned' })
+  async getStorageQuota(@CurrentUser('id') userId: string): Promise<StorageQuotaDto> {
+    return this.queryBus.execute(new GetStorageQuotaQuery(userId));
   }
 
   @Get('workspace/default-path')

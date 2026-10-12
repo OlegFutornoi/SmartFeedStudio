@@ -47,6 +47,7 @@ export class UserCreatedEventHandler implements IEventHandler<UserCreatedEvent> 
       const hasWhiteLabel = dbPlan ? dbPlan.hasWhiteLabel : limits.hasWhiteLabel;
       const hasSso = dbPlan ? dbPlan.hasSso : limits.hasSso;
       const hasAuditLog = dbPlan ? dbPlan.hasAuditLog : limits.hasAuditLog;
+      const maxStorageGb = dbPlan?.maxStorageGb ? Number(dbPlan.maxStorageGb) : 0;
       const tariffPlanId = dbPlan ? dbPlan.id : null;
 
       // Trial duration for new registrations: 7 days default (or dbPlan.durationDays if customized by admin)
@@ -73,6 +74,7 @@ export class UserCreatedEventHandler implements IEventHandler<UserCreatedEvent> 
           hasWhiteLabel,
           hasSso,
           hasAuditLog,
+          maxStorageGb,
           isActive: true,
           expiresAt,
         },

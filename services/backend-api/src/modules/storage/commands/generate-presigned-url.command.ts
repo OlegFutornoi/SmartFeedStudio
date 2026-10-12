@@ -6,5 +6,6 @@ export class GeneratePresignedUploadUrlCommand implements ICommand {
     public readonly fileName: string,
     public readonly contentType: string,
     public readonly folder: string = 'images',
+    public readonly fileSize?: number,
   ) {}
 }

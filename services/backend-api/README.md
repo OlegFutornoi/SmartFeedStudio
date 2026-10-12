@@ -99,11 +99,14 @@ Central REST API for SmartFeed Studio built with **NestJS 11** + **CQRS** + **Pr
 | `PATCH`  | `/api/navigation/:id`     | Update label, path, icon, roles, plan, visibility            | `Bearer (Admin)` |
 | `DELETE` | `/api/navigation/:id`     | Delete dynamic navigation item                               | `Bearer (Admin)` |
 
-### Storage
+### Storage & Cloudflare R2 Cloud Storage
 
-| Method | Endpoint                     | Description                      | Auth     |
-| :----- | :--------------------------- | :------------------------------- | :------- |
-| `POST` | `/api/storage/presigned-url` | Generate S3 presigned upload URL | `Bearer` |
+| Method   | Endpoint                      | Description                                                                    | Auth     |
+| :------- | :---------------------------- | :----------------------------------------------------------------------------- | :------- |
+| `POST`   | `/api/storage/presigned-url`  | Generate Cloudflare R2 / S3 presigned upload URL with quota enforcement        | `Bearer` |
+| `POST`   | `/api/storage/confirm-upload` | Confirm direct upload to Cloudflare R2 and atomically increment storage quota  | `Bearer` |
+| `DELETE` | `/api/storage/files/:id`      | Delete file from Cloudflare R2, remove DB record, and release storage quota    | `Bearer` |
+| `GET`    | `/api/storage/quota`          | Get current user cloud storage quota limits, disk usage, and plan capabilities | `Bearer` |
 
 ---
 

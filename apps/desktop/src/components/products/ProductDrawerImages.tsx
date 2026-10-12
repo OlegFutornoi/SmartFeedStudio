@@ -32,7 +32,7 @@ export const ProductDrawerImages: React.FC<ProductDrawerImagesProps> = ({
           <Images className="h-3.5 w-3.5 text-primary" />
           {t('catalogs:productImages')} ({images.length})
         </span>
-        {images.length > 0 && (
+        {images.length > 0 ? (
           <div className="flex items-center gap-2">
             <Button
               type="button"
@@ -56,6 +56,17 @@ export const ProductDrawerImages: React.FC<ProductDrawerImagesProps> = ({
               <Trash2 className="h-3.5 w-3.5" />
             </Button>
           </div>
+        ) : (
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            data-testid="drawer-add-photo-btn"
+            onClick={onOpenGallery}
+            className="h-6 text-[11px] px-2 text-primary hover:text-primary gap-1"
+          >
+            <span>{t('catalogs:viewFullGallery')}</span>
+          </Button>
         )}
       </div>
 

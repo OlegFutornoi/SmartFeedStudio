@@ -61,6 +61,7 @@ export class SelectTariffPlanHandler implements ICommandHandler<
       const hasWhiteLabel = dbPlan.hasWhiteLabel ?? fallbackLimits.hasWhiteLabel;
       const hasSso = dbPlan.hasSso ?? fallbackLimits.hasSso;
       const hasAuditLog = dbPlan.hasAuditLog ?? fallbackLimits.hasAuditLog;
+      const maxStorageGb = dbPlan.maxStorageGb ? Number(dbPlan.maxStorageGb) : 0;
 
       const durationDays =
         billingInterval === 'yearly' && Number(dbPlan.priceYearly || 0) > 0
@@ -131,6 +132,7 @@ export class SelectTariffPlanHandler implements ICommandHandler<
             hasWhiteLabel,
             hasSso,
             hasAuditLog,
+            maxStorageGb,
             isActive: true,
             expiresAt,
           },

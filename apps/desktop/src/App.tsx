@@ -92,6 +92,7 @@ export default function App() {
                 </FeatureTeaserGate>
               }
             />
+            <Route path="/cloud" element={<Navigate to="/cloud-sync" replace />} />
             <Route path="/plans" element={<PlansPage />} />
             <Route
               path="/team"

@@ -25,7 +25,7 @@ Whenever invoked or assigned any frontend, UI, styling, localization, or Playwri
 
 3. **Stage 3: UI/UX Architecture & Theme Harmony**
    - **Skills**: `ui-ux-pro-max`, `emil-design-eng`, `image`.
-   - **How used**: Use official `shadcn/ui` components with `cn()` utility. Enforce 100% theme tokens (`--background`, `--card`, `--primary`, `--border`). Zero hardcoded palette colors (`purple-*`, `violet-*`, `pink-*`). Enforce **100% Solid Sticky Headers** (`thead.sticky.top-0` and dialog headers must have solid `bg-card`/`bg-background`). Eliminate duplicate CTA buttons across toolbar and empty state.
+   - **How used**: **Mandatory Official shadcn Installation**: Once the required UI primitives are identified (progress, dialog, tooltip, tabs, select, etc.), the agent **MUST ALWAYS install them via official CLI (`npx shadcn@latest add <component> -y`)**, NEVER write base UI primitives from scratch. Maintain the registry inventory in `apps/desktop/src/components/ui/COMPONENTS.md`. Enforce 100% theme tokens (`--background`, `--card`, `--primary`, `--border`). Zero hardcoded palette colors (`purple-*`, `violet-*`, `pink-*`). Enforce **100% Solid Sticky Headers** (`thead.sticky.top-0` and dialog headers must have solid `bg-card`/`bg-background`). Eliminate duplicate CTA buttons across toolbar and empty state.
 
 4. **Stage 4: Automated UI Testing (Playwright TDD RED)**
    - **Skills**: `playwright-automation`, `mock-real-parity`, `doubt-driven-development`.

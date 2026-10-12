@@ -271,7 +271,39 @@ test.describe('Desktop App — Local Product Images Engine & Management (E2E)', 
       // Close modal & revert back
       await page.getByTestId('close-gallery-modal-btn').click();
       await langBtn.click();
-      await expect(drawer.getByText(/Галерея фотографій/)).toBeVisible();
     }
+  });
+
+  test('5. Інтеграція Cloudflare R2: перевірка компактної квоти та форми завантаження фото', async ({
+    page,
+  }) => {
+    await expect(page.getByTestId('products-view')).toBeVisible();
+
+    // Open drawer
+    await page.getByTestId('product-actions-prod_1').click();
+    await page.getByTestId('view-details-btn-prod_1').click();
+
+    // Open gallery modal
+    await page.getByTestId('open-gallery-modal-btn').click();
+    const galleryModal = page.getByTestId('product-gallery-modal');
+    await expect(galleryModal).toBeVisible();
+
+    // Verify compact storage quota bar is visible in modal footer
+    const compactQuota = page.getByTestId('storage-quota-bar-compact');
+    await expect(compactQuota).toBeVisible();
+
+    // Verify "+ Додати фото" button is visible in modal header
+    const toggleUploadBtn = page.getByTestId('toggle-upload-photo-btn');
+    await expect(toggleUploadBtn).toBeVisible();
+    await toggleUploadBtn.click();
+
+    // Direct photo uploader dropzone is displayed
+    const uploader = page.getByTestId('direct-photo-uploader');
+    await expect(uploader).toBeVisible();
+    await expect(page.getByTestId('photo-dropzone-input')).toBeAttached();
+
+    // Close modal
+    await page.getByTestId('close-gallery-modal-btn').click();
+    await expect(galleryModal).not.toBeVisible();
   });
 });

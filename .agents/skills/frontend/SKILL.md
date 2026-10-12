@@ -73,6 +73,7 @@ A comprehensive, full-cycle frontend engineering **master skill** for SmartFeed 
 9. **Architecture & Reliability > Speed ("Working" is Not Enough)**: Correct modular design from day one. Never write code to "just make it work" with quick hacks. Analyze deeply and pick the most robust, performant pattern.
 10. **Upfront Research via `context7` & MCPs**: Before implementing features or designing architecture, refresh library APIs and official docs via `context7` (`resolve-library-id`, `query-docs`) and `shadcn` MCP.
 11. **Strict Zero Plan Dumping in Chat**: Write all detailed plans into `plans/active/<feature>.md`. Chat responses must contain ONLY a concise 1-2 sentence summary, status, and clickable file link `[План](file:///...)`.
+12. **Mandatory Official shadcn Installation & Registry Inventory**: After compiling the list of required components, the agent **MUST ALWAYS install them directly into the project via official CLI (`npx shadcn@latest add <component> -y`)**, NEVER write base UI primitives from scratch. Maintain an up-to-date registry of installed components in `src/components/ui/COMPONENTS.md`.
 
 ---
 

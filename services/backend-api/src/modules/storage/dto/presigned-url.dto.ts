@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsInt, IsNotEmpty, IsOptional, IsString, Max, Min } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class PresignedUrlDto {
@@ -16,4 +16,11 @@ export class PresignedUrlDto {
   @IsString()
   @IsOptional()
   folder?: string;
+
+  @ApiPropertyOptional({ description: 'Expected file size in bytes', example: 1048576 })
+  @IsInt()
+  @Min(1)
+  @Max(524288000)
+  @IsOptional()
+  fileSize?: number;
 }

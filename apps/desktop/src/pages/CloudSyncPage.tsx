@@ -1,10 +1,11 @@
-import { HardDrive, ShieldCheck, ArrowUpCircle, History } from 'lucide-react';
+import { ShieldCheck, ArrowUpCircle, History } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useTranslation } from '@/i18n';
 import { useLicense } from '@/hooks/useLicense';
 import { ExpiredPlanBlocker } from '@/components/layout/ExpiredPlanBlocker';
+import { StorageQuotaBar } from '@/components/storage/StorageQuotaBar';
 
 export function CloudSyncPage() {
   const { t } = useTranslation(['cloud', 'common']);
@@ -17,33 +18,27 @@ export function CloudSyncPage() {
   return (
     <div
       data-testid="cloud-sync-page"
-      className="max-w-6xl mx-auto space-y-4 animate-in fade-in duration-300"
+      className="max-w-6xl mx-auto space-y-5 animate-in fade-in duration-300"
     >
       {/* Top Action Toolbar */}
-      <div className="flex items-center justify-end">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-sm font-semibold text-foreground">{t('cloud:title')}</h2>
+          <p className="text-xs text-muted-foreground mt-0.5">
+            Cloudflare R2 Storage & Automated Cloud Snapshots
+          </p>
+        </div>
         <Button size="sm" className="gap-1.5 text-xs h-8 shadow-xs">
           <ArrowUpCircle className="h-3.5 w-3.5" />
           <span>{t('cloud:createSnapshot')}</span>
         </Button>
       </div>
 
-      {/* Cloud Status Cards */}
-      <div className="grid gap-4 sm:grid-cols-3">
-        <Card className="border-border/80 bg-card shadow-xs transition-all hover:border-border">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">
-              {t('cloud:storageUsage')}
-            </CardTitle>
-            <HardDrive className="size-4 text-primary" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold tracking-tight tabular-nums text-foreground">
-              1.4 GB
-            </div>
-            <p className="text-xs text-muted-foreground mt-1">S3 Bucket: `smartfeed-storage`</p>
-          </CardContent>
-        </Card>
+      {/* Live Cloudflare R2 Quota Widget */}
+      <StorageQuotaBar variant="full" />
 
+      {/* Cloud Status Cards */}
+      <div className="grid gap-4 sm:grid-cols-2">
         <Card className="border-border/80 bg-card shadow-xs transition-all hover:border-border">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">

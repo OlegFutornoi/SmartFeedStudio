@@ -42,6 +42,7 @@ export class CreateLicenseHandler implements ICommandHandler<CreateLicenseComman
     const hasWhiteLabel = dbPlan ? dbPlan.hasWhiteLabel : fallbackLimits.hasWhiteLabel;
     const hasSso = dbPlan ? dbPlan.hasSso : fallbackLimits.hasSso;
     const hasAuditLog = dbPlan ? dbPlan.hasAuditLog : fallbackLimits.hasAuditLog;
+    const maxStorageGb = dbPlan?.maxStorageGb ? Number(dbPlan.maxStorageGb) : 0;
     const tariffPlanId = dbPlan ? dbPlan.id : null;
 
     const randomBytes = crypto.randomBytes(6).toString('hex').toUpperCase();
@@ -78,6 +79,7 @@ export class CreateLicenseHandler implements ICommandHandler<CreateLicenseComman
         hasWhiteLabel,
         hasSso,
         hasAuditLog,
+        maxStorageGb,
         isActive: true,
         expiresAt: finalExpiresAt,
       },

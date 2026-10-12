@@ -61,6 +61,8 @@ export async function cleanDatabase(
       'short-pw+',
       'no-pw+',
       'duration.test@',
+      'storagetest-',
+      'storage.test+',
     ],
     organizationIds = [],
     organizationNames = [],
@@ -96,8 +98,11 @@ export async function cleanDatabase(
 
     const allUserIds = Array.from(new Set([...userIds, ...matchedUsers.map((u) => u.id)]));
 
-    // 2. Cascade cleanup: Snapshots & Payment Transactions
+    // 2. Cascade cleanup: StorageFiles, Snapshots & Payment Transactions
     if (allUserIds.length > 0) {
+      await prisma.storageFile.deleteMany({
+        where: { userId: { in: allUserIds } },
+      });
       await prisma.snapshot.deleteMany({
         where: { userId: { in: allUserIds } },
       });

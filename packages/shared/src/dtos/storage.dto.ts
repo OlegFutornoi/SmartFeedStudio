@@ -4,6 +4,7 @@ export const PresignedUrlRequestDtoSchema = z.object({
   fileName: z.string().min(1, 'File name is required'),
   contentType: z.string().min(1, 'Content type is required'),
   folder: z.string().optional().default('images'),
+  fileSize: z.number().int().positive().max(524288000).optional(),
 });
 
 export type PresignedUrlRequestDto = z.infer<typeof PresignedUrlRequestDtoSchema>;
@@ -88,3 +89,62 @@ export const CreateLocalBackupResultDtoSchema = z.object({
 });
 
 export type CreateLocalBackupResultDto = z.infer<typeof CreateLocalBackupResultDtoSchema>;
+
+export enum StorageFileCategory {
+  PRODUCT_IMAGE = 'PRODUCT_IMAGE',
+  FEED_CATALOG = 'FEED_CATALOG',
+  SYSTEM_BACKUP = 'SYSTEM_BACKUP',
+  EXPORT_ARCHIVE = 'EXPORT_ARCHIVE',
+}
+
+export enum StorageFileStatus {
+  PENDING_UPLOAD = 'PENDING_UPLOAD',
+  ACTIVE = 'ACTIVE',
+  DELETED = 'DELETED',
+}
+
+export const StorageFileDtoSchema = z.object({
+  id: z.string(),
+  userId: z.string(),
+  organizationId: z.string().nullable().optional(),
+  category: z.nativeEnum(StorageFileCategory),
+  status: z.nativeEnum(StorageFileStatus),
+  bucketName: z.string(),
+  s3Key: z.string(),
+  publicUrl: z.string().url(),
+  originalName: z.string(),
+  mimeType: z.string(),
+  sizeBytes: z.number().int().nonnegative(),
+  checksumSha256: z.string().nullable().optional(),
+  width: z.number().int().nullable().optional(),
+  height: z.number().int().nullable().optional(),
+  refCount: z.number().int().default(1),
+  expiresAt: z.string().nullable().optional(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+});
+
+export type StorageFileDto = z.infer<typeof StorageFileDtoSchema>;
+
+export const ConfirmUploadRequestDtoSchema = z.object({
+  s3Key: z.string().min(1, 'S3 key is required'),
+  category: z.nativeEnum(StorageFileCategory).default(StorageFileCategory.PRODUCT_IMAGE),
+  originalName: z.string().optional(),
+  checksumSha256: z.string().optional(),
+  width: z.number().int().optional(),
+  height: z.number().int().optional(),
+});
+
+export type ConfirmUploadRequestDto = z.infer<typeof ConfirmUploadRequestDtoSchema>;
+
+export const StorageQuotaDtoSchema = z.object({
+  canCloudStorage: z.boolean(),
+  maxStorageGb: z.number(),
+  usedStorageBytes: z.number(),
+  availableBytes: z.number(),
+  usedPercentage: z.number(),
+  totalFilesCount: z.number(),
+  planType: z.string(),
+});
+
+export type StorageQuotaDto = z.infer<typeof StorageQuotaDtoSchema>;
