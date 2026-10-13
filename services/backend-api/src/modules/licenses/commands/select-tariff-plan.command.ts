@@ -5,5 +5,7 @@ export class SelectTariffPlanCommand {
     public readonly userId: string,
     public readonly planCode: string,
     public readonly billingInterval: BillingInterval = 'monthly',
+    public readonly paymentTransactionId?: string,
+    public readonly isInternalSystemCall: boolean = false,
   ) {}
 }

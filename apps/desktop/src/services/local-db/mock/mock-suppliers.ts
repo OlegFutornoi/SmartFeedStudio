@@ -1,24 +1,35 @@
-import type {
+import {
   SupplierDto,
   CreateSupplierDto,
   UpdateSupplierDto,
   SupplierPricingRuleDto,
   CreateSupplierPricingRuleDto,
   UpdateSupplierPricingRuleDto,
+  CurrencyCode,
+  ExchangeRateMode,
+  PriceRoundingMode,
 } from '@smartfeed/shared';
 import type { MockDbState } from '@/services/local-db/mock/mock-state';
 import { syncCounters } from '@/services/local-db/mock/mock-state';
+import { ensureSupplierCategories } from '@/services/local-db/mock/mock-supplier-categories';
 
 export function getSuppliers(state: MockDbState, search?: string): SupplierDto[] {
   let result = state.suppliers.map((s) => {
     const productsCount = state.products.filter((p) => p.supplierId === s.id).length;
     const activeFeedsCount = (state.feedSources.get(s.id) || []).length;
+    const cats = ensureSupplierCategories(state, s.id);
+    const categoriesCount = cats.length;
+    const activeCategoriesCount = cats.filter((c) => c.isActive).length;
+
     return {
       ...s,
       productsCount,
       activeFeedsCount,
+      categoriesCount,
+      activeCategoriesCount,
     };
   });
+
   if (search) {
     const q = search.toLowerCase();
     result = result.filter(
@@ -33,7 +44,17 @@ export function getSupplierById(state: MockDbState, id: string): SupplierDto | n
   if (!s) return null;
   const productsCount = state.products.filter((p) => p.supplierId === s.id).length;
   const activeFeedsCount = (state.feedSources.get(s.id) || []).length;
-  return { ...s, productsCount, activeFeedsCount };
+  const cats = ensureSupplierCategories(state, s.id);
+  const categoriesCount = cats.length;
+  const activeCategoriesCount = cats.filter((c) => c.isActive).length;
+
+  return {
+    ...s,
+    productsCount,
+    activeFeedsCount,
+    categoriesCount,
+    activeCategoriesCount,
+  };
 }
 
 export function createSupplier(state: MockDbState, payload: CreateSupplierDto): SupplierDto {
@@ -46,16 +67,27 @@ export function createSupplier(state: MockDbState, payload: CreateSupplierDto): 
     contactEmail: payload.contactEmail,
     website: payload.website,
     notes: payload.notes,
+    logoUrl: payload.logoUrl,
+    baseCurrency: payload.baseCurrency || CurrencyCode.UAH,
+    targetCurrency: payload.targetCurrency || CurrencyCode.UAH,
+    exchangeRateMode: payload.exchangeRateMode || ExchangeRateMode.MANUAL,
+    exchangeRate: Number(payload.exchangeRate || 1.0),
+    currencyBufferPercent: Number(payload.currencyBufferPercent || 0),
+    priceRounding: payload.priceRounding || PriceRoundingMode.NONE,
     defaultMarginPercent: Number(payload.defaultMarginPercent || 0),
     defaultFixedMarkup: Number(payload.defaultFixedMarkup || 0),
     isActive: payload.isActive ?? true,
     activeFeedsCount: 0,
     productsCount: 0,
+    categoriesCount: 0,
+    activeCategoriesCount: 0,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
 
   state.suppliers.unshift(newSupplier);
+  ensureSupplierCategories(state, newSupplier.id);
+  syncCounters(state);
   return newSupplier;
 }
 
@@ -73,6 +105,16 @@ export function updateSupplier(
   const updated: SupplierDto = {
     ...current,
     ...payload,
+    baseCurrency: payload.baseCurrency ?? current.baseCurrency,
+    targetCurrency: payload.targetCurrency ?? current.targetCurrency,
+    exchangeRateMode: payload.exchangeRateMode ?? current.exchangeRateMode,
+    exchangeRate:
+      payload.exchangeRate !== undefined ? Number(payload.exchangeRate) : current.exchangeRate,
+    currencyBufferPercent:
+      payload.currencyBufferPercent !== undefined
+        ? Number(payload.currencyBufferPercent)
+        : current.currencyBufferPercent,
+    priceRounding: payload.priceRounding ?? current.priceRounding,
     defaultMarginPercent:
       payload.defaultMarginPercent !== undefined
         ? Number(payload.defaultMarginPercent)
@@ -91,13 +133,29 @@ export function deleteSupplier(state: MockDbState, id: string): boolean {
   const initialLen = state.suppliers.length;
   state.suppliers = state.suppliers.filter((s) => s.id !== id);
   state.pricingRules.delete(id);
+  state.supplierCategories.delete(id);
   state.feedSources.delete(id);
   state.products = state.products.filter((p) => p.supplierId !== id);
 
   syncCounters(state);
-
   return state.suppliers.length < initialLen;
 }
+
+// ---------------------------------------------------------------------------
+// Supplier Categories Management (Re-exported from mock-supplier-categories)
+// ---------------------------------------------------------------------------
+
+export {
+  ensureSupplierCategories,
+  getSupplierCategories,
+  toggleSupplierCategory,
+  batchToggleSupplierCategories,
+  updateSupplierCategoryRule,
+} from '@/services/local-db/mock/mock-supplier-categories';
+
+// ---------------------------------------------------------------------------
+// Pricing Rules Management
+// ---------------------------------------------------------------------------
 
 export function getPricingRules(state: MockDbState, supplierId: string): SupplierPricingRuleDto[] {
   return state.pricingRules.get(supplierId) || [];

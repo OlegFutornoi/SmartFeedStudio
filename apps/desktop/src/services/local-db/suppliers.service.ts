@@ -1,4 +1,9 @@
-import type { SupplierDto, CreateSupplierDto, UpdateSupplierDto } from '@smartfeed/shared';
+import type {
+  SupplierDto,
+  CreateSupplierDto,
+  UpdateSupplierDto,
+  SupplierCategoryRuleDto,
+} from '@smartfeed/shared';
 import { invokeLocalDb } from '@/services/local-db/client';
 
 export class LocalSuppliersService {
@@ -20,6 +25,47 @@ export class LocalSuppliersService {
 
   async deleteSupplier(id: string): Promise<boolean> {
     return invokeLocalDb('db_delete_supplier', { id });
+  }
+
+  async getSupplierCategories(
+    supplierId: string,
+    search?: string,
+  ): Promise<SupplierCategoryRuleDto[]> {
+    return invokeLocalDb('db_get_supplier_categories', { supplierId, search });
+  }
+
+  async toggleSupplierCategory(
+    supplierId: string,
+    categoryId: string,
+    isActive: boolean,
+  ): Promise<SupplierCategoryRuleDto> {
+    return invokeLocalDb('db_toggle_supplier_category', { supplierId, categoryId, isActive });
+  }
+
+  async batchToggleSupplierCategories(
+    supplierId: string,
+    categoryIds: string[],
+    isActive: boolean,
+  ): Promise<{ updatedCount: number }> {
+    return invokeLocalDb('db_batch_toggle_supplier_categories', {
+      supplierId,
+      categoryIds,
+      isActive,
+    });
+  }
+
+  async updateSupplierCategoryRule(
+    supplierId: string,
+    categoryId: string,
+    marginPercent?: number | null,
+    fixedMarkup?: number | null,
+  ): Promise<SupplierCategoryRuleDto> {
+    return invokeLocalDb('db_update_supplier_category_rule', {
+      supplierId,
+      categoryId,
+      marginPercent,
+      fixedMarkup,
+    });
   }
 }
 

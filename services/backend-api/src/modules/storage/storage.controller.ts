@@ -42,6 +42,7 @@ import {
   OpenFolderRequestDto,
   WorkspaceActionRequestDto,
   MigrateWorkspaceRequestDto,
+  GetStorageStatsQueryDto,
 } from '@/modules/storage/dto';
 
 export * from '@/modules/storage/dto';
@@ -177,16 +178,16 @@ export class StorageController {
   })
   async getStorageStats(
     @CurrentUser('id') userId: string,
-    @Query('path') workspacePath?: string,
+    @Query() query: GetStorageStatsQueryDto,
   ): Promise<StorageStatsDto> {
-    return this.queryBus.execute(new GetStorageStatsQuery(userId, workspacePath));
+    return this.queryBus.execute(new GetStorageStatsQuery(userId, query.path));
   }
 
   @Post('workspace/open')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Open workspace folder in native OS file manager (Finder / Explorer)' })
-  async openFolder(@Body() dto: OpenFolderRequestDto): Promise<{ success: boolean }> {
+  async openFolder(@Body() dto: OpenFolderRequestDto): Promise<{ success: boolean; path: string }> {
     return this.commandBus.execute(new OpenWorkspaceFolderCommand(dto.path));
   }
 

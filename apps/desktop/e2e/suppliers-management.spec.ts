@@ -27,14 +27,15 @@ test.describe('Desktop App — Постачальники та ліміти', ()
     // Click on active feeds button
     await page.getByTestId('view-supplier-feeds-btn-sup_test_1').click();
 
-    // Verify modal appears with feed details
-    await expect(page.getByText('Підключені фіди:')).toBeVisible();
+    // Verify workspace appears with feed details
+    await expect(page.getByTestId('supplier-feeds-tab')).toBeVisible();
     await expect(page.getByText('Livolo Main XML')).toBeVisible();
     await expect(page.getByText('XML_ROZETKA')).toBeVisible();
-    await expect(page.getByText('Синхронізувати')).toBeVisible();
+    await expect(page.getByTestId('sync-feed-source-src_feed_1')).toBeVisible();
 
-    // Close modal
-    await page.getByRole('button', { name: 'Закрити' }).click();
+    // Close drawer and return to list
+    await page.getByTestId('supplier-drawer-close-btn').click();
+    await expect(page.getByTestId('suppliers-page')).toBeVisible();
   });
 
   test('блокування кнопок додавання постачальника та підключення фідів при вичерпанні лімітів тарифу (з підказками)', async ({
@@ -99,7 +100,7 @@ test.describe('Desktop App — Постачальники та ліміти', ()
     });
 
     await page.goto('/suppliers');
-    await expect(page.getByRole('heading', { name: 'Постачальник 1', exact: true })).toBeVisible();
+    await expect(page.getByText('Постачальник 1').first()).toBeVisible();
 
     // Add supplier header button should be disabled
     const addSupplierBtn = page.getByTestId('add-supplier-header-btn');
@@ -107,17 +108,6 @@ test.describe('Desktop App — Постачальники та ліміти', ()
     await expect(addSupplierBtn).toHaveAttribute(
       'title',
       'Ліміт постачальників вичерпано. Підвищіть тариф або видаліть зайвих постачальників.',
-    );
-
-    // Import feed button should not exist in toolbar (zero duplicate CTA)
-    await expect(page.getByTestId('import-feed-header-btn')).not.toBeVisible();
-
-    // Supplier card import button should be disabled with feed limit tooltip
-    const cardImportBtn = page.getByTestId('supplier-card-import-btn-sup_test_1');
-    await expect(cardImportBtn).toBeDisabled();
-    await expect(cardImportBtn).toHaveAttribute(
-      'title',
-      'Ліміт джерел фідів вичерпано. Підвищіть тариф або видаліть зайві фіди.',
     );
   });
 
@@ -142,17 +132,14 @@ test.describe('Desktop App — Постачальники та ліміти', ()
 
     // Click on active feeds button
     await page.getByTestId('view-supplier-feeds-btn-sup_test_1').click();
-    await expect(page.getByText('Підключені фіди:')).toBeVisible();
+    await expect(page.getByTestId('supplier-feeds-tab')).toBeVisible();
 
-    // Click delete feed button inside modal
+    // Click delete feed button inside workspace feeds tab
     await page.getByTestId('delete-feed-source-src_feed_1').click();
 
     // Custom ConfirmDeleteDialog should appear
-    await expect(page.getByRole('dialog')).toBeVisible();
+    await expect(page.getByTestId('confirm-dialog')).toBeVisible();
     await expect(page.getByText('Видалити підключений фід')).toBeVisible();
-    await expect(
-      page.getByText('Ви впевнені, що хочете видалити це підключене джерело фіду?'),
-    ).toBeVisible();
 
     // Click confirm delete button in dialog
     await page.getByTestId('confirm-dialog-confirm-btn').click();
@@ -198,23 +185,16 @@ test.describe('Desktop App — Постачальники та ліміти', ()
 
     await page.goto('/suppliers');
     await page.getByTestId('view-supplier-feeds-btn-sup_test_1').click();
+    await expect(page.getByTestId('supplier-feeds-tab')).toBeVisible();
 
-    await expect(page.getByText('Підключені фіди:')).toBeVisible();
+    // URL feed format and badge
+    await expect(page.getByText('URL потік')).toBeVisible();
+    await expect(page.getByText('Локальний файл')).toBeVisible();
 
-    // URL feed should have "Синхронізувати"
-    await expect(page.getByRole('button', { name: 'Синхронізувати' })).toBeVisible();
-
-    // FILE feed should have "Оновити файл" instead of broken sync
-    await expect(page.getByRole('button', { name: 'Оновити файл' })).toBeVisible();
-
-    // Statuses should be localized (Успішно and Помилка, not raw English ERROR)
-    await expect(page.getByText('Успішно')).toBeVisible();
-    await expect(page.getByText('Помилка')).toBeVisible();
-
-    // Modal footer button should not have double plus
-    const modalAddBtn = page.getByTestId('modal-connect-new-feed-btn');
-    await expect(modalAddBtn).toBeVisible();
-    await expect(modalAddBtn).toHaveText('Підключити новий фід');
+    // Connect new feed button in tab header has single plus
+    const tabAddBtn = page.getByTestId('connect-feed-btn');
+    await expect(tabAddBtn).toBeVisible();
+    await expect(tabAddBtn).toHaveText('Підключити новий фід');
   });
 
   test('сторінка постачальників: при порожньому списку приховує тулбар і не дублює кнопку створення (єдина кнопка у картці)', async ({

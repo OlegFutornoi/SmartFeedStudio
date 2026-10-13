@@ -12,13 +12,15 @@ export class UpdatePaymentSettingsHandler implements ICommandHandler<UpdatePayme
     const { provider, dto } = command;
     const prismaProvider = provider as unknown as PrismaPaymentProvider;
 
+    const isMaskedSecret = Boolean(dto.merchantSecretKey && dto.merchantSecretKey.includes('•'));
+
     const setting = await this.prisma.paymentSetting.upsert({
       where: { provider: prismaProvider },
       update: {
         ...(dto.isEnabled !== undefined ? { isEnabled: dto.isEnabled } : {}),
         ...(dto.isTestMode !== undefined ? { isTestMode: dto.isTestMode } : {}),
         ...(dto.merchantAccount !== undefined ? { merchantAccount: dto.merchantAccount } : {}),
-        ...(dto.merchantSecretKey !== undefined
+        ...(dto.merchantSecretKey !== undefined && !isMaskedSecret
           ? { merchantSecretKey: dto.merchantSecretKey }
           : {}),
         ...(dto.merchantDomain !== undefined ? { merchantDomain: dto.merchantDomain } : {}),
@@ -43,7 +45,10 @@ export class UpdatePaymentSettingsHandler implements ICommandHandler<UpdatePayme
       isEnabled: setting.isEnabled,
       isTestMode: setting.isTestMode,
       merchantAccount: setting.merchantAccount,
-      merchantSecretKey: setting.merchantSecretKey,
+      merchantSecretKey: setting.merchantSecretKey
+        ? `••••••••${setting.merchantSecretKey.slice(-4)}`
+        : null,
+      isSecretConfigured: Boolean(setting.merchantSecretKey),
       merchantDomain: setting.merchantDomain,
       serviceUrl: setting.serviceUrl,
       returnUrl: setting.returnUrl,

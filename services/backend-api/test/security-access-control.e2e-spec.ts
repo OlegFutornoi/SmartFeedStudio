@@ -56,11 +56,23 @@ describe('Security & Access Control (RBAC/ABAC E2E)', () => {
       })
       .expect(201);
 
+    const proTx = await prisma.paymentTransaction.create({
+      data: {
+        orderReference: `ord-sec-pro-${Date.now()}`,
+        userId: ownerRes.body.user.id,
+        amount: 59,
+        currency: 'USD',
+        status: 'APPROVED',
+        planCode: 'PRO',
+        billingInterval: 'MONTHLY',
+      },
+    });
+
     // Upgrade owner to standard PRO plan to allow team seats
     await request(app.getHttpServer())
       .post('/api/licenses/select-plan')
       .set('Authorization', `Bearer ${ownerRes.body.tokens.accessToken}`)
-      .send({ planCode: 'PRO' })
+      .send({ planCode: 'PRO', paymentTransactionId: proTx.id })
       .expect(201);
 
     const userOrgs = await request(app.getHttpServer())

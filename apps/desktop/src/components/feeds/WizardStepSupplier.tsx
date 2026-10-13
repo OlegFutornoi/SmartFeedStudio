@@ -9,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Truck, Plus, Percent, RefreshCw, Layers } from 'lucide-react';
+import { Truck, Plus, Percent, RefreshCw, Layers, AlertCircle } from 'lucide-react';
 import { useTranslation } from '@/i18n';
 
 interface WizardStepSupplierProps {
@@ -21,6 +21,7 @@ interface WizardStepSupplierProps {
   autoUpdateStocks: boolean;
   setAutoUpdateStocks: (val: boolean) => void;
   onOpenCreateSupplier?: () => void;
+  error?: string | null;
 }
 
 export function WizardStepSupplier({
@@ -32,9 +33,9 @@ export function WizardStepSupplier({
   autoUpdateStocks,
   setAutoUpdateStocks,
   onOpenCreateSupplier,
+  error,
 }: WizardStepSupplierProps) {
   const { t } = useTranslation(['suppliers', 'common']);
-
   const selectedSupplier = suppliers.find((s) => s.id === selectedSupplierId);
   const hasMarkup =
     selectedSupplier &&
@@ -43,6 +44,16 @@ export function WizardStepSupplier({
 
   return (
     <div className="space-y-4">
+      {error && (
+        <div
+          data-testid="wizard-supplier-error"
+          className="p-3 rounded-xl bg-destructive/10 border border-destructive/20 text-destructive text-xs flex items-center gap-2 animate-in fade-in duration-150"
+        >
+          <AlertCircle className="size-4 shrink-0" />
+          <span>{error}</span>
+        </div>
+      )}
+
       {/* Supplier Select / Empty State */}
       <div className="space-y-2">
         <div className="flex items-center justify-between">
@@ -100,9 +111,7 @@ export function WizardStepSupplier({
               >
                 <Plus className="size-3.5" />
                 <span>
-                  {t('suppliers:quickCreateSupplier', {
-                    defaultValue: 'Створити постачальника',
-                  })}
+                  {t('suppliers:quickCreateSupplier', { defaultValue: 'Створити постачальника' })}
                 </span>
               </Button>
             )}
@@ -205,9 +214,7 @@ export function WizardStepSupplier({
             <div className="text-xs">
               <div className="font-medium text-foreground flex items-center gap-1.5">
                 <RefreshCw className="size-3 text-primary" />
-                {t('suppliers:autoUpdatePrices', {
-                  defaultValue: 'Автоматично оновлювати ціни',
-                })}
+                {t('suppliers:autoUpdatePrices', { defaultValue: 'Автоматично оновлювати ціни' })}
               </div>
               <div className="text-[11px] text-muted-foreground">
                 {t('suppliers:autoUpdatePricesHint', {

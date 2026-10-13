@@ -66,10 +66,13 @@ If you can't name the trust boundaries for a feature, you're not ready to secure
 
 - **Never commit secrets** to version control (API keys, passwords, tokens)
 - **Never log sensitive data** (passwords, tokens, full credit card numbers)
+- **Never expose unmasked secrets in REST responses** (`merchantSecretKey` must be masked `••••••••` + last 4 chars or boolean)
+- **Never allow plan/tier upgrades to commercial plans** without verified payment transaction (`APPROVED`) or admin RBAC (OWASP API4)
+- **Never spawn desktop GUI tools** (`open`, `explorer`, `xdg-open`) inside headless backend API server (CWE-400)
+- **Never decouple SSRF DNS lookup from HTTP fetch** without IP pinning (protects against DNS Rebinding TOCTOU)
 - **Never trust client-side validation** as a security boundary
 - **Never disable security headers** for convenience
 - **Never use `eval()` or `innerHTML`** with user-provided data
-- **Never store sessions in client-accessible storage** (localStorage for auth tokens)
 - **Never expose stack traces** or internal error details to users
 
 ## Hardening Controls

@@ -164,7 +164,7 @@ test.describe('Desktop App — Динамічне бічне меню та ма�
 
     await expect(page).toHaveURL('/ai-enrichment');
     await expect(page.getByTestId('ai-enrichment-page')).toBeVisible();
-    await expect(page.getByRole('heading', { name: 'AI Асистент контенту' })).toBeVisible();
+    await expect(page.getByTestId('ai-header-title')).toBeVisible();
 
     // 5. Перехід на "Хмарна синхронізація" (/cloud-sync)
     const cloudLink = sidebar.getByRole('link', { name: /Хмарна синхронізація/i });
@@ -293,5 +293,45 @@ test.describe('Desktop App — Динамічне бічне меню та ма�
     await page.getByTestId('header-profile-link').click();
     await expect(page).toHaveURL('/profile');
     await expect(page.getByTestId('profile-page')).toBeVisible();
+  });
+
+  test('перевірка навігації на /ai-enrichment: захист від зациклення запитів (Zero Network Loop & Single Request)', async ({
+    page,
+  }) => {
+    let aiGuideRequestsCount = 0;
+    const failedUrls: string[] = [];
+
+    page.on('request', (req) => {
+      if (req.url().includes('/api/page-guides/ai-enrichment')) {
+        aiGuideRequestsCount++;
+      }
+    });
+
+    page.on('response', (res) => {
+      if (res.status() >= 400 && !res.url().includes('favicon')) {
+        failedUrls.push(`${res.status()} ${res.url()}`);
+      }
+    });
+
+    await page.goto('/auth/login');
+    await page.getByTestId('email-input').fill('client@smartfeed.studio');
+    await page.getByTestId('password-input').fill('Password123!');
+    await page.getByTestId('login-button').click();
+    await expect(page.getByTestId('home-page')).toBeVisible();
+
+    const sidebar = page.getByTestId('desktop-sidebar');
+    const aiLink = sidebar.getByRole('link', { name: /AI Асистент/i });
+    await aiLink.click();
+
+    await expect(page).toHaveURL('/ai-enrichment');
+    await expect(page.getByTestId('ai-enrichment-page')).toBeVisible();
+
+    // Пауза для перевірки, що рендери не генерують лавину запитів
+    await page.waitForTimeout(1000);
+
+    // Запит до page-guides для ai-enrichment викликається рівно 1 раз (повна відсутність безкінечного циклу)
+    expect(aiGuideRequestsCount).toBe(1);
+    // Відсутність 404 помилок для ai-enrichment
+    expect(failedUrls.filter((u) => u.includes('ai-enrichment'))).toHaveLength(0);
   });
 });

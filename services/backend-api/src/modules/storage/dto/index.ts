@@ -6,3 +6,4 @@ export * from '@/modules/storage/dto/migrate-workspace.dto';
 export * from '@/modules/storage/dto/confirm-upload.dto';
 export * from '@/modules/storage/dto/storage-file-list.dto';
 export * from '@/modules/storage/dto/cleanup-orphans.dto';
+export * from '@/modules/storage/dto/get-storage-stats-query.dto';

@@ -1,7 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
-import { execFile } from 'child_process';
 import { BadRequestException } from '@nestjs/common';
 import { WorkspaceInfoDto } from '@smartfeed/shared';
 
@@ -199,26 +198,15 @@ export function readWorkspaceInfo(targetPath?: string): WorkspaceInfoDto | null 
   return null;
 }
 
-export function openInOsFileManager(targetPath: string): void {
+export function openInOsFileManager(targetPath: string): { success: boolean; path: string } {
   const resolved = resolveWorkspacePath(targetPath);
   if (!fs.existsSync(resolved)) {
     fs.mkdirSync(resolved, { recursive: true });
   }
 
-  const platform = os.platform();
-  const handleError = (err: Error | null) => {
-    if (err) {
-      console.warn(`[Workspace] Failed to open in file manager: ${err.message}`);
-    }
-  };
-
-  if (platform === 'darwin') {
-    execFile('open', [resolved], handleError);
-  } else if (platform === 'win32') {
-    execFile('explorer', [resolved], handleError);
-  } else {
-    execFile('xdg-open', [resolved], handleError);
-  }
+  // Zero server-side desktop GUI spawns (CWE-400):
+  // Return the resolved path so the native client opens it via Tauri IPC (@tauri-apps/plugin-opener).
+  return { success: true, path: resolved };
 }
 
 export function migrateWorkspaceOnDisk(

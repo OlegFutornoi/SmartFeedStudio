@@ -22,6 +22,7 @@ import type {
   LocalProductImageDto,
   UpdateProductImageOrderDto,
   DeleteProductImageResultDto,
+  SupplierCategoryRuleDto,
 } from '@smartfeed/shared';
 
 export interface LocalDbCommandMap {
@@ -63,6 +64,29 @@ export interface LocalDbCommandMap {
   db_create_supplier: { args: { payload: CreateSupplierDto }; result: SupplierDto };
   db_update_supplier: { args: { id: string; payload: UpdateSupplierDto }; result: SupplierDto };
   db_delete_supplier: { args: { id: string }; result: boolean };
+
+  // Supplier Categories
+  db_get_supplier_categories: {
+    args: { supplierId: string; search?: string };
+    result: SupplierCategoryRuleDto[];
+  };
+  db_toggle_supplier_category: {
+    args: { supplierId: string; categoryId: string; isActive: boolean };
+    result: SupplierCategoryRuleDto;
+  };
+  db_batch_toggle_supplier_categories: {
+    args: { supplierId: string; categoryIds: string[]; isActive: boolean };
+    result: { updatedCount: number };
+  };
+  db_update_supplier_category_rule: {
+    args: {
+      supplierId: string;
+      categoryId: string;
+      marginPercent?: number | null;
+      fixedMarkup?: number | null;
+    };
+    result: SupplierCategoryRuleDto;
+  };
 
   // Pricing Rules
   db_get_pricing_rules: { args: { supplierId: string }; result: SupplierPricingRuleDto[] };

@@ -76,9 +76,10 @@ export function useImportFeedWizard({
     if (cats.length === 0) return analysis.totalDetected;
     if (selectedCategoryIds.length === 0) return 0;
     const selectedSet = new Set(selectedCategoryIds);
-    return cats
+    const sum = cats
       .filter((c) => selectedSet.has(c.id))
-      .reduce((sum, c) => sum + (c.productCount || 0), 0);
+      .reduce((acc, c) => acc + (c.productCount || 0), 0);
+    return sum > 0 ? sum : analysis.totalDetected;
   }, [analysis, selectedCategoryIds]);
 
   const isQuotaExceeded = !isUnlimited && totalSelectedSkus > remainingQuota;
@@ -139,6 +140,9 @@ export function useImportFeedWizard({
   };
 
   const handleClose = () => {
+    if (importResult) {
+      onSuccess?.();
+    }
     handleReset();
     onClose();
   };
@@ -149,19 +153,23 @@ export function useImportFeedWizard({
     setAnalysis(null);
     try {
       let result: FeedAnalysisResult;
-      const targetUrl = customUrl ?? feedUrl;
+      let targetUrl = (customUrl ?? feedUrl).trim();
       const targetContent = customContent ?? fileContent;
 
       if (sourceType === 'URL') {
-        if (!targetUrl.trim()) {
+        if (!targetUrl) {
           setAnalysisError(
             t('suppliers:enterFeedUrl', { defaultValue: 'Введіть посилання на фід' }),
           );
           setIsAnalyzing(false);
           return false;
         }
+        if (!targetUrl.startsWith('http://') && !targetUrl.startsWith('https://')) {
+          targetUrl = `https://${targetUrl}`;
+          setFeedUrl(targetUrl);
+        }
         result = await analyzeFeedUrl(
-          targetUrl.trim(),
+          targetUrl,
           selectedSupplierId || undefined,
           token || undefined,
         );
@@ -202,7 +210,15 @@ export function useImportFeedWizard({
   };
 
   const handleNextFromSource = async () => {
-    if (isFeedLimitReached) return;
+    if (isFeedLimitReached) {
+      setAnalysisError(
+        t('suppliers:feedLimitReachedDesc', {
+          defaultValue:
+            'Ваш поточний тариф дозволяє підключити обмежену кількість фідів. Щоб імпортувати новий фід, оновіть тариф або видаліть існуюче джерело.',
+        }),
+      );
+      return;
+    }
     if (!analysis) {
       const ok = await performAnalysis();
       if (!ok) return;
@@ -212,10 +228,18 @@ export function useImportFeedWizard({
 
   const handleNextFromSupplier = async () => {
     if (!selectedSupplierId) {
-      setAnalysisError('Оберіть постачальника для привʼязки фіду');
+      setAnalysisError(
+        t('suppliers:selectSupplierError', {
+          defaultValue: 'Оберіть постачальника для привʼязки фіду',
+        }),
+      );
       return;
     }
-    await performAnalysis();
+    setAnalysisError(null);
+    if (!analysis) {
+      const ok = await performAnalysis();
+      if (!ok) return;
+    }
     setStep('PREVIEW');
   };
 
@@ -259,7 +283,6 @@ export function useImportFeedWizard({
 
       refreshQuotas();
       emitDataSync(['suppliers', 'feeds', 'products', 'quotas']);
-      onSuccess?.();
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Помилка під час запуску імпорту товарів';
       setImportError(msg);

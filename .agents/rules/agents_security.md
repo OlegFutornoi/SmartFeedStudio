@@ -26,19 +26,19 @@ Whenever invoked or assigned any vulnerability scanning, penetration testing, se
 
 3. **Stage 3: White-Box Static Audit & Secret Leak Detection**
    - **Skills**: `secret-serialization`, `security-and-hardening`, `tauri-v2-security-and-ipc`.
-   - **How used**: Inspect serialization sinks (`JSON.stringify`, logs, Sentry spans, DTO responses) to block password/hash/token exposure. Verify zero CWE-78 (command injection via `exec`) using `execFile` exclusively. Check OS Keychain and SQLite SQLCipher key handling.
+   - **How used**: Inspect serialization sinks (`JSON.stringify`, logs, Sentry spans, DTO responses) to block password/hash/token exposure. **Secret Masking Audit**: inspect all GET settings endpoints (e.g. `GET /payments/settings`) to ensure `merchantSecretKey` and merchant tokens are NEVER returned unmasked (must be masked `••••••••` or boolean). Verify zero CWE-78 (command injection via `exec`) using `execFile` exclusively. Check that headless server code contains zero OS GUI calls (`open`/`explorer`/`xdg-open`, CWE-400). Check OS Keychain and SQLite SQLCipher key handling.
 
 4. **Stage 4: Black-Box & API Penetration Testing (OWASP Top 10)**
    - **Skills**: `api-security-testing`, `penetration-testing-with-strix`, `web-app-penetration-testing`.
-   - **How used**: Actively probe for BOLA/IDOR across multi-tenant boundaries (user A accessing user B resources). Probe for Mass Assignment (tampering with `role`, `isSuperAdmin`, `organizationId`). Test for CSRF, XSS, SSRF, and authentication bypasses.
+   - **How used**: Actively probe for BOLA/IDOR across multi-tenant boundaries (user A accessing user B resources). **Broken Business Logic Probe (OWASP API4)**: test calling `POST /licenses/select-plan` with paid plan codes (e.g. `ENTERPRISE`, `PRO`) without payment; assert that direct upgrades are blocked with 402/403. Probe for Mass Assignment (tampering with `role`, `isSuperAdmin`, `organizationId`). Test for CSRF, XSS, and authentication bypasses. **SSRF TOCTOU Probe (CWE-918)**: verify feed fetching endpoints against DNS Rebinding with TTL=0, ensuring IP pinning during connection.
 
 5. **Stage 5: Database, RBAC & Privilege Escalation Audit**
    - **Skills**: `prisma-postgres-mastery`, `postgresql-optimization`, `idempotency-and-outbox`.
-   - **How used**: Probe for SQL injection in raw Prisma queries (`$queryRawUnsafe`). Verify tenant isolation and FK cascades. Test concurrency race conditions (TOCTOU, seat theft, credit double-spending) and idempotency locks.
+   - **How used**: Probe for SQL injection in raw Prisma queries (`$queryRawUnsafe`). Verify tenant isolation and FK cascades. Test concurrency race conditions (TOCTOU, seat theft, credit double-spending) and idempotency locks. Check that loose `@Query()` parameters cannot bypass limit validation.
 
 6. **Stage 6: Proof-of-Concept (PoC) Validation & Exploit Test Suites**
    - **Skills**: `doubt-driven-development`, `test-driven-development`, `playwright-automation`, `systematic-debugging`.
-   - **How used**: Develop deterministic, isolated automated tests (Supertest / Playwright E2E) reproducing the vulnerability. Prove exploitability without damaging production or test data integrity. Ensure 100% `cleanDatabase` cleanup.
+   - **How used**: Develop deterministic, isolated automated tests (Supertest / Playwright E2E) reproducing the vulnerability (e.g. asserting 402 on unpaid plan selection, asserting masked secrets in `/payments/settings`). Prove exploitability without damaging production or test data integrity. Ensure 100% `cleanDatabase` cleanup.
 
 7. **Stage 7: Deterministic Remediation Plan Generation**
    - **Skills**: `planning-and-lifecycle`, `fix-security-vulnerabilities-with-strix`, `communication_and_research.md`.

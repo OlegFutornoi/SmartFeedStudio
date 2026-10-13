@@ -193,17 +193,25 @@
      └── billing.repository.ts       # Робота з PrismaService (~180 рядків)
      ```
 4. **Проектування 4-шарового захисту (Defense-in-Depth)**:
-   - Шар 1: DTO валідатори (`class-validator`, `ValidationPipe`).
-   - Шар 2: Доменні квоти та бізнес-правила (+ mutex при паралельних мутаціях).
-   - Шар 3: Guards, RBAC, Tenant scoping (`organizationId`).
+   - Шар 1: DTO валідатори (`class-validator`, `ValidationPipe`). **Залізне правило: 100% `@Query()` мають власний валідований DTO клас** (`@IsInt()`, `@Min(1)`, `@Max(100)`). Заборонено приймати сирі `@Query('limit')` чи `@Query('offset')`.
+   - Шар 2: Доменні квоти та бізнес-правила (+ mutex при паралельних мутаціях). **Залізне правило: зміна комерційного тарифу (price > 0) вимагає перевіреного `transactionId` (OWASP API4)**. Прямий `select-plan` дозволений виключно для плану з ціною 0.
+   - Шар 3: Guards, RBAC, Tenant scoping (`organizationId`). **Залізне правило: заборона виклику GUI команд** (`execFile('open')`/`explorer`) у хмарному API (CWE-400).
    - Шар 4: Database constraints, FK, атомарні транзакції.
+5. **Залізний закон модульності CQRS (1 File = 1 Handler)**:
+   - Жоден файл командних або запитових обробників не має права містити більше 1-2 пов'язаних дій.
+   - Заборонено зливати всі операції модуля в один файл на 300+ рядків (як було в `suppliers.handlers.ts`).
+   - Кожен обробник живе у своєму файлі `handlers/<action>.handler.ts` (<120-150 рядків) та повертає виключно `{ id }` або `void`.
+6. **Залізне правило маскування секретів (Secret Masking)**:
+   - `merchantSecretKey` та API-ключі платіжних провайдерів категорично заборонено віддавати у відкритому вигляді через REST ендпоінти (маскувати `••••••••` + останні 4 символи або boolean `isSecretConfigured`).
+7. **Захист від SSRF DNS Rebinding (TOCTOU)**:
+   - Перевірка безпеки URL та наступний `fetch()` повинні бути пов'язані єдиним закріпленням IP-адреси (IP pinning) для унеможливлення підміни адреси при TTL=0.
 
 ### 📋 Скіли планування в арсеналі агента на Етапі 2:
 
 - [**`planning-and-lifecycle`**](../skills/planning-and-lifecycle/SKILL.md) — створення детермінованого плану у `plans/active/` з інваріантами та DoD.
 - [**`contract-first-api`**](../skills/contract-first-api/SKILL.md) — проектування та компіляція типів, DTO і Zod-схем у `@smartfeed/shared`.
 - [**`spec-driven-development`**](../skills/spec-driven-development/SKILL.md) — точна специфікація API-ендпоінтів та CQRS сигнатур до кодування.
-- [**`incremental-implementation`**](../skills/incremental-implementation/SKILL.md) — нарізка реалізації на тонкі вертикальні скибки до 250–300 рядків.
+- [**`incremental-implementation`**](../skills/incremental-implementation/SKILL.md) — нарізка реалізації на тонкі вертикальні скибки до 250 рядків.
 - [**`code-simplification`**](../skills/code-simplification/SKILL.md) — запобігання зайвим абстракціям, чиста архітектура без оверінжинірингу.
 
 ---

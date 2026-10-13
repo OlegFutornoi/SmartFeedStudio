@@ -18,7 +18,6 @@ describe('Security Adversarial Hardening (OWASP, SSRF, Tokens E2E)', () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
-
     app = moduleFixture.createNestApplication();
     app.useGlobalPipes(
       new ValidationPipe({
@@ -29,7 +28,6 @@ describe('Security Adversarial Hardening (OWASP, SSRF, Tokens E2E)', () => {
       }),
     );
     app.setGlobalPrefix('api');
-
     await app.init();
     prisma = app.get(PrismaService);
 
@@ -92,9 +90,7 @@ describe('Security Adversarial Hardening (OWASP, SSRF, Tokens E2E)', () => {
   });
 
   afterAll(async () => {
-    await cleanDatabase(prisma, {
-      emailPrefixes: ['adv-'],
-    });
+    await cleanDatabase(prisma, { emailPrefixes: ['adv-'] });
     await app.close();
   });
 
@@ -136,12 +132,10 @@ describe('Security Adversarial Hardening (OWASP, SSRF, Tokens E2E)', () => {
         .get('/api/auth/me')
         .set('Authorization', `Bearer ${ownerUser.token}`)
         .expect(200);
-
       expect(meRes.body).not.toHaveProperty('passwordHash');
       expect(meRes.body).not.toHaveProperty('password');
       expect(meRes.body).not.toHaveProperty('salt');
       expect(meRes.body).not.toHaveProperty('refreshSecret');
-
       const serialized = JSON.stringify(meRes.body);
       expect(serialized).not.toContain('passwordHash');
       expect(serialized).not.toContain('$2b$');
@@ -152,7 +146,6 @@ describe('Security Adversarial Hardening (OWASP, SSRF, Tokens E2E)', () => {
         .get('/api/organizations')
         .set('Authorization', `Bearer ${ownerUser.token}`)
         .expect(200);
-
       const serialized = JSON.stringify(orgsRes.body);
       expect(serialized).not.toContain('passwordHash');
       expect(serialized).not.toContain('$2b$');
@@ -181,29 +174,18 @@ describe('Security Adversarial Hardening (OWASP, SSRF, Tokens E2E)', () => {
       const res = await request(app.getHttpServer())
         .post('/api/auth/change-password')
         .set('Authorization', `Bearer ${foreignUser.token}`)
-        .send({
-          currentPassword: 'Password123!',
-          newPassword: 'ForeignNewPassword123!',
-        })
+        .send({ currentPassword: 'Password123!', newPassword: 'ForeignNewPassword123!' })
         .expect(200);
-
       expect(res.body.success).toBe(true);
 
       await request(app.getHttpServer())
         .post('/api/auth/login')
-        .send({
-          email: ownerUser.email,
-          password: 'Password123!',
-        })
+        .send({ email: ownerUser.email, password: 'Password123!' })
         .expect(200);
     });
 
     it('should reject requests from deactivated user accounts with 403 USER_SUSPENDED', async () => {
-      await prisma.user.update({
-        where: { id: foreignUser.id },
-        data: { isActive: false },
-      });
-
+      await prisma.user.update({ where: { id: foreignUser.id }, data: { isActive: false } });
       await request(app.getHttpServer())
         .get('/api/auth/me')
         .set('Authorization', `Bearer ${foreignUser.token}`)
@@ -221,17 +203,12 @@ describe('Security Adversarial Hardening (OWASP, SSRF, Tokens E2E)', () => {
     });
 
     it('should allow super admin to call /api/licenses/upgrade with 201 Created', async () => {
-      await prisma.user.update({
-        where: { id: foreignUser.id },
-        data: { isActive: true },
-      });
-
+      await prisma.user.update({ where: { id: foreignUser.id }, data: { isActive: true } });
       const res = await request(app.getHttpServer())
         .post('/api/licenses/upgrade')
         .set('Authorization', `Bearer ${adminUser.token}`)
         .send({ planType: 'ENTERPRISE' })
         .expect(201);
-
       expect(res.body.planType).toBe('ENTERPRISE');
       expect(res.body.licenseKey).toBeDefined();
     });
@@ -241,7 +218,6 @@ describe('Security Adversarial Hardening (OWASP, SSRF, Tokens E2E)', () => {
         where: { provider: 'WAYFORPAY' },
         data: { isTestMode: false },
       });
-
       try {
         await request(app.getHttpServer())
           .post('/api/payments/simulate-sandbox-webhook')
@@ -262,13 +238,11 @@ describe('Security Adversarial Hardening (OWASP, SSRF, Tokens E2E)', () => {
         .set('Authorization', `Bearer ${ownerUser.token}`)
         .send({ url: 'http://127.0.0.1:5432/db' })
         .expect(400);
-
       await request(app.getHttpServer())
         .post('/api/feeds/fetch-url')
         .set('Authorization', `Bearer ${ownerUser.token}`)
         .send({ url: 'http://169.254.169.254/latest/meta-data' })
         .expect(400);
-
       await request(app.getHttpServer())
         .post('/api/feeds/fetch-url')
         .set('Authorization', `Bearer ${ownerUser.token}`)
@@ -279,18 +253,81 @@ describe('Security Adversarial Hardening (OWASP, SSRF, Tokens E2E)', () => {
     it('should guarantee /api/auth/forgot-password NEVER returns resetToken in production', async () => {
       const originalEnv = process.env.NODE_ENV;
       process.env.NODE_ENV = 'production';
-
       try {
         const res = await request(app.getHttpServer())
           .post('/api/auth/forgot-password')
           .send({ email: ownerUser.email })
           .expect(200);
-
         expect(res.body.success).toBe(true);
         expect(res.body.resetToken).toBeUndefined();
       } finally {
         process.env.NODE_ENV = originalEnv;
       }
+    });
+
+    it('SEC-01: should reject direct unpaid upgrade to commercial plan with 402 Payment Required', async () => {
+      const res = await request(app.getHttpServer())
+        .post('/api/licenses/select-plan')
+        .set('Authorization', `Bearer ${ownerUser.token}`)
+        .send({ planCode: 'ENTERPRISE' })
+        .expect(402);
+      expect(res.body.code).toBe('PAYMENT_REQUIRED');
+      expect(res.body.statusCode).toBe(402);
+    });
+
+    it('SEC-01: should permit commercial plan upgrade when backed by an approved PaymentTransaction', async () => {
+      const paymentTx = await prisma.paymentTransaction.create({
+        data: {
+          userId: ownerUser.id,
+          orderReference: `SF-ORD-TEST-APPROVED-${Date.now()}`,
+          planCode: 'PRO',
+          billingInterval: 'MONTHLY',
+          amount: 1490,
+          currency: 'UAH',
+          status: 'APPROVED',
+          provider: 'WAYFORPAY',
+        },
+      });
+
+      const res = await request(app.getHttpServer())
+        .post('/api/licenses/select-plan')
+        .set('Authorization', `Bearer ${ownerUser.token}`)
+        .send({ planCode: 'PRO', paymentTransactionId: paymentTx.id })
+        .expect(201);
+      expect(res.body.planType).toBe('PRO');
+    });
+
+    it('SEC-02: should mask merchantSecretKey in GET /api/payments/settings', async () => {
+      const res = await request(app.getHttpServer())
+        .get('/api/payments/settings')
+        .set('Authorization', `Bearer ${adminUser.token}`)
+        .expect(200);
+      const wayforpay = res.body.find((s: { provider: string }) => s.provider === 'WAYFORPAY');
+      if (wayforpay && wayforpay.merchantSecretKey) {
+        expect(wayforpay.merchantSecretKey).toMatch(/^••••••••/);
+        expect(wayforpay.isSecretConfigured).toBe(true);
+      }
+    });
+
+    it('SEC-04: should return directory path safely without spawning server-side processes in workspace/open', async () => {
+      const res = await request(app.getHttpServer())
+        .post('/api/storage/workspace/open')
+        .set('Authorization', `Bearer ${ownerUser.token}`)
+        .send({ path: 'test-workspace-safe' })
+        .expect(201);
+      expect(res.body.success).toBe(true);
+      expect(res.body.path).toBeDefined();
+    });
+
+    it('SEC-05: should enforce strict integer limits and reject extreme query limits with 400', async () => {
+      await request(app.getHttpServer())
+        .get('/api/licenses/admin?limit=99999999')
+        .set('Authorization', `Bearer ${adminUser.token}`)
+        .expect(400);
+      await request(app.getHttpServer())
+        .get('/api/licenses/admin?limit=-5')
+        .set('Authorization', `Bearer ${adminUser.token}`)
+        .expect(400);
     });
   });
 });

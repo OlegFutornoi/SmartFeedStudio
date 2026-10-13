@@ -5,6 +5,7 @@ import type {
   ExportChannelPricingRuleDto,
   ProductDto,
   FeedSourceDto,
+  SupplierCategoryRuleDto,
 } from '@smartfeed/shared';
 
 export interface MockDbCounters {
@@ -17,6 +18,7 @@ export interface MockDbCounters {
 export interface MockDbState {
   suppliers: SupplierDto[];
   pricingRules: Map<string, SupplierPricingRuleDto[]>;
+  supplierCategories: Map<string, SupplierCategoryRuleDto[]>;
   exportChannels: ExportChannelDto[];
   exportPricingRules: Map<string, ExportChannelPricingRuleDto[]>;
   products: ProductDto[];
@@ -28,6 +30,7 @@ export function createInitialState(): MockDbState {
   return {
     suppliers: [],
     pricingRules: new Map(),
+    supplierCategories: new Map(),
     exportChannels: [],
     exportPricingRules: new Map(),
     products: [],

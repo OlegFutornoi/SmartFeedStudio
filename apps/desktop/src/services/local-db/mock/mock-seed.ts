@@ -1,15 +1,20 @@
 import type { MockDbState } from '@/services/local-db/mock/mock-state';
 import { syncCounters } from '@/services/local-db/mock/mock-state';
+import { getInitialSeededCategories } from '@/services/local-db/mock/mock-seed-categories';
 import {
   FeedFormat,
   FeedSourceType,
   ProductStatus,
   ImageDownloadStatus,
   ImageSyncStatus,
+  CurrencyCode,
+  ExchangeRateMode,
+  PriceRoundingMode,
 } from '@smartfeed/shared';
 
 export function seedDefaultMockData(state: MockDbState): void {
   const defaultSupplierId = 'sup_demo_01';
+  const techSupplierId = 'sup_demo_02';
 
   state.suppliers = [
     {
@@ -17,15 +22,52 @@ export function seedDefaultMockData(state: MockDbState): void {
       userId: 'usr_admin',
       name: 'Brain Distribution',
       code: 'BRAIN',
+      contactPhone: '+380 (44) 123-4567',
+      contactEmail: 'sales@brain.com.ua',
+      website: 'https://brain.com.ua',
+      baseCurrency: CurrencyCode.UAH,
+      targetCurrency: CurrencyCode.UAH,
+      exchangeRateMode: ExchangeRateMode.MANUAL,
+      exchangeRate: 1.0,
+      currencyBufferPercent: 0,
+      priceRounding: PriceRoundingMode.NONE,
       defaultMarginPercent: 15,
       defaultFixedMarkup: 0,
       isActive: true,
       activeFeedsCount: 3,
       productsCount: 450,
+      categoriesCount: 4,
+      activeCategoriesCount: 4,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+    {
+      id: techSupplierId,
+      userId: 'usr_admin',
+      name: 'TechMart Electronics',
+      code: 'TECHMART',
+      contactPhone: '+1 (555) 345-6789',
+      contactEmail: 'contact@techmart.com',
+      website: 'https://techmart-global.com',
+      baseCurrency: CurrencyCode.USD,
+      targetCurrency: CurrencyCode.UAH,
+      exchangeRateMode: ExchangeRateMode.AUTO_NBU,
+      exchangeRate: 41.5,
+      currencyBufferPercent: 1.5,
+      priceRounding: PriceRoundingMode.DECIMAL_99,
+      defaultMarginPercent: 20,
+      defaultFixedMarkup: 100,
+      isActive: true,
+      activeFeedsCount: 1,
+      productsCount: 180,
+      categoriesCount: 3,
+      activeCategoriesCount: 2,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     },
   ];
+
+  state.supplierCategories = getInitialSeededCategories(defaultSupplierId, techSupplierId);
 
   state.feedSources.set(defaultSupplierId, [
     {

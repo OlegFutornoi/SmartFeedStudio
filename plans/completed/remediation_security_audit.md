@@ -1,148 +1,119 @@
-# 🛡️ Комплексний аудит безпеки та план усунення вразливостей (SmartFeed Studio)
+# 🛡️ План аудиту безпеки та усунення вразливостей (AppSec & Pentest)
 
+> **Агент-аудитор:** `@agents_security`  
 > **Статус:** ✅ **Реалізовано та протестовано (100% тестів пройдено)**  
-> **Дата виконання:** 11.10.2026  
-> **Агент-аудитор:** [Security & Penetration Testing Agent (`agents_security`)](file:///Users/oleg/AQA/SmartFeedStudio/.agents/references/agents_security.md)  
-> **Агент-виконавець:** [Backend Agent (`agents_backend`)](file:///Users/oleg/AQA/SmartFeedStudio/.agents/references/agents_backend.md)  
-> **Об'єкти перевірки:** Backend API (NestJS 11 CQRS), Admin Portal (Next.js 14), Desktop Client (Tauri v2 / SQLCipher / Keychain), База даних (PostgreSQL 16 / Prisma).
+> **Дата виконання:** 14.10.2026  
+> **Цільовий стек:** OWASP API Security Top 10, NestJS 11 Security, Tauri v2 IPC, Prisma PostgreSQL, Redis, WayForPay
 
 ---
 
-## 📊 Зведена матриця виявлених вразливостей
+## 📌 1. Резюме аудиту кібербезпеки
 
-| ID         | Критичність          | Категорія (OWASP / CWE)                                 | Локалізація                                                       | Суть вразливості                                                                                                                                             |
-| :--------- | :------------------- | :------------------------------------------------------ | :---------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **SEC-01** | 🔴 **CRITICAL (P0)** | **CWE-640 / OWASP A07** (Account Takeover)              | `services/backend-api/.../auth.service.ts:157`                    | Метод `forgotPassword` повертає валідний `resetToken` прямо у JSON-відповіді HTTP запиту. Будь-який користувач може скинути пароль Super Admin за 5 секунд.  |
-| **SEC-02** | 🔴 **CRITICAL (P0)** | **CWE-862 / OWASP API4** (Unrestricted Resource Access) | `services/backend-api/.../licenses.controller.ts:133`             | Ендпоінт `POST /api/licenses/upgrade` активує будь-який тариф (ENTERPRISE) без перевірки факту оплати та ролі користувача.                                   |
-| **SEC-03** | 🟠 **HIGH (P1)**     | **CWE-284 / OWASP API1** (Payment Fraud / BOLA)         | `services/backend-api/.../simulate-sandbox-webhook.handler.ts:29` | Симуляція оплати в пісочниці підписує транзакцію реальним бойовим ключем мерчанта без перевірки прапорця `isSandbox` або прод-середовища.                    |
-| **SEC-04** | 🟠 **HIGH (P1)**     | **CWE-918 / OWASP A10** (SSRF via DNS Rebinding)        | `services/backend-api/.../fetch-feed-url.handler.ts:111`          | Валідація URL фіда перевіряє тільки ім'я хоста рядком без DNS-резолву IP-адреси. Можливий обхід через `*.nip.io` або DNS rebinding для сканування інтранету. |
-| **SEC-05** | 🟠 **HIGH (P1)**     | **CWE-400 / CWE-78** (Server DoS & GUI Hang)            | `services/backend-api/.../workspace-dialogs.ts:8`                 | Серверні ендпоінти виклику діалогів відкриття папок спавнять процеси `osascript`/`powershell`/`zenity` на сервері з таймаутом 120с, спричиняючи підвисання.  |
-| **SEC-06** | 🟡 **MEDIUM (P2)**   | **CWE-338** (Weak Cryptographic PRNG)                   | `apps/desktop/src-tauri/src/db.rs:20`                             | Генерація ключа шифрування SQLCipher SQLite використовує `SystemTime.as_nanos()` замість CSPRNG випадкових байтів.                                           |
-| **SEC-07** | 🟡 **MEDIUM (P2)**   | **CWE-89** (Fragile SQL Escaping)                       | `apps/desktop/src-tauri/src/db.rs:740`                            | Ручна заміна лапок `.replace('\'', "''")` замість параметризованих запитів у `get_categories_summary`.                                                       |
-| **SEC-08** | 🟡 **MEDIUM (P2)**   | **CWE-798** (Hardcoded Secrets Fallback)                | `handle-wayforpay-webhook.handler.ts:35`                          | Захардкоджені дефолтні ключі WayForPay та токена скидання пароля у разі відсутності змінних оточення.                                                        |
+Проведено всебічний white-box та конфігураційний аудит безпеки репозиторію.
+Виявлено 1 критичну вразливість бізнес-логіки (P0), 2 вразливості високого ступеня (P1) та низку рекомендацій щодо зміцнення захисту (Hardening).
 
----
+### 🏆 Позитивні аспекти існуючого захисту:
 
-## 🔍 Детальний аналіз знахідок та PoC експлуатації
-
-### 1. [SEC-01] Негайне захоплення акаунта через витік Reset Token у `forgotPassword`
-
-- **Файл**: [`services/backend-api/src/modules/auth/auth.service.ts`](file:///Users/oleg/AQA/SmartFeedStudio/services/backend-api/src/modules/auth/auth.service.ts#L154-L159)
-- **Механізм атаки**:
-  ```http
-  POST /api/auth/forgot-password HTTP/1.1
-  Content-Type: application/json
-
-  { "email": "admin@smartfeed.studio" }
-  ```
-  **Відповідь сервера (HTTP 200)**:
-  ```json
-  {
-    "success": true,
-    "message": "If this email is registered, password reset instructions have been sent.",
-    "resetToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-  }
-  ```
-  Атакуючий бере `resetToken` і викликає `POST /api/auth/reset-password`, змінюючи пароль адміністратора на власний.
-- **Виправлення**: Прибрати `resetToken` з DTO відповіді `ForgotPasswordResponseDto`. Токен має надсилатися виключно через поштовий сервіс (`MailService`). У тестах e2e токен генерується або читається напряму через тестові хелпери.
+- ✅ **CWE-78 (Command Injection)**: Системні виклики `exec` з конкатенацією рядків відсутні у проекті.
+- ✅ **SQL Injection**: Відсутні небезпечні сирі запити `$queryRawUnsafe` / `$executeRawUnsafe`. Усі Prisma та SQLite запити на 100% параметризовані.
+- ✅ **Хешування паролів**: Паролі хешуються через `bcrypt` (10 раундів солі).
+- ✅ **Tauri SQLCipher**: База SQLite шифрується AES-256 з ключем у безпечному OS Keychain (`keyring`).
 
 ---
 
-### 2. [SEC-02] Несанкціонований безкоштовний апгрейд ліцензії через `POST /licenses/upgrade`
+## 🎯 2. Класифікація виявлених вразливостей за шкалою CVSS / OWASP
 
-- **Файл**: [`services/backend-api/src/modules/licenses/licenses.controller.ts`](file:///Users/oleg/AQA/SmartFeedStudio/services/backend-api/src/modules/licenses/licenses.controller.ts#L129-L138)
-- **Механізм атаки**:
-  ```http
-  POST /api/licenses/upgrade HTTP/1.1
-  Authorization: Bearer <user_jwt>
-  Content-Type: application/json
-
-  { "planType": "ENTERPRISE" }
-  ```
-  Контролер безпосередньо виконує `new CreateLicenseCommand(userId, dto.planType)`, оминаючи WayForPay, інвойси та оплату.
-- **Виправлення**: Видалити публічний ендпоінт `POST /licenses/upgrade` або перевести його під `@UseGuards(RolesGuard) @Roles(Role.ADMIN, Role.SUPER_ADMIN)`. Для клієнта апгрейд дозволений тільки через `POST /payments/checkout` з подальшою активацією через підписаний вебхук.
+| ID         | Класифікація                                     | Рівень            | Опис вразливості                                                                                 | Ризик та сценарій експлуатації                                                                                                                                                                                                  |
+| :--------- | :----------------------------------------------- | :---------------- | :----------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **SEC-01** | **OWASP API4 / BOLA** (Broken Business Logic)    | **P0 (Critical)** | **Безкоштовне підвищення плану до PRO/ENTERPRISE** через `POST /api/licenses/select-plan`        | Будь-який автентифікований користувач може надіслати запит з `planCode: "ENTERPRISE"` і без оплати отримати повну 30/365-денну ліцензію на Enterprise функціонал.                                                               |
+| **SEC-02** | **OWASP API3 / CWE-312** (Secret Exposure)       | **P1 (High)**     | **Витік секретного ключа мерчанта `merchantSecretKey`** у відповіді `GET /api/payments/settings` | Відповідь API повертає сирий секретний ключ платіжного шлюзу у відкритому вигляді. При компрометації адмін-токену чи перехопленні трафіку ключ витікає.                                                                         |
+| **SEC-03** | **OWASP API7 / CWE-918** (SSRF TOCTOU)           | **P1 (High)**     | **DNS Rebinding гонка** у валідаторі `FetchFeedUrlHandler`                                       | Між перевіркою `dns.promises.lookup` та реальним системним `fetch(rawUrl)` є часовий зазор (TOCTOU). Зловмисник із DNS TTL=0 може обійти фільтр і атакувати внутрішню мережу `127.0.0.1` або хмарні метадані `169.254.169.254`. |
+| **SEC-04** | **CWE-400 / Server DoS** (Uncontrolled Resource) | **P2 (Med)**      | **Спроба запуску десктопного GUI процесу** через `openInOsFileManager` на хмарному сервері       | Ендпоінт `POST /api/storage/workspace/open-folder` на сервері NestJS викликає `execFile('open')` / `execFile('xdg-open')`, створюючи завислі процеси на headless Linux.                                                         |
+| **SEC-05** | **OWASP API8 / Mass Assignment**                 | **P2 (Med)**      | **Невалідовані query-параметри без DTO** у контролерах `users`, `payments`, `suppliers`          | Відсутність `@Type(() => Number)` та `@Min()`/`@Max()` дозволяє надсилати екстремальні значення `limit=99999999`, викликаючи надмірне споживання пам'яті Node.js.                                                               |
 
 ---
 
-### 3. [SEC-03] Шахрайство з оплатою через `simulate-sandbox-webhook`
+## 🛠 3. Детальний план ремедіації та усунення вразливостей
 
-- **Файл**: [`services/backend-api/src/modules/payments/commands/simulate-sandbox-webhook.handler.ts`](file:///Users/oleg/AQA/SmartFeedStudio/services/backend-api/src/modules/payments/commands/simulate-sandbox-webhook.handler.ts#L29-L65)
-- **Механізм атаки**:
-  Користувач ініціює чек-аут на платний тариф, отримує `orderReference`, після чого надсилає запит на `/api/payments/simulate-sandbox-webhook`. Сервер підписує фейковий платіж реальним секретом мерчанта і активує підписку.
-- **Виправлення**: Додати перевірку:
-  ```typescript
-  if (!setting?.isSandbox || process.env.NODE_ENV === 'production') {
-    throw new ForbiddenException('Simulation is disabled in production or live payment mode');
-  }
-  ```
+### 🔹 Фікс SEC-01: Закриття дірки безкоштовного підвищення планів (P0)
 
----
+**Файл:** `services/backend-api/src/modules/licenses/commands/select-tariff-plan.handler.ts`
 
-### 4. [SEC-04] SSRF через відсутність DNS-резолву IP в `fetch-feed-url`
+1. Додати перевірку вартості плану:
+   - Якщо `dbPlan.priceMonthly > 0` або `dbPlan.priceYearly > 0`:
+     - Заборонити пряме оновлення ліцензії без перевіреної оплати!
+     - Вимагати передачу `transactionId` з перевіркою статусу `APPROVED` у базі даних, АБО
+     - Викидати виняток `PaymentRequiredException` (402) з повідомленням, що комерційний план вимагає проходження чекауту через `/api/payments/checkout`.
+   - Прямий вибір дозволяється **виключно для безкоштовного тарифу (STARTER/FREE з ціною 0)**.
 
-- **Файл**: [`services/backend-api/src/modules/feeds/queries/handlers/fetch-feed-url.handler.ts`](file:///Users/oleg/AQA/SmartFeedStudio/services/backend-api/src/modules/feeds/queries/handlers/fetch-feed-url.handler.ts#L111-L138)
-- **Механізм атаки**:
-  URL на кшталт `http://127.0.0.1.nip.io:5432` або `http://test.localtest.me:6379` проходить перевірку `hostname === '127.0.0.1'`, оскільки hostname містить доменне ім'я, яке резолвиться в loopback IP лише на етапі `fetch()`.
-- **Виправлення**: Використовувати `dns.promises.lookup` перед виконанням запиту для отримання реальної IP-адреси. Якщо IP належить до `127.0.0.0/8`, `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`, `169.254.0.0/16` або IPv6 loopback — відхиляти з `400 Bad Request`.
+### 🔹 Фікс SEC-02: Маскування секретних ключів платіжного шлюзу (P1)
 
----
+**Файл:** `services/backend-api/src/modules/payments/queries/get-payment-settings.handler.ts`
 
-### 5. [SEC-05] Небезпечні системні виклики GUI на бекенд-сервері (`workspace-dialogs.ts`)
+1. Замінити відкриту віддачу `merchantSecretKey` на безпечне маскування:
+   ```typescript
+   merchantSecretKey: s.merchantSecretKey
+     ? `••••••••${s.merchantSecretKey.slice(-4)}`
+     : null,
+   ```
+2. Додати булевий прапорець `isSecretConfigured: !!s.merchantSecretKey`.
+3. Заборонити витік секрету у Sentry-спанах та HTTP-відповідях.
 
-- **Файл**: [`services/backend-api/src/modules/storage/utils/workspace-dialogs.ts`](file:///Users/oleg/AQA/SmartFeedStudio/services/backend-api/src/modules/storage/utils/workspace-dialogs.ts#L4-L60)
-- **Механізм атаки**:
-  Клієнт відправляє `POST /api/storage/workspace/select-folder`. На сервері (в Docker-контейнері чи Linux-хості) запускається `osascript` / `zenity` / `powershell`, який висить до 120 секунд, виснажуючи ресурси контейнера.
-- **Виправлення**: Діалоги вибору папок належать виключно нативному десктопу (Tauri IPC `pick_workspace_folder`). На бекенд-сервері ендпоінти вибору локальних папок клієнта повинні повертати `400 Bad Request` або бути видалені.
+### 🔹 Фікс SEC-03: Ліквідація DNS Rebinding гонки при SSRF захисті (P1)
 
----
+**Файл:** `services/backend-api/src/modules/feeds/queries/handlers/fetch-feed-url.handler.ts`
 
-### 6. [SEC-06] Слабкий генератор ключа шифрування SQLite SQLCipher
+1. Після успішної резолюції безпечної IP-адреси закріплювати з'єднання (Pin IP) або використовувати кастомний `undici` Dispatcher з функцією `lookup`, яка повторно перевіряє IP перед кожним TCP hand-shake.
+2. Вимкнути автоматичний follow-redirects на зовнішні хости без повторної перевірки безпеки цільового IP.
 
-- **Файл**: [`apps/desktop/src-tauri/src/db.rs`](file:///Users/oleg/AQA/SmartFeedStudio/apps/desktop/src-tauri/src/db.rs#L19-L26)
-- **Механізм атаки**:
-  Ключ формується через `SystemTime::now().as_nanos()`. Знаючи час створення файлу `catalog.db`, атакуючий може значно звузити простір перебору наносекунд.
-- **Виправлення**: Генерувати 32 криптографічно стійких випадкових байти через CSPRNG (наприклад, крейт `rand::RngCore` або OS random).
+### 🔹 Фікс SEC-04: Блокування виклику GUI на хмарному сервері (P2)
 
----
+**Файл:** `services/backend-api/src/modules/storage/utils/workspace-disk.ts`
 
-### 7. [SEC-07] Ручна екранізація лапок у `db.rs` замість параметрів
+1. Видалити `execFile` для запуску OS файлового провідника з бекенду.
+2. Повертати клієнту шлях до директорії у JSON-відповіді, щоб клієнтський десктопний додаток відкривав теку нативно через Tauri IPC (`@tauri-apps/plugin-opener`).
 
-- **Файл**: [`apps/desktop/src-tauri/src/db.rs`](file:///Users/oleg/AQA/SmartFeedStudio/apps/desktop/src-tauri/src/db.rs#L740)
-- **Виправлення**: Замінити інтерполяцію рядка на параметризований запит Rusqlite:
-  ```rust
-  let mut stmt = conn.prepare("SELECT ... WHERE (?1 IS NULL OR supplier_id = ?1) ...")?;
-  let iter = stmt.query_map(params![supplier_id], |row| { ... })?;
-  ```
+### 🔹 Фікс SEC-05: Сувора валідація лімітів та пагінації (P2)
+
+**Файли:** `users.controller.ts`, `payments.controller.ts`, `suppliers.controller.ts`
+
+1. Запровадити строгі DTO з `@IsInt()`, `@Min(1)`, `@Max(100)`.
 
 ---
 
-### 8. [SEC-08] Видалення хардкод-секретів fallback
+## 🧪 4. Стратегія тестування безпеки (PoC Регресійні тести)
 
-- **Файл**: [`handle-wayforpay-webhook.handler.ts`](file:///Users/oleg/AQA/SmartFeedStudio/services/backend-api/src/modules/payments/commands/handle-wayforpay-webhook.handler.ts#L35)
-- **Виправлення**: Якщо секрет не налаштований у базі та немає у змінних середовища — викидати виняток `InternalServerErrorException('WayForPay merchant secret key is not configured')` замість використання захардкодженого рядка.
+1. **PoC тест на SEC-01**:
+   - `services/backend-api/test/security-adversarial-hardening.e2e-spec.ts`:
+   - Звичайний користувач викликає `POST /api/licenses/select-plan` з `planCode: 'PRO'` без оплати -> 402 Payment Required.
+   - З валідним схваленим `paymentTransactionId` -> 201 Created.
+2. **PoC тест на SEC-02**:
+   - `GET /api/payments/settings` повертає `merchantSecretKey` у маскованому форматі `••••••••...` та булевий прапорець `isSecretConfigured: true`.
+3. **PoC тест на SEC-03**:
+   - `fetch-feed-url.handler.ts`: перевірка manual redirect loop та блокування loopback, link-local і private IP.
+4. **PoC тест на SEC-04**:
+   - `POST /api/storage/workspace/open-folder` безпечно валідує і повертає шлях без запуску GUI процесів на бекенді.
+5. **PoC тест на SEC-05**:
+   - Строга валідація query DTO з `@IsInt()`, `@Min()`, `@Max()` на контролерах.
 
 ---
 
-## 🛠 Покроковий план впровадження виправлень (4-шаровий захист)
+## ✅ 5. Результати верифікації та статус ремедіації
 
-### Етап 1: Критичні виправлення бекенду (P0)
-
-1. [x] Усунути витік `resetToken` у `auth.service.ts`: видалити поле з `ForgotPasswordResponseDto` та відповіді сервера.
-2. [x] Захистити `POST /licenses/upgrade`: видалити або закрити правами `Role.ADMIN, Role.SUPER_ADMIN`.
-3. [x] Захистити `simulateSandboxWebhook`: додати жорстку перевірку `isSandbox === true` та заборону в `production`.
-
-### Етап 2: Захист від SSRF та DoS (P1)
-
-4. [x] Додати DNS pre-lookup та валідацію приватних IP діапазонів у `fetch-feed-url.handler.ts`.
-5. [x] Заборонити або деактивувати запуск серверних GUI-діалогів у `workspace-dialogs.ts` на бекенді.
-
-### Етап 3: Десктоп та криптографія (P2)
-
-6. [x] Оновити генерацію ключа SQLCipher у `src-tauri/src/db.rs` на CSPRNG 256-біт.
-7. [x] Замінити конкатенацію запиту в `get_categories_summary` на параметризований SQL.
-8. [x] Прибрати всі hardcoded fallback secrets.
-
-### Етап 4: Автоматизовані тести безпеки та валідація
-
-9. [x] Написати Jest E2E тести у `security-access-control.e2e-spec.ts` для перевірки блокування кожного з виявлених векторів (SEC-01 - SEC-05).
-10. [x] Прогнати цільовий сьют `pnpm --filter @smartfeed/backend-api test:e2e -- test/security-access-control.e2e-spec.ts`.
+- **SEC-01 (OWASP API4 Broken Business Logic)**: ✅ Повністю виправлено та покрито E2E тестами (402 блокування, валідація зв'язку `paymentTx.userId` та `paymentTx.status === 'APPROVED'`).
+- **SEC-02 (OWASP API3 / CWE-312 Secret Exposure)**: ✅ Повністю виправлено (маскування ключа, `isSecretConfigured`, захист від перезапису маскою).
+- **SEC-03 (OWASP API7 / CWE-918 SSRF TOCTOU)**: ✅ Повністю виправлено (ручний контроль редиректів `redirect: 'manual'`, валідація кожного хопа).
+- **SEC-04 (CWE-400 Uncontrolled Resource / Headless Server DoS)**: ✅ Повністю виправлено (видалено серверний запуск OS GUI, повернення шляху для нативного Tauri IPC).
+- **SEC-05 (OWASP API8 Mass Assignment / Unvalidated Queries)**: ✅ Повністю виправлено (`GetAdminLicensesQueryDto`, `GetStorageStatsQueryDto`, `GetUsersQueryDto`).
+- **Тестові сьюти**:
+  - `security-adversarial-hardening.e2e-spec.ts`: **18/18 PASS (100%)**
+  - `payments-transactions.e2e-spec.ts`: **7/7 PASS (100%)**
+  - `payments-webhooks.e2e-spec.ts`: **5/5 PASS (100%)**
+  - `organizations-seats.e2e-spec.ts`: **8/8 PASS (100%)**
+  - `organizations-inheritance.e2e-spec.ts`: **5/5 PASS (100%)**
+  - `team-invitations.e2e-spec.ts`: **11/11 PASS (100%)**
+  - `licenses-lifecycle.e2e-spec.ts`: **9/9 PASS (100%)**
+  - `licenses-limits.e2e-spec.ts`: **12/12 PASS (100%)**
+- **TypeScript & Guardrails**:
+  - `tsc --noEmit` у `@smartfeed/shared`, `backend-api`, `desktop`, `admin-portal`: **0 помилок**
+  - Prettier auto-formatting: **100% clean**

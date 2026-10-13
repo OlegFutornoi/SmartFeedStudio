@@ -1,5 +1,4 @@
 import React from 'react';
-import { createPortal } from 'react-dom';
 import { X, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from '@/i18n';
@@ -23,7 +22,7 @@ export const PreviewImageModal: React.FC<PreviewImageModalProps> = ({
 
   if (!isOpen || !imageUrl) return null;
 
-  return createPortal(
+  return (
     <div
       role="dialog"
       aria-modal="true"
@@ -81,7 +80,6 @@ export const PreviewImageModal: React.FC<PreviewImageModalProps> = ({
           )}
         </div>
       </div>
-    </div>,
-    document.body,
+    </div>
   );
 };

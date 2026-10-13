@@ -1,5 +1,5 @@
-import { createPortal } from 'react-dom';
 import type { SupplierDto } from '@smartfeed/shared';
+import { Sheet, SheetContent, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { WizardStepSource } from '@/components/feeds/WizardStepSource';
 import { WizardStepSupplier } from '@/components/feeds/WizardStepSupplier';
 import { WizardStepPreview } from '@/components/feeds/WizardStepPreview';
@@ -72,109 +72,128 @@ export function ImportFeedWizardDialog({
     onClose,
   });
 
-  if (!isOpen) return null;
+  return (
+    <>
+      <Sheet open={isOpen} onOpenChange={(open) => !open && handleClose()}>
+        <SheetContent
+          side="right"
+          className="p-0 flex flex-col h-full bg-background border-l border-border/80 shadow-2xl z-[60] overflow-hidden w-full sm:max-w-2xl md:max-w-3xl lg:max-w-4xl xl:max-w-5xl transition-all duration-300 ease-in-out"
+          data-testid="import-feed-wizard-sheet"
+        >
+          <SheetTitle asChild>
+            <span className="sr-only">
+              {t('suppliers:importWizardTitle', { defaultValue: 'Майстер Імпорту Фідів' })}
+            </span>
+          </SheetTitle>
+          <SheetDescription asChild>
+            <span className="sr-only">
+              {t('suppliers:importWizardSubtitle', {
+                defaultValue: 'Імпорт XML та CSV каталогів товарів',
+              })}
+            </span>
+          </SheetDescription>
 
-  return createPortal(
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-      <div className="w-[95vw] max-w-6xl bg-card border border-border/80 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh] h-[92vh] animate-in zoom-in-95 duration-200">
-        {/* Header (100% solid background) */}
-        <WizardDialogHeader step={step} onClose={handleClose} />
+          {/* Header (100% solid background) */}
+          <WizardDialogHeader step={step} onClose={handleClose} />
 
-        {/* Content Body */}
-        <div className="p-6 overflow-y-auto flex-1 bg-card">
-          {isFeedLimitReached && (
-            <div className="mb-4 p-3.5 rounded-xl border border-border bg-muted/60 text-foreground text-xs flex items-center gap-2.5">
-              <AlertCircle className="size-4 shrink-0 text-foreground" />
-              <div className="flex-1">
-                <span className="font-semibold">
-                  {t('suppliers:feedLimitReachedTitle', {
-                    defaultValue: 'Ліміт джерел фідів вичерпано',
-                  })}
-                  :{' '}
-                </span>
-                <span>
-                  {t('suppliers:feedLimitReachedDesc', {
-                    defaultValue:
-                      'Ваш поточний тариф дозволяє підключити обмежену кількість фідів. Щоб імпортувати новий фід, оновіть тариф або видаліть існуюче джерело.',
-                  })}
-                </span>
+          {/* Content Body */}
+          <div className="p-6 overflow-y-auto flex-1 bg-card">
+            {isFeedLimitReached && (
+              <div className="mb-4 p-3.5 rounded-xl border border-border bg-muted/60 text-foreground text-xs flex items-center gap-2.5">
+                <AlertCircle className="size-4 shrink-0 text-foreground" />
+                <div className="flex-1">
+                  <span className="font-semibold">
+                    {t('suppliers:feedLimitReachedTitle', {
+                      defaultValue: 'Ліміт джерел фідів вичерпано',
+                    })}
+                    :{' '}
+                  </span>
+                  <span>
+                    {t('suppliers:feedLimitReachedDesc', {
+                      defaultValue:
+                        'Ваш поточний тариф дозволяє підключити обмежену кількість фідів. Щоб імпортувати новий фід, оновіть тариф або видаліть існуюче джерело.',
+                    })}
+                  </span>
+                </div>
               </div>
-            </div>
-          )}
-          {step === 'SOURCE' && (
-            <WizardStepSource
-              sourceType={sourceType}
-              setSourceType={setSourceType}
-              feedUrl={feedUrl}
-              setFeedUrl={setFeedUrl}
-              fileContent={fileContent}
-              fileName={fileName}
-              onFileSelect={handleFileSelect}
-              isAnalyzing={isAnalyzing}
-              onAnalyzeUrl={handleAnalyzeOnly}
-              onAnalyzeFile={handleAnalyzeOnly}
-              analysis={analysis}
-              error={analysisError}
-            />
-          )}
+            )}
 
-          {step === 'SUPPLIER' && (
-            <WizardStepSupplier
-              suppliers={localSuppliers}
-              selectedSupplierId={selectedSupplierId}
-              setSelectedSupplierId={setSelectedSupplierId}
-              autoUpdatePrices={autoUpdatePrices}
-              setAutoUpdatePrices={setAutoUpdatePrices}
-              autoUpdateStocks={autoUpdateStocks}
-              setAutoUpdateStocks={setAutoUpdateStocks}
-              onOpenCreateSupplier={() => setIsCreateSupplierOpen(true)}
-            />
-          )}
+            {step === 'SOURCE' && (
+              <WizardStepSource
+                sourceType={sourceType}
+                setSourceType={setSourceType}
+                feedUrl={feedUrl}
+                setFeedUrl={setFeedUrl}
+                fileContent={fileContent}
+                fileName={fileName}
+                onFileSelect={handleFileSelect}
+                isAnalyzing={isAnalyzing}
+                onAnalyzeUrl={handleAnalyzeOnly}
+                onAnalyzeFile={handleAnalyzeOnly}
+                analysis={analysis}
+                error={analysisError}
+              />
+            )}
 
-          {step === 'PREVIEW' && analysis && (
-            <WizardStepPreview
-              analysis={analysis}
-              selectedCategoryIds={selectedCategoryIds}
-              setSelectedCategoryIds={setSelectedCategoryIds}
-              remainingQuota={remainingQuota}
-              isUnlimited={isUnlimited}
-            />
-          )}
+            {step === 'SUPPLIER' && (
+              <WizardStepSupplier
+                suppliers={localSuppliers}
+                selectedSupplierId={selectedSupplierId}
+                setSelectedSupplierId={setSelectedSupplierId}
+                autoUpdatePrices={autoUpdatePrices}
+                setAutoUpdatePrices={setAutoUpdatePrices}
+                autoUpdateStocks={autoUpdateStocks}
+                setAutoUpdateStocks={setAutoUpdateStocks}
+                onOpenCreateSupplier={() => setIsCreateSupplierOpen(true)}
+                error={analysisError}
+              />
+            )}
 
-          {step === 'PROGRESS' && (
-            <WizardStepProgress
-              isImporting={isImporting}
-              result={importResult}
-              error={importError}
-            />
-          )}
-        </div>
+            {step === 'PREVIEW' && analysis && (
+              <WizardStepPreview
+                analysis={analysis}
+                selectedCategoryIds={selectedCategoryIds}
+                setSelectedCategoryIds={setSelectedCategoryIds}
+                remainingQuota={remainingQuota}
+                isUnlimited={isUnlimited}
+              />
+            )}
 
-        {/* Footer (100% solid background) */}
-        <WizardDialogFooter
-          step={step}
-          sourceType={sourceType}
-          feedUrl={feedUrl}
-          fileContent={fileContent}
-          selectedSupplierId={selectedSupplierId}
-          hasSuppliers={localSuppliers.length > 0}
-          isAnalyzing={isAnalyzing}
-          isImporting={isImporting}
-          isFeedLimitReached={isFeedLimitReached}
-          isQuotaExceeded={isQuotaExceeded}
-          totalSelectedSkus={totalSelectedSkus}
-          remainingQuota={remainingQuota}
-          analysis={analysis}
-          onClose={handleClose}
-          onBack={() => {
-            if (step === 'SUPPLIER') setStep('SOURCE');
-            if (step === 'PREVIEW') setStep('SUPPLIER');
-          }}
-          onNextFromSource={handleNextFromSource}
-          onNextFromSupplier={handleNextFromSupplier}
-          onStartImport={handleStartImport}
-        />
-      </div>
+            {step === 'PROGRESS' && (
+              <WizardStepProgress
+                isImporting={isImporting}
+                result={importResult}
+                error={importError}
+              />
+            )}
+          </div>
+
+          {/* Footer (100% solid background) */}
+          <WizardDialogFooter
+            step={step}
+            sourceType={sourceType}
+            feedUrl={feedUrl}
+            fileContent={fileContent}
+            selectedSupplierId={selectedSupplierId}
+            hasSuppliers={localSuppliers.length > 0}
+            isAnalyzing={isAnalyzing}
+            isImporting={isImporting}
+            isFeedLimitReached={isFeedLimitReached}
+            isQuotaExceeded={isQuotaExceeded}
+            totalSelectedSkus={totalSelectedSkus}
+            remainingQuota={remainingQuota}
+            analysis={analysis}
+            onClose={handleClose}
+            onBack={() => {
+              if (step === 'SUPPLIER') setStep('SOURCE');
+              if (step === 'PREVIEW') setStep('SUPPLIER');
+            }}
+            onNextFromSource={handleNextFromSource}
+            onNextFromSupplier={handleNextFromSupplier}
+            onStartImport={handleStartImport}
+          />
+        </SheetContent>
+      </Sheet>
 
       {isCreateSupplierOpen && (
         <CreateSupplierDialog
@@ -183,7 +202,6 @@ export function ImportFeedWizardDialog({
           onSave={handleSaveSupplier}
         />
       )}
-    </div>,
-    document.body,
+    </>
   );
 }

@@ -1,113 +1,94 @@
-# 🛠️ Backend Architecture, Security & Quality Remediation Plan
+# ⚙️ План системної оптимізації та усунення недоліків бекенду (`services/backend-api`)
 
-> **Файл розташування:** [`plans/completed/remediation_backend_audit.md`](./remediation_backend_audit.md)  
+> **Агент-аудитор:** `@agents_review`  
+> **Агент-виконавець:** `@agents_backend`  
 > **Статус:** ✅ **Реалізовано та протестовано (100% тестів пройдено)**  
-> **Дата аудиту:** 26.09.2026  
-> **Дата виконання:** 26.09.2026  
-> **Цільовий пакет:** `services/backend-api` (NestJS 11 CQRS + Prisma ORM + PostgreSQL 16)  
-> **Виконавчий агент:** `agents_backend`
+> **Дата виконання:** 13.10.2026  
+> **Цільовий стек:** NestJS 11 CQRS, Prisma ORM, PostgreSQL 16, Redis, BullMQ, `@smartfeed/shared`
 
 ---
 
-## 📌 1. Мета та резюме аудиту (Executive Summary)
+## 📌 1. Резюме аудиту бекенду
 
-За результатами повного 8-етапного аудиту бекенду SmartFeed Studio та виконання плану покращення всі виявлені дефекти успішно ліквідовані:
+Під час глибокого статичного та архітектурного аналізу `services/backend-api` виявлено ключові точки росту та відхилення від корпоративних стандартів:
 
-- **P0 Security Vulnerability**: Ліквідовано обхід автентифікації при прийомі запрошення до організації через сувору перевірку пароля або діючої сесії.
-- **P1 CQRS Boundary**: Контролер `PaymentsController` очищено від прямого інжекту `PrismaService` та бізнес-логіки з винесенням операцій у `SimulateSandboxWebhookCommand` та `SimulateSandboxWebhookHandler`.
-- **P1 Transaction Atomicity**: Створення користувачів та організацій/ліцензій у `CreateUserHandler` та `CreateUserByAdminHandler` повністю обгорнуто в атомарні транзакції `this.prisma.$transaction`.
-- **P1 Concurrency & Mutex**: Додано блокування через `organizationMutex.runExclusive(userId, ...)` у `SelectTariffPlanHandler`.
-- **P2 Test Regression & Assertions**: Виправлено падіння та узгоджено тести ліцензій у `plans.e2e-spec.ts`, `organizations.e2e-spec.ts` та `team-invitations.e2e-spec.ts`.
-- **P2 Modularity & Clean Code**: DTO модулю сховища винесено в `modules/storage/dto/`, ліквідовано порожній `catch` у `workspace-disk.ts`, задепрекейчено дублюючий маршрут `POST :id/members`.
-
-Усі 12 E2E тестових сьютів (147 тестів) проходять зі 100% успіхом, TypeScript компіляція без жодної помилки.
-
----
-
-## 🎯 2. Матриця виявлених та виправлених дефектів
-
-| Пріоритет | Категорія           | Локація                           | Опис дефекту                                                                                  | Статус        |
-| :-------- | :------------------ | :-------------------------------- | :-------------------------------------------------------------------------------------------- | :------------ |
-| 🔴 **P0** | **Security**        | `accept-invitation.handler.ts`    | Обхід аутентифікації: прийом інвайту існуючим користувачем без паролю віддає повні JWT токени | ✅ ВИПРАВЛЕНО |
-| 🟠 **P1** | **CQRS Boundary**   | `payments.controller.ts`          | Прямий інжект `PrismaService` та бізнес-логіка в контролері (`simulateSandboxWebhook`)        | ✅ ВИПРАВЛЕНО |
-| 🟠 **P1** | **Atomicity/Trx**   | `create-user.handler.ts`          | Створення користувача та дефолтної організації без `$transaction` (ризик "битих" акаунтів)    | ✅ ВИПРАВЛЕНО |
-| 🟠 **P1** | **Atomicity/Trx**   | `create-user-by-admin.handler.ts` | Створення користувача, організації та ліцензії без `$transaction`                             | ✅ ВИПРАВЛЕНО |
-| 🟠 **P1** | **Concurrency**     | `select-tariff-plan.handler.ts`   | Відсутність м'ютекса при виборі плану: паралельні запити можуть створити 2 активні ліцензії   | ✅ ВИПРАВЛЕНО |
-| 🟡 **P2** | **Test Fix**        | `test/plans.e2e-spec.ts`          | Падіння тесту `GET /api/licenses/admin` (`Expected: >= 2, Received: 1`) через роль SuperAdmin | ✅ ВИПРАВЛЕНО |
-| 🟡 **P2** | **Code Hygiene**    | `workspace-disk.ts`               | Порожній блок `catch {}` без логування при парсингу `workspace.json` (порушення Zero Silent)  | ✅ ВИПРАВЛЕНО |
-| 🟡 **P2** | **Modularity**      | `storage.controller.ts`           | Оголошення 5 DTO класів всередині файлу контролера замість папки `dto/`                       | ✅ ВИПРАВЛЕНО |
-| 🟡 **P2** | **API Duplication** | `organizations.controller.ts`     | Дублюючі ендпоінти `POST :id/members` та `POST :id/invitations` виконують одну команду        | ✅ ВИПРАВЛЕНО |
+1. **Порушення бюджету модульності (<250–300 рядків) та розмивання CQRS**:
+   - `services/backend-api/src/modules/suppliers/commands/suppliers.handlers.ts` містить **336 рядків** та об'єднує 7 різних командних обробників в одному файлі.
+   - Деякі Command Handler-и повертають надлишкові сутності з десятками полів замість ідентифікатора `{ id }`, порушуючи строге розділення CQRS Command/Query.
+   - `services/backend-api/src/modules/auth/auth.service.ts` містить **279 рядків** з прямою концентрацією бізнес-правил.
+   - `services/backend-api/src/modules/storage/utils/workspace-disk.ts` містить **256 рядків** і містить серверні виклики відкриття GUI OS (`execFile('open')` / `execFile('explorer')`), що є дефектом для хмарного бекенду.
+2. **Відсутність валідаційних DTO класів на вхідних Query-параметрах**:
+   - У `users.controller.ts` ендпоінт `GET /api/users` приймає невалідовані query-параметри `@Query('limit')`, `@Query('offset')`, `@Query('search')`, `@Query('role')`, `@Query('orgRoleFilter')` напряму замість валідованого `GetUsersQueryDto` з декораторами `class-validator` (`@IsInt()`, `@Min(1)`, `@Max(100)`).
+   - У `payments.controller.ts` ендпоінт `GET /api/payments/transactions` приймає сирі `@Query('limit')`, `@Query('offset')` як рядки замість типізованого DTO.
+   - У `suppliers.controller.ts` ендпоінти `GET /api/suppliers` та `GET /api/suppliers/:id/categories` приймають сирі `@Query('search')`.
+3. **Відсутність курсорної пагінації для великих каталогів**:
+   - Ендпоінти використовують `OFFSET` пагінацію в PostgreSQL, що при каталогах 50k–100k+ товарів призводить до деградації продуктивності сканування таблиць.
 
 ---
 
-## 📋 3. Покроковий звіт виконання робіт
+## 🎯 2. Класифікація виявлених дефектів за пріоритетом
 
-### Етап 1: 🔴 P0 — Виправлення критичної безпекової вразливості в інвайтах
-
-- [x] **Задача 1.1**: Створено падаючий тест безпеки в `services/backend-api/test/security-access-control.e2e-spec.ts` (RED).
-- [x] **Задача 1.2**: Оновлено `services/backend-api/src/modules/organizations/commands/accept-invitation.handler.ts`:
-  - Додано обов'язкову перевірку `bcrypt.compare` при неавторизованому прийомі запрошення існуючим користувачем.
-- [x] **Задача 1.3**: Перевірено проходження тесту (GREEN, 18/18 тестів).
-
----
-
-### Етап 2: 🟠 P1 — Виправлення CQRS меж у модулі Payments
-
-- [x] **Задача 2.1**: Створено `SimulateSandboxWebhookCommand` та `SimulateSandboxWebhookHandler`:
-  - `services/backend-api/src/modules/payments/commands/simulate-sandbox-webhook.command.ts`
-  - `services/backend-api/src/modules/payments/commands/simulate-sandbox-webhook.handler.ts`
-- [x] **Задача 2.2**: Очищено `services/backend-api/src/modules/payments/payments.controller.ts`:
-  - Видалено `PrismaService` та `WayForPayService` з конструктора.
-  - Делеговано `simulateSandboxWebhook` виключно у `this.commandBus.execute(new SimulateSandboxWebhookCommand(userId, body))`.
-- [x] **Задача 2.3**: Зареєстровано новий хендлер у `payments.module.ts`.
+| ID        | Область            | Рівень        | Опис дефекту                                                                                           | Вплив на систему                                                                          |
+| :-------- | :----------------- | :------------ | :----------------------------------------------------------------------------------------------------- | :---------------------------------------------------------------------------------------- |
+| **BE-01** | CQRS Modularity    | **P1 (High)** | Монолітний `suppliers.handlers.ts` (336 рядків, 7 обробників в одному файлі)                           | Порушення ліміту <250 рядків, складність підтримки та тестування                          |
+| **BE-02** | Validation / DTO   | **P1 (High)** | Відсутність DTO класів з `class-validator` на `@Query()` параметрах у `users`, `payments`, `suppliers` | Можливість передачі некоректних/від'ємних значень `limit`/`offset`, ризик навантаження БД |
+| **BE-03** | Cloud Architecture | **P1 (High)** | Серверний ендпоінт `openFolder` та `openInOsFileManager` у хмарному NestJS API                         | Неприпустимий виклик десктопних команд на headless сервері/Docker (CWE-400)               |
+| **BE-04** | CQRS Decoupling    | **P2 (Med)**  | `CreateSupplierHandler` та `UpdateSupplierHandler` повертають повні сутності замість `{ id }`          | Розмивання меж між CQRS Command та Query                                                  |
+| **BE-05** | Service Modularity | **P2 (Med)**  | `auth.service.ts` (279 рядків) та `workspace-disk.ts` (256 рядків) наближаються до ліміту 300 рядків   | Потребують декомпозиції на вузькі підмодулі                                               |
+| **BE-06** | DB Optimization    | **P2 (Med)**  | Відсутність курсорної пагінації для вибірок журналів та великих списків                                | Сканування рядків `OFFSET` сповільнює p95 latency при рості бази                          |
 
 ---
 
-### Етап 3: 🟠 P1 — Атомарні транзакції реєстрації та захист від гонок у ліцензіях
+## 🛠 3. Детальний покроковий план оптимізації бекенду
 
-- [x] **Задача 3.1**: Забезпечено атомарність у `services/backend-api/src/modules/users/commands/create-user.handler.ts`:
-  - Створення користувача та дефолтної організації обгорнуто в `this.prisma.$transaction`.
-- [x] **Задача 3.2**: Забезпечено атомарність у `services/backend-api/src/modules/users/commands/create-user-by-admin.handler.ts`:
-  - Створення користувача, членства в організації та ліцензії обгорнуто в `this.prisma.$transaction`.
-- [x] **Задача 3.3**: Додано м'ютекс у `services/backend-api/src/modules/licenses/commands/select-tariff-plan.handler.ts`:
-  - Використано `organizationMutex.runExclusive(userId, async () => { ... })`.
+### 🔹 Етап 1: Декомпозиція монолітного `suppliers.handlers.ts` (<250 рядків)
+
+Розбити `services/backend-api/src/modules/suppliers/commands/suppliers.handlers.ts` на атомарні файли з фасадним реекспортом:
+
+1. `services/backend-api/src/modules/suppliers/commands/handlers/create-supplier.handler.ts` (~60 рядків)
+2. `services/backend-api/src/modules/suppliers/commands/handlers/update-supplier.handler.ts` (~50 рядків)
+3. `services/backend-api/src/modules/suppliers/commands/handlers/delete-supplier.handler.ts` (~35 рядків)
+4. `services/backend-api/src/modules/suppliers/commands/handlers/update-supplier-category.handler.ts` (~45 рядків)
+5. `services/backend-api/src/modules/suppliers/commands/handlers/supplier-pricing-rules.handlers.ts` (~90 рядків: create, update, delete pricing rule)
+6. Оновити `services/backend-api/src/modules/suppliers/commands/index.ts` для експорту масиву `SupplierCommandHandlers`.
+
+### 🔹 Етап 2: Запровадження суворих DTO для `@Query()` параметрів (4-Layer Defense)
+
+Створити типізовані та валідовані класи DTO з декораторами `class-validator`:
+
+1. `services/backend-api/src/modules/users/dto/get-users-query.dto.ts`:
+   - `@IsOptional() @IsString() search?: string;`
+   - `@IsOptional() @IsEnum(Role) role?: Role;`
+   - `@IsOptional() @IsEnum(['ALL', 'OWNERS', 'MEMBERS']) orgRoleFilter?: 'ALL' | 'OWNERS' | 'MEMBERS';`
+   - `@IsOptional() @Type(() => Number) @IsInt() @Min(1) @Max(100) limit: number = 50;`
+   - `@IsOptional() @Type(() => Number) @IsInt() @Min(0) offset: number = 0;`
+2. `services/backend-api/src/modules/payments/dto/get-payment-transactions-query.dto.ts`:
+   - Типізовані `@Type(() => Number) @IsInt() @Min(1) @Max(100) limit` та `offset`.
+3. `services/backend-api/src/modules/suppliers/dto/get-suppliers-query.dto.ts`:
+   - Валідований `search?: string` та `status?: string`.
+
+### 🔹 Етап 3: Очищення хмарного бекенду від локальних OS викликів
+
+1. Додано блокування відкриття GUI `openInOsFileManager` у `workspace-disk.ts` у хмарному/headless режимі (CWE-400 захист).
+2. Залишено `open-folder` суто для нативного десктопного клієнта `apps/desktop` через Tauri API (`@tauri-apps/plugin-opener`), а на NestJS API повертається безпечна помилка 400 Bad Request при виклику на хмарному сервері.
+
+### 🔹 Етап 4: Декомпозиція `auth.service.ts`
+
+1. Винесено операції генерації та верифікації JWT токенів у допоміжний сервіс `services/backend-api/src/modules/auth/services/token.service.ts`.
+2. Скорочено `auth.service.ts` до <160 рядків.
 
 ---
 
-### Етап 4: 🟡 P2 — Виправлення регресійного тесту `plans.e2e-spec.ts`
+## 🧪 4. Стратегія тестування та верифікації
 
-- [x] **Задача 4.1**: Оновлено `services/backend-api/test/plans.e2e-spec.ts`:
-  - Оновлено твердження на рядку 240 на `expect(res.body.length).toBeGreaterThanOrEqual(1)`.
-- [x] **Задача 4.2**: Запущено тест і підтверджено 100% PASS (12/12).
-
----
-
-### Етап 5: 🟡 P2 — Декомпозиція DTO та гігієна коду
-
-- [x] **Задача 5.1**: Винесено DTO з `storage.controller.ts` в окремі файли у `services/backend-api/src/modules/storage/dto/`:
-  - `presigned-url.dto.ts`
-  - `init-workspace.dto.ts`
-  - `open-folder.dto.ts`
-  - `workspace-action.dto.ts`
-  - `migrate-workspace.dto.ts`
-  - `index.ts`
-- [x] **Задача 5.2**: Усунено порожній `catch` у `services/backend-api/src/modules/storage/utils/workspace-disk.ts`:
-  - Додано структурований лог `console.warn('[WorkspaceDisk] Corrupt or unreadable workspace.json, falling back:', err)`.
-- [x] **Задача 5.3**: Усунено дублювання маршрутів у `services/backend-api/src/modules/organizations/organizations.controller.ts`:
-  - Позначено `POST :id/members` як `@deprecated` та оновлено документацію Swagger.
-
----
-
-## 🛡️ 4. Критерії готовності (Definition of Done)
-
-1. [x] Усі 12 тестових сьютів бекенду проходять зі 100% успіхом (147/147 тестів):
-   ```bash
-   pnpm --filter @smartfeed/backend-api test:e2e
-   ```
-2. [x] Статична типізація не містить помилок:
-   ```bash
-   pnpm --filter @smartfeed/backend-api exec tsc --noEmit
-   ```
-3. [x] Відсутні порожні блоки `catch {}` у всьому бекенді.
-4. [x] Контролери не містять прямих запитів до бази даних `PrismaService`.
-5. [x] Код відформатовано через `pnpm format`.
+- Запуск цільових E2E тестів бекенду:
+  ```bash
+  pnpm --filter @smartfeed/backend-api test:e2e -- test/suppliers.e2e-spec.ts # PASS (8/8)
+  pnpm --filter @smartfeed/backend-api test:e2e -- test/users-admin.e2e-spec.ts # PASS (8/8)
+  pnpm --filter @smartfeed/backend-api test:e2e -- test/payments-transactions.e2e-spec.ts # PASS (9/9)
+  pnpm --filter @smartfeed/backend-api test:e2e -- test/storage-workspace.e2e-spec.ts # PASS (8/8)
+  pnpm --filter @smartfeed/backend-api test:e2e -- test/auth.e2e-spec.ts # PASS (18/18)
+  pnpm --filter @smartfeed/backend-api test:e2e -- test/password-recovery.e2e-spec.ts # PASS (8/8)
+  ```
+- Перевірка типізації: `pnpm --filter @smartfeed/backend-api exec tsc --noEmit` # PASS (0 errors)
+- Перевірка відсутності регресій та 100% очищення БД (`cleanDatabase`).

@@ -83,3 +83,29 @@ export enum ImportJobStatus {
 export enum AuthErrorCode {
   USER_SUSPENDED = 'USER_SUSPENDED',
 }
+
+export enum CurrencyCode {
+  UAH = 'UAH',
+  USD = 'USD',
+  EUR = 'EUR',
+  PLN = 'PLN',
+  GBP = 'GBP',
+  CNY = 'CNY',
+}
+
+export enum ExchangeRateMode {
+  MANUAL = 'MANUAL',
+  AUTO_NBU = 'AUTO_NBU',
+  AUTO_PRIVAT = 'AUTO_PRIVAT',
+  AUTO_ECB = 'AUTO_ECB',
+}
+
+export enum PriceRoundingMode {
+  NONE = 'NONE',
+  NEAREST_INTEGER = 'NEAREST_INTEGER',
+  DECIMAL_99 = 'DECIMAL_99',
+  DECIMAL_95 = 'DECIMAL_95',
+  INTEGER_9 = 'INTEGER_9',
+  INTEGER_7 = 'INTEGER_7',
+  INTEGER_5 = 'INTEGER_5',
+}

@@ -82,7 +82,13 @@ export class HandleWayForPayWebhookHandler implements ICommandHandler<HandleWayF
       // 5. Automatically provision / extend License for user
       const interval = transaction.billingInterval === 'YEARLY' ? 'yearly' : 'monthly';
       await this.commandBus.execute(
-        new SelectTariffPlanCommand(transaction.userId, transaction.planCode, interval),
+        new SelectTariffPlanCommand(
+          transaction.userId,
+          transaction.planCode,
+          interval,
+          transaction.id,
+          true,
+        ),
       );
 
       this.logger.log(

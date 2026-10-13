@@ -9,7 +9,6 @@ import { cleanDatabase } from '@test/utils/teardown.helper';
 describe('Team Invitations & Mail Service Life-cycle (E2E)', () => {
   let app: INestApplication;
   let prisma: PrismaService;
-
   let ownerToken: string;
   let orgId: string;
 
@@ -19,11 +18,9 @@ describe('Team Invitations & Mail Service Life-cycle (E2E)', () => {
     fullName: 'Company Owner Tester',
     companyName: 'Invites Testing Corp',
   };
-
   const newColleagueEmail = 'inv.test+newcolleague@smartfeed.studio';
   const existingColleagueEmail = 'inv.test+existingcolleague@smartfeed.studio';
   const thirdColleagueEmail = 'inv.test+thirdcolleague@smartfeed.studio';
-
   const allTestEmails = [
     ownerUser.email,
     newColleagueEmail,
@@ -35,53 +32,53 @@ describe('Team Invitations & Mail Service Life-cycle (E2E)', () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
-
     app = moduleFixture.createNestApplication();
     app.setGlobalPrefix('api');
     app.useGlobalFilters(new GlobalHttpExceptionFilter());
     app.useGlobalPipes(
-      new ValidationPipe({
-        whitelist: true,
-        transform: true,
-        forbidNonWhitelisted: true,
-      }),
+      new ValidationPipe({ whitelist: true, transform: true, forbidNonWhitelisted: true }),
     );
-
     await app.init();
     prisma = app.get<PrismaService>(PrismaService);
 
-    // Teardown any leftovers before starting
     await cleanDatabase(prisma, {
       userEmails: allTestEmails,
       emailPrefixes: ['inv.test+'],
       organizationNames: [ownerUser.companyName],
     });
 
-    // 1. Register owner
     const regRes = await request(app.getHttpServer())
       .post('/api/auth/register')
       .send(ownerUser)
       .expect(201);
-
     ownerToken = regRes.body.tokens.accessToken;
     orgId = regRes.body.user.organization.id;
 
-    // 2. Upgrade owner to PRO (3 seats)
+    const proTx = await prisma.paymentTransaction.create({
+      data: {
+        orderReference: `ord-inv-pro-${Date.now()}`,
+        userId: regRes.body.user.id,
+        amount: 59,
+        currency: 'USD',
+        status: 'APPROVED',
+        planCode: 'PRO',
+        billingInterval: 'MONTHLY',
+      },
+    });
+
     await request(app.getHttpServer())
       .post('/api/licenses/select-plan')
       .set('Authorization', `Bearer ${ownerToken}`)
-      .send({ planCode: 'PRO' })
+      .send({ planCode: 'PRO', paymentTransactionId: proTx.id })
       .expect(201);
   });
 
   afterAll(async () => {
-    // 100% complete data isolation teardown
     await cleanDatabase(prisma, {
       userEmails: allTestEmails,
       emailPrefixes: ['inv.test+'],
       organizationNames: [ownerUser.companyName],
     });
-
     await app.close();
   });
 
@@ -92,10 +89,7 @@ describe('Team Invitations & Mail Service Life-cycle (E2E)', () => {
       const res = await request(app.getHttpServer())
         .post(`/api/organizations/${orgId}/invitations`)
         .set('Authorization', `Bearer ${ownerToken}`)
-        .send({
-          email: newColleagueEmail,
-          role: 'MEMBER',
-        })
+        .send({ email: newColleagueEmail, role: 'MEMBER' })
         .expect(201);
 
       expect(res.body.id).toBeDefined();
@@ -104,14 +98,11 @@ describe('Team Invitations & Mail Service Life-cycle (E2E)', () => {
       expect(res.body.token).toMatch(/^SF-INV-/);
       expect(res.body.inviteUrl).toContain('/invite?token=SF-INV-');
       expect(res.body.status).toBe('PENDING');
-
       invitationToken = res.body.token;
     });
 
     it('should dispatch HTML email to Mailpit SMTP server with token link', async () => {
-      // Small wait to allow async Nodemailer dispatch to complete
       await new Promise((resolve) => setTimeout(resolve, 300));
-
       try {
         const mailpitRes = await fetch('http://localhost:8025/api/v1/messages');
         if (mailpitRes.ok) {
@@ -124,14 +115,13 @@ describe('Team Invitations & Mail Service Life-cycle (E2E)', () => {
           const sentMessage = mailpitData.messages?.find((m) =>
             m.To?.some((to) => to.Address === newColleagueEmail),
           );
-
           if (sentMessage) {
             expect(sentMessage.Subject).toContain(ownerUser.companyName);
             expect(sentMessage.Snippet || '').toContain('SF-INV-');
           }
         }
       } catch {
-        // Mailpit check is non-blocking in environments without docker mailpit
+        // Mailpit check is non-blocking
       }
     });
 
@@ -139,7 +129,6 @@ describe('Team Invitations & Mail Service Life-cycle (E2E)', () => {
       const res = await request(app.getHttpServer())
         .get(`/api/invitations/${invitationToken}`)
         .expect(200);
-
       expect(res.body.token).toBe(invitationToken);
       expect(res.body.email).toBe(newColleagueEmail);
       expect(res.body.organizationName).toBe(ownerUser.companyName);
@@ -153,7 +142,6 @@ describe('Team Invitations & Mail Service Life-cycle (E2E)', () => {
         .get(`/api/organizations/${orgId}/invitations`)
         .set('Authorization', `Bearer ${ownerToken}`)
         .expect(200);
-
       expect(Array.isArray(res.body)).toBe(true);
       expect(res.body.length).toBe(1);
       expect(res.body[0].email).toBe(newColleagueEmail);
@@ -174,10 +162,7 @@ describe('Team Invitations & Mail Service Life-cycle (E2E)', () => {
       const res = await request(app.getHttpServer())
         .post(`/api/organizations/${orgId}/invitations`)
         .set('Authorization', `Bearer ${ownerToken}`)
-        .send({
-          email: newColleagueEmail,
-          role: 'MEMBER',
-        })
+        .send({ email: newColleagueEmail, role: 'MEMBER' })
         .expect(201);
       invitationToken = res.body.token;
     });
@@ -185,11 +170,7 @@ describe('Team Invitations & Mail Service Life-cycle (E2E)', () => {
     it('should require password with at least 6 characters for new user registration', async () => {
       await request(app.getHttpServer())
         .post('/api/invitations/accept')
-        .send({
-          token: invitationToken,
-          fullName: 'New Colleague',
-          password: '123', // Too short
-        })
+        .send({ token: invitationToken, fullName: 'New Colleague', password: '123' })
         .expect(400);
     });
 
@@ -210,13 +191,11 @@ describe('Team Invitations & Mail Service Life-cycle (E2E)', () => {
       expect(res.body.user.organization.id).toBe(orgId);
       expect(res.body.user.organization.role).toBe('MEMBER');
 
-      // Verify invitation in DB is now ACCEPTED
       const dbInv = await prisma.organizationInvitation.findUnique({
         where: { token: invitationToken },
       });
       expect(dbInv?.status).toBe('ACCEPTED');
 
-      // Verify pending invitations list is now empty
       const pendingList = await request(app.getHttpServer())
         .get(`/api/organizations/${orgId}/invitations`)
         .set('Authorization', `Bearer ${ownerToken}`)
@@ -225,18 +204,12 @@ describe('Team Invitations & Mail Service Life-cycle (E2E)', () => {
     });
 
     it('should reject plan selection (POST /api/licenses/select-plan) when executed by invited member with 403', async () => {
-      // 1. Log in as new colleague (MEMBER role)
       const loginRes = await request(app.getHttpServer())
         .post('/api/auth/login')
-        .send({
-          email: newColleagueEmail,
-          password: 'SecureColleaguePassword123!',
-        })
+        .send({ email: newColleagueEmail, password: 'SecureColleaguePassword123!' })
         .expect(200);
-
       const colleagueToken = loginRes.body.tokens.accessToken;
 
-      // 2. Colleague attempts to switch tariff plan to ENTERPRISE -> must be rejected with 403
       const blockedRes = await request(app.getHttpServer())
         .post('/api/licenses/select-plan')
         .set('Authorization', `Bearer ${colleagueToken}`)
@@ -251,7 +224,6 @@ describe('Team Invitations & Mail Service Life-cycle (E2E)', () => {
     let invitationToken: string;
 
     beforeAll(async () => {
-      // 1. Register existing colleague
       await request(app.getHttpServer())
         .post('/api/auth/register')
         .send({
@@ -261,14 +233,10 @@ describe('Team Invitations & Mail Service Life-cycle (E2E)', () => {
         })
         .expect(201);
 
-      // 2. Invite existing colleague to org
       const invRes = await request(app.getHttpServer())
         .post(`/api/organizations/${orgId}/invitations`)
         .set('Authorization', `Bearer ${ownerToken}`)
-        .send({
-          email: existingColleagueEmail,
-          role: 'ADMIN',
-        })
+        .send({ email: existingColleagueEmail, role: 'ADMIN' })
         .expect(201);
 
       invitationToken = invRes.body.token;
@@ -278,28 +246,20 @@ describe('Team Invitations & Mail Service Life-cycle (E2E)', () => {
       const res = await request(app.getHttpServer())
         .get(`/api/invitations/${invitationToken}`)
         .expect(200);
-
       expect(res.body.isExistingUser).toBe(true);
       expect(res.body.email).toBe(existingColleagueEmail);
       expect(res.body.role).toBe('ADMIN');
     });
 
     it('should require password or authenticated session for existing user to accept', async () => {
-      // Unauthenticated without password should fail (defense-in-depth)
       await request(app.getHttpServer())
         .post('/api/invitations/accept')
-        .send({
-          token: invitationToken,
-        })
+        .send({ token: invitationToken })
         .expect(400);
 
-      // Verifying ownership via password succeeds
       const res = await request(app.getHttpServer())
         .post('/api/invitations/accept')
-        .send({
-          token: invitationToken,
-          password: 'ExistingPassword123!',
-        })
+        .send({ token: invitationToken, password: 'ExistingPassword123!' })
         .expect(200);
 
       expect(res.body.user.email).toBe(existingColleagueEmail);
@@ -312,7 +272,6 @@ describe('Team Invitations & Mail Service Life-cycle (E2E)', () => {
     let invitationId: string;
 
     beforeAll(async () => {
-      // Free up a seat first
       const members = await request(app.getHttpServer())
         .get(`/api/organizations/${orgId}/members`)
         .set('Authorization', `Bearer ${ownerToken}`)
@@ -333,14 +292,10 @@ describe('Team Invitations & Mail Service Life-cycle (E2E)', () => {
           .expect(200);
       }
 
-      // Create an invitation to third colleague
       const invRes = await request(app.getHttpServer())
         .post(`/api/organizations/${orgId}/invitations`)
         .set('Authorization', `Bearer ${ownerToken}`)
-        .send({
-          email: thirdColleagueEmail,
-          role: 'MEMBER',
-        })
+        .send({ email: thirdColleagueEmail, role: 'MEMBER' })
         .expect(201);
 
       invitationId = invRes.body.id;
@@ -352,7 +307,6 @@ describe('Team Invitations & Mail Service Life-cycle (E2E)', () => {
         .set('Authorization', `Bearer ${ownerToken}`)
         .expect(200);
 
-      // Verify it no longer appears in pending invitations list
       const res = await request(app.getHttpServer())
         .get(`/api/organizations/${orgId}/invitations`)
         .set('Authorization', `Bearer ${ownerToken}`)

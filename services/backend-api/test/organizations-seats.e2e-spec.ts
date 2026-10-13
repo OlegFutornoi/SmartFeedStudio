@@ -17,6 +17,7 @@ describe('Organizations & Team Seats Quotas (E2E)', () => {
   let prisma: PrismaService;
 
   let ownerToken: string;
+  let ownerUserId: string;
   let orgId: string;
   let soloUserToken: string;
 
@@ -143,6 +144,7 @@ describe('Organizations & Team Seats Quotas (E2E)', () => {
       expect(res.body.user.organization.name).toBe(testOwner.companyName);
       expect(res.body.user.organization.role).toBe('OWNER');
       ownerToken = res.body.tokens.accessToken;
+      ownerUserId = res.body.user.id;
 
       const orgsRes = await request(app.getHttpServer())
         .get('/api/organizations')
@@ -193,10 +195,23 @@ describe('Organizations & Team Seats Quotas (E2E)', () => {
 
   describe('3. Corporate License Upgrade via API (POST /api/licenses/select-plan)', () => {
     it('should allow organization owner to upgrade to PRO plan and automatically link license to organization', async () => {
+      const paymentTx = await prisma.paymentTransaction.create({
+        data: {
+          userId: ownerUserId,
+          orderReference: `SF-ORD-SEATS-PRO-${Date.now()}`,
+          planCode: 'PRO',
+          billingInterval: 'MONTHLY',
+          amount: 49,
+          currency: 'UAH',
+          status: 'APPROVED',
+          provider: 'WAYFORPAY',
+        },
+      });
+
       const res = await request(app.getHttpServer())
         .post('/api/licenses/select-plan')
         .set('Authorization', `Bearer ${ownerToken}`)
-        .send({ planCode: 'PRO' })
+        .send({ planCode: 'PRO', paymentTransactionId: paymentTx.id })
         .expect(201);
 
       expect(res.body.planType).toBe('PRO');

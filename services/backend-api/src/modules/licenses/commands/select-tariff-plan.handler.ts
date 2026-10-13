@@ -1,5 +1,12 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { ForbiddenException, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { LicenseEntity, PlanType, PLAN_LIMITS_MAP, Role } from '@smartfeed/shared';
 import * as crypto from 'crypto';
 import { PrismaService } from '@/prisma/prisma.service';
@@ -18,7 +25,13 @@ export class SelectTariffPlanHandler implements ICommandHandler<
   constructor(private readonly prisma: PrismaService) {}
 
   async execute(command: SelectTariffPlanCommand): Promise<LicenseEntity> {
-    const { userId, planCode, billingInterval = 'monthly' } = command;
+    const {
+      userId,
+      planCode,
+      billingInterval = 'monthly',
+      paymentTransactionId,
+      isInternalSystemCall,
+    } = command;
 
     return organizationMutex.runExclusive(userId, async () => {
       const normalizedCode = planCode.toUpperCase().trim();
@@ -31,7 +44,33 @@ export class SelectTariffPlanHandler implements ICommandHandler<
         throw new ForbiddenException('SUPER_ADMIN_CANNOT_SELECT_PLAN');
       }
 
-      // 1. Fetch requested tariff plan
+      // 1. Check user's organization roles (Only owner can change plan)
+      const ownedOrgMembership = await this.prisma.organizationMember.findFirst({
+        where: { userId, role: 'OWNER' },
+        include: { organization: true },
+      });
+
+      const anyMembership = await this.prisma.organizationMember.findFirst({
+        where: { userId },
+        include: { organization: true },
+      });
+
+      if (!ownedOrgMembership && anyMembership && anyMembership.role !== 'OWNER') {
+        throw new ForbiddenException({
+          statusCode: 403,
+          error: 'Forbidden',
+          code: 'ONLY_OWNER_CAN_CHANGE_PLAN',
+          message: 'Тільки власник організації має право змінювати або оплачувати тарифний план',
+          details:
+            'You are an invited member of this workspace. Plan selection is managed by the organization owner.',
+        });
+      }
+
+      const orgMembership = ownedOrgMembership || anyMembership;
+      const organizationId = orgMembership?.organizationId || null;
+      const organizationName = orgMembership?.organization?.name || null;
+
+      // 2. Fetch requested tariff plan
       const dbPlan = await this.prisma.tariffPlan.findUnique({
         where: { code: normalizedCode },
       });
@@ -40,6 +79,45 @@ export class SelectTariffPlanHandler implements ICommandHandler<
         throw new NotFoundException(
           `Tariff plan with code "${normalizedCode}" not found or inactive`,
         );
+      }
+
+      // SEC-01: Prohibit unpaid upgrades to commercial plans (OWASP API4 Broken Business Logic)
+      const isCommercial =
+        Number(dbPlan.priceMonthly || 0) > 0 || Number(dbPlan.priceYearly || 0) > 0;
+      if (isCommercial && !isInternalSystemCall) {
+        if (!paymentTransactionId) {
+          throw new HttpException(
+            {
+              statusCode: HttpStatus.PAYMENT_REQUIRED,
+              error: 'Payment Required',
+              code: 'PAYMENT_REQUIRED',
+              message:
+                'Комерційний тариф вимагає проходження чекауту та успішної оплати через /api/payments/checkout',
+            },
+            HttpStatus.PAYMENT_REQUIRED,
+          );
+        }
+
+        const paymentTx = await this.prisma.paymentTransaction.findUnique({
+          where: { id: paymentTransactionId },
+        });
+
+        if (
+          !paymentTx ||
+          paymentTx.status !== 'APPROVED' ||
+          paymentTx.userId !== userId ||
+          paymentTx.planCode.toUpperCase() !== normalizedCode
+        ) {
+          throw new HttpException(
+            {
+              statusCode: HttpStatus.PAYMENT_REQUIRED,
+              error: 'Payment Required',
+              code: 'PAYMENT_REQUIRED',
+              message: 'Комерційний тариф вимагає дійсної та підтвердженої оплати',
+            },
+            HttpStatus.PAYMENT_REQUIRED,
+          );
+        }
       }
 
       const planTypeEnum = Object.values(PlanType).includes(normalizedCode as PlanType)
@@ -71,32 +149,6 @@ export class SelectTariffPlanHandler implements ICommandHandler<
       const expiresAt = durationDays
         ? new Date(Date.now() + durationDays * 24 * 60 * 60 * 1000)
         : null;
-
-      // 2. Check user's organization roles
-      const ownedOrgMembership = await this.prisma.organizationMember.findFirst({
-        where: { userId, role: 'OWNER' },
-        include: { organization: true },
-      });
-
-      const anyMembership = await this.prisma.organizationMember.findFirst({
-        where: { userId },
-        include: { organization: true },
-      });
-
-      if (!ownedOrgMembership && anyMembership && anyMembership.role !== 'OWNER') {
-        throw new ForbiddenException({
-          statusCode: 403,
-          error: 'Forbidden',
-          code: 'ONLY_OWNER_CAN_CHANGE_PLAN',
-          message: 'Тільки власник організації має право змінювати або оплачувати тарифний план',
-          details:
-            'You are an invited member of this workspace. Plan selection is managed by the organization owner.',
-        });
-      }
-
-      const orgMembership = ownedOrgMembership || anyMembership;
-      const organizationId = orgMembership?.organizationId || null;
-      const organizationName = orgMembership?.organization?.name || null;
 
       // 3. Deactivate previous active licenses and create fresh active license inside an atomic transaction
       const randomBytes = crypto.randomBytes(6).toString('hex').toUpperCase();

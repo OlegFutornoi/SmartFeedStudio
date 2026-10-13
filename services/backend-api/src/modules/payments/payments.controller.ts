@@ -17,7 +17,6 @@ import {
   PaymentProvider,
   PaymentSettingDto,
   PaymentStatsDto,
-  PaymentStatus,
   PaymentTransactionDto,
   Role,
   UpdatePaymentSettingDto,
@@ -36,6 +35,10 @@ import { GetPaymentStatsQuery } from '@/modules/payments/queries/get-payment-sta
 import { GetPaymentSettingsQuery } from '@/modules/payments/queries/get-payment-settings.query';
 import { CreateCheckoutDto } from '@/modules/payments/dto/create-checkout.dto';
 import { SimulateSandboxWebhookDto } from '@/modules/payments/dto/simulate-sandbox-webhook.dto';
+import {
+  GetPaymentTransactionsQueryDto,
+  GetMyTransactionsQueryDto,
+} from '@/modules/payments/dto/get-payment-transactions-query.dto';
 
 @ApiTags('Payments')
 @ApiBearerAuth()
@@ -88,19 +91,15 @@ export class PaymentsController {
   @Roles(Role.SUPER_ADMIN, Role.ADMIN)
   @Get('transactions')
   async getTransactions(
-    @Query('status') status?: PaymentStatus,
-    @Query('provider') provider?: PaymentProvider,
-    @Query('search') search?: string,
-    @Query('limit') limit?: string,
-    @Query('offset') offset?: string,
+    @Query() query: GetPaymentTransactionsQueryDto,
   ): Promise<{ transactions: PaymentTransactionDto[]; total: number }> {
     return this.queryBus.execute(
       new GetPaymentTransactionsQuery({
-        status,
-        provider,
-        search,
-        limit: limit ? parseInt(limit, 10) : 50,
-        offset: offset ? parseInt(offset, 10) : 0,
+        status: query.status,
+        provider: query.provider,
+        search: query.search,
+        limit: query.limit,
+        offset: query.offset,
       }),
     );
   }
@@ -112,14 +111,13 @@ export class PaymentsController {
   @Get('my-transactions')
   async getMyTransactions(
     @CurrentUser('id') userId: string,
-    @Query('limit') limit?: string,
-    @Query('offset') offset?: string,
+    @Query() query: GetMyTransactionsQueryDto,
   ): Promise<{ transactions: PaymentTransactionDto[]; total: number }> {
     return this.queryBus.execute(
       new GetPaymentTransactionsQuery({
         userId,
-        limit: limit ? parseInt(limit, 10) : 20,
-        offset: offset ? parseInt(offset, 10) : 0,
+        limit: query.limit,
+        offset: query.offset,
       }),
     );
   }

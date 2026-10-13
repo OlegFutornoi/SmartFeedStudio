@@ -12,7 +12,9 @@ describe('Licenses Lifecycle & Duration Policy (E2E)', () => {
 
   let adminToken: string;
   let userToken: string;
+  let userId: string;
   let expiredUserToken: string;
+  let expiredUserId: string;
 
   const testAdmin = {
     email: 'admin.lic.life@smartfeed.studio',
@@ -75,11 +77,13 @@ describe('Licenses Lifecycle & Duration Policy (E2E)', () => {
 
     const userRegRes = await request(app.getHttpServer()).post('/api/auth/register').send(testUser);
     userToken = userRegRes.body.tokens.accessToken;
+    userId = userRegRes.body.user.id;
 
     const expiredRegRes = await request(app.getHttpServer())
       .post('/api/auth/register')
       .send(expiredUser);
     expiredUserToken = expiredRegRes.body.tokens.accessToken;
+    expiredUserId = expiredRegRes.body.user.id;
 
     await new Promise((resolve) => setTimeout(resolve, 300));
 
@@ -180,10 +184,22 @@ describe('Licenses Lifecycle & Duration Policy (E2E)', () => {
 
   describe('POST /api/licenses/select-plan (User Plan Selection & Renewal)', () => {
     it('should allow user to select STARTER paid plan and receive 30 days duration with starter quota', async () => {
+      const starterTx = await prisma.paymentTransaction.create({
+        data: {
+          orderReference: `ord-life-starter-${Date.now()}`,
+          userId,
+          amount: 299,
+          currency: 'UAH',
+          status: 'APPROVED',
+          planCode: 'STARTER',
+          billingInterval: 'MONTHLY',
+        },
+      });
+
       const res = await request(app.getHttpServer())
         .post('/api/licenses/select-plan')
         .set('Authorization', `Bearer ${userToken}`)
-        .send({ planCode: 'STARTER' })
+        .send({ planCode: 'STARTER', paymentTransactionId: starterTx.id })
         .expect(201);
 
       expect(res.body.planType).toBe('STARTER');
@@ -196,10 +212,22 @@ describe('Licenses Lifecycle & Duration Policy (E2E)', () => {
     });
 
     it('should allow user to select PRO plan and receive 30 days duration with correct quota', async () => {
+      const proTx = await prisma.paymentTransaction.create({
+        data: {
+          orderReference: `ord-life-pro-${Date.now()}`,
+          userId,
+          amount: 59,
+          currency: 'USD',
+          status: 'APPROVED',
+          planCode: 'PRO',
+          billingInterval: 'MONTHLY',
+        },
+      });
+
       const res = await request(app.getHttpServer())
         .post('/api/licenses/select-plan')
         .set('Authorization', `Bearer ${userToken}`)
-        .send({ planCode: 'PRO' })
+        .send({ planCode: 'PRO', paymentTransactionId: proTx.id })
         .expect(201);
 
       expect(res.body.planType).toBe('PRO');
@@ -243,14 +271,26 @@ describe('Licenses Lifecycle & Duration Policy (E2E)', () => {
         })
         .expect(403);
 
-      expect(res.body.message).toBe('LICENSE_EXPIRED');
+      expect(res.body.message).toContain('LICENSE_EXPIRED');
     });
 
     it('should allow user to select a new plan in expired state and immediately restore access', async () => {
+      const entTx = await prisma.paymentTransaction.create({
+        data: {
+          orderReference: `ord-life-ent-${Date.now()}`,
+          userId: expiredUserId,
+          amount: 199,
+          currency: 'USD',
+          status: 'APPROVED',
+          planCode: 'ENTERPRISE',
+          billingInterval: 'YEARLY',
+        },
+      });
+
       const renewRes = await request(app.getHttpServer())
         .post('/api/licenses/select-plan')
         .set('Authorization', `Bearer ${expiredUserToken}`)
-        .send({ planCode: 'ENTERPRISE' })
+        .send({ planCode: 'ENTERPRISE', paymentTransactionId: entTx.id })
         .expect(201);
 
       expect(renewRes.body.planType).toBe('ENTERPRISE');

@@ -58,8 +58,14 @@ export class GetPageGuidesHandler implements IQueryHandler<
         };
       }
 
-      // Fallback from canonical default guides
-      const defaultGuide = DEFAULT_PAGE_GUIDES[normalizedRoute];
+      // Fallback from canonical default guides with route aliasing
+      const defaultGuide =
+        DEFAULT_PAGE_GUIDES[normalizedRoute] ||
+        (normalizedRoute === '/ai-enrichment' ? DEFAULT_PAGE_GUIDES['/ai'] : undefined) ||
+        (normalizedRoute === '/ai' ? DEFAULT_PAGE_GUIDES['/ai-enrichment'] : undefined) ||
+        (normalizedRoute === '/channels' ? DEFAULT_PAGE_GUIDES['/catalogs'] : undefined) ||
+        (normalizedRoute === '/quota' ? DEFAULT_PAGE_GUIDES['/plans'] : undefined);
+
       if (defaultGuide) {
         return {
           ...defaultGuide,

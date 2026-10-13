@@ -19,6 +19,7 @@ import { PaymentsModule } from '@/modules/payments/payments.module';
 import { FeedsModule } from '@/modules/feeds/feeds.module';
 import { LegalModule } from '@/modules/legal/legal.module';
 import { PageGuidesModule } from '@/modules/page-guides/page-guides.module';
+import { SuppliersModule } from '@/modules/suppliers/suppliers.module';
 
 @Module({
   imports: [
@@ -83,6 +84,7 @@ import { PageGuidesModule } from '@/modules/page-guides/page-guides.module';
     FeedsModule,
     LegalModule,
     PageGuidesModule,
+    SuppliersModule,
   ],
   providers: [
     {

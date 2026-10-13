@@ -57,16 +57,8 @@ export async function fetchFeedContent(url: string, token?: string): Promise<str
       if (data?.content && data.content.trim().length > 10) {
         return data.content;
       }
-      throw new Error('FEED_EMPTY');
     }
-
-    if (relayResp.status === 404) throw new Error('FEED_NOT_FOUND');
-    if (relayResp.status === 504) throw new Error('FEED_TIMEOUT');
-    if (relayResp.status >= 500) throw new Error('FEED_SERVER_ERROR');
   } catch (err: unknown) {
-    if (err instanceof Error && err.message.startsWith('FEED_')) {
-      throw err;
-    }
     console.warn('[feeds:fetchFeedContent] Backend relay fetch failed, trying local proxy:', err);
   }
 

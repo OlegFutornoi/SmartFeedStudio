@@ -30,6 +30,7 @@ import { CreateLicenseCommand } from '@/modules/licenses/commands/create-license
 import { SelectTariffPlanCommand } from '@/modules/licenses/commands/select-tariff-plan.command';
 import { UpdateLicenseStatusCommand } from '@/modules/licenses/commands/update-license-status.command';
 import { DeleteLicenseCommand } from '@/modules/licenses/commands/delete-license.command';
+import { GetAdminLicensesQueryDto } from '@/modules/licenses/dto/get-admin-licenses-query.dto';
 import { IsBoolean, IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class SelectPlanDto {
@@ -40,6 +41,10 @@ export class SelectPlanDto {
   @IsOptional()
   @IsString()
   billingInterval?: 'monthly' | 'yearly';
+
+  @IsOptional()
+  @IsString()
+  paymentTransactionId?: string;
 }
 
 export class UpgradeLicenseDto {
@@ -102,13 +107,13 @@ export class LicensesController {
   @ApiQuery({ name: 'offset', required: false, type: Number })
   @ApiResponse({ status: 200, description: 'List of user licenses' })
   @ApiResponse({ status: 403, description: 'Forbidden' })
-  async getAdminLicenses(
-    @Query('search') search?: string,
-    @Query('limit') limit?: number,
-    @Query('offset') offset?: number,
-  ): Promise<AdminLicenseItemDto[]> {
+  async getAdminLicenses(@Query() query: GetAdminLicensesQueryDto): Promise<AdminLicenseItemDto[]> {
     return this.queryBus.execute(
-      new GetAdminLicensesQuery(search, limit ? Number(limit) : 50, offset ? Number(offset) : 0),
+      new GetAdminLicensesQuery(
+        query.search,
+        query.limit ? Number(query.limit) : 50,
+        query.offset ? Number(query.offset) : 0,
+      ),
     );
   }
 
@@ -122,7 +127,13 @@ export class LicensesController {
     @Body() dto: SelectPlanDto,
   ): Promise<LicenseEntity> {
     return this.commandBus.execute(
-      new SelectTariffPlanCommand(userId, dto.planCode, dto.billingInterval || 'monthly'),
+      new SelectTariffPlanCommand(
+        userId,
+        dto.planCode,
+        dto.billingInterval || 'monthly',
+        dto.paymentTransactionId,
+        false,
+      ),
     );
   }
 

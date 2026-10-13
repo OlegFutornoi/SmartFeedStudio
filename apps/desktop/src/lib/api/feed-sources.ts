@@ -28,7 +28,34 @@ export async function getSupplierFeedSources(
   supplierId: string,
   token?: string,
 ): Promise<FeedSourceItemDto[]> {
-  if (!isTauri()) {
+  try {
+    const sources = await localDb.feeds.getSupplierFeedSources(supplierId);
+    if (sources && sources.length > 0) {
+      return sources.map((s) => ({
+        id: s.id,
+        supplierId: s.supplierId,
+        name: s.name,
+        sourceType: s.sourceType,
+        fileFormat: s.fileFormat || 'XML',
+        sourceUrl: s.sourceUrl || undefined,
+        autoUpdatePrices: s.autoUpdatePrices ?? true,
+        autoUpdateStocks: s.autoUpdateStocks ?? true,
+        lastSyncedAt: s.lastSyncedAt
+          ? typeof s.lastSyncedAt === 'string'
+            ? s.lastSyncedAt
+            : s.lastSyncedAt.toISOString()
+          : null,
+        lastSyncStatus: s.lastSyncStatus || 'SUCCESS',
+        productsCount: s.productsCount ?? 0,
+        createdAt: typeof s.createdAt === 'string' ? s.createdAt : s.createdAt.toISOString(),
+        updatedAt: typeof s.updatedAt === 'string' ? s.updatedAt : s.updatedAt.toISOString(),
+      }));
+    }
+  } catch (err) {
+    console.warn('[feed-sources] localDb lookup failed, checking remote:', err);
+  }
+
+  if (!isTauri() && token) {
     try {
       const response = await fetchWithAuth(
         `/feeds/suppliers/${supplierId}/sources`,
@@ -43,30 +70,38 @@ export async function getSupplierFeedSources(
     }
   }
 
-  const sources = await localDb.feeds.getSupplierFeedSources(supplierId);
-  return sources.map((s) => ({
-    id: s.id,
-    supplierId: s.supplierId,
-    name: s.name,
-    sourceType: s.sourceType,
-    fileFormat: s.fileFormat || 'XML',
-    sourceUrl: s.sourceUrl || undefined,
-    autoUpdatePrices: s.autoUpdatePrices ?? true,
-    autoUpdateStocks: s.autoUpdateStocks ?? true,
-    lastSyncedAt: s.lastSyncedAt
-      ? typeof s.lastSyncedAt === 'string'
-        ? s.lastSyncedAt
-        : s.lastSyncedAt.toISOString()
-      : null,
-    lastSyncStatus: s.lastSyncStatus || 'SUCCESS',
-    productsCount: s.productsCount ?? 0,
-    createdAt: typeof s.createdAt === 'string' ? s.createdAt : s.createdAt.toISOString(),
-    updatedAt: typeof s.updatedAt === 'string' ? s.updatedAt : s.updatedAt.toISOString(),
-  }));
+  return [];
 }
 
 export async function getAllFeedSources(token?: string): Promise<FeedSourceItemDto[]> {
-  if (!isTauri()) {
+  try {
+    const sources = await localDb.feeds.getAllFeedSources();
+    if (sources && sources.length > 0) {
+      return sources.map((s) => ({
+        id: s.id,
+        supplierId: s.supplierId,
+        name: s.name,
+        sourceType: s.sourceType,
+        fileFormat: s.fileFormat || 'XML',
+        sourceUrl: s.sourceUrl || undefined,
+        autoUpdatePrices: s.autoUpdatePrices ?? true,
+        autoUpdateStocks: s.autoUpdateStocks ?? true,
+        lastSyncedAt: s.lastSyncedAt
+          ? typeof s.lastSyncedAt === 'string'
+            ? s.lastSyncedAt
+            : s.lastSyncedAt.toISOString()
+          : null,
+        lastSyncStatus: s.lastSyncStatus || 'SUCCESS',
+        productsCount: s.productsCount ?? 0,
+        createdAt: typeof s.createdAt === 'string' ? s.createdAt : s.createdAt.toISOString(),
+        updatedAt: typeof s.updatedAt === 'string' ? s.updatedAt : s.updatedAt.toISOString(),
+      }));
+    }
+  } catch (err) {
+    console.warn('[feed-sources] localDb getAllFeedSources failed:', err);
+  }
+
+  if (!isTauri() && token) {
     try {
       const response = await fetchWithAuth('/feeds/sources', { method: 'GET' }, token);
       if (response.ok) {
@@ -77,26 +112,7 @@ export async function getAllFeedSources(token?: string): Promise<FeedSourceItemD
     }
   }
 
-  const sources = await localDb.feeds.getAllFeedSources();
-  return sources.map((s) => ({
-    id: s.id,
-    supplierId: s.supplierId,
-    name: s.name,
-    sourceType: s.sourceType,
-    fileFormat: s.fileFormat || 'XML',
-    sourceUrl: s.sourceUrl || undefined,
-    autoUpdatePrices: s.autoUpdatePrices ?? true,
-    autoUpdateStocks: s.autoUpdateStocks ?? true,
-    lastSyncedAt: s.lastSyncedAt
-      ? typeof s.lastSyncedAt === 'string'
-        ? s.lastSyncedAt
-        : s.lastSyncedAt.toISOString()
-      : null,
-    lastSyncStatus: s.lastSyncStatus || 'SUCCESS',
-    productsCount: s.productsCount ?? 0,
-    createdAt: typeof s.createdAt === 'string' ? s.createdAt : s.createdAt.toISOString(),
-    updatedAt: typeof s.updatedAt === 'string' ? s.updatedAt : s.updatedAt.toISOString(),
-  }));
+  return [];
 }
 
 export async function syncSupplierFeedSource(

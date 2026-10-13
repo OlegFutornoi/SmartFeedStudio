@@ -213,12 +213,60 @@ export async function setupSuppliersFeedsRoutes(page: Page) {
     });
   });
 
+  const currentSuppliers = [...mockSuppliers.map((s) => ({ ...s }))];
+
   await page.route(/\/api\/suppliers(\?|$)/, async (route) => {
     await route.fulfill({
       status: 200,
       contentType: 'application/json',
-      body: JSON.stringify(mockSuppliers),
+      body: JSON.stringify(currentSuppliers),
     });
+  });
+
+  await page.route(/\/api\/suppliers\/([^/?#]+)$/, async (route) => {
+    const method = route.request().method();
+    const id = route.request().url().split('/').pop()?.split('?')[0];
+
+    if (method === 'PATCH') {
+      const patch = route.request().postDataJSON() || {};
+      const foundIndex = currentSuppliers.findIndex((s) => s.id === id);
+      const found = foundIndex !== -1 ? currentSuppliers[foundIndex] : currentSuppliers[0];
+      const updated = { ...found, ...patch };
+      if (foundIndex !== -1) {
+        currentSuppliers[foundIndex] = updated;
+      }
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(updated),
+      });
+      return;
+    }
+
+    if (method === 'GET') {
+      const found = currentSuppliers.find((s) => s.id === id) || currentSuppliers[0];
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(found),
+      });
+      return;
+    }
+
+    if (method === 'DELETE') {
+      const foundIndex = currentSuppliers.findIndex((s) => s.id === id);
+      if (foundIndex !== -1) {
+        currentSuppliers.splice(foundIndex, 1);
+      }
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ success: true }),
+      });
+      return;
+    }
+
+    await route.fallback();
   });
 
   await page.route('**/api/feeds/jobs/active', async (route) => {

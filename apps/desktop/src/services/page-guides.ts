@@ -38,6 +38,8 @@ export async function getAiAssistantProfile(token?: string): Promise<AiAssistant
   return DEFAULT_AI_ASSISTANT_PROFILE;
 }
 
+const inFlightRequests: Record<string, Promise<PageGuideDto> | undefined> = {};
+
 /**
  * Fetch page guide for a specific route with instant offline fallback.
  */
@@ -49,26 +51,43 @@ export async function getPageGuide(route: string, token?: string): Promise<PageG
     return cachedGuides[normalizedRoute];
   }
 
-  try {
-    const headers: Record<string, string> = {};
-    if (token) headers['Authorization'] = `Bearer ${token}`;
-
-    const res = await fetch(`${API_BASE_URL}/page-guides/${encodeURIComponent(routeKey)}`, {
-      headers,
-    });
-    if (res.ok) {
-      const data = await res.json();
-      cachedGuides[normalizedRoute] = data;
-      return data;
-    }
-  } catch (err) {
-    console.warn(`[PageGuides] Offline fallback for route ${normalizedRoute}:`, err);
+  const existingInFlight = inFlightRequests[normalizedRoute];
+  if (existingInFlight) {
+    return existingInFlight;
   }
 
-  // Instant canonical fallback
-  const fallback = DEFAULT_PAGE_GUIDES[normalizedRoute] || DEFAULT_PAGE_GUIDES['/'];
-  const profile = cachedAssistantProfile || DEFAULT_AI_ASSISTANT_PROFILE;
-  return { ...fallback, assistant: profile };
+  const promise = (async () => {
+    try {
+      const headers: Record<string, string> = {};
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+
+      const res = await fetch(`${API_BASE_URL}/page-guides/${encodeURIComponent(routeKey)}`, {
+        headers,
+      });
+      if (res.ok) {
+        const data = await res.json();
+        cachedGuides[normalizedRoute] = data;
+        return data;
+      }
+    } catch (err) {
+      console.warn(`[PageGuides] Offline fallback for route ${normalizedRoute}:`, err);
+    } finally {
+      delete inFlightRequests[normalizedRoute];
+    }
+
+    // Instant canonical fallback
+    const fallback =
+      DEFAULT_PAGE_GUIDES[normalizedRoute] ||
+      (normalizedRoute === '/ai-enrichment' ? DEFAULT_PAGE_GUIDES['/ai'] : undefined) ||
+      DEFAULT_PAGE_GUIDES['/'];
+    const profile = cachedAssistantProfile || DEFAULT_AI_ASSISTANT_PROFILE;
+    const guide = { ...fallback, assistant: profile };
+    cachedGuides[normalizedRoute] = guide;
+    return guide;
+  })();
+
+  inFlightRequests[normalizedRoute] = promise;
+  return promise;
 }
 
 /**

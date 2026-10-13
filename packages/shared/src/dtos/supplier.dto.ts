@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { CurrencyCode, ExchangeRateMode, PriceRoundingMode } from '../enums/index.js';
 
 export const SupplierDtoSchema = z.object({
   id: z.string(),
@@ -10,11 +11,25 @@ export const SupplierDtoSchema = z.object({
   contactEmail: z.string().email().nullable().optional(),
   website: z.string().url().nullable().optional(),
   notes: z.string().nullable().optional(),
+  logoUrl: z.string().nullable().optional(),
+
+  // Currency & Multi-Currency configuration
+  baseCurrency: z.nativeEnum(CurrencyCode).default(CurrencyCode.UAH),
+  targetCurrency: z.nativeEnum(CurrencyCode).default(CurrencyCode.UAH),
+  exchangeRateMode: z.nativeEnum(ExchangeRateMode).default(ExchangeRateMode.MANUAL),
+  exchangeRate: z.number().positive().default(1.0),
+  currencyBufferPercent: z.number().min(0).max(100).default(0),
+  priceRounding: z.nativeEnum(PriceRoundingMode).default(PriceRoundingMode.NONE),
+
+  // Default markups
   defaultMarginPercent: z.number().nonnegative().default(0),
   defaultFixedMarkup: z.number().nonnegative().default(0),
+
   isActive: z.boolean().default(true),
   productsCount: z.number().int().nonnegative().optional(),
   activeFeedsCount: z.number().int().nonnegative().optional(),
+  categoriesCount: z.number().int().nonnegative().optional(),
+  activeCategoriesCount: z.number().int().nonnegative().optional(),
   createdAt: z.union([z.date(), z.string()]),
   updatedAt: z.union([z.date(), z.string()]),
 });
@@ -31,8 +46,21 @@ export const CreateSupplierDtoSchema = z.object({
   contactEmail: z.string().email('Invalid email address').optional().or(z.literal('')),
   website: z.string().url('Invalid URL').optional().or(z.literal('')),
   notes: z.string().optional(),
-  defaultMarginPercent: z.number().min(0, 'Margin percent cannot be negative').default(0),
-  defaultFixedMarkup: z.number().min(0, 'Fixed markup cannot be negative').default(0),
+  logoUrl: z.string().optional(),
+
+  baseCurrency: z.nativeEnum(CurrencyCode).default(CurrencyCode.UAH).optional(),
+  targetCurrency: z.nativeEnum(CurrencyCode).default(CurrencyCode.UAH).optional(),
+  exchangeRateMode: z.nativeEnum(ExchangeRateMode).default(ExchangeRateMode.MANUAL).optional(),
+  exchangeRate: z.number().positive().default(1.0).optional(),
+  currencyBufferPercent: z.number().min(0).max(100).default(0).optional(),
+  priceRounding: z.nativeEnum(PriceRoundingMode).default(PriceRoundingMode.NONE).optional(),
+
+  defaultMarginPercent: z
+    .number()
+    .min(0, 'Margin percent cannot be negative')
+    .default(0)
+    .optional(),
+  defaultFixedMarkup: z.number().min(0, 'Fixed markup cannot be negative').default(0).optional(),
   isActive: z.boolean().default(true).optional(),
 });
 

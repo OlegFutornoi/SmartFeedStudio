@@ -21,7 +21,7 @@ Whenever invoked or assigned any frontend, UI, styling, localization, or Playwri
 
 2. **Stage 2: Planning & Modularity Budget (Zero Plan Dumping)**
    - **Skills**: `planning-and-lifecycle`, `spec-driven-development`.
-   - **How used**: Formulate deterministic plan in `plans/active/<feature_name>.md`. Plan strict component modularity: **max 250–300 lines per file**. Decompose monolithic UI into dedicated subcomponents (`*Header.tsx`, `*Table.tsx`, `*Dialog.tsx`). **Zero Plan Dumping in Chat**: all details, checklists, and breakdown live in the plan file; chat response contains ONLY a concise summary (1-2 sentences) and link `[План](file:///...)`. Await user confirmation before coding.
+   - **How used**: Formulate deterministic plan in `plans/active/<feature_name>.md`. Plan strict component modularity: **max 250 lines per file**. **Mandatory Table Row Extraction**: any DataTable with >3 columns or interactive cells (actions/switches/badges) MUST extract row rendering into `*TableRow.tsx` (<150 lines); inlining all cells in the table map is prohibited. **List Page Modularity**: list pages MUST extract dialogs into `*DialogsContainer.tsx` and modal state into `use*PageState.ts` to keep the main page <180 lines. **Session Storage Decoupling**: Context providers MUST encapsulate `localStorage` reads/writes into dedicated storage modules (`authSessionStorage.ts`). **Zero Plan Dumping in Chat**: concise summary (1-2 sentences) and link `[План](file:///...)`. Await user confirmation before coding.
 
 3. **Stage 3: UI/UX Architecture & Theme Harmony**
    - **Skills**: `ui-ux-pro-max`, `emil-design-eng`, `image`.
@@ -33,7 +33,7 @@ Whenever invoked or assigned any frontend, UI, styling, localization, or Playwri
 
 5. **Stage 5: Implementation GREEN & Polish**
    - **Skills**: `vercel-react-best-practices`, `i18n-localization`, `incremental-implementation`.
-   - **How used**: Implement UI components to turn tests GREEN. Ensure 100% `@/` path aliases (zero relative `../` or `./` imports). Zero `any` types; strictly use contracts from `@smartfeed/shared`. Zero silent failures: no empty `catch {}` blocks.
+   - **How used**: Implement UI components to turn tests GREEN. Enforce modularity budgets: `*TableRow.tsx` (<150 lines), `*DataTable.tsx` (<180 lines), `*ListPage.tsx` (<180 lines). In `mock-driver.ts`, delegate domain logic to specialized modules (`mock-suppliers.ts`, `mock-feeds.ts`). Ensure 100% `@/` path aliases (zero relative `../` or `./` imports). Zero `any` types; strictly use contracts from `@smartfeed/shared`. Zero silent failures: no empty `catch {}` blocks.
 
 6. **Stage 6: Code Review & DoD Verification**
    - **Skills**: `code-review-and-quality`, `automated-guardrails-ci`.

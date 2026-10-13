@@ -6,16 +6,12 @@ import {
   getCurrentUser,
   refreshAuthSession,
   updateUserAvatar,
-  TOKEN_KEY,
-  REFRESH_TOKEN_KEY,
-  USER_KEY,
   type LoginCredentials,
   type RegisterCredentials,
 } from '@/lib/api';
 import { setSentryUser } from '@/lib/sentry';
 import { getLocalAvatar, saveLocalAvatar } from '@/services/localUserProfile';
-import { mockDatabaseDriver } from '@/services/local-db/mock-driver';
-import { emitDataSync } from '@/lib/syncEvents';
+import { authSessionStorage } from '@/services/authSessionStorage';
 
 interface AuthContextType {
   user: UserProfile | null;
@@ -37,43 +33,12 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [token, setToken] = useState<string | null>(() => {
-    return localStorage.getItem(TOKEN_KEY);
-  });
-
-  const [user, setUser] = useState<UserProfile | null>(() => {
-    const saved = localStorage.getItem(USER_KEY);
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved) as UserProfile;
-        if (parsed?.id) {
-          mockDatabaseDriver.switchUser(parsed.id);
-        }
-        return parsed;
-      } catch (e) {
-        console.warn('[AuthContext] Failed to parse saved user profile:', e);
-        return null;
-      }
-    }
-    return null;
-  });
-
-  const [isSuspended, setIsSuspended] = useState<boolean>(() => {
-    const saved = localStorage.getItem(USER_KEY);
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved) as UserProfile;
-        return parsed?.isActive === false;
-      } catch {
-        return false;
-      }
-    }
-    return false;
-  });
-
-  const [isLoading, setIsLoading] = useState<boolean>(() => {
-    return !!localStorage.getItem(TOKEN_KEY);
-  });
+  const [token, setToken] = useState<string | null>(() => authSessionStorage.getInitialToken());
+  const [user, setUser] = useState<UserProfile | null>(() => authSessionStorage.getInitialUser());
+  const [isSuspended, setIsSuspended] = useState<boolean>(() =>
+    authSessionStorage.getInitialSuspended(),
+  );
+  const [isLoading, setIsLoading] = useState<boolean>(() => !!authSessionStorage.getInitialToken());
 
   // Listen to global user-suspended events dispatched by API client on 403 Forbidden
   useEffect(() => {
@@ -86,18 +51,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const logout = useCallback(() => {
-    localStorage.removeItem(TOKEN_KEY);
-    localStorage.removeItem(REFRESH_TOKEN_KEY);
-    localStorage.removeItem(USER_KEY);
-    mockDatabaseDriver.switchUser(null);
-    emitDataSync(['suppliers', 'feeds', 'products', 'quotas', 'all']);
+    authSessionStorage.clearSession();
     setToken(null);
     setUser(null);
     setIsSuspended(false);
   }, []);
 
+  const setAuthSession = useCallback(
+    (authResponse: {
+      tokens: { accessToken: string; refreshToken?: string };
+      user: UserProfile;
+    }) => {
+      const accessToken = authResponse.tokens.accessToken;
+      const userProfile = authResponse.user;
+
+      authSessionStorage.saveSession(authResponse.tokens, userProfile);
+      setToken(accessToken);
+      setUser(userProfile);
+      setIsSuspended(userProfile.isActive === false);
+    },
+    [],
+  );
+
   const refreshProfile = useCallback(async () => {
-    const activeToken = localStorage.getItem(TOKEN_KEY);
+    const activeToken = authSessionStorage.getInitialToken();
     if (!activeToken) {
       setIsLoading(false);
       return;
@@ -105,37 +82,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     try {
       const profile = await getCurrentUser(activeToken);
-      if (profile.isActive === false) {
-        setIsSuspended(true);
-      } else {
-        setIsSuspended(false);
-      }
+      setIsSuspended(profile.isActive === false);
+
       const localAvatar = await getLocalAvatar(profile.id);
       if (localAvatar === '') {
         profile.avatarUrl = null;
       } else if (localAvatar) {
         profile.avatarUrl = localAvatar;
       }
-      mockDatabaseDriver.switchUser(profile.id);
+
       setUser(profile);
-      localStorage.setItem(USER_KEY, JSON.stringify(profile));
-      // In case token was silently refreshed during getCurrentUser
-      const currentStoredToken = localStorage.getItem(TOKEN_KEY);
+      authSessionStorage.saveUser(profile);
+
+      const currentStoredToken = authSessionStorage.getInitialToken();
       if (currentStoredToken && currentStoredToken !== activeToken) {
         setToken(currentStoredToken);
       }
     } catch (e: unknown) {
       console.warn('[AuthContext:refreshProfile] Failed to refresh user profile:', e);
-      // If user is suspended (HTTP 403 / USER_SUSPENDED), keep session state and activate blocker
       const err = e as { statusCode?: number; data?: { code?: string } };
       if (err?.statusCode === 403 || err?.data?.code === 'USER_SUSPENDED') {
         setIsSuspended(true);
         setUser((prev) => (prev ? { ...prev, isActive: false } : prev));
         return;
       }
-      // Only logout if even refresh failed
-      const refreshToken = localStorage.getItem(REFRESH_TOKEN_KEY);
-      if (!refreshToken) {
+      if (!authSessionStorage.getRefreshToken()) {
         logout();
       }
     } finally {
@@ -144,7 +115,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [logout]);
 
   useEffect(() => {
-    const activeToken = localStorage.getItem(TOKEN_KEY);
+    const activeToken = authSessionStorage.getInitialToken();
     if (activeToken) {
       refreshProfile();
     } else {
@@ -161,7 +132,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [user]);
 
-  // Proactive background silent refresh every 10 minutes to keep session active indefinitely
+  // Proactive background silent refresh every 10 minutes to keep session active
   useEffect(() => {
     if (!token) return;
 
@@ -178,77 +149,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => clearInterval(interval);
   }, [token]);
 
-  const setAuthSession = useCallback(
-    (authResponse: {
-      tokens: { accessToken: string; refreshToken?: string };
-      user: UserProfile;
-    }) => {
-      const accessToken = authResponse.tokens.accessToken;
-      const userProfile = authResponse.user;
-
-      localStorage.setItem(TOKEN_KEY, accessToken);
-      if (authResponse.tokens.refreshToken) {
-        localStorage.setItem(REFRESH_TOKEN_KEY, authResponse.tokens.refreshToken);
+  const login = useCallback(
+    async (credentials: LoginCredentials) => {
+      setIsLoading(true);
+      try {
+        const authResponse = await loginUser(credentials);
+        setAuthSession(authResponse);
+      } finally {
+        setIsLoading(false);
       }
-      localStorage.setItem(USER_KEY, JSON.stringify(userProfile));
-
-      mockDatabaseDriver.switchUser(userProfile.id);
-      emitDataSync(['suppliers', 'feeds', 'products', 'quotas', 'all']);
-
-      setToken(accessToken);
-      setUser(userProfile);
-      setIsSuspended(userProfile.isActive === false);
     },
-    [],
+    [setAuthSession],
   );
 
-  const login = useCallback(async (credentials: LoginCredentials) => {
-    setIsLoading(true);
-    try {
-      const authResponse = await loginUser(credentials);
-      const accessToken = authResponse.tokens.accessToken;
-      const userProfile = authResponse.user;
-
-      localStorage.setItem(TOKEN_KEY, accessToken);
-      if (authResponse.tokens.refreshToken) {
-        localStorage.setItem(REFRESH_TOKEN_KEY, authResponse.tokens.refreshToken);
+  const register = useCallback(
+    async (credentials: RegisterCredentials) => {
+      setIsLoading(true);
+      try {
+        const authResponse = await registerUser(credentials);
+        setAuthSession(authResponse);
+      } finally {
+        setIsLoading(false);
       }
-      localStorage.setItem(USER_KEY, JSON.stringify(userProfile));
-
-      mockDatabaseDriver.switchUser(userProfile.id);
-      emitDataSync(['suppliers', 'feeds', 'products', 'quotas', 'all']);
-
-      setToken(accessToken);
-      setUser(userProfile);
-      setIsSuspended(userProfile.isActive === false);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  const register = useCallback(async (credentials: RegisterCredentials) => {
-    setIsLoading(true);
-    try {
-      const authResponse = await registerUser(credentials);
-      const accessToken = authResponse.tokens.accessToken;
-      const userProfile = authResponse.user;
-
-      localStorage.setItem(TOKEN_KEY, accessToken);
-      if (authResponse.tokens.refreshToken) {
-        localStorage.setItem(REFRESH_TOKEN_KEY, authResponse.tokens.refreshToken);
-      }
-      localStorage.setItem(USER_KEY, JSON.stringify(userProfile));
-
-      mockDatabaseDriver.switchUser(userProfile.id);
-      emitDataSync(['suppliers', 'feeds', 'products', 'quotas', 'all']);
-
-      setToken(accessToken);
-      setUser(userProfile);
-      setIsSuspended(userProfile.isActive === false);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+    },
+    [setAuthSession],
+  );
 
   // Sync local avatar for desktop user
   useEffect(() => {
@@ -271,11 +196,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser((prev) => {
         if (!prev) return null;
         const updated = { ...prev, avatarUrl: normalized };
-        localStorage.setItem(USER_KEY, JSON.stringify(updated));
+        authSessionStorage.saveUser(updated);
         return updated;
       });
 
-      // Synchronize with backend API if authenticated
       try {
         await updateUserAvatar(normalized);
       } catch (err) {

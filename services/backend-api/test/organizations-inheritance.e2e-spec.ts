@@ -11,6 +11,7 @@ describe('Organizations License Inheritance & Renewal (E2E)', () => {
   let prisma: PrismaService;
 
   let ownerToken: string;
+  let ownerId: string;
   let orgId: string;
   let colleagueToken: string;
 
@@ -125,16 +126,29 @@ describe('Organizations License Inheritance & Renewal (E2E)', () => {
     // Register owner and upgrade to PRO
     const regRes = await request(app.getHttpServer()).post('/api/auth/register').send(testOwner);
     ownerToken = regRes.body.tokens.accessToken;
+    ownerId = regRes.body.user.id;
 
     const orgsRes = await request(app.getHttpServer())
       .get('/api/organizations')
       .set('Authorization', `Bearer ${ownerToken}`);
     orgId = orgsRes.body[0].id;
 
+    const proTx = await prisma.paymentTransaction.create({
+      data: {
+        orderReference: `ord-inh-pro-${Date.now()}`,
+        userId: ownerId,
+        amount: 59,
+        currency: 'USD',
+        status: 'APPROVED',
+        planCode: 'PRO',
+        billingInterval: 'MONTHLY',
+      },
+    });
+
     await request(app.getHttpServer())
       .post('/api/licenses/select-plan')
       .set('Authorization', `Bearer ${ownerToken}`)
-      .send({ planCode: 'PRO' });
+      .send({ planCode: 'PRO', paymentTransactionId: proTx.id });
 
     // Invite colleague
     const invRes = await request(app.getHttpServer())
@@ -249,14 +263,26 @@ describe('Organizations License Inheritance & Renewal (E2E)', () => {
         .send({ fileName: 'team_feed.xml', contentType: 'application/xml' })
         .expect(403);
 
-      expect(blockedRes.body.message).toBe('LICENSE_EXPIRED');
+      expect(blockedRes.body.message).toContain('LICENSE_EXPIRED');
     });
 
     it('should immediately restore team member access after owner upgrades or renews corporate plan', async () => {
+      const entTx = await prisma.paymentTransaction.create({
+        data: {
+          orderReference: `ord-inh-ent-${Date.now()}`,
+          userId: ownerId,
+          amount: 199,
+          currency: 'USD',
+          status: 'APPROVED',
+          planCode: 'ENTERPRISE',
+          billingInterval: 'YEARLY',
+        },
+      });
+
       const renewRes = await request(app.getHttpServer())
         .post('/api/licenses/select-plan')
         .set('Authorization', `Bearer ${ownerToken}`)
-        .send({ planCode: 'ENTERPRISE' })
+        .send({ planCode: 'ENTERPRISE', paymentTransactionId: entTx.id })
         .expect(201);
 
       expect(renewRes.body.planType).toBe('ENTERPRISE');

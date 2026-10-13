@@ -12,13 +12,41 @@ pub struct SupplierDto {
     pub contact_email: Option<String>,
     pub website: Option<String>,
     pub notes: Option<String>,
+    pub logo_url: Option<String>,
+    #[serde(default = "default_currency")]
+    pub base_currency: String,
+    #[serde(default = "default_currency")]
+    pub target_currency: String,
+    #[serde(default = "default_exchange_rate_mode")]
+    pub exchange_rate_mode: String,
+    #[serde(default = "default_exchange_rate")]
+    pub exchange_rate: f64,
+    #[serde(default)]
+    pub currency_buffer_percent: f64,
+    #[serde(default = "default_rounding")]
+    pub price_rounding: String,
     pub default_margin_percent: f64,
     pub default_fixed_markup: f64,
     pub is_active: bool,
     pub products_count: Option<u32>,
     pub active_feeds_count: Option<u32>,
+    pub categories_count: Option<u32>,
+    pub active_categories_count: Option<u32>,
     pub created_at: String,
     pub updated_at: String,
+}
+
+fn default_currency() -> String {
+    "UAH".to_string()
+}
+fn default_exchange_rate_mode() -> String {
+    "MANUAL".to_string()
+}
+fn default_exchange_rate() -> f64 {
+    1.0
+}
+fn default_rounding() -> String {
+    "NONE".to_string()
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -30,6 +58,13 @@ pub struct CreateSupplierDto {
     pub contact_email: Option<String>,
     pub website: Option<String>,
     pub notes: Option<String>,
+    pub logo_url: Option<String>,
+    pub base_currency: Option<String>,
+    pub target_currency: Option<String>,
+    pub exchange_rate_mode: Option<String>,
+    pub exchange_rate: Option<f64>,
+    pub currency_buffer_percent: Option<f64>,
+    pub price_rounding: Option<String>,
     #[serde(default)]
     pub default_margin_percent: f64,
     #[serde(default)]
@@ -46,10 +81,51 @@ pub struct UpdateSupplierDto {
     pub contact_email: Option<String>,
     pub website: Option<String>,
     pub notes: Option<String>,
+    pub logo_url: Option<String>,
+    pub base_currency: Option<String>,
+    pub target_currency: Option<String>,
+    pub exchange_rate_mode: Option<String>,
+    pub exchange_rate: Option<f64>,
+    pub currency_buffer_percent: Option<f64>,
+    pub price_rounding: Option<String>,
     pub default_margin_percent: Option<f64>,
     pub default_fixed_markup: Option<f64>,
     pub is_active: Option<bool>,
 }
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct SupplierCategoryRuleDto {
+    pub id: String,
+    pub supplier_id: String,
+    pub feed_category_id: String,
+    pub name: String,
+    pub parent_id: Option<String>,
+    pub is_active: bool,
+    pub margin_percent: Option<f64>,
+    pub fixed_markup: Option<f64>,
+    pub product_count: u32,
+    pub created_at: Option<String>,
+    pub updated_at: String,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct SupplierPricingRuleDto {
+    pub id: String,
+    pub supplier_id: String,
+    pub category_id: Option<String>,
+    pub category_name_uk: Option<String>,
+    pub min_price: Option<f64>,
+    pub max_price: Option<f64>,
+    pub margin_percent: f64,
+    pub fixed_markup: f64,
+    pub priority: i32,
+    pub is_active: bool,
+    pub created_at: String,
+    pub updated_at: String,
+}
+
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]

@@ -64,6 +64,7 @@ export const PaymentSettingDtoSchema = z.object({
   isTestMode: z.boolean(),
   merchantAccount: z.string().nullable().optional(),
   merchantSecretKey: z.string().nullable().optional(),
+  isSecretConfigured: z.boolean().optional(),
   merchantDomain: z.string().nullable().optional(),
   serviceUrl: z.string().nullable().optional(),
   returnUrl: z.string().nullable().optional(),

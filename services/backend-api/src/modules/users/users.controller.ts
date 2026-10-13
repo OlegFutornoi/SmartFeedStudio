@@ -31,7 +31,11 @@ import {
 import { CreateUserByAdminCommand } from '@/modules/users/commands/create-user-by-admin.command';
 import { UpdateUserStatusCommand } from '@/modules/users/commands/update-user-status.command';
 import { DeleteUserCommand } from '@/modules/users/commands/delete-user.command';
-import { CreateUserByAdminRequestDto, UpdateUserStatusRequestDto } from '@/modules/users/dto';
+import {
+  CreateUserByAdminRequestDto,
+  UpdateUserStatusRequestDto,
+  GetUsersQueryDto,
+} from '@/modules/users/dto';
 
 @ApiTags('Users')
 @Controller('users')
@@ -49,20 +53,14 @@ export class UsersController {
   @ApiOperation({ summary: 'Get list of users with their licenses' })
   @ApiResponse({ status: 200, description: 'List of users returned' })
   @ApiResponse({ status: 403, description: 'Forbidden: Admin access required' })
-  async getUsers(
-    @Query('search') search?: string,
-    @Query('role') role?: string,
-    @Query('orgRoleFilter') orgRoleFilter?: 'ALL' | 'OWNERS' | 'MEMBERS',
-    @Query('limit') limit?: number,
-    @Query('offset') offset?: number,
-  ): Promise<UserListItemDto[]> {
+  async getUsers(@Query() query: GetUsersQueryDto): Promise<UserListItemDto[]> {
     return this.queryBus.execute(
       new GetUsersListQuery(
-        search,
-        role,
-        orgRoleFilter,
-        limit ? Number(limit) : 50,
-        offset ? Number(offset) : 0,
+        query.search,
+        query.role,
+        query.orgRoleFilter,
+        query.limit,
+        query.offset,
       ),
     );
   }

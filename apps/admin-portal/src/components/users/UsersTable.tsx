@@ -11,7 +11,12 @@ import { UsersTableToolbar } from '@/components/users/UsersTableToolbar';
 import { TablePagination } from '@/components/ui/table-pagination';
 import { usePagination } from '@/hooks/usePagination';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useColumnVisibility, ColumnConfig } from '@/hooks/useColumnVisibility';
+import { useColumnVisibility } from '@/hooks/useColumnVisibility';
+import {
+  USER_COLUMNS,
+  UserColumnId,
+  useUsersTableFilterState,
+} from '@/components/users/usersTableConfig';
 
 interface UsersTableProps {
   users: UserListItemDto[];
@@ -35,36 +40,6 @@ interface UsersTableProps {
   onOpenDelete: (user: UserListItemDto) => void;
   onOpenTeam: (user: UserListItemDto) => void;
 }
-
-type UserColumnId = 'user' | 'role' | 'team' | 'plan' | 'status' | 'created' | 'actions';
-
-const USER_COLUMNS: ColumnConfig<UserColumnId>[] = [
-  { id: 'user', labelUk: 'Користувач', labelEn: 'User', canHide: false, defaultVisible: true },
-  { id: 'role', labelUk: 'Роль', labelEn: 'Role', canHide: true, defaultVisible: true },
-  {
-    id: 'team',
-    labelUk: 'Організація / Команда',
-    labelEn: 'Organization / Team',
-    canHide: true,
-    defaultVisible: true,
-  },
-  {
-    id: 'plan',
-    labelUk: 'Тарифний план',
-    labelEn: 'Plan Tier',
-    canHide: true,
-    defaultVisible: true,
-  },
-  { id: 'status', labelUk: 'Статус', labelEn: 'Status', canHide: true, defaultVisible: true },
-  {
-    id: 'created',
-    labelUk: 'Дата реєстрації',
-    labelEn: 'Registered Date',
-    canHide: true,
-    defaultVisible: true,
-  },
-  { id: 'actions', labelUk: 'Дії', labelEn: 'Actions', canHide: false, defaultVisible: true },
-];
 
 export const UsersTable = React.memo(function UsersTable({
   users,
@@ -95,48 +70,12 @@ export const UsersTable = React.memo(function UsersTable({
   const { visibleColumns, toggleColumn, resetToDefaults, columnOptions } =
     useColumnVisibility<UserColumnId>('admin_users_columns', USER_COLUMNS, isUk);
 
-  const statusOptions = React.useMemo(() => {
-    let activeCount = 0;
-    let suspendedCount = 0;
-    users.forEach((u) => {
-      if (u.isActive === false) suspendedCount++;
-      else activeCount++;
-    });
-    return [
-      { value: 'ALL', label: t('users', 'filter_status_all'), count: users.length },
-      { value: 'ACTIVE', label: t('users', 'status_active'), count: activeCount },
-      { value: 'SUSPENDED', label: t('users', 'status_suspended'), count: suspendedCount },
-    ];
-  }, [users, t]);
-
-  const planOptions = React.useMemo(() => {
-    const counts: Record<string, number> = {};
-    users.forEach((u) => {
-      const plan = u.license?.planType || 'FREE';
-      counts[plan] = (counts[plan] || 0) + 1;
-    });
-    const knownPlans = ['FREE', 'STARTER', 'GROWTH', 'PRO', 'ENTERPRISE'];
-    return [
-      { value: 'ALL', label: t('users', 'filter_plan_all'), count: users.length },
-      ...knownPlans.map((p) => ({
-        value: p,
-        label: p,
-        count: counts[p] || 0,
-      })),
-    ];
-  }, [users, t]);
-
-  const filteredUsers = React.useMemo(() => {
-    return users.filter((u) => {
-      if (selectedStatus === 'ACTIVE' && u.isActive === false) return false;
-      if (selectedStatus === 'SUSPENDED' && u.isActive !== false) return false;
-      if (selectedPlan && selectedPlan !== 'ALL') {
-        const plan = u.license?.planType || 'FREE';
-        if (plan !== selectedPlan) return false;
-      }
-      return true;
-    });
-  }, [users, selectedStatus, selectedPlan]);
+  const { statusOptions, planOptions, filteredUsers, totalUsersCount } = useUsersTableFilterState(
+    users,
+    selectedStatus,
+    selectedPlan,
+    t,
+  );
 
   const { currentPage, pageSize, totalPages, totalItems, paginatedItems, setPage, setPageSize } =
     usePagination(filteredUsers, {
@@ -148,15 +87,6 @@ export const UsersTable = React.memo(function UsersTable({
   React.useEffect(() => {
     setExpandedUserIds(new Set());
   }, [search, selectedRole, selectedOrgRole, selectedStatus, selectedPlan, currentPage]);
-
-  const totalUsersCount = React.useMemo(() => {
-    const ids = new Set<string>();
-    filteredUsers.forEach((u) => {
-      ids.add(u.id);
-      u.teamMembers?.forEach((m) => ids.add(m.id));
-    });
-    return ids.size;
-  }, [filteredUsers]);
 
   const toggleExpand = useCallback((userId: string) => {
     setExpandedUserIds((prev) => {

@@ -1,32 +1,20 @@
-import {
-  Injectable,
-  UnauthorizedException,
-  ForbiddenException,
-  BadRequestException,
-  InternalServerErrorException,
-  Logger,
-} from '@nestjs/common';
+import { Injectable, UnauthorizedException, ForbiddenException, Logger } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
-import { JwtService } from '@nestjs/jwt';
-import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
 import {
   AuthErrorCode,
   AuthResponseDto,
-  AuthTokens,
   ForgotPasswordResponseDto,
-  JwtPayload,
   ResetPasswordResponseDto,
-  Role,
   UserEntity,
   UserProfile,
 } from '@smartfeed/shared';
-import type { SignOptions } from 'jsonwebtoken';
 
 import { RegisterDto } from '@/modules/auth/dto/register.dto';
 import { LoginDto } from '@/modules/auth/dto/login.dto';
 import { ForgotPasswordDto } from '@/modules/auth/dto/forgot-password.dto';
 import { ResetPasswordDto } from '@/modules/auth/dto/reset-password.dto';
+import { TokenService } from '@/modules/auth/services/token.service';
 import { CreateUserCommand } from '@/modules/users/commands/create-user.command';
 import { ResetPasswordCommand } from '@/modules/users/commands/reset-password.command';
 import { GetUserByEmailQuery } from '@/modules/users/queries/get-user-by-email.query';
@@ -39,8 +27,7 @@ export class AuthService {
   constructor(
     private readonly commandBus: CommandBus,
     private readonly queryBus: QueryBus,
-    private readonly jwtService: JwtService,
-    private readonly configService: ConfigService,
+    private readonly tokenService: TokenService,
   ) {}
 
   /**
@@ -49,12 +36,11 @@ export class AuthService {
   async register(dto: RegisterDto): Promise<AuthResponseDto> {
     this.logger.log(`Registering user with email: ${dto.email}`);
 
-    // Delegate creation & password hashing to UsersModule through CommandBus
     const user = await this.commandBus.execute<CreateUserCommand, UserProfile>(
       new CreateUserCommand(dto.email, dto.password, dto.fullName, dto.role, dto.companyName),
     );
 
-    const tokens = await this.generateTokens(user);
+    const tokens = await this.tokenService.generateTokens(user);
 
     return {
       user,
@@ -68,7 +54,6 @@ export class AuthService {
   async login(dto: LoginDto): Promise<AuthResponseDto> {
     this.logger.log(`Authenticating user with email: ${dto.email}`);
 
-    // Query user data strictly through QueryBus
     const user = await this.queryBus.execute<GetUserByEmailQuery, UserEntity | null>(
       new GetUserByEmailQuery(dto.email),
     );
@@ -93,7 +78,7 @@ export class AuthService {
       });
     }
 
-    const tokens = await this.generateTokens(userProfile);
+    const tokens = await this.tokenService.generateTokens(userProfile);
 
     return {
       user: userProfile,
@@ -105,39 +90,25 @@ export class AuthService {
    * Refresh access & refresh tokens.
    */
   async refreshToken(token: string): Promise<AuthResponseDto> {
-    try {
-      const refreshSecret =
-        this.configService.get<string>('JWT_REFRESH_SECRET') ||
-        'super-secret-refresh-token-key-change-in-production';
+    const payload = await this.tokenService.verifyRefreshToken(token);
 
-      const payload = await this.jwtService.verifyAsync<JwtPayload>(token, {
-        secret: refreshSecret,
+    const user = await this.queryBus.execute<GetUserByIdQuery, UserProfile>(
+      new GetUserByIdQuery(payload.sub),
+    );
+
+    if (!user || user.isActive === false) {
+      throw new ForbiddenException({
+        code: AuthErrorCode.USER_SUSPENDED,
+        message: 'User account has been suspended by administration. Please contact support.',
       });
-
-      // Verify user existence and active status via QueryBus
-      const user = await this.queryBus.execute<GetUserByIdQuery, UserProfile>(
-        new GetUserByIdQuery(payload.sub),
-      );
-
-      if (!user || user.isActive === false) {
-        throw new ForbiddenException({
-          code: AuthErrorCode.USER_SUSPENDED,
-          message: 'User account has been suspended by administration. Please contact support.',
-        });
-      }
-
-      const tokens = await this.generateTokens(user);
-
-      return {
-        user,
-        tokens,
-      };
-    } catch (err: unknown) {
-      if (err instanceof ForbiddenException) {
-        throw err;
-      }
-      throw new UnauthorizedException('Invalid or expired refresh token');
     }
+
+    const tokens = await this.tokenService.generateTokens(user);
+
+    return {
+      user,
+      tokens,
+    };
   }
 
   /**
@@ -146,42 +117,19 @@ export class AuthService {
   async forgotPassword(dto: ForgotPasswordDto): Promise<ForgotPasswordResponseDto> {
     this.logger.log(`Password reset requested for email: ${dto.email}`);
 
-    // Query user strictly through QueryBus
     const user = await this.queryBus.execute<GetUserByEmailQuery, UserEntity | null>(
       new GetUserByEmailQuery(dto.email),
     );
 
     if (!user) {
-      // Return success without token to prevent email enumeration
+      // Prevent email enumeration
       return {
         success: true,
         message: 'If this email is registered, password reset instructions have been sent.',
       };
     }
 
-    const resetSecret =
-      this.configService.get<string>('JWT_RESET_SECRET') ||
-      this.configService.get<string>('JWT_ACCESS_SECRET');
-
-    if (!resetSecret && process.env.NODE_ENV === 'production') {
-      throw new InternalServerErrorException('JWT secret is not configured in production');
-    }
-
-    const secretToUse = resetSecret || 'super-secret-reset-token-key-change-in-production';
-
-    const resetToken = await this.jwtService.signAsync(
-      {
-        sub: user.id,
-        email: user.email,
-        purpose: 'reset-password',
-      },
-      {
-        secret: secretToUse,
-        expiresIn: '1h',
-      },
-    );
-
-    // In production, resetToken is NEVER returned in the HTTP response to prevent Account Takeover (CWE-640)
+    const resetToken = await this.tokenService.generatePasswordResetToken(user);
     const isTestEnvironment = process.env.NODE_ENV === 'test';
 
     return {
@@ -195,85 +143,13 @@ export class AuthService {
    * Reset user password using verified reset token.
    */
   async resetPassword(dto: ResetPasswordDto): Promise<ResetPasswordResponseDto> {
-    try {
-      const resetSecret =
-        this.configService.get<string>('JWT_RESET_SECRET') ||
-        this.configService.get<string>('JWT_ACCESS_SECRET');
+    const payload = await this.tokenService.verifyPasswordResetToken(dto.token);
 
-      if (!resetSecret && process.env.NODE_ENV === 'production') {
-        throw new InternalServerErrorException('JWT secret is not configured in production');
-      }
-
-      const secretToUse = resetSecret || 'super-secret-reset-token-key-change-in-production';
-
-      const payload = await this.jwtService.verifyAsync<{
-        sub: string;
-        email: string;
-        purpose?: string;
-      }>(dto.token, {
-        secret: secretToUse,
-      });
-
-      if (payload.purpose !== 'reset-password') {
-        throw new BadRequestException('Invalid reset token purpose');
-      }
-
-      await this.commandBus.execute(new ResetPasswordCommand(payload.sub, dto.newPassword));
-
-      return {
-        success: true,
-        message: 'Password has been reset successfully',
-      };
-    } catch (err) {
-      if (err instanceof BadRequestException) {
-        throw err;
-      }
-      throw new BadRequestException('Invalid or expired reset token');
-    }
-  }
-
-  /**
-   * Issue JWT access and refresh token pair.
-   */
-  private async generateTokens(user: {
-    id: string;
-    email: string;
-    role: Role;
-  }): Promise<AuthTokens> {
-    const payload: JwtPayload = {
-      sub: user.id,
-      email: user.email,
-      role: user.role,
-    };
-
-    const accessExpiration = (this.configService.get<string>('JWT_ACCESS_EXPIRATION') ||
-      '30d') as SignOptions['expiresIn'];
-    const expiresInSeconds = 30 * 24 * 60 * 60; // 30 days session
-
-    const accessSecret =
-      this.configService.get<string>('JWT_ACCESS_SECRET') ||
-      'super-secret-access-token-key-change-in-production';
-    const refreshSecret =
-      this.configService.get<string>('JWT_REFRESH_SECRET') ||
-      'super-secret-refresh-token-key-change-in-production';
-
-    const [accessToken, refreshToken] = await Promise.all([
-      this.jwtService.signAsync(payload, {
-        secret: accessSecret,
-        expiresIn: accessExpiration,
-      }),
-      this.jwtService.signAsync(payload, {
-        secret: refreshSecret,
-        expiresIn: (this.configService.get<string>('JWT_REFRESH_EXPIRATION') ||
-          '30d') as SignOptions['expiresIn'],
-      }),
-    ]);
+    await this.commandBus.execute(new ResetPasswordCommand(payload.sub, dto.newPassword));
 
     return {
-      accessToken,
-      refreshToken,
-      tokenType: 'Bearer',
-      expiresIn: expiresInSeconds,
+      success: true,
+      message: 'Password has been reset successfully',
     };
   }
 }

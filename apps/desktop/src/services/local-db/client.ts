@@ -171,6 +171,40 @@ export async function invokeLocalDb<K extends keyof LocalDbCommandMap>(
       return mockDatabaseDriver.deleteSupplier(a.id) as LocalDbCommandMap[K]['result'];
     }
 
+    // Supplier Categories
+    case 'db_get_supplier_categories': {
+      const a = args as LocalDbCommandMap['db_get_supplier_categories']['args'];
+      return mockDatabaseDriver.getSupplierCategories(
+        a.supplierId,
+        a.search,
+      ) as LocalDbCommandMap[K]['result'];
+    }
+    case 'db_toggle_supplier_category': {
+      const a = args as LocalDbCommandMap['db_toggle_supplier_category']['args'];
+      return mockDatabaseDriver.toggleSupplierCategory(
+        a.supplierId,
+        a.categoryId,
+        a.isActive,
+      ) as LocalDbCommandMap[K]['result'];
+    }
+    case 'db_batch_toggle_supplier_categories': {
+      const a = args as LocalDbCommandMap['db_batch_toggle_supplier_categories']['args'];
+      return mockDatabaseDriver.batchToggleSupplierCategories(
+        a.supplierId,
+        a.categoryIds,
+        a.isActive,
+      ) as LocalDbCommandMap[K]['result'];
+    }
+    case 'db_update_supplier_category_rule': {
+      const a = args as LocalDbCommandMap['db_update_supplier_category_rule']['args'];
+      return mockDatabaseDriver.updateSupplierCategoryRule(
+        a.supplierId,
+        a.categoryId,
+        a.marginPercent,
+        a.fixedMarkup,
+      ) as LocalDbCommandMap[K]['result'];
+    }
+
     // Pricing Rules
     case 'db_get_pricing_rules': {
       const a = args as LocalDbCommandMap['db_get_pricing_rules']['args'];

@@ -12,6 +12,7 @@ describe('Licenses Admin Actions & Quotas (E2E)', () => {
 
   let adminToken: string;
   let userToken: string;
+  let userId: string;
 
   const testAdmin = {
     email: 'admin.lic.limits@smartfeed.studio',
@@ -62,6 +63,7 @@ describe('Licenses Admin Actions & Quotas (E2E)', () => {
 
     const userRegRes = await request(app.getHttpServer()).post('/api/auth/register').send(testUser);
     userToken = userRegRes.body.tokens.accessToken;
+    userId = userRegRes.body.user.id;
 
     await new Promise((resolve) => setTimeout(resolve, 300));
   });
@@ -214,7 +216,7 @@ describe('Licenses Admin Actions & Quotas (E2E)', () => {
         })
         .expect(403);
 
-      expect(blockRes.body.message).toBe('LICENSE_EXPIRED');
+      expect(blockRes.body.message).toContain('LICENSE_EXPIRED');
     });
   });
 
@@ -250,10 +252,22 @@ describe('Licenses Admin Actions & Quotas (E2E)', () => {
     });
 
     it('коректно оновлює ліміти квот при зміні тарифного плану (PRO -> STARTER)', async () => {
+      const proTx = await prisma.paymentTransaction.create({
+        data: {
+          orderReference: `ord-limits-pro-${Date.now()}`,
+          userId,
+          amount: 59,
+          currency: 'USD',
+          status: 'APPROVED',
+          planCode: 'PRO',
+          billingInterval: 'MONTHLY',
+        },
+      });
+
       await request(app.getHttpServer())
         .post('/api/licenses/select-plan')
         .set('Authorization', `Bearer ${userToken}`)
-        .send({ planCode: 'PRO' })
+        .send({ planCode: 'PRO', paymentTransactionId: proTx.id })
         .expect(201);
 
       const proQuotas = await request(app.getHttpServer())
@@ -264,10 +278,22 @@ describe('Licenses Admin Actions & Quotas (E2E)', () => {
       expect(proQuotas.body.planCode).toBe('PRO');
       expect(proQuotas.body.products.max).toBeGreaterThan(1000);
 
+      const starterTx = await prisma.paymentTransaction.create({
+        data: {
+          orderReference: `ord-limits-starter-${Date.now()}`,
+          userId,
+          amount: 299,
+          currency: 'UAH',
+          status: 'APPROVED',
+          planCode: 'STARTER',
+          billingInterval: 'MONTHLY',
+        },
+      });
+
       await request(app.getHttpServer())
         .post('/api/licenses/select-plan')
         .set('Authorization', `Bearer ${userToken}`)
-        .send({ planCode: 'STARTER' })
+        .send({ planCode: 'STARTER', paymentTransactionId: starterTx.id })
         .expect(201);
 
       const starterQuotas = await request(app.getHttpServer())

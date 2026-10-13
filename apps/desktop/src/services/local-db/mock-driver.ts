@@ -20,53 +20,12 @@ import type {
   LocalProductImageDto,
   UpdateProductImageOrderDto,
   DeleteProductImageResultDto,
+  SupplierCategoryRuleDto,
 } from '@smartfeed/shared';
-import {
-  type MockDbState,
-  createInitialState,
-  syncCounters,
-  seedDefaultMockData,
-  getSuppliers,
-  getSupplierById,
-  createSupplier,
-  updateSupplier,
-  deleteSupplier,
-  getPricingRules,
-  createPricingRule,
-  updatePricingRule,
-  deletePricingRule,
-  getExportChannels,
-  getExportChannelById,
-  createExportChannel,
-  updateExportChannel,
-  deleteExportChannel,
-  getExportPricingRules,
-  createExportPricingRule,
-  deleteExportPricingRule,
-  simulatePrice,
-  getProducts,
-  getCategoriesSummary,
-  bulkDeleteProducts,
-  bulkUpsertProducts,
-  getSupplierFeedSources,
-  getAllFeedSources,
-  createFeedSource,
-  deleteFeedSource,
-  type CreateFeedSourcePayload,
-  getProductImages,
-  deleteProductImage,
-  updateImagesOrder,
-  downloadProductImage,
-  saveMockDbToStorage,
-  restoreMockDbFromStorage,
-  attachStorageHooks,
-  MUTATING_METHODS,
-  getStorageKey,
-  clearLegacyMockDbStorage,
-} from '@/services/local-db/mock';
+import * as mock from '@/services/local-db/mock';
 
 export class MockDatabaseDriver {
-  private state: MockDbState = createInitialState();
+  private state: mock.MockDbState = mock.createInitialState();
   private currentUserId: string | null = null;
 
   constructor() {
@@ -74,22 +33,22 @@ export class MockDatabaseDriver {
   }
 
   public saveToStorage(): void {
-    saveMockDbToStorage(this.state, this.currentUserId);
+    mock.saveMockDbToStorage(this.state, this.currentUserId);
   }
 
   public checkAndSeedIfEnabled(userId?: string | null): void {
     if (typeof window !== 'undefined') {
-      clearLegacyMockDbStorage();
+      mock.clearLegacyMockDbStorage();
       if (userId !== undefined) {
         this.currentUserId = userId;
       }
-      const storageKey = getStorageKey(this.currentUserId);
+      const storageKey = mock.getStorageKey(this.currentUserId);
       const saved = window.localStorage?.getItem(storageKey);
       if (saved) {
-        restoreMockDbFromStorage(this.state, saved);
+        mock.restoreMockDbFromStorage(this.state, saved);
         return;
       }
-      this.state = createInitialState();
+      this.state = mock.createInitialState();
       if (window.localStorage?.getItem('smartfeed_e2e_seed') === 'true') {
         this.seedDefaultData();
       }
@@ -98,103 +57,73 @@ export class MockDatabaseDriver {
 
   public switchUser(userId: string | null): void {
     this.currentUserId = userId;
-    this.state = createInitialState();
+    this.state = mock.createInitialState();
     this.checkAndSeedIfEnabled(userId);
     this.saveToStorage();
   }
 
   public reset(): void {
-    this.state = createInitialState();
+    this.state = mock.createInitialState();
     this.saveToStorage();
   }
 
   public seedDefaultData(): void {
-    seedDefaultMockData(this.state);
+    mock.seedDefaultMockData(this.state);
   }
 
   // Suppliers & Pricing Rules
-  public getSuppliers(search?: string): SupplierDto[] {
-    return getSuppliers(this.state, search);
-  }
+  public getSuppliers = (search?: string): SupplierDto[] => mock.getSuppliers(this.state, search);
+  public getSupplierById = (id: string): SupplierDto | null => mock.getSupplierById(this.state, id);
+  public createSupplier = (p: CreateSupplierDto): SupplierDto => mock.createSupplier(this.state, p);
+  public updateSupplier = (id: string, p: UpdateSupplierDto): SupplierDto =>
+    mock.updateSupplier(this.state, id, p);
+  public deleteSupplier = (id: string): boolean => mock.deleteSupplier(this.state, id);
 
-  public getSupplierById(id: string): SupplierDto | null {
-    return getSupplierById(this.state, id);
-  }
+  // Supplier Categories
+  public getSupplierCategories = (supplierId: string, search?: string): SupplierCategoryRuleDto[] =>
+    mock.getSupplierCategories(this.state, supplierId, search);
+  public toggleSupplierCategory = (
+    sId: string,
+    cId: string,
+    active: boolean,
+  ): SupplierCategoryRuleDto => mock.toggleSupplierCategory(this.state, sId, cId, active);
+  public batchToggleSupplierCategories = (sId: string, cIds: string[], active: boolean) =>
+    mock.batchToggleSupplierCategories(this.state, sId, cIds, active);
+  public updateSupplierCategoryRule = (
+    sId: string,
+    cId: string,
+    margin?: number | null,
+    markup?: number | null,
+  ): SupplierCategoryRuleDto =>
+    mock.updateSupplierCategoryRule(this.state, sId, cId, margin, markup);
 
-  public createSupplier(payload: CreateSupplierDto): SupplierDto {
-    return createSupplier(this.state, payload);
-  }
+  // Pricing Rules
+  public getPricingRules = (sId: string): SupplierPricingRuleDto[] =>
+    mock.getPricingRules(this.state, sId);
+  public createPricingRule = (sId: string, p: CreateSupplierPricingRuleDto) =>
+    mock.createPricingRule(this.state, sId, p);
+  public updatePricingRule = (sId: string, rId: string, p: UpdateSupplierPricingRuleDto) =>
+    mock.updatePricingRule(this.state, sId, rId, p);
+  public deletePricingRule = (sId: string, rId: string): boolean =>
+    mock.deletePricingRule(this.state, sId, rId);
 
-  public updateSupplier(id: string, payload: UpdateSupplierDto): SupplierDto {
-    return updateSupplier(this.state, id, payload);
-  }
-
-  public deleteSupplier(id: string): boolean {
-    return deleteSupplier(this.state, id);
-  }
-
-  public getPricingRules(supplierId: string): SupplierPricingRuleDto[] {
-    return getPricingRules(this.state, supplierId);
-  }
-
-  public createPricingRule(
-    supplierId: string,
-    payload: CreateSupplierPricingRuleDto,
-  ): SupplierPricingRuleDto {
-    return createPricingRule(this.state, supplierId, payload);
-  }
-
-  public updatePricingRule(
-    supplierId: string,
-    ruleId: string,
-    payload: UpdateSupplierPricingRuleDto,
-  ): SupplierPricingRuleDto {
-    return updatePricingRule(this.state, supplierId, ruleId, payload);
-  }
-
-  public deletePricingRule(supplierId: string, ruleId: string): boolean {
-    return deletePricingRule(this.state, supplierId, ruleId);
-  }
-
-  // Export Channels & Pricing Rules
-  public getExportChannels(): ExportChannelDto[] {
-    return getExportChannels(this.state);
-  }
-
-  public getExportChannelById(id: string): ExportChannelDto | null {
-    return getExportChannelById(this.state, id);
-  }
-
-  public createExportChannel(payload: CreateExportChannelDto): ExportChannelDto {
-    return createExportChannel(this.state, payload);
-  }
-
-  public updateExportChannel(id: string, payload: UpdateExportChannelDto): ExportChannelDto {
-    return updateExportChannel(this.state, id, payload);
-  }
-
-  public deleteExportChannel(id: string): boolean {
-    return deleteExportChannel(this.state, id);
-  }
-
-  public getExportPricingRules(channelId: string): ExportChannelPricingRuleDto[] {
-    return getExportPricingRules(this.state, channelId);
-  }
-
-  public createExportPricingRule(
-    channelId: string,
-    payload: CreateExportChannelPricingRuleDto,
-  ): ExportChannelPricingRuleDto {
-    return createExportPricingRule(this.state, channelId, payload);
-  }
-
-  public deleteExportPricingRule(channelId: string, ruleId: string): boolean {
-    return deleteExportPricingRule(this.state, channelId, ruleId);
-  }
-
-  public simulatePrice(payload: PriceSimulationRequestDto): PriceSimulationResultDto {
-    return simulatePrice(payload);
-  }
+  // Export Channels
+  public getExportChannels = (): ExportChannelDto[] => mock.getExportChannels(this.state);
+  public getExportChannelById = (id: string): ExportChannelDto | null =>
+    mock.getExportChannelById(this.state, id);
+  public createExportChannel = (p: CreateExportChannelDto): ExportChannelDto =>
+    mock.createExportChannel(this.state, p);
+  public updateExportChannel = (id: string, p: UpdateExportChannelDto): ExportChannelDto =>
+    mock.updateExportChannel(this.state, id, p);
+  public deleteExportChannel = (id: string): boolean => mock.deleteExportChannel(this.state, id);
+  public getExportPricingRules = (cId: string): ExportChannelPricingRuleDto[] =>
+    mock.getExportPricingRules(this.state, cId);
+  public createExportPricingRule = (cId: string, p: CreateExportChannelPricingRuleDto) =>
+    mock.createExportPricingRule(this.state, cId, p);
+  public deleteExportPricingRule = (cId: string, rId: string): boolean =>
+    mock.deleteExportPricingRule(this.state, cId, rId);
+  public simulatePrice = (p: PriceSimulationRequestDto): PriceSimulationResultDto =>
+    mock.simulatePrice(p);
 
   // Products & Categories
   public getProducts(params: {
@@ -206,74 +135,39 @@ export class MockDatabaseDriver {
     minPrice?: number;
     maxPrice?: number;
     inStockOnly?: boolean;
-  }): {
-    items: ProductDto[];
-    total: number;
-    page: number;
-    limit: number;
-    totalPages: number;
-  } {
-    return getProducts(this.state, params);
+  }): { items: ProductDto[]; total: number; page: number; limit: number; totalPages: number } {
+    return mock.getProducts(this.state, params);
   }
-
-  public getCategoriesSummary(supplierId?: string): ProductCategorySummaryDto[] {
-    return getCategoriesSummary(this.state, supplierId);
-  }
-
-  public bulkDeleteProducts(payload: BulkDeleteProductsDto): BulkDeleteResultDto {
-    return bulkDeleteProducts(this.state, payload);
-  }
-
-  public bulkUpsertProducts(products: ProductDto[]): { count: number } {
-    return bulkUpsertProducts(this.state, products);
-  }
+  public getCategoriesSummary = (supplierId?: string): ProductCategorySummaryDto[] =>
+    mock.getCategoriesSummary(this.state, supplierId);
+  public bulkDeleteProducts = (p: BulkDeleteProductsDto): BulkDeleteResultDto =>
+    mock.bulkDeleteProducts(this.state, p);
+  public bulkUpsertProducts = (products: ProductDto[]): { count: number } =>
+    mock.bulkUpsertProducts(this.state, products);
 
   // Feed Sources
-  public getSupplierFeedSources(supplierId: string): FeedSourceDto[] {
-    return getSupplierFeedSources(this.state, supplierId);
-  }
-
-  public getAllFeedSources(): FeedSourceDto[] {
-    return getAllFeedSources(this.state);
-  }
-
-  public createFeedSource(
-    supplierId: string,
-    payload: CreateFeedSourcePayload,
-  ): { totalProcessed: number; createdCount: number; feedSourceId: string } {
-    return createFeedSource(this.state, supplierId, payload);
-  }
-
-  public deleteFeedSource(
-    supplierId: string,
-    sourceId: string,
-    deleteProducts = true,
-  ): { success: boolean; deletedProductsCount: number } {
-    return deleteFeedSource(this.state, supplierId, sourceId, deleteProducts);
-  }
+  public getSupplierFeedSources = (supplierId: string): FeedSourceDto[] =>
+    mock.getSupplierFeedSources(this.state, supplierId);
+  public getAllFeedSources = (): FeedSourceDto[] => mock.getAllFeedSources(this.state);
+  public createFeedSource = (sId: string, p: mock.CreateFeedSourcePayload) =>
+    mock.createFeedSource(this.state, sId, p);
+  public deleteFeedSource = (sId: string, srcId: string, del = true) =>
+    mock.deleteFeedSource(this.state, sId, srcId, del);
 
   // Images Management
-  public getProductImages(productId: string): LocalProductImageDto[] {
-    return getProductImages(this.state, productId);
-  }
-
-  public deleteProductImage(imageId: string): DeleteProductImageResultDto {
-    return deleteProductImage(this.state, imageId);
-  }
-
-  public updateImagesOrder(payload: UpdateProductImageOrderDto): void {
-    updateImagesOrder(this.state, payload);
-  }
-
-  public downloadProductImage(imageId: string, imageUrl: string): LocalProductImageDto {
-    return downloadProductImage(this.state, imageId, imageUrl);
-  }
+  public getProductImages = (productId: string): LocalProductImageDto[] =>
+    mock.getProductImages(this.state, productId);
+  public deleteProductImage = (imageId: string): DeleteProductImageResultDto =>
+    mock.deleteProductImage(this.state, imageId);
+  public updateImagesOrder = (p: UpdateProductImageOrderDto): void =>
+    mock.updateImagesOrder(this.state, p);
+  public downloadProductImage = (imgId: string, url: string): LocalProductImageDto =>
+    mock.downloadProductImage(this.state, imgId, url);
 
   // Counters
   public syncCounters(): void {
-    syncCounters(this.state);
+    mock.syncCounters(this.state);
   }
-
   public getCounters() {
     this.syncCounters();
     return this.state.counters;
@@ -287,4 +181,4 @@ if (typeof window !== 'undefined') {
     mockDatabaseDriver;
 }
 
-attachStorageHooks(mockDatabaseDriver, MUTATING_METHODS);
+mock.attachStorageHooks(mockDatabaseDriver, mock.MUTATING_METHODS);
