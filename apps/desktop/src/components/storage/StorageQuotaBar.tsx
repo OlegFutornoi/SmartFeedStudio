@@ -28,7 +28,6 @@ export function StorageQuotaBar({
     percentUsed,
     usedFormatted,
     maxFormatted,
-    availableFormatted,
     refetch,
   } = useStorageQuota();
 
@@ -94,77 +93,81 @@ export function StorageQuotaBar({
   return (
     <div
       data-testid="storage-quota-bar-full"
-      className={cn('p-5 rounded-xl bg-card border border-border shadow-xs space-y-4', className)}
+      className={cn(
+        'px-4 py-2.5 rounded-xl bg-card border border-border shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3',
+        className,
+      )}
     >
-      {/* Header with Title and Cloud Status */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2.5">
-          <div className="size-9 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0 border border-primary/20">
-            <HardDrive className="size-4.5" />
-          </div>
-          <div>
-            <h4 className="text-xs font-semibold text-foreground flex items-center gap-2">
+      {/* Left: Icon + Storage Info */}
+      <div className="flex items-center gap-2.5 min-w-0">
+        <div className="size-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0 border border-primary/20">
+          <HardDrive className="size-4" />
+        </div>
+        <div className="min-w-0">
+          <div className="flex items-center gap-2">
+            <h4 className="text-xs font-semibold text-foreground truncate">
               {t('storage:cloudStorageUsage')}
-              <Badge
-                variant="outline"
-                className="text-[10px] h-4.5 px-1.5 font-normal border-border bg-muted/40"
-              >
-                {quota?.planType || 'FREE'}
-              </Badge>
             </h4>
-            <p className="text-[11px] text-muted-foreground mt-0.5">
-              {isLocked
-                ? t('storage:storageNotIncluded')
-                : `${t('storage:usedOf', { used: usedFormatted, max: maxFormatted })} (${percentUsed}%)`}
-            </p>
+            <Badge
+              variant="outline"
+              className="text-[10px] h-4 px-1.5 font-normal border-border bg-muted/40 shrink-0"
+            >
+              {quota?.planType || 'FREE'}
+            </Badge>
           </div>
+          <p className="text-[11px] text-muted-foreground truncate">
+            {isLocked
+              ? t('storage:storageNotIncluded')
+              : `${usedFormatted} / ${maxFormatted} (${percentUsed}%)`}
+          </p>
+        </div>
+      </div>
+
+      {/* Right: Progress bar + File count + Actions */}
+      <div className="flex items-center gap-3 shrink-0">
+        <div className="flex flex-col items-end gap-1">
+          <div className="flex items-center gap-2">
+            <Progress
+              value={isLocked ? 0 : percentUsed}
+              className="h-1.5 w-28 sm:w-40 bg-muted/60"
+              indicatorClassName={getIndicatorColor()}
+            />
+            <span className="text-[11px] font-mono tabular-nums text-muted-foreground">
+              {percentUsed}%
+            </span>
+          </div>
+          <span className="text-[10px] text-muted-foreground">
+            {quota?.totalFilesCount || 0} {t('storage:filesInR2')}
+          </span>
         </div>
 
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1">
           <Button
             type="button"
             variant="ghost"
             size="sm"
             onClick={() => refetch()}
             disabled={isLoading}
-            className="size-8 p-0 text-muted-foreground hover:text-foreground"
+            className="size-7 p-0 text-muted-foreground hover:text-foreground"
             title={t('storage:refreshQuota')}
             data-testid="refresh-quota-btn"
           >
             <RefreshCw className={cn('size-3.5', isLoading && 'animate-spin')} />
           </Button>
+
           {(isLocked || percentUsed >= 75) && (
             <Button
               type="button"
               size="sm"
               variant="outline"
               onClick={handleUpgrade}
-              className="h-8 text-xs font-medium gap-1 text-primary border-primary/30 hover:bg-primary/5"
+              className="h-7 text-[11px] px-2 font-medium gap-1 text-primary border-primary/30 hover:bg-primary/5"
               data-testid="full-upgrade-btn"
             >
               {t('storage:upgradeBtn')}
-              <ArrowUpRight className="size-3.5" />
+              <ArrowUpRight className="size-3" />
             </Button>
           )}
-        </div>
-      </div>
-
-      {/* Progress Bar with Color Coding */}
-      <div className="space-y-1.5">
-        <Progress
-          value={isLocked ? 0 : percentUsed}
-          className="h-2 bg-muted/60"
-          indicatorClassName={getIndicatorColor()}
-        />
-        <div className="flex items-center justify-between text-[11px] text-muted-foreground">
-          <span>
-            {isLocked
-              ? t('storage:upgradeToUnlockStorage')
-              : t('storage:available', { available: availableFormatted })}
-          </span>
-          <span className="font-mono">
-            {quota?.totalFilesCount || 0} {t('storage:filesInR2')}
-          </span>
         </div>
       </div>
 

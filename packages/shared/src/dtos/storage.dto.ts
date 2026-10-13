@@ -148,3 +148,50 @@ export const StorageQuotaDtoSchema = z.object({
 });
 
 export type StorageQuotaDto = z.infer<typeof StorageQuotaDtoSchema>;
+
+export const StorageFileListQueryDtoSchema = z.object({
+  page: z.coerce.number().int().positive().optional().default(1),
+  limit: z.coerce.number().int().positive().max(100).optional().default(10),
+  folder: z.string().optional(),
+  search: z.string().optional(),
+});
+
+export type StorageFileListQueryDto = z.infer<typeof StorageFileListQueryDtoSchema>;
+
+export const StorageFileListResponseDtoSchema = z.object({
+  items: z.array(StorageFileDtoSchema),
+  total: z.number().int().nonnegative(),
+  page: z.number().int().positive(),
+  totalPages: z.number().int().nonnegative(),
+});
+
+export type StorageFileListResponseDto = z.infer<typeof StorageFileListResponseDtoSchema>;
+
+export const CatalogMediaStatsDtoSchema = z.object({
+  totalImages: z.number().int().nonnegative(),
+  syncedCloudCount: z.number().int().nonnegative(),
+  localOnlyCount: z.number().int().nonnegative(),
+  pendingCount: z.number().int().nonnegative(),
+  failedCount: z.number().int().nonnegative(),
+  totalSizeBytes: z.number().int().nonnegative(),
+});
+
+export type CatalogMediaStatsDto = z.infer<typeof CatalogMediaStatsDtoSchema>;
+
+export const CleanupOrphansRequestDtoSchema = z.object({
+  dryRun: z.boolean().optional().default(false),
+  folder: z.string().optional().default('images'),
+  activeKeys: z.array(z.string()).optional(),
+});
+
+export type CleanupOrphansRequestDto = z.infer<typeof CleanupOrphansRequestDtoSchema>;
+
+export const CleanupOrphansResponseDtoSchema = z.object({
+  dryRun: z.boolean(),
+  orphanCount: z.number().int().nonnegative(),
+  orphanSizeBytes: z.number().int().nonnegative(),
+  freedBytes: z.number().int().nonnegative(),
+  deletedKeys: z.array(z.string()),
+});
+
+export type CleanupOrphansResponseDto = z.infer<typeof CleanupOrphansResponseDtoSchema>;

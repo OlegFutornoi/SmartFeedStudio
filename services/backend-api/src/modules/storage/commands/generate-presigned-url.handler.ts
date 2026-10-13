@@ -79,10 +79,17 @@ export class GeneratePresignedUploadUrlHandler implements ICommandHandler<
     }
 
     // Path traversal defense: strip any path separators and keep only safe basename
-    const baseFileName = fileName.split(/[/\\]/).pop() || 'upload';
-    const sanitizedFileName = baseFileName.replace(/[^a-zA-Z0-9._-]/g, '_').slice(0, 100);
-    const uniqueSuffix = crypto.randomBytes(4).toString('hex');
-    const s3Key = `${targetFolder}/${userId}/${Date.now()}-${uniqueSuffix}-${sanitizedFileName}`;
+    const rawBase = fileName.split(/[/\\]/).pop() || 'upload';
+    const lastDotIdx = rawBase.lastIndexOf('.');
+    const rawName = lastDotIdx > 0 ? rawBase.slice(0, lastDotIdx) : rawBase;
+    const rawExt = lastDotIdx > 0 ? rawBase.slice(lastDotIdx + 1) : 'webp';
+
+    const sanitizedBase = rawName.replace(/[^a-zA-Z0-9._-]/g, '_').slice(0, 80) || 'file';
+    const sanitizedExt = rawExt.replace(/[^a-zA-Z0-9]/g, '').slice(0, 10) || 'webp';
+    const uniqueSuffix = crypto.randomBytes(3).toString('hex');
+
+    // Semantic S3 key: human-readable name at the start, unique suffix before extension
+    const s3Key = `${targetFolder}/${userId}/${sanitizedBase}_${uniqueSuffix}.${sanitizedExt}`;
 
     const expiresInSeconds = 60 * 15; // 15 minutes validity
 
@@ -114,7 +121,7 @@ export class GeneratePresignedUploadUrlHandler implements ICommandHandler<
           bucketName: this.s3StorageService.getBucketName(),
           s3Key,
           publicUrl,
-          originalName: sanitizedFileName,
+          originalName: `${sanitizedBase}.${sanitizedExt}`,
           mimeType: normalizedContentType,
           sizeBytes: BigInt(fileSize || 0),
           expiresAt,

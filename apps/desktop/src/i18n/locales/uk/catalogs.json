@@ -105,5 +105,15 @@
   "redownloadPhoto": "Завантажити повторно",
   "noImagesAvailable": "Фотографії відсутні",
   "viewFullGallery": "Переглянути всі фото",
-  "imageUnavailable": "Зображення недоступне"
+  "imageUnavailable": "Зображення недоступне",
+  "badgeCloudR2": "Хмара R2",
+  "badgeLocalOnly": "Локально",
+  "badgeSupplierUrl": "URL",
+  "badgeSyncing": "Синхр.",
+  "badgeError": "Помилка",
+  "tooltipCloudR2": "Збережено у Cloudflare R2 CDN",
+  "tooltipLocalOnly": "Збережено локально на цьому компʼютері",
+  "tooltipSupplierUrl": "Завантажується з сервера постачальника",
+  "tooltipSyncing": "В процесі вивантаження в R2",
+  "tooltipError": "Помилка завантаження або синхронізації"
 }

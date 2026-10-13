@@ -15,10 +15,12 @@ import { RunDatabaseMaintenanceHandler } from '@/modules/storage/commands/run-da
 import { ClearStorageCacheHandler } from '@/modules/storage/commands/clear-storage-cache.handler';
 import { MigrateWorkspaceHandler } from '@/modules/storage/commands/migrate-workspace.handler';
 import { SelectWorkspaceFolderHandler } from '@/modules/storage/commands/select-workspace-folder.handler';
+import { CleanupOrphansHandler } from '@/modules/storage/commands/cleanup-orphans.handler';
 import { GetDefaultWorkspacePathHandler } from '@/modules/storage/queries/get-default-workspace-path.handler';
 import { GetWorkspaceInfoHandler } from '@/modules/storage/queries/get-workspace-info.handler';
 import { GetStorageStatsHandler } from '@/modules/storage/queries/get-storage-stats.handler';
 import { GetStorageQuotaHandler } from '@/modules/storage/queries/get-storage-quota.handler';
+import { GetStorageFilesHandler } from '@/modules/storage/queries/get-storage-files.handler';
 import { S3StorageService } from '@/modules/storage/services/s3-storage.service';
 import { StorageSchedulerService } from '@/modules/storage/services/storage-scheduler.service';
 import { StorageGcProcessor } from '@/modules/storage/processors/storage-gc.processor';
@@ -35,6 +37,7 @@ export const CommandHandlers = [
   ClearStorageCacheHandler,
   MigrateWorkspaceHandler,
   SelectWorkspaceFolderHandler,
+  CleanupOrphansHandler,
 ];
 
 export const QueryHandlers = [
@@ -42,6 +45,7 @@ export const QueryHandlers = [
   GetWorkspaceInfoHandler,
   GetStorageStatsHandler,
   GetStorageQuotaHandler,
+  GetStorageFilesHandler,
 ];
 
 @Module({

@@ -1,6 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { PanelLeft, Menu, Search } from 'lucide-react';
+import {
+  PanelLeft,
+  Menu,
+  Search,
+  LayoutDashboard,
+  Layers,
+  Truck,
+  Sparkles,
+  Cloud,
+  CreditCard,
+  Users,
+  User,
+  Settings,
+  HelpCircle,
+} from 'lucide-react';
 import { useSidebar } from '@/contexts/SidebarContext';
 import { useTranslation } from '@/i18n';
 import { Button } from '@/components/ui/button';
@@ -8,6 +22,7 @@ import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { LanguageToggle } from '@/components/ui/language-toggle';
 import { HeaderUserMenu } from '@/components/layout/HeaderUserMenu';
 import { CommandSearchDialog } from '@/components/layout/CommandSearchDialog';
+import { PageHeaderGuide } from '@/components/layout/PageHeaderGuide';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -15,45 +30,69 @@ import {
   BreadcrumbPage,
 } from '@/components/ui/breadcrumb';
 
-const routeTitles: Record<string, { titleUk: string; titleEn: string; testId: string }> = {
-  '/': { titleUk: 'Дашборд', titleEn: 'Dashboard', testId: 'dashboard-header-title' },
+interface RouteMeta {
+  titleUk: string;
+  titleEn: string;
+  icon: React.ComponentType<{ className?: string; 'data-testid'?: string }>;
+  testId: string;
+}
+
+const routeTitles: Record<string, RouteMeta> = {
+  '/': {
+    titleUk: 'Дашборд',
+    titleEn: 'Dashboard',
+    icon: LayoutDashboard,
+    testId: 'dashboard-header-title',
+  },
   '/catalogs': {
     titleUk: 'Каталоги товарів',
     titleEn: 'Product Catalogs',
+    icon: Layers,
     testId: 'catalogs-header-title',
   },
   '/suppliers': {
     titleUk: 'Постачальники',
     titleEn: 'Suppliers',
+    icon: Truck,
     testId: 'suppliers-header-title',
   },
   '/ai': {
-    titleUk: 'AI Асистент контенту',
-    titleEn: 'AI Content Assistant',
+    titleUk: 'AI Асистент',
+    titleEn: 'AI Assistant',
+    icon: Sparkles,
     testId: 'ai-header-title',
   },
   '/ai-enrichment': {
-    titleUk: 'AI Асистент контенту',
-    titleEn: 'AI Content Assistant',
+    titleUk: 'AI Асистент',
+    titleEn: 'AI Assistant',
+    icon: Sparkles,
     testId: 'ai-header-title',
   },
   '/cloud-sync': {
-    titleUk: 'Хмарна синхронізація & Бекап',
-    titleEn: 'Cloud Sync & Backups',
+    titleUk: 'Хмарна синхронізація',
+    titleEn: 'Cloud Sync',
+    icon: Cloud,
     testId: 'cloud-header-title',
   },
   '/plans': {
-    titleUk: 'Тарифні плани та підписка',
-    titleEn: 'Subscription Plans & Pricing',
+    titleUk: 'Тарифні плани',
+    titleEn: 'Subscription Plans',
+    icon: CreditCard,
     testId: 'plans-header-title',
   },
-  '/team': { titleUk: 'Команда', titleEn: 'Team', testId: 'team-header-title' },
+  '/team': { titleUk: 'Команда', titleEn: 'Team', icon: Users, testId: 'team-header-title' },
   '/profile': {
     titleUk: 'Профіль користувача',
     titleEn: 'User Profile',
+    icon: User,
     testId: 'profile-header-title',
   },
-  '/settings': { titleUk: 'Налаштування', titleEn: 'Settings', testId: 'settings-header-title' },
+  '/settings': {
+    titleUk: 'Налаштування',
+    titleEn: 'Settings',
+    icon: Settings,
+    testId: 'settings-header-title',
+  },
 };
 
 export const Header = React.memo(function Header() {
@@ -66,8 +105,10 @@ export const Header = React.memo(function Header() {
   const currentRouteMeta = routeTitles[location.pathname] || {
     titleUk: 'SmartFeed Studio',
     titleEn: 'SmartFeed Studio',
+    icon: HelpCircle,
     testId: 'default-header-title',
   };
+  const RouteIcon = currentRouteMeta.icon || HelpCircle;
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -121,7 +162,8 @@ export const Header = React.memo(function Header() {
         {/* Clean minimalist Breadcrumb */}
         <Breadcrumb className="min-w-0">
           <BreadcrumbList>
-            <BreadcrumbItem className="min-w-0">
+            <BreadcrumbItem className="min-w-0 flex items-center gap-1.5">
+              <RouteIcon className="size-4 text-primary shrink-0" data-testid="header-route-icon" />
               <BreadcrumbPage
                 data-testid={currentRouteMeta.testId}
                 className="text-sm font-semibold tracking-tight text-foreground truncate max-w-[240px] sm:max-w-none"
@@ -130,6 +172,7 @@ export const Header = React.memo(function Header() {
                   {isUk ? currentRouteMeta.titleUk : currentRouteMeta.titleEn}
                 </h1>
               </BreadcrumbPage>
+              <PageHeaderGuide route={location.pathname} />
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>

@@ -46,8 +46,8 @@ const DEFAULT_NAVIGATION_ITEMS: NavigationItemDto[] = [
   {
     id: 'default-cloud',
     key: 'cloud_sync',
-    labelUk: 'Хмарна синхронізація',
-    labelEn: 'Cloud Sync',
+    labelUk: 'Хмарне сховище & Медіа',
+    labelEn: 'Cloud Storage & Media',
     path: '/cloud-sync',
     icon: 'Cloud',
     order: 4,

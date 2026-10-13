@@ -15,6 +15,8 @@ export * from './dtos/product-image.dto';
 export * from './dtos/feed.dto';
 export * from './dtos/pricing-rule.dto';
 export * from './dtos/legal.dto';
+export * from './dtos/page-guide.dto';
 export * from './utils/pricing-calculator';
+export * from './utils/media-naming';
 export * from './contracts/cqrs';
 export * from './constants';

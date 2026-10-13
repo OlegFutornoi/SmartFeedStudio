@@ -18,6 +18,7 @@ import { MailModule } from '@/modules/mail/mail.module';
 import { PaymentsModule } from '@/modules/payments/payments.module';
 import { FeedsModule } from '@/modules/feeds/feeds.module';
 import { LegalModule } from '@/modules/legal/legal.module';
+import { PageGuidesModule } from '@/modules/page-guides/page-guides.module';
 
 @Module({
   imports: [
@@ -81,6 +82,7 @@ import { LegalModule } from '@/modules/legal/legal.module';
     PaymentsModule,
     FeedsModule,
     LegalModule,
+    PageGuidesModule,
   ],
   providers: [
     {

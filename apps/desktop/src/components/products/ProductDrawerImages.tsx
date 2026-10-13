@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { useTranslation } from '@/i18n';
 import type { LocalProductImageDto } from '@smartfeed/shared';
 import { ProductImageThumbnail } from '@/components/products/ProductImageThumbnail';
+import { ProductImageStatusBadge } from '@/components/products/ProductImageStatusBadge';
 
 interface ProductDrawerImagesProps {
   images: LocalProductImageDto[];
@@ -70,7 +71,7 @@ export const ProductDrawerImages: React.FC<ProductDrawerImagesProps> = ({
         )}
       </div>
 
-      <div className="h-56 w-full rounded-xl overflow-hidden bg-muted/30 border border-border flex items-center justify-center p-2">
+      <div className="relative h-56 w-full rounded-xl overflow-hidden bg-muted/30 border border-border flex items-center justify-center p-2">
         <ProductImageThumbnail
           image={currentImg}
           alt={productTitle}
@@ -78,6 +79,11 @@ export const ProductDrawerImages: React.FC<ProductDrawerImagesProps> = ({
           className="h-full w-full border-0 bg-transparent"
           imageClassName="object-contain"
         />
+        {currentImg && (
+          <div className="absolute top-2 right-2 z-10">
+            <ProductImageStatusBadge image={currentImg} size="xs" showLabel />
+          </div>
+        )}
       </div>
 
       {images.length > 1 && (

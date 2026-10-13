@@ -90,6 +90,7 @@ export const ProductTableRow: React.FC<ProductTableRowProps> = ({
             image={mainImage}
             alt={product.titleUk}
             size="md"
+            showStatusBadge
             dataTestId={`product-thumbnail-${product.id}`}
             imageClassName="group-hover:scale-105 transition-transform duration-200"
           />

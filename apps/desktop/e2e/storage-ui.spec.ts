@@ -200,4 +200,58 @@ test.describe('Desktop App — Cloudflare R2 Storage & Media UI (E2E)', () => {
     await expect(quotaWidget).toContainText('Cloud Storage Usage');
     await expect(quotaWidget).toContainText('files in Cloudflare R2');
   });
+
+  test('Тест 4: Рендеринг 4 shadcn вкладок та перемикання між ними', async ({ page }) => {
+    await page.route('**/api/storage/quota', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(mockActiveQuota),
+      });
+    });
+
+    await page.route('**/api/storage/files*', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          items: [],
+          total: 0,
+          page: 1,
+          totalPages: 0,
+        }),
+      });
+    });
+
+    await page.goto('/cloud-sync');
+
+    // 1. Verify all 4 tabs exist and are visible
+    const tabMedia = page.locator('[data-testid="cloud-tab-media"]');
+    const tabFiles = page.locator('[data-testid="cloud-tab-files"]');
+    const tabBackups = page.locator('[data-testid="cloud-tab-backups"]');
+    const tabSettings = page.locator('[data-testid="cloud-tab-settings"]');
+
+    await expect(tabMedia).toBeVisible();
+    await expect(tabFiles).toBeVisible();
+    await expect(tabBackups).toBeVisible();
+    await expect(tabSettings).toBeVisible();
+
+    // 2. Default tab is Media: MediaSyncTab is visible
+    await expect(page.locator('[data-testid="media-sync-tab"]')).toBeVisible();
+    await expect(page.locator('[data-testid="sync-all-media-btn"]')).toBeVisible();
+
+    // 3. Switch to Files tab
+    await tabFiles.click();
+    await expect(page.locator('[data-testid="cloud-files-browser-tab"]')).toBeVisible();
+
+    // 4. Switch to Settings tab
+    await tabSettings.click();
+    await expect(page.locator('[data-testid="storage-settings-tab"]')).toBeVisible();
+    await expect(page.locator('[data-testid="auto-sync-switch"]')).toBeVisible();
+    await expect(page.locator('[data-testid="webp-compress-switch"]')).toBeVisible();
+
+    // 5. Switch to Backups tab
+    await tabBackups.click();
+    await expect(page.locator('[data-testid="cloud-backups-tab"]')).toBeVisible();
+  });
 });

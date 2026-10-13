@@ -5,6 +5,7 @@ import {
   PutObjectCommand,
   HeadObjectCommand,
   DeleteObjectCommand,
+  ListObjectsV2Command,
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
@@ -90,6 +91,25 @@ export class S3StorageService {
     } catch (err: unknown) {
       this.logger.warn(`HeadObject failed for key="${s3Key}": ${(err as Error).message}`);
       return null;
+    }
+  }
+
+  async listObjects(prefix: string): Promise<Array<{ key: string; size: number }>> {
+    try {
+      const command = new ListObjectsV2Command({
+        Bucket: this.bucketName,
+        Prefix: prefix,
+      });
+      const response = await this.s3Client.send(command);
+      return (
+        response.Contents?.map((item) => ({
+          key: item.Key || '',
+          size: item.Size || 0,
+        })).filter((item) => item.key !== '') || []
+      );
+    } catch (err: unknown) {
+      this.logger.error(`ListObjectsV2 failed for prefix="${prefix}": ${(err as Error).message}`);
+      return [];
     }
   }
 

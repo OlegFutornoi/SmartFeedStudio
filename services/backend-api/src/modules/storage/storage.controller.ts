@@ -7,17 +7,22 @@ import { CurrentUser } from '@/modules/auth/decorators/current-user.decorator';
 import { GeneratePresignedUploadUrlCommand } from '@/modules/storage/commands/generate-presigned-url.command';
 import { ConfirmUploadCommand } from '@/modules/storage/commands/confirm-upload.command';
 import { DeleteStorageFileCommand } from '@/modules/storage/commands/delete-storage-file.command';
+import { CleanupOrphansCommand } from '@/modules/storage/commands/cleanup-orphans.command';
 import { GetStorageQuotaQuery } from '@/modules/storage/queries/get-storage-quota.query';
+import { GetStorageFilesQuery } from '@/modules/storage/queries/get-storage-files.query';
 import {
   PresignedUploadUrlResult,
   StorageFileDto,
   StorageQuotaDto,
+  StorageFileListResponseDto,
+  CleanupOrphansResponseDto,
   WorkspaceInfoDto,
   StorageStatsDto,
   DatabaseMaintenanceResultDto,
   CreateLocalBackupResultDto,
   ClearStorageCacheResultDto,
 } from '@smartfeed/shared';
+
 import { GetDefaultWorkspacePathQuery } from '@/modules/storage/queries/get-default-workspace-path.query';
 import { GetWorkspaceInfoQuery } from '@/modules/storage/queries/get-workspace-info.query';
 import { GetStorageStatsQuery } from '@/modules/storage/queries/get-storage-stats.query';
@@ -31,6 +36,8 @@ import { SelectWorkspaceFolderCommand } from '@/modules/storage/commands/select-
 import {
   PresignedUrlDto,
   ConfirmUploadDto,
+  StorageFileListQueryDto,
+  CleanupOrphansDto,
   InitWorkspaceRequestDto,
   OpenFolderRequestDto,
   WorkspaceActionRequestDto,
@@ -99,6 +106,20 @@ export class StorageController {
     return this.commandBus.execute(new DeleteStorageFileCommand(userId, fileId));
   }
 
+  @Post('cleanup-orphans')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Scan S3 bucket for orphaned unindexed files and purge garbage',
+  })
+  @ApiResponse({ status: 200, description: 'Orphaned files cleaned up or dry-run inspected' })
+  async cleanupOrphans(
+    @CurrentUser('id') userId: string,
+    @Body() dto: CleanupOrphansDto,
+  ): Promise<CleanupOrphansResponseDto> {
+    return this.commandBus.execute(new CleanupOrphansCommand(userId, dto));
+  }
+
   @Get('quota')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
@@ -106,6 +127,18 @@ export class StorageController {
   @ApiResponse({ status: 200, description: 'Storage quota stats returned' })
   async getStorageQuota(@CurrentUser('id') userId: string): Promise<StorageQuotaDto> {
     return this.queryBus.execute(new GetStorageQuotaQuery(userId));
+  }
+
+  @Get('files')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get paginated list of uploaded files in Cloudflare R2' })
+  @ApiResponse({ status: 200, description: 'List of files returned' })
+  async getFiles(
+    @CurrentUser('id') userId: string,
+    @Query() query: StorageFileListQueryDto,
+  ): Promise<StorageFileListResponseDto> {
+    return this.queryBus.execute(new GetStorageFilesQuery(userId, query));
   }
 
   @Get('workspace/default-path')

@@ -179,6 +179,10 @@ test.describe('Desktop App — Local Product Images Engine & Management (E2E)', 
     // Verify product thumbnail container is visible
     const thumbnail = row1.locator('[data-testid^="product-thumbnail-"]');
     await expect(thumbnail).toBeVisible();
+
+    // Verify image sync status badge is rendered on thumbnail
+    const statusBadge = row1.locator('[data-testid="product-image-status-badge"]');
+    await expect(statusBadge).toBeVisible();
   });
 
   test('2. Перегляд галереї фото у висувній картці товару та модалці', async ({ page }) => {

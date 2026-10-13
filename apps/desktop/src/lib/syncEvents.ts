@@ -11,7 +11,15 @@ import { useEffect, useRef } from 'react';
  */
 
 export type SyncDomain =
-  'all' | 'suppliers' | 'feeds' | 'products' | 'categories' | 'quotas' | 'licenses';
+  | 'all'
+  | 'suppliers'
+  | 'feeds'
+  | 'products'
+  | 'categories'
+  | 'quotas'
+  | 'licenses'
+  | 'storage'
+  | 'settings';
 
 export interface DataSyncDetail {
   domain?: SyncDomain | SyncDomain[];

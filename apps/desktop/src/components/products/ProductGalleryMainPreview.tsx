@@ -1,16 +1,10 @@
 import type { FC } from 'react';
 import { useTranslation } from '@/i18n';
-import {
-  Trash2,
-  Star,
-  HardDrive,
-  AlertCircle,
-  RefreshCw,
-  ChevronLeft,
-  ChevronRight,
-} from 'lucide-react';
+import { Trash2, Star, AlertCircle, ChevronLeft, ChevronRight } from 'lucide-react';
+
 import type { LocalProductImageDto } from '@smartfeed/shared';
 import { Button } from '@/components/ui/button';
+import { ProductImageStatusBadge } from '@/components/products/ProductImageStatusBadge';
 
 export interface ProductGalleryMainPreviewProps {
   currentImage?: LocalProductImageDto;
@@ -74,17 +68,7 @@ export const ProductGalleryMainPreview: FC<ProductGalleryMainPreviewProps> = ({
       {currentImage && (
         <div className="w-full max-w-2xl mt-3 flex items-center justify-between px-1">
           <div className="flex items-center gap-2 text-xs">
-            {currentImage.localPath ? (
-              <span className="inline-flex items-center gap-1 text-foreground font-medium">
-                <HardDrive className="h-3.5 w-3.5" />
-                {t('catalogs:imageStatusReady')}
-              </span>
-            ) : (
-              <span className="inline-flex items-center gap-1 text-muted-foreground font-medium">
-                <RefreshCw className="h-3.5 w-3.5" />
-                {t('catalogs:imageStatusPending')}
-              </span>
-            )}
+            <ProductImageStatusBadge image={currentImage} size="sm" showLabel />
             {currentImage.isMain && (
               <span className="bg-primary/10 text-primary text-[10px] font-bold px-2 py-0.5 rounded-md">
                 {t('catalogs:mainImageBadge')}

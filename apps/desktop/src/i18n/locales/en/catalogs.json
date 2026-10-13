@@ -105,5 +105,15 @@
   "redownloadPhoto": "Redownload",
   "noImagesAvailable": "No photos available",
   "viewFullGallery": "View All Photos",
-  "imageUnavailable": "Image unavailable"
+  "imageUnavailable": "Image unavailable",
+  "badgeCloudR2": "Cloud R2",
+  "badgeLocalOnly": "Local",
+  "badgeSupplierUrl": "URL",
+  "badgeSyncing": "Syncing",
+  "badgeError": "Error",
+  "tooltipCloudR2": "Stored in Cloudflare R2 CDN",
+  "tooltipLocalOnly": "Stored locally on this computer",
+  "tooltipSupplierUrl": "Loaded from supplier server URL",
+  "tooltipSyncing": "Currently uploading to R2",
+  "tooltipError": "Download or synchronization error"
 }

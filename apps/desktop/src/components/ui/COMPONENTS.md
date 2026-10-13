@@ -20,8 +20,11 @@
 | **`Input`**        | `input.tsx`         | React                           | Поля вводу тексту                          |
 | **`Label`**        | `label.tsx`         | `@radix-ui/react-label`         | Доступні мітки для форм                    |
 | **`Progress`**     | `progress.tsx`      | `@radix-ui/react-progress`      | Прогрес-бари квот та завантажень           |
+| **`ScrollArea`**   | `scroll-area.tsx`   | `@radix-ui/react-scroll-area`   | Області прокрутки зі стилізованим скролом  |
 | **`Select`**       | `select.tsx`        | `@radix-ui/react-select`        | Селектори з пошуком та опціями             |
 | **`Separator`**    | `separator.tsx`     | `@radix-ui/react-separator`     | Розділювачі секцій                         |
+| **`Skeleton`**     | `skeleton.tsx`      | React                           | Пульсуючі заглушки для стану завантаження  |
+| **`Switch`**       | `switch.tsx`        | `@radix-ui/react-switch`        | Перемикачі тумблерного типу                |
 | **`Table`**        | `table.tsx`         | React                           | Таблиці з компактними клітинками `text-xs` |
 | **`Tabs`**         | `tabs.tsx`          | `@radix-ui/react-tabs`          | Вкладки перемикання категорій/режимів      |
 | **`Tooltip`**      | `tooltip.tsx`       | `@radix-ui/react-tooltip`       | Спливаючі підказки                         |

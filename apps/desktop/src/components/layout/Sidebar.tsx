@@ -95,8 +95,8 @@ export function Sidebar() {
       },
       cloud_sync: {
         key: 'cloud_sync',
-        labelUk: 'Хмарна синхронізація',
-        labelEn: 'Cloud Sync',
+        labelUk: 'Хмарне сховище & Медіа',
+        labelEn: 'Cloud Storage & Media',
         path: '/cloud-sync',
         icon: 'Cloud',
         order: 8,

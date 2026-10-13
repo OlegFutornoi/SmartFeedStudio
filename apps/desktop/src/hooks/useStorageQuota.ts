@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import type { StorageQuotaDto } from '@smartfeed/shared';
 import { useAuth } from '@/contexts/AuthContext';
-import { getStorageQuota } from '@/services/storage';
+import { getStorageQuota, invalidateStorageQuotaCache } from '@/services/storage';
+import { useDataSync } from '@/lib/syncEvents';
 
 export function formatStorageBytes(bytes: number): string {
   if (!bytes || bytes <= 0) return '0 B';
@@ -39,6 +40,10 @@ export function useStorageQuota(): StorageQuotaState {
         setQuota(null);
         return;
       }
+      if (force) {
+        lastFetchedTokenRef.current = null;
+        invalidateStorageQuotaCache();
+      }
       if (!force && lastFetchedTokenRef.current === token) return;
       if (isFetchingRef.current) return;
 
@@ -46,7 +51,7 @@ export function useStorageQuota(): StorageQuotaState {
         isFetchingRef.current = true;
         setIsLoading(true);
         setError(null);
-        const data = await getStorageQuota(token);
+        const data = await getStorageQuota(token, force);
         lastFetchedTokenRef.current = token;
         setQuota(data);
       } catch (err: unknown) {
@@ -64,6 +69,11 @@ export function useStorageQuota(): StorageQuotaState {
   useEffect(() => {
     fetchQuota();
   }, [fetchQuota]);
+
+  // Synchronize across all components when storage or quota changes
+  useDataSync(['storage', 'quotas', 'licenses', 'all'], () => {
+    fetchQuota(true);
+  });
 
   const refetch = useCallback(async () => {
     await fetchQuota(true);

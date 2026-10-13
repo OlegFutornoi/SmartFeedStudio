@@ -1,5 +1,5 @@
 import type { AiActionLogItem } from '@/modules/growth-showcase/types';
-import aiAvatarImg from '@/assets/ai-copilot-agent.jpg';
+import { useAiAssistantProfile } from '@/hooks/useAiAssistantProfile';
 import { Bot, Sparkles, CheckCircle2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
@@ -9,6 +9,8 @@ interface AiCopilotCardProps {
 }
 
 export function AiCopilotCard({ currentAction, isUk }: AiCopilotCardProps) {
+  const { avatarUrl, name } = useAiAssistantProfile();
+
   return (
     <div
       data-testid="ai-copilot-card"
@@ -18,8 +20,8 @@ export function AiCopilotCard({ currentAction, isUk }: AiCopilotCardProps) {
       <div className="relative shrink-0">
         <div className="relative h-12 w-12 sm:h-13 sm:w-13 overflow-hidden rounded-xl border border-emerald-500/40 bg-background/80 shadow-md ring-2 ring-emerald-500/20">
           <img
-            src={aiAvatarImg}
-            alt="SmartFeed AI Copilot"
+            src={avatarUrl}
+            alt={name || 'SmartFeed AI Copilot'}
             className="h-full w-full object-cover object-center transition-transform duration-500 hover:scale-105"
           />
         </div>

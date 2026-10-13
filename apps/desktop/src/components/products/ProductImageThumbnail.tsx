@@ -3,6 +3,7 @@ import { Package, ImageOff } from 'lucide-react';
 import type { LocalProductImageDto, ProductImageDto } from '@smartfeed/shared';
 import { useTranslation } from '@/i18n';
 import { resolveImageSrc } from '@/lib/image-url';
+import { ProductImageStatusBadge } from '@/components/products/ProductImageStatusBadge';
 
 export interface ProductImageThumbnailProps {
   image?: LocalProductImageDto | ProductImageDto | null;
@@ -11,6 +12,7 @@ export interface ProductImageThumbnailProps {
   className?: string;
   imageClassName?: string;
   dataTestId?: string;
+  showStatusBadge?: boolean;
 }
 
 const sizeClasses = {
@@ -28,6 +30,7 @@ export const ProductImageThumbnail: React.FC<ProductImageThumbnailProps> = ({
   className = '',
   imageClassName = '',
   dataTestId,
+  showStatusBadge = false,
 }) => {
   const { t } = useTranslation(['catalogs']);
   const [hasError, setHasError] = useState(false);
@@ -45,13 +48,18 @@ export const ProductImageThumbnail: React.FC<ProductImageThumbnailProps> = ({
     return (
       <div
         data-testid={dataTestId || 'product-image-fallback'}
-        className={`rounded-lg overflow-hidden bg-muted/40 border border-border/60 flex items-center justify-center shrink-0 text-muted-foreground/40 ${containerSize} ${className}`}
+        className={`relative rounded-lg overflow-hidden bg-muted/40 border border-border/60 flex items-center justify-center shrink-0 text-muted-foreground/40 ${containerSize} ${className}`}
         title={hasError ? t('catalogs:imageUnavailable') : alt}
       >
         {hasError ? (
           <ImageOff className="h-4 w-4 opacity-70" />
         ) : (
           <Package className="h-4 w-4 opacity-50" />
+        )}
+        {showStatusBadge && image && (
+          <div className="absolute top-1 right-1 z-10 pointer-events-auto">
+            <ProductImageStatusBadge image={image} size="xs" />
+          </div>
         )}
       </div>
     );
@@ -77,6 +85,11 @@ export const ProductImageThumbnail: React.FC<ProductImageThumbnailProps> = ({
           isLoading ? 'opacity-0' : 'opacity-100'
         } ${imageClassName}`}
       />
+      {showStatusBadge && image && (
+        <div className="absolute top-1 right-1 z-10 pointer-events-auto">
+          <ProductImageStatusBadge image={image} size="xs" />
+        </div>
+      )}
     </div>
   );
 };

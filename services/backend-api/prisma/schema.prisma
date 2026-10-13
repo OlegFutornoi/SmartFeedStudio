@@ -274,6 +274,46 @@ model NavigationItem {
   @@map("navigation_items")
 }
 
+model PageGuide {
+  id            String    @id @default(cuid())
+  route         String    @unique
+  titleUk       String    @map("title_uk")
+  titleEn       String    @map("title_en")
+  icon          String    @default("HelpCircle")
+  badgeUk       String    @default("AI Асистент") @map("badge_uk")
+  badgeEn       String    @default("AI Assistant") @map("badge_en")
+  summaryUk     String    @map("summary_uk")
+  summaryEn     String    @map("summary_en")
+  descriptionUk String    @map("description_uk")
+  descriptionEn String    @map("description_en")
+  featuresUk    String[]  @default([]) @map("features_uk")
+  featuresEn    String[]  @default([]) @map("features_en")
+  proTipUk      String?   @map("pro_tip_uk")
+  proTipEn      String?   @map("pro_tip_en")
+  order         Int       @default(0)
+  targetApp     TargetApp @default(DESKTOP) @map("target_app")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  @@index([route])
+  @@index([targetApp, order])
+  @@map("page_guides")
+}
+
+model AiAssistantSetting {
+  id        String   @id @default(cuid())
+  name      String   @default("SmartFeed AI Copilot")
+  avatarUrl String?  @map("avatar_url")
+  roleUk    String   @default("Персональний AI-асистент з товарних каталогів та фідів") @map("role_uk")
+  roleEn    String   @default("Personal AI Catalog & Feed Copilot") @map("role_en")
+  badgeUk   String   @default("AI Автопілот 24/7") @map("badge_uk")
+  badgeEn   String   @default("24/7 AI Autopilot") @map("badge_en")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("ai_assistant_settings")
+}
+
 model PaymentTransaction {
   id                String          @id @default(cuid())
   orderReference    String          @unique @map("order_reference")

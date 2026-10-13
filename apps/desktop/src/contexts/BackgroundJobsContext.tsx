@@ -5,7 +5,7 @@ import { useQuotas } from '@/hooks/useQuotas';
 import { emitDataSync } from '@/lib/syncEvents';
 
 export type BackgroundJobKind =
-  'IMPORT' | 'DELETE_FEED' | 'DELETE_CATEGORIES' | 'DELETE_SUPPLIER' | 'SYNC';
+  'IMPORT' | 'DELETE_FEED' | 'DELETE_CATEGORIES' | 'DELETE_SUPPLIER' | 'SYNC' | 'CLEANUP_ORPHANS';
 
 export interface BackgroundTaskItem {
   id: string;

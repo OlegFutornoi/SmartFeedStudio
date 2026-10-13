@@ -4,6 +4,7 @@ import { emitDataSync } from '@/lib/syncEvents';
 import { feedEngine } from '@/services/feed-engine';
 import { fetchFeedContent } from '@/lib/api/feeds-mutations';
 import { fetchWithAuth } from '@/lib/api/client';
+import { cleanupStorageOrphans } from '@/services/storage';
 import type { ImportFeedResultDto } from '@/lib/api/feeds';
 
 export interface FeedSourceItemDto {
@@ -178,6 +179,31 @@ export async function deleteSupplierFeedSource(
     }
   }
 
+  // If deleteProducts is enabled and access token is present, cascade delete feed photos from Cloudflare R2
+  if (deleteProducts && token) {
+    try {
+      const allProds = await localDb.products.getProducts({ limit: 10000 });
+      const remainingKeys: string[] = [];
+      for (const prod of allProds.items || []) {
+        const pFeedSourceId =
+          (prod as unknown as { feedSourceId?: string; feed_source_id?: string }).feedSourceId ||
+          (prod as unknown as { feedSourceId?: string; feed_source_id?: string }).feed_source_id;
+        if (pFeedSourceId !== sourceId && prod.supplierId !== supplierId) {
+          for (const img of prod.images || []) {
+            if (img.s3Key) remainingKeys.push(img.s3Key);
+          }
+        }
+      }
+      await cleanupStorageOrphans(token, {
+        dryRun: false,
+        folder: 'images',
+        activeKeys: remainingKeys,
+      });
+    } catch (err) {
+      console.warn('[deleteSupplierFeedSource] Failed to cascade purge R2 images:', err);
+    }
+  }
+
   // Always execute cascading deletion in local database (SQLCipher in Tauri / Mock in Web)
   const localResult = await localDb.feeds.deleteSupplierFeedSource(
     supplierId,
@@ -185,7 +211,7 @@ export async function deleteSupplierFeedSource(
     deleteProducts,
   );
 
-  emitDataSync(['suppliers', 'feeds', 'products', 'quotas', 'all']);
+  emitDataSync(['suppliers', 'feeds', 'products', 'quotas', 'storage', 'all']);
 
   return {
     success: true,

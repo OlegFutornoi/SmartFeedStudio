@@ -41,6 +41,7 @@ export function GlobalJobProgressBar() {
       switch (currentTask.kind) {
         case 'DELETE_FEED':
         case 'DELETE_CATEGORIES':
+        case 'CLEANUP_ORPHANS':
           return <Trash2 className="size-3.5 text-destructive shrink-0" />;
         case 'DELETE_SUPPLIER':
           return <Truck className="size-3.5 text-destructive shrink-0" />;
