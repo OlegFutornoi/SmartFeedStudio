@@ -1,5 +1,10 @@
 import { CommandHandler, ICommandHandler, CommandBus } from '@nestjs/cqrs';
-import { BadRequestException, NotFoundException, Logger } from '@nestjs/common';
+import {
+  BadRequestException,
+  NotFoundException,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
 import { Prisma } from '@/generated/prisma/client';
 import { HandleWayForPayWebhookCommand } from '@/modules/payments/commands/handle-wayforpay-webhook.command';
@@ -31,15 +36,13 @@ export class HandleWayForPayWebhookHandler implements ICommandHandler<HandleWayF
     });
     const secretKey = setting?.merchantSecretKey || process.env.WAYFORPAY_MERCHANT_SECRET_KEY;
 
-    if (!secretKey && process.env.NODE_ENV === 'production') {
-      this.logger.error('WayForPay merchant secret key is not configured in production');
-      throw new BadRequestException('Payment gateway configuration is missing');
+    if (!secretKey) {
+      this.logger.error('Payment gateway secret key is not configured');
+      throw new InternalServerErrorException('Payment gateway secret key is not configured');
     }
 
-    const effectiveSecret = secretKey || 'flk3409refn54t54vk354gh5400ef001';
-
     // 2. Validate Signature
-    const isValid = this.wayforpayService.verifyWebhookSignature(payload, effectiveSecret);
+    const isValid = this.wayforpayService.verifyWebhookSignature(payload, secretKey);
     if (!isValid) {
       this.logger.warn(`Invalid signature for orderReference: ${payload.orderReference}`);
       throw new BadRequestException('Invalid WayForPay signature');

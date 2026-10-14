@@ -115,7 +115,11 @@ export function useCatalogMediaSync(onSuccess?: () => void): UseCatalogMediaSync
           try {
             const fetchRes = await fetch(img.originalUrl, { mode: 'cors' });
             blob = await fetchRes.blob();
-          } catch {
+          } catch (err) {
+            console.warn(
+              '[useCatalogMediaSync] Failed to fetch image via CORS, using fallback blob:',
+              err,
+            );
             // Fallback lightweight WebP dummy blob if CORS blocks direct fetch
             blob = new Blob(['SMARTFEED_MEDIA_PAYLOAD'], { type: 'image/webp' });
           }

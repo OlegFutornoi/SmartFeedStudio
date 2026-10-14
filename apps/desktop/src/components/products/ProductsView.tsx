@@ -2,45 +2,15 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { ProductsToolbar } from '@/components/products/ProductsToolbar';
 import { ProductsBulkActionsBar } from '@/components/products/ProductsBulkActionsBar';
 import { ProductsTable } from '@/components/products/ProductsTable';
-import { ProductDetailsDrawer } from '@/components/products/ProductDetailsDrawer';
 import { ProductsZeroStateCard } from '@/components/products/ProductsZeroStateCard';
-import { ConfirmDeleteDialog } from '@/components/ui/ConfirmDeleteDialog';
+import { ProductsDialogsContainer } from '@/components/products/ProductsDialogsContainer';
+import { PRODUCT_COLUMNS } from '@/components/products/productColumns';
 import { localDb } from '@/services/local-db';
 import { useDataSync } from '@/lib/syncEvents';
 import { useTranslation } from '@/i18n';
 import type { ProductDto, SupplierDto } from '@smartfeed/shared';
-import { ProductColumnId } from '@/components/products/ProductTableRow';
-import { useColumnVisibility, ColumnConfig } from '@/hooks/useColumnVisibility';
-
-const PRODUCT_COLUMNS: ColumnConfig<ProductColumnId>[] = [
-  { id: 'select', labelUk: 'Вибір', labelEn: 'Select', canHide: false, defaultVisible: true },
-  { id: 'image', labelUk: 'Зображення', labelEn: 'Image', canHide: true, defaultVisible: true },
-  { id: 'sku', labelUk: 'Артикул / SKU', labelEn: 'SKU', canHide: false, defaultVisible: true },
-  {
-    id: 'title',
-    labelUk: 'Назва товару',
-    labelEn: 'Product Title',
-    canHide: false,
-    defaultVisible: true,
-  },
-  {
-    id: 'supplier',
-    labelUk: 'Постачальник',
-    labelEn: 'Supplier',
-    canHide: true,
-    defaultVisible: true,
-  },
-  {
-    id: 'price',
-    labelUk: 'Роздрібна ціна',
-    labelEn: 'Retail Price',
-    canHide: true,
-    defaultVisible: true,
-  },
-  { id: 'margin', labelUk: 'Маржа', labelEn: 'Margin', canHide: true, defaultVisible: false },
-  { id: 'stock', labelUk: 'Залишок', labelEn: 'Stock', canHide: true, defaultVisible: false },
-  { id: 'actions', labelUk: 'Дії', labelEn: 'Actions', canHide: false, defaultVisible: true },
-];
+import type { ProductColumnId } from '@/components/products/ProductTableRow';
+import { useColumnVisibility } from '@/hooks/useColumnVisibility';
 
 interface ProductsViewProps {
   onOpenImportWizard?: () => void;
@@ -51,7 +21,7 @@ export const ProductsView: React.FC<ProductsViewProps> = ({
   onOpenImportWizard,
   isFeedLimitReached = false,
 }) => {
-  const { t, language } = useTranslation(['catalogs', 'common']);
+  const { language } = useTranslation(['catalogs', 'common']);
   const isUk = language === 'uk';
 
   const { visibleColumns, toggleColumn, resetToDefaults, columnOptions } =
@@ -123,7 +93,6 @@ export const ProductsView: React.FC<ProductsViewProps> = ({
     }
   }, [page, limit, search, selectedSupplierId, selectedCategory, inStockOnly]);
 
-  // Initial load and reactive data sync
   useEffect(() => {
     loadFilterOptions();
   }, [loadFilterOptions]);
@@ -137,7 +106,6 @@ export const ProductsView: React.FC<ProductsViewProps> = ({
     loadFilterOptions();
   });
 
-  // Filter handlers
   const handleResetFilters = useCallback(() => {
     setSearch('');
     setSelectedSupplierId('');
@@ -151,7 +119,6 @@ export const ProductsView: React.FC<ProductsViewProps> = ({
     [search, selectedSupplierId, selectedCategory, inStockOnly],
   );
 
-  // Selection handlers
   const handleToggleSelect = useCallback((id: string) => {
     setSelectedIds((prev) =>
       prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id],
@@ -179,7 +146,6 @@ export const ProductsView: React.FC<ProductsViewProps> = ({
     setSelectedIds([]);
   }, []);
 
-  // Single delete
   const handleConfirmSingleDelete = useCallback(async () => {
     if (!productToDelete) return;
     setIsDeleting(true);
@@ -193,7 +159,6 @@ export const ProductsView: React.FC<ProductsViewProps> = ({
     }
   }, [productToDelete, fetchProducts]);
 
-  // Bulk delete
   const handleConfirmBulkDelete = useCallback(async () => {
     if (selectedIds.length === 0) return;
     setIsDeleting(true);
@@ -210,14 +175,12 @@ export const ProductsView: React.FC<ProductsViewProps> = ({
   return (
     <div data-testid="products-view" className="space-y-4 animate-in fade-in duration-200">
       {!isLoading && total === 0 && !hasActiveFilters ? (
-        /* Pristine Zero State: Catalog has 0 items and no filters */
         <ProductsZeroStateCard
           onOpenImportWizard={onOpenImportWizard || (() => {})}
           isFeedLimitReached={isFeedLimitReached}
         />
       ) : (
         <>
-          {/* Toolbar */}
           <ProductsToolbar
             search={search}
             onSearchChange={(val) => {
@@ -250,7 +213,6 @@ export const ProductsView: React.FC<ProductsViewProps> = ({
             isUk={isUk}
           />
 
-          {/* Bulk Actions Bar */}
           <ProductsBulkActionsBar
             selectedCount={selectedIds.length}
             onClearSelection={handleClearSelection}
@@ -258,7 +220,6 @@ export const ProductsView: React.FC<ProductsViewProps> = ({
             isDeleting={isDeleting}
           />
 
-          {/* Main Table */}
           <ProductsTable
             products={products}
             suppliers={suppliers}
@@ -284,35 +245,22 @@ export const ProductsView: React.FC<ProductsViewProps> = ({
         </>
       )}
 
-      {/* Drawer */}
-      <ProductDetailsDrawer
-        product={drawerProduct}
+      <ProductsDialogsContainer
+        drawerProduct={drawerProduct}
         suppliers={suppliers}
-        onClose={() => setDrawerProduct(null)}
+        onCloseDrawer={() => setDrawerProduct(null)}
         onProductUpdate={(updated) => {
           setDrawerProduct(updated);
           setProducts((prev) => prev.map((p) => (p.id === updated.id ? updated : p)));
         }}
-      />
-
-      {/* Single Delete Confirmation */}
-      <ConfirmDeleteDialog
-        isOpen={Boolean(productToDelete)}
-        onClose={() => setProductToDelete(null)}
-        onConfirm={handleConfirmSingleDelete}
-        title={t('catalogs:confirmDeleteProductTitle')}
-        description={`${t('catalogs:confirmDeleteProductMessage')} (${productToDelete?.sku} — ${productToDelete?.titleUk})`}
-        isLoading={isDeleting}
-      />
-
-      {/* Bulk Delete Confirmation */}
-      <ConfirmDeleteDialog
-        isOpen={isBulkDeleteModalOpen}
-        onClose={() => setIsBulkDeleteModalOpen(false)}
-        onConfirm={handleConfirmBulkDelete}
-        title={t('catalogs:confirmDeleteBulkTitle')}
-        description={t('catalogs:confirmDeleteBulkMessage', { count: selectedIds.length })}
-        isLoading={isDeleting}
+        productToDelete={productToDelete}
+        onCloseSingleDelete={() => setProductToDelete(null)}
+        onConfirmSingleDelete={handleConfirmSingleDelete}
+        isBulkDeleteOpen={isBulkDeleteModalOpen}
+        selectedCount={selectedIds.length}
+        onCloseBulkDelete={() => setIsBulkDeleteModalOpen(false)}
+        onConfirmBulkDelete={handleConfirmBulkDelete}
+        isDeleting={isDeleting}
       />
     </div>
   );

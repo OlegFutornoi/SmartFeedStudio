@@ -161,11 +161,11 @@ export function CreateSupplierDialog({
                 {t('suppliers:pricingRulesTitle')}
               </span>
             </div>
-            <p className="text-[11px] text-muted-foreground">{t('suppliers:pricingRulesDesc')}</p>
+            <p className="text-xs text-muted-foreground">{t('suppliers:pricingRulesDesc')}</p>
 
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1">
-                <label className="text-[11px] font-medium text-foreground">
+                <label className="text-xs font-medium text-foreground">
                   {t('suppliers:marginPercent')} (%)
                 </label>
                 <input
@@ -180,7 +180,7 @@ export function CreateSupplierDialog({
               </div>
 
               <div className="space-y-1">
-                <label className="text-[11px] font-medium text-foreground">
+                <label className="text-xs font-medium text-foreground">
                   {t('suppliers:fixedMarkup')} (₴)
                 </label>
                 <input

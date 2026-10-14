@@ -129,7 +129,7 @@ export function LegalDocumentModal({
 
         {/* Footer */}
         <div className="flex items-center justify-between border-t border-border/80 px-6 py-3.5 bg-muted/20">
-          <span className="text-[11px] text-muted-foreground">
+          <span className="text-xs text-muted-foreground">
             SmartFeed Studio Legal v2.0 • 100% Encrypted
           </span>
           <Button size="sm" onClick={onClose} data-testid="confirm-legal-modal-button">

@@ -194,7 +194,7 @@ export const CloudBackupsTab: React.FC = () => {
             <Database className="h-3.5 w-3.5 text-primary" />
             <span>{t('cloud:backupCatalogTitle')}</span>
           </h4>
-          <p className="text-[11px] text-muted-foreground leading-relaxed">
+          <p className="text-xs text-muted-foreground leading-relaxed">
             {t('cloud:backupCatalogDesc')}
           </p>
         </div>
@@ -251,7 +251,7 @@ export const CloudBackupsTab: React.FC = () => {
           <h4 className="text-xs font-semibold text-foreground flex items-center gap-2">
             <Cloud className="h-3.5 w-3.5 text-primary" />
             <span>{t('cloud:backupsHistoryTitle')}</span>
-            <Badge variant="outline" className="text-[10px] font-mono">
+            <Badge variant="outline" className="text-2xs font-mono">
               {backups.length}
             </Badge>
           </h4>

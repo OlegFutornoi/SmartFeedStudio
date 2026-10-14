@@ -47,7 +47,7 @@ export const WizardDialogHeader: React.FC<WizardDialogHeaderProps> = ({ step, on
           {STEPS.map((s, i) => (
             <div
               key={s}
-              className={`size-6 rounded-full flex items-center justify-center text-[10px] font-mono transition-colors ${
+              className={`size-6 rounded-full flex items-center justify-center text-2xs font-mono transition-colors ${
                 step === s
                   ? 'bg-primary text-primary-foreground shadow-sm'
                   : i < STEPS.indexOf(step)

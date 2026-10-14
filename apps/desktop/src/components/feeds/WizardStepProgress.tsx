@@ -70,7 +70,7 @@ export function WizardStepProgress({ isImporting, result, error }: WizardStepPro
         <div className="grid grid-cols-3 gap-2.5 pt-2">
           <div className="p-3 rounded-lg bg-secondary/30 border border-border/50 text-center">
             <ShoppingBag className="size-4 text-foreground mx-auto mb-1" />
-            <div className="text-[11px] text-muted-foreground">Створено товарів</div>
+            <div className="text-xs text-muted-foreground">Створено товарів</div>
             <div className="text-base font-bold text-foreground font-mono mt-0.5">
               +{result.createdItems}
             </div>
@@ -78,7 +78,7 @@ export function WizardStepProgress({ isImporting, result, error }: WizardStepPro
 
           <div className="p-3 rounded-lg bg-secondary/30 border border-border/50 text-center">
             <RefreshCw className="size-4 text-primary mx-auto mb-1" />
-            <div className="text-[11px] text-muted-foreground">Оновлено цін/залишків</div>
+            <div className="text-xs text-muted-foreground">Оновлено цін/залишків</div>
             <div className="text-base font-bold text-foreground font-mono mt-0.5">
               {result.updatedItems}
             </div>
@@ -86,7 +86,7 @@ export function WizardStepProgress({ isImporting, result, error }: WizardStepPro
 
           <div className="p-3 rounded-lg bg-secondary/30 border border-border/50 text-center">
             <Layers className="size-4 text-primary mx-auto mb-1" />
-            <div className="text-[11px] text-muted-foreground">Категорій</div>
+            <div className="text-xs text-muted-foreground">Категорій</div>
             <div className="text-base font-bold text-foreground font-mono mt-0.5">
               +{result.categoriesCreated}
             </div>
@@ -95,7 +95,7 @@ export function WizardStepProgress({ isImporting, result, error }: WizardStepPro
 
         <div className="p-2.5 rounded-lg bg-primary/5 border border-primary/20 flex items-center justify-between text-xs">
           <span className="text-muted-foreground">Формат:</span>
-          <Badge variant="outline" className="font-mono text-[10px]">
+          <Badge variant="outline" className="font-mono text-2xs">
             {result.format}
           </Badge>
         </div>

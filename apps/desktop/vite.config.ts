@@ -81,10 +81,25 @@ function feedProxyPlugin(): Plugin {
 export default defineConfig({
   plugins: [react(), feedProxyPlugin()],
   resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './src'),
-      '@smartfeed/shared': path.resolve(__dirname, '../../packages/shared/src/index.ts'),
-    },
+    alias: [
+      {
+        find: '@smartfeed/shared',
+        replacement: path.resolve(__dirname, '../../packages/shared/src/index.ts'),
+      },
+      {
+        find: /^@\/(.*)/,
+        replacement: '$1',
+        async customResolver(source, importer, options) {
+          const basePath =
+            importer && importer.includes('packages/shared')
+              ? path.resolve(__dirname, '../../packages/shared/src')
+              : path.resolve(__dirname, './src');
+          const target = path.resolve(basePath, source);
+          const resolved = await this.resolve(target, importer, { ...options, skipSelf: true });
+          return resolved || target;
+        },
+      },
+    ],
   },
   clearScreen: false,
   server: {

@@ -36,7 +36,7 @@ export const StorageActionsPanel: React.FC<StorageActionsPanelProps> = ({
               <DownloadCloud className="size-4 text-primary" />
               <span className="text-xs font-bold text-foreground">{t('storage:createBackup')}</span>
             </div>
-            <p className="text-[11px] text-muted-foreground leading-relaxed">
+            <p className="text-xs text-muted-foreground leading-relaxed">
               {t('storage:tabDescription')}
             </p>
           </div>
@@ -64,7 +64,7 @@ export const StorageActionsPanel: React.FC<StorageActionsPanelProps> = ({
               <Sparkles className="size-4 text-primary" />
               <span className="text-xs font-bold text-foreground">{t('storage:vacuumDb')}</span>
             </div>
-            <p className="text-[11px] text-muted-foreground leading-relaxed">
+            <p className="text-xs text-muted-foreground leading-relaxed">
               {t('storage:tabDescription')}
             </p>
           </div>
@@ -92,7 +92,7 @@ export const StorageActionsPanel: React.FC<StorageActionsPanelProps> = ({
               <Trash2 className="size-4 text-destructive" />
               <span className="text-xs font-bold text-foreground">{t('storage:clearCache')}</span>
             </div>
-            <p className="text-[11px] text-muted-foreground leading-relaxed">
+            <p className="text-xs text-muted-foreground leading-relaxed">
               {t('storage:tabDescription')}
             </p>
           </div>

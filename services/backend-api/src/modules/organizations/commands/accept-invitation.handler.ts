@@ -5,6 +5,7 @@ import {
   UnauthorizedException,
   Injectable,
   NotFoundException,
+  InternalServerErrorException,
   Logger,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -184,12 +185,14 @@ export class AcceptInvitationHandler implements ICommandHandler<
         role: targetUser.role as Role,
       };
 
-      const accessSecret =
-        this.configService.get<string>('JWT_ACCESS_SECRET') ||
-        'super-secret-access-token-key-change-in-production';
-      const refreshSecret =
-        this.configService.get<string>('JWT_REFRESH_SECRET') ||
-        'super-secret-refresh-token-key-change-in-production';
+      const accessSecret = this.configService.get<string>('JWT_ACCESS_SECRET');
+      const refreshSecret = this.configService.get<string>('JWT_REFRESH_SECRET');
+
+      if (!accessSecret || !refreshSecret) {
+        throw new InternalServerErrorException(
+          'Critical configuration missing: JWT_ACCESS_SECRET and JWT_REFRESH_SECRET must be defined',
+        );
+      }
 
       const [accessToken, refreshToken] = await Promise.all([
         this.jwtService.signAsync(payload, {

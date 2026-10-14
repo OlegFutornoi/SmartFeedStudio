@@ -151,14 +151,14 @@ export function PlanFeatureList({
               >
                 <div className="flex flex-col gap-0.5 truncate pr-2">
                   <span className="truncate text-foreground font-medium">
-                    <span className="text-[10px] text-muted-foreground uppercase font-mono mr-1.5">
+                    <span className="text-2xs text-muted-foreground uppercase font-mono mr-1.5">
                       UA:
                     </span>
                     {fUk}
                   </span>
                   {fEn && (
-                    <span className="truncate text-muted-foreground text-[11px]">
-                      <span className="text-[10px] text-muted-foreground uppercase font-mono mr-1.5">
+                    <span className="truncate text-muted-foreground text-xs">
+                      <span className="text-2xs text-muted-foreground uppercase font-mono mr-1.5">
                         EN:
                       </span>
                       {fEn}

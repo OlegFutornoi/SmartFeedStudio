@@ -42,7 +42,7 @@ export const QuotaReconciliationFooter: React.FC<QuotaReconciliationFooterProps>
           {isProjectedValid && (
             <Badge
               variant="outline"
-              className="bg-secondary text-secondary-foreground border-border text-[10px]"
+              className="bg-secondary text-secondary-foreground border-border text-2xs"
             >
               {isUk ? 'В межах ліміту' : 'Within limit'}
             </Badge>

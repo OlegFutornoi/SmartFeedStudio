@@ -38,7 +38,7 @@ export const PricingSimulatorWidget: React.FC<PricingSimulatorWidgetProps> = ({
         </span>
         <Badge
           variant="outline"
-          className="text-[10px] font-mono bg-primary/10 text-primary border-primary/20"
+          className="text-2xs font-mono bg-primary/10 text-primary border-primary/20"
         >
           Live Preview
         </Badge>
@@ -46,9 +46,7 @@ export const PricingSimulatorWidget: React.FC<PricingSimulatorWidgetProps> = ({
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div>
-          <Label className="text-[11px] text-muted-foreground">
-            Собівартість постачальника (₴)
-          </Label>
+          <Label className="text-xs text-muted-foreground">Собівартість постачальника (₴)</Label>
           <Input
             type="number"
             min="0"
@@ -60,7 +58,7 @@ export const PricingSimulatorWidget: React.FC<PricingSimulatorWidgetProps> = ({
         </div>
 
         <div>
-          <Label className="text-[11px] text-muted-foreground">Тестова категорія товару</Label>
+          <Label className="text-xs text-muted-foreground">Тестова категорія товару</Label>
           <div className="mt-1">
             <Select
               value={testCategoryId || 'none'}
@@ -84,14 +82,14 @@ export const PricingSimulatorWidget: React.FC<PricingSimulatorWidgetProps> = ({
         </div>
 
         <div className="p-2.5 rounded-lg bg-background border border-border/80 flex flex-col justify-center">
-          <span className="text-[10px] text-muted-foreground font-medium">
+          <span className="text-2xs text-muted-foreground font-medium">
             Розрахована ціна продажу:
           </span>
           <div className="flex items-center gap-2 mt-0.5">
             <span className="text-base font-bold text-foreground font-mono">
               {simulationResult?.sellingPrice ?? 0} ₴
             </span>
-            <span className="text-[11px] text-muted-foreground font-mono">
+            <span className="text-xs text-muted-foreground font-mono">
               (+{simulationResult ? simulationResult.sellingPrice - simulationResult.costPrice : 0}{' '}
               ₴)
             </span>

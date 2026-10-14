@@ -200,7 +200,7 @@ export function LicensesTable({ licenses, isUk, onRefresh, isLoading }: Licenses
                         ? 'Жодної ліцензії за обраними фільтрами не знайдено'
                         : 'No licenses match your selected filters'}
                     </p>
-                    <p className="text-[11px] text-muted-foreground">
+                    <p className="text-xs text-muted-foreground">
                       {isUk
                         ? 'Спробуйте змінити пошуковий запит або скинути активні фільтри.'
                         : 'Try adjusting your search terms or clearing active filters.'}

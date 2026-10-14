@@ -38,7 +38,7 @@ export const ConnectedFeedsTableRow: React.FC<ConnectedFeedsTableRowProps> = ({
             >
               {formatFeedTitle(catalog.name, catalog.sourceUrl)}
             </span>
-            <Badge variant="outline" className="text-[10px] font-mono h-4.5 px-1.5">
+            <Badge variant="outline" className="text-2xs font-mono h-4.5 px-1.5">
               {catalog.fileFormat}
             </Badge>
           </div>
@@ -47,7 +47,7 @@ export const ConnectedFeedsTableRow: React.FC<ConnectedFeedsTableRowProps> = ({
       {visibleColumns.source && (
         <TableCell className="px-3 py-2">
           <span
-            className="text-[11px] font-mono text-muted-foreground truncate block max-w-xs"
+            className="text-xs font-mono text-muted-foreground truncate block max-w-xs"
             title={catalog.sourceUrl || undefined}
           >
             {formatDisplayUrl(catalog.sourceUrl) || (isUk ? 'Локальний файл' : 'Local File')}
@@ -63,7 +63,7 @@ export const ConnectedFeedsTableRow: React.FC<ConnectedFeedsTableRowProps> = ({
       )}
       {visibleColumns.lastSynced && (
         <TableCell className="px-3 py-2">
-          <span className="text-[11px] text-muted-foreground whitespace-nowrap">
+          <span className="text-xs text-muted-foreground whitespace-nowrap">
             {catalog.lastSyncedAt
               ? new Date(catalog.lastSyncedAt).toLocaleString(isUk ? 'uk-UA' : 'en-US', {
                   month: 'short',
@@ -79,7 +79,7 @@ export const ConnectedFeedsTableRow: React.FC<ConnectedFeedsTableRowProps> = ({
         <TableCell className="px-3 py-2">
           <Badge
             variant={catalog.lastSyncStatus === 'SUCCESS' ? 'secondary' : 'default'}
-            className="text-[10px] h-5 px-1.5 flex items-center gap-1 w-fit"
+            className="text-2xs h-5 px-1.5 flex items-center gap-1 w-fit"
           >
             {catalog.lastSyncStatus === 'SUCCESS' && (
               <CheckCircle2 className="size-3 text-foreground" />

@@ -50,20 +50,17 @@ export const QuotaSuppliersTab: React.FC<QuotaSuppliersTabProps> = ({
                     </span>
                     <Badge
                       variant="outline"
-                      className="text-[10px] font-mono uppercase bg-background px-1.5 py-0"
+                      className="text-2xs font-mono uppercase bg-background px-1.5 py-0"
                     >
                       {sup.code}
                     </Badge>
                     {isItemDeleting && (
-                      <Badge
-                        variant="destructive"
-                        className="text-[10px] animate-pulse px-1.5 py-0"
-                      >
+                      <Badge variant="destructive" className="text-2xs animate-pulse px-1.5 py-0">
                         {isUk ? 'Видаляється...' : 'Deleting...'}
                       </Badge>
                     )}
                   </div>
-                  <p className="text-[11px] text-muted-foreground">
+                  <p className="text-xs text-muted-foreground">
                     {isUk
                       ? `Товарів: ${sup.productsCount || 0} SKU • Фідів: ${sup.activeFeedsCount || 0}`
                       : `Products: ${sup.productsCount || 0} SKU • Feeds: ${sup.activeFeedsCount || 0}`}

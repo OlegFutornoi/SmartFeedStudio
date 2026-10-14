@@ -27,7 +27,11 @@ export function useAiAssistantProfile(): AiAssistantProfileState {
       setIsLoading(true);
       const data = await getAiAssistantProfile(token || undefined);
       setProfile(data);
-    } catch {
+    } catch (err) {
+      console.warn(
+        '[useAiAssistantProfile] Failed to fetch AI assistant profile, using default:',
+        err,
+      );
       setProfile(DEFAULT_AI_ASSISTANT_PROFILE);
     } finally {
       setIsLoading(false);

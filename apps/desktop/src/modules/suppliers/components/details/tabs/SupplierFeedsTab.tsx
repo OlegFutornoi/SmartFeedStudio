@@ -179,7 +179,7 @@ export const SupplierFeedsTab: React.FC<SupplierFeedsTabProps> = ({
                         <div className="truncate max-w-[220px]">
                           <p className="font-medium truncate">{src.name}</p>
                           {src.sourceUrl && (
-                            <p className="text-[10px] text-muted-foreground font-mono truncate">
+                            <p className="text-2xs text-muted-foreground font-mono truncate">
                               {src.sourceUrl}
                             </p>
                           )}
@@ -189,10 +189,10 @@ export const SupplierFeedsTab: React.FC<SupplierFeedsTabProps> = ({
 
                     <TableCell className="py-2">
                       <div className="flex items-center gap-1.5">
-                        <Badge variant="outline" className="text-[10px] font-mono h-5">
+                        <Badge variant="outline" className="text-2xs font-mono h-5">
                           {src.fileFormat}
                         </Badge>
-                        <span className="text-[11px] text-muted-foreground">
+                        <span className="text-xs text-muted-foreground">
                           {isFile ? 'Локальний файл' : 'URL потік'}
                         </span>
                       </div>

@@ -98,7 +98,7 @@ export const QuotaReconciliationDialog: React.FC<QuotaReconciliationDialogProps>
           >
             <FolderTree className="h-3.5 w-3.5" />
             {isUk ? 'Категорії товарів' : 'Product Categories'}
-            <Badge variant="secondary" className="text-[10px] px-1 py-0 font-mono">
+            <Badge variant="secondary" className="text-2xs px-1 py-0 font-mono">
               {categories.length}
             </Badge>
           </button>
@@ -115,7 +115,7 @@ export const QuotaReconciliationDialog: React.FC<QuotaReconciliationDialogProps>
           >
             <Radio className="h-3.5 w-3.5" />
             {isUk ? 'Джерела фідів' : 'Feed Sources'}
-            <Badge variant="secondary" className="text-[10px] px-1 py-0 font-mono">
+            <Badge variant="secondary" className="text-2xs px-1 py-0 font-mono">
               {feedSources.length}
             </Badge>
           </button>
@@ -132,7 +132,7 @@ export const QuotaReconciliationDialog: React.FC<QuotaReconciliationDialogProps>
           >
             <Truck className="h-3.5 w-3.5" />
             {isUk ? 'Постачальники' : 'Suppliers'}
-            <Badge variant="secondary" className="text-[10px] px-1 py-0 font-mono">
+            <Badge variant="secondary" className="text-2xs px-1 py-0 font-mono">
               {suppliers.length}
             </Badge>
           </button>

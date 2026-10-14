@@ -27,7 +27,7 @@ export const TeamInteractiveMockup: React.FC = () => {
             </h3>
             <Badge
               variant="outline"
-              className="text-[10px] px-1.5 py-0 border-primary/40 text-primary"
+              className="text-2xs px-1.5 py-0 border-primary/40 text-primary"
             >
               Sandbox
             </Badge>
@@ -62,22 +62,22 @@ export const TeamInteractiveMockup: React.FC = () => {
                 <span>Олександр Шевченко</span>
                 <Crown className="h-3 w-3 text-foreground" />
               </div>
-              <div className="text-[11px] text-muted-foreground">alex@business.ua</div>
+              <div className="text-xs text-muted-foreground">alex@business.ua</div>
             </div>
           </div>
 
           <div className="flex items-center gap-3">
             <div className="text-right hidden md:block">
-              <div className="text-[11px] font-medium text-foreground">
+              <div className="text-xs font-medium text-foreground">
                 {t('featureTeaser.team.mockup.roles.owner')}
               </div>
-              <div className="text-[10px] text-muted-foreground">
+              <div className="text-2xs text-muted-foreground">
                 {t('featureTeaser.team.mockup.permissions.owner')}
               </div>
             </div>
             <Badge
               variant="outline"
-              className="text-[10px] bg-secondary text-secondary-foreground border-border"
+              className="text-2xs bg-secondary text-secondary-foreground border-border"
             >
               {t('featureTeaser.team.mockup.activeStatus')}
             </Badge>
@@ -98,19 +98,19 @@ export const TeamInteractiveMockup: React.FC = () => {
                 <span>Марія Ткачук</span>
                 <Sparkles className="h-3 w-3 text-primary animate-pulse" />
               </div>
-              <div className="text-[11px] text-muted-foreground">maria@agency.com</div>
+              <div className="text-xs text-muted-foreground">maria@agency.com</div>
             </div>
           </div>
 
           {/* Role selector buttons */}
           <div className="flex items-center gap-3">
             <div className="text-right hidden md:block max-w-xs">
-              <div className="text-[11px] font-medium text-foreground">
+              <div className="text-xs font-medium text-foreground">
                 {isMariaAdmin
                   ? t('featureTeaser.team.mockup.roles.admin')
                   : t('featureTeaser.team.mockup.roles.member')}
               </div>
-              <div className="text-[10px] text-muted-foreground truncate">
+              <div className="text-2xs text-muted-foreground truncate">
                 {isMariaAdmin
                   ? t('featureTeaser.team.mockup.permissions.admin')
                   : t('featureTeaser.team.mockup.permissions.member')}
@@ -122,7 +122,7 @@ export const TeamInteractiveMockup: React.FC = () => {
                 type="button"
                 data-testid="mockup-select-admin"
                 onClick={() => setSelectedRole('admin')}
-                className={`px-2 py-1 text-[11px] font-medium rounded-md transition-all flex items-center gap-1 ${
+                className={`px-2 py-1 text-xs font-medium rounded-md transition-all flex items-center gap-1 ${
                   isMariaAdmin
                     ? 'bg-primary text-primary-foreground shadow-xs'
                     : 'text-muted-foreground hover:text-foreground'
@@ -135,7 +135,7 @@ export const TeamInteractiveMockup: React.FC = () => {
                 type="button"
                 data-testid="mockup-select-member"
                 onClick={() => setSelectedRole('member')}
-                className={`px-2 py-1 text-[11px] font-medium rounded-md transition-all flex items-center gap-1 ${
+                className={`px-2 py-1 text-xs font-medium rounded-md transition-all flex items-center gap-1 ${
                   !isMariaAdmin
                     ? 'bg-primary text-primary-foreground shadow-xs'
                     : 'text-muted-foreground hover:text-foreground'
@@ -156,27 +156,27 @@ export const TeamInteractiveMockup: React.FC = () => {
             </div>
             <div>
               <div className="text-xs font-semibold text-foreground">Дмитро Коваль</div>
-              <div className="text-[11px] text-muted-foreground">dmitry@seller.com</div>
+              <div className="text-xs text-muted-foreground">dmitry@seller.com</div>
             </div>
           </div>
 
           <div className="flex items-center gap-3">
             <div className="text-right hidden md:block">
-              <div className="text-[11px] font-medium text-foreground">
+              <div className="text-xs font-medium text-foreground">
                 {t('featureTeaser.team.mockup.roles.member')}
               </div>
-              <div className="text-[10px] text-muted-foreground">
+              <div className="text-2xs text-muted-foreground">
                 {t('featureTeaser.team.mockup.permissions.member')}
               </div>
             </div>
-            <Badge variant="secondary" className="text-[10px]">
+            <Badge variant="secondary" className="text-2xs">
               {t('featureTeaser.team.mockup.activeStatus')}
             </Badge>
           </div>
         </div>
       </div>
 
-      <div className="text-[11px] text-muted-foreground bg-muted/30 p-2.5 rounded-lg border border-border/50 flex items-center justify-between">
+      <div className="text-xs text-muted-foreground bg-muted/30 p-2.5 rounded-lg border border-border/50 flex items-center justify-between">
         <span>{t('featureTeaser.team.mockup.tryActionHint')}</span>
         <span className="font-semibold text-primary">
           {t('featureTeaser.team.mockup.membersLimitNotice')}

@@ -1,4 +1,9 @@
-import { Injectable, UnauthorizedException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  ForbiddenException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { ConfigService } from '@nestjs/config';
@@ -12,12 +17,17 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     configService: ConfigService,
     private readonly queryBus: QueryBus,
   ) {
+    const secretOrKey = configService.get<string>('JWT_ACCESS_SECRET');
+    if (!secretOrKey) {
+      throw new InternalServerErrorException(
+        'Critical configuration missing: JWT_ACCESS_SECRET must be defined',
+      );
+    }
+
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey:
-        configService.get<string>('JWT_ACCESS_SECRET') ||
-        'super-secret-access-token-key-change-in-production',
+      secretOrKey,
     });
   }
 

@@ -77,7 +77,7 @@ export const QuotaExcessBanner: React.FC<QuotaExcessBannerProps> = ({
                   ? `Перевищено ліміти тарифного плану «${quotas.planNameUk || 'Старт'}»`
                   : `Plan Limits Exceeded for «${quotas.planNameEn || 'Starter'}»`}
               </h4>
-              <Badge variant="destructive" className="text-[10px] uppercase font-mono px-2 py-0.5">
+              <Badge variant="destructive" className="text-2xs uppercase font-mono px-2 py-0.5">
                 {isUk ? 'Потрібна дія' : 'Action required'}
               </Badge>
             </div>

@@ -40,7 +40,7 @@ export const TeamMemberRow: React.FC<TeamMemberRowProps> = ({
         return (
           <Badge
             variant="outline"
-            className="bg-muted text-foreground border-border text-[10px] gap-1 font-semibold"
+            className="bg-muted text-foreground border-border text-2xs gap-1 font-semibold"
           >
             <Crown className="h-3 w-3 text-foreground" />
             <span>{t('team.ownerRole')}</span>
@@ -48,14 +48,14 @@ export const TeamMemberRow: React.FC<TeamMemberRowProps> = ({
         );
       case 'ADMIN':
         return (
-          <Badge className="bg-primary/10 text-primary border-primary/20 text-[10px] gap-1 font-semibold">
+          <Badge className="bg-primary/10 text-primary border-primary/20 text-2xs gap-1 font-semibold">
             <Shield className="h-3 w-3" />
             <span>{t('team.adminRole')}</span>
           </Badge>
         );
       default:
         return (
-          <Badge variant="secondary" className="text-[10px] gap-1">
+          <Badge variant="secondary" className="text-2xs gap-1">
             <User className="h-3 w-3" />
             <span>{t('team.memberRole')}</span>
           </Badge>
@@ -79,7 +79,7 @@ export const TeamMemberRow: React.FC<TeamMemberRowProps> = ({
       data-testid="team-member-row"
     >
       <div className="flex items-center gap-2.5 min-w-0 flex-1">
-        <div className="size-7 rounded-full bg-primary/20 flex items-center justify-center text-primary text-[10px] font-bold border border-primary/30 shrink-0">
+        <div className="size-7 rounded-full bg-primary/20 flex items-center justify-center text-primary text-2xs font-bold border border-primary/30 shrink-0">
           {getInitials(memberFullName, memberEmail)}
         </div>
         <div className="flex-1 min-w-0">
@@ -98,7 +98,7 @@ export const TeamMemberRow: React.FC<TeamMemberRowProps> = ({
             {getRoleBadge(member.role)}
           </div>
           <p
-            className="text-[11px] text-muted-foreground font-mono truncate mt-0.5"
+            className="text-xs text-muted-foreground font-mono truncate mt-0.5"
             data-testid="member-email"
           >
             {memberEmail}
@@ -107,7 +107,7 @@ export const TeamMemberRow: React.FC<TeamMemberRowProps> = ({
       </div>
 
       <div className="flex items-center gap-3 shrink-0">
-        <span className="text-[10px] text-muted-foreground hidden sm:inline-block font-mono">
+        <span className="text-2xs text-muted-foreground hidden sm:inline-block font-mono">
           {t('team.joinedAt', { date: formattedDate })}
         </span>
 

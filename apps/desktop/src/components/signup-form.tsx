@@ -237,7 +237,7 @@ export function SignupForm({ className, onOpenLegal, ...props }: SignupFormProps
         </div>
 
         {/* Password Hint */}
-        <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
           <CheckCircle2
             className={cn(
               'h-3.5 w-3.5 transition-colors',
@@ -248,7 +248,7 @@ export function SignupForm({ className, onOpenLegal, ...props }: SignupFormProps
         </div>
 
         {/* Terms Agreement Checkbox with Interactive Modal Triggers */}
-        <label className="flex items-start gap-2 cursor-pointer text-[11px] text-muted-foreground select-none leading-tight">
+        <label className="flex items-start gap-2 cursor-pointer text-xs text-muted-foreground select-none leading-tight">
           <input
             type="checkbox"
             checked={agreedToTerms}

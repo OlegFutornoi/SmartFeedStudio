@@ -72,7 +72,7 @@ export const PlanCard: React.FC<PlanCardProps> = ({
         {isCurrent && !isExpired ? (
           <Badge
             data-testid={`plan-current-badge-${codeKey}`}
-            className="bg-primary text-primary-foreground text-[10px] font-semibold px-2.5 py-0.5 flex items-center gap-1 shadow-sm"
+            className="bg-primary text-primary-foreground text-2xs font-semibold px-2.5 py-0.5 flex items-center gap-1 shadow-sm"
           >
             <Zap className="size-2.5" />
             <span>{t('plans.currentPlan')}</span>
@@ -80,7 +80,7 @@ export const PlanCard: React.FC<PlanCardProps> = ({
         ) : isCurrent && isExpired ? (
           <Badge
             data-testid={`plan-expired-badge-${codeKey}`}
-            className="bg-destructive text-destructive-foreground text-[10px] font-semibold px-2.5 py-0.5 flex items-center gap-1 shadow-sm"
+            className="bg-destructive text-destructive-foreground text-2xs font-semibold px-2.5 py-0.5 flex items-center gap-1 shadow-sm"
           >
             <AlertTriangle className="size-2.5" />
             <span>{t('plans.expiredBadge')}</span>
@@ -88,7 +88,7 @@ export const PlanCard: React.FC<PlanCardProps> = ({
         ) : plan.isPopular ? (
           <Badge
             data-testid={`plan-popular-badge-${codeKey}`}
-            className="bg-primary text-primary-foreground text-[10px] font-semibold px-2.5 py-0.5 flex items-center gap-1 shadow-sm"
+            className="bg-primary text-primary-foreground text-2xs font-semibold px-2.5 py-0.5 flex items-center gap-1 shadow-sm"
           >
             <Sparkles className="size-2.5" />
             <span>{t('plans.popular')}</span>
@@ -105,7 +105,7 @@ export const PlanCard: React.FC<PlanCardProps> = ({
             <Badge
               variant="outline"
               data-testid={`plan-code-badge-${codeKey}`}
-              className="text-[10px] font-mono uppercase"
+              className="text-2xs font-mono uppercase"
             >
               {plan.code}
             </Badge>
@@ -134,7 +134,7 @@ export const PlanCard: React.FC<PlanCardProps> = ({
             {/* Trial badge for STARTER */}
             {plan.code === 'STARTER' && (
               <div className="mt-0.5">
-                <span className="text-[10px] font-medium text-foreground bg-muted px-1.5 py-0.5 rounded">
+                <span className="text-2xs font-medium text-foreground bg-muted px-1.5 py-0.5 rounded">
                   {isUk ? '7 днів тріалу при реєстрації' : '7-day trial on signup'}
                 </span>
               </div>
@@ -142,7 +142,7 @@ export const PlanCard: React.FC<PlanCardProps> = ({
 
             {/* Dynamic Billing Subtitle & Badges */}
             {isYearly && hasYearlyOption ? (
-              <div className="flex flex-col gap-1 mt-1 text-[11px]">
+              <div className="flex flex-col gap-1 mt-1 text-xs">
                 <div className="flex items-center justify-between text-muted-foreground">
                   <span data-testid={`plan-price-yearly-${codeKey}`}>
                     {t('plans.billedYearly', {
@@ -151,7 +151,7 @@ export const PlanCard: React.FC<PlanCardProps> = ({
                   </span>
                 </div>
                 {yearlySavingAmount > 0 && (
-                  <span className="text-[10px] font-medium text-foreground bg-muted px-1.5 py-0.5 rounded self-start">
+                  <span className="text-2xs font-medium text-foreground bg-muted px-1.5 py-0.5 rounded self-start">
                     {t('plans.yearlySavingNote', {
                       amount: yearlySavingAmount.toLocaleString(),
                     })}
@@ -159,11 +159,11 @@ export const PlanCard: React.FC<PlanCardProps> = ({
                 )}
               </div>
             ) : !isYearly && hasYearlyOption ? (
-              <div className="flex items-center justify-between text-[11px] text-muted-foreground mt-0.5">
+              <div className="flex items-center justify-between text-xs text-muted-foreground mt-0.5">
                 <span data-testid={`plan-price-yearly-${codeKey}`}>
                   {plan.priceYearly} {currencySymbol} {isUk ? '/рік' : '/yr'}
                 </span>
-                <span className="text-[10px] font-medium text-foreground bg-muted px-1.5 py-0.5 rounded">
+                <span className="text-2xs font-medium text-foreground bg-muted px-1.5 py-0.5 rounded">
                   {t('plans.save20Badge')}
                 </span>
               </div>

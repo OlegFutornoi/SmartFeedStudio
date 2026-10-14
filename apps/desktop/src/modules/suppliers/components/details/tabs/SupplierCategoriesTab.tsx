@@ -189,7 +189,7 @@ export const SupplierCategoriesTab: React.FC<SupplierCategoriesTabProps> = ({
                 })}
           </p>
           {!search && (
-            <p className="text-[11px] text-muted-foreground mt-1 max-w-sm">
+            <p className="text-xs text-muted-foreground mt-1 max-w-sm">
               {t('suppliers:noCategoriesYetHint', {
                 defaultValue:
                   'Категорії будуть автоматично імпортовані після підключення та обробки XML/CSV фіду.',
@@ -250,7 +250,7 @@ export const SupplierCategoriesTab: React.FC<SupplierCategoriesTabProps> = ({
                       {!cat.isActive && (
                         <Badge
                           variant="outline"
-                          className="text-[10px] h-4.5 px-1.5 text-muted-foreground border-border"
+                          className="text-2xs h-4.5 px-1.5 text-muted-foreground border-border"
                         >
                           {t('suppliers:categoryExcluded', {
                             defaultValue: 'Виключено з каталогу',

@@ -119,7 +119,7 @@ export function StatusBadge({
       variant="outline"
       data-testid={testId || `status-badge-${normalizedStatus.toLowerCase()}`}
       className={cn(
-        'rounded-full px-2 py-0 text-[10px] h-5 inline-flex items-center gap-1.5 font-normal border transition-colors select-none',
+        'rounded-full px-2 py-0 text-2xs h-5 inline-flex items-center gap-1.5 font-normal border transition-colors select-none',
         styleConfig.badge,
         className,
       )}

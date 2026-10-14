@@ -14,7 +14,7 @@ export function QuotaUsageBadge({ quota, unit, className = '' }: QuotaUsageBadge
     return (
       <Badge
         variant="secondary"
-        className={`text-[11px] font-mono font-medium text-foreground bg-muted border-border ${className}`}
+        className={`text-xs font-mono font-medium text-foreground bg-muted border-border ${className}`}
       >
         {quota.used.toLocaleString()} / ∞ {unit}
       </Badge>
@@ -34,7 +34,7 @@ export function QuotaUsageBadge({ quota, unit, className = '' }: QuotaUsageBadge
   return (
     <Badge
       variant="outline"
-      className={`text-[11px] font-mono font-semibold transition-all duration-200 ${colorClasses} ${className}`}
+      className={`text-xs font-mono font-semibold transition-all duration-200 ${colorClasses} ${className}`}
     >
       {quota.used.toLocaleString()} / {quota.max.toLocaleString()} {unit}
     </Badge>

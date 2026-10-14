@@ -134,7 +134,7 @@ export function WayForPaySettingsDialog({
                 <Label htmlFor="wfp-sandbox-switch" className="text-xs font-medium cursor-pointer">
                   {isUk ? 'Тестовий режим' : 'Sandbox Mode'}
                 </Label>
-                <div className="text-[10px] text-muted-foreground">
+                <div className="text-2xs text-muted-foreground">
                   {isTestMode
                     ? isUk
                       ? 'Без списань'
@@ -170,7 +170,7 @@ export function WayForPaySettingsDialog({
               />
               <KeyRound className="size-3.5 absolute left-2.5 top-3 text-muted-foreground" />
             </div>
-            <p className="text-[10px] text-muted-foreground">
+            <p className="text-2xs text-muted-foreground">
               {isUk
                 ? 'Для тесту використовуйте `test_merch_n1`. Для бойового введіть ID з кабінету WayForPay.'
                 : 'Use `test_merch_n1` for sandbox. Enter your live ID for production.'}
@@ -194,7 +194,7 @@ export function WayForPaySettingsDialog({
               />
               <Shield className="size-3.5 absolute left-2.5 top-3 text-muted-foreground" />
             </div>
-            <p className="text-[11px] text-muted-foreground">
+            <p className="text-xs text-muted-foreground">
               {isUk
                 ? "Для тесту: 'flk3409refn54t54t*FNJRET'. Для бойового — Secret Key з кабінету WayForPay."
                 : "For testing: 'flk3409refn54t54t*FNJRET'. For live — Secret Key from WayForPay account."}
@@ -218,7 +218,7 @@ export function WayForPaySettingsDialog({
               />
               <Globe className="size-3.5 absolute left-2.5 top-3 text-muted-foreground" />
             </div>
-            <p className="text-[11px] text-muted-foreground">
+            <p className="text-xs text-muted-foreground">
               {isUk
                 ? "Для тесту вкажіть 'www.market.ua' (домен тестового мерчанта WayForPay). Для бойового — зареєстрований домен вашого сайту (напр. smartfeed.studio)."
                 : "For test mode enter 'www.market.ua' (WayForPay test domain). For production — your registered store domain."}

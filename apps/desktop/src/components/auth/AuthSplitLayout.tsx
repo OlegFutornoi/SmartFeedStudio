@@ -42,7 +42,7 @@ export function AuthSplitLayout({ children, testId = 'auth-page' }: AuthSplitLay
             <span className="text-sm sm:text-base font-bold tracking-tight text-foreground">
               SmartFeed Studio
             </span>
-            <span className="text-[10px] text-muted-foreground font-medium">
+            <span className="text-2xs text-muted-foreground font-medium">
               Catalog & Feed Platform
             </span>
           </div>
@@ -56,7 +56,7 @@ export function AuthSplitLayout({ children, testId = 'auth-page' }: AuthSplitLay
         </div>
 
         {/* Bottom Footer with Interactive Legal Links */}
-        <div className="flex flex-col items-center justify-between gap-1.5 border-t border-border/40 pt-2.5 text-center text-[11px] text-muted-foreground sm:flex-row sm:text-left">
+        <div className="flex flex-col items-center justify-between gap-1.5 border-t border-border/40 pt-2.5 text-center text-xs text-muted-foreground sm:flex-row sm:text-left">
           <span>© {new Date().getFullYear()} SmartFeed Studio. All rights reserved.</span>
           <div className="flex items-center gap-2">
             <button

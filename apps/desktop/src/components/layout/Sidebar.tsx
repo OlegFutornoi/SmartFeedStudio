@@ -211,7 +211,7 @@ export function Sidebar() {
                   </span>
                   <Badge
                     variant="outline"
-                    className="text-[10px] px-1.5 py-0 h-4 uppercase font-medium text-muted-foreground border-border/60"
+                    className="text-2xs px-1.5 py-0 h-4 uppercase font-medium text-muted-foreground border-border/60"
                   >
                     Studio
                   </Badge>

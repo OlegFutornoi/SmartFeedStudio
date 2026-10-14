@@ -89,7 +89,7 @@ export const WizardSampleProductsTable: React.FC<WizardSampleProductsTableProps>
             {isLoadingPhotos ? (
               <Badge
                 variant="outline"
-                className="text-[11px] gap-1.5 font-normal py-0.5 px-2 text-primary border-primary/30 bg-primary/5 animate-pulse"
+                className="text-xs gap-1.5 font-normal py-0.5 px-2 text-primary border-primary/30 bg-primary/5 animate-pulse"
                 title={t('suppliers:previewPhotosHint', {
                   defaultValue:
                     'Для швидкого перегляду завантажуються перші фото, решта каталогу синхронізується у фоні',
@@ -109,7 +109,7 @@ export const WizardSampleProductsTable: React.FC<WizardSampleProductsTableProps>
               readyCount > 0 ? (
                 <Badge
                   variant="outline"
-                  className="text-[11px] gap-1.5 font-normal py-0.5 px-2 text-foreground border-border bg-secondary"
+                  className="text-xs gap-1.5 font-normal py-0.5 px-2 text-foreground border-border bg-secondary"
                   data-testid="preview-photos-ready-badge"
                 >
                   <CheckCircle2 className="size-3 text-foreground" />
@@ -128,7 +128,7 @@ export const WizardSampleProductsTable: React.FC<WizardSampleProductsTableProps>
               ) : (
                 <Badge
                   variant="outline"
-                  className="text-[11px] gap-1.5 font-normal py-0.5 px-2 text-muted-foreground border-border bg-muted"
+                  className="text-xs gap-1.5 font-normal py-0.5 px-2 text-muted-foreground border-border bg-muted"
                   data-testid="preview-photos-failed-badge"
                 >
                   <AlertCircle className="size-3 text-muted-foreground" />
@@ -143,7 +143,7 @@ export const WizardSampleProductsTable: React.FC<WizardSampleProductsTableProps>
               totalWithImages === 0 && (
                 <Badge
                   variant="outline"
-                  className="text-[11px] gap-1 font-normal py-0.5 px-2 text-muted-foreground border-border bg-muted/20"
+                  className="text-xs gap-1 font-normal py-0.5 px-2 text-muted-foreground border-border bg-muted/20"
                   data-testid="preview-photos-none-badge"
                 >
                   <span>
@@ -218,7 +218,7 @@ export const WizardSampleProductsTable: React.FC<WizardSampleProductsTableProps>
                       </div>
                     </td>
                     <td className="px-3 py-2 text-right whitespace-nowrap font-mono text-xs">
-                      <span className="text-muted-foreground line-through text-[11px] mr-1">
+                      <span className="text-muted-foreground line-through text-xs mr-1">
                         {prod.costPrice.toLocaleString('uk-UA')} ₴
                       </span>
                       <ArrowRight className="size-3 inline text-primary mx-1" />
@@ -229,7 +229,7 @@ export const WizardSampleProductsTable: React.FC<WizardSampleProductsTableProps>
                     <td className="px-3 py-2 text-center">
                       <Badge
                         variant={prod.inStock ? 'secondary' : 'outline'}
-                        className={`text-[10px] px-2 py-0.5 font-medium ${
+                        className={`text-2xs px-2 py-0.5 font-medium ${
                           prod.inStock
                             ? 'text-foreground bg-secondary border-border'
                             : 'text-muted-foreground bg-secondary/50'

@@ -3,12 +3,19 @@ import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 import { AppModule } from '@/app.module';
 import { PrismaService } from '@/prisma/prisma.service';
+import { cleanDatabase } from '@test/utils/teardown.helper';
 
 describe('Page Guides & AI Assistant (E2E)', () => {
   let app: INestApplication;
   let prisma: PrismaService;
+  let adminToken: string;
+  let userToken: string;
+  let adminUserId: string;
+  let regularUserId: string;
 
   const testRoute = `/test-guide-${Date.now()}`;
+  const adminEmail = `guide-admin-${Date.now()}@example.com`;
+  const userEmail = `guide-user-${Date.now()}@example.com`;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -29,15 +36,64 @@ describe('Page Guides & AI Assistant (E2E)', () => {
 
     await app.init();
 
-    // Clean any leftover test guides
+    await cleanDatabase(prisma, {
+      emailPrefixes: ['guide-admin-', 'guide-user-'],
+    });
+
+    // Create Admin User
+    const adminReg = await request(app.getHttpServer())
+      .post('/api/auth/register')
+      .send({
+        email: adminEmail,
+        password: 'Password123!',
+        fullName: 'Guide Admin',
+      })
+      .expect(201);
+    adminUserId = adminReg.body.user.id;
+
+    await prisma.user.update({
+      where: { id: adminUserId },
+      data: { role: 'ADMIN' },
+    });
+
+    const adminLogin = await request(app.getHttpServer())
+      .post('/api/auth/login')
+      .send({ email: adminEmail, password: 'Password123!' })
+      .expect(200);
+    adminToken = adminLogin.body.tokens.accessToken;
+
+    // Create Regular User
+    const userReg = await request(app.getHttpServer())
+      .post('/api/auth/register')
+      .send({
+        email: userEmail,
+        password: 'Password123!',
+        fullName: 'Regular User',
+      })
+      .expect(201);
+    regularUserId = userReg.body.user.id;
+
+    const userLogin = await request(app.getHttpServer())
+      .post('/api/auth/login')
+      .send({ email: userEmail, password: 'Password123!' })
+      .expect(200);
+    userToken = userLogin.body.tokens.accessToken;
+
+    // Clean any leftover test guides and AI settings
     await prisma.pageGuide.deleteMany({
       where: { route: { startsWith: '/test-guide-' } },
     });
+    await prisma.aiAssistantSetting.deleteMany({});
   });
 
   afterAll(async () => {
     await prisma.pageGuide.deleteMany({
       where: { route: { startsWith: '/test-guide-' } },
+    });
+    await prisma.aiAssistantSetting.deleteMany({});
+    await cleanDatabase(prisma, {
+      userIds: [adminUserId, regularUserId].filter(Boolean),
+      emailPrefixes: ['guide-admin-', 'guide-user-'],
     });
     await app.close();
   });
@@ -58,7 +114,10 @@ describe('Page Guides & AI Assistant (E2E)', () => {
     expect(Array.isArray(res.body)).toBe(true);
     expect(res.body.length).toBeGreaterThan(0);
 
-    const cloudGuide = res.body.find((g: any) => g.route === '/cloud-sync');
+    const cloudGuide = res.body.find(
+      (g: { route: string; icon: string; titleUk: string; assistant: unknown }) =>
+        g.route === '/cloud-sync',
+    );
     expect(cloudGuide).toBeDefined();
     expect(cloudGuide.icon).toBe('Cloud');
     expect(cloudGuide.titleUk).toContain('Хмарн');
@@ -99,17 +158,40 @@ describe('Page Guides & AI Assistant (E2E)', () => {
     expect(res.body.icon).toBe('Sparkles');
   });
 
-  it('6. PUT /api/page-guides/assistant/profile updates AI assistant avatar and metadata', async () => {
-    const customAvatarUrl = 'https://r2.smartfeed.studio/avatars/custom-ai-avatar.png';
-    const putRes = await request(app.getHttpServer())
+  it('6. PUT /api/page-guides/assistant/profile requires admin authorization', async () => {
+    const customAvatarDataUri =
+      'data:image/webp;base64,UklGRgAMAABXRUJQVlA4WAoAAAAgAAAAxwAAxwAAQUxQSAwAAAARBxAR/Q8AAABWUDgg';
+
+    // 1. Unauthenticated -> 401 Unauthorized
+    await request(app.getHttpServer())
       .put('/api/page-guides/assistant/profile')
       .send({
-        avatarUrl: customAvatarUrl,
+        avatarUrl: customAvatarDataUri,
+        name: 'Custom AI Assistant',
+      })
+      .expect(401);
+
+    // 2. Regular User -> 403 Forbidden
+    await request(app.getHttpServer())
+      .put('/api/page-guides/assistant/profile')
+      .set('Authorization', `Bearer ${userToken}`)
+      .send({
+        avatarUrl: customAvatarDataUri,
+        name: 'Custom AI Assistant',
+      })
+      .expect(403);
+
+    // 3. Admin -> 200 OK
+    const putRes = await request(app.getHttpServer())
+      .put('/api/page-guides/assistant/profile')
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({
+        avatarUrl: customAvatarDataUri,
         name: 'Custom AI Assistant',
       })
       .expect(200);
 
-    expect(putRes.body.avatarUrl).toBe(customAvatarUrl);
+    expect(putRes.body.avatarUrl).toBe(customAvatarDataUri);
     expect(putRes.body.name).toBe('Custom AI Assistant');
 
     // Verify GET immediately reflects the change
@@ -117,7 +199,7 @@ describe('Page Guides & AI Assistant (E2E)', () => {
       .get('/api/page-guides/assistant/profile')
       .expect(200);
 
-    expect(getRes.body.avatarUrl).toBe(customAvatarUrl);
+    expect(getRes.body.avatarUrl).toBe(customAvatarDataUri);
     expect(getRes.body.name).toBe('Custom AI Assistant');
 
     // Reset back for test isolation

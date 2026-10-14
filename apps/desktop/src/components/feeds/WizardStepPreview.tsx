@@ -107,7 +107,7 @@ export function WizardStepPreview({
         <div className="p-3.5 rounded-xl bg-destructive/15 border border-destructive/40 text-destructive flex items-start gap-3 shadow-sm animate-in fade-in duration-200">
           <AlertTriangle className="size-5 shrink-0 mt-0.5 text-destructive" />
           <div className="space-y-1 text-xs">
-            <p className="font-bold text-[13px]">
+            <p className="font-bold text-sm">
               {t('suppliers:quotaExceededTitle', {
                 defaultValue: 'Перевищено ліміт товарів тарифу',
               })}
@@ -134,7 +134,7 @@ export function WizardStepPreview({
                   defaultValue: 'Оберіть категорії для імпорту:',
                 })}
               </div>
-              <p className="text-[11px] text-muted-foreground">
+              <p className="text-xs text-muted-foreground">
                 {t('suppliers:selectCategoriesHint', {
                   defaultValue:
                     'Імпортуйте лише потрібні категорії, щоб заощаджувати ліміти вашого тарифу.',
@@ -198,7 +198,7 @@ export function WizardStepPreview({
                 >
                   <div className="flex items-center gap-2 min-w-0 flex-1">
                     <div
-                      className={`size-4 rounded flex items-center justify-center shrink-0 text-[10px] ${
+                      className={`size-4 rounded flex items-center justify-center shrink-0 text-2xs ${
                         isSelected
                           ? 'bg-primary text-primary-foreground font-bold'
                           : 'border border-border bg-background'
@@ -211,7 +211,7 @@ export function WizardStepPreview({
                     </span>
                   </div>
 
-                  <span className="font-mono text-[10px] text-muted-foreground ml-1.5 shrink-0">
+                  <span className="font-mono text-2xs text-muted-foreground ml-1.5 shrink-0">
                     {cat.productCount} SKU
                   </span>
                 </button>
@@ -254,7 +254,7 @@ export function WizardStepPreview({
               </span>
             </div>
 
-            <div className="text-[11px] font-mono text-muted-foreground">
+            <div className="text-xs font-mono text-muted-foreground">
               {t('suppliers:quotaLimitAvailable', { defaultValue: 'Доступно за лімітом:' })}{' '}
               <strong
                 className={isQuotaExceeded ? 'text-destructive font-bold' : 'text-foreground'}

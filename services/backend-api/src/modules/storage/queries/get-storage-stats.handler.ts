@@ -8,8 +8,12 @@ import {
 import * as path from 'path';
 import * as fs from 'fs';
 
+import { Logger } from '@nestjs/common';
+
 @QueryHandler(GetStorageStatsQuery)
 export class GetStorageStatsHandler implements IQueryHandler<GetStorageStatsQuery> {
+  private readonly logger = new Logger(GetStorageStatsHandler.name);
+
   async execute(query: GetStorageStatsQuery): Promise<StorageStatsDto> {
     const rootPath = resolveWorkspacePath(query.workspacePath);
 
@@ -30,8 +34,8 @@ export class GetStorageStatsHandler implements IQueryHandler<GetStorageStatsQuer
         const statfs = await fs.promises.statfs(rootPath);
         availableDiskSpaceBytes = statfs.bavail * statfs.bsize;
       }
-    } catch {
-      // Fallback
+    } catch (err) {
+      this.logger.warn(`Failed to inspect disk space via statfs for ${rootPath}:`, err);
     }
 
     return {

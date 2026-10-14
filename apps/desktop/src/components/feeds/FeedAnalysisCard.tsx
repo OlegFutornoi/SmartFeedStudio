@@ -65,7 +65,7 @@ export function FeedAnalysisCard({ analysis }: FeedAnalysisCardProps) {
           <CheckCircle2 className="size-3.5" />
           {t('suppliers:analysisSuccess', { defaultValue: 'Фід успішно проаналізовано' })}
         </div>
-        <Badge className={`text-[10px] font-mono border px-2 py-0.5 ${formatColor}`}>
+        <Badge className={`text-2xs font-mono border px-2 py-0.5 ${formatColor}`}>
           {formatLabel}
         </Badge>
       </div>
@@ -74,7 +74,7 @@ export function FeedAnalysisCard({ analysis }: FeedAnalysisCardProps) {
       <div className="grid grid-cols-3 gap-px bg-border/30">
         {/* Total SKU */}
         <div className="flex flex-col items-center justify-center gap-0.5 py-3 px-2 bg-card/80">
-          <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground font-medium uppercase tracking-wide">
+          <div className="flex items-center gap-1.5 text-2xs text-muted-foreground font-medium uppercase tracking-wide">
             <ShoppingBag className="size-3 text-primary" />
             {t('suppliers:totalProductsFound', { defaultValue: 'Знайдено товарів' })}
           </div>
@@ -86,7 +86,7 @@ export function FeedAnalysisCard({ analysis }: FeedAnalysisCardProps) {
 
         {/* Categories */}
         <div className="flex flex-col items-center justify-center gap-0.5 py-3 px-2 bg-card/80">
-          <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground font-medium uppercase tracking-wide">
+          <div className="flex items-center gap-1.5 text-2xs text-muted-foreground font-medium uppercase tracking-wide">
             <Layers className="size-3 text-primary" />
             {t('suppliers:categoriesFound', { defaultValue: 'Категорій' })}
           </div>
@@ -97,7 +97,7 @@ export function FeedAnalysisCard({ analysis }: FeedAnalysisCardProps) {
 
         {/* In Stock % */}
         <div className="flex flex-col items-center justify-center gap-0.5 py-3 px-2 bg-card/80">
-          <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground font-medium uppercase tracking-wide">
+          <div className="flex items-center gap-1.5 text-2xs text-muted-foreground font-medium uppercase tracking-wide">
             <PackageCheck className="size-3 text-primary" />
             {t('suppliers:inStockPercent', { defaultValue: 'В наявності' })}
           </div>
@@ -117,7 +117,7 @@ export function FeedAnalysisCard({ analysis }: FeedAnalysisCardProps) {
       {/* Top Categories */}
       {topCategories.length > 0 && (
         <div className="px-4 py-3 space-y-1.5">
-          <div className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
+          <div className="text-2xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
             <Tag className="size-3" />
             {t('suppliers:topCategoriesTitle', { defaultValue: 'Топ категорії' })}
           </div>
@@ -135,7 +135,7 @@ export function FeedAnalysisCard({ analysis }: FeedAnalysisCardProps) {
                 </div>
                 <div className="flex items-center gap-1 shrink-0">
                   <TrendingUp className="size-2.5 text-muted-foreground" />
-                  <span className="text-[10px] font-mono text-muted-foreground">
+                  <span className="text-2xs font-mono text-muted-foreground">
                     {(cat.productCount || 0).toLocaleString('uk-UA')} SKU
                   </span>
                 </div>
@@ -143,7 +143,7 @@ export function FeedAnalysisCard({ analysis }: FeedAnalysisCardProps) {
             ))}
           </div>
           {analysis.categories.length > 6 && (
-            <p className="text-[10px] text-muted-foreground text-center pt-0.5">
+            <p className="text-2xs text-muted-foreground text-center pt-0.5">
               {t('suppliers:andMoreCategories', {
                 count: analysis.categories.length - 6,
                 defaultValue: `...та ще ${analysis.categories.length - 6} категорій`,

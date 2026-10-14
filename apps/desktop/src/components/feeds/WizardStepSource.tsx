@@ -122,7 +122,7 @@ export function WizardStepSource({
                 onClick={() => {
                   setFeedUrl(testLivoloUrl);
                 }}
-                className="text-[11px] text-primary hover:underline flex items-center gap-1"
+                className="text-xs text-primary hover:underline flex items-center gap-1"
               >
                 <Sparkles className="size-3" />
                 {t('suppliers:pasteLivoloUrl', { defaultValue: 'Тестовий фід Livolo' })}
@@ -152,7 +152,7 @@ export function WizardStepSource({
                 )}
               </Button>
             </div>
-            <p className="text-[11px] text-muted-foreground">
+            <p className="text-xs text-muted-foreground">
               {t('suppliers:feedUrlHint', {
                 defaultValue:
                   'Підтримуються формати Rozetka XML, Prom YML, Google Shopping RSS та CSV.',
@@ -170,7 +170,7 @@ export function WizardStepSource({
                     defaultValue: 'Завантаження та аналіз структури фіду...',
                   })}
                 </p>
-                <p className="text-[11px] text-muted-foreground mt-0.5">
+                <p className="text-xs text-muted-foreground mt-0.5">
                   {t('suppliers:analyzingFeedProgressHint', {
                     defaultValue:
                       'Великі каталоги (30+ МБ) можуть завантажуватися 10–20 секунд. Зачекайте...',
@@ -232,7 +232,7 @@ export function WizardStepSource({
                   })
                 )}
               </div>
-              <p className="text-[11px] text-muted-foreground">XML, YML, CSV (до 100 МБ)</p>
+              <p className="text-xs text-muted-foreground">XML, YML, CSV (до 100 МБ)</p>
             </div>
           </div>
 

@@ -74,7 +74,7 @@ export const HeaderUserMenu = React.memo(function HeaderUserMenu() {
             </Avatar>
             <div className="grid flex-1 text-left text-xs leading-tight min-w-0">
               <span className="truncate font-semibold text-foreground">{displayName}</span>
-              <span className="truncate text-[11px] text-muted-foreground">{displayEmail}</span>
+              <span className="truncate text-xs text-muted-foreground">{displayEmail}</span>
             </div>
           </div>
         </DropdownMenuLabel>

@@ -41,7 +41,7 @@ export const ProductDrawerImages: React.FC<ProductDrawerImagesProps> = ({
               size="sm"
               data-testid="open-gallery-modal-btn"
               onClick={onOpenGallery}
-              className="h-6 text-[11px] px-2 text-primary hover:text-primary"
+              className="h-6 text-xs px-2 text-primary hover:text-primary"
             >
               {t('catalogs:viewFullGallery')}
             </Button>
@@ -64,7 +64,7 @@ export const ProductDrawerImages: React.FC<ProductDrawerImagesProps> = ({
             size="sm"
             data-testid="drawer-add-photo-btn"
             onClick={onOpenGallery}
-            className="h-6 text-[11px] px-2 text-primary hover:text-primary gap-1"
+            className="h-6 text-xs px-2 text-primary hover:text-primary gap-1"
           >
             <span>{t('catalogs:viewFullGallery')}</span>
           </Button>

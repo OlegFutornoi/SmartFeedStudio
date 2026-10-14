@@ -46,7 +46,7 @@ export function UserAvatarCell({
         )}
       >
         {avatarUrl && <AvatarImage src={avatarUrl} alt={displayName} />}
-        <AvatarFallback className="bg-primary/10 text-primary text-[10px] font-semibold">
+        <AvatarFallback className="bg-primary/10 text-primary text-2xs font-semibold">
           {initials}
         </AvatarFallback>
       </Avatar>
@@ -64,7 +64,7 @@ export function UserAvatarCell({
         {showEmail && email && (
           <span
             data-testid="user-avatar-email"
-            className="text-[11px] text-muted-foreground font-mono truncate"
+            className="text-xs text-muted-foreground font-mono truncate"
             title={email}
           >
             {email}

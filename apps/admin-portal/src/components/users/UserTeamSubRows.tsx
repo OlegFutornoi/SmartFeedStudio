@@ -62,7 +62,7 @@ export const UserTeamSubRows = React.memo(function UserTeamSubRows({
               <TableCell className="py-2">
                 <Badge
                   variant="outline"
-                  className="bg-secondary text-secondary-foreground text-[10px] h-5 px-1.5 py-0 font-medium"
+                  className="bg-secondary text-secondary-foreground text-2xs h-5 px-1.5 py-0 font-medium"
                 >
                   {t('users', 'role_user')}
                 </Badge>
@@ -86,7 +86,7 @@ export const UserTeamSubRows = React.memo(function UserTeamSubRows({
                     <Badge
                       data-testid={`user-subrow-plan-${member.id}`}
                       variant="outline"
-                      className={`text-[10px] h-5 px-1.5 py-0 font-medium ${
+                      className={`text-2xs h-5 px-1.5 py-0 font-medium ${
                         ownerUser.license.planType === 'ENTERPRISE'
                           ? 'bg-primary text-primary-foreground font-semibold'
                           : ownerUser.license.planType === 'PRO'
@@ -110,7 +110,7 @@ export const UserTeamSubRows = React.memo(function UserTeamSubRows({
                 <Badge
                   data-testid={`user-subrow-status-${member.id}`}
                   variant="outline"
-                  className={`text-[10px] h-5 px-1.5 py-0 font-medium ${
+                  className={`text-2xs h-5 px-1.5 py-0 font-medium ${
                     isActive
                       ? 'bg-primary/10 text-primary border-primary/20'
                       : 'bg-destructive/10 text-destructive border-destructive/20'

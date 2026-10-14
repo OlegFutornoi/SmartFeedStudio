@@ -84,9 +84,9 @@ export const ProfileAvatarCard = () => {
               <span className="text-xs font-semibold text-foreground">
                 {user?.fullName || 'Client User'}
               </span>
-              <span className="text-[11px] text-muted-foreground font-mono">{user?.email}</span>
+              <span className="text-xs text-muted-foreground font-mono">{user?.email}</span>
               {errorMsg && (
-                <span className="text-[11px] text-destructive font-medium mt-0.5">{errorMsg}</span>
+                <span className="text-xs text-destructive font-medium mt-0.5">{errorMsg}</span>
               )}
             </div>
           </div>

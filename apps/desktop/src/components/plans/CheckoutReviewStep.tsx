@@ -67,7 +67,7 @@ export function CheckoutReviewStep({
           <Button
             variant="outline"
             size="sm"
-            className="h-7 text-[11px] border-red-500/40 text-red-400 dark:text-red-300 hover:bg-red-500/20 hover:text-red-200 ml-2 shrink-0 cursor-pointer"
+            className="h-7 text-xs border-red-500/40 text-red-400 dark:text-red-300 hover:bg-red-500/20 hover:text-red-200 ml-2 shrink-0 cursor-pointer"
             onClick={onInitInvoice}
           >
             <RefreshCw className="size-3 mr-1" />
@@ -90,7 +90,7 @@ export function CheckoutReviewStep({
           {plan.isPopular && (
             <Badge
               variant="outline"
-              className="border-primary/40 text-primary text-[10px] uppercase font-bold"
+              className="border-primary/40 text-primary text-2xs uppercase font-bold"
             >
               {t('plans.popular')}
             </Badge>
@@ -105,7 +105,7 @@ export function CheckoutReviewStep({
         </div>
 
         {/* Quotas Breakdown */}
-        <div className="grid grid-cols-2 gap-2 pt-2 border-t border-border/50 text-[11px] text-muted-foreground">
+        <div className="grid grid-cols-2 gap-2 pt-2 border-t border-border/50 text-xs text-muted-foreground">
           <div className="flex items-center gap-1.5">
             <Layers className="size-3.5 text-primary" />
             <span>{plan.maxXmlLimit.toLocaleString()} SKU</span>
@@ -135,7 +135,7 @@ export function CheckoutReviewStep({
               {price.toLocaleString()} грн
             </span>
             {isYearly && (
-              <div className="text-[10px] text-foreground font-medium">
+              <div className="text-2xs text-foreground font-medium">
                 {t('plans.saveYearlyDiscount')}
               </div>
             )}
@@ -145,7 +145,7 @@ export function CheckoutReviewStep({
 
       {/* Order Reference */}
       {checkoutData && (
-        <div className="flex items-center justify-between px-2 text-[11px] text-muted-foreground font-mono">
+        <div className="flex items-center justify-between px-2 text-xs text-muted-foreground font-mono">
           <span>{checkoutData.orderReference}</span>
           <span className="text-foreground font-semibold">Sandbox test_merch_n1</span>
         </div>
@@ -185,9 +185,7 @@ export function CheckoutReviewStep({
         onSimulate={onSimulate}
       />
 
-      <p className="text-[10px] text-muted-foreground text-center">
-        {t('plans.securePaymentNotice')}
-      </p>
+      <p className="text-2xs text-muted-foreground text-center">{t('plans.securePaymentNotice')}</p>
     </div>
   );
 }

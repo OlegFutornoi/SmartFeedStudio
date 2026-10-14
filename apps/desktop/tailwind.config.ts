@@ -50,6 +50,9 @@ const config: Config = {
         '2xl': 'calc(var(--radius) * 2)',
         '3xl': 'calc(var(--radius) * 3)',
       },
+      fontSize: {
+        '2xs': ['0.625rem', { lineHeight: '0.875rem' }],
+      },
     },
   },
   plugins: [],

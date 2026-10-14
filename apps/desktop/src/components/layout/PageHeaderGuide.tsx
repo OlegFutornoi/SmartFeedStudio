@@ -91,7 +91,7 @@ export const PageHeaderGuide: React.FC<PageHeaderGuideProps> = ({ route }) => {
                   </DialogTitle>
                   <Badge
                     variant="outline"
-                    className="text-[10px] px-1.5 py-0 h-4 border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-mono"
+                    className="text-2xs px-1.5 py-0 h-4 border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-mono"
                   >
                     {assistantBadge}
                   </Badge>
@@ -112,7 +112,7 @@ export const PageHeaderGuide: React.FC<PageHeaderGuideProps> = ({ route }) => {
             {/* Key Capabilities / Features */}
             {features && features.length > 0 && (
               <div className="space-y-1.5 rounded-lg border border-border/80 bg-muted/30 p-3">
-                <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                   {isUk ? 'Ключові можливості:' : 'Key Capabilities:'}
                 </p>
                 <ul className="space-y-1.5">
@@ -134,7 +134,7 @@ export const PageHeaderGuide: React.FC<PageHeaderGuideProps> = ({ route }) => {
               <div className="flex items-start gap-2.5 rounded-lg border border-primary/20 bg-primary/5 p-3 text-foreground/90">
                 <Lightbulb className="h-4 w-4 text-primary shrink-0 mt-0.5" />
                 <div className="space-y-0.5">
-                  <p className="text-[11px] font-semibold text-primary">
+                  <p className="text-xs font-semibold text-primary">
                     {isUk ? 'Порада від AI Асистента' : 'AI Assistant Pro-Tip'}
                   </p>
                   <p className="text-xs leading-relaxed text-muted-foreground">{proTip}</p>

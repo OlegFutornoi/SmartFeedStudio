@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { CurrencyCode, ExchangeRateMode, PriceRoundingMode } from '../enums/index.js';
+import { CurrencyCode, ExchangeRateMode, PriceRoundingMode } from '@/enums';
 
 export const SupplierDtoSchema = z.object({
   id: z.string(),

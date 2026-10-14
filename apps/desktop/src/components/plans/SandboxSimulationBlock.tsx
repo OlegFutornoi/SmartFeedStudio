@@ -33,7 +33,7 @@ export function SandboxSimulationBlock({
             <Sparkles className="size-3.5 shrink-0" />
             <span>{t('plans.sandboxTestingTitle')}</span>
           </div>
-          <p className="text-[11px] text-muted-foreground leading-relaxed">
+          <p className="text-xs text-muted-foreground leading-relaxed">
             {t('plans.sandboxTestingDesc')}
           </p>
         </>

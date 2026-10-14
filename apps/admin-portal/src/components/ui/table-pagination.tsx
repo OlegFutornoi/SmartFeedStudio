@@ -91,7 +91,7 @@ export const TablePagination: React.FC<TablePaginationProps> = ({
 
         {onPageSizeChange && (
           <div className="flex items-center gap-1.5 ml-0 sm:ml-2">
-            <span className="text-[11px] text-muted-foreground hidden md:inline">
+            <span className="text-xs text-muted-foreground hidden md:inline">
               {isUk ? 'Рядків:' : 'Rows:'}
             </span>
             <div className="relative">

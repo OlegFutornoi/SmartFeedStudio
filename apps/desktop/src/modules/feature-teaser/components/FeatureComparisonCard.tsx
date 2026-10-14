@@ -32,7 +32,7 @@ export const FeatureComparisonCard: React.FC<FeatureComparisonCardProps> = ({ co
             <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
               {t(comparison.starterTitleKey)}
             </span>
-            <Badge variant="outline" className="text-[10px] text-muted-foreground">
+            <Badge variant="outline" className="text-2xs text-muted-foreground">
               {t('featureTeaser.common.currentPlanBadge', { defaultValue: 'Поточний' })}
             </Badge>
           </div>
@@ -54,7 +54,7 @@ export const FeatureComparisonCard: React.FC<FeatureComparisonCardProps> = ({ co
               <Sparkles className="h-3.5 w-3.5" />
               <span>{t(comparison.targetTitleKey)}</span>
             </span>
-            <Badge className="text-[10px] bg-primary text-primary-foreground font-semibold">
+            <Badge className="text-2xs bg-primary text-primary-foreground font-semibold">
               {t('featureTeaser.common.recommendedBadge', { defaultValue: 'Рекомендовано' })}
             </Badge>
           </div>

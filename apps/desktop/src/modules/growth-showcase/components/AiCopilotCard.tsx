@@ -39,17 +39,17 @@ export function AiCopilotCard({ currentAction, isUk }: AiCopilotCardProps) {
           <div className="flex items-center gap-1.5">
             <Badge
               variant="outline"
-              className="gap-1 border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400"
+              className="gap-1 border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-2xs font-semibold text-emerald-600 dark:text-emerald-400"
             >
               <Bot className="h-3 w-3" />
               <span>{isUk ? 'AI Автопілот 24/7' : '24/7 AI Autopilot'}</span>
             </Badge>
-            <span className="hidden text-[10px] text-muted-foreground sm:inline">
+            <span className="hidden text-2xs text-muted-foreground sm:inline">
               • {isUk ? 'Робить усю рутину' : 'Automates all routine'}
             </span>
           </div>
 
-          <span className="font-mono text-[10px] text-muted-foreground/80">
+          <span className="font-mono text-2xs text-muted-foreground/80">
             {currentAction.timestampText}
           </span>
         </div>
@@ -61,7 +61,7 @@ export function AiCopilotCard({ currentAction, isUk }: AiCopilotCardProps) {
         </div>
 
         {/* Live Sub-Status Tag */}
-        <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
+        <div className="flex items-center gap-2 text-2xs text-muted-foreground">
           <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400">
             <CheckCircle2 className="h-3 w-3" />
             <span>{isUk ? 'Автономна дія' : 'Autonomous action'}</span>

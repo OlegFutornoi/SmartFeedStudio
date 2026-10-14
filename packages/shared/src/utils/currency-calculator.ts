@@ -1,4 +1,4 @@
-import { CurrencyCode, PriceRoundingMode } from '../enums/index.js';
+import { CurrencyCode, PriceRoundingMode } from '@/enums';
 
 export interface CurrencyConversionParams {
   costPrice: number;

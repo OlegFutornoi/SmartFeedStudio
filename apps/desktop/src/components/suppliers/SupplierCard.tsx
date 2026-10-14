@@ -50,7 +50,7 @@ export function SupplierCard({
               </CardTitle>
               <Badge
                 variant="outline"
-                className="text-[10px] font-mono tracking-wider bg-muted/50 shrink-0"
+                className="text-2xs font-mono tracking-wider bg-muted/50 shrink-0"
               >
                 {supplier.code}
               </Badge>
@@ -62,7 +62,7 @@ export function SupplierCard({
 
           <Badge
             variant={supplier.isActive ? 'default' : 'outline'}
-            className={`text-[10px] shrink-0 font-medium px-2 py-0.5 ${
+            className={`text-2xs shrink-0 font-medium px-2 py-0.5 ${
               supplier.isActive ? 'bg-foreground text-background' : 'text-muted-foreground'
             }`}
           >
@@ -108,7 +108,7 @@ export function SupplierCard({
           <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-md bg-muted/20 border border-border/40 min-w-0">
             <ShoppingBag className="size-3.5 text-primary shrink-0" />
             <div className="truncate min-w-0">
-              <div className="text-[10px] text-muted-foreground leading-none truncate">
+              <div className="text-2xs text-muted-foreground leading-none truncate">
                 {t('suppliers:totalProducts')}
               </div>
               <div className="font-semibold text-foreground mt-0.5 font-mono truncate text-xs">
@@ -128,7 +128,7 @@ export function SupplierCard({
           >
             <Radio className="size-3.5 text-foreground shrink-0 group-hover:scale-105 transition-transform" />
             <div className="truncate min-w-0">
-              <div className="text-[10px] text-muted-foreground leading-none truncate group-hover:text-primary transition-colors">
+              <div className="text-2xs text-muted-foreground leading-none truncate group-hover:text-primary transition-colors">
                 {t('suppliers:activeFeeds')}
               </div>
               <div className="font-semibold text-foreground mt-0.5 font-mono truncate text-xs">
@@ -140,7 +140,7 @@ export function SupplierCard({
 
         {/* Contact Links */}
         {(supplier.contactEmail || supplier.contactPhone || supplier.website) && (
-          <div className="space-y-1 text-[11px] text-muted-foreground pt-1 border-t border-border/40">
+          <div className="space-y-1 text-xs text-muted-foreground pt-1 border-t border-border/40">
             {supplier.contactEmail && (
               <div className="flex items-center gap-1.5 truncate">
                 <Mail className="size-3 shrink-0" />

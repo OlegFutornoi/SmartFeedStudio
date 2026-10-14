@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import type { SupplierDto, CreateSupplierDto } from '@smartfeed/shared';
 import { useTranslation } from '@/i18n';
 import { useQuotas } from '@/hooks/useQuotas';
@@ -15,6 +15,8 @@ import {
 import type { WizardStep } from '@/components/feeds/WizardDialogHeader';
 import { emitDataSync } from '@/lib/syncEvents';
 import { getFeedAnalysisErrorMessage } from '@/components/feeds/feedErrorMessages';
+import { useWizardStepMapping } from '@/components/feeds/useWizardStepMapping';
+import { useWizardStepValidation } from '@/components/feeds/useWizardStepValidation';
 
 interface UseImportFeedWizardOptions {
   isOpen: boolean;
@@ -65,29 +67,15 @@ export function useImportFeedWizard({
   const [importResult, setImportResult] = useState<ImportFeedResultDto | null>(null);
   const [importError, setImportError] = useState<string | null>(null);
 
-  // Quota & Selected SKUs calculation
-  const productQuota = quotas?.products;
-  const isUnlimited = productQuota?.isUnlimited ?? false;
-  const remainingQuota = productQuota ? Math.max(0, productQuota.max - productQuota.used) : 10000;
-
-  const totalSelectedSkus = useMemo(() => {
-    if (!analysis) return 0;
-    const cats = analysis.categories || [];
-    if (cats.length === 0) return analysis.totalDetected;
-    if (selectedCategoryIds.length === 0) return 0;
-    const selectedSet = new Set(selectedCategoryIds);
-    const sum = cats
-      .filter((c) => selectedSet.has(c.id))
-      .reduce((acc, c) => acc + (c.productCount || 0), 0);
-    return sum > 0 ? sum : analysis.totalDetected;
-  }, [analysis, selectedCategoryIds]);
-
-  const isQuotaExceeded = !isUnlimited && totalSelectedSkus > remainingQuota;
+  const { totalSelectedSkus, isQuotaExceeded, isUnlimited, remainingQuota } = useWizardStepMapping({
+    analysis,
+    selectedCategoryIds,
+    productQuota: quotas?.products,
+  });
 
   const prevIsOpenRef = useRef(isOpen);
   const prevInitialSupplierIdRef = useRef(initialSupplierId);
 
-  // Sync initialSupplierId only when dialog opens or initialSupplierId prop changes
   useEffect(() => {
     const justOpened = isOpen && !prevIsOpenRef.current;
     const initialChanged = initialSupplierId !== prevInitialSupplierIdRef.current;
@@ -205,43 +193,19 @@ export function useImportFeedWizard({
     await performAnalysis(content);
   };
 
-  const handleAnalyzeOnly = async () => {
-    await performAnalysis();
+  const handleAnalyzeOnly = async (): Promise<boolean> => {
+    return performAnalysis();
   };
 
-  const handleNextFromSource = async () => {
-    if (isFeedLimitReached) {
-      setAnalysisError(
-        t('suppliers:feedLimitReachedDesc', {
-          defaultValue:
-            'Ваш поточний тариф дозволяє підключити обмежену кількість фідів. Щоб імпортувати новий фід, оновіть тариф або видаліть існуюче джерело.',
-        }),
-      );
-      return;
-    }
-    if (!analysis) {
-      const ok = await performAnalysis();
-      if (!ok) return;
-    }
-    setStep('SUPPLIER');
-  };
-
-  const handleNextFromSupplier = async () => {
-    if (!selectedSupplierId) {
-      setAnalysisError(
-        t('suppliers:selectSupplierError', {
-          defaultValue: 'Оберіть постачальника для привʼязки фіду',
-        }),
-      );
-      return;
-    }
-    setAnalysisError(null);
-    if (!analysis) {
-      const ok = await performAnalysis();
-      if (!ok) return;
-    }
-    setStep('PREVIEW');
-  };
+  const { handleNextFromSource, handleNextFromSupplier } = useWizardStepValidation({
+    t,
+    isFeedLimitReached,
+    selectedSupplierId,
+    analysis,
+    performAnalysis: handleAnalyzeOnly,
+    setAnalysisError,
+    setStep,
+  });
 
   const handleStartImport = async () => {
     if (isFeedLimitReached) {

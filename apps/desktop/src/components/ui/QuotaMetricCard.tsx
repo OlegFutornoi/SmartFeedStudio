@@ -72,7 +72,7 @@ export function QuotaMetricCard({ title, icon: Icon, quota, unit, testId }: Quot
           </div>
 
           {!isUnlimited && (
-            <span className={`text-[11px] font-mono ${badgeColor}`}>{displayPercent}%</span>
+            <span className={`text-xs font-mono ${badgeColor}`}>{displayPercent}%</span>
           )}
         </div>
 
@@ -89,17 +89,17 @@ export function QuotaMetricCard({ title, icon: Icon, quota, unit, testId }: Quot
         {/* Footer Subtext or Upgrade Prompt */}
         <div className="flex items-center justify-between text-xs pt-0.5">
           {isUnlimited ? (
-            <span className="text-foreground text-[11px] font-medium">
+            <span className="text-foreground text-xs font-medium">
               {t('common:unlimitedPlan', { defaultValue: 'Безлімітний тариф' })}
             </span>
           ) : isCritical ? (
             <div className="flex items-center justify-between w-full">
-              <span className="text-destructive text-[11px] font-medium">
+              <span className="text-destructive text-xs font-medium">
                 {t('common:limitExceeded', { defaultValue: 'Ліміт вичерпано' })}
               </span>
               <Link
                 to="/plans"
-                className="text-[11px] text-primary hover:underline flex items-center gap-0.5 font-medium"
+                className="text-xs text-primary hover:underline flex items-center gap-0.5 font-medium"
               >
                 <span>{t('common:upgradeQuota', { defaultValue: 'Збільшити квоту' })}</span>
                 <ArrowUpRight className="size-3" />
@@ -107,19 +107,19 @@ export function QuotaMetricCard({ title, icon: Icon, quota, unit, testId }: Quot
             </div>
           ) : isWarning ? (
             <div className="flex items-center justify-between w-full">
-              <span className="text-foreground text-[11px]">
+              <span className="text-foreground text-xs">
                 {t('common:remaining', { defaultValue: 'Залишилось' })}: {quota.remaining}
               </span>
               <Link
                 to="/plans"
-                className="text-[11px] text-primary hover:underline flex items-center gap-0.5"
+                className="text-xs text-primary hover:underline flex items-center gap-0.5"
               >
                 <span>{t('common:upgrade', { defaultValue: 'Апгрейд' })}</span>
                 <ArrowUpRight className="size-3" />
               </Link>
             </div>
           ) : (
-            <span className="text-muted-foreground text-[11px]">
+            <span className="text-muted-foreground text-xs">
               {t('common:availableMore', { defaultValue: 'Доступно ще' })}:{' '}
               <strong className="text-foreground">{quota.remaining}</strong>
             </span>

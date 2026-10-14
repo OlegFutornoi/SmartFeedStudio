@@ -46,7 +46,7 @@ export function PipelineFunnelCards({
             {/* Header: Icon, Step # & Badge */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1.5">
-                <span className="flex h-5 w-5 items-center justify-center rounded-md bg-background border border-border/60 text-[10px] font-bold">
+                <span className="flex h-5 w-5 items-center justify-center rounded-md bg-background border border-border/60 text-2xs font-bold">
                   {stage.stepNumber}
                 </span>
                 {getIcon(stage.iconName, isActive)}
@@ -69,13 +69,13 @@ export function PipelineFunnelCards({
               <span className="text-xs font-semibold tracking-tight text-foreground">
                 {isUk ? stage.titleUk : stage.titleEn}
               </span>
-              <span className="text-[10px] text-muted-foreground">
+              <span className="text-2xs text-muted-foreground">
                 {isUk ? stage.subtitleUk : stage.subtitleEn}
               </span>
             </div>
 
             {/* Key Stat pill */}
-            <div className="mt-0.5 flex items-center justify-between border-t border-border/40 pt-1.5 text-[10px]">
+            <div className="mt-0.5 flex items-center justify-between border-t border-border/40 pt-1.5 text-2xs">
               <span className="font-semibold text-foreground">
                 {isUk ? stage.statPrimaryUk : stage.statPrimaryEn}
               </span>

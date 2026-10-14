@@ -48,7 +48,7 @@ export const SuppliersKpiCards: React.FC<SuppliersKpiCardsProps> = ({
             </div>
           </div>
           <div className="mt-3">
-            <div className="flex items-center justify-between text-[11px] text-muted-foreground mb-1">
+            <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
               <span>{t('suppliers:kpiQuotaUsage', { defaultValue: 'Ліміт тарифу' })}</span>
               <span>
                 {usedSuppliers} / {maxSuppliers}
@@ -75,7 +75,7 @@ export const SuppliersKpiCards: React.FC<SuppliersKpiCardsProps> = ({
               <Rss className="size-4.5" />
             </div>
           </div>
-          <p className="text-[11px] text-muted-foreground mt-3">
+          <p className="text-xs text-muted-foreground mt-3">
             {t('suppliers:kpiFeedsDesc', { defaultValue: 'URL та завантажені локальні файли' })}
           </p>
         </CardContent>
@@ -97,7 +97,7 @@ export const SuppliersKpiCards: React.FC<SuppliersKpiCardsProps> = ({
               <Package className="size-4.5" />
             </div>
           </div>
-          <p className="text-[11px] text-muted-foreground mt-3">
+          <p className="text-xs text-muted-foreground mt-3">
             {t('suppliers:kpiProductsDesc', {
               defaultValue: 'Товари з прив’язкою до постачальників',
             })}
@@ -121,7 +121,7 @@ export const SuppliersKpiCards: React.FC<SuppliersKpiCardsProps> = ({
               <SlidersHorizontal className="size-4.5" />
             </div>
           </div>
-          <p className="text-[11px] text-muted-foreground mt-3">
+          <p className="text-xs text-muted-foreground mt-3">
             {t('suppliers:kpiRulesDesc', { defaultValue: 'Категорійні націнки та курси НБУ' })}
           </p>
         </CardContent>

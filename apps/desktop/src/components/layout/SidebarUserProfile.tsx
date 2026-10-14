@@ -81,7 +81,7 @@ export const SidebarUserProfile = React.memo(function SidebarUserProfile({
                   </p>
                   <p
                     data-testid="user-email"
-                    className="text-[11px] text-muted-foreground truncate leading-tight mt-0.5"
+                    className="text-xs text-muted-foreground truncate leading-tight mt-0.5"
                   >
                     <span data-testid="sidebar-user-email">{displayEmail}</span>
                   </p>
@@ -113,7 +113,7 @@ export const SidebarUserProfile = React.memo(function SidebarUserProfile({
               </Avatar>
               <div className="grid flex-1 text-left text-xs leading-tight min-w-0">
                 <span className="truncate font-semibold text-foreground">{displayName}</span>
-                <span className="truncate text-[11px] text-muted-foreground">{displayEmail}</span>
+                <span className="truncate text-xs text-muted-foreground">{displayEmail}</span>
               </div>
             </div>
           </DropdownMenuLabel>

@@ -51,6 +51,7 @@ Reference these guidelines when:
 - `arch-single-responsibility` - Focused services over "god services"
 - `arch-use-repository-pattern` - Abstract database logic for testability
 - `arch-use-events` - Event-driven architecture for decoupling
+- `arch-native-vs-cloud-segregation` - Cloud API must never manipulate desktop client local workspace files
 
 ### 2. Dependency Injection (CRITICAL)
 
@@ -66,13 +67,17 @@ Reference these guidelines when:
 - `error-use-exception-filters` - Centralized exception handling
 - `error-throw-http-exceptions` - Use NestJS HTTP exceptions
 - `error-handle-async-errors` - Handle async errors properly
+- `error-zero-silent-failures` - Zero empty or comment-only `catch {}` blocks; mandatory structured logging or typed exceptions
 
 ### 4. Security (HIGH)
 
 - `security-auth-jwt` - Secure JWT authentication
+- `security-protect-all-mutations` - 100% of POST/PUT/DELETE/PATCH endpoints must use `@UseGuards` or `@Public()`
+- `security-zero-fallback-secrets` - Zero string fallbacks (`|| 'fallback'`) for JWT, webhook HMAC, or encryption keys (CWE-798)
+- `security-guard-decorator-parity` - `@CurrentUser()` strictly requires an active AuthGuard (`JwtAuthGuard` or `OptionalJwtAuthGuard`)
 - `security-validate-all-input` - Validate with class-validator
 - `security-use-guards` - Authentication and authorization guards
-- `security-sanitize-output` - Prevent XSS attacks
+- `security-sanitize-output` - Prevent XSS and sensitive field leaks
 - `security-rate-limiting` - Implement rate limiting
 
 ### 5. Performance (HIGH)
@@ -100,6 +105,7 @@ Reference these guidelines when:
 - `api-use-interceptors` - Cross-cutting concerns
 - `api-versioning` - API versioning strategies
 - `api-use-pipes` - Input transformation with pipes
+- `api-validated-query-dtos` - All `@Query()` endpoints must use validated DTO classes (zero raw query params)
 
 ### 9. Microservices (MEDIUM)
 

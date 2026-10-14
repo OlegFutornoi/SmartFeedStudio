@@ -47,7 +47,7 @@ export const PlanSelector = React.memo(function PlanSelector({
           <Badge
             variant="outline"
             className={cn(
-              'text-[10px] px-1.5 py-0 h-4 border-0 font-semibold mr-1.5',
+              'text-2xs px-1.5 py-0 h-4 border-0 font-semibold mr-1.5',
               selected === p.value ? 'bg-primary/15 text-primary' : p.color,
             )}
           >

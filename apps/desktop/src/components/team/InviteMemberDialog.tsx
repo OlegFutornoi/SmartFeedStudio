@@ -179,7 +179,7 @@ export const InviteMemberDialog: React.FC<InviteMemberDialogProps> = ({
                   <h2 className="text-base font-bold text-foreground">
                     {t('team.inviteModalTitle')}
                   </h2>
-                  <Badge variant="secondary" className="text-[10px]">
+                  <Badge variant="secondary" className="text-2xs">
                     {remainingSeats} з {maxSeats} вільних
                   </Badge>
                 </div>
@@ -234,7 +234,7 @@ export const InviteMemberDialog: React.FC<InviteMemberDialogProps> = ({
                       <User className="h-3.5 w-3.5 text-primary" />
                       <span>{t('team.memberRole')}</span>
                     </div>
-                    <span className="text-[10px] leading-tight text-muted-foreground">
+                    <span className="text-2xs leading-tight text-muted-foreground">
                       {t('team.memberRoleDesc')}
                     </span>
                   </button>
@@ -253,7 +253,7 @@ export const InviteMemberDialog: React.FC<InviteMemberDialogProps> = ({
                       <Shield className="h-3.5 w-3.5 text-primary" />
                       <span>{t('team.adminRole')}</span>
                     </div>
-                    <span className="text-[10px] leading-tight text-muted-foreground">
+                    <span className="text-2xs leading-tight text-muted-foreground">
                       {t('team.adminRoleDesc')}
                     </span>
                   </button>

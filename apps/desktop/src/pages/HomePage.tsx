@@ -211,7 +211,7 @@ export function HomePage() {
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
                       <p className="font-medium text-sm text-foreground">{supplier.name}</p>
-                      <Badge variant="outline" className="text-[10px] h-4 px-1 py-0 uppercase">
+                      <Badge variant="outline" className="text-2xs h-4 px-1 py-0 uppercase">
                         {supplier.code}
                       </Badge>
                     </div>

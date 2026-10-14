@@ -38,8 +38,8 @@ export function createBackupFileOnDisk(workspacePath: string): CreateLocalBackup
       const parsed = JSON.parse(content);
       parsed.lastBackupAt = new Date().toISOString();
       fs.writeFileSync(configPath, JSON.stringify(parsed, null, 2), 'utf-8');
-    } catch {
-      // Ignore
+    } catch (err) {
+      console.warn('[WorkspaceBackup] Failed to update lastBackupAt in workspace.json:', err);
     }
   }
 
@@ -76,12 +76,12 @@ export function clearCacheOnDisk(workspacePath: string): ClearStorageCacheResult
           fs.rmSync(itemPath, { recursive: true, force: true });
           filesRemoved += 1;
         }
-      } catch {
-        // Ignore individual deletion error
+      } catch (err) {
+        console.warn(`[WorkspaceBackup] Failed to remove cache entry ${itemPath}:`, err);
       }
     }
-  } catch {
-    // Ignore readdir error
+  } catch (err) {
+    console.warn(`[WorkspaceBackup] Failed to read feedsDir ${feedsDir}:`, err);
   }
 
   return { bytesFreed, filesRemoved };

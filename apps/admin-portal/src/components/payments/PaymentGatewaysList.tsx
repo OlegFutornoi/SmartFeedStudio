@@ -62,7 +62,7 @@ export const PaymentGatewaysList: React.FC<PaymentGatewaysListProps> = ({ isUk }
                   <div className="size-8 rounded-lg bg-muted flex items-center justify-center text-muted-foreground">
                     <Icon className="size-4" />
                   </div>
-                  <Badge variant={gw.badgeVariant} className="text-[10px]">
+                  <Badge variant={gw.badgeVariant} className="text-2xs">
                     {isUk ? gw.statusUk : gw.statusEn}
                   </Badge>
                 </div>
@@ -72,7 +72,7 @@ export const PaymentGatewaysList: React.FC<PaymentGatewaysListProps> = ({ isUk }
                 </CardDescription>
               </CardHeader>
               <CardContent className="pt-0">
-                <span className="text-[11px] text-muted-foreground italic">
+                <span className="text-xs text-muted-foreground italic">
                   {isUk
                     ? 'Буде доступно в наступних релізах'
                     : 'Will be available in future releases'}

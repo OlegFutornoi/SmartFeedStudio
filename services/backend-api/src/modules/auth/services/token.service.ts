@@ -1,5 +1,6 @@
 import {
   Injectable,
+  Logger,
   UnauthorizedException,
   BadRequestException,
   InternalServerErrorException,
@@ -11,10 +12,32 @@ import { AuthTokens, JwtPayload, Role } from '@smartfeed/shared';
 
 @Injectable()
 export class TokenService {
+  private readonly logger = new Logger(TokenService.name);
+
   constructor(
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
   ) {}
+
+  private getAccessSecret(): string {
+    const secret = this.configService.get<string>('JWT_ACCESS_SECRET');
+    if (!secret) {
+      throw new InternalServerErrorException(
+        'Critical configuration missing: JWT_ACCESS_SECRET must be defined',
+      );
+    }
+    return secret;
+  }
+
+  private getRefreshSecret(): string {
+    const secret = this.configService.get<string>('JWT_REFRESH_SECRET');
+    if (!secret) {
+      throw new InternalServerErrorException(
+        'Critical configuration missing: JWT_REFRESH_SECRET must be defined',
+      );
+    }
+    return secret;
+  }
 
   /**
    * Issue JWT access and refresh token pair.
@@ -30,12 +53,8 @@ export class TokenService {
       '30d') as SignOptions['expiresIn'];
     const expiresInSeconds = 30 * 24 * 60 * 60; // 30 days session
 
-    const accessSecret =
-      this.configService.get<string>('JWT_ACCESS_SECRET') ||
-      'super-secret-access-token-key-change-in-production';
-    const refreshSecret =
-      this.configService.get<string>('JWT_REFRESH_SECRET') ||
-      'super-secret-refresh-token-key-change-in-production';
+    const accessSecret = this.getAccessSecret();
+    const refreshSecret = this.getRefreshSecret();
 
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(payload, {
@@ -61,15 +80,14 @@ export class TokenService {
    * Verify refresh token and return decoded payload.
    */
   async verifyRefreshToken(token: string): Promise<JwtPayload> {
-    const refreshSecret =
-      this.configService.get<string>('JWT_REFRESH_SECRET') ||
-      'super-secret-refresh-token-key-change-in-production';
+    const refreshSecret = this.getRefreshSecret();
 
     try {
       return await this.jwtService.verifyAsync<JwtPayload>(token, {
         secret: refreshSecret,
       });
-    } catch {
+    } catch (err) {
+      this.logger.warn('[TokenService] Refresh token verification failed:', err);
       throw new UnauthorizedException('Invalid or expired refresh token');
     }
   }
@@ -82,11 +100,11 @@ export class TokenService {
       this.configService.get<string>('JWT_RESET_SECRET') ||
       this.configService.get<string>('JWT_ACCESS_SECRET');
 
-    if (!resetSecret && process.env.NODE_ENV === 'production') {
-      throw new InternalServerErrorException('JWT secret is not configured in production');
+    if (!resetSecret) {
+      throw new InternalServerErrorException(
+        'Critical configuration missing: JWT_RESET_SECRET or JWT_ACCESS_SECRET must be defined',
+      );
     }
-
-    const secretToUse = resetSecret || 'super-secret-reset-token-key-change-in-production';
 
     return this.jwtService.signAsync(
       {
@@ -95,7 +113,7 @@ export class TokenService {
         purpose: 'reset-password',
       },
       {
-        secret: secretToUse,
+        secret: resetSecret,
         expiresIn: '1h',
       },
     );
@@ -109,11 +127,11 @@ export class TokenService {
       this.configService.get<string>('JWT_RESET_SECRET') ||
       this.configService.get<string>('JWT_ACCESS_SECRET');
 
-    if (!resetSecret && process.env.NODE_ENV === 'production') {
-      throw new InternalServerErrorException('JWT secret is not configured in production');
+    if (!resetSecret) {
+      throw new InternalServerErrorException(
+        'Critical configuration missing: JWT_RESET_SECRET or JWT_ACCESS_SECRET must be defined',
+      );
     }
-
-    const secretToUse = resetSecret || 'super-secret-reset-token-key-change-in-production';
 
     try {
       const payload = await this.jwtService.verifyAsync<{
@@ -121,7 +139,7 @@ export class TokenService {
         email: string;
         purpose?: string;
       }>(token, {
-        secret: secretToUse,
+        secret: resetSecret,
       });
 
       if (payload.purpose !== 'reset-password') {

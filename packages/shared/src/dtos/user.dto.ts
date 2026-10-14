@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { Role, PlanType } from '../enums/index.js';
+import { Role, PlanType } from '@/enums';
 
 export interface UserLicenseSummary {
   licenseKey: string;

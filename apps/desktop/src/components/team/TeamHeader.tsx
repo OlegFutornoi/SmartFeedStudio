@@ -72,7 +72,7 @@ export const TeamHeader: React.FC<TeamHeaderProps> = ({
             <Badge
               variant="default"
               data-testid="team-plan-badge"
-              className={`text-[10px] font-bold tracking-wide uppercase px-2 py-0.5 shadow-sm ${getPlanBadgeColor(planType)}`}
+              className={`text-2xs font-bold tracking-wide uppercase px-2 py-0.5 shadow-sm ${getPlanBadgeColor(planType)}`}
             >
               {planType === 'ENTERPRISE' && (
                 <Crown className="h-3 w-3 mr-1 inline-block text-background" />
@@ -81,12 +81,12 @@ export const TeamHeader: React.FC<TeamHeaderProps> = ({
             </Badge>
 
             {isExpired ? (
-              <Badge variant="destructive" className="text-[10px] font-medium gap-1">
+              <Badge variant="destructive" className="text-2xs font-medium gap-1">
                 <ShieldAlert className="h-3 w-3" />
                 <span>Термін вичерпано</span>
               </Badge>
             ) : daysRemaining !== null && daysRemaining !== undefined ? (
-              <span className="text-[11px] text-muted-foreground font-mono">
+              <span className="text-xs text-muted-foreground font-mono">
                 {t('team.daysRemaining', { count: daysRemaining })}
               </span>
             ) : null}

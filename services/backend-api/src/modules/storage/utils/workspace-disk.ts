@@ -84,13 +84,13 @@ export function calculateDirSizeBytes(dirPath: string): number {
       } else if (entry.isFile()) {
         try {
           totalBytes += fs.statSync(fullPath).size;
-        } catch {
-          // Ignore transient file lock
+        } catch (err) {
+          console.warn(`[WorkspaceDisk] Transient file lock or error reading ${fullPath}:`, err);
         }
       }
     }
-  } catch {
-    // Ignore permissions/read errors
+  } catch (err) {
+    console.warn(`[WorkspaceDisk] Directory read error for ${dirPath}:`, err);
   }
 
   return totalBytes;
@@ -115,14 +115,18 @@ export async function calculateDirSizeBytesAsync(dirPath: string): Promise<numbe
           fs.promises
             .stat(fullPath)
             .then((s) => s.size)
-            .catch(() => 0),
+            .catch((err) => {
+              console.warn(`[WorkspaceDisk] Async stat error on ${fullPath}:`, err);
+              return 0;
+            }),
         );
       }
     }
 
     const results = await Promise.all(subPromises);
     return results.reduce((acc, bytes) => acc + bytes, 0);
-  } catch {
+  } catch (err) {
+    console.warn(`[WorkspaceDisk] Async directory read error for ${dirPath}:`, err);
     return 0;
   }
 }

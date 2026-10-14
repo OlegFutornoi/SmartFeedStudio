@@ -95,7 +95,7 @@ export const FeatureRoiWidget: React.FC<FeatureRoiWidgetProps> = ({ roiConfig, f
           className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer accent-primary"
         />
 
-        <div className="flex justify-between text-[10px] text-muted-foreground">
+        <div className="flex justify-between text-2xs text-muted-foreground">
           <span>
             {config.minHours} {t('featureTeaser.common.hoursUnit', { defaultValue: 'год' })}
           </span>
@@ -115,7 +115,7 @@ export const FeatureRoiWidget: React.FC<FeatureRoiWidgetProps> = ({ roiConfig, f
             <Clock className="h-5 w-5" />
           </div>
           <div>
-            <div className="text-[11px] text-muted-foreground">{t(roiKeys.hoursSavedLabel)}</div>
+            <div className="text-xs text-muted-foreground">{t(roiKeys.hoursSavedLabel)}</div>
             <div data-testid="roi-hours-saved-result" className="text-lg font-bold text-foreground">
               ~{monthlyHoursSaved} {t('featureTeaser.common.hoursPerMonth')}
             </div>
@@ -127,7 +127,7 @@ export const FeatureRoiWidget: React.FC<FeatureRoiWidgetProps> = ({ roiConfig, f
             <Coins className="h-5 w-5" />
           </div>
           <div>
-            <div className="text-[11px] text-muted-foreground">{t(roiKeys.moneySavedLabel)}</div>
+            <div className="text-xs text-muted-foreground">{t(roiKeys.moneySavedLabel)}</div>
             <div
               data-testid="roi-money-saved-result"
               className="text-lg font-bold text-foreground font-mono"

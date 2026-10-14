@@ -53,7 +53,7 @@ export const SupplierDrawerHeader: React.FC<SupplierDrawerHeaderProps> = ({
             {supplier.code && (
               <Badge
                 variant="outline"
-                className="text-[10px] py-0 px-1.5 font-mono"
+                className="text-2xs py-0 px-1.5 font-mono"
                 data-testid="supplier-drawer-code"
               >
                 {supplier.code}
@@ -61,7 +61,7 @@ export const SupplierDrawerHeader: React.FC<SupplierDrawerHeaderProps> = ({
             )}
           </div>
           {formattedDate && (
-            <p className="text-[11px] text-muted-foreground mt-0.5">
+            <p className="text-xs text-muted-foreground mt-0.5">
               {t('suppliers:lastSynced', { defaultValue: 'Додано' })}: {formattedDate}
             </p>
           )}

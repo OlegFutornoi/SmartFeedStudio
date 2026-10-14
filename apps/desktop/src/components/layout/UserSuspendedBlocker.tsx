@@ -42,7 +42,7 @@ export const UserSuspendedBlocker: React.FC = () => {
           <span className="font-semibold text-xs tracking-tight text-foreground">
             SmartFeed Studio
           </span>
-          <span className="ml-auto text-[10px] font-mono px-1.5 py-0.5 rounded bg-muted text-muted-foreground border border-border/60">
+          <span className="ml-auto text-2xs font-mono px-1.5 py-0.5 rounded bg-muted text-muted-foreground border border-border/60">
             SECURITY
           </span>
         </div>
@@ -59,11 +59,11 @@ export const UserSuspendedBlocker: React.FC = () => {
             </div>
           </div>
 
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-destructive/10 text-destructive border border-destructive/20 text-[11px] font-medium mb-1">
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-destructive/10 text-destructive border border-destructive/20 text-xs font-medium mb-1">
             <Sparkles className="h-3 w-3" />
             <span>AI Security Sentinel</span>
           </div>
-          <p className="text-[11px] text-muted-foreground max-w-[200px] leading-relaxed">
+          <p className="text-xs text-muted-foreground max-w-[200px] leading-relaxed">
             {t('auth.aiSecurityStatus', {
               defaultValue: 'Автоматичний захист контурів та збереження локального каталогу',
             })}
@@ -72,14 +72,14 @@ export const UserSuspendedBlocker: React.FC = () => {
 
         {/* Status Indicators */}
         <div className="space-y-1.5 border-t border-border/40 pt-4 text-xs text-muted-foreground relative z-10">
-          <div className="flex items-center justify-between text-[11px]">
+          <div className="flex items-center justify-between text-xs">
             <span>{t('auth.catalogDataState', { defaultValue: 'Стан каталогу' })}</span>
             <span className="text-emerald-600 dark:text-emerald-400 font-medium flex items-center gap-1">
               <CheckCircle2 className="h-3 w-3" />{' '}
               {t('auth.catalogProtected', { defaultValue: 'Захищено' })}
             </span>
           </div>
-          <div className="flex items-center justify-between text-[11px]">
+          <div className="flex items-center justify-between text-xs">
             <span>{t('auth.localStorageState', { defaultValue: 'Локальна база' })}</span>
             <span className="font-mono text-foreground/80">SQLite Encr.</span>
           </div>
@@ -90,7 +90,7 @@ export const UserSuspendedBlocker: React.FC = () => {
       <div className="md:col-span-7 p-6 md:p-8 flex flex-col justify-between bg-card/60">
         <div>
           <div className="flex items-center gap-2 mb-2.5">
-            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-destructive/10 text-destructive border border-destructive/20">
+            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-destructive/10 text-destructive border border-destructive/20">
               <ShieldAlert className="h-3 w-3" />
               {t('auth.accountSuspendedBadge', { defaultValue: 'ПРИЗУПИНЕНО' })}
             </span>
@@ -117,7 +117,7 @@ export const UserSuspendedBlocker: React.FC = () => {
             </div>
           )}
 
-          <div className="mt-4 p-3 rounded-xl bg-muted/30 border border-border/40 text-[11px] text-muted-foreground leading-relaxed">
+          <div className="mt-4 p-3 rounded-xl bg-muted/30 border border-border/40 text-xs text-muted-foreground leading-relaxed">
             <span className="font-medium text-foreground block mb-0.5">
               {t('auth.nextStepsTitle', { defaultValue: 'Що потрібно зробити?' })}
             </span>

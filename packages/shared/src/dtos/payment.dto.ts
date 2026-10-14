@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { PaymentStatus, PaymentProvider, PaymentInterval } from '../enums';
+import { PaymentStatus, PaymentProvider, PaymentInterval } from '@/enums';
 
 // 1. Create Checkout Invoice Request
 export const CreateCheckoutDtoSchema = z.object({

@@ -177,7 +177,7 @@ export function TransactionsTable({
                     {/* Interval */}
                     {visibleColumns.interval !== false && (
                       <TableCell>
-                        <span className="text-[11px] text-muted-foreground font-medium">
+                        <span className="text-xs text-muted-foreground font-medium">
                           {tx.billingInterval === 'YEARLY'
                             ? isUk
                               ? '1 рік (-20%)'
@@ -208,11 +208,11 @@ export function TransactionsTable({
                             <span>{tx.provider}</span>
                           </span>
                           {tx.cardPan ? (
-                            <span className="text-[10px] text-muted-foreground font-mono">
+                            <span className="text-2xs text-muted-foreground font-mono">
                               {tx.cardPan} {tx.cardType ? `(${tx.cardType})` : ''}
                             </span>
                           ) : (
-                            <span className="text-[10px] text-muted-foreground italic">
+                            <span className="text-2xs text-muted-foreground italic">
                               {tx.failureReason || '—'}
                             </span>
                           )}
@@ -222,7 +222,7 @@ export function TransactionsTable({
 
                     {/* Date */}
                     {visibleColumns.date !== false && (
-                      <TableCell className="text-right text-muted-foreground font-mono text-[11px] tabular-nums">
+                      <TableCell className="text-right text-muted-foreground font-mono text-xs tabular-nums">
                         {formattedDate}
                       </TableCell>
                     )}

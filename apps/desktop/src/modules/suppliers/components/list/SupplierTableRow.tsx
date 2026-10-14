@@ -72,7 +72,7 @@ export const SupplierTableRow: React.FC<SupplierTableRowProps> = ({
               {s.name}
             </button>
             <div className="flex items-center gap-1.5 mt-0.5">
-              <span className="text-[10px] font-mono text-muted-foreground uppercase bg-muted px-1.5 py-0.2 rounded">
+              <span className="text-2xs font-mono text-muted-foreground uppercase bg-muted px-1.5 py-0.2 rounded">
                 {s.code}
               </span>
             </div>
@@ -83,7 +83,7 @@ export const SupplierTableRow: React.FC<SupplierTableRowProps> = ({
       {/* Contacts */}
       {visible('contacts') && (
         <TableCell className="py-2">
-          <div className="flex flex-col gap-0.5 text-[11px] text-muted-foreground">
+          <div className="flex flex-col gap-0.5 text-xs text-muted-foreground">
             {s.contactEmail && (
               <div className="flex items-center gap-1 truncate max-w-[190px]">
                 <Mail className="size-3 shrink-0" />
@@ -108,7 +108,7 @@ export const SupplierTableRow: React.FC<SupplierTableRowProps> = ({
         <TableCell className="py-2 text-center">
           <Badge
             variant="outline"
-            className="text-[11px] font-medium h-5.5 px-2 cursor-pointer hover:bg-muted"
+            className="text-xs font-medium h-5.5 px-2 cursor-pointer hover:bg-muted"
             onClick={() => (onOpenFeeds ? onOpenFeeds(s) : onOpenDetails(s))}
             data-testid={`view-supplier-feeds-btn-${s.id}`}
           >
@@ -128,10 +128,10 @@ export const SupplierTableRow: React.FC<SupplierTableRowProps> = ({
       {visible('currencyMarkup') && (
         <TableCell className="py-2 text-center">
           <div className="flex flex-col items-center gap-0.5">
-            <Badge variant="secondary" className="text-[10px] h-4.5 px-1.5 font-bold font-mono">
+            <Badge variant="secondary" className="text-2xs h-4.5 px-1.5 font-bold font-mono">
               {s.baseCurrency || 'UAH'} ({currencySym})
             </Badge>
-            <span className="text-[11px] text-muted-foreground">
+            <span className="text-xs text-muted-foreground">
               +{s.defaultMarginPercent || 0}%
               {s.defaultFixedMarkup ? ` +${s.defaultFixedMarkup} ₴` : ''}
             </span>
@@ -168,14 +168,14 @@ export const SupplierTableRow: React.FC<SupplierTableRowProps> = ({
           <div className="flex items-center justify-center">
             {s.isActive ? (
               <span
-                className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"
+                className="inline-flex items-center px-2 py-0.5 rounded-full text-2xs font-medium bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"
                 data-testid="status-badge"
               >
                 {t('suppliers:statusActive', { defaultValue: 'Активний' })}
               </span>
             ) : (
               <span
-                className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-muted text-muted-foreground border border-border"
+                className="inline-flex items-center px-2 py-0.5 rounded-full text-2xs font-medium bg-muted text-muted-foreground border border-border"
                 data-testid="status-badge"
               >
                 {t('suppliers:statusInactive', { defaultValue: 'Неактивний' })}

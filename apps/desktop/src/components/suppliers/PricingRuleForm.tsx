@@ -76,7 +76,7 @@ export const PricingRuleForm: React.FC<PricingRuleFormProps> = ({
           <Plus className="size-3.5 text-primary" />
           Додати правило націнки
         </h4>
-        <div className="flex items-center gap-1 bg-secondary/50 p-0.5 rounded-lg border border-border/50 text-[11px]">
+        <div className="flex items-center gap-1 bg-secondary/50 p-0.5 rounded-lg border border-border/50 text-xs">
           <button
             type="button"
             onClick={() => setRuleType('category')}
@@ -105,7 +105,7 @@ export const PricingRuleForm: React.FC<PricingRuleFormProps> = ({
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
         {ruleType === 'category' ? (
           <div className="col-span-1 sm:col-span-2">
-            <Label className="text-[11px] text-muted-foreground">Категорія товару</Label>
+            <Label className="text-xs text-muted-foreground">Категорія товару</Label>
             <div className="mt-1">
               <Select value={selectedCategoryId} onValueChange={setSelectedCategoryId}>
                 <SelectTrigger className="w-full h-8 text-xs bg-background">
@@ -130,7 +130,7 @@ export const PricingRuleForm: React.FC<PricingRuleFormProps> = ({
         ) : (
           <>
             <div>
-              <Label className="text-[11px] text-muted-foreground">Мін. собівартість (₴)</Label>
+              <Label className="text-xs text-muted-foreground">Мін. собівартість (₴)</Label>
               <Input
                 type="number"
                 min="0"
@@ -141,7 +141,7 @@ export const PricingRuleForm: React.FC<PricingRuleFormProps> = ({
               />
             </div>
             <div>
-              <Label className="text-[11px] text-muted-foreground">Макс. собівартість (₴)</Label>
+              <Label className="text-xs text-muted-foreground">Макс. собівартість (₴)</Label>
               <Input
                 type="number"
                 min="0"
@@ -155,7 +155,7 @@ export const PricingRuleForm: React.FC<PricingRuleFormProps> = ({
         )}
 
         <div>
-          <Label className="text-[11px] text-muted-foreground">Націнка (%)</Label>
+          <Label className="text-xs text-muted-foreground">Націнка (%)</Label>
           <Input
             type="number"
             step="0.5"
@@ -166,7 +166,7 @@ export const PricingRuleForm: React.FC<PricingRuleFormProps> = ({
         </div>
 
         <div>
-          <Label className="text-[11px] text-muted-foreground">Фіксована націнка (+₴)</Label>
+          <Label className="text-xs text-muted-foreground">Фіксована націнка (+₴)</Label>
           <Input
             type="number"
             step="1"
@@ -179,7 +179,7 @@ export const PricingRuleForm: React.FC<PricingRuleFormProps> = ({
 
       <div className="flex items-center justify-between pt-2 border-t border-border/40">
         <div className="flex items-center gap-2">
-          <Label className="text-[11px] text-muted-foreground">
+          <Label className="text-xs text-muted-foreground">
             Пріоритет (вищий виконується першим):
           </Label>
           <Input

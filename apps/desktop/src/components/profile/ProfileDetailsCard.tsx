@@ -51,7 +51,7 @@ export const ProfileDetailsCard = () => {
         {/* User attributes grid */}
         <div className="grid sm:grid-cols-2 gap-3">
           <div className="p-3 rounded-lg border border-border bg-muted/20 flex flex-col gap-1">
-            <span className="text-[11px] font-medium text-muted-foreground">
+            <span className="text-xs font-medium text-muted-foreground">
               {t('settings:fullName')}
             </span>
             <span className="text-xs font-semibold text-foreground">
@@ -60,18 +60,14 @@ export const ProfileDetailsCard = () => {
           </div>
 
           <div className="p-3 rounded-lg border border-border bg-muted/20 flex flex-col gap-1">
-            <span className="text-[11px] font-medium text-muted-foreground">
-              {t('settings:email')}
-            </span>
+            <span className="text-xs font-medium text-muted-foreground">{t('settings:email')}</span>
             <span className="text-xs font-semibold text-foreground font-mono">{user?.email}</span>
           </div>
 
           <div className="p-3 rounded-lg border border-border bg-muted/20 flex flex-col gap-1">
-            <span className="text-[11px] font-medium text-muted-foreground">
-              {t('settings:role')}
-            </span>
+            <span className="text-xs font-medium text-muted-foreground">{t('settings:role')}</span>
             <div>
-              <Badge variant="outline" className="text-[10px] font-mono">
+              <Badge variant="outline" className="text-2xs font-mono">
                 {user?.role}
               </Badge>
             </div>
@@ -79,7 +75,7 @@ export const ProfileDetailsCard = () => {
 
           {user?.organization ? (
             <div className="p-3 rounded-lg border border-border bg-muted/20 flex flex-col gap-1">
-              <span className="text-[11px] font-medium text-muted-foreground">
+              <span className="text-xs font-medium text-muted-foreground">
                 {t('settings:organization')}
               </span>
               <div className="flex items-center gap-1.5 text-xs text-foreground font-medium">
@@ -89,7 +85,7 @@ export const ProfileDetailsCard = () => {
             </div>
           ) : (
             <div className="p-3 rounded-lg border border-border bg-muted/20 flex flex-col gap-1">
-              <span className="text-[11px] font-medium text-muted-foreground">
+              <span className="text-xs font-medium text-muted-foreground">
                 {t('settings:keySecurity')}
               </span>
               <div className="flex items-center gap-1.5 text-xs text-foreground font-medium">
@@ -117,14 +113,14 @@ export const ProfileDetailsCard = () => {
             <div className="flex flex-col gap-0.5">
               <div className="flex items-center gap-2">
                 <span className="text-xs font-semibold text-foreground">{planName}</span>
-                <span className="text-muted-foreground text-[10px]">•</span>
+                <span className="text-muted-foreground text-2xs">•</span>
                 <span
-                  className={`text-[11px] font-medium ${isExpired ? 'text-destructive font-bold' : 'text-muted-foreground'}`}
+                  className={`text-xs font-medium ${isExpired ? 'text-destructive font-bold' : 'text-muted-foreground'}`}
                 >
                   {planPeriod}
                 </span>
               </div>
-              <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+              <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                 <span className="h-1.5 w-1.5 rounded-full bg-foreground animate-pulse" />
                 <span>
                   {t('settings:systemStatus')}: {t('settings:online')}

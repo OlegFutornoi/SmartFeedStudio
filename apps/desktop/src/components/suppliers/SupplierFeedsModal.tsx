@@ -131,7 +131,7 @@ export function SupplierFeedsModal({
                   {t('suppliers:connectedFeedsTitle', { defaultValue: 'Підключені фіди' })}:
                 </span>
                 <span className="text-primary">{supplier.name}</span>
-                <Badge variant="outline" className="text-[10px] font-mono">
+                <Badge variant="outline" className="text-2xs font-mono">
                   {supplier.code}
                 </Badge>
               </h2>
@@ -270,11 +270,11 @@ export function SupplierFeedsModal({
                 : 'Are you sure you want to delete this connected feed source?'}
             </p>
             {feedToDelete && (
-              <div className="p-2.5 rounded-lg bg-muted border border-border font-mono text-[11px] text-foreground font-semibold truncate">
+              <div className="p-2.5 rounded-lg bg-muted border border-border font-mono text-xs text-foreground font-semibold truncate">
                 {feedToDelete.name}
               </div>
             )}
-            <p className="text-[11px] text-muted-foreground">
+            <p className="text-xs text-muted-foreground">
               {isUk
                 ? 'Всі імпортовані товари цього фіду також буде видалено з каталогу.'
                 : 'All imported products from this feed will also be deleted from the catalog.'}

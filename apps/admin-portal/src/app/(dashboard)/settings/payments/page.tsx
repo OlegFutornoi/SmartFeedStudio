@@ -83,7 +83,7 @@ export default function PaymentsSettingsPage() {
                       <Badge
                         variant="outline"
                         data-testid="wfp-status-badge"
-                        className="bg-primary/10 text-primary border-primary/20 text-[10px] flex items-center gap-1 font-mono font-medium"
+                        className="bg-primary/10 text-primary border-primary/20 text-2xs flex items-center gap-1 font-mono font-medium"
                       >
                         <CheckCircle2 className="size-3" />
                         <span>{isUk ? 'Активний' : 'Active'}</span>
@@ -92,7 +92,7 @@ export default function PaymentsSettingsPage() {
                       <Badge
                         variant="secondary"
                         data-testid="wfp-status-badge"
-                        className="text-[10px] flex items-center gap-1"
+                        className="text-2xs flex items-center gap-1"
                       >
                         <AlertCircle className="size-3" />
                         <span>{isUk ? 'Вимкнено' : 'Disabled'}</span>
@@ -102,7 +102,7 @@ export default function PaymentsSettingsPage() {
                       <Badge
                         variant="secondary"
                         data-testid="wfp-testmode-badge"
-                        className="text-[10px] font-mono border border-border"
+                        className="text-2xs font-mono border border-border"
                       >
                         TEST MODE (SANDBOX)
                       </Badge>
@@ -132,7 +132,7 @@ export default function PaymentsSettingsPage() {
           <CardContent className="pt-0 border-t border-border/40 mt-2">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-3 text-xs">
               <div>
-                <span className="text-muted-foreground block text-[11px]">
+                <span className="text-muted-foreground block text-xs">
                   {isUk ? 'Ідентифікатор мерчанта:' : 'Merchant Account ID:'}
                 </span>
                 <span
@@ -144,7 +144,7 @@ export default function PaymentsSettingsPage() {
               </div>
 
               <div>
-                <span className="text-muted-foreground block text-[11px]">
+                <span className="text-muted-foreground block text-xs">
                   {isUk ? 'Секретний ключ:' : 'Secret Key:'}
                 </span>
                 <span
@@ -160,7 +160,7 @@ export default function PaymentsSettingsPage() {
               </div>
 
               <div>
-                <span className="text-muted-foreground block text-[11px]">
+                <span className="text-muted-foreground block text-xs">
                   {isUk ? 'Режим обробки:' : 'Processing Mode:'}
                 </span>
                 <span className="font-medium text-foreground mt-0.5 flex items-center gap-1">

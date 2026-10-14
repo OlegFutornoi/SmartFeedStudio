@@ -86,7 +86,7 @@ export const SidebarMobileDrawer = React.memo(function SidebarMobileDrawer({
               <p className="text-xs font-semibold text-foreground truncate">
                 {user?.fullName || 'User'}
               </p>
-              <p className="text-[11px] text-muted-foreground truncate font-mono">
+              <p className="text-xs text-muted-foreground truncate font-mono">
                 {user?.email || 'user@smartfeed.studio'}
               </p>
             </div>

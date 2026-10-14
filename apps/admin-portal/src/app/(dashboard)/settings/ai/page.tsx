@@ -88,10 +88,7 @@ export default function AiSettingsPage() {
                 <div className="h-10 w-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
                   <Bot className="h-5 w-5" />
                 </div>
-                <Badge
-                  variant={provider.badgeVariant}
-                  className="text-[10px] uppercase font-semibold"
-                >
+                <Badge variant={provider.badgeVariant} className="text-2xs uppercase font-semibold">
                   {isUk ? provider.statusUk : provider.statusEn}
                 </Badge>
               </div>
@@ -102,7 +99,7 @@ export default function AiSettingsPage() {
             </CardHeader>
 
             <CardContent className="pt-2 flex items-center justify-between border-t border-border/50 mt-4">
-              <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground font-mono">
+              <div className="flex items-center gap-1.5 text-xs text-muted-foreground font-mono">
                 <Cpu className="size-3 text-primary" />
                 <span>{provider.modelDefault}</span>
               </div>

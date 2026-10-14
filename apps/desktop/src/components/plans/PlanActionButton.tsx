@@ -36,7 +36,7 @@ export function PlanActionButton({
         <Button
           variant="outline"
           disabled
-          className="h-7 px-2 text-[11px] w-full cursor-not-allowed opacity-70"
+          className="h-7 px-2 text-xs w-full cursor-not-allowed opacity-70"
         >
           {isUk ? 'Керується власником' : 'Managed by Owner'}
         </Button>
@@ -45,7 +45,7 @@ export function PlanActionButton({
           variant="outline"
           disabled
           data-testid={`comparison-select-btn-${plan.code.toLowerCase()}`}
-          className="h-7 px-2 text-[11px] w-full border-border text-foreground bg-muted font-semibold cursor-default"
+          className="h-7 px-2 text-xs w-full border-border text-foreground bg-muted font-semibold cursor-default"
         >
           <Check className="size-3 mr-1" />
           <span>{t('plans.currentPlan')}</span>
@@ -56,7 +56,7 @@ export function PlanActionButton({
           data-testid={`comparison-select-btn-${plan.code.toLowerCase()}`}
           onClick={() => onSelect(plan.code, billingInterval)}
           disabled={isLoading}
-          className="h-7 px-2 text-[11px] w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold gap-1"
+          className="h-7 px-2 text-xs w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold gap-1"
         >
           {isLoading ? (
             <Loader2 className="size-3 animate-spin" />
@@ -72,7 +72,7 @@ export function PlanActionButton({
           onClick={() => onSelect(plan.code, billingInterval)}
           disabled={isLoading}
           className={cn(
-            'h-7 px-2 text-[11px] w-full font-semibold gap-1',
+            'h-7 px-2 text-xs w-full font-semibold gap-1',
             isPro && 'bg-primary text-primary-foreground shadow-xs',
           )}
         >

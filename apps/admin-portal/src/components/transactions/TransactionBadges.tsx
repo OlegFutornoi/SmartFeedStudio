@@ -13,7 +13,7 @@ export function TransactionStatusBadge({ status, isUk }: TransactionStatusBadgeP
         <Badge
           variant="outline"
           data-testid="transaction-status-approved"
-          className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 gap-1 text-[11px] font-medium"
+          className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 gap-1 text-xs font-medium"
         >
           <CheckCircle2 className="size-3" />
           <span>{isUk ? 'Оплачено' : 'Approved'}</span>
@@ -24,7 +24,7 @@ export function TransactionStatusBadge({ status, isUk }: TransactionStatusBadgeP
         <Badge
           variant="outline"
           data-testid="transaction-status-pending"
-          className="bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20 gap-1 text-[11px] font-medium"
+          className="bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20 gap-1 text-xs font-medium"
         >
           <Clock className="size-3" />
           <span>{isUk ? 'Очікує' : 'Pending'}</span>
@@ -34,7 +34,7 @@ export function TransactionStatusBadge({ status, isUk }: TransactionStatusBadgeP
       return (
         <Badge
           variant="destructive"
-          className="bg-destructive/10 text-destructive border-destructive/30 gap-1 text-[11px]"
+          className="bg-destructive/10 text-destructive border-destructive/30 gap-1 text-xs"
         >
           <XCircle className="size-3" />
           <span>{isUk ? 'Відхилено' : 'Declined'}</span>
@@ -52,7 +52,7 @@ export function TransactionPlanBadge({ planCode }: { planCode: string }) {
   return (
     <Badge
       variant="outline"
-      className={`text-[10px] uppercase font-bold tracking-wider ${
+      className={`text-2xs uppercase font-bold tracking-wider ${
         isEnterprise
           ? 'bg-primary/20 text-primary border-primary/40'
           : isPro

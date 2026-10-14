@@ -38,8 +38,8 @@ export function useColumnVisibility<T extends string>(
           return { ...defaultState, ...parsed } as Record<T, boolean>;
         }
       }
-    } catch {
-      // Fallback to defaults
+    } catch (err) {
+      console.warn(`[useColumnVisibility] Failed to parse column storage for ${storageKey}:`, err);
     }
 
     return defaultState as Record<T, boolean>;
@@ -51,8 +51,8 @@ export function useColumnVisibility<T extends string>(
   useEffect(() => {
     try {
       localStorage.setItem(`table_columns_${storageKey}`, JSON.stringify(visibleColumns));
-    } catch {
-      // Ignore storage errors
+    } catch (err) {
+      console.warn(`[useColumnVisibility] Failed to persist columns for ${storageKey}:`, err);
     }
   }, [storageKey, visibleColumns]);
 

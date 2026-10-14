@@ -61,7 +61,7 @@ export function WizardStepSupplier({
             {t('suppliers:selectSupplierLabel', { defaultValue: 'Оберіть постачальника' })}
           </Label>
           <div className="flex items-center gap-2">
-            <span className="text-[11px] text-muted-foreground">
+            <span className="text-xs text-muted-foreground">
               {t('suppliers:suppliersCount', {
                 count: suppliers.length,
                 defaultValue: `Доступно: ${suppliers.length}`,
@@ -71,7 +71,7 @@ export function WizardStepSupplier({
               <button
                 type="button"
                 onClick={onOpenCreateSupplier}
-                className="text-[11px] font-medium text-primary hover:underline flex items-center gap-0.5"
+                className="text-xs font-medium text-primary hover:underline flex items-center gap-0.5"
                 data-testid="wizard-quick-add-supplier-link"
               >
                 <Plus className="size-3" />
@@ -93,7 +93,7 @@ export function WizardStepSupplier({
               <h4 className="text-xs font-semibold text-foreground">
                 {t('suppliers:noSuppliersYet', { defaultValue: 'Постачальників ще не додано' })}
               </h4>
-              <p className="text-[11px] text-muted-foreground max-w-sm">
+              <p className="text-xs text-muted-foreground max-w-sm">
                 {t('suppliers:noSuppliersWizardDesc', {
                   defaultValue:
                     'Для імпорту товарів необхідно створити постачальника, щоб налаштувати правила націнки та синхронізацію.',
@@ -138,8 +138,8 @@ export function WizardStepSupplier({
                 >
                   <div className="flex items-center gap-2">
                     <span className="font-medium text-foreground">{s.name}</span>
-                    <span className="text-muted-foreground font-mono text-[10px]">({s.code})</span>
-                    <span className="text-muted-foreground text-[11px]">
+                    <span className="text-muted-foreground font-mono text-2xs">({s.code})</span>
+                    <span className="text-muted-foreground text-xs">
                       — {s.defaultMarginPercent > 0 ? `+${s.defaultMarginPercent}% ` : ''}
                       {s.defaultFixedMarkup > 0 ? `+${s.defaultFixedMarkup} ₴` : ''}
                       {!s.defaultMarginPercent && !s.defaultFixedMarkup
@@ -163,14 +163,14 @@ export function WizardStepSupplier({
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <span className="font-semibold text-foreground">{selectedSupplier.name}</span>
-              <Badge variant="outline" className="text-[10px] font-mono">
+              <Badge variant="outline" className="text-2xs font-mono">
                 {selectedSupplier.code}
               </Badge>
             </div>
             <Badge
               variant="outline"
               data-testid="wizard-selected-supplier-markup"
-              className="text-[11px] text-foreground bg-secondary border-border"
+              className="text-xs text-foreground bg-secondary border-border"
             >
               <Percent className="size-3 mr-1 text-primary" />
               {hasMarkup ? (
@@ -185,7 +185,7 @@ export function WizardStepSupplier({
               )}
             </Badge>
           </div>
-          <p className="text-[11px] text-muted-foreground">
+          <p className="text-xs text-muted-foreground">
             {t('suppliers:markupAutoAppliedHint', {
               defaultValue:
                 'Правила націнки цього постачальника будуть автоматично застосовані до закупівельних цін усіх товарів з фіду.',
@@ -216,7 +216,7 @@ export function WizardStepSupplier({
                 <RefreshCw className="size-3 text-primary" />
                 {t('suppliers:autoUpdatePrices', { defaultValue: 'Автоматично оновлювати ціни' })}
               </div>
-              <div className="text-[11px] text-muted-foreground">
+              <div className="text-xs text-muted-foreground">
                 {t('suppliers:autoUpdatePricesHint', {
                   defaultValue: 'Перераховувати ціни існуючих товарів при наступних синхронізаціях',
                 })}
@@ -239,7 +239,7 @@ export function WizardStepSupplier({
                   defaultValue: 'Синхронізувати залишки та наявність',
                 })}
               </div>
-              <div className="text-[11px] text-muted-foreground">
+              <div className="text-xs text-muted-foreground">
                 {t('suppliers:autoUpdateStocksHint', {
                   defaultValue: 'Оновлювати статус наявності та кількість на складі',
                 })}

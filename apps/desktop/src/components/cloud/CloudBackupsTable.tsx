@@ -35,7 +35,7 @@ export const CloudBackupsTable: React.FC<CloudBackupsTableProps> = ({
       <div className="p-8 rounded-xl border border-dashed border-border bg-card text-center space-y-2">
         <Database className="h-8 w-8 text-muted-foreground mx-auto opacity-50" />
         <p className="text-xs font-semibold text-foreground">{t('cloud:emptyBackupsList')}</p>
-        <p className="text-[11px] text-muted-foreground max-w-sm mx-auto">
+        <p className="text-xs text-muted-foreground max-w-sm mx-auto">
           {t('cloud:emptyBackupsListDesc')}
         </p>
       </div>
@@ -47,16 +47,16 @@ export const CloudBackupsTable: React.FC<CloudBackupsTableProps> = ({
       <Table>
         <TableHeader>
           <TableRow className="h-8 bg-muted/40 hover:bg-muted/40">
-            <TableHead className="text-[11px] font-medium text-muted-foreground px-3">
+            <TableHead className="text-xs font-medium text-muted-foreground px-3">
               {t('cloud:fileKeyCol')}
             </TableHead>
-            <TableHead className="text-[11px] font-medium text-muted-foreground px-3">
+            <TableHead className="text-xs font-medium text-muted-foreground px-3">
               {t('cloud:sizeCol')}
             </TableHead>
-            <TableHead className="text-[11px] font-medium text-muted-foreground px-3">
+            <TableHead className="text-xs font-medium text-muted-foreground px-3">
               {t('cloud:uploadDateCol')}
             </TableHead>
-            <TableHead className="text-[11px] font-medium text-muted-foreground px-3 text-right">
+            <TableHead className="text-xs font-medium text-muted-foreground px-3 text-right">
               {t('cloud:actionsCol')}
             </TableHead>
           </TableRow>
@@ -91,7 +91,7 @@ export const CloudBackupsTable: React.FC<CloudBackupsTableProps> = ({
                     onClick={() => onRestore(file)}
                     disabled={isRestoringId === file.id}
                     data-testid={`restore-backup-btn-${file.id}`}
-                    className="h-7 text-[11px] px-2 gap-1 text-primary hover:text-primary"
+                    className="h-7 text-xs px-2 gap-1 text-primary hover:text-primary"
                   >
                     <RotateCcw
                       className={`h-3 w-3 ${isRestoringId === file.id ? 'animate-spin' : ''}`}

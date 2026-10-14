@@ -9,7 +9,7 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags, ApiQuery } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import {
   Role,
@@ -31,6 +31,8 @@ import { DeleteNavigationItemCommand } from '@/modules/navigation/commands/delet
 import { ReorderNavigationItemsCommand } from '@/modules/navigation/commands/reorder-navigation-items.command';
 import { GetLicenseByUserIdQuery } from '@/modules/licenses/queries/get-license-by-user-id.query';
 
+import { GetNavigationQueryDto } from '@/modules/navigation/dto/get-navigation-query.dto';
+
 @ApiTags('Navigation')
 @Controller('navigation')
 export class NavigationController {
@@ -43,15 +45,14 @@ export class NavigationController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get accessible navigation items for the authenticated user' })
-  @ApiQuery({ name: 'app', enum: TargetApp, required: false })
   @ApiResponse({ status: 200, description: 'List of accessible navigation items' })
   async getAccessibleNavigation(
     @CurrentUser() user: { id: string; role: Role },
-    @Query('app') app?: TargetApp,
+    @Query() query: GetNavigationQueryDto,
   ) {
     const license = await this.queryBus.execute(new GetLicenseByUserIdQuery(user.id));
     const userPlan = (license?.planType as PlanType) || PlanType.STARTER;
-    const targetApp = app || TargetApp.DESKTOP;
+    const targetApp = query.app || TargetApp.DESKTOP;
 
     return this.queryBus.execute(new GetAccessibleNavigationQuery(user.role, userPlan, targetApp));
   }
@@ -61,9 +62,8 @@ export class NavigationController {
   @Roles(Role.SUPER_ADMIN, Role.ADMIN)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get all navigation items for management (Admin only)' })
-  @ApiQuery({ name: 'app', enum: TargetApp, required: false })
-  async getAllForAdmin(@Query('app') app?: TargetApp) {
-    return this.queryBus.execute(new GetAllNavigationItemsQuery(app));
+  async getAllForAdmin(@Query() query: GetNavigationQueryDto) {
+    return this.queryBus.execute(new GetAllNavigationItemsQuery(query.app));
   }
 
   @Post()

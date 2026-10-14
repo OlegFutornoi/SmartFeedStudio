@@ -72,14 +72,14 @@ export function StorageQuotaBar({
             variant="ghost"
             size="sm"
             onClick={handleUpgrade}
-            className="h-6 px-1.5 text-[11px] text-primary hover:text-primary/80 font-medium"
+            className="h-6 px-1.5 text-xs text-primary hover:text-primary/80 font-medium"
             data-testid="compact-upgrade-btn"
           >
             {t('storage:upgradeBtn')}
             <ArrowUpRight className="size-3 ml-0.5" />
           </Button>
         ) : (
-          <span className="text-[11px] font-mono text-muted-foreground">{percentUsed}%</span>
+          <span className="text-xs font-mono text-muted-foreground">{percentUsed}%</span>
         )}
         <UpgradeStoragePromptDialog
           open={showUpgradeModal}
@@ -110,12 +110,12 @@ export function StorageQuotaBar({
             </h4>
             <Badge
               variant="outline"
-              className="text-[10px] h-4 px-1.5 font-normal border-border bg-muted/40 shrink-0"
+              className="text-2xs h-4 px-1.5 font-normal border-border bg-muted/40 shrink-0"
             >
               {quota?.planType || 'FREE'}
             </Badge>
           </div>
-          <p className="text-[11px] text-muted-foreground truncate">
+          <p className="text-xs text-muted-foreground truncate">
             {isLocked
               ? t('storage:storageNotIncluded')
               : `${usedFormatted} / ${maxFormatted} (${percentUsed}%)`}
@@ -132,11 +132,11 @@ export function StorageQuotaBar({
               className="h-1.5 w-28 sm:w-40 bg-muted/60"
               indicatorClassName={getIndicatorColor()}
             />
-            <span className="text-[11px] font-mono tabular-nums text-muted-foreground">
+            <span className="text-xs font-mono tabular-nums text-muted-foreground">
               {percentUsed}%
             </span>
           </div>
-          <span className="text-[10px] text-muted-foreground">
+          <span className="text-2xs text-muted-foreground">
             {quota?.totalFilesCount || 0} {t('storage:filesInR2')}
           </span>
         </div>
@@ -161,7 +161,7 @@ export function StorageQuotaBar({
               size="sm"
               variant="outline"
               onClick={handleUpgrade}
-              className="h-7 text-[11px] px-2 font-medium gap-1 text-primary border-primary/30 hover:bg-primary/5"
+              className="h-7 text-xs px-2 font-medium gap-1 text-primary border-primary/30 hover:bg-primary/5"
               data-testid="full-upgrade-btn"
             >
               {t('storage:upgradeBtn')}

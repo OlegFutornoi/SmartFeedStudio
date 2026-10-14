@@ -174,9 +174,7 @@ export function DirectPhotoUploader({
             </div>
             <div>
               <p className="text-xs font-medium text-foreground">{t('storage:dropzoneTitle')}</p>
-              <p className="text-[11px] text-muted-foreground mt-0.5">
-                {t('storage:dropzoneHint')}
-              </p>
+              <p className="text-xs text-muted-foreground mt-0.5">{t('storage:dropzoneHint')}</p>
             </div>
           </div>
         )}
@@ -205,7 +203,7 @@ export function DirectPhotoUploader({
               {t('storage:uploadSuccess')} ({successFile.originalName})
             </span>
           </div>
-          <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-700 dark:text-emerald-300">
+          <span className="text-2xs font-mono px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-700 dark:text-emerald-300">
             CDN
           </span>
         </div>

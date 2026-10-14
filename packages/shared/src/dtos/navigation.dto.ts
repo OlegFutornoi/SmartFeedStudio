@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { Role, PlanType, TargetApp } from '../enums';
+import { Role, PlanType, TargetApp } from '@/enums';
 
 export const NavigationItemSchema = z.object({
   id: z.string().uuid(),

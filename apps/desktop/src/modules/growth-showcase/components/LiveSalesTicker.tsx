@@ -30,7 +30,7 @@ export function LiveSalesTicker({ orders, isUk }: LiveSalesTickerProps) {
   return (
     <div
       data-testid="live-sales-ticker"
-      className="flex items-center justify-between gap-2 rounded-lg border border-border/60 bg-background/60 px-3 py-1.5 shadow-xs backdrop-blur-xs text-[11px]"
+      className="flex items-center justify-between gap-2 rounded-lg border border-border/60 bg-background/60 px-3 py-1.5 shadow-xs backdrop-blur-xs text-xs"
     >
       {/* Left Marketplace & Pulse */}
       <div className="flex items-center gap-2 min-w-0">
@@ -57,7 +57,7 @@ export function LiveSalesTicker({ orders, isUk }: LiveSalesTickerProps) {
           <ArrowUpRight className="h-3 w-3" />
           <span>{formatAmount(order.amount)}</span>
         </span>
-        <span className="text-[10px] text-muted-foreground">
+        <span className="text-2xs text-muted-foreground">
           {isUk ? order.timeAgoUk : order.timeAgoEn}
         </span>
       </div>

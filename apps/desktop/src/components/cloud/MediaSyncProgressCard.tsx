@@ -63,7 +63,7 @@ export const MediaSyncProgressCard: React.FC<MediaSyncProgressCardProps> = ({
                 size="sm"
                 onClick={onCancel}
                 data-testid="cancel-media-sync-btn"
-                className="h-6 text-[11px] px-2 text-muted-foreground hover:text-foreground"
+                className="h-6 text-xs px-2 text-muted-foreground hover:text-foreground"
               >
                 {t('common:cancel')}
               </Button>
@@ -74,12 +74,12 @@ export const MediaSyncProgressCard: React.FC<MediaSyncProgressCardProps> = ({
         <Progress value={progressPercent} className="h-1.5" />
 
         {currentFileName && (
-          <p className="text-[11px] text-muted-foreground truncate font-mono">
+          <p className="text-xs text-muted-foreground truncate font-mono">
             {t('cloud:syncCurrentFile')}: {currentFileName}
           </p>
         )}
 
-        {error && <p className="text-[11px] text-destructive">{error}</p>}
+        {error && <p className="text-xs text-destructive">{error}</p>}
       </CardContent>
     </Card>
   );

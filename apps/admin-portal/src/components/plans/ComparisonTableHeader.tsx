@@ -16,7 +16,7 @@ export function ComparisonTableHeader({ sortedPlans, isUk, onEdit }: ComparisonT
       <th className="p-4 w-[28%] min-w-[220px] font-semibold text-foreground align-bottom">
         <div className="flex flex-col gap-1">
           <span className="text-sm font-bold">{isUk ? 'Можливості тарифу' : 'Plan Features'}</span>
-          <span className="text-[11px] text-muted-foreground font-normal">
+          <span className="text-xs text-muted-foreground font-normal">
             {isUk
               ? 'Порівняйте параметри та оберіть оптимальний план'
               : 'Compare quotas and pick the best tier'}
@@ -39,7 +39,7 @@ export function ComparisonTableHeader({ sortedPlans, isUk, onEdit }: ComparisonT
           >
             {isPro && (
               <div className="mb-2">
-                <Badge className="bg-primary text-primary-foreground text-[10px] font-semibold px-2 py-0.5 inline-flex items-center gap-1 shadow-xs">
+                <Badge className="bg-primary text-primary-foreground text-2xs font-semibold px-2 py-0.5 inline-flex items-center gap-1 shadow-xs">
                   <Sparkles className="size-2.5" />
                   <span>{isUk ? 'Хіт продажу' : 'Popular'}</span>
                 </Badge>
@@ -48,7 +48,7 @@ export function ComparisonTableHeader({ sortedPlans, isUk, onEdit }: ComparisonT
 
             <div className="flex flex-col items-center gap-1">
               <span className="font-bold text-sm text-foreground">{name}</span>
-              <span className="text-[10px] font-mono text-muted-foreground uppercase">
+              <span className="text-2xs font-mono text-muted-foreground uppercase">
                 {plan.code}
               </span>
 
@@ -60,7 +60,7 @@ export function ComparisonTableHeader({ sortedPlans, isUk, onEdit }: ComparisonT
                       : 'Free'
                     : `${plan.priceMonthly} ${currencySymbol}`}
                 </span>
-                <span className="text-[11px] text-muted-foreground">{isUk ? '/міс' : '/mo'}</span>
+                <span className="text-xs text-muted-foreground">{isUk ? '/міс' : '/mo'}</span>
               </div>
 
               <Button
@@ -68,7 +68,7 @@ export function ComparisonTableHeader({ sortedPlans, isUk, onEdit }: ComparisonT
                 size="sm"
                 data-testid={`comparison-edit-btn-${plan.code.toLowerCase()}`}
                 onClick={() => onEdit(plan)}
-                className="h-7 px-2.5 text-[11px] gap-1 mt-1 w-full max-w-[130px]"
+                className="h-7 px-2.5 text-xs gap-1 mt-1 w-full max-w-[130px]"
               >
                 <Pencil className="size-2.5 text-muted-foreground" />
                 <span>{isUk ? 'Редагувати' : 'Edit'}</span>

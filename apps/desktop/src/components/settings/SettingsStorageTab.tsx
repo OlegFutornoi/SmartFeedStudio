@@ -128,7 +128,7 @@ export const SettingsStorageTab: React.FC = () => {
                 </h4>
                 <Badge
                   variant="secondary"
-                  className="text-[10px] gap-1 text-foreground border-border bg-muted font-mono"
+                  className="text-2xs gap-1 text-foreground border-border bg-muted font-mono"
                 >
                   <ShieldCheck className="size-3" />
                   <span>{t('storage:encryptionStatus')}</span>

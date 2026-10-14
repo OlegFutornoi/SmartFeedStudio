@@ -65,7 +65,7 @@ export function GrowthShowcaseModule({
             ? 'Ваш автономний AI-асистент для маркетплейсів'
             : 'Your Autonomous AI Marketplace Copilot'}
         </h2>
-        <p className="max-w-xl text-[11px] sm:text-xs leading-relaxed text-muted-foreground">
+        <p className="max-w-xl text-xs sm:text-xs leading-relaxed text-muted-foreground">
           {isUk
             ? 'Підготує каталоги, вивантажить товари на маркетплейси та максимізує прибуток 24/7 без вашої рутини.'
             : 'Prepares catalogs, syncs products across marketplaces, and maximizes profits 24/7 on autopilot.'}
@@ -104,7 +104,7 @@ export function GrowthShowcaseModule({
       </div>
 
       {/* 6. Footer Trust & Enterprise Bar */}
-      <div className="mt-1 flex flex-wrap items-center justify-between gap-2 border-t border-border/60 pt-1.5 text-[10px] text-muted-foreground">
+      <div className="mt-1 flex flex-wrap items-center justify-between gap-2 border-t border-border/60 pt-1.5 text-2xs text-muted-foreground">
         <span className="flex items-center gap-1 font-medium text-foreground">
           <Zap className="h-3 w-3 text-emerald-500" />
           <span>{isUk ? '10 000+ SKU за секунди' : '10,000+ SKUs in seconds'}</span>

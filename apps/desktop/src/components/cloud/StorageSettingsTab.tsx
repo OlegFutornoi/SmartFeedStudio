@@ -40,7 +40,7 @@ export const StorageSettingsTab: React.FC = () => {
               >
                 {t('cloud:autoSyncOnImport')}
               </Label>
-              <p className="text-[11px] text-muted-foreground">{t('cloud:autoSyncOnImportDesc')}</p>
+              <p className="text-xs text-muted-foreground">{t('cloud:autoSyncOnImportDesc')}</p>
             </div>
             <Switch
               id="auto-sync-switch"
@@ -59,7 +59,7 @@ export const StorageSettingsTab: React.FC = () => {
               >
                 {t('cloud:webpCompression')}
               </Label>
-              <p className="text-[11px] text-muted-foreground">{t('cloud:webpCompressionDesc')}</p>
+              <p className="text-xs text-muted-foreground">{t('cloud:webpCompressionDesc')}</p>
             </div>
             <Switch
               id="webp-compress-switch"
@@ -75,7 +75,7 @@ export const StorageSettingsTab: React.FC = () => {
               <span className="text-xs font-medium text-foreground block">
                 {t('cloud:clearLocalCache')}
               </span>
-              <p className="text-[11px] text-muted-foreground">{t('cloud:clearLocalCacheDesc')}</p>
+              <p className="text-xs text-muted-foreground">{t('cloud:clearLocalCacheDesc')}</p>
             </div>
             <Button
               type="button"

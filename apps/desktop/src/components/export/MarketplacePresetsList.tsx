@@ -75,7 +75,7 @@ export const MarketplacePresetsList: React.FC<MarketplacePresetsListProps> = ({
               }`}
             >
               <span className="truncate">{displayName}</span>
-              <span className="text-[10px] opacity-75 font-mono">
+              <span className="text-2xs opacity-75 font-mono">
                 {t('export:commissionApprox', { percent: m.defaultCommission })}
               </span>
             </button>

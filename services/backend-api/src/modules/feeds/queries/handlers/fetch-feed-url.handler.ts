@@ -125,7 +125,8 @@ export class FetchFeedUrlHandler implements IQueryHandler<FetchFeedUrlQuery, Fet
     let parsed: URL;
     try {
       parsed = new URL(targetUrl);
-    } catch {
+    } catch (err) {
+      this.logger.warn(`[FetchFeedUrlHandler] Invalid URL format encountered: ${targetUrl}`, err);
       throw new BadRequestException('Invalid URL format');
     }
 

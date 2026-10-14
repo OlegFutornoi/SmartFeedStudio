@@ -46,7 +46,7 @@ export const SidebarUpsellSection: React.FC<SidebarUpsellSectionProps> = ({
 
       {/* Header */}
       {!isCollapsed ? (
-        <div className="px-3 pb-1.5 flex items-center justify-between text-[11px] font-semibold text-muted-foreground/70 tracking-wider uppercase">
+        <div className="px-3 pb-1.5 flex items-center justify-between text-xs font-semibold text-muted-foreground/70 tracking-wider uppercase">
           <span className="flex items-center gap-1.5">
             <Sparkles className="h-3 w-3 text-primary/70 shrink-0" />
             <span>{t('featureTeaser.sidebar.upsellHeader')}</span>

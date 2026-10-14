@@ -120,7 +120,7 @@ export const FirstRunWorkspaceSetupDialog: React.FC = () => {
                   <span className="text-xs font-semibold text-foreground">
                     {t('storage:defaultPathLabel')}
                   </span>
-                  <span className="text-[10px] font-medium text-foreground bg-muted border border-border px-2 py-0.5 rounded-md">
+                  <span className="text-2xs font-medium text-foreground bg-muted border border-border px-2 py-0.5 rounded-md">
                     Рекомендовано
                   </span>
                 </div>
@@ -191,7 +191,7 @@ export const FirstRunWorkspaceSetupDialog: React.FC = () => {
               <span>{t('storage:folderStructureTitle')}</span>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] text-muted-foreground font-mono">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-muted-foreground font-mono">
               <div className="flex items-center gap-2 p-2 rounded-lg bg-card border border-border/40">
                 <Database className="size-3.5 text-muted-foreground shrink-0" />
                 <span className="truncate">database/catalog.db</span>
@@ -214,7 +214,7 @@ export const FirstRunWorkspaceSetupDialog: React.FC = () => {
           {/* Security & Encryption Notice */}
           <div className="flex items-start gap-2.5 p-3 rounded-xl bg-primary/5 border border-primary/20 text-xs text-muted-foreground">
             <ShieldCheck className="size-4 text-primary shrink-0 mt-0.5" />
-            <p className="text-[11px] leading-relaxed">{t('storage:encryptionNotice')}</p>
+            <p className="text-xs leading-relaxed">{t('storage:encryptionNotice')}</p>
           </div>
 
           {/* 100% Solid Opaque Footer */}

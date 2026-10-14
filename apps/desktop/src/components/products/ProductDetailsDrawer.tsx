@@ -88,9 +88,7 @@ export const ProductDetailsDrawer: React.FC<ProductDetailsDrawerProps> = ({
         {/* Header with solid bg */}
         <div className="p-4 border-b border-border bg-card flex items-center justify-between shrink-0">
           <div>
-            <span className="text-[11px] font-mono text-muted-foreground uppercase">
-              {product.sku}
-            </span>
+            <span className="text-xs font-mono text-muted-foreground uppercase">{product.sku}</span>
             <h3 className="text-base font-bold text-foreground line-clamp-1">{product.titleUk}</h3>
           </div>
           <Button
@@ -126,25 +124,21 @@ export const ProductDetailsDrawer: React.FC<ProductDetailsDrawerProps> = ({
 
             <div className="grid grid-cols-3 gap-2 text-center">
               <div className="p-2 bg-card rounded-lg border border-border/40">
-                <div className="text-[10px] text-muted-foreground">{t('catalogs:productCost')}</div>
+                <div className="text-2xs text-muted-foreground">{t('catalogs:productCost')}</div>
                 <div className="text-xs font-bold text-foreground">
                   {cost.toLocaleString()} {product.currency}
                 </div>
               </div>
 
               <div className="p-2 bg-card rounded-lg border border-border/40">
-                <div className="text-[10px] text-muted-foreground">
-                  {t('catalogs:productRetail')}
-                </div>
+                <div className="text-2xs text-muted-foreground">{t('catalogs:productRetail')}</div>
                 <div className="text-xs font-bold text-primary">
                   {retail.toLocaleString()} {product.currency}
                 </div>
               </div>
 
               <div className="p-2 bg-muted/60 rounded-lg border border-border">
-                <div className="text-[10px] text-muted-foreground">
-                  {t('catalogs:productMargin')}
-                </div>
+                <div className="text-2xs text-muted-foreground">{t('catalogs:productMargin')}</div>
                 <div className="text-xs font-bold text-foreground">
                   +{marginPercent}% (+{Math.round(marginDiff)} ₴)
                 </div>
@@ -193,10 +187,7 @@ export const ProductDetailsDrawer: React.FC<ProductDetailsDrawerProps> = ({
                 <Layers className="h-3.5 w-3.5" />
                 {t('catalogs:productStock')}:
               </span>
-              <Badge
-                variant={product.inStock ? 'secondary' : 'destructive'}
-                className="text-[11px]"
-              >
+              <Badge variant={product.inStock ? 'secondary' : 'destructive'} className="text-xs">
                 {product.inStock
                   ? `${product.stockQuantity || 0} шт (${t('catalogs:statusInStock')})`
                   : t('catalogs:statusOutOfStock')}
@@ -216,7 +207,7 @@ export const ProductDetailsDrawer: React.FC<ProductDetailsDrawerProps> = ({
                     key={i}
                     className="p-2 bg-muted/20 rounded-lg border border-border/40 text-xs"
                   >
-                    <div className="text-[10px] text-muted-foreground">{attr.nameUk}</div>
+                    <div className="text-2xs text-muted-foreground">{attr.nameUk}</div>
                     <div className="font-medium text-foreground">{attr.valueUk}</div>
                   </div>
                 ))}

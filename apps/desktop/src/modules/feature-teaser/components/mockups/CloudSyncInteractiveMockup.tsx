@@ -49,7 +49,7 @@ export const CloudSyncInteractiveMockup: React.FC = () => {
             </h3>
             <Badge
               variant="outline"
-              className="text-[10px] px-1.5 py-0 border-primary/40 text-primary"
+              className="text-2xs px-1.5 py-0 border-primary/40 text-primary"
             >
               Sandbox
             </Badge>
@@ -100,20 +100,16 @@ export const CloudSyncInteractiveMockup: React.FC = () => {
                         id: item.id.toString(),
                       })}
                     </span>
-                    <span className="text-[11px] font-normal text-muted-foreground">
-                      ({item.time})
-                    </span>
+                    <span className="text-xs font-normal text-muted-foreground">({item.time})</span>
                   </div>
-                  <div className="text-[11px] text-muted-foreground">{item.comment}</div>
+                  <div className="text-xs text-muted-foreground">{item.comment}</div>
                 </div>
               </div>
 
               <div className="flex items-center gap-3 justify-between sm:justify-end">
                 <div className="text-right">
-                  <div className="text-[11px] font-semibold text-foreground">
-                    {item.skuCount} SKU
-                  </div>
-                  <div className="text-[10px] text-muted-foreground">{item.size}</div>
+                  <div className="text-xs font-semibold text-foreground">{item.skuCount} SKU</div>
+                  <div className="text-2xs text-muted-foreground">{item.size}</div>
                 </div>
 
                 <Button

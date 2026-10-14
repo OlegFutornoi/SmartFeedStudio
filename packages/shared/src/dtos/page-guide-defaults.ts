@@ -1,4 +1,4 @@
-import type { AiAssistantProfileDto, PageGuideDto } from './page-guide.dto';
+import type { AiAssistantProfileDto, PageGuideDto } from '@/dtos/page-guide.dto';
 
 export const DEFAULT_AI_ASSISTANT_PROFILE: AiAssistantProfileDto = {
   name: 'SmartFeed AI Copilot',

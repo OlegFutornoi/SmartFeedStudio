@@ -59,7 +59,7 @@ export const PlansPage: React.FC = () => {
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <h3 className="text-sm font-semibold">{t('plans.corporateLicenseNotice')}</h3>
-              <Badge variant="secondary" className="text-[10px] font-mono uppercase">
+              <Badge variant="secondary" className="text-2xs font-mono uppercase">
                 {user?.organization?.name || 'Company'}
               </Badge>
             </div>

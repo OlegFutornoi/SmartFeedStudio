@@ -67,7 +67,7 @@ export function PlanCard({ plan, isUk, onEdit, onDelete }: PlanCardProps) {
     >
       {plan.isPopular && (
         <div className="absolute -top-2.5 right-4" data-testid={`plan-popular-badge-${codeKey}`}>
-          <Badge className="bg-primary text-primary-foreground text-[10px] font-semibold px-2.5 py-0.5 flex items-center gap-1 shadow-sm">
+          <Badge className="bg-primary text-primary-foreground text-2xs font-semibold px-2.5 py-0.5 flex items-center gap-1 shadow-sm">
             <Sparkles className="size-2.5" />
             <span>{isUk ? 'Хіт продажу' : 'Most Popular'}</span>
           </Badge>
@@ -83,7 +83,7 @@ export function PlanCard({ plan, isUk, onEdit, onDelete }: PlanCardProps) {
             <Badge
               variant="outline"
               data-testid={`plan-code-badge-${codeKey}`}
-              className="text-[10px] font-mono"
+              className="text-2xs font-mono"
             >
               {plan.code}
             </Badge>
@@ -113,11 +113,11 @@ export function PlanCard({ plan, isUk, onEdit, onDelete }: PlanCardProps) {
             </div>
 
             {plan.priceYearly && plan.priceYearly > 0 ? (
-              <div className="flex items-center justify-between text-[11px] text-muted-foreground mt-0.5">
+              <div className="flex items-center justify-between text-xs text-muted-foreground mt-0.5">
                 <span data-testid={`plan-price-yearly-${codeKey}`}>
                   {plan.priceYearly} {currencySymbol} {isUk ? '/рік' : '/yr'}
                 </span>
-                <span className="text-[10px] font-medium bg-primary/10 text-primary border border-primary/20 px-1.5 py-0.5 rounded">
+                <span className="text-2xs font-medium bg-primary/10 text-primary border border-primary/20 px-1.5 py-0.5 rounded">
                   {isUk ? '-20% знижка' : '-20% discount'}
                 </span>
               </div>
@@ -127,13 +127,13 @@ export function PlanCard({ plan, isUk, onEdit, onDelete }: PlanCardProps) {
           <div className="h-[1px] w-full bg-border/60" />
 
           {/* 4 Essential Quotas in 2x2 Grid */}
-          <div className="grid grid-cols-2 gap-2 text-[11px]">
+          <div className="grid grid-cols-2 gap-2 text-xs">
             {/* SKU Limit */}
             <div
               data-testid={`plan-xml-limit-${codeKey}`}
               className="p-2 rounded-md bg-secondary/40 border border-border/50 flex flex-col gap-0.5"
             >
-              <span className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground flex items-center gap-1">
+              <span className="text-2xs uppercase tracking-wider font-semibold text-muted-foreground flex items-center gap-1">
                 <Box className="size-3 text-primary shrink-0" />
                 <span>{isUk ? 'Товари' : 'SKU Limit'}</span>
               </span>
@@ -151,7 +151,7 @@ export function PlanCard({ plan, isUk, onEdit, onDelete }: PlanCardProps) {
               data-testid={`plan-suppliers-limit-${codeKey}`}
               className="p-2 rounded-md bg-secondary/40 border border-border/50 flex flex-col gap-0.5"
             >
-              <span className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground flex items-center gap-1">
+              <span className="text-2xs uppercase tracking-wider font-semibold text-muted-foreground flex items-center gap-1">
                 <Users className="size-3 text-primary shrink-0" />
                 <span>{isUk ? 'Постачальники' : 'Suppliers'}</span>
               </span>
@@ -171,7 +171,7 @@ export function PlanCard({ plan, isUk, onEdit, onDelete }: PlanCardProps) {
               data-testid={`plan-channels-limit-${codeKey}`}
               className="p-2 rounded-md bg-secondary/40 border border-border/50 flex flex-col gap-0.5"
             >
-              <span className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground flex items-center gap-1">
+              <span className="text-2xs uppercase tracking-wider font-semibold text-muted-foreground flex items-center gap-1">
                 <Share2 className="size-3 text-primary shrink-0" />
                 <span>{isUk ? 'Канали' : 'Channels'}</span>
               </span>
@@ -191,7 +191,7 @@ export function PlanCard({ plan, isUk, onEdit, onDelete }: PlanCardProps) {
               data-testid={`plan-ai-credits-${codeKey}`}
               className="p-2 rounded-md bg-secondary/40 border border-border/50 flex flex-col gap-0.5"
             >
-              <span className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground flex items-center gap-1">
+              <span className="text-2xs uppercase tracking-wider font-semibold text-muted-foreground flex items-center gap-1">
                 <Bot className="size-3 text-primary shrink-0" />
                 <span>{isUk ? 'AI Кредити' : 'AI Credits'}</span>
               </span>
@@ -203,7 +203,7 @@ export function PlanCard({ plan, isUk, onEdit, onDelete }: PlanCardProps) {
 
           {/* Section 1: Available Features (✅) */}
           <div className="flex flex-col gap-2 pt-1">
-            <span className="text-[11px] font-semibold text-foreground/80 uppercase tracking-wider">
+            <span className="text-xs font-semibold text-foreground/80 uppercase tracking-wider">
               {isUk ? 'Включено у тариф:' : 'Included in plan:'}
             </span>
             {features && features.length > 0 && (
@@ -221,7 +221,7 @@ export function PlanCard({ plan, isUk, onEdit, onDelete }: PlanCardProps) {
           {/* Section 2: Unavailable / Locked Features (❌) */}
           {unavailableFeatures.length > 0 && (
             <div className="flex flex-col gap-2 pt-2 border-t border-border/50">
-              <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+              <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                 {isUk ? 'Недоступно в цьому тарифі:' : 'Not included in this tier:'}
               </span>
               <div

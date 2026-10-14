@@ -54,17 +54,17 @@ export function RevenueGrowthChart({
       {/* KPI Top Bar: Dynamic Live Currency Counter */}
       <div className="flex items-center justify-between border-b border-border/60 pb-2">
         <div className="flex flex-col">
-          <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+          <span className="text-2xs font-medium uppercase tracking-wider text-muted-foreground">
             {isUk ? 'Ріст виручки на маркетплейсах' : 'Marketplace Revenue Growth'}
           </span>
           <div className="flex items-baseline gap-2">
             <span className="font-mono text-lg font-bold tracking-tight text-foreground sm:text-xl">
               {formatCurrency(currentPoint.revenue)}
             </span>
-            <span className="text-[11px] text-muted-foreground">/ {isUk ? 'міс' : 'mo'}</span>
+            <span className="text-xs text-muted-foreground">/ {isUk ? 'міс' : 'mo'}</span>
             <Badge
               variant="outline"
-              className="gap-0.5 border-emerald-500/30 bg-emerald-500/10 px-1.5 py-0 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400"
+              className="gap-0.5 border-emerald-500/30 bg-emerald-500/10 px-1.5 py-0 text-2xs font-semibold text-emerald-600 dark:text-emerald-400"
             >
               <ArrowUpRight className="h-3 w-3" />
               <span>+{Math.round((currentPoint.revenue / timeline[0].revenue - 1) * 100)}%</span>
@@ -73,13 +73,13 @@ export function RevenueGrowthChart({
         </div>
 
         <div className="flex flex-col items-end">
-          <span className="text-[10px] font-medium text-muted-foreground">
+          <span className="text-2xs font-medium text-muted-foreground">
             {isUk ? 'Чистий прибуток' : 'Net Profit'}
           </span>
           <span className="font-mono text-sm font-semibold text-emerald-600 dark:text-emerald-400">
             {formatCurrency(currentPoint.profit)}
           </span>
-          <span className="text-[10px] text-muted-foreground">
+          <span className="text-2xs text-muted-foreground">
             {currentPoint.ordersCount} {isUk ? 'замовлень' : 'orders'}
           </span>
         </div>
@@ -141,10 +141,10 @@ export function RevenueGrowthChart({
                   const item = payload[0].payload as RevenueGrowthPoint;
                   return (
                     <div className="rounded-lg border border-border bg-popover/95 p-2 shadow-xl backdrop-blur-md">
-                      <div className="text-[11px] font-semibold text-foreground">
+                      <div className="text-xs font-semibold text-foreground">
                         {isUk ? item.monthLabelUk : item.monthLabelEn}
                       </div>
-                      <div className="mt-1 flex flex-col gap-0.5 text-[10px]">
+                      <div className="mt-1 flex flex-col gap-0.5 text-2xs">
                         <div className="flex items-center justify-between gap-3 text-emerald-500 font-medium">
                           <span>{isUk ? 'Виручка:' : 'Revenue:'}</span>
                           <span className="font-mono">{formatCurrency(item.revenue)}</span>
@@ -187,7 +187,7 @@ export function RevenueGrowthChart({
       </div>
 
       {/* Legend & Milestone Steps Indicators */}
-      <div className="flex items-center justify-between border-t border-border/60 pt-2 text-[10px]">
+      <div className="flex items-center justify-between border-t border-border/60 pt-2 text-2xs">
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1">
             <span className="h-2 w-2 rounded-full bg-emerald-500" />

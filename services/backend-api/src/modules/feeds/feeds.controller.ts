@@ -10,7 +10,12 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { QueryBus } from '@nestjs/cqrs';
-import type { FetchFeedResultDto, FeedSourceDto, ImportJobDto } from '@smartfeed/shared';
+import {
+  type FetchFeedResultDto,
+  type FeedSourceDto,
+  type ImportJobDto,
+  ImportJobStatus,
+} from '@smartfeed/shared';
 import { JwtAuthGuard } from '@/modules/auth/guards/jwt-auth.guard';
 import { FetchFeedUrlDto, ImportFeedAsyncDto } from '@/modules/feeds/dto';
 import { FetchFeedUrlQuery } from '@/modules/feeds/queries/fetch-feed-url.query';
@@ -73,7 +78,7 @@ export class FeedsController {
     return {
       id,
       feedSourceId: 'feed_source_cloud',
-      status: 'COMPLETED' as any,
+      status: ImportJobStatus.COMPLETED,
       totalItems: 0,
       processedItems: 0,
       createdItems: 0,

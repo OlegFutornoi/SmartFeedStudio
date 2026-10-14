@@ -32,7 +32,7 @@ export class UpdatePaymentSettingsHandler implements ICommandHandler<UpdatePayme
         isEnabled: dto.isEnabled ?? true,
         isTestMode: dto.isTestMode ?? true,
         merchantAccount: dto.merchantAccount || 'test_merch_n1',
-        merchantSecretKey: dto.merchantSecretKey || 'flk3409refn54t54vk354gh5400ef001',
+        merchantSecretKey: dto.merchantSecretKey || null,
         merchantDomain: dto.merchantDomain || 'localhost',
         serviceUrl: dto.serviceUrl || 'http://localhost:4000/api/payments/wayforpay/webhook',
         returnUrl: dto.returnUrl || 'http://localhost:1420/payment/result',

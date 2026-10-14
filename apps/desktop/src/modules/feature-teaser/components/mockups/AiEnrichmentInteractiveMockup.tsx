@@ -45,7 +45,7 @@ export const AiEnrichmentInteractiveMockup: React.FC = () => {
               </CardTitle>
               <Badge
                 variant="secondary"
-                className="text-[10px] bg-primary/10 text-primary border-primary/20"
+                className="text-2xs bg-primary/10 text-primary border-primary/20"
               >
                 AI Sandbox
               </Badge>
@@ -100,7 +100,7 @@ export const AiEnrichmentInteractiveMockup: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Source product row */}
           <div className="p-3.5 rounded-xl bg-muted/40 border border-border/80 space-y-2">
-            <div className="text-[11px] font-semibold uppercase text-muted-foreground tracking-wider flex items-center justify-between">
+            <div className="text-xs font-semibold uppercase text-muted-foreground tracking-wider flex items-center justify-between">
               <span>{t('featureTeaser.aiEnrichment.mockup.rawTitle')}</span>
               <Badge variant="outline" className="text-[9px] px-1 py-0 text-muted-foreground">
                 {t('featureTeaser.aiEnrichment.mockup.inputBadge')}
@@ -109,14 +109,14 @@ export const AiEnrichmentInteractiveMockup: React.FC = () => {
             <div className="p-2.5 rounded-lg bg-background/80 border border-border/60 text-xs font-mono text-foreground/90">
               {t('featureTeaser.aiEnrichment.mockup.sampleSourceText')}
             </div>
-            <p className="text-[11px] text-muted-foreground">
+            <p className="text-xs text-muted-foreground">
               {t('featureTeaser.aiEnrichment.mockup.rawDescription')}
             </p>
           </div>
 
           {/* AI Result row */}
           <div className="p-3.5 rounded-xl bg-primary/5 border border-primary/20 space-y-2 relative">
-            <div className="text-[11px] font-semibold uppercase text-primary tracking-wider flex items-center justify-between">
+            <div className="text-xs font-semibold uppercase text-primary tracking-wider flex items-center justify-between">
               <span className="flex items-center gap-1.5">
                 <Bot className="h-3.5 w-3.5 text-primary" />
                 {t('featureTeaser.aiEnrichment.mockup.aiResultTitle')}
@@ -126,7 +126,7 @@ export const AiEnrichmentInteractiveMockup: React.FC = () => {
                 variant="ghost"
                 onClick={handleGenerate}
                 disabled={isGenerating}
-                className="h-5 px-1 text-[10px] gap-1 text-primary hover:text-primary/80"
+                className="h-5 px-1 text-2xs gap-1 text-primary hover:text-primary/80"
               >
                 <RefreshCw className={`h-3 w-3 ${isGenerating ? 'animate-spin' : ''}`} />
                 {t('featureTeaser.aiEnrichment.mockup.regenerate')}

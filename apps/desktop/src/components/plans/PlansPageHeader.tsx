@@ -113,7 +113,7 @@ export function PlansPageHeader({
                 <span>{t('plans.billingYearly')}</span>
                 <Badge
                   data-testid="save-20-badge"
-                  className="bg-secondary text-secondary-foreground border-border text-[10px] px-1.5 py-0 font-bold"
+                  className="bg-secondary text-secondary-foreground border-border text-2xs px-1.5 py-0 font-bold"
                 >
                   {t('plans.save20Badge')}
                 </Badge>

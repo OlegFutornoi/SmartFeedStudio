@@ -27,7 +27,7 @@ export const PricingRulesList: React.FC<PricingRulesListProps> = ({
           <Layers className="size-3.5 text-primary" />
           Активні правила націнки ({rules.length})
         </h4>
-        <span className="text-[11px] text-muted-foreground">
+        <span className="text-xs text-muted-foreground">
           Базова націнка: +{defaultMarginPercent}% +{defaultFixedMarkup} ₴
         </span>
       </div>
@@ -66,7 +66,7 @@ export const PricingRulesList: React.FC<PricingRulesListProps> = ({
                   +{rule.marginPercent}% {rule.fixedMarkup > 0 && `+${rule.fixedMarkup} ₴`}
                 </span>
 
-                <span className="text-[10px] text-muted-foreground ml-auto pr-2">
+                <span className="text-2xs text-muted-foreground ml-auto pr-2">
                   Пріоритет: {rule.priority}
                 </span>
               </div>

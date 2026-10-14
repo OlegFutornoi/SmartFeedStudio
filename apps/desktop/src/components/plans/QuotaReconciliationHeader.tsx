@@ -58,7 +58,7 @@ export const QuotaReconciliationHeader: React.FC<QuotaReconciliationHeaderProps>
       <div className="px-6 py-3 bg-muted/40 border-b border-border/60 shrink-0">
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs">
           <div className="p-2.5 rounded-xl border border-border/60 bg-card">
-            <span className="text-muted-foreground block text-[11px]">
+            <span className="text-muted-foreground block text-xs">
               {isUk ? 'Товарів у базі' : 'Products in DB'}
             </span>
             <div className="flex items-baseline gap-1 mt-0.5 font-bold font-mono">
@@ -69,14 +69,14 @@ export const QuotaReconciliationHeader: React.FC<QuotaReconciliationHeaderProps>
               >
                 {currentProductsUsed.toLocaleString()}
               </span>
-              <span className="text-muted-foreground font-normal text-[10px]">
+              <span className="text-muted-foreground font-normal text-2xs">
                 / {maxProductsLimit.toLocaleString()} SKU
               </span>
             </div>
           </div>
 
           <div className="p-2.5 rounded-xl border border-border/60 bg-card">
-            <span className="text-muted-foreground block text-[11px]">
+            <span className="text-muted-foreground block text-xs">
               {isUk ? 'Підключені фіди' : 'Connected Feeds'}
             </span>
             <div className="flex items-baseline gap-1 mt-0.5 font-bold font-mono">
@@ -87,15 +87,13 @@ export const QuotaReconciliationHeader: React.FC<QuotaReconciliationHeaderProps>
               >
                 {currentFeedsUsed}
               </span>
-              <span className="text-muted-foreground font-normal text-[10px]">
-                / {maxFeedsLimit}
-              </span>
+              <span className="text-muted-foreground font-normal text-2xs">/ {maxFeedsLimit}</span>
             </div>
           </div>
 
           <div className="col-span-2 sm:col-span-1 p-2.5 rounded-xl border border-border/60 bg-card flex items-center justify-between">
             <div>
-              <span className="text-muted-foreground block text-[11px]">
+              <span className="text-muted-foreground block text-xs">
                 {isUk ? 'Альтернатива' : 'Alternative'}
               </span>
               <span className="font-semibold text-xs text-primary block mt-0.5">PRO Тариф</span>

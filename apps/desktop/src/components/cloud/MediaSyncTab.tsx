@@ -35,7 +35,7 @@ export const MediaSyncTab: React.FC = () => {
             <div className="text-xl font-bold tracking-tight text-foreground tabular-nums">
               {stats.totalImages}
             </div>
-            <p className="text-[11px] text-muted-foreground mt-0.5">
+            <p className="text-xs text-muted-foreground mt-0.5">
               {stats.totalProducts} {t('catalogs:products')} • {formatBytes(stats.totalSizeBytes)}
             </p>
           </CardContent>
@@ -54,12 +54,12 @@ export const MediaSyncTab: React.FC = () => {
               <span>{stats.syncedCloudCount}</span>
               <Badge
                 variant="outline"
-                className="text-[10px] text-emerald-600 dark:text-emerald-400 border-emerald-500/30 bg-emerald-500/5 font-mono"
+                className="text-2xs text-emerald-600 dark:text-emerald-400 border-emerald-500/30 bg-emerald-500/5 font-mono"
               >
                 {stats.syncedPercentage}%
               </Badge>
             </div>
-            <p className="text-[11px] text-muted-foreground mt-0.5">{t('cloud:cdnActive')}</p>
+            <p className="text-xs text-muted-foreground mt-0.5">{t('cloud:cdnActive')}</p>
           </CardContent>
         </Card>
 
@@ -75,7 +75,7 @@ export const MediaSyncTab: React.FC = () => {
             <div className="text-xl font-bold tracking-tight text-foreground tabular-nums">
               {stats.localOnlyCount}
             </div>
-            <p className="text-[11px] text-muted-foreground mt-0.5">{t('cloud:readyToUpload')}</p>
+            <p className="text-xs text-muted-foreground mt-0.5">{t('cloud:readyToUpload')}</p>
           </CardContent>
         </Card>
 
@@ -91,7 +91,7 @@ export const MediaSyncTab: React.FC = () => {
             <div className="text-xl font-bold tracking-tight text-foreground tabular-nums">
               {stats.remoteUrlsCount}
             </div>
-            <p className="text-[11px] text-muted-foreground mt-0.5">{t('cloud:hotlinkSupplier')}</p>
+            <p className="text-xs text-muted-foreground mt-0.5">{t('cloud:hotlinkSupplier')}</p>
           </CardContent>
         </Card>
       </div>
@@ -104,7 +104,7 @@ export const MediaSyncTab: React.FC = () => {
               ? `${t('cloud:needSyncTitle')}: ${pendingToSync} ${t('cloud:photosPending')}`
               : t('cloud:allSyncedTitle')}
           </h4>
-          <p className="text-[11px] text-muted-foreground">
+          <p className="text-xs text-muted-foreground">
             {pendingToSync > 0 ? t('cloud:needSyncDesc') : t('cloud:allSyncedDesc')}
           </p>
         </div>

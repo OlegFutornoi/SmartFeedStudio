@@ -34,7 +34,7 @@ export function ComparisonTableHeader({
       <th className="p-4 w-[28%] min-w-[220px] font-semibold text-foreground align-bottom">
         <div className="flex flex-col gap-1">
           <span className="text-sm font-bold">{t('plans.featuresTitle')}</span>
-          <span className="text-[11px] text-muted-foreground font-normal">
+          <span className="text-xs text-muted-foreground font-normal">
             {t('plans.comparisonSubtitle')}
           </span>
         </div>
@@ -63,7 +63,7 @@ export function ComparisonTableHeader({
           >
             {isPro && (
               <div className="mb-2">
-                <Badge className="bg-primary text-primary-foreground text-[10px] font-semibold px-2 py-0.5 inline-flex items-center gap-1 shadow-xs">
+                <Badge className="bg-primary text-primary-foreground text-2xs font-semibold px-2 py-0.5 inline-flex items-center gap-1 shadow-xs">
                   <Sparkles className="size-2.5" />
                   <span>{t('plans.popular')}</span>
                 </Badge>
@@ -72,7 +72,7 @@ export function ComparisonTableHeader({
 
             <div className="flex flex-col items-center gap-1">
               <span className="font-bold text-sm text-foreground">{name}</span>
-              <span className="text-[10px] font-mono text-muted-foreground uppercase">
+              <span className="text-2xs font-mono text-muted-foreground uppercase">
                 {plan.code}
               </span>
 
@@ -88,11 +88,11 @@ export function ComparisonTableHeader({
                         : 'Free'
                       : `${displayMonthlyPrice} ${currencySymbol}`}
                   </span>
-                  <span className="text-[11px] text-muted-foreground">{isUk ? '/міс' : '/mo'}</span>
+                  <span className="text-xs text-muted-foreground">{isUk ? '/міс' : '/mo'}</span>
                 </div>
 
                 {isYearly && hasYearlyOption ? (
-                  <span className="text-[10px] text-muted-foreground mt-0.5">
+                  <span className="text-2xs text-muted-foreground mt-0.5">
                     {plan.priceYearly} {currencySymbol} {isUk ? '/рік' : '/yr'}
                   </span>
                 ) : null}

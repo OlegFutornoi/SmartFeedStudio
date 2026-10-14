@@ -33,7 +33,7 @@ export const CloudBackupsCards: React.FC<CloudBackupsCardsProps> = ({
           <div className="text-xl font-bold tracking-tight text-foreground tabular-nums">
             {productsCount} {t('cloud:productsCountLabel')}
           </div>
-          <p className="text-[11px] text-muted-foreground mt-0.5">
+          <p className="text-xs text-muted-foreground mt-0.5">
             {categoriesCount} {t('cloud:categoriesCountLabel')} • {t('cloud:readyToBackup')}
           </p>
         </CardContent>
@@ -56,7 +56,7 @@ export const CloudBackupsCards: React.FC<CloudBackupsCardsProps> = ({
                 </span>
                 <Badge
                   variant="outline"
-                  className="text-[10px] text-emerald-600 border-emerald-500/30 bg-emerald-500/5"
+                  className="text-2xs text-emerald-600 border-emerald-500/30 bg-emerald-500/5"
                 >
                   {formatBytes(latestBackup.sizeBytes)}
                 </Badge>
@@ -67,7 +67,7 @@ export const CloudBackupsCards: React.FC<CloudBackupsCardsProps> = ({
               </span>
             )}
           </div>
-          <p className="text-[11px] text-muted-foreground mt-0.5">
+          <p className="text-xs text-muted-foreground mt-0.5">
             {latestBackup
               ? new Date(latestBackup.createdAt).toLocaleTimeString([], {
                   hour: '2-digit',
@@ -91,14 +91,12 @@ export const CloudBackupsCards: React.FC<CloudBackupsCardsProps> = ({
             <span>Cloudflare R2</span>
             <Badge
               variant="outline"
-              className="text-[10px] text-emerald-600 border-emerald-500/30 bg-emerald-500/5"
+              className="text-2xs text-emerald-600 border-emerald-500/30 bg-emerald-500/5"
             >
               ACTIVE
             </Badge>
           </div>
-          <p className="text-[11px] text-muted-foreground mt-0.5">
-            {t('cloud:cloudProtectionDesc')}
-          </p>
+          <p className="text-xs text-muted-foreground mt-0.5">{t('cloud:cloudProtectionDesc')}</p>
         </CardContent>
       </Card>
     </div>

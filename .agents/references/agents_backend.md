@@ -288,6 +288,10 @@
 #### Шар 3: Безпека, RBAC, Guards & Непорушні інваріанти
 
 - Захист ендпоінтів декораторами: `@UseGuards(JwtAuthGuard, RolesGuard, RequireActiveLicenseGuard)`.
+- **100% Protected Mutation Endpoints (Zero Unauthenticated Mutations)**: Усі ендпоінти зміни даних (`POST`, `PUT`, `DELETE`, `PATCH`) у контролерах NestJS зобов'язані містити захисні гарди (`@UseGuards(JwtAuthGuard, RolesGuard)` або `@Roles(Role.ADMIN, Role.SUPER_ADMIN)`). Категорично заборонено залишати мутації відкритими для анонімного доступу (як вразливість `PUT /page-guides/assistant/profile`). Винятки (реєстрація, логін, публічні вебхуки) зобов'язані явно маркуватися декоратором `@Public()`.
+- **Guard-Decorator Parity**: Використання декоратора `@CurrentUser()` у контролерах дозволено ВИКЛЮЧНО на роутах із `@UseGuards(JwtAuthGuard)` або `@UseGuards(OptionalJwtAuthGuard)`. Без активного гарда Passport не гідратує `request.user` і параметр завжди дорівнює `undefined`.
+- **Zero Hardcoded Secrets / Zero Fallback Keys (CWE-798)**: Заборонено використання будь-яких рядкових резервів (`|| 'fallback-secret'`, `?? 'default-token'`) для JWT секретів, HMAC ключів платіжних вебхуків (WayForPay тощо), API-токенів та шифрування. Відсутність ключа зобов'язана негайно зупиняти додаток (Fail Fast на старті) або викидати `InternalServerErrorException('Configuration for <SECRET_NAME> is missing')`.
+- **Strict Native vs Cloud Runtime Segregation (Zero Server-Side Local FS Manipulation)**: Хмарний бекенд NestJS (`services/backend-api`) працює headless у контейнерах Docker/Linux і НЕ МАЄ ПРАВА маніпулювати файловою системою локального десктопу (`fs.unlinkSync`, `fs.mkdirSync`, `fs.rmSync` у `/storage/workspace/*`). Усі операції локального воркспейсу, каталогу та SQLite виконуються виключно через нативний бекенд Tauri v2 (`src-tauri`).
 - **Tenant Scoping**: кожна вибірка та мутація перевіряє належність ресурсу до організації користувача (`organizationId`).
 - Безпечне хешування паролів: тільки Argon2id або bcrypt (rounds >= 10).
 - **Zero Token/Secret Leaks (CWE-640)**: КАТЕГОРИЧНО заборонено повертати `resetToken`, токени підтвердження чи тимчасові секрети у тілі HTTP-відповідей (`/auth/forgot-password`). Доставка виключно через `MailService`.
@@ -295,19 +299,22 @@
 - **Strict Sandbox / Production Gating**: Симуляції платежів та тестові вебхуки суворо блокуються у продакшн середовищі (`NODE_ENV === 'production'`) та коли налаштування провайдера не перебувають у режимі `isSandbox`.
 - **SSRF Захист із обов'язковим DNS Pre-lookup (CWE-918)**: Будь-яке завантаження зовнішніх URL (XML/CSV фіди, вебхуки) зобов'язане проводити резолв IP через `dns.promises.lookup` та блокувати всі приватні підмережі (127.0.0.0/8, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 169.254.0.0/16, ::1, 0.0.0.0) до виконання HTTP запиту.
 - **Zero OS GUI Calls on Headless Backend (CWE-400)**: Бекенд-сервер НЕ МАЄ ПРАВА спавнити десктопні діалогові вікна (`osascript`, `powershell`, `zenity`). Будь-який вибір папок клієнта виконується виключно на клієнті через Tauri IPC.
-- **Zero Hardcoded Secrets (CWE-798)**: Відсутність обов'язкових ключів або секретів (JWT, платіжні мерчанти) зобов'язана викидати `InternalServerErrorException`, а не підставляти захардкоджені дефолтні рядки.
 - **Безпечні системні виклики (CWE-78)**: категорично заборонено `exec` з конкатенацією рядків. Тільки `execFile(binary, [args], { shell: false })`.
 
 #### Шар 4: База даних, Prisma & PostgreSQL ([postgres_skills.md](rules/postgres_skills.md))
 
-- **100% FK індекси**: кожне поле foreign key має явний `@@index([fkColumn])`.
+- **100% FK індекси**: кожне поле foreign key має явний `@@index([fkColumn])` (PostgreSQL не індексує FK автоматично).
 - **100% snake_case mapping**: кожна модель має `@@map("snake_case")`, кожна колонка `@map("column_name")`.
-- **Timestamptz**: усі часові мітки тільки `DateTime` у Prisma (PostgreSQL `timestamptz`).
-- **Курсорна пагінація**: для великих списків `WHERE createdAt < cursor LIMIT N`. Жодного `OFFSET`.
-- **Zero N+1**: жодних циклічних запитів до БД. Тільки пакети `findMany({ where: { id: { in: ids } } })` або `include`.
-- **Короткі транзакції**: `$transaction` містить виключно SQL/Prisma запити. Жодних звернень до S3, email чи HTTP всередині транзакцій.
-- **Zero `as any`**: тільки суворі згенеровані типи Prisma (наприклад, `Prisma.UserWhereInput`).
-- **Zero Silent Failures**: жодних порожніх `catch {}`. Обов'язкове структуроване логування `this.logger.error('[Module:Context] Message', err)`.
+- **Mandatory `@db.Timestamptz(6)`**: усі поля дат `DateTime` у `schema.prisma` ЗОБОВ'ЯЗАНІ містити атрибут `@db.Timestamptz(6)` для гарантії збереження часового поясу в PostgreSQL 16 (L-022).
+- **Time-Ordered CUID Primary Keys**: `@id @default(cuid())` для послідовної B-tree індексації без фрагментації сторінок.
+- **Cascade Deletions (`onDelete: Cascade`)**: на 100% зв'язків батько-дитина для усунення «підвішених» записів (L-001).
+- **Курсорна пагінація**: для великих списків та каталогів фідів `WHERE createdAt < cursor LIMIT N` (L-025). Жодного `OFFSET`.
+- **Zero N+1**: жодних циклічних викликів Prisma у `.map()` чи `forEach`. Тільки пакети `findMany({ where: { id: { in: ids } } })` або `include`/`select`.
+- **Короткі транзакції**: `$transaction` містить виключно SQL/Prisma запити. Жодних звернень до S3, email, HTTP чи BullMQ черг всередині транзакцій (L-027).
+- **Zero `as any` у запитах**: тільки суворі згенеровані типи Prisma (наприклад, `Prisma.UserWhereInput`). Контролери не повинні повертати захардкоджені фейкові об'єкти з приведенням до `as any`.
+- **Versioned Expand/Contract Migrations**: продакшн-деплой здійснюється виключно через `prisma migrate dev/deploy` з `SET lock_timeout = '2s'` (L-026). Використання неконтрольованого `prisma db push` у продакшні суворо заборонено.
+- **Zero Silent Failures**: жодних порожніх або comment-only `catch {}`. Обов'язкове структуроване логування `this.logger.warn('[Module:Context] Message', err)` або прокидання доменного винятку (L-023).
+- **Zero Raw Query Params**: усі `@Query()` параметри у контролерах зобов'язані використовувати DTO з валідаторами `class-validator` (правило L-011).
 
 #### 🧪 Перевірка досягнення GREEN:
 

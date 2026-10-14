@@ -56,7 +56,7 @@ export function TransactionStatsCards({ stats, isUk }: TransactionStatsCardsProp
                 <h3 className="text-xl font-bold text-foreground mt-0.5 tracking-tight">
                   {c.value}
                 </h3>
-                <p className="text-[10px] text-muted-foreground mt-0.5">{c.subtitle}</p>
+                <p className="text-2xs text-muted-foreground mt-0.5">{c.subtitle}</p>
               </div>
               <div className={`h-10 w-10 rounded-xl flex items-center justify-center ${c.color}`}>
                 <Icon className="size-5" />

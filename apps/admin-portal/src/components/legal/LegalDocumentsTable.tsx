@@ -143,14 +143,14 @@ export function LegalDocumentsTable({
                       <span className="font-medium text-foreground text-xs">
                         {isUk ? doc.titleUk : doc.titleEn}
                       </span>
-                      <span className="text-[11px] text-muted-foreground">
+                      <span className="text-xs text-muted-foreground">
                         {isUk ? doc.titleEn : doc.titleUk}
                       </span>
                     </div>
                   </TableCell>
                   {visibleColumns.slug !== false && (
                     <TableCell>
-                      <code className="rounded bg-muted px-1.5 py-0.5 text-[11px] font-mono text-muted-foreground">
+                      <code className="rounded bg-muted px-1.5 py-0.5 text-xs font-mono text-muted-foreground">
                         {doc.slug}
                       </code>
                     </TableCell>
@@ -165,7 +165,7 @@ export function LegalDocumentsTable({
                       {doc.isPublished ? (
                         <Badge
                           variant="outline"
-                          className="text-[10px] h-5 px-1.5 py-0 gap-1 border-primary/20 text-primary bg-primary/10"
+                          className="text-2xs h-5 px-1.5 py-0 gap-1 border-primary/20 text-primary bg-primary/10"
                         >
                           <CheckCircle2 className="h-2.5 w-2.5" />
                           <span>{isUk ? 'Опубліковано' : 'Published'}</span>
@@ -173,7 +173,7 @@ export function LegalDocumentsTable({
                       ) : (
                         <Badge
                           variant="outline"
-                          className="text-[10px] h-5 px-1.5 py-0 gap-1 text-muted-foreground bg-muted/40"
+                          className="text-2xs h-5 px-1.5 py-0 gap-1 text-muted-foreground bg-muted/40"
                         >
                           <Clock className="h-2.5 w-2.5" />
                           <span>{isUk ? 'Чернетка' : 'Draft'}</span>

@@ -130,7 +130,7 @@ export const SupplierProductsTab: React.FC<SupplierProductsTabProps> = ({ suppli
                     key={prod.id}
                     className="h-11 border-b border-border/60 hover:bg-muted/40"
                   >
-                    <TableCell className="pl-3.5 py-1.5 font-mono text-[11px] font-medium text-muted-foreground">
+                    <TableCell className="pl-3.5 py-1.5 font-mono text-xs font-medium text-muted-foreground">
                       {prod.sku}
                     </TableCell>
                     <TableCell className="py-1.5 font-medium text-foreground truncate max-w-[260px]">
@@ -147,11 +147,11 @@ export const SupplierProductsTab: React.FC<SupplierProductsTabProps> = ({ suppli
                     </TableCell>
                     <TableCell className="pr-3.5 py-1.5 text-center">
                       {prod.inStock ? (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-2xs font-medium bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
                           В наявності
                         </span>
                       ) : (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-muted text-muted-foreground">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-2xs font-medium bg-muted text-muted-foreground">
                           Немає
                         </span>
                       )}

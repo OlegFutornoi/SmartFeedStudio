@@ -41,7 +41,8 @@ export function usePageGuide(route: string): PageGuideState {
           }
           return data;
         });
-      } catch {
+      } catch (err) {
+        console.warn(`[usePageGuide] Failed to fetch guide for route ${normalizedRoute}:`, err);
         setGuide(initialGuide);
       } finally {
         setIsLoading(false);

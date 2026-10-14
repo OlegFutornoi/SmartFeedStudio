@@ -69,7 +69,7 @@ export const PlanFeatureBulletList: React.FC<PlanFeatureBulletListProps> = ({ pl
       {/* Key Quotas Grid */}
       <div
         data-testid={`plan-quotas-${codeKey}`}
-        className="grid grid-cols-2 gap-x-2 gap-y-1.5 text-[11px] leading-snug text-muted-foreground bg-muted/30 p-2.5 rounded-lg border border-border/40"
+        className="grid grid-cols-2 gap-x-2 gap-y-1.5 text-xs leading-snug text-muted-foreground bg-muted/30 p-2.5 rounded-lg border border-border/40"
       >
         <div
           className="flex items-center gap-1.5 min-w-0"
@@ -78,7 +78,7 @@ export const PlanFeatureBulletList: React.FC<PlanFeatureBulletListProps> = ({ pl
           <Box className="size-3 text-primary shrink-0" />
           <span className="font-medium text-foreground whitespace-nowrap">
             <strong className="font-semibold">{plan.maxXmlLimit.toLocaleString()}</strong>{' '}
-            <span className="text-[10px] text-muted-foreground">SKU</span>
+            <span className="text-2xs text-muted-foreground">SKU</span>
           </span>
         </div>
         <div className="flex items-center gap-1.5 min-w-0" title={teamSeatsLabel}>
@@ -100,14 +100,14 @@ export const PlanFeatureBulletList: React.FC<PlanFeatureBulletListProps> = ({ pl
           <Bot className="size-3 text-primary shrink-0" />
           <span className="font-medium text-foreground whitespace-nowrap">
             <strong className="font-semibold">{plan.aiCredits.toLocaleString()}</strong>{' '}
-            <span className="text-[10px] text-muted-foreground">AI</span>
+            <span className="text-2xs text-muted-foreground">AI</span>
           </span>
         </div>
       </div>
 
       {/* Section 1: Included Features (✅) */}
       <div className="flex flex-col gap-2">
-        <span className="text-[11px] font-semibold tracking-wider text-muted-foreground uppercase">
+        <span className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
           {t('plans.featuresTitle')}
         </span>
         <ul
@@ -126,7 +126,7 @@ export const PlanFeatureBulletList: React.FC<PlanFeatureBulletListProps> = ({ pl
       {/* Section 2: Unavailable / Locked Features (❌) */}
       {unavailableFeatures.length > 0 && (
         <div className="flex flex-col gap-2 pt-2 border-t border-border/50">
-          <span className="text-[11px] font-semibold tracking-wider text-muted-foreground/70 uppercase">
+          <span className="text-xs font-semibold tracking-wider text-muted-foreground/70 uppercase">
             {t('plans.unavailableFeatures')}
           </span>
           <ul className="flex flex-col gap-2 text-xs text-muted-foreground/60">

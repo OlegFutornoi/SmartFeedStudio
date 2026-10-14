@@ -234,7 +234,7 @@ export function EditLegalDocumentModal({
               <span className="text-xs font-medium text-foreground">
                 {isUk ? 'Опубліковано для клієнтів' : 'Published for clients'}
               </span>
-              <span className="text-[11px] text-muted-foreground">
+              <span className="text-xs text-muted-foreground">
                 {isUk
                   ? 'Документ буде доступний у десктоп-додатку'
                   : 'Document will be accessible in desktop app'}

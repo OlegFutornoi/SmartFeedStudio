@@ -43,6 +43,7 @@ import {
   WorkspaceActionRequestDto,
   MigrateWorkspaceRequestDto,
   GetStorageStatsQueryDto,
+  GetWorkspaceInfoQueryDto,
 } from '@/modules/storage/dto';
 
 export * from '@/modules/storage/dto';
@@ -154,8 +155,10 @@ export class StorageController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get workspace initialization status and metadata' })
-  async getWorkspaceInfo(@Query('path') workspacePath?: string): Promise<WorkspaceInfoDto | null> {
-    return this.queryBus.execute(new GetWorkspaceInfoQuery(workspacePath));
+  async getWorkspaceInfo(
+    @Query() query: GetWorkspaceInfoQueryDto,
+  ): Promise<WorkspaceInfoDto | null> {
+    return this.queryBus.execute(new GetWorkspaceInfoQuery(query.path));
   }
 
   @Post('workspace/init')

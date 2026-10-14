@@ -104,7 +104,7 @@ export const CloudFilesBrowserTab: React.FC = () => {
           </div>
           <Badge
             variant="secondary"
-            className="text-[11px] font-mono tabular-nums shrink-0 h-8 px-2 flex items-center"
+            className="text-xs font-mono tabular-nums shrink-0 h-8 px-2 flex items-center"
           >
             {total}
           </Badge>
@@ -118,7 +118,7 @@ export const CloudFilesBrowserTab: React.FC = () => {
                 setFolder('all');
                 setPage(1);
               }}
-              className={`px-2.5 py-1 rounded-md text-[11px] font-medium transition-colors ${
+              className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors ${
                 folder === 'all'
                   ? 'bg-primary text-primary-foreground shadow-xs'
                   : 'text-muted-foreground hover:text-foreground'
@@ -132,7 +132,7 @@ export const CloudFilesBrowserTab: React.FC = () => {
                 setFolder('images');
                 setPage(1);
               }}
-              className={`px-2.5 py-1 rounded-md text-[11px] font-medium transition-colors ${
+              className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors ${
                 folder === 'images'
                   ? 'bg-primary text-primary-foreground shadow-xs'
                   : 'text-muted-foreground hover:text-foreground'
@@ -146,7 +146,7 @@ export const CloudFilesBrowserTab: React.FC = () => {
                 setFolder('snapshots');
                 setPage(1);
               }}
-              className={`px-2.5 py-1 rounded-md text-[11px] font-medium transition-colors ${
+              className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors ${
                 folder === 'snapshots'
                   ? 'bg-primary text-primary-foreground shadow-xs'
                   : 'text-muted-foreground hover:text-foreground'
@@ -227,7 +227,7 @@ export const CloudFilesBrowserTab: React.FC = () => {
                     <p className="text-xs font-semibold text-foreground">
                       {t('cloud:noFilesFound')}
                     </p>
-                    <p className="text-[11px] text-muted-foreground max-w-sm">
+                    <p className="text-xs text-muted-foreground max-w-sm">
                       {t('cloud:noFilesDesc')}
                     </p>
                   </div>

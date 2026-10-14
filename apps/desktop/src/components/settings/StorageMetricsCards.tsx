@@ -40,7 +40,7 @@ export const StorageMetricsCards: React.FC<StorageMetricsCardsProps> = ({ storag
           data-testid="storage-metric-db"
         >
           <div className="flex items-center justify-between">
-            <span className="text-[11px] text-muted-foreground font-medium truncate">
+            <span className="text-xs text-muted-foreground font-medium truncate">
               {t('storage:databaseSize')}
             </span>
             <Database className="size-3.5 text-primary shrink-0" />
@@ -52,7 +52,7 @@ export const StorageMetricsCards: React.FC<StorageMetricsCardsProps> = ({ storag
             >
               {formatBytes(storageStats?.databaseSizeBytes || 0)}
             </div>
-            <div className="text-[10px] text-muted-foreground mt-0.5 flex items-center gap-1">
+            <div className="text-2xs text-muted-foreground mt-0.5 flex items-center gap-1">
               <Package className="size-2.5" />
               <span data-testid="local-products-count">{storageStats?.productsCount || 0}</span>
               <span>товарів</span>
@@ -66,7 +66,7 @@ export const StorageMetricsCards: React.FC<StorageMetricsCardsProps> = ({ storag
           data-testid="storage-metric-feeds"
         >
           <div className="flex items-center justify-between">
-            <span className="text-[11px] text-muted-foreground font-medium truncate">
+            <span className="text-xs text-muted-foreground font-medium truncate">
               {t('storage:feedsStorage')}
             </span>
             <FileSpreadsheet className="size-3.5 text-primary shrink-0" />
@@ -78,7 +78,7 @@ export const StorageMetricsCards: React.FC<StorageMetricsCardsProps> = ({ storag
             >
               {formatBytes(storageStats?.feedsSizeBytes || 0)}
             </div>
-            <div className="text-[10px] text-muted-foreground mt-0.5 flex items-center gap-1">
+            <div className="text-2xs text-muted-foreground mt-0.5 flex items-center gap-1">
               <Radio className="size-2.5" />
               <span data-testid="local-feeds-count">{storageStats?.feedsCount || 0}</span>
               <span>фідів</span>
@@ -92,7 +92,7 @@ export const StorageMetricsCards: React.FC<StorageMetricsCardsProps> = ({ storag
           data-testid="storage-metric-backups"
         >
           <div className="flex items-center justify-between">
-            <span className="text-[11px] text-muted-foreground font-medium truncate">
+            <span className="text-xs text-muted-foreground font-medium truncate">
               {t('storage:backupsStorage')}
             </span>
             <Archive className="size-3.5 text-primary shrink-0" />
@@ -104,7 +104,7 @@ export const StorageMetricsCards: React.FC<StorageMetricsCardsProps> = ({ storag
             >
               {formatBytes(storageStats?.backupsSizeBytes || 0)}
             </div>
-            <div className="text-[10px] text-muted-foreground mt-0.5 flex items-center gap-1">
+            <div className="text-2xs text-muted-foreground mt-0.5 flex items-center gap-1">
               <Building2 className="size-2.5" />
               <span data-testid="local-suppliers-count">{storageStats?.suppliersCount || 0}</span>
               <span>постач.</span>
@@ -118,7 +118,7 @@ export const StorageMetricsCards: React.FC<StorageMetricsCardsProps> = ({ storag
           data-testid="storage-metric-cache"
         >
           <div className="flex items-center justify-between">
-            <span className="text-[11px] text-muted-foreground font-medium truncate">
+            <span className="text-xs text-muted-foreground font-medium truncate">
               {t('storage:cacheStorage')}
             </span>
             <Sparkles className="size-3.5 text-primary shrink-0" />

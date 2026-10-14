@@ -48,15 +48,15 @@ export const TeamSeatsQuotaCard: React.FC<TeamSeatsQuotaCardProps> = ({
               <Users className="h-4 w-4 text-primary" />
               <CardTitle className="text-sm font-semibold">{t('team.seatsTitle')}</CardTitle>
               {isSoloPlan ? (
-                <Badge variant="outline" className="text-[10px] text-muted-foreground">
+                <Badge variant="outline" className="text-2xs text-muted-foreground">
                   {t('team.soloPlanBadge')}
                 </Badge>
               ) : isLimitReached ? (
-                <Badge variant="destructive" className="text-[10px]">
+                <Badge variant="destructive" className="text-2xs">
                   {t('team.limitReachedBadge')}
                 </Badge>
               ) : (
-                <Badge variant="secondary" className="text-[10px]">
+                <Badge variant="secondary" className="text-2xs">
                   {remainingSeats === 1
                     ? t('team.seatsRemaining', { count: remainingSeats })
                     : t('team.seatsRemainingPlural', { count: remainingSeats })}
@@ -113,7 +113,7 @@ export const TeamSeatsQuotaCard: React.FC<TeamSeatsQuotaCardProps> = ({
               style={{ width: `${percentage}%` }}
             />
           </div>
-          <div className="flex justify-between items-center text-[10px] text-muted-foreground font-mono">
+          <div className="flex justify-between items-center text-2xs text-muted-foreground font-mono">
             <span data-testid="seats-count-label">
               {usedSeats} / {isUnlimited ? '∞' : maxSeats}
             </span>

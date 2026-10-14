@@ -46,8 +46,8 @@ export class RedisCacheService implements OnModuleInit, OnModuleDestroy {
     if (this.client) {
       try {
         await this.client.quit();
-      } catch {
-        // Ignore disconnect error during shutdown
+      } catch (err) {
+        this.logger.warn('[RedisCacheService] Failed to gracefully disconnect Redis client:', err);
       }
     }
   }
@@ -58,7 +58,8 @@ export class RedisCacheService implements OnModuleInit, OnModuleDestroy {
       const data = await this.client.get(key);
       if (!data) return null;
       return JSON.parse(data) as T;
-    } catch {
+    } catch (err) {
+      this.logger.warn(`[RedisCacheService] Failed to parse cache key ${key}:`, err);
       return null;
     }
   }
@@ -67,8 +68,8 @@ export class RedisCacheService implements OnModuleInit, OnModuleDestroy {
     if (!this.isConnected || !this.client) return;
     try {
       await this.client.set(key, JSON.stringify(value), 'EX', ttlSeconds);
-    } catch {
-      // Ignore cache write error
+    } catch (err) {
+      this.logger.warn(`[RedisCacheService] Failed to write cache key ${key}:`, err);
     }
   }
 
@@ -79,8 +80,11 @@ export class RedisCacheService implements OnModuleInit, OnModuleDestroy {
       if (keys.length > 0) {
         await this.client.del(...keys);
       }
-    } catch {
-      // Ignore cache del error
+    } catch (err) {
+      this.logger.warn(
+        `[RedisCacheService] Failed to delete cache keys for pattern ${keyPattern}:`,
+        err,
+      );
     }
   }
 }

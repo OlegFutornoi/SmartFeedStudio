@@ -48,7 +48,7 @@ export function ExportChannelCard({ channel, onEdit, onDelete }: ExportChannelCa
               </CardTitle>
               <Badge
                 variant="outline"
-                className={`text-[10px] font-mono tracking-wider shrink-0 ${getMarketplaceBadgeColor(
+                className={`text-2xs font-mono tracking-wider shrink-0 ${getMarketplaceBadgeColor(
                   channel.marketplaceCode,
                 )}`}
               >
@@ -64,7 +64,7 @@ export function ExportChannelCard({ channel, onEdit, onDelete }: ExportChannelCa
 
           <Badge
             variant={channel.isActive ? 'default' : 'outline'}
-            className={`text-[10px] shrink-0 font-medium px-2 py-0.5 ${
+            className={`text-2xs shrink-0 font-medium px-2 py-0.5 ${
               channel.isActive ? 'bg-foreground text-background' : 'text-muted-foreground'
             }`}
           >
@@ -87,12 +87,12 @@ export function ExportChannelCard({ channel, onEdit, onDelete }: ExportChannelCa
         </div>
 
         {/* Reverse Markup Indicator */}
-        <div className="flex items-center justify-between text-[11px] px-1">
+        <div className="flex items-center justify-between text-xs px-1">
           <span className="text-muted-foreground">{t('export:markupFormulaLabel')}</span>
           {channel.applyReverseMarkup ? (
             <Badge
               variant="outline"
-              className="text-[10px] bg-primary/10 text-primary border-primary/20 flex items-center gap-1"
+              className="text-2xs bg-primary/10 text-primary border-primary/20 flex items-center gap-1"
             >
               <Sparkles className="size-3" />
               {t('export:reverseMarkupBadge')}
@@ -104,7 +104,7 @@ export function ExportChannelCard({ channel, onEdit, onDelete }: ExportChannelCa
 
         {/* Live Feed URL Copy Box */}
         <div className="space-y-1.5">
-          <div className="flex items-center justify-between text-[10px] text-muted-foreground">
+          <div className="flex items-center justify-between text-2xs text-muted-foreground">
             <span>{t('export:liveFeedLink')}</span>
             <span className="font-mono">{channel.feedFormat}</span>
           </div>
@@ -113,7 +113,7 @@ export function ExportChannelCard({ channel, onEdit, onDelete }: ExportChannelCa
               type="text"
               readOnly
               value={fullFeedUrl}
-              className="bg-transparent text-[11px] font-mono text-muted-foreground flex-1 px-1 outline-none truncate"
+              className="bg-transparent text-xs font-mono text-muted-foreground flex-1 px-1 outline-none truncate"
             />
             <Button
               variant="ghost"

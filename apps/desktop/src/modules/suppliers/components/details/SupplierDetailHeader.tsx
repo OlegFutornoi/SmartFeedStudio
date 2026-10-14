@@ -169,7 +169,7 @@ export const SupplierDetailHeader: React.FC<SupplierDetailHeaderProps> = ({
         {/* Right: 4 Quick Stats Badges */}
         <div className="flex items-center gap-3 sm:gap-6 bg-muted/40 px-4 py-2.5 rounded-xl border border-border/60 self-stretch md:self-auto justify-between sm:justify-start">
           <div className="text-center">
-            <span className="text-[11px] text-muted-foreground block">
+            <span className="text-xs text-muted-foreground block">
               {t('suppliers:columnProducts', { defaultValue: 'Товари' })}
             </span>
             <span className="text-base font-bold font-mono text-foreground">
@@ -178,7 +178,7 @@ export const SupplierDetailHeader: React.FC<SupplierDetailHeaderProps> = ({
           </div>
           <div className="h-7 w-px bg-border/80" />
           <div className="text-center">
-            <span className="text-[11px] text-muted-foreground block">
+            <span className="text-xs text-muted-foreground block">
               {t('suppliers:columnFeeds', { defaultValue: 'Фіди' })}
             </span>
             <span className="text-base font-bold font-mono text-foreground">
@@ -187,7 +187,7 @@ export const SupplierDetailHeader: React.FC<SupplierDetailHeaderProps> = ({
           </div>
           <div className="h-7 w-px bg-border/80" />
           <div className="text-center">
-            <span className="text-[11px] text-muted-foreground block">
+            <span className="text-xs text-muted-foreground block">
               {t('suppliers:tabCategories', { defaultValue: 'Категорії' })}
             </span>
             <span className="text-base font-bold font-mono text-foreground">
@@ -196,7 +196,7 @@ export const SupplierDetailHeader: React.FC<SupplierDetailHeaderProps> = ({
           </div>
           <div className="h-7 w-px bg-border/80" />
           <div className="text-center">
-            <span className="text-[11px] text-muted-foreground block">
+            <span className="text-xs text-muted-foreground block">
               {t('suppliers:currency', { defaultValue: 'Валюта' })}
             </span>
             <span className="text-base font-bold font-mono text-primary">

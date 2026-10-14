@@ -87,7 +87,7 @@ export function ThemeSelector() {
             </span>
             <Badge
               variant="outline"
-              className="text-[10px] py-0 px-1.5 h-4 border-muted-foreground/30 text-muted-foreground"
+              className="text-2xs py-0 px-1.5 h-4 border-muted-foreground/30 text-muted-foreground"
             >
               shadcn/ui
             </Badge>
@@ -171,7 +171,7 @@ export function ThemeSelector() {
             <span className="text-sm font-medium text-foreground">{t('borderRadius')}</span>
             <Badge
               variant="outline"
-              className="text-[10px] py-0 px-1.5 h-4 border-muted-foreground/30 text-muted-foreground"
+              className="text-2xs py-0 px-1.5 h-4 border-muted-foreground/30 text-muted-foreground"
             >
               {t('globalBadge')}
             </Badge>
@@ -200,7 +200,7 @@ export function ThemeSelector() {
                 }`}
               >
                 <span>{r.pixels}</span>
-                <span className="text-[10px] opacity-70 hidden md:inline">
+                <span className="text-2xs opacity-70 hidden md:inline">
                   {isUk
                     ? r.labelUk.split(' ')[1]?.replace(/[()]/g, '')
                     : r.labelEn.split(' ')[1]?.replace(/[()]/g, '')}

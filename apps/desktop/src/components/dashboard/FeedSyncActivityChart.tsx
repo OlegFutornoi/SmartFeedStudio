@@ -130,7 +130,7 @@ export const FeedSyncActivityChart = React.memo(function FeedSyncActivityChart({
               axisLine={false}
               tickMargin={8}
               minTickGap={32}
-              className="text-[11px] fill-muted-foreground"
+              className="text-xs fill-muted-foreground"
             />
             <YAxis
               domain={yDomain}
@@ -138,7 +138,7 @@ export const FeedSyncActivityChart = React.memo(function FeedSyncActivityChart({
               tickLine={false}
               axisLine={false}
               tickMargin={8}
-              className="text-[11px] fill-muted-foreground"
+              className="text-xs fill-muted-foreground"
             />
             <ChartTooltip
               cursor={{ stroke: 'hsl(var(--border))', strokeWidth: 1 }}

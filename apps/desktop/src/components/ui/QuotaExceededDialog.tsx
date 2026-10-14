@@ -59,7 +59,7 @@ export function QuotaExceededDialog({
             <Sparkles className="size-4 shrink-0" />
             <span>Як збільшити доступну квоту?</span>
           </div>
-          <p className="text-[11px] text-muted-foreground leading-relaxed">
+          <p className="text-xs text-muted-foreground leading-relaxed">
             Перейдіть на вищий тарифний план (наприклад, <strong>Pro</strong> або{' '}
             <strong>Enterprise</strong>), щоб отримати більше постачальників, необмежені фіди та
             розширений SKU-каталог.

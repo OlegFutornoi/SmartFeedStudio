@@ -130,7 +130,7 @@ export const QuotaCategoriesTab: React.FC<QuotaCategoriesTabProps> = ({
                         {isItemDeleting && (
                           <Badge
                             variant="destructive"
-                            className="text-[10px] animate-pulse px-1.5 py-0"
+                            className="text-2xs animate-pulse px-1.5 py-0"
                           >
                             {isUk ? 'Видаляється...' : 'Deleting...'}
                           </Badge>
@@ -185,7 +185,7 @@ export const QuotaCategoriesTab: React.FC<QuotaCategoriesTabProps> = ({
               {selectedProductsToDeleteCount.toLocaleString()} SKU
             </Badge>
           </div>
-          <div className="text-[11px] text-muted-foreground mt-1 flex items-center gap-1.5">
+          <div className="text-xs text-muted-foreground mt-1 flex items-center gap-1.5">
             <span>{isUk ? 'Залишок після видалення:' : 'Remaining after delete:'}</span>
             <span
               className={`font-mono font-bold ${isProjectedValid ? 'text-foreground' : 'text-muted-foreground'}`}

@@ -54,12 +54,12 @@ export const SupplierFeedsTable: React.FC<SupplierFeedsTableProps> = ({
                 >
                   {formatFeedTitle(source.name, source.sourceUrl)}
                 </span>
-                <Badge variant="outline" className="text-[10px] font-mono uppercase bg-background">
+                <Badge variant="outline" className="text-2xs font-mono uppercase bg-background">
                   {source.fileFormat}
                 </Badge>
                 <Badge
                   variant="secondary"
-                  className="text-[10px] bg-secondary text-secondary-foreground border border-border"
+                  className="text-2xs bg-secondary text-secondary-foreground border border-border"
                 >
                   {source.sourceType}
                 </Badge>
@@ -67,7 +67,7 @@ export const SupplierFeedsTable: React.FC<SupplierFeedsTableProps> = ({
 
               {source.sourceUrl && (
                 <p
-                  className="text-[11px] font-mono text-muted-foreground truncate max-w-md"
+                  className="text-xs font-mono text-muted-foreground truncate max-w-md"
                   title={source.sourceUrl}
                 >
                   {formatDisplayUrl(source.sourceUrl)}
@@ -121,7 +121,7 @@ export const SupplierFeedsTable: React.FC<SupplierFeedsTableProps> = ({
           </div>
 
           {/* Sync status & metrics footer */}
-          <div className="pt-2 border-t border-border/40 flex items-center justify-between text-[11px] text-muted-foreground flex-wrap gap-2">
+          <div className="pt-2 border-t border-border/40 flex items-center justify-between text-xs text-muted-foreground flex-wrap gap-2">
             <div className="flex items-center gap-1.5">
               <Clock className="size-3 shrink-0" />
               <span>{t('suppliers:lastSynced', { defaultValue: 'Остання синхронізація:' })}</span>

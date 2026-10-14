@@ -210,7 +210,7 @@ export const SupplierCurrenciesTab: React.FC<SupplierCurrenciesTabProps> = ({
                     %
                   </span>
                 </div>
-                <p className="text-[10px] text-muted-foreground mt-1">
+                <p className="text-2xs text-muted-foreground mt-1">
                   Захищає прибуток при різких коливаннях курсу між оновленнями фідів
                 </p>
               </div>

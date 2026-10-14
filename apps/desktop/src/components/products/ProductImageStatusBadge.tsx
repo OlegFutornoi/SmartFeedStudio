@@ -91,7 +91,7 @@ export const ProductImageStatusBadge: React.FC<ProductImageStatusBadgeProps> = (
         <TooltipTrigger asChild>
           <span
             data-testid="product-image-status-badge"
-            className={`inline-flex items-center gap-1 rounded-md border font-mono font-medium text-[10px] leading-none shadow-xs backdrop-blur-xs transition-colors cursor-help ${
+            className={`inline-flex items-center gap-1 rounded-md border font-mono font-medium text-2xs leading-none shadow-xs backdrop-blur-xs transition-colors cursor-help ${
               showLabel ? withLabelPadding : iconOnlyPadding
             } ${config.classes} ${className}`}
           >
@@ -102,7 +102,7 @@ export const ProductImageStatusBadge: React.FC<ProductImageStatusBadgeProps> = (
         <TooltipContent side="top" className="text-xs max-w-xs font-sans">
           <p>{config.tooltip}</p>
           {isCloud && image.cloudUrl && (
-            <p className="text-[10px] text-muted-foreground mt-0.5 font-mono truncate max-w-[200px]">
+            <p className="text-2xs text-muted-foreground mt-0.5 font-mono truncate max-w-[200px]">
               {image.cloudUrl}
             </p>
           )}

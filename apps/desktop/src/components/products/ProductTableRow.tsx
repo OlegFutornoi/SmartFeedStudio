@@ -112,7 +112,7 @@ export const ProductTableRow: React.FC<ProductTableRowProps> = ({
           </button>
         </div>
         {product.barcode && (
-          <span className="font-mono text-[11px] text-muted-foreground/80 block mt-0.5">
+          <span className="font-mono text-xs text-muted-foreground/80 block mt-0.5">
             {product.barcode}
           </span>
         )}
@@ -131,13 +131,13 @@ export const ProductTableRow: React.FC<ProductTableRowProps> = ({
           {product.categoryNameUk ? (
             <Badge
               variant="outline"
-              className="text-[10px] h-4.5 font-normal py-0 px-1.5 bg-secondary/50 text-muted-foreground border-border/50"
+              className="text-2xs h-4.5 font-normal py-0 px-1.5 bg-secondary/50 text-muted-foreground border-border/50"
             >
               {product.categoryNameUk}
             </Badge>
           ) : null}
           {product.vendor ? (
-            <span className="text-[11px] text-muted-foreground/80">{product.vendor}</span>
+            <span className="text-xs text-muted-foreground/80">{product.vendor}</span>
           ) : null}
         </div>
       </TableCell>
@@ -148,7 +148,7 @@ export const ProductTableRow: React.FC<ProductTableRowProps> = ({
           <Badge
             variant="outline"
             data-testid={`product-supplier-badge-${product.id}`}
-            className="text-[10px] h-5 px-1.5 font-medium bg-secondary/40 text-foreground border-border/60 max-w-[140px] truncate"
+            className="text-2xs h-5 px-1.5 font-medium bg-secondary/40 text-foreground border-border/60 max-w-[140px] truncate"
           >
             {resolvedSupplierName}
           </Badge>
@@ -163,7 +163,7 @@ export const ProductTableRow: React.FC<ProductTableRowProps> = ({
               {product.price?.toLocaleString()} {product.currency || 'UAH'}
             </div>
             {product.costPrice !== undefined && product.costPrice > 0 && (
-              <div className="text-[11px] text-muted-foreground/80 tabular-nums">
+              <div className="text-xs text-muted-foreground/80 tabular-nums">
                 {t('catalogs:colCostPrice')}: {product.costPrice.toLocaleString()}{' '}
                 {product.currency || 'UAH'}
               </div>
@@ -178,7 +178,7 @@ export const ProductTableRow: React.FC<ProductTableRowProps> = ({
           {marginDiff > 0 ? (
             <Badge
               variant="secondary"
-              className="text-[10px] h-5 px-1.5 font-medium tabular-nums bg-secondary text-secondary-foreground border border-border/50"
+              className="text-2xs h-5 px-1.5 font-medium tabular-nums bg-secondary text-secondary-foreground border border-border/50"
             >
               +{marginPercent}% (+{Math.round(marginDiff)} ₴)
             </Badge>

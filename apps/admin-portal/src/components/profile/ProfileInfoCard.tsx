@@ -214,9 +214,7 @@ export const ProfileInfoCard = React.memo(function ProfileInfoCard({ user }: Pro
                 </Button>
               )}
             </div>
-            <span className="text-[11px] text-muted-foreground">
-              {t('settings', 'avatar_hint')}
-            </span>
+            <span className="text-xs text-muted-foreground">{t('settings', 'avatar_hint')}</span>
           </div>
         </div>
 

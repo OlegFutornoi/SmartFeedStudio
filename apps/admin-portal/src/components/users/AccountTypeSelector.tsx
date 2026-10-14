@@ -54,8 +54,8 @@ export const AccountTypeSelector = React.memo(function AccountTypeSelector({
           )}
         >
           <opt.icon className="size-4 shrink-0" />
-          <span className="text-[11px] font-semibold leading-tight">{labels[opt.labelKey]}</span>
-          <span className="text-[10px] leading-tight opacity-70">{labels[opt.descKey]}</span>
+          <span className="text-xs font-semibold leading-tight">{labels[opt.labelKey]}</span>
+          <span className="text-2xs leading-tight opacity-70">{labels[opt.descKey]}</span>
         </button>
       ))}
     </div>

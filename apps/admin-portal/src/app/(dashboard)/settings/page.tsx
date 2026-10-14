@@ -63,7 +63,7 @@ export default function SettingsPage() {
                   {isUk ? 'Платіжні системи' : 'Payment Gateways'}
                 </CardTitle>
               </div>
-              <Badge variant="outline" className="text-[10px] gap-1 font-mono">
+              <Badge variant="outline" className="text-2xs gap-1 font-mono">
                 <ShieldCheck className="size-2.5 text-emerald-500" />
                 <span>WayForPay</span>
               </Badge>
@@ -98,7 +98,7 @@ export default function SettingsPage() {
                   {isUk ? 'AI Інтеграції & Моделі' : 'AI Integrations & Models'}
                 </CardTitle>
               </div>
-              <Badge variant="outline" className="text-[10px] gap-1 font-mono">
+              <Badge variant="outline" className="text-2xs gap-1 font-mono">
                 <Sparkles className="size-2.5 text-amber-500" />
                 <span>3 {isUk ? 'провайдери' : 'providers'}</span>
               </Badge>
@@ -133,7 +133,7 @@ export default function SettingsPage() {
                   {isUk ? 'Юридичні документи' : 'Legal Documents'}
                 </CardTitle>
               </div>
-              <Badge variant="outline" className="text-[10px] gap-1 font-mono">
+              <Badge variant="outline" className="text-2xs gap-1 font-mono">
                 <FileCheck className="size-2.5 text-blue-500" />
                 <span>{isUk ? 'Публічні угоди' : 'Public Policies'}</span>
               </Badge>

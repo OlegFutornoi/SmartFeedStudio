@@ -251,15 +251,25 @@ describe('Team Invitations & Mail Service Life-cycle (E2E)', () => {
       expect(res.body.role).toBe('ADMIN');
     });
 
-    it('should require password or authenticated session for existing user to accept', async () => {
+    it('should require password or authenticated session for existing user to accept, and allow acceptance via Bearer token', async () => {
+      // 1. Without password and without Bearer token -> 400 Bad Request
       await request(app.getHttpServer())
         .post('/api/invitations/accept')
         .send({ token: invitationToken })
         .expect(400);
 
+      // 2. Login existing colleague
+      const loginRes = await request(app.getHttpServer())
+        .post('/api/auth/login')
+        .send({ email: existingColleagueEmail, password: 'ExistingPassword123!' })
+        .expect(200);
+      const existingToken = loginRes.body.tokens.accessToken;
+
+      // 3. Accept with Bearer token only (no password required)
       const res = await request(app.getHttpServer())
         .post('/api/invitations/accept')
-        .send({ token: invitationToken, password: 'ExistingPassword123!' })
+        .set('Authorization', `Bearer ${existingToken}`)
+        .send({ token: invitationToken })
         .expect(200);
 
       expect(res.body.user.email).toBe(existingColleagueEmail);

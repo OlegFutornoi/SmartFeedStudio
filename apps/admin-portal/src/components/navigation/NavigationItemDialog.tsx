@@ -168,7 +168,7 @@ export function NavigationItemDialog({
                   title={name}
                 >
                   <IconComponent className="h-4 w-4" />
-                  <span className="text-[10px] truncate max-w-full">{name}</span>
+                  <span className="text-2xs truncate max-w-full">{name}</span>
                 </button>
               ))}
             </div>

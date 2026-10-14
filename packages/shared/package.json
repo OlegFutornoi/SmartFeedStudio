@@ -4,7 +4,7 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && tsc-alias",
     "dev": "tsc --watch",
     "lint": "eslint src --ext .ts",
     "clean": "rm -rf dist"
@@ -13,6 +13,7 @@
     "zod": "^3.24.1"
   },
   "devDependencies": {
+    "tsc-alias": "^1.9.7",
     "typescript": "^5.7.3"
   }
 }

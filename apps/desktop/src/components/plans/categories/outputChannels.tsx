@@ -45,7 +45,7 @@ export function buildOutputChannelsCategory(isUk: boolean): FeatureCategory {
         getValue: () => (
           <span className="inline-flex items-center gap-1 text-foreground font-medium">
             <Check className="size-4 shrink-0" />
-            <span className="text-[11px] text-muted-foreground">
+            <span className="text-xs text-muted-foreground">
               {isUk ? '(в межах ліміту)' : '(within quota)'}
             </span>
           </span>

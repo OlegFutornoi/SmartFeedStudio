@@ -52,7 +52,7 @@ export const NavigationLivePreview = React.memo(function NavigationLivePreview({
                 key={plan}
                 onClick={() => setSelectedPlan(plan)}
                 className={cn(
-                  'py-1 text-[11px] rounded-lg font-medium transition-all text-center truncate px-1',
+                  'py-1 text-xs rounded-lg font-medium transition-all text-center truncate px-1',
                   selectedPlan === plan
                     ? 'bg-primary text-primary-foreground font-semibold shadow-sm'
                     : 'text-muted-foreground hover:text-foreground',
@@ -74,7 +74,7 @@ export const NavigationLivePreview = React.memo(function NavigationLivePreview({
       <CardContent className="space-y-3 pt-0">
         {/* Simulated Sidebar Container */}
         <div className="rounded-xl border border-border/70 bg-card/90 p-4 space-y-3 shadow-inner">
-          <div className="text-[10px] font-bold tracking-wider text-muted-foreground uppercase px-2">
+          <div className="text-2xs font-bold tracking-wider text-muted-foreground uppercase px-2">
             {t('navigation', 'user_menu_preview')} ({selectedPlan})
           </div>
 
@@ -96,7 +96,7 @@ export const NavigationLivePreview = React.memo(function NavigationLivePreview({
             )}
           </div>
 
-          <div className="text-[11px] text-center text-muted-foreground/80 pt-2 border-t border-border/40 font-mono">
+          <div className="text-xs text-center text-muted-foreground/80 pt-2 border-t border-border/40 font-mono">
             {t('navigation', 'available_items_count', {
               available: visibleItems.length,
               total: desktopItems.length,

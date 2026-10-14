@@ -105,7 +105,7 @@ export function ThemeCustomizer() {
               </span>
               <Badge
                 variant="outline"
-                className="text-[10px] py-0 px-1.5 h-4 border-muted-foreground/30 text-muted-foreground"
+                className="text-2xs py-0 px-1.5 h-4 border-muted-foreground/30 text-muted-foreground"
               >
                 shadcn/ui
               </Badge>

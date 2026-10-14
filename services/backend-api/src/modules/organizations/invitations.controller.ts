@@ -1,7 +1,18 @@
-import { Controller, Get, Post, Param, Body, HttpCode, HttpStatus } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Param,
+  Body,
+  HttpCode,
+  HttpStatus,
+  UseGuards,
+} from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import { Throttle } from '@nestjs/throttler';
 import { CurrentUser } from '@/modules/auth/decorators/current-user.decorator';
+import { OptionalJwtAuthGuard } from '@/modules/auth/guards/optional-jwt-auth.guard';
 import { AcceptInvitationDto } from '@/modules/organizations/dto/accept-invitation.dto';
 import { GetInvitationByTokenQuery } from '@/modules/organizations/queries/get-invitation-by-token.query';
 import { AcceptInvitationCommand } from '@/modules/organizations/commands/accept-invitation.command';
@@ -27,6 +38,9 @@ export class InvitationsController {
 
   @Post('accept')
   @HttpCode(HttpStatus.OK)
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
+  @UseGuards(OptionalJwtAuthGuard)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Accept invitation (register new user or join existing user)' })
   @ApiResponse({ status: 200, description: 'Invitation accepted and tokens generated' })
   @ApiResponse({ status: 400, description: 'Invalid token, expired, or invalid credentials' })

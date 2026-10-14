@@ -52,7 +52,7 @@ export const SidebarMobileDrawer = React.memo(function SidebarMobileDrawer({
             </div>
             <div>
               <div className="font-bold text-sm text-foreground">SmartFeed</div>
-              <div className="text-[11px] text-muted-foreground">Admin Portal</div>
+              <div className="text-xs text-muted-foreground">Admin Portal</div>
             </div>
           </div>
           <Button

@@ -33,7 +33,8 @@ export const authSessionStorage = {
     try {
       const parsed = JSON.parse(saved) as UserProfile;
       return parsed?.isActive === false;
-    } catch {
+    } catch (err) {
+      console.warn('[authSessionStorage] Failed to parse saved user for suspended check:', err);
       return false;
     }
   },

@@ -69,7 +69,7 @@ export const FacetedFilter = React.memo(function FacetedFilter({
             <span className="text-muted-foreground/60">|</span>
             <Badge
               variant="secondary"
-              className="text-[10px] px-1.5 py-0 h-4 font-mono font-normal rounded-sm"
+              className="text-2xs px-1.5 py-0 h-4 font-mono font-normal rounded-sm"
             >
               {currentOption.label}
             </Badge>
@@ -116,7 +116,7 @@ export const FacetedFilter = React.memo(function FacetedFilter({
                     <span className="truncate">{option.label}</span>
                   </div>
                   {typeof option.count === 'number' && (
-                    <span className="text-[10px] font-mono text-muted-foreground ml-2 px-1.5 py-0.5 rounded bg-muted/40 border border-border/40">
+                    <span className="text-2xs font-mono text-muted-foreground ml-2 px-1.5 py-0.5 rounded bg-muted/40 border border-border/40">
                       {option.count}
                     </span>
                   )}

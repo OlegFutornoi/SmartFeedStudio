@@ -65,18 +65,15 @@ export const QuotaFeedsTab: React.FC<QuotaFeedsTabProps> = ({
                     </span>
                     <Badge
                       variant="outline"
-                      className="text-[10px] font-mono uppercase bg-background px-1.5 py-0"
+                      className="text-2xs font-mono uppercase bg-background px-1.5 py-0"
                     >
                       {feed.fileFormat}
                     </Badge>
-                    <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
+                    <Badge variant="secondary" className="text-2xs px-1.5 py-0">
                       {supplier.name}
                     </Badge>
                     {isItemDeleting && (
-                      <Badge
-                        variant="destructive"
-                        className="text-[10px] animate-pulse px-1.5 py-0"
-                      >
+                      <Badge variant="destructive" className="text-2xs animate-pulse px-1.5 py-0">
                         {isUk ? 'Видаляється...' : 'Deleting...'}
                       </Badge>
                     )}
@@ -84,7 +81,7 @@ export const QuotaFeedsTab: React.FC<QuotaFeedsTabProps> = ({
 
                   {showSubtitle && (
                     <p
-                      className="text-[11px] text-muted-foreground truncate font-mono max-w-[360px] sm:max-w-[440px]"
+                      className="text-xs text-muted-foreground truncate font-mono max-w-[360px] sm:max-w-[440px]"
                       title={subtitle}
                     >
                       {subtitle}

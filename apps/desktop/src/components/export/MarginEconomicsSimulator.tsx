@@ -38,7 +38,7 @@ export const MarginEconomicsSimulator: React.FC<MarginEconomicsSimulatorProps> =
         </div>
         <Badge
           variant="outline"
-          className="text-[10px] font-mono bg-primary/10 text-primary border-primary/20"
+          className="text-2xs font-mono bg-primary/10 text-primary border-primary/20"
         >
           {applyReverseMarkup ? t('export:reverseMode') : t('export:directMode')}
         </Badge>
@@ -46,7 +46,7 @@ export const MarginEconomicsSimulator: React.FC<MarginEconomicsSimulatorProps> =
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
         <div>
-          <Label className="text-[10px] text-muted-foreground">{t('export:simulatorCost')}</Label>
+          <Label className="text-2xs text-muted-foreground">{t('export:simulatorCost')}</Label>
           <Input
             type="number"
             value={simCostPrice}
@@ -55,7 +55,7 @@ export const MarginEconomicsSimulator: React.FC<MarginEconomicsSimulatorProps> =
           />
         </div>
         <div>
-          <Label className="text-[10px] text-muted-foreground">{t('export:simulatorMargin')}</Label>
+          <Label className="text-2xs text-muted-foreground">{t('export:simulatorMargin')}</Label>
           <Input
             type="number"
             value={simSupplierMargin}
@@ -64,7 +64,7 @@ export const MarginEconomicsSimulator: React.FC<MarginEconomicsSimulatorProps> =
           />
         </div>
         <div>
-          <Label className="text-[10px] text-muted-foreground">
+          <Label className="text-2xs text-muted-foreground">
             {t('export:simulatorCommission')}
           </Label>
           <div className="h-7 text-xs font-mono flex items-center px-2 rounded-md bg-background border border-border/60 mt-0.5">
@@ -72,7 +72,7 @@ export const MarginEconomicsSimulator: React.FC<MarginEconomicsSimulatorProps> =
           </div>
         </div>
         <div>
-          <Label className="text-[10px] text-muted-foreground">{t('export:extraCosts')}</Label>
+          <Label className="text-2xs text-muted-foreground">{t('export:extraCosts')}</Label>
           <div className="h-7 text-xs font-mono flex items-center px-2 rounded-md bg-background border border-border/60 mt-0.5">
             +{extraFixedCost || 0} ₴
           </div>
@@ -82,13 +82,13 @@ export const MarginEconomicsSimulator: React.FC<MarginEconomicsSimulatorProps> =
       {/* Economics Breakdown */}
       <div className="p-3 rounded-lg bg-background border border-border/80 grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
         <div>
-          <span className="text-[10px] text-muted-foreground block">{t('export:basePrice')}</span>
+          <span className="text-2xs text-muted-foreground block">{t('export:basePrice')}</span>
           <span className="text-xs font-bold font-mono text-foreground mt-0.5 block">
             {simulation.basePrice} ₴
           </span>
         </div>
         <div>
-          <span className="text-[10px] text-muted-foreground block">
+          <span className="text-2xs text-muted-foreground block">
             {t('export:shelfPriceLabel')}
           </span>
           <span className="text-xs font-bold font-mono text-foreground mt-0.5 block">
@@ -96,15 +96,13 @@ export const MarginEconomicsSimulator: React.FC<MarginEconomicsSimulatorProps> =
           </span>
         </div>
         <div>
-          <span className="text-[10px] text-muted-foreground block">
-            {t('export:siteCommission')}
-          </span>
+          <span className="text-2xs text-muted-foreground block">{t('export:siteCommission')}</span>
           <span className="text-xs font-bold font-mono text-destructive mt-0.5 block">
             -{simulation.commissionAmount} ₴
           </span>
         </div>
         <div>
-          <span className="text-[10px] text-muted-foreground block">{t('export:netEarnings')}</span>
+          <span className="text-2xs text-muted-foreground block">{t('export:netEarnings')}</span>
           <span className="text-xs font-bold font-mono text-primary mt-0.5 flex items-center justify-center gap-1">
             <Sparkles className="size-3" />+{simulation.netProfit} ₴ ({simulation.netMarginPercent}
             %)

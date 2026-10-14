@@ -251,7 +251,7 @@ export function CreateExportChannelDialog({
               >
                 {t('export:reverseMarkupTitle')}
               </label>
-              <p className="text-[11px] text-muted-foreground leading-relaxed">
+              <p className="text-xs text-muted-foreground leading-relaxed">
                 {t('export:reverseMarkupDesc')}
               </p>
             </div>

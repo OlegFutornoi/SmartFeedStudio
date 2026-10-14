@@ -196,7 +196,7 @@ export function ExportChannelsList({ catalogs = [] }: ExportChannelsListProps) {
           <div className="space-y-2">
             <p>{t('export:deleteDesc')}</p>
             {channelToDelete && (
-              <div className="p-2.5 rounded-lg bg-muted border border-border font-mono text-[11px] text-foreground font-semibold truncate">
+              <div className="p-2.5 rounded-lg bg-muted border border-border font-mono text-xs text-foreground font-semibold truncate">
                 {channelToDelete.name} ({channelToDelete.marketplaceCode})
               </div>
             )}

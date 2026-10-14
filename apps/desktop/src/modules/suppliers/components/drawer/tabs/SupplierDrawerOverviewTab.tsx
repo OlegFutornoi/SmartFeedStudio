@@ -25,7 +25,7 @@ export const SupplierDrawerOverviewTab: React.FC<SupplierDrawerOverviewTabProps>
           data-testid="overview-kpi-products"
         >
           <div className="flex items-center justify-between text-muted-foreground mb-1">
-            <span className="text-[11px] font-medium">
+            <span className="text-xs font-medium">
               {t('suppliers:columnProducts', { defaultValue: 'Товари' })}
             </span>
             <Package className="size-3.5 text-primary" />
@@ -41,7 +41,7 @@ export const SupplierDrawerOverviewTab: React.FC<SupplierDrawerOverviewTabProps>
           data-testid="overview-kpi-feeds"
         >
           <div className="flex items-center justify-between text-muted-foreground mb-1">
-            <span className="text-[11px] font-medium">
+            <span className="text-xs font-medium">
               {t('suppliers:columnFeeds', { defaultValue: 'Джерела фідів' })}
             </span>
             <Rss className="size-3.5 text-blue-500" />
@@ -57,7 +57,7 @@ export const SupplierDrawerOverviewTab: React.FC<SupplierDrawerOverviewTabProps>
           data-testid="overview-kpi-categories"
         >
           <div className="flex items-center justify-between text-muted-foreground mb-1">
-            <span className="text-[11px] font-medium">
+            <span className="text-xs font-medium">
               {t('suppliers:tabCategories', { defaultValue: 'Категорії' })}
             </span>
             <Sliders className="size-3.5 text-amber-500" />
@@ -73,7 +73,7 @@ export const SupplierDrawerOverviewTab: React.FC<SupplierDrawerOverviewTabProps>
           data-testid="overview-kpi-currencies"
         >
           <div className="flex items-center justify-between text-muted-foreground mb-1">
-            <span className="text-[11px] font-medium">
+            <span className="text-xs font-medium">
               {t('suppliers:filterCurrency', { defaultValue: 'Валюта' })}
             </span>
             <DollarSign className="size-3.5 text-emerald-500" />

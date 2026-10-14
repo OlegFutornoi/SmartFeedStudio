@@ -75,14 +75,14 @@ export const SupplierPriceSimulator: React.FC<SupplierPriceSimulatorProps> = ({
         <div className="p-3 rounded-xl bg-muted/40 border border-border/80 space-y-2">
           <div className="flex items-center justify-between text-xs">
             <span className="text-muted-foreground">Застосоване правило:</span>
-            <Badge variant="outline" className="text-[10px] font-mono">
+            <Badge variant="outline" className="text-2xs font-mono">
               {simulation.matchedRuleType === 'PRICE_BRACKET' ? 'Діапазон цін' : 'Базова націнка'}
             </Badge>
           </div>
           {roundingMode && roundingMode !== PriceRoundingMode.NONE && (
             <div className="flex items-center justify-between text-xs">
               <span className="text-muted-foreground">Крок округлення:</span>
-              <Badge variant="secondary" className="text-[10px] font-mono">
+              <Badge variant="secondary" className="text-2xs font-mono">
                 {roundingMode}
               </Badge>
             </div>

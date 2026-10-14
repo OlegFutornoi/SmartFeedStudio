@@ -70,7 +70,7 @@ export const ProductGalleryMainPreview: FC<ProductGalleryMainPreviewProps> = ({
           <div className="flex items-center gap-2 text-xs">
             <ProductImageStatusBadge image={currentImage} size="sm" showLabel />
             {currentImage.isMain && (
-              <span className="bg-primary/10 text-primary text-[10px] font-bold px-2 py-0.5 rounded-md">
+              <span className="bg-primary/10 text-primary text-2xs font-bold px-2 py-0.5 rounded-md">
                 {t('catalogs:mainImageBadge')}
               </span>
             )}

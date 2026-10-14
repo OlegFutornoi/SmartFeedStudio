@@ -187,9 +187,7 @@ export const SupplierPricingTab: React.FC<SupplierPricingTabProps> = ({
             <div className="p-2.5 rounded-lg bg-muted/40 border border-border/70 space-y-2">
               <div className="grid grid-cols-2 gap-2 text-xs">
                 <div>
-                  <span className="text-[11px] text-muted-foreground block mb-1">
-                    Мін. ціна (₴)
-                  </span>
+                  <span className="text-xs text-muted-foreground block mb-1">Мін. ціна (₴)</span>
                   <Input
                     type="number"
                     placeholder="0"
@@ -199,9 +197,7 @@ export const SupplierPricingTab: React.FC<SupplierPricingTabProps> = ({
                   />
                 </div>
                 <div>
-                  <span className="text-[11px] text-muted-foreground block mb-1">
-                    Макс. ціна (₴)
-                  </span>
+                  <span className="text-xs text-muted-foreground block mb-1">Макс. ціна (₴)</span>
                   <Input
                     type="number"
                     placeholder="1000"
@@ -213,7 +209,7 @@ export const SupplierPricingTab: React.FC<SupplierPricingTabProps> = ({
               </div>
               <div className="grid grid-cols-2 gap-2 text-xs">
                 <div>
-                  <span className="text-[11px] text-muted-foreground block mb-1">Націнка (%)</span>
+                  <span className="text-xs text-muted-foreground block mb-1">Націнка (%)</span>
                   <Input
                     type="number"
                     value={ruleMargin}
@@ -222,9 +218,7 @@ export const SupplierPricingTab: React.FC<SupplierPricingTabProps> = ({
                   />
                 </div>
                 <div>
-                  <span className="text-[11px] text-muted-foreground block mb-1">
-                    Фіксовано (₴)
-                  </span>
+                  <span className="text-xs text-muted-foreground block mb-1">Фіксовано (₴)</span>
                   <Input
                     type="number"
                     value={ruleFixed}
@@ -253,7 +247,7 @@ export const SupplierPricingTab: React.FC<SupplierPricingTabProps> = ({
                   <TableBody>
                     {rules.map((r) => (
                       <TableRow key={r.id} className="h-8">
-                        <TableCell className="py-1 font-mono text-[11px]">
+                        <TableCell className="py-1 font-mono text-xs">
                           {r.minPrice != null ? `${r.minPrice}₴` : '0₴'} —{' '}
                           {r.maxPrice != null ? `${r.maxPrice}₴` : '∞'}
                         </TableCell>

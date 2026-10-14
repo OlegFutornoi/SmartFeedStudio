@@ -64,7 +64,7 @@ export const DashboardRecentUsersTable = React.memo(function DashboardRecentUser
               }`}
             >
               <span>{t('dashboard', 'tab_users')}</span>
-              <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-muted text-muted-foreground font-mono">
+              <span className="text-2xs px-1.5 py-0.2 rounded-full bg-muted text-muted-foreground font-mono">
                 {totalUsers}
               </span>
             </button>
@@ -79,7 +79,7 @@ export const DashboardRecentUsersTable = React.memo(function DashboardRecentUser
               }`}
             >
               <span>{t('dashboard', 'tab_transactions')}</span>
-              <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-muted text-muted-foreground font-mono">
+              <span className="text-2xs px-1.5 py-0.2 rounded-full bg-muted text-muted-foreground font-mono">
                 {totalTransactions}
               </span>
             </button>
@@ -94,7 +94,7 @@ export const DashboardRecentUsersTable = React.memo(function DashboardRecentUser
               }`}
             >
               <span>{t('dashboard', 'tab_licenses')}</span>
-              <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-muted text-muted-foreground font-mono">
+              <span className="text-2xs px-1.5 py-0.2 rounded-full bg-muted text-muted-foreground font-mono">
                 {totalLicenses}
               </span>
             </button>

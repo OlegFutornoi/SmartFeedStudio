@@ -74,10 +74,10 @@ export const LicensesTableRow = React.memo(function LicensesTableRow({
             data-testid={`license-plan-badge-${lic.licenseKey}`}
             className={
               lic.planType === 'ENTERPRISE'
-                ? 'bg-primary/15 text-primary border-primary/30 font-medium text-[10px] h-5'
+                ? 'bg-primary/15 text-primary border-primary/30 font-medium text-2xs h-5'
                 : lic.planType === 'PRO'
-                  ? 'bg-muted text-foreground border-border font-medium text-[10px] h-5'
-                  : 'bg-secondary text-secondary-foreground font-medium text-[10px] h-5'
+                  ? 'bg-muted text-foreground border-border font-medium text-2xs h-5'
+                  : 'bg-secondary text-secondary-foreground font-medium text-2xs h-5'
             }
           >
             <KeyRound className="h-3 w-3 mr-1" />
@@ -137,13 +137,13 @@ export const LicensesTableRow = React.memo(function LicensesTableRow({
             <Badge
               variant="secondary"
               data-testid={`license-cloud-badge-${lic.licenseKey}`}
-              className="text-[10px] h-5 gap-1 px-1.5 py-0"
+              className="text-2xs h-5 gap-1 px-1.5 py-0"
             >
               <Cloud className="size-2.5 text-muted-foreground" />
               <span>S3 Active</span>
             </Badge>
           ) : (
-            <span className="text-[11px] text-muted-foreground">—</span>
+            <span className="text-xs text-muted-foreground">—</span>
           )}
         </TableCell>
       )}

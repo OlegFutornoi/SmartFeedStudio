@@ -34,7 +34,7 @@ export const TeamMembersList: React.FC<TeamMembersListProps> = ({
           </div>
           <Badge
             variant="secondary"
-            className="text-[10px] font-mono"
+            className="text-2xs font-mono"
             data-testid="members-count-badge"
           >
             {t('team.membersCount', { count: members.length })}

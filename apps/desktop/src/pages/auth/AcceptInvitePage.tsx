@@ -140,7 +140,7 @@ export const AcceptInvitePage: React.FC = () => {
                   <Building2 className="h-4 w-4 text-primary" />
                   <CardTitle className="text-sm font-bold">{details.organizationName}</CardTitle>
                 </div>
-                <Badge variant="secondary" className="text-[10px] font-semibold gap-1">
+                <Badge variant="secondary" className="text-2xs font-semibold gap-1">
                   <Shield className="h-3 w-3 text-primary" />
                   <span>
                     {details.role === 'ADMIN' ? t('team.adminRole') : t('team.memberRole')}

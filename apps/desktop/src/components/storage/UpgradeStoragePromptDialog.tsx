@@ -72,7 +72,7 @@ export function UpgradeStoragePromptDialog({
           {/* Plan Comparison Card */}
           <div className="p-3.5 rounded-lg bg-muted/40 border border-border/80 flex items-center justify-between">
             <div>
-              <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
+              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
                 {t('storage:recommendedPlan')}
               </p>
               <p className="text-xs font-semibold text-foreground mt-0.5">

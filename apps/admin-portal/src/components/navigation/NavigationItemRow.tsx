@@ -78,7 +78,7 @@ export const NavigationItemRow = React.memo(function NavigationItemRow({
           <div className="flex items-center gap-2 text-xs text-muted-foreground font-mono mt-0.5">
             <span>{item.path}</span>
             <span>•</span>
-            <span className="text-[11px] text-muted-foreground/70">key: {item.key}</span>
+            <span className="text-xs text-muted-foreground/70">key: {item.key}</span>
           </div>
         </div>
       </div>
@@ -88,7 +88,7 @@ export const NavigationItemRow = React.memo(function NavigationItemRow({
         {/* Target App Badge */}
         <Badge
           variant="outline"
-          className="text-[10px] uppercase font-mono px-2 py-0.5 gap-1 border-primary/20 text-primary bg-primary/5"
+          className="text-2xs uppercase font-mono px-2 py-0.5 gap-1 border-primary/20 text-primary bg-primary/5"
         >
           {item.targetApp === TargetApp.DESKTOP ? (
             <Monitor className="h-2.5 w-2.5" />
@@ -102,7 +102,7 @@ export const NavigationItemRow = React.memo(function NavigationItemRow({
         <Badge
           variant="outline"
           className={cn(
-            'text-[10px] font-mono px-2 py-0.5 gap-1',
+            'text-2xs font-mono px-2 py-0.5 gap-1',
             !item.requiredPlan
               ? 'border-border text-muted-foreground bg-muted/30'
               : 'border-primary/30 text-primary bg-primary/10',

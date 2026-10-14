@@ -86,7 +86,7 @@ export const UserTableRow = React.memo(function UserTableRow({
             <Badge
               data-testid="user-row-role-admin"
               variant="outline"
-              className="bg-primary/10 text-primary border-primary/20 text-[10px] h-5 px-1.5 py-0 font-medium"
+              className="bg-primary/10 text-primary border-primary/20 text-2xs h-5 px-1.5 py-0 font-medium"
             >
               <Shield className="h-2.5 w-2.5 mr-1" />
               {t('users', 'role_admin')}
@@ -95,7 +95,7 @@ export const UserTableRow = React.memo(function UserTableRow({
             <Badge
               data-testid="user-row-role"
               variant="outline"
-              className="bg-secondary text-secondary-foreground text-[10px] h-5 px-1.5 py-0 font-medium"
+              className="bg-secondary text-secondary-foreground text-2xs h-5 px-1.5 py-0 font-medium"
             >
               {t('users', 'role_user')}
             </Badge>
@@ -120,7 +120,7 @@ export const UserTableRow = React.memo(function UserTableRow({
                   <Badge
                     data-testid="user-row-role-owner"
                     variant="outline"
-                    className="bg-muted text-muted-foreground border-border text-[10px] h-5 font-medium py-0 px-1.5"
+                    className="bg-muted text-muted-foreground border-border text-2xs h-5 font-medium py-0 px-1.5"
                   >
                     <Building2 className="h-2.5 w-2.5 mr-0.5" />
                     {t('users', 'team_owner')}
@@ -132,7 +132,7 @@ export const UserTableRow = React.memo(function UserTableRow({
                     type="button"
                     data-testid={`user-row-team-badge-${user.id}`}
                     onClick={() => onOpenTeam(user)}
-                    className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 text-[10px] h-5 font-medium transition-colors cursor-pointer"
+                    className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 text-2xs h-5 font-medium transition-colors cursor-pointer"
                     title={t('users', 'action_manage_team')}
                   >
                     <UsersIcon className="size-2.5" />
@@ -155,7 +155,7 @@ export const UserTableRow = React.memo(function UserTableRow({
               <Badge
                 data-testid="user-row-plan"
                 variant="outline"
-                className={`text-[10px] h-5 px-1.5 py-0 font-medium ${
+                className={`text-2xs h-5 px-1.5 py-0 font-medium ${
                   user.license.planType === 'ENTERPRISE'
                     ? 'bg-primary text-primary-foreground font-semibold'
                     : user.license.planType === 'PRO'

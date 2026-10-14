@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { FeedFormat } from '../enums';
+import { FeedFormat } from '@/enums';
 
 // ---------------------------------------------------------------------------
 // Supplier Pricing Rule DTOs

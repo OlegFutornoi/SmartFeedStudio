@@ -156,8 +156,8 @@ export function TeamMembersDialog({
                           variant="outline"
                           className={
                             isActive
-                              ? 'border-border text-foreground font-normal text-[10px] h-5'
-                              : 'bg-destructive/10 text-destructive border-destructive/20 text-[10px] h-5'
+                              ? 'border-border text-foreground font-normal text-2xs h-5'
+                              : 'bg-destructive/10 text-destructive border-destructive/20 text-2xs h-5'
                           }
                         >
                           <span

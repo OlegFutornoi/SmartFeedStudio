@@ -37,29 +37,26 @@ export const CloudFilesTableRow: React.FC<CloudFilesTableRowProps> = ({
           </div>
         )}
       </TableCell>
-      <TableCell className="px-3 py-2 font-mono text-[11px]">
+      <TableCell className="px-3 py-2 font-mono text-xs">
         <span
           className="font-semibold text-foreground block truncate max-w-xs"
           title={file.originalName}
         >
           {file.originalName}
         </span>
-        <span
-          className="text-muted-foreground text-[10px] block truncate max-w-xs"
-          title={file.s3Key}
-        >
+        <span className="text-muted-foreground text-2xs block truncate max-w-xs" title={file.s3Key}>
           {file.s3Key}
         </span>
       </TableCell>
       <TableCell className="px-3 py-2">
-        <Badge variant="outline" className="text-[10px] font-mono">
+        <Badge variant="outline" className="text-2xs font-mono">
           {file.s3Key.split('/')[0] || 'other'}
         </Badge>
       </TableCell>
-      <TableCell className="px-3 py-2 text-right font-mono text-[11px] tabular-nums">
+      <TableCell className="px-3 py-2 text-right font-mono text-xs tabular-nums">
         {formatBytes(file.sizeBytes)}
       </TableCell>
-      <TableCell className="px-3 py-2 text-[11px] text-muted-foreground">
+      <TableCell className="px-3 py-2 text-xs text-muted-foreground">
         {new Date(file.createdAt).toLocaleDateString()}
       </TableCell>
       <TableCell className="px-3 py-2 text-right">

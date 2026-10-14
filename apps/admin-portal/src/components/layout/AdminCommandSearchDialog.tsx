@@ -162,7 +162,7 @@ export function AdminCommandSearchDialog({ isOpen, onClose }: AdminCommandSearch
           />
           <kbd
             onClick={onClose}
-            className="inline-flex items-center px-1.5 py-0.5 text-[10px] font-mono font-medium text-muted-foreground bg-muted/80 border border-border/80 rounded cursor-pointer hover:bg-muted ml-2 shrink-0 select-none"
+            className="inline-flex items-center px-1.5 py-0.5 text-2xs font-mono font-medium text-muted-foreground bg-muted/80 border border-border/80 rounded cursor-pointer hover:bg-muted ml-2 shrink-0 select-none"
             title="Escape"
           >
             ESC
@@ -218,13 +218,13 @@ export function AdminCommandSearchDialog({ isOpen, onClose }: AdminCommandSearch
         </div>
 
         {/* Bottom Help Footer */}
-        <div className="px-4 py-2 border-t border-border bg-muted/30 flex items-center justify-between text-[11px] text-muted-foreground">
+        <div className="px-4 py-2 border-t border-border bg-muted/30 flex items-center justify-between text-xs text-muted-foreground">
           <div className="flex items-center gap-2">
             <span>↑↓ {isUk ? 'Навігація' : 'Navigate'}</span>
             <span>↵ {isUk ? 'Перехід' : 'Select'}</span>
             <span>Esc {isUk ? 'Закрити' : 'Close'}</span>
           </div>
-          <span className="font-mono text-[10px]">Admin ⌘K</span>
+          <span className="font-mono text-2xs">Admin ⌘K</span>
         </div>
       </div>
     </div>,

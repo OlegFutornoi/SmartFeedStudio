@@ -50,7 +50,8 @@ export const CloudOrphanCleanupDialog: React.FC<CloudOrphanCleanupDialogProps> =
         }
       }
       return keys;
-    } catch {
+    } catch (err) {
+      console.warn('[CloudOrphanCleanupDialog] Failed to retrieve active catalog keys:', err);
       return [];
     }
   };
@@ -168,10 +169,10 @@ export const CloudOrphanCleanupDialog: React.FC<CloudOrphanCleanupDialogProps> =
 
               {scanResult.deletedKeys.length > 0 && (
                 <div className="mt-2 pt-2 border-t border-border">
-                  <p className="text-[11px] text-muted-foreground mb-1.5 font-medium">
+                  <p className="text-xs text-muted-foreground mb-1.5 font-medium">
                     Приклади незв'язаних файлів:
                   </p>
-                  <div className="max-h-24 overflow-y-auto space-y-1 font-mono text-[10px] text-muted-foreground bg-background/50 p-2 rounded border border-border">
+                  <div className="max-h-24 overflow-y-auto space-y-1 font-mono text-2xs text-muted-foreground bg-background/50 p-2 rounded border border-border">
                     {scanResult.deletedKeys.slice(0, 5).map((key) => (
                       <div key={key} className="truncate">
                         {key.split('/').pop()}

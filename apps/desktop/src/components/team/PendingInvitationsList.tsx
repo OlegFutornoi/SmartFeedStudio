@@ -54,7 +54,7 @@ export const PendingInvitationsList: React.FC<PendingInvitationsListProps> = ({
               <Clock className="h-4 w-4 text-muted-foreground" />
               <span>{t('team.pendingInvitationsTitle')}</span>
             </CardTitle>
-            <Badge variant="outline" className="text-[10px] text-muted-foreground border-border">
+            <Badge variant="outline" className="text-2xs text-muted-foreground border-border">
               {invitations.length}
             </Badge>
           </div>
@@ -85,11 +85,11 @@ export const PendingInvitationsList: React.FC<PendingInvitationsListProps> = ({
                   <div>
                     <div className="flex items-center gap-2">
                       <span className="text-xs font-semibold text-foreground">{inv.email}</span>
-                      <Badge variant="secondary" className="text-[10px] py-0 px-1.5 font-medium">
+                      <Badge variant="secondary" className="text-2xs py-0 px-1.5 font-medium">
                         {inv.role === 'ADMIN' ? t('team.adminRole') : t('team.memberRole')}
                       </Badge>
                     </div>
-                    <p className="text-[11px] text-muted-foreground mt-0.5">
+                    <p className="text-xs text-muted-foreground mt-0.5">
                       {t('team.expiresIn', { date: formattedDate })}
                     </p>
                   </div>

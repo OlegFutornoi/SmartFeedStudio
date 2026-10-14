@@ -82,7 +82,7 @@ export function GlobalJobProgressBar() {
                   {getTaskIcon()}
                   <span className="truncate">{currentTask.title}</span>
                 </div>
-                <div className="text-[10px] text-muted-foreground font-mono truncate">
+                <div className="text-2xs text-muted-foreground font-mono truncate">
                   {isCompleted
                     ? t('suppliers:operationCompleted', { defaultValue: 'Операцію завершено' })
                     : isFailed
@@ -118,7 +118,7 @@ export function GlobalJobProgressBar() {
             />
           </div>
 
-          <div className="text-[10px] text-muted-foreground flex items-center justify-between">
+          <div className="text-2xs text-muted-foreground flex items-center justify-between">
             <span>
               {t('suppliers:backgroundCleanupHint', {
                 defaultValue: 'Видалення триває у фоні, ви можете закрити вікно',
@@ -164,7 +164,7 @@ export function GlobalJobProgressBar() {
                 <Radio className="size-3 text-primary shrink-0" />
                 <span className="truncate">{feedDisplayName}</span>
               </div>
-              <div className="text-[10px] text-muted-foreground font-mono">
+              <div className="text-2xs text-muted-foreground font-mono">
                 {total > 0
                   ? `${processed.toLocaleString('uk-UA')} / ${total.toLocaleString('uk-UA')} SKU`
                   : t('suppliers:processingFeed', { defaultValue: 'Обробка структури...' })}
@@ -183,7 +183,7 @@ export function GlobalJobProgressBar() {
           />
         </div>
 
-        <div className="text-[10px] text-muted-foreground flex items-center justify-between">
+        <div className="text-2xs text-muted-foreground flex items-center justify-between">
           <span>
             {t('suppliers:backgroundImportHint', {
               defaultValue: 'Ви можете продовжувати роботу',

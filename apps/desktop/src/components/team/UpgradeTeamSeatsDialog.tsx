@@ -60,7 +60,7 @@ export const UpgradeTeamSeatsDialog: React.FC<UpgradeTeamSeatsDialogProps> = ({
               <h2 className="text-lg font-bold text-foreground">{t('team.upgradeModalTitle')}</h2>
               <Badge
                 variant="outline"
-                className="text-[10px] font-mono border-primary/30 text-primary"
+                className="text-2xs font-mono border-primary/30 text-primary"
               >
                 {currentPlan}
               </Badge>
@@ -88,7 +88,7 @@ export const UpgradeTeamSeatsDialog: React.FC<UpgradeTeamSeatsDialogProps> = ({
                   3 місця
                 </Badge>
               </div>
-              <ul className="space-y-2 text-[11px] text-muted-foreground">
+              <ul className="space-y-2 text-xs text-muted-foreground">
                 <li className="flex items-center gap-1.5">
                   <Check className="h-3.5 w-3.5 text-primary shrink-0" />
                   <span>{t('team.proBenefit1')}</span>
@@ -120,7 +120,7 @@ export const UpgradeTeamSeatsDialog: React.FC<UpgradeTeamSeatsDialogProps> = ({
                   ∞ місць
                 </Badge>
               </div>
-              <ul className="space-y-2 text-[11px] text-muted-foreground">
+              <ul className="space-y-2 text-xs text-muted-foreground">
                 <li className="flex items-center gap-1.5">
                   <Check className="h-3.5 w-3.5 text-foreground shrink-0" />
                   <span>{t('team.enterpriseBenefit1')}</span>
