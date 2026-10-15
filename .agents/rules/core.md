@@ -38,9 +38,10 @@ description: Core universal engineering invariants applied across all tasks and 
 
 ## CORE-06: Upfront Research via context7 and Project MCPs
 
-- Before writing code or designing architecture for any external library or framework, call `context7` (`resolve-library-id {libraryName, query}`, `query-docs {libraryId, query}`) and relevant project MCPs (`postgres`, `shadcn`, `redis`).
-- Never rely on outdated training memory or guess API signatures.
-- Reason: Library APIs evolve frequently; outdated API assumptions produce broken code and wasted debugging loops.
+- When integrating external libraries, adopting new framework features, resolving version drift, or working with complex API signatures (not routine primitives), ground knowledge via `context7`.
+- Use either native MCP tools (`resolve-library-id`, `query-docs`) or the local CLI (`ctx7 library <name> "<query>"`, `ctx7 docs <id> "<query>"`), supplemented by project MCPs (`postgres`, `shadcn`, `redis`).
+- Never guess API signatures or rely on stale training memory for third-party SDKs.
+- Reason: Library APIs evolve frequently; verified official documentation prevents broken builds and debugging churn.
 
 ## CORE-07: Strict Chat Brevity and Zero Plan Dumping
 
