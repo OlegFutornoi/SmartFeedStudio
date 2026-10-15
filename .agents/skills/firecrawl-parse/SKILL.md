@@ -1,49 +1,23 @@
 ---
 name: firecrawl-parse
-description: |
-  Convert a local file (PDF, DOCX, XLSX, HTML, …) to markdown, or answer questions about its content. Use whenever the input is a file path, not a URL.
-allowed-tools:
-  - Bash(firecrawl *)
-  - Bash(npx firecrawl-cli *)
+description: Document parsing and extraction (PDF, DOCX, XLSX, HTML) into markdown via Firecrawl CLI or MCP. Use when ingesting external supplier catalogs or converting document specifications.
+rules:
+  - core
+  - backend
 ---
 
-# firecrawl parse
+# Firecrawl Document Parsing
 
-Turn a local document into clean markdown on disk. Supports **PDF, DOCX, DOC, ODT, RTF, XLSX, XLS, HTML/HTM**.
+## Step 0 - Load rules (mandatory, before any analysis or code)
 
-## Quick start
+1. Read `.agents/rules/core.md` and `.agents/rules/backend.md`.
+2. Note all file size limits (50 MB) and output destination paths.
+3. If using Firecrawl MCP tools, verify tool availability (`firecrawl_parse`).
+4. Do not stream large document markdown dumps into stdout or conversational context.
 
-Always save to `.firecrawl/` with `-o` — parsed docs can be hundreds of KB and blow up context if streamed to stdout. Add `.firecrawl/` to `.gitignore`.
+## Parsing instructions
 
-```bash
-mkdir -p .firecrawl
-
-# File → markdown
-firecrawl parse ./paper.pdf -o .firecrawl/paper.md
-
-# AI summary
-firecrawl parse ./paper.pdf -S -o .firecrawl/paper-summary.md
-
-# Ask a question about the doc
-firecrawl parse ./paper.pdf -Q "What are the main conclusions?" \
-  -o .firecrawl/paper-qa.md
-```
-
-Then read the output incrementally with `head`, `grep`, or `rg`.
-
-Run `firecrawl parse --help` for the full option list.
-
-**Done when:** the markdown, summary, or answer is written under `.firecrawl/` and you have inspected it with bounded reads.
-
-## Tips
-
-- Quote paths with spaces: `firecrawl parse "./My Doc.pdf" -o .firecrawl/mydoc.md`.
-- Max upload size: **50 MB** per file.
-- Credits: ~1 per PDF page; HTML is 1 flat.
-- Check `.firecrawl/` before re-parsing the same file.
-- To check your credit balance (recommended for batch processing and similar workflows), use `firecrawl credit-usage` (requires authentication).
-
-## See also
-
-- [firecrawl-scrape](../firecrawl-scrape/SKILL.md) — same idea for URLs
-- [firecrawl-build-scrape](https://github.com/firecrawl/skills/tree/main/skills/build/firecrawl-build-scrape) — building document extraction into an app instead of running it here
+1. Output file destination: Always write parsed documents directly to `.firecrawl/<filename>.md` using the `-o` flag. Never stream multi-megabyte document parses directly to stdout.
+2. File types supported: PDF, DOCX, DOC, ODT, RTF, XLSX, XLS, HTML.
+3. Context protection: Inspect parsed document outputs incrementally using `head`, `grep_search`, or `view_file` with line range limits.
+4. Credit budget: Monitor credit usage via `firecrawl credit-usage` before executing large batch catalog document transformations.

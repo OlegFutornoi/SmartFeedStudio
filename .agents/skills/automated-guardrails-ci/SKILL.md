@@ -1,22 +1,25 @@
 ---
 name: automated-guardrails-ci
-version: 1.0.0
-description: 'Use when a rule keeps being violated or a new invariant is codified: converts text rules into automatic enforcement (ESLint rules, tests, hooks, CI) so violations are blocked, not just discouraged.'
+description: Automated guardrails enforcement via ESLint rules, TypeScript strict flags, pre-commit hooks, and CI pipelines. Converts policy invariants into machine-enforced blocking checks.
+rules:
+  - core
+  - testing
 ---
 
-# Automated Guardrails
+# Automated Guardrails and CI Enforcement
 
-Правило, яке можна перевірити машиною, **не живе лише в тексті**.
+## Step 0 - Load rules (mandatory, before any analysis or code)
 
-## Загальні принципи
+1. Read `.agents/rules/core.md` and `.agents/rules/testing.md`.
+2. Note all automated enforcement mechanisms and invariant IDs in working notes.
+3. If modifying ESLint or TypeScript configurations, call context7 to check rule syntax.
+4. Do not commit policy changes without validating automated guardrail checks.
 
-1. Новий інваріант → одразу механізм блокування (lint/тест/hook), інакше запис у реєстрі неповний.
-2. Спершу `warn` + підрахунок наявних порушень; перехід на `error` — після виправлення старих.
-3. Перевіряти, що правило реально ловить порушення (тимчасовий приклад → має падати).
+## Guardrail principles and enforcement
 
-## Reference — індекс
-
-| Тригер                                                                    | Reference                                                       |
-| ------------------------------------------------------------------------- | --------------------------------------------------------------- |
-| Порушено імпорти `../`, `as any`, God-file, hex-кольори, порожній `catch` | [`guardrails-catalog.md`](references/guardrails-catalog.md)     |
-| Додаєш нове правило в ESLint/hooks/CI                                     | [`enforcement-playbook.md`](references/enforcement-playbook.md) |
+1. Machine-verifiable rules: Rules must not exist solely in documentation. Every structural invariant must be enforced by automated tools (ESLint, TypeScript `tsc --noEmit`, automated scripts, or CI checks).
+2. Two-phase rollout: When adding a new structural rule, first run in warning mode or audit mode to quantify existing violations. Upgrade to blocking error mode once existing codebase instances are resolved.
+3. Path alias enforcement: Enforce `@/` import aliases and block relative imports (`../`) via ESLint `no-restricted-imports`.
+4. File size limits: Enforce component and module size budgets (<250-300 lines) via ESLint `max-lines`.
+5. Strict typing: Block `as any` and implicit any via TypeScript strict mode and lint rules.
+6. Validation verification: Ensure automated checks pass locally (`pnpm build`, `tsc --noEmit`, `pnpm lint:fix && pnpm format`) before triggering git workflows.

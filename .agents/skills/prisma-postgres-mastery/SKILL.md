@@ -1,60 +1,44 @@
 ---
 name: prisma-postgres-mastery
-description: >-
-  Enterprise database engineering and optimization for Prisma ORM and PostgreSQL 16.
-  Consolidates schema design, migrations, indexing, and query patterns.
-  Use when creating or altering models in schema.prisma, writing Prisma queries/mutations,
-  adding indexes (@@index, @@unique), configuring connection pooling (@prisma/adapter-pg),
-  planning zero-downtime migrations (expand/contract), eliminating N+1 queries,
-  implementing cursor pagination, or diagnosing slow queries with EXPLAIN ANALYZE.
+description: Prisma ORM and PostgreSQL 16 schema design, migrations, indexing, pooling, and query patterns. Use when modifying schema.prisma, writing queries, planning expand/contract migrations, or optimizing database operations.
+rules:
+  - core
+  - database
+  - backend
 ---
 
-# 🐘 Prisma & PostgreSQL Mastery (SmartFeed Studio)
+# Prisma Postgres Mastery
 
-Enterprise database engineering standard for PostgreSQL 16 + Prisma ORM in NestJS CQRS and local migrations.
+## Step 0 - Load rules (mandatory, before any analysis or code)
 
-## 🧭 1. Mandatory Schema Invariants (Zero-Defect Checklist)
+1. Read `.agents/rules/core.md`, `.agents/rules/database.md`, and `.agents/rules/backend.md`.
+2. Note all invariant IDs relevant to the task in working notes (DB-01 through DB-10).
+3. If touching Prisma or PostgreSQL features, call context7: `resolve-library-id {libraryName: "prisma", query: "..."}` and `query-docs`.
+4. Do not write or edit schema or query code until steps 1-3 are complete.
 
-1. **100% Foreign Key Indexes**: PostgreSQL does NOT auto-index foreign keys. Every FK field MUST have an explicit `@@index([fkField])`.
-2. **snake_case Database Identifiers**: All models must have `@@map("table_name")` and fields must map via `@map("column_name")`. Never leak camelCase into PostgreSQL.
-3. **Time-Ordered CUID Primary Keys**: Use `@id @default(cuid())` to prevent B-tree fragmentation during high-volume feed imports.
-4. **Timezone-Aware Timestamps**: All timestamps must be `DateTime` in Prisma mapped to `timestamptz` in PostgreSQL (`@default(now())`).
-5. **Composite & Filtered Indexes**: Composite indexes must align with actual query filters (e.g. `@@index([userId, isActive])`, `@@index([targetApp, isVisible, order])`).
-6. **Upfront Research via `context7` & `postgres` MCP**: Before changing schema or writing complex queries, verify Prisma API signatures via `context7` (`/prisma/prisma`) and execution plans via `postgres` MCP (`explain_query`).
+## Schema design invariants
 
-## ⚙️ 2. Connection Pooling & Transaction Safety
+1. Foreign key indexes: Add an explicit `@@index([fkField])` for every relation foreign key column. PostgreSQL does not index foreign keys automatically.
+2. Identifier mapping: Every model must declare `@@map("snake_case_table")` and columns must use `@map("snake_case_column")`. Never use camelCase identifiers in PostgreSQL.
+3. Primary keys: Use `@id @default(cuid())` for ordered B-tree insertion without index fragmentation.
+4. Timestamps: All datetime fields must be Prisma `DateTime` mapped to PostgreSQL `timestamptz(6)` via `@db.Timestamptz(6)` with `@default(now())`.
+5. Composite indexes: Align index column order with query filters, for example `@@index([userId, isActive])`.
+6. Cascade deletions: Declare `onDelete: Cascade` on parent-child relations to prevent orphan records.
 
-- **Connection Pool**: `PrismaService` strictly connects via `Pool` from `pg` with `@prisma/adapter-pg`. Direct unbounded connections are prohibited.
-- **Short Transactions**: `$transaction()` must never wrap external HTTP calls, S3 uploads, or queue pushes. Keep transactional work strictly bounded to database operations.
-- **Lock Deadlock Prevention**: Always sort resource IDs before acquiring transactional locks across multiple rows.
+## Connection pooling and transactions
 
-## 🚀 3. Query Optimization & Zero N+1 Patterns
+1. Pool configuration: Connect via `pg.Pool` with `@prisma/adapter-pg`. Do not create direct unbounded connections.
+2. Short transactions: Keep `$transaction()` strictly bounded to database operations. Never wrap HTTP calls, S3 presigned URL generation, emails, or queue pushes inside transactions.
+3. Lock ordering: Sort resource IDs before acquiring transactional row locks to prevent deadlocks.
 
-- **Zero N+1 Queries**: Never loop with individual Prisma calls (`await prisma.item.findUnique(...)`). Always use batch lookups `findMany({ where: { id: { in: ids } } })` or relation eager-loading via `include`/`select`.
-- **Cursor Pagination for High-Scale Endpoints**: On large feeds or product catalogs, OFFSET pagination is strictly prohibited (it scans all skipped rows). Always use cursor-based pagination:
-  ```typescript
-  await prisma.product.findMany({
-    take: limit,
-    skip: cursor ? 1 : 0,
-    cursor: cursor ? { id: cursor } : undefined,
-    orderBy: { id: 'asc' },
-  });
-  ```
+## Query patterns
 
-## 🔄 4. Zero-Downtime Expand/Contract Migration Pattern
+1. Zero N+1 queries: Use batch queries `findMany({ where: { id: { in: ids } } })` or relation `include`/`select`. Never execute Prisma queries inside `.map()` or `forEach`.
+2. Cursor pagination: High-volume endpoints must use cursor pagination (`take`, `skip: cursor ? 1 : 0`, `cursor: { id }`). OFFSET pagination is forbidden on large datasets.
+3. Type safety: Use generated Prisma input types such as `Prisma.UserWhereInput`. Do not cast `where` or `data` objects with `as any`.
 
-When altering existing schemas with high row counts:
+## Expand and contract migration workflow
 
-1. **Phase 1 (Expand)**: Add the new column/table as nullable or with default. Deploy application writing to both old and new.
-2. **Phase 2 (Backfill)**: Backfill data in small, cursor-paginated chunks without locking tables. Add `CREATE INDEX CONCURRENTLY` with `lock_timeout = '2s'`.
-3. **Phase 3 (Contract)**: Switch application reads to the new column/table. Drop the old column/table safely.
-
-## 📚 5. Technical References
-
-See detailed guides in `references/`:
-
-- `references/query-missing-indexes.md` — Foreign key and lookup indexing
-- `references/data-n-plus-one.md` — Batch query patterns
-- `references/conn-pooling.md` — Connection pool tuning
-- `references/data-pagination.md` — Cursor vs offset benchmarks
-- `references/lock-deadlock-prevention.md` — Transaction lock ordering
+1. Phase 1 (Expand): Add new column or table as nullable or with a default. Deploy application writing to both old and new columns.
+2. Phase 2 (Backfill): Backfill existing rows in small cursor-paginated chunks. Create indexes concurrently with `SET lock_timeout = '2s'`.
+3. Phase 3 (Contract): Switch application reads to the new column, remove fallback code, and drop obsolete columns safely.

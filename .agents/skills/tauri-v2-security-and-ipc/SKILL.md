@@ -1,34 +1,26 @@
 ---
 name: tauri-v2-security-and-ipc
-version: 1.0.0
-description: 'Use for Tauri v2 native desktop security: capabilities and permission scoping, secure IPC commands, SQLCipher key derivation via OS Keychain, and safe filesystem operations.'
-metadata:
-  requires:
-    packages: ['@tauri-apps/api', 'keyring-rs', 'rusqlite', 'tauri-plugin-sql']
+description: Tauri v2 native desktop security. Governs capabilities and permission scoping, secure IPC commands, SQLCipher key derivation via OS Keychain, path traversal defense, and safe filesystem operations.
+rules:
+  - core
+  - security
+  - backend
 ---
 
-# tauri-v2-security-and-ipc
+# Tauri v2 Security and IPC
 
-Інженерний стандарт безпеки десктопного клієнта SmartFeed Studio (Tauri v2 + Rust + React): конфігурація capabilities, безпечний IPC міст, апаратне шифрування SQLCipher та зберігання ключів у системному Keychain.
+## Step 0 - Load rules (mandatory, before any analysis or code)
 
-## Залізні принципи безпеки десктопу
+1. Read `.agents/rules/core.md`, `.agents/rules/security.md`, and `.agents/rules/backend.md`.
+2. Note all desktop security and IPC invariants in working notes (SEC-07, BE-02).
+3. If modifying Tauri capabilities or permissions, call context7: `resolve-library-id {libraryName: "tauri", query: "..."}` and `query-docs`.
+4. Do not modify IPC commands or configuration until steps 1-3 are complete.
 
-1. **Мінімальні привілеї Capabilities (Least Privilege)**: Заборонено видавати дикі дозволи (`"core:default"` на все вікно). Кожна команда Rust повинна бути явно описана в файлах можливостей `src-tauri/capabilities/*.json` з обмеженим доступом до конкретних вікон та URL.
-2. **Апаратне зберігання ключів (OS Keychain Only)**: Майстер-ключ розшифрування локальної бази SQLCipher та JWT refresh-токени **категорично заборонено** зберігати у відкритому вигляді (в `localStorage`, конфігураційних `.json` чи SQLite). Вони зберігаються виключно в нативному Keychain операційної системи (macOS Keychain, Windows Credential Manager, Linux Secret Service) через Rust-крейт `keyring`.
-3. **Захист від Command & Path Traversal Injection (CWE-22, CWE-78)**: Будь-які шляхи до файлів імпорту або експорту, передані з React у Tauri IPC, зобов'язані перевірятися в Rust через `dunce::canonicalize()` з контролем виходу за межі дозволеної робочої директорії. Заборонено виклики системної консолі `std::process::Command` з конкатенацією рядків.
-4. **Сувора типізація IPC (Serde Validation)**: Усі аргументи функцій `#[tauri::command]` типізуються суворими структурами Rust (`Deserialize`), а не сирими рядками або `serde_json::Value`.
+## Security and IPC invariants
 
-## Матриця виклику інструкцій (Triggers → References)
-
-| Тригер / Потреба                                   | Цільовий reference-файл                                                                            | Ключовий фокус                                                                      |
-| :------------------------------------------------- | :------------------------------------------------------------------------------------------------- | :---------------------------------------------------------------------------------- |
-| Налаштування дозволів вікон, прав IPC у Tauri v2   | [`references/tauri-v2-capabilities-and-scopes.md`](references/tauri-v2-capabilities-and-scopes.md) | JSON capabilities, permissions, ізоляція від сторонніх URL, scopes файлової системи |
-| Шифрування локальної БД SQLCipher, OS Keychain     | [`references/sqlcipher-key-management.md`](references/sqlcipher-key-management.md)                 | Робота з `keyring-rs`, генерація PBKDF2 солі, `PRAGMA key`, безпечний рестарт       |
-| Безпека команд Rust `#[tauri::command]`, валідація | [`references/ipc-input-validation-rust.md`](references/ipc-input-validation-rust.md)               | Захист від Path Traversal (`dunce::canonicalize`), безпечні помилки для UI          |
-
-## Категорично заборонено
-
-- Зберігати refresh-токени чи паролі в `localStorage` вебв'ю десктопу (це вразливо до XSS).
-- Використовувати `shell:open` або `process::Command` з несанітизованими аргументами.
-- Залишати базу даних SQLCipher відкритою без `PRAGMA key` або з хардкодним статичним паролем.
-- Дозволяти доступ до довільних локальних файлів без обмеження через Tauri FS Scope.
+1. Least privilege capabilities: Configure explicit permissions in `src-tauri/capabilities/*.json`. Do not grant wildcard core defaults (`"core:default"`) across all windows. Restrict each command and plugin to authorized windows and webview origins.
+2. OS Keychain for secrets: Never store SQLCipher encryption keys, passwords, or JWT refresh tokens in plaintext (avoid `localStorage`, config files, or unencrypted SQLite). Store and retrieve keys exclusively from the host OS Keychain (macOS Keychain, Windows Credential Manager, Linux Secret Service) using the `keyring` Rust crate.
+3. Path traversal prevention (CWE-22): Any file or directory path received from the webview through IPC must be canonicalized and validated using `dunce::canonicalize()`. Block any path navigating outside the authorized workspace directory.
+4. Command injection prevention (CWE-78): Never pass unvalidated user inputs or shell command strings to `std::process::Command`. Always pass separate arguments in discrete vector items with `shell: false`.
+5. Strict IPC argument typing: Every Tauri command handler (`#[tauri::command]`) must accept strongly typed Rust structs implementing `serde::Deserialize`. Do not accept raw unvalidated strings or untyped JSON values.
+6. Webview XSS mitigation: Keep CSP (Content Security Policy) enabled in `tauri.conf.json`. Restrict external script and stylesheet loading.

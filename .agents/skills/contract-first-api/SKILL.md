@@ -1,29 +1,26 @@
 ---
 name: contract-first-api
-version: 1.0.0
-description: 'Use when creating, modifying, or integrating any API endpoint, DTO, or client-server interaction: defines Zod schemas and TypeScript types in packages/shared FIRST, ensuring client and server contracts never drift and eliminating inline ad-hoc types.'
+description: Contract-first API engineering using shared Zod schemas, TypeScript DTOs, and enums in packages/shared. Use when defining new endpoints, altering payload shapes, or synchronizing client and server models.
+rules:
+  - core
+  - backend
 ---
 
-# Contract-First API & Shared Type Safety
+# Contract-First API
 
-Гарантує, що клієнтські додатки (`apps/desktop`, `apps/admin-portal`) та серверний бекенд (`services/backend-api`) працюють через єдине джерело істини в `packages/shared`, унеможливлюючи розрив типів.
+## Step 0 - Load rules (mandatory, before any analysis or code)
 
-## Загальні принципи
+1. Read `.agents/rules/core.md` and `.agents/rules/backend.md`.
+2. Note all contract and typing invariants in working notes.
+3. If defining complex Zod schemas, call context7: `resolve-library-id {libraryName: "zod", query: "..."}` and `query-docs`.
+4. Do not write client or server code until contracts in `packages/shared` are compiled.
 
-1. **Контракт передує коду (Shared First)**: Будь-який новий ендпоінт, параметр або фільтр спочатку описується у `packages/shared` як Zod-схема та TypeScript DTO.
-2. **Єдиний тип запиту/відповіді**: Заборонено дублювати інтерфейси на фронтенді чи бекенді. Обидві сторони імпортують типи з `@smartfeed/shared`.
-3. **Повна заборона `as any` та `any`**: Будь-яка невідома структура валідується через Zod `.parse()` або `.safeParse()`.
-4. **Синхронізація з OpenAPI/Swagger**: DTO контролерів NestJS відображають схеми Zod, забезпечуючи точну документацію в `/api/docs`.
+## Workflow instructions
 
-## Reference — індекс
-
-| Тригер                                                                 | Reference                                                               |
-| ---------------------------------------------------------------------- | ----------------------------------------------------------------------- |
-| Створення або модифікація Zod-схем та спільних DTO у `packages/shared` | [`zod-shared-patterns.md`](references/zod-shared-patterns.md)           |
-| Інтеграція контрактів у NestJS контролери та клієнтські API сервіси    | [`client-server-codegen.md`](references/client-server-codegen.md)       |
-| Перевірка на злам зворотної сумісності (Breaking Changes) контрактів   | [`breaking-change-detector.md`](references/breaking-change-detector.md) |
-
-## Заборони
-
-- Заборонено створення локальних інтерфейсів у компонентах для даних, які приходять з API.
-- Заборонено мутувати схему API без запуску `pnpm --filter @smartfeed/shared build`.
+1. Define shared contracts first: Create or modify Zod schemas, TypeScript interfaces, and enum types in `packages/shared/src/` before creating backend controllers or frontend UI components.
+2. Build shared package: Run `pnpm --filter @smartfeed/shared build` after any contract modification. Confirm zero compilation errors.
+3. Single source of truth: Import types and schemas in `services/backend-api` and frontend applications (`apps/desktop`, `apps/admin-portal`) strictly from `@smartfeed/shared`.
+4. Zero inline ad-hoc types: Never declare local inline types for API requests, responses, or entity models in frontend components or backend controllers.
+5. Zero type bypasses: Do not cast payloads with `as any`. Use Zod `.parse()` or `.safeParse()` for runtime payload validation.
+6. Controller DTO synchronization: NestJS request DTOs and Swagger schemas must match Zod schema definitions in `@smartfeed/shared`.
+7. Non-breaking evolution: When modifying existing contracts, introduce optional fields or versioned interfaces to preserve backward compatibility.

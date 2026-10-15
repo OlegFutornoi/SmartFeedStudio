@@ -1,142 +1,45 @@
 ---
 name: nestjs-best-practices
-description: NestJS best practices and architecture patterns for building production-ready applications. This skill should be used when writing, reviewing, or refactoring NestJS code to ensure proper patterns for modules, dependency injection, security, and performance.
-license: MIT
-metadata:
-  author: Kadajett
-  version: '1.2.0'
+description: NestJS 11 CQRS architecture, modularity, dependency injection, validation, and error handling. Use when creating or modifying NestJS modules, controllers, CQRS commands, queries, handlers, services, and validation pipes.
+rules:
+  - core
+  - backend
 ---
 
 # NestJS Best Practices
 
-Comprehensive best practices guide for NestJS applications. Contains 40 rules across 10 categories, prioritized by impact to guide automated refactoring and code generation.
+## Step 0 - Load rules (mandatory, before any analysis or code)
 
-## When to Apply
+1. Read `.agents/rules/core.md` and `.agents/rules/backend.md`.
+2. Note all invariant IDs relevant to the task in working notes (BE-01 through BE-10).
+3. If touching NestJS, class-validator, or CQRS APIs, call context7: `resolve-library-id {libraryName: "@nestjs/core", query: "..."}` and `query-docs`.
+4. Do not write or edit backend code until steps 1-3 are complete.
 
-Reference these guidelines when:
+## Architecture and CQRS modularity
 
-- Writing new NestJS modules, controllers, or services
-- Implementing authentication and authorization
-- Reviewing code for architecture and security issues
-- Refactoring existing NestJS codebases
-- Optimizing performance or database queries
-- Building microservices architectures
+1. Modularity limit: Every handler, service, and controller must stay below 250 lines. Keep command and query handlers strictly under 120-150 lines.
+2. One handler per file: Each CQRS Command Handler or Query Handler must reside in its own dedicated file. Bundling multiple handlers into a single file is prohibited.
+3. Decoupling: Command handlers return `{ id }` or void, never full read entities. Queries are read-only.
+4. Feature modules: Organize code by domain feature, not technical layer. UsersModule must have zero knowledge of JWT tokens, Passport strategies, or auth controllers.
+5. Cloud boundary: The cloud backend runs headless in Docker/Railway. Endpoints must never execute local OS workspace filesystem operations (`fs.unlinkSync`, `fs.mkdirSync`, `fs.rmSync`). Local workspaces belong strictly to Tauri v2 Rust.
 
-## Rule Categories by Priority
+## Dependency injection
 
-| Priority | Category             | Impact      | Prefix      |
-| -------- | -------------------- | ----------- | ----------- |
-| 1        | Architecture         | CRITICAL    | `arch-`     |
-| 2        | Dependency Injection | CRITICAL    | `di-`       |
-| 3        | Error Handling       | HIGH        | `error-`    |
-| 4        | Security             | HIGH        | `security-` |
-| 5        | Performance          | HIGH        | `perf-`     |
-| 6        | Testing              | MEDIUM-HIGH | `test-`     |
-| 7        | Database & ORM       | MEDIUM-HIGH | `db-`       |
-| 8        | API Design           | MEDIUM      | `api-`      |
-| 9        | Microservices        | MEDIUM      | `micro-`    |
-| 10       | DevOps & Deployment  | LOW-MEDIUM  | `devops-`   |
+1. Constructor injection: Prefer constructor injection over property injection.
+2. Avoid service locator: Do not resolve dependencies dynamically via ModuleRef unless building dynamic plugin dispatchers.
+3. Injection tokens: Use symbol or string injection tokens for interface-based dependencies.
+4. Scope management: Keep default singleton scope for services. Use request scope only when tenant context cannot be passed through arguments.
 
-## Quick Reference
+## Controllers and validation
 
-### 0. Upfront Research via `context7` MCP (CRITICAL)
+1. Validated DTOs: Every property in request body DTOs must have explicit `class-validator` decorators (`@IsString()`, `@IsInt()`, `@IsOptional()`, `@Type(() => Number)`).
+2. Validated query params: Every `@Query()` parameter must use a validated DTO class. Raw primitive query parameters without class-validator are prohibited.
+3. Global validation pipe: Ensure `ValidationPipe` runs with `whitelist: true` and `transform: true`.
+4. Guard and decorator parity: Whenever `@CurrentUser()` is used in a controller handler, the route must be protected with `@UseGuards(JwtAuthGuard)` or `@UseGuards(OptionalJwtAuthGuard)` so `request.user` is hydrated.
+5. Protected mutation endpoints: All POST, PUT, DELETE, and PATCH endpoints must declare `@UseGuards(JwtAuthGuard, ...)` unless explicitly decorated with `@Public()`.
 
-- Query `context7` (`/nestjs/nest`, `class-validator`, `/taskforcesh/bullmq`) before designing modules, CQRS handlers, validation pipes, or queue workers to verify official NestJS 11 signatures and patterns.
+## Error handling and secrets
 
-### 1. Architecture (CRITICAL)
-
-- `arch-avoid-circular-deps` - Avoid circular module dependencies
-- `arch-feature-modules` - Organize by feature, not technical layer
-- `arch-module-sharing` - Proper module exports/imports, avoid duplicate providers
-- `arch-single-responsibility` - Focused services over "god services"
-- `arch-use-repository-pattern` - Abstract database logic for testability
-- `arch-use-events` - Event-driven architecture for decoupling
-- `arch-native-vs-cloud-segregation` - Cloud API must never manipulate desktop client local workspace files
-
-### 2. Dependency Injection (CRITICAL)
-
-- `di-avoid-service-locator` - Avoid service locator anti-pattern
-- `di-interface-segregation` - Interface Segregation Principle (ISP)
-- `di-liskov-substitution` - Liskov Substitution Principle (LSP)
-- `di-prefer-constructor-injection` - Constructor over property injection
-- `di-scope-awareness` - Understand singleton/request/transient scopes
-- `di-use-interfaces-tokens` - Use injection tokens for interfaces
-
-### 3. Error Handling (HIGH)
-
-- `error-use-exception-filters` - Centralized exception handling
-- `error-throw-http-exceptions` - Use NestJS HTTP exceptions
-- `error-handle-async-errors` - Handle async errors properly
-- `error-zero-silent-failures` - Zero empty or comment-only `catch {}` blocks; mandatory structured logging or typed exceptions
-
-### 4. Security (HIGH)
-
-- `security-auth-jwt` - Secure JWT authentication
-- `security-protect-all-mutations` - 100% of POST/PUT/DELETE/PATCH endpoints must use `@UseGuards` or `@Public()`
-- `security-zero-fallback-secrets` - Zero string fallbacks (`|| 'fallback'`) for JWT, webhook HMAC, or encryption keys (CWE-798)
-- `security-guard-decorator-parity` - `@CurrentUser()` strictly requires an active AuthGuard (`JwtAuthGuard` or `OptionalJwtAuthGuard`)
-- `security-validate-all-input` - Validate with class-validator
-- `security-use-guards` - Authentication and authorization guards
-- `security-sanitize-output` - Prevent XSS and sensitive field leaks
-- `security-rate-limiting` - Implement rate limiting
-
-### 5. Performance (HIGH)
-
-- `perf-async-hooks` - Proper async lifecycle hooks
-- `perf-use-caching` - Implement caching strategies
-- `perf-optimize-database` - Optimize database queries
-- `perf-lazy-loading` - Lazy load modules for faster startup
-
-### 6. Testing (MEDIUM-HIGH)
-
-- `test-use-testing-module` - Use NestJS testing utilities
-- `test-e2e-supertest` - E2E testing with Supertest
-- `test-mock-external-services` - Mock external dependencies
-
-### 7. Database & ORM (MEDIUM-HIGH)
-
-- `db-use-transactions` - Transaction management
-- `db-avoid-n-plus-one` - Avoid N+1 query problems
-- `db-use-migrations` - Use migrations for schema changes
-
-### 8. API Design (MEDIUM)
-
-- `api-use-dto-serialization` - DTO and response serialization
-- `api-use-interceptors` - Cross-cutting concerns
-- `api-versioning` - API versioning strategies
-- `api-use-pipes` - Input transformation with pipes
-- `api-validated-query-dtos` - All `@Query()` endpoints must use validated DTO classes (zero raw query params)
-
-### 9. Microservices (MEDIUM)
-
-- `micro-use-patterns` - Message and event patterns
-- `micro-use-health-checks` - Health checks for orchestration
-- `micro-use-queues` - Background job processing
-
-### 10. DevOps & Deployment (LOW-MEDIUM)
-
-- `devops-use-config-module` - Environment configuration
-- `devops-use-logging` - Structured logging
-- `devops-graceful-shutdown` - Zero-downtime deployments
-
-## How to Use
-
-Read individual rule files for detailed explanations and code examples:
-
-```
-rules/arch-avoid-circular-deps.md
-rules/security-validate-all-input.md
-rules/_sections.md
-```
-
-Each rule file contains:
-
-- Brief explanation of why it matters
-- Incorrect code example with explanation
-- Correct code example with explanation
-- Additional context and references
-
-## Full Compiled Document
-
-For the complete guide with all rules expanded in a single document, see
-[AGENTS.md in the repository](https://github.com/Kadajett/agent-nestjs-skills/blob/main/AGENTS.md).
+1. Centralized exception handling: Throw NestJS HTTP exceptions (`NotFoundException`, `BadRequestException`, `ForbiddenException`). Catch blocks must log structured warnings or rethrow domain exceptions. Silent empty catch blocks are prohibited.
+2. Zero fallback secrets: Never use fallback strings (`|| 'default-secret'`) for JWT secrets, HMAC keys, or encryption tokens. Throw `InternalServerErrorException` immediately if environment configuration is missing.
+3. Secret serialization: Never return passwords, token hashes, or merchant secret keys in controller responses.

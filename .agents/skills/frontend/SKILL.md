@@ -1,478 +1,63 @@
 ---
 name: frontend
-description: >-
-  Enterprise full-cycle frontend engineering master skill for SmartFeed Studio (React 18/19, Next.js 14,
-  Tauri v2, Tailwind CSS, shadcn/ui, Playwright). Consolidates ALL frontend skills: UI/UX design
-  (ui-ux-pro-max, emil-design-eng, image), localization (i18n-localization), performance (vercel-react-best-practices,
-  performance-optimization), testing & automation (playwright-automation, browser-debugging, mock-real-parity),
-  contracts & API (contract-first-api), planning (planning-and-lifecycle, spec-driven-development, incremental-implementation),
-  and review (code-review-and-quality, review). Guides the complete 7-stage frontend lifecycle:
-  1. Task & UX Analysis, 2. Planning & Component Decomposition, 3. Solution & UI/UX Architecture,
-  4. Automated UI Testing (Playwright TDD RED), 5. Implementation & UI Polish GREEN,
-  6. Rigorous Code Review & DoD Verification, 7. Systematic Debugging. Enforces Web Interface Guidelines
-  (accessibility, visible focus, forms UX, tabular numbers), 100% theme harmony (zero off-scheme colors),
-  100% solid sticky headers, zero duplicate CTA buttons, zero duplicate network requests (useRef guarding),
-  100% bilingual i18n (UA/EN), and strict component modularity (<250-300 lines). Use whenever building,
-  refactoring, styling, reviewing, planning, or testing pages, components, dialogs, or hooks in
-  apps/desktop or apps/admin-portal. Triggers on any frontend, UI, design, React, Next.js, Tauri, component, hook,
-  animation, styling, localization, or Playwright task.
+description: Enterprise full-cycle frontend engineering lifecycle orchestrator for SmartFeed Studio (React 18, Next.js 14, Tauri v2 desktop UI, Tailwind CSS, shadcn/ui, Playwright). Use when building, refactoring, styling, reviewing, or testing pages, components, dialogs, hooks, and local mock drivers in apps/desktop or apps/admin-portal. Do not use for server-side CQRS handlers or cloud database migrations; use backend instead.
+rules: [core, frontend, i18n, testing]
 ---
 
-# 🎨 Enterprise Frontend Engineering Lifecycle (SmartFeed Studio)
-
-A comprehensive, full-cycle frontend engineering **master skill** for SmartFeed Studio. It consolidates ALL frontend-related specialized skills, project rules, design systems, planning methodology, and review protocols.
-
----
-
-## 🧭 1. Consolidated Skills Architecture
-
-```text
-                               ┌────────────────────────────────────┐
-                               │       frontend (Master Skill)      │
-                               └─────────────────┬──────────────────┘
-           ┌──────────────────────┬──────────────┴─────┬──────────────────────┬──────────────────────┐
-           ▼                      ▼                    ▼                      ▼                      ▼
-┌──────────────────────┐ ┌──────────────────┐ ┌──────────────────┐ ┌──────────────────┐ ┌──────────────────┐
-│   UI/UX & Design     │ │React Performance │ │ Testing & Autom. │ │  Planning & SDD  │ │ Review & Quality │
-├──────────────────────┤ ├──────────────────┤ ├──────────────────┤ ├──────────────────┤ ├──────────────────┤
-│ ui-ux-pro-max        │ │ vercel-react-bp  │ │ playwright-auto  │ │ plan-lifecycle   │ │ code-review-qual │
-│ emil-design-eng      │ │ perform-optimize │ │ browser-debugging│ │ spec-driven-dev  │ │ code-simplify    │
-│ image                │ │ contract-first   │ │ mock-real-parity │ │ incremental-impl │ │ doubt-driven-dev │
-│ i18n-localization    │ │                  │ │ tdd-cycle        │ │                  │ │                  │
-└──────────────────────┘ └──────────────────┘ └──────────────────┘ └──────────────────┘ └──────────────────┘
-```
-
-### 📋 Операційна матриця підскілів фронтенду
-
-| Підскіл                           | Що робить (Функціонал)                                                                | Коли активується | Застосування в SmartFeed Studio                                                      |
-| :-------------------------------- | :------------------------------------------------------------------------------------ | :--------------- | :----------------------------------------------------------------------------------- |
-| **`ui-ux-pro-max`**               | 100% Solid Sticky Headers, семантичні токени теми, нуль дублів CTA, ліміт <250 рядків | Фази 3, 5, 6     | Верстка каталогів, таблиць товарів, модалок, виключення напівпрозорих шапок.         |
-| **`vercel-react-best-practices`** | Ліквідація дублів запитів через `useRef`, відсутність `StrictMode` double-mount       | Фази 3, 5        | Підключення API, таблиці 10k+ SKU, мемоізація хуків, оптимізація ре-рендерів.        |
-| **`i18n-localization`**           | 100% паритет словників `uk` ⇄ `en`, нуль хардкоду, перевірка через `pnpm i18n:check`  | Фази 3, 5, 6     | Локалізація форм, модалок, тостів, тултіпів, помилок бекенду (`getErrorMessage`).    |
-| **`emil-design-eng`**             | Spring-анімації, мікродеталі, плавні переходи, тактильність, оптимістичний UI         | Фаза 5           | Анімація випадаючих меню, тостів, перемикачів тарифів, drag-and-drop.                |
-| **`image`**                       | Оптимізація та стиснення медіа-асетів (Sharp, WebP, плейсхолдери)                     | Фази 3, 5        | Аватари користувачів, ілюстрації порожніх станів (Empty State), фото товарів.        |
-| **`playwright-automation`**       | Автотести E2E з Page Object Model, перевірка двомовності UA ⇄ EN                      | Фази 4, 6        | Перевірка відсутності дублів запитів (`requestCount === 1`), тести інтерфейсу.       |
-| **`browser-debugging`**           | Жива інспекція DOM, мережі та консолі браузера через Playwright MCP                   | Фази 5, 7        | Візуальний аудит, перевірка відсутності помилок консолі та рендерингу.               |
-| **`mock-real-parity`**            | 100% паритет між браузерним Mock (`mockDatabaseDriver`), SQLite та реальним API       | Фази 4, 6        | Перевірка повноти гідратації зв'язаних сутностей у таблицях та лічильниках квот.     |
-| **`contract-first-api`**          | Спільні DTO, Zod-схеми, єдині типи контрактів у `@smartfeed/shared`                   | Фази 2, 5        | Інтеграція клієнтських форм з бекендом, безпечна типізація пропсів.                  |
-| **`planning-and-lifecycle`**      | Детерміновані плани в `plans/active/`, декомпозиція екранів до початку коду           | Фаза 2           | Декомпозиція великих модалок (Header, Footer, Content), контроль ліміту <250 рядків. |
-| **`test-driven-development`**     | Цикл TDD RED → GREEN, написання поведінкових тестів перед кодом                       | Фаза 4           | Перевірка логіки фільтрів, сортування та мапінгу до написання компонентів.           |
-| **`systematic-debugging`**        | 4-фазний дебаг: відтворення тестом → трейсинг до першопричини → чистий фікс           | Фаза 7           | Пошук джерел нескінченних циклів ререндеру, розривів станів чи помилок UI.           |
-| **`code-review-and-quality`**     | 5-осьовий аудит, перевірка DoD, відсутність `any`, 100% переклади i18n                | Фаза 6           | Фінальна верифікація перед здачею задачі, запуск `tsc --noEmit`.                     |
-
-### 💎 Iron Laws of Frontend Engineering
-
-1. **Component Modularity Budget (<250 lines)**: Monolithic components (300–1000+ lines) are strictly prohibited. Target <180 lines.
-2. **Mandatory Table Row Extraction**: Any DataTable with >3 columns or interactive elements (actions, switches, badges) **MUST** extract row rendering into `*TableRow.tsx` (<150 lines). Never inline all cells inside the table file.
-3. **List Page Modularity & Dialogs Container**: List pages (e.g. `SuppliersListPage.tsx`) MUST extract dialog components into `*DialogsContainer.tsx` and dialog open/close state into `use*PageState.ts` (<120 lines). Main page file must remain a clean orchestrator <180 lines.
-4. **Session & Storage Decoupling**: Context providers MUST encapsulate `localStorage` operations into dedicated storage utilities (e.g. `authSessionStorage.ts`), avoiding direct scattered `localStorage` calls in React components.
-5. **100% Solid Sticky Headers & Modals**: Sticky headers, modal headers/footers **MUST** use `bg-card`, `bg-muted`, `bg-background` — never semi-transparent `bg-*/40`, `bg-*/50`.
-6. **Zero Off-Scheme Palette Colors**: NEVER `purple-*`, `violet-*`, `fuchsia-*`, `pink-*`, `emerald-*` or ad-hoc colors. Only semantic design tokens: `primary`, `secondary`, `destructive`, `muted`, `accent`, `card`, `background`, `border` with alpha channels (`border-primary/20 bg-primary/10 text-primary`).
-7. **Zero Duplicate Action / CTA Buttons**: Empty state CTA = hidden header CTA. If an empty state card provides a CTA (e.g. "Add Channel", "Create Feed"), the toolbar/header button MUST be hidden (`items.length === 0 && !search ? null : <Button ...>`).
-8. **Zero Duplicate API Requests**: `useRef` guards (`isFetchingRef`, `lastFetchedTokenRef`). No `React.StrictMode` double-mounting.
-9. **Zero Silent Failures (`catch {}`)**: NEVER write empty `catch {}` or ignore errors silently. Any `catch` block MUST either display a localized toast (`toast.error(getErrorMessage(err, t))`) or log structured diagnostics (`console.warn('[Module:Context] Description:', err)`).
-10. **100% Bilingual Internationalization (i18n)**: Zero hardcoded strings. All labels, toasts, modals, tooltips, placeholders, and HTML titles (`title={t('...')}`) in both `locales/uk/*.json` and `locales/en/*.json`. Numerical metrics like percentages must be formatted cleanly (`Math.round(percent)`).
-11. **No Arbitrary Timeouts**: Playwright tests use condition-based waiting (`waitForResponse`, `waitForSelector`, `expect.poll`).
-12. **Architecture & Reliability > Speed ("Working" is Not Enough)**: Correct modular design from day one. Never write code to "just make it work" with quick hacks. Analyze deeply and pick the most robust, performant pattern.
-13. **Upfront Research via `context7` & MCPs**: Before implementing features or designing architecture, refresh library APIs and official docs via `context7` (`resolve-library-id`, `query-docs`) and `shadcn` MCP.
-14. **Strict Zero Plan Dumping in Chat**: Write all detailed plans into `plans/active/<feature>.md`. Chat responses must contain ONLY a concise 1-2 sentence summary, status, and clickable file link `[План](file:///...)`.
-15. **Mandatory Official shadcn Installation & Registry Inventory**: After compiling the list of required components, the agent **MUST ALWAYS install them directly into the project via official CLI (`npx shadcn@latest add <component> -y`)**, NEVER write base UI primitives from scratch. Maintain an up-to-date registry of installed components in `src/components/ui/COMPONENTS.md`.
-
----
-
-### 🚫 Anti-Patterns & Remediation Lessons (Learned from Audits)
-
-| ❌ Severe Anti-Pattern                                              | Why It Fails                                                                  | ✅ Mandatory Correct Implementation                                                                                            |
-| :------------------------------------------------------------------ | :---------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------- |
-| **Inlining All Table Cells in `*DataTable.tsx`** (>300 lines)       | Monolithic table files, redundant re-renders, hard to maintain.               | **TableRow Extraction**: Extract `<SupplierTableRow />` into its own file (<150 lines); keep table container <180 lines.       |
-| **Bloated List Pages Containing All Dialogs** (`SuppliersListPage`) | Bundles 7+ modal states and handlers into main page, ballooning to 370 lines. | **Dialogs Container & Hook**: Move dialogs to `*DialogsContainer.tsx` and state to `use*PageState.ts`. Main page <180 lines.   |
-| **Direct Scattered `localStorage` Calls in Contexts**               | Mixes React state with browser storage; race conditions on token refresh.     | **Encapsulated Storage Service**: Create `authSessionStorage.ts` for reading, writing, and clearing tokens and profiles.       |
-| **Monolithic Mock Driver Accumulating All Domains** (>330 lines)    | `mock-driver.ts` grows infinitely with every new feature.                     | **Domain Mock Drivers**: Split into `mock-suppliers.ts`, `mock-feeds.ts`, `mock-products.ts` with thin facade dispatcher.      |
-| **Ad-hoc Palette Colors** (`purple-600`, `violet-500`, `pink-500`)  | Breaks theme harmony in dark/light mode; causes visual fragmentation.         | **Use Semantic Tokens**: `bg-primary/10 text-primary border-primary/20`, `bg-muted text-muted-foreground`.                     |
-| **Duplicate CTA in Header & Empty State**                           | User sees two identical "Add" buttons simultaneously when list is empty.      | **Conditionally Hide Header CTA**: `if (items.length === 0 && !search) return null;` in toolbar.                               |
-| **Empty `catch {}` Blocks**                                         | Hides network, parsing, or state errors; leaves UI in broken/frozen state.    | **Structured Log or Toast**: `console.warn('[ExportChannels:load] Failed:', err);` or `toast.error(getErrorMessage(err, t));`. |
-| **God-Components (400–1000+ lines)**                                | Unmaintainable, untestable, causes excessive re-renders.                      | **Strict Decomposition**: Split into `<View>`, `<Header>`, `<Table>`, `<Row>`, `<Dialog>`, `<EmptyState>`, `useHook`.          |
-| **Hardcoded English/Ukrainian Strings**                             | Incomplete localization; raw strings leak when user switches language.        | **100% i18n**: All text in `t('ns:key')`. Keys registered in both `uk` and `en` JSON dictionaries.                             |
-| **Untranslated HTML Titles** (`title="Edit"`)                       | Browser tooltips display English in Ukrainian interface.                      | **Translated Attributes**: `title={t('common:edit')}`, `aria-label={t('common:delete')}`.                                      |
-| **Raw Floating Percentages** (`33.33333333333333%`)                 | Looks unpolished and breaks table formatting.                                 | **Clean Formatting**: `Math.round(percent)` or `Number(percent.toFixed(1))`.                                                   |
-
----
-
-## 🔌 2. MCP Research Tools — Use During Development
-
-Бери ці інструменти **проактивно** під час написання коду — не чекай запиту від користувача.
-
-### 📚 context7 — Документація бібліотек
-
-Використовуй для отримання **актуальної документації** будь-якої бібліотеки перед написанням коду:
-
-```
-# Крок 1: Знайти ID бібліотеки
-call_mcp_tool(ServerName: "context7", ToolName: "resolve-library-id",
-  Arguments: { libraryName: "shadcn/ui" })
-
-# Крок 2: Отримати документацію
-call_mcp_tool(ServerName: "context7", ToolName: "query-docs",
-  Arguments: { context7CompatibleLibraryID: "/shadcn-ui/ui",
-               topic: "Dialog component props" })
-```
-
-**Коли використовувати**:
-
-- Перед використанням нового shadcn компонента → документація API і props
-- Next.js 14 App Router patterns → актуальні server/client component правила
-- Tailwind CSS v3/v4 → нові утиліти та синтаксис
-- React 18/19 нові хуки (`useTransition`, `use`, `useOptimistic`)
-- `i18next`, `react-i18next` → namespace та interpolation синтаксис
-- Tauri v2 API → Rust command signatures та JS bindings
-
-### 🔥 firecrawl — Пошук & Аналіз Сайтів
-
-Використовуй для **пошуку best practices**, аналізу конкурентів, дослідження UI patterns:
-
-```
-# Пошук документації / best practices
-call_mcp_tool(ServerName: "firecrawl", ToolName: "firecrawl_search",
-  Arguments: { query: "Next.js 14 sticky table header with solid background",
-               limit: 5 })
-
-# Скрапінг конкретної сторінки документації
-call_mcp_tool(ServerName: "firecrawl", ToolName: "firecrawl_scrape",
-  Arguments: { url: "https://ui.shadcn.com/docs/components/dialog" })
-
-# Дослідження UI патернів
-call_mcp_tool(ServerName: "firecrawl", ToolName: "firecrawl_search",
-  Arguments: { query: "React data table empty state UX patterns 2024" })
-```
-
-**Коли використовувати**:
-
-- Пошук оптимального CSS pattern для складного layout
-- Дослідження UX best practices для специфічного компонента
-- Аналіз офіційної документації (Vercel, shadcn, Tailwind)
-- Пошук вирішення нестандартних Playwright проблем
-- Дослідження accessibility patterns (WCAG, ARIA)
-
-### 🎭 playwright MCP — Браузерна Інспекція
-
-**ЗАМІСТЬ** `browser_subagent` (який завжди падає на macOS ARM64) використовуй:
-
-```
-# Навігація на сторінку
-call_mcp_tool(ServerName: "playwright", ToolName: "browser_navigate",
-  Arguments: { url: "http://localhost:3000/dashboard" })
-
-# Скриншот для візуальної перевірки
-call_mcp_tool(ServerName: "playwright", ToolName: "browser_take_screenshot",
-  Arguments: {})
-
-# DOM snapshot для інспекції структури
-call_mcp_tool(ServerName: "playwright", ToolName: "browser_snapshot",
-  Arguments: {})
-
-# Клік по елементу
-call_mcp_tool(ServerName: "playwright", ToolName: "browser_click",
-  Arguments: { selector: "[data-testid='create-btn']" })
-
-# Заповнення форми
-call_mcp_tool(ServerName: "playwright", ToolName: "browser_fill_form",
-  Arguments: { fields: { "[name='email']": "test@test.com" } })
-```
-
-**Коли використовувати**:
-
-- Візуальна перевірка UI після змін (скриншот + порівняння)
-- Інспекція DOM для дебагу selector issues
-- Перевірка що sticky header справді solid (не transparent)
-- Верифікація що переклади відображаються правильно
-- Тестування responsive поведінки
-- Логін та навігація для перевірки auth flows
-
----
-
-## 🎨 3. Design System & Visual Excellence
-
-_Read [references/ui-ux-design-system.md](references/ui-ux-design-system.md) for full design token reference._
-
-### Anti-Templated Design Philosophy (`design-taste-frontend`, `beautiful-design`, `frontend-design`)
-
-Before writing a single component, determine the **design direction**:
-
-- What visual identity does this screen need? (Data-dense admin? Marketing landing? Onboarding wizard?)
-- What typography conveys the right tone? (Inter for admin; display fonts for landing pages)
-- Is this a redesign (audit-first) or greenfield (direction-first)?
-
-### Key Design Principles
-
-1. **Editorial Quality**: High-contrast hierarchy. No gray soup. Every element either signals something important or is removed.
-2. **Typography First**: Use `Inter` (admin/data), `Outfit` (onboarding), `DM Mono` (code). Never browser defaults.
-3. **Semantic Color Tokens Only**: `bg-background`, `bg-card`, `text-foreground`, `text-muted-foreground`, `border-border`, `bg-primary`, `text-primary-foreground`.
-4. **Micro-interactions**: Animate `opacity`/`transform` only. Smooth hover transitions (`transition-colors duration-150`). Respect `prefers-reduced-motion`.
-5. **Shadcn/ui Composition**: Reuse `Card`, `Button`, `Badge`, `Dialog`, `DropdownMenu`, `Table`, `Input`, `Tooltip`. Always merge classes via `cn()`.
-6. **Modern Web APIs** (`modern-web-guidance`): Before using a polyfill or library, check if native browser API exists. Use `:has()`, `container queries`, `@layer`, `text-wrap: balance` where available.
-
----
-
-## 🔄 4. The 7-Stage Frontend Development Workflow
-
-```mermaid
-flowchart TD
-    S1[Phase 1: Task & UX Analysis] --> S2[Phase 2: Planning & Component Decomposition]
-    S2 --> S3[Phase 3: Solution & UI/UX Architecture]
-    S3 --> S4[Phase 4: Automated UI Testing - Playwright TDD RED]
-    S4 --> S5[Phase 5: Implementation & UI Polish - GREEN]
-    S5 --> S6[Phase 6: Rigorous Code Review & DoD Verification]
-    S6 --> S7[Phase 7: Systematic Debugging & Error Remediation]
-```
-
----
-
-### 🔍 Phase 1: Task & UX Analysis
-
-> 💡 **MCP at this phase**: Use `firecrawl_search` to research UI patterns for this feature type before designing.
-
-Before writing any component, analyze user journeys, layout states, and platform constraints:
-
-1. **Target Application & Runtime**:
-   - Web Admin Portal (`apps/admin-portal` Next.js 14) or Desktop (`apps/desktop` Tauri v2)?
-   - Desktop: Does it interact with local SQLite/Rust commands (`isTauri()`) or remote cloud API?
-2. **5 Mandatory UI States**:
-   - **Loading**: Skeleton loaders (`<Skeleton />`), not bare spinners.
-   - **Empty**: Friendly icon, clear explanation, single centered CTA.
-   - **Data**: Clean table/grid/list with pagination and sorting.
-   - **Error**: Localized message via `getErrorMessage(err, t)`, retry button.
-   - **Success**: Toast (`toast.success()`), inline badges, optimistic updates.
-3. **Bilingual Mapping (i18n)**: Identify ALL strings — titles, subtitles, placeholders, tooltips, buttons, confirm modals, error toasts. Prepare key structure in both locales.
-4. **Actor Permissions**: Which roles (`SUPER_ADMIN`, `ADMIN`, `USER`) can view/edit? Disabled vs hidden based on role or license tier.
-5. **Design Direction** (`design-taste-frontend`): Audit existing screens first on redesigns. Determine visual identity before writing markup.
-6. **Modern Web Guidance**: Check `modern-web-guidance` for relevant modern CSS/JS APIs before reaching for libraries.
-
-> **Gate 1**: Target app, all 5 UI states, i18n keys, actor permissions, and design direction identified?
-
----
-
-### 📋 Phase 2: Planning & Component Decomposition
-
-> 💡 **MCP at this phase**: Use `context7` to verify latest shadcn/Next.js/Tailwind API before planning component structure.
-
-_Rules: [plans_lifecycle.md](../../rules/plans_lifecycle.md) · [engineering_discipline_and_planning.md](../../rules/engineering_discipline_and_planning.md)_
-_Skills: [planning-and-lifecycle](../planning-and-lifecycle/SKILL.md) · [spec-driven-development](../spec-driven-development/SKILL.md) · [incremental-implementation](../incremental-implementation/SKILL.md) · [contract-first-api](../contract-first-api/SKILL.md)_
-
-1. **Component Modularity Budgeting**: Plan decomposition immediately. No file > **250–300 lines**.
-   ```text
-   features/<feature-name>/
-   ├── <Feature>View.tsx          # Main orchestrator (<200 lines)
-   ├── <Feature>Header.tsx        # Title, breadcrumbs, search (<150 lines)
-   ├── <Feature>Table.tsx         # Data display with solid sticky header (<250 lines)
-   ├── <Feature>Row.tsx           # Individual item row & action menu (<150 lines)
-   ├── <Feature>Dialog.tsx        # Create/Edit modal with form validation (<250 lines)
-   ├── <Feature>EmptyState.tsx    # Dedicated empty state card (<100 lines)
-   └── use<Feature>.ts            # Data fetching, useRef dedup, mutation state (<200 lines)
-   ```
-2. **Shared Contracts**: Ensure DTOs, response types, and enums exist in `packages/shared`. Run `pnpm build:shared`. Never declare ad-hoc inline types.
-3. **Execution Strategy**: For complex features, use `subagent-driven-development` (one subagent per task) or `dispatching-parallel-agents` (independent parallel tasks).
-4. **Plan Artifact**: Create `plans/active/<feature_name>.md` with component tree, test assertions, and i18n keys. **Await explicit user approval before coding.**
-
-> **Gate 2**: Plan in `plans/active/`, modularity planned, shared contracts built, user approval received?
-
----
-
-### 🎨 Phase 3: Solution & UI/UX Architecture
-
-> 💡 **MCP at this phase**: Use `context7` for shadcn component API docs. Use `firecrawl_search` for accessibility pattern research. Use `playwright` MCP to inspect existing UI for reference.
-
-_Read [references/ui-ux-design-system.md](references/ui-ux-design-system.md) · Rules: [design_system_and_theming.md](../../rules/design_system_and_theming.md)_
-
-1. **Design System & Semantic Tokens**: Only `bg-background`, `bg-card`, `text-foreground`, `text-muted-foreground`, `border-border`, `bg-primary`. **NEVER** hardcoded palette colors.
-2. **100% Solid Sticky Headers**: `thead.sticky.top-0` and modal headers MUST have solid opaque bg:
-   ```tsx
-   <thead className="sticky top-0 z-10 bg-card border-b border-border">
-   ```
-3. **Zero Duplicate Action Buttons**: Hide header/toolbar CTA when empty state card provides it.
-4. **Network Deduplication (`integrate-backend` + `vercel-react-best-practices`)**:
-   ```typescript
-   const isFetchingRef = useRef<boolean>(false);
-   const lastTokenRef = useRef<string | null>(null);
-   ```
-   - Never cascade `/auth/me` on login/register (profile already in auth response).
-   - Lean `useCallback` deps: never put `locale`, `theme`, `isUk` in data-fetching deps.
-5. **Shadcn Composition**: `Card`, `Button`, `Badge`, `Dialog`, `DropdownMenu`, `Table`, `Input`, `Tooltip`. Always `cn()` for class merging.
-6. **Web Interface Guidelines (`web-design-guidelines`)**:
-   - `<button>` for actions, `<a>/<Link>` for navigation (NEVER `<div onClick>`).
-   - Icon-only buttons: `aria-label`. Decorative icons: `aria-hidden="true"`.
-   - Visible focus: `focus-visible:ring-2 focus-visible:ring-primary` (NEVER bare `outline-none`).
-   - Forms: `name`, `type`, `autocomplete`. Clickable labels (`htmlFor`). Never block paste.
-   - `tabular-nums` for numbers/counters. Flex children with `min-w-0` for truncation.
-
-> **Gate 3**: Semantic tokens, solid sticky headers, zero duplicate CTAs, network dedup, Web Guidelines respected?
-
----
-
-### 🧪 Phase 4: Playwright TDD — RED Phase
-
-_Read [references/playwright-testing.md](references/playwright-testing.md) · Skills: [playwright-automation](../playwright-automation/SKILL.md) · [test-driven-development](../test-driven-development/SKILL.md) · [mock-real-parity](../mock-real-parity/SKILL.md)_
-
-> [!WARNING]
-> **NEVER** call `browser_subagent` or `open_browser_url`. Always use:
-> `pnpm test:desktop` / `pnpm test:admin` (or headed/UI variants)
-
-1. **Playwright Architecture**: POM + resilient `data-testid` selectors. Location: `apps/desktop/tests/` or `apps/admin-portal/tests/`.
-2. **Mandatory Coverage**:
-   - **5 UI States**: Loading skeleton, empty state, data table, error state, success feedback.
-   - **Bilingual Test (UA⇄EN)**: Switch language, assert all headings/buttons/badges translate.
-   - **Network Dedup Assertion**: Each API endpoint called exactly **1 time** on page load.
-   - **Dialog & Form Validation**: Invalid inputs → localized errors; valid submission → success toast.
-3. **Test Isolation**: Clear `localStorage`, `sessionStorage`, cookies, and route mocks before/after each test.
-4. **Condition-Based Waiting**: `waitForResponse`, `waitForSelector`, `expect.poll` — never `sleep()`.
-5. **Execute RED**: `pnpm test:desktop -- <feature>.spec.ts`. Verify test fails for the **expected functional reason**.
-
-> **Gate 4**: Playwright test written, executed, failing for the exact expected functional reason?
-
----
-
-### 💻 Phase 5: Implementation & UI Polish — GREEN Phase
-
-> 💡 **MCP at this phase**: Use `playwright` MCP (`browser_take_screenshot`, `browser_snapshot`) to visually verify UI after implementation before running full test suite.
-
-_Skills: [ui-ux-pro-max](../ui-ux-pro-max/SKILL.md) · [vercel-react-best-practices](../vercel-react-best-practices/SKILL.md) · [i18n-localization](../i18n-localization/SKILL.md) · [emil-design-eng](../emil-design-eng/SKILL.md) · [browser-debugging](../browser-debugging/SKILL.md)_
-
-1. **Decomposed Subcomponents**: Each file within modularity budget (<250 lines).
-2. **100% i18n Completeness**: Keys in both `locales/uk/<ns>.json` and `locales/en/<ns>.json`. Use `const { t } = useTranslation('<namespace>')`. Format percentages cleanly (`Math.round(percent)`). HTML titles: `title={t('common:edit')}`.
-3. **Backend Error Translation**: `getErrorMessage(err, t)` — no raw English server errors in Ukrainian UI.
-4. **Web Interface Guidelines & Micro-interactions**:
-   - Hover transitions (`transition-colors duration-150`), ARIA labels, high contrast.
-   - `tabular-nums`, `min-w-0` on flex children. Never block paste.
-5. **Visual Polish** (`beautiful-design`): Editorial hierarchy, smooth animations on `opacity`/`transform`, premium feel without generic templates.
-6. **Verify GREEN**: `pnpm test:desktop` / `pnpm test:admin` — all tests pass cleanly.
-
-> **Gate 5**: All components pass Playwright tests, <250 lines, Web Guidelines compliant, 100% i18n?
-
----
-
-### 🔍 Phase 6: Code Review & DoD Verification
-
-_Read [references/checklist.md](references/checklist.md) · Skills: [code-review-and-quality](../code-review-and-quality/SKILL.md) · [code-simplification](../code-simplification/SKILL.md) · [doubt-driven-development](../doubt-driven-development/SKILL.md)_
-
-**Step 1 — Dispatch Self-Review** (`requesting-code-review`): Before claiming complete, dispatch a review subagent against the implementation.
-
-**Step 2 — 12-Point Frontend Quality Checklist**:
-
-| #   | Check Item                                | Verification Method                                                 |
-| --- | ----------------------------------------- | ------------------------------------------------------------------- |
-| 1   | **Component Modularity (<250-300 lines)** | No God-components. Every screen decomposed.                         |
-| 2   | **100% Solid Sticky Headers**             | `thead.sticky` + solid `bg-card`/`bg-background`. 0 text bleed.     |
-| 3   | **Zero Off-Scheme Colors**                | 0 hardcoded `purple-*`, `pink-*`, `violet-*`.                       |
-| 4   | **Zero Duplicate Action Buttons**         | CTA hidden from header when empty state provides it.                |
-| 5   | **Zero Duplicate Network Calls**          | `useRef` guards active; `requestCount === 1` asserted.              |
-| 6   | **100% Bilingual i18n**                   | All keys in both `uk` and `en` locale files. 0 raw strings.         |
-| 7   | **Web Interface & A11y**                  | `aria-label` on icon buttons; `focus-visible:ring-2`; paste ok.     |
-| 8   | **Zero Dead Code**                        | 0 unused imports (lucide, hooks, types). Clean ESLint.              |
-| 9   | **Zero Silent Failures**                  | 0 empty `catch {}`. Errors via localized toasts or banners.         |
-| 10  | **Test Isolation**                        | Browser storage reset before/after each test.                       |
-| 11  | **Static Typecheck**                      | `tsc --noEmit` exits with **0 errors** in desktop and admin-portal. |
-| 12  | **Code Formatting**                       | `pnpm format` executed cleanly.                                     |
-
-**Step 3 — Receive Review Feedback** (`code-review-reception`): Evaluate each finding with technical rigor. Verify every fix individually. Never implement blindly.
-
-**Step 4 — Lifecycle Close**:
-
-1. Move `plans/active/<feature>.md` → `plans/completed/<feature>.md` with `✅ Реалізовано та протестовано`.
-2. Update `plans/README.md` registry.
-
-> **Gate 6**: All 12 checks verified, typechecks passing, plans registered in `completed/`?
-
----
-
-### 🛠️ Phase 7: Systematic Debugging & Error Remediation
-
-_Skills: [systematic-debugging](../systematic-debugging/SKILL.md) · [browser-debugging](../browser-debugging/SKILL.md)_
-
-```text
-NO FIXES WITHOUT ROOT CAUSE INVESTIGATION FIRST
-```
-
-**4-Phase Debugging Process**:
-
-1. **Root Cause**: Inspect browser console + Playwright trace. CSS stacking, React re-render loop, stale closure, or network failure?
-2. **Pattern Analysis**: Compare with stable working components in `apps/desktop/src/pages/` or `apps/admin-portal/src/`.
-3. **Hypothesis & Minimal Test**: _"I think X fails because Y."_ Test smallest possible change.
-4. **Implementation & Verification**: Fix at root cause. Verify Playwright passes ≥3 consecutive runs.
-
-**🚨 Circuit Breaker (3-Fix Rule)**: If 3+ fixes fail → STOP. Signals architectural flaw. Refactor with user alignment.
-
----
-
-## 🧬 8. Self-Evolution & Continuous Skill Upgrade Protocol (Механізм самопрокачування через skill-creator)
-
-Коли фронтенд-інженер стикається з дефектом, антипатерном, крайовим випадком чи вимогою користувача, **яких ще немає в інструкціях або правилах**, він зобов'язаний запустити цикл безперервного самопрокачування:
-
-```text
- ┌────────────────────────────────────────────────────────────────────────────────────────┐
- │            КОНТУР САМОПРОКАЧУВАННЯ FRONTEND-АГЕНТА (SELF-EVOLUTION LOOP)               │
- └──────────────────────────────────────────┬─────────────────────────────────────────────┘
-                                            │
-    ┌───────────────────────────────────────▼───────────────────────────────────────┐
-    │ 1. ДЕТЕКЦІЯ: ВИЯВЛЕННЯ НЕЗАДОКУМЕНТОВАНОЇ ПРОБЛЕМИ АБО АНТИПАТЕРНУ            │
-    │    • Баг рендерингу (наприклад, зсув верстки, невидимий текст у темній темі) │
-    │    • Новий специфічний патерн бібліотеки (наприклад, оновлення shadcn/Tailwind)│
-    │    • Зауваження користувача (наприклад: шрифт, бейдж, заборона relative import)│
-    └───────────────────────────────────────┬───────────────────────────────────────┘
-                                            │
-    ┌───────────────────────────────────────▼───────────────────────────────────────┐
-    │ 2. СИНТЕЗ КОРЕНЕВОЇ ПРИЧИНИ (ROOT CAUSE SYNTHESIS)                            │
-    │    • Скіли: systematic-debugging, doubt-driven-development, lessons-learned   │
-    │    • Чому виник дефект? Який інваріант був порушений?                         │
-    │    • Як системно запобігти повторенню на рівні архітектури, а не костиля?     │
-    └───────────────────────────────────────┬───────────────────────────────────────┘
-                                            │
-    ┌───────────────────────────────────────▼───────────────────────────────────────┐
-    │ 3. КОДИФІКАЦІЯ ТА ЗБЕРЕЖЕННЯ ІНВАРІАНТУ                                       │
-    │    • Оновлення інваріантів у lessons-learned-registry та automated-guardrails │
-    │    • Створення або вдосконалення скіла через skill-creator                   │
-    │    • Оновлення правил проекту у .agents/rules/*.md (<12k символів)            │
-    └───────────────────────────────────────┬───────────────────────────────────────┘
-                                            │
-    ┌───────────────────────────────────────▼───────────────────────────────────────┐
-    │ 4. ЗАКРІПЛЕННЯ АВТОТЕСТОМ (TEST LOCK-IN)                                      │
-    │    • Написання E2E тесту Playwright (playwright-automation, tdd-cycle)        │
-    │    • Перевірка реального значення (not.toBe('Постачальник'), count === 1)     │
-    │    • Тепер регресія неможлива — тест впаде при спробі повторити помилку!      │
-    └───────────────────────────────────────┬───────────────────────────────────────┘
-                                            │
-    ┌───────────────────────────────────────▼───────────────────────────────────────┐
-    │ 5. СИНХРОНІЗАЦІЯ З КОМАНДОЮ АГЕНТІВ                                           │
-    │    • Оновлення таблиці Anti-Patterns у frontend/SKILL.md                      │
-    │    • Повідомлення agents_review для включення в чеклист аудиту                │
-    │    • Оновлення навігаційної матриці в .agents/AGENTS.md                       │
-    └───────────────────────────────────────────────────────────────────────────────┘
-```
-
----
-
-## 📚 Bundled References
-
-| File                                                                   | Purpose                                        |
-| ---------------------------------------------------------------------- | ---------------------------------------------- |
-| [references/checklist.md](references/checklist.md)                     | Pre-commit Frontend & UI/UX Checklist          |
-| [references/ui-ux-design-system.md](references/ui-ux-design-system.md) | Semantic tokens, solid headers, modularity     |
-| [references/playwright-testing.md](references/playwright-testing.md)   | POM, bilingual tests, network dedup assertions |
-
-**Related Project Rules & Playbooks** (always active / load on-demand):
-
-- [agents_frontend.md](../../references/agents_frontend.md) — Повний 84КБ інженерний плейбук фронтенду (детальні UI/UX специфікації, Playwright POM шаблони, bilingual matrix)
-- [design_system_and_theming.md](../../rules/design_system_and_theming.md) — 100% theme harmony
-- [frontend_network_dedup.md](../../rules/frontend_network_dedup.md) — Zero duplicate API calls
-- [engineering_discipline_and_planning.md](../../rules/engineering_discipline_and_planning.md) — Architecture > Speed
-- [plans_lifecycle.md](../../rules/plans_lifecycle.md) — Plans lifecycle management
-- [testing_and_quality.md](../../rules/testing_and_quality.md) — i18n testing, teardown policy
-
-**Related Frontend Skills** (load as needed):
-
-- [i18n-localization](../i18n-localization/SKILL.md) — 100% паритет словників `uk` ⇄ `en`, скрипт `pnpm i18n:check`
-- [browser-debugging](../browser-debugging/SKILL.md) — Інспекція живого DOM, консолі та мережі через Playwright MCP
-- [mock-real-parity](../mock-real-parity/SKILL.md) — 100% паритет між браузерним Mock, SQLite та реальним API
-- [ui-ux-pro-max](../ui-ux-pro-max/SKILL.md) — 100% solid sticky headers, semantic design tokens, zero duplicate CTAs
-- [vercel-react-best-practices](../vercel-react-best-practices/SKILL.md) — React 18 performance, request deduplication via `useRef`
-- [emil-design-eng](../emil-design-eng/SKILL.md) — Spring animations, micro-interactions, optimistic updates
-- [image](../image/SKILL.md) — Asset generation, WebP Sharp optimization
-- [playwright-automation](../playwright-automation/SKILL.md) — POM, bilingual tests, network dedup assertions
+# Frontend Engineering Master Orchestrator
+
+## Step 0 - Load rules (mandatory, before any analysis or code)
+
+1. Read `.agents/rules/core.md`, `.agents/rules/frontend.md`, `.agents/rules/i18n.md`, `.agents/rules/testing.md`.
+2. Note all invariant IDs relevant to the task (e.g. `CORE-01`, `CORE-04`, `FE-01` through `FE-07`, `UI-01` through `UI-06`, `I18N-01` through `I18N-06`, `TEST-02` through `TEST-05`).
+3. If using any external library or shadcn component, call context7: `resolve-library-id {libraryName, query}` then `query-docs {libraryId, query}`.
+4. Do not write or modify UI code until steps 1-3 are complete.
+
+## Inputs
+
+- User task prompt or issue description.
+- Target application identifier (`apps/desktop` or `apps/admin-portal`).
+- Existing feature files and tests in the target workspace.
+
+## Procedure
+
+1. Stage 1 - Discovery and UX Scope Analysis: identify the target runtime (Desktop Tauri SQLite vs Web Admin Portal), verify user permissions, map the 5 mandatory UI states (loading skeleton, empty state card, data table, localized error, success feedback), and verify bilingual dictionary keys.
+2. Stage 2 - Planning and Modularity Budgeting: create implementation plan in `plans/active/<feature>.md`. Enforce component modularity budget (<250 lines per file). Explicitly budget row component extraction (`*TableRow.tsx`), modal extraction (`*DialogsContainer.tsx`), and modal state extraction (`use*PageState.ts`). Await user approval before coding.
+3. Stage 3 - UI/UX Architecture and Design Tokens: enforce semantic tokens only (`bg-background`, `bg-card`, `text-foreground`, `border-border`, `bg-primary`, `bg-destructive`, `bg-muted`, `bg-success`). Enforce 100% solid sticky headers (`thead.sticky.top-0 bg-card` or `bg-background`). Hide header CTA if empty state CTA is visible. Install required shadcn primitives via `npx shadcn@latest add <component> -y`.
+4. Stage 4 - Automated Testing (Playwright TDD RED): write Page Object Model E2E test in `apps/desktop/tests/` or `apps/admin-portal/tests/`. Assert real business data (`expect(val).not.toBe('Постачальник')`), single-request network execution (`requestCount === 1`), and dynamic bilingual switching (`UA` ⇄ `EN`). Run test to verify expected functional failure (RED).
+5. Stage 5 - Implementation and UI Polish (GREEN): implement components to turn test GREEN. Use `useRef` guards for API calls (`isFetchingRef`, `lastFetchedTokenRef`). Use clean callback deps (never include locale/theme). Localize 100% of strings, tooltips (`title={t('...')}`), and map backend errors via `getErrorMessage(err, t)`.
+6. Stage 6 - Code Review and Quality Verification: execute pre-commit verification checklist. Check file lengths (<250 lines), zero dead imports, zero `any` types, zero hardcoded colors. Run `pnpm --filter <app> exec tsc --noEmit` and `pnpm format`.
+7. Stage 7 - Systematic Debugging: if UI fails or test breaks, inspect DOM and console with Playwright MCP tools (`browser_snapshot`, `browser_take_screenshot`). Trace root cause backward; apply structural fix.
+8. Stage 8 - Documentation and Plan Handoff: move plan to `plans/completed/<feature>.md`. Update `plans/README.md`.
+
+## Outputs
+
+- Modular React components meeting the <250-line budget.
+- Playwright E2E tests covering 5 UI states and bilingual parity.
+- Bilingual localization keys added to both `locales/uk/*.json` and `locales/en/*.json`.
+- Completed plan moved to `plans/completed/`.
+
+## Gate (stop condition)
+
+- Targeted Playwright test passes cleanly: `pnpm --filter @smartfeed/desktop exec playwright test <spec>`.
+- Static typechecking exits with 0 errors: `pnpm --filter @smartfeed/desktop exec tsc --noEmit`.
+- Bilingual parity check passes: `pnpm i18n:check`.
+- Formatting applied: `pnpm format`.
+- Invariant IDs `FE-01` through `FE-07` and `UI-01` through `UI-06` satisfied.
+
+## Never
+
+- Never use relative imports `../` or `./` across packages (violates `CORE-01`).
+- Never write empty catch blocks `catch {}` (violates `CORE-02`).
+- Never use `as any` to bypass component prop typing (violates `CORE-03`).
+- Never write components longer than 250-300 lines (violates `CORE-04`).
+- Never use semi-transparent `backdrop-blur` for sticky table headers (violates `UI-01`).
+- Never use arbitrary palette colors like `purple-*` or `violet-*` (violates `UI-02`).
+- Never render duplicate CTA buttons in both header and empty state card (violates `UI-04`).
+- Never call `browser_subagent` or `open_browser_url` (violates `CORE-09`).
+
+## References
+
+- `references/playwright-testing.md` - read when writing Playwright POM test suites.
+- `references/ui-ux-design-system.md` - read when configuring semantic tokens and layout styles.
+- `references/checklist.md` - read when performing pre-commit quality audits.

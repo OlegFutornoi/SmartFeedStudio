@@ -1,76 +1,44 @@
-# 🤖 SmartFeed Studio — Agent Guide
+# SmartFeed Studio — Agent & Engineering Architecture Guide
 
-## 📌 Mission & Architecture
+## 1. System Mission & Tech Stack
 
-Enterprise platform for catalog feeds.
+Enterprise platform for parsing, editing, and syncing XML/CSV product feeds with encrypted local SQLite, Cloudflare R2 / S3 object storage, and AI-driven catalog enrichment.
 
-- **Admin Portal**: Next.js 14 (`apps/admin-portal`, :3000)
-- **Desktop Client**: Tauri v2 + React 18 (`apps/desktop`, :1420) — Native SQLite/Keychain backend
-- **Backend API**: NestJS 11 CQRS + Prisma + BullMQ (`services/backend-api`, :4000)
-- **Contracts**: `@smartfeed/shared`
+- Admin Portal: Next.js 14 App Router (`apps/admin-portal`, port 3000)
+- Desktop Client: Tauri v2 + React 18 (`apps/desktop`, port 1420) — Native SQLite (SQLCipher) + OS Keychain
+- Backend API: NestJS 11 CQRS + Prisma + BullMQ (`services/backend-api`, port 4000)
+- Contracts: `@smartfeed/shared`
+- Infrastructure: PostgreSQL 16 (port 5432), Redis 7 (port 6379), MinIO S3 (port 9000/9001), Cloudflare R2
 
----
+## 2. Rules Architecture (`.agents/rules/`)
 
-## 🏛 Rules Index (`.agents/rules/`)
+All invariants are indexed by unique IDs and partitioned into 9 domain files:
 
-All domain rules are modularized (max 12k chars per file):
+- [core.md](file:///.agents/rules/core.md) — Universal invariants: path aliases, zero silent failures, no any, file budgets, safe OS exec, context7 research, brevity, MCP auto-approval, targeted testing.
+- [agents.md](file:///.agents/rules/agents.md) — Autonomous agent router and mandatory 8-stage lifecycle.
+- [backend.md](file:///.agents/rules/backend.md) — Native vs cloud segregation, CQRS modularity, DTO validation, mutation guards, mutex protection.
+- [database.md](file:///.agents/rules/database.md) — PostgreSQL 16 & Prisma: 100% FK indexes, timestamptz(6), snake_case, CUIDs, cascade deletes, zero N+1, cursor pagination.
+- [frontend.md](file:///.agents/rules/frontend.md) — React 18, Next.js 14, Tauri: request dedup (useRef), solid sticky headers, semantic tokens, row extraction, shadcn CLI.
+- [i18n.md](file:///.agents/rules/i18n.md) — Bilingual parity (UK/EN), translated attributes, backend error mapping, zero raw keys.
+- [testing.md](file:///.agents/rules/testing.md) — cleanDatabase teardown, test isolation, real business data assertions, TDD RED->GREEN.
+- [security.md](file:///.agents/rules/security.md) — 4-layer defense, zero secret serialization leaks, secret masking, BOLA tenant isolation, SSRF IP pinning.
+- [docs_and_ops.md](file:///.agents/rules/docs_and_ops.md) — WIKI synchronization, backend E2E coverage tables, SemVer releases, monorepo ports.
 
-1. [rules.md](.agents/rules/rules.md) — Architecture, CQRS, Native vs Cloud backend
-2. [code_review_and_skills.md](.agents/rules/code_review_and_skills.md) — Skills matrix & pre-commit checklist
-3. [testing_and_quality.md](.agents/rules/testing_and_quality.md) — Teardown (`cleanDatabase`), 100% i18n, Git policy
-4. [plans_lifecycle.md](.agents/rules/plans_lifecycle.md) — Plans lifecycle (`active/`, `backlog/`, `completed/`)
-5. [wiki_and_documentation.md](.agents/rules/wiki_and_documentation.md) — WIKI & test coverage sync
-6. [postgres_skills.md](.agents/rules/postgres_skills.md) — PostgreSQL indexes & schema rules
-7. [frontend_network_dedup.md](.agents/rules/frontend_network_dedup.md) — Zero-duplicate API calls
-8. [commands.md](.agents/rules/commands.md) — CLI commands, ports, credentials, 100% MCP auto-approval policy
-9. [design_system_and_theming.md](.agents/rules/design_system_and_theming.md) — 100% theme harmony, semantic tokens & zero off-scheme colors (no ad-hoc purple/pink), zero duplicate action buttons
-10. [engineering_discipline_and_planning.md](.agents/rules/engineering_discipline_and_planning.md) — Architecture & scalability first, quality over naive simplicity ("working" is not enough), zero God-files (<250-300 lines), mutex concurrency, safe OS execution, pre-planned domain modularity
-11. [Master Intelligence & Skills Dispatcher](.agents/AGENTS.md) — Центральний диспетчер 52 модульних скілів та 6 спеціалізованих агентів
-12. [Frontend Agent (agents_frontend)](.agents/references/agents_frontend.md) — Спеціалізований фронтенд-агент (8 етапів: аналіз UX, планування, UI/UX, Playwright TDD RED, реалізація GREEN, рев'ю, дебаг, передача)
-13. [Backend Agent (agents_backend)](.agents/references/agents_backend.md) — Спеціалізований бекенд-агент (8 етапів: аналіз, контракти first, DB архітектура, Jest TDD RED, 4-шарова реалізація GREEN, рев'ю, дебаг, передача)
-14. [Code Review & Audit Agent (agents_review)](.agents/references/agents_review.md) — Спеціалізований агент аудиту та якості (8 етапів: розвідка, CQRS аудит, 4-шаровий захист, UX/DoD, БД аудит, змагальний стрес-тест, план ремедіації, фінальний звіт)
-15. [DevOps & Release Agent (agents_devops)](.agents/references/agents_devops.md) — Спеціалізований агент DevOps, інфраструктури, безпечних міграцій БД (Expand/Contract, Zero-Downtime), Docker, Railway та SemVer релізів
-16. [QA & Performance Agent (agents_qa)](.agents/references/agents_qa.md) — Спеціалізований агент QA, навантажувальних бенчмарків 100k+ SKU, хаос-тестування гонок пам'яті, mock/real паритету та 100% очищення даних
-17. [Security & Pentest Agent (agents_security)](.agents/references/agents_security.md) — Спеціалізований агент кібербезпеки, пентесту (OWASP Top 10, BOLA/IDOR, SQLi, Mass Assignment, Keychain/IPC), валідації PoC та планів усунення
-18. [Task Prompt Examples](.agents/references/task_prompt_examples.md) — Практичні приклади та шаблони постановки задач для фронтенду, бекенду, рев'ю, devops, qa, security та fullstack
-19. [communication_and_research.md](.agents/rules/communication_and_research.md) — Жорсткий регламент чату: лаконічність, нуль планів у чат, якість понад "аби працювало", upfront context7/MCP research
+## 3. Specialized Autonomous Agents
 
----
+- Frontend Agent: `@agents_frontend` / `@agents-frontend` (`.agents/agents/frontend.md`)
+- Backend Agent: `@agents_backend` / `@agents-backend` (`.agents/agents/backend.md`)
+- Code Review Agent: `@agents_review` / `@agents-review` (`.agents/agents/review.md`)
+- QA & Benchmarks Agent: `@agents_qa` / `@agents-qa` (`.agents/agents/qa.md`)
+- DevOps & Release Agent: `@agents_devops` / `@agents-devops` (`.agents/agents/devops.md`)
+- Security & Pentest Agent: `@agents_security` / `@agents-security` (`.agents/agents/security.md`)
 
-## ⚡ Commands & Ports
+## 4. Key Commands
 
-- `pnpm docker:up` / `pnpm docker:down` — Docker (PG: 5432, Redis: 6379, MinIO: 9000/9001)
-- `pnpm dev` / `pnpm dev:backend` / `pnpm dev:admin` / `pnpm dev:desktop` — Dev servers
-- `pnpm --filter @smartfeed/backend-api test:e2e` / `pnpm test:desktop` / `pnpm test:admin` — Tests
-- `pnpm lint:fix && pnpm format` — Lint & Prettier format
-- **Admin**: `admin@smartfeed.studio` / `AdminPassword123!`
-
----
-
-## 🚫 Import Policy (Zero Relative Imports)
-
-- **100% `@/` Path Aliases**: Never use relative imports (`../`, `../../`, `./`).
-- All internal project imports must strictly use `@/` (e.g., `@/components/...`, `@/services/...`, `@/lib/...`, `@/modules/...`) or shared contracts `@smartfeed/shared`. Any `../` import is considered an architectural defect.
-
----
-
-## 💬 Communication Policy & Zero Plan Dumping in Chat (Strict)
-
-- **Concise & Direct (Token Economy)**: Always answer user questions briefly, clearly, and to the point.
-- **Zero Plan & File Dumping in Chat**: Never rewrite, dump, or duplicate full plans, task breakdowns, or file contents into chat messages. All detailed plans MUST be written directly to `plans/active/<feature>.md`. Chat responses must contain ONLY concise summaries (1-2 sentences) with clickable markdown file links (`file:///...`).
-- **Reliability & Quality > "Working is Enough"**: Never write code to "just make it work" with quick hacks. Analyze deeply and pick the most efficient, robust, scalable, and reliable approach.
-- **Upfront Research via `context7` & MCPs**: Before implementing features or designing architecture, refresh library APIs and official docs via `context7` (`resolve-library-id`, `query-docs`) and relevant MCPs.
-
----
-
-## 🎯 Targeted Feature Testing Policy (Zero Redundant Full-Suite Runs)
-
-- **Targeted Scope Only**: When implementing or fixing a specific feature, run **strictly** the tests covering that feature/page (e.g. `pnpm exec playwright test e2e/<feature>.spec.ts`).
-- **Zero Redundant Full Runs**: Never run the entire global test suite (all 99+ desktop specs or all backend E2E suites) during feature work. Full suites are executed ONLY upon explicit user command or during release verification.
-
----
-
-## ⚡ 100% MCP Auto-Approval & Zero Confirmation Questions Policy (Strict)
-
-- **Zero Confirmation Questions**: The agent must **NEVER** ask confirmation questions (via `ask_question`, modals, or chat messages) before calling or accessing ANY MCP tool (`call_mcp_tool`, `mcp_*`).
-- **100% Auto-Approved**: All MCP tools across all servers (`playwright`, `sentry`, `shadcn`, `railway`, `postgres`, `redis`, `firecrawl`, `context7`, `github`) are pre-approved and executed autonomously and immediately.
+- Infrastructure: `pnpm docker:up` / `pnpm docker:down`
+- Dev servers: `pnpm dev` / `pnpm dev:backend` / `pnpm dev:admin` / `pnpm dev:desktop`
+- Testing: `pnpm --filter @smartfeed/backend-api test:e2e` / `pnpm test:desktop` / `pnpm test:admin`
+- Contracts build: `pnpm --filter @smartfeed/shared build`
+- Typecheck: `pnpm --filter @smartfeed/backend-api exec tsc --noEmit`
+- Format & lint: `pnpm lint:fix && pnpm format`
+- Localization check: `pnpm i18n:check`

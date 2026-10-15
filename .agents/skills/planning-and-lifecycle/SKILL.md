@@ -1,56 +1,45 @@
 ---
 name: planning-and-lifecycle
-description: >-
-  Deterministic task planning, architectural invariant validation, and plan lifecycle management.
-  Use when starting any non-trivial feature or refactor, writing plans in plans/active/<feature>.md,
-  generating business invariant checklists, executing approved tasks incrementally,
-  or completing plans and moving them to plans/completed/.
+description: Deterministic implementation planning, specification drafting, architectural invariant validation, and plan lifecycle management. Governs plans in plans/active/, plans/backlog/, and plans/completed/.
+rules:
+  - core
+  - docs_and_ops
 ---
 
-# 📋 Planning and Lifecycle Management (SmartFeed Studio)
+# Planning and Lifecycle Management
 
-Enterprise workflow for planning, executing, and archiving engineering tasks in SmartFeed Studio.
+## Step 0 - Load rules (mandatory, before any analysis or code)
 
-## 🏛 1. The 3-Directory Plans Lifecycle (`plans/`)
+1. Read `.agents/rules/core.md` and `.agents/rules/docs_and_ops.md`.
+2. Note all planning invariants (PLAN-01, PLAN-02, PLAN-03).
+3. If planning integration of external libraries, call context7 to verify current APIs and recommendations.
+4. Do not write or modify code or database schemas until the plan is approved by the user.
 
-```text
-plans/
-├── active/      # Current active tasks under planning or implementation
-├── backlog/     # Strategic architecture plans, future backlog features
-├── completed/   # 100% implemented, tested, and verified tasks
-└── README.md    # Central registry of all plans
-```
+## Three-directory plan lifecycle
 
-### Strict Rules:
+1. `plans/active/`: Contains the currently active task under planning or implementation. Only one active plan should be in flight at a time.
+2. `plans/backlog/`: Strategic roadmaps, future architectural proposals, and deferred feature plans.
+3. `plans/completed/`: Finished and verified implementation plans (100% test pass).
+4. `plans/README.md`: Central registry of all plans categorized by active, backlog, and completed.
 
-- **No Premature Execution**: Creating a plan in `plans/active/` does NOT authorize coding or DB modifications until explicit user approval ("виконуй", "починай", "роби").
-- **Automatic Move to Completed (DoD)**: Upon 100% verification and test pass, the plan file MUST be moved from `plans/active/` to `plans/completed/<feature>.md` with status metadata.
+## Mandatory plan structure and invariants
 
-## 📐 2. Mandatory Architecture Invariants in Every Plan
+Every plan authored in `plans/active/<feature>.md` must include:
 
-Every plan created in `plans/active/` MUST include:
-
-1. **Shared Contracts First**: Define TypeScript interfaces, Zod schemas, and Enums in `@smartfeed/shared` before creating UI or backend services. No `any` types.
-2. **4-Layer Defense Model**:
-   - Layer 1 (DTO): `class-validator` / Zod on all input.
+1. Shared contracts: Explicitly define DTOs, Zod schemas, and TypeScript interfaces in `@smartfeed/shared` before creating UI or backend services. Never use `any`.
+2. Four-layer defense model:
+   - Layer 1 (DTO): class-validator on backend and Zod on client.
    - Layer 2 (Domain/Quota): Subscription limits, SKU quotas, team seat checks.
    - Layer 3 (Security/RBAC): Tenant scoping, JWT guards, permissions.
-   - Layer 4 (Database): Foreign keys, unique constraints, atomic transactions.
-3. **Component Modularity Budget**: Pre-plan decomposition for any UI component expected to exceed 250–300 lines.
-4. **Failure Modes & Edge Cases**: Define offline behavior, network drops, and 100% bilingual localized error messages (UA ⇄ EN).
-5. **Upfront Research via `context7` & MCPs**: Refresh library signatures and modern practices using `context7` (`resolve-library-id`, `query-docs`) before drafting architecture.
-6. **Reliability & Quality > "Working is Enough"**: Reject superficial hacks; evaluate and select the most scalable, robust, and clean approach.
-7. **Strict Zero Plan Dumping in Chat (Token Economy)**: All detailed plans, tasks, checklists, and architectures MUST be written directly to `plans/active/<feature>.md`. In chat, provide ONLY a concise 1-2 sentence summary, status, and clickable file link `[План](file:///...)`. Never duplicate or dump the plan body into the chat response.
+   - Layer 4 (Database): Foreign key indexes, unique constraints, atomic transactions.
+3. Modularity budgets: Decompose components and files expected to exceed 250 lines into focused sub-modules.
+4. Failure modes and bilingual localization: Define offline behaviors, network drops, and translations in both `uk` and `en`.
+5. Upfront research: Document API signatures confirmed via context7.
+6. Zero plan dumping in chat: The complete plan text must be written directly to `plans/active/<feature>.md`. The chat response must contain only a 1-2 sentence summary and clickable markdown link (`[План](file:///...)`).
 
-## 🚀 3. Incremental Execution Loop
+## Plan completion and transition to completed
 
-Follow the Addy Osmani `/build` loop:
-
-```text
-Task Acceptance Criteria → Context Read → RED (test) → GREEN (code) → Regression → Build Check → Atomic Commit
-```
-
-Stop and seek clarification immediately if:
-
-- A test fails without an obvious fix.
-- An irreversible operation (schema drop, auth changes, data migration) is encountered.
+1. Upon completing implementation and verifying 100% test pass across targeted suites:
+   - Move plan file from `plans/active/<feature>.md` to `plans/completed/<feature>.md`.
+   - Update header metadata with completed status and completion date.
+   - Update `plans/README.md` to reflect the completed state.

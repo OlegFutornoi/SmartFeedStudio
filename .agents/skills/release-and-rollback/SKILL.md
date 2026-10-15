@@ -1,48 +1,38 @@
 ---
 name: release-and-rollback
-description: Управління версіями (SemVer), генерація CHANGELOG, пост-деплойне smoke-тестування та стратегія швидкого відкату (Rollback) без втрати даних
+description: Semantic versioning, changelog generation, post-deployment health verification, and zero-data-loss rollback procedures. Use when tagging releases, deploying to production, or managing deployment rollbacks.
+rules:
+  - core
+  - docs_and_ops
+  - testing
 ---
 
-# 🚀 Release & Rollback — Релізи, Smoke-валідація та Безпечний Відкат
+# Release and Rollback
 
-> **Призначення:** Забезпечення детермінованого циклу релізу монорепозиторію: семантичне версіонування (SemVer), автоматична генерація списку змін, пост-деплойні перевірки здоров'я (`health check`) та план миттєвого відкату без пошкодження або втрати даних у PostgreSQL.
+## Step 0 - Load rules (mandatory, before any analysis or code)
 
----
+1. Read `.agents/rules/core.md`, `.agents/rules/docs_and_ops.md`, and `.agents/rules/testing.md`.
+2. Note all release criteria and rollback steps in working notes.
+3. If managing cloud deployments, inspect Railway status via railway MCP.
+4. Do not publish release tags or deploy without verifying rollback runbooks.
 
-## ⚡ Швидкий старт (Routing Table)
+## Semantic versioning and release criteria
 
-| Тригер / Потреба                       | Документ / Довідник                                                            | Що містить                                                                                 |
-| :------------------------------------- | :----------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------- |
-| Версіонування та генерація CHANGELOG   | [`references/semver-and-changelog.md`](./references/semver-and-changelog.md)   | Правила SemVer (MAJOR.MINOR.PATCH), парсинг Conventional Commits, оновлення `package.json` |
-| Пост-деплойні перевірки працездатності | [`references/post-deployment-smoke.md`](./references/post-deployment-smoke.md) | Перевірка `/health`, пінги Redis/MinIO, smoke E2E сьют Playwright на проді                 |
-| Стратегія відкату без втрати даних     | [`references/zero-loss-rollback.md`](./references/zero-loss-rollback.md)       | Rollback деплою Railway/Docker, міграції backward-compatibility, відкат станів             |
+1. Version bump rules:
+   - MAJOR: Breaking contract changes, removed endpoints, or incompatible database schema changes.
+   - MINOR: New backward-compatible features, new API endpoints, or new UI screens.
+   - PATCH: Backward-compatible bug fixes, performance optimizations, or styling updates.
+2. Pre-release verification gates: Before creating any release tag (`vX.Y.Z`):
+   - Confirm `pnpm --filter @smartfeed/shared build` compiles cleanly.
+   - Confirm `pnpm exec tsc --noEmit` passes with 0 errors across all monorepo packages.
+   - Confirm all targeted test suites pass.
+   - Confirm `CHANGELOG.md` is updated with conventional commit entries.
+3. Git release command trigger: Release tagging and git push occur only upon explicit user command (`/git-commit --release [patch|minor|major]`).
 
----
+## Post-deployment health verification and rollback
 
-## 🏛 4 Залізні правила безпечного релізу
-
-1. **Двостороння сумісність БД (Backward Compatibility First)**:
-   - Новий реліз **ніколи** не повинен ламати попередню версію коду, що ще працює під час rolling-update.
-   - Застосовується патерн `db-migrations-zero-downtime` (Expand -> Migrate -> Contract).
-2. **Обов'язковий Post-Deployment Smoke Check**:
-   - Після викатки в середовище обов'язково викликається ендпоінт `/api/health` та виконується базовий Playwright auth smoke-test.
-   - При будь-якому коді помилки ≥ 500 — негайне зупинення та тригер процедури Rollback.
-3. **Automated Verification Before Release Tag**:
-   - Жоден тег `vX.Y.Z` не створюється без проходження:
-     1. `tsc --noEmit` у всіх пакетах.
-     2. `pnpm build:shared && pnpm build`.
-     3. 100% проходження автоматичних тестів.
-4. **Strict SemVer Semantic Rules**:
-   - `MAJOR`: Зміна API контрактів або видалення полів у `@smartfeed/shared`.
-   - `MINOR`: Нові фічі, нові ендпоінти, нові UI екрани.
-   - `PATCH`: Багфікси, оптимізації стилів, оновлення залежностей.
-
----
-
-## 📋 Чеклист перед випуском релізу
-
-- [ ] Виконано `pnpm --filter @smartfeed/shared build`
-- [ ] Виконано статичний тайпчек `tsc --noEmit` по всьому монорепо
-- [ ] Оновлено `CHANGELOG.md` двома мовами або стандартним форматом
-- [ ] Перевірено відсутність незастосованих або блокуючих міграцій БД
-- [ ] Підготовлено план швидкого відкату (команда `railway rollback` або git revert)
+1. Post-deployment smoke check: Query `/api/health` immediately following deployment. Verify HTTP 200 responses, Redis connectivity, and PostgreSQL connection pool readiness.
+2. Rollback trigger: If `/api/health` returns any status code >= 500, or critical auth/login flows fail, trigger immediate deployment rollback.
+3. Zero-data-loss rollback strategy:
+   - Database migrations must follow the Expand/Contract pattern. Application code rollbacks must remain fully compatible with expanded database schemas.
+   - Use Railway CLI (`railway rollback`) or git revert to roll back application containers cleanly.

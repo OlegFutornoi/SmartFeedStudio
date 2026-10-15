@@ -1,22 +1,32 @@
 ---
 name: project-context-map
-version: 1.0.0
-description: 'Use at the start of any task to locate code without scanning the repo: compact map of SmartFeed Studio modules, entry points, data flow and where each domain lives. Update after any architectural change.'
+description: Monorepo system topology, service ports, directory boundaries, and data flow navigation. Use at the start of tasks to locate domain code without full repository scans.
+rules:
+  - core
+  - docs_and_ops
 ---
 
 # Project Context Map
 
-Стисла карта проєкту, щоб не витрачати токени на сканування. Деталі — у `wiki/`.
+## Step 0 - Load rules (mandatory, before any analysis or code)
 
-## Загальні принципи
+1. Read `.agents/rules/core.md` and `.agents/rules/docs_and_ops.md`.
+2. Locate target module paths in working notes before running searches.
+3. Consult `wiki/` for in-depth architecture notes.
+4. Do not read entire files speculatively; target specific line ranges and grep patterns.
 
-1. **Карта → wiki → grep → діапазон рядків**. Не відкривати файли «щоб подивитись».
-2. **Карта оновлюється** у тій самій задачі, що змінила архітектуру (модуль, ендпоінт, таблиця, Tauri-команда, порт).
-3. Якщо карта розходиться з кодом — виправити карту (код — істина) і записати в `lessons-learned-registry`.
+## Monorepo topology and ports
 
-## Reference — індекс
-
-| Тригер                                           | Reference                                             |
-| ------------------------------------------------ | ----------------------------------------------------- |
-| Потрібно знайти, де живе домен/файл; нова задача | [`map.md`](references/map.md)                         |
-| Змінено архітектуру, модулі, схему, ендпоінти    | [`update-protocol.md`](references/update-protocol.md) |
+1. Apps and services:
+   - Admin Web Portal (`apps/admin-portal`): Next.js 14 App Router on port 3000.
+   - Desktop Client (`apps/desktop`): Tauri v2 + React 18 on port 1420.
+   - Native Rust Backend (`apps/desktop/src-tauri`): SQLCipher SQLite in `db.rs` and OS Keychain integration.
+   - Cloud Backend API (`services/backend-api`): NestJS 11 CQRS on port 4000.
+   - Shared Contracts (`packages/shared`): TypeScript DTOs, Zod schemas, and enums.
+2. Infrastructure ports:
+   - PostgreSQL 16: port 5432 (`smartfeed_db`).
+   - Redis 7: port 6379 (BullMQ queues and caching).
+   - MinIO S3: port 9000 (API) and 9001 (Console).
+3. Navigation protocol:
+   - Use `project-context-map` and `wiki/` first, followed by ripgrep (`grep_search`) to pinpoint symbols.
+   - Update `references/map.md` whenever architectural boundaries or service ports change.

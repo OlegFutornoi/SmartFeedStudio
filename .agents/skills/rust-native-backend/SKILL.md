@@ -1,93 +1,26 @@
 ---
 name: rust-native-backend
-description: Native Rust backend engineering in Tauri v2 (apps/desktop/src-tauri). Governs SQLCipher encrypted SQLite (rusqlite), database migrations, transactions, thiserror error handling, IPC commands, and cargo clippy linting. Use when creating or modifying Rust commands, SQLite schemas, catalog queries, or Keychain storage in the desktop client.
+description: Native Rust backend engineering in Tauri v2 (apps/desktop/src-tauri). Governs SQLCipher encrypted SQLite (rusqlite), schema migrations, atomic transactions, thiserror error handling, IPC commands, and cargo clippy linting.
+rules:
+  - core
+  - backend
+  - security
 ---
 
-# 🦀 Rust Native Backend Engineering (Tauri v2 + SQLCipher)
+# Rust Native Backend Engineering
 
-## 📌 Architecture & Responsibilities
+## Step 0 - Load rules (mandatory, before any analysis or code)
 
-The Desktop Client (`apps/desktop`) operates with its **own native SQLite backend** written in Rust:
+1. Read `.agents/rules/core.md`, `.agents/rules/backend.md`, and `.agents/rules/security.md`.
+2. Note all native desktop and SQLite invariants in working notes (BE-02, SEC-07).
+3. If using Tauri v2 or rusqlite APIs, call context7: `resolve-library-id {libraryName: "tauri", query: "..."}` and `query-docs`.
+4. Do not write or edit Rust code until steps 1-3 are complete.
 
-- **`src-tauri/src/db.rs`**: Encrypted SQLCipher database connection, schema migrations, and queries.
-- **`src-tauri/src/models.rs`**: Rust domain structs with `serde::Serialize` and `serde::Deserialize`.
-- **`src-tauri/src/lib.rs`**: Tauri command handlers exposed to React via IPC `invoke()`.
-- **`src-tauri/src/workspace.rs`**: Local catalog workspace filesystem management.
+## Architecture and native boundaries
 
----
-
-## 🔒 Iron Rules for Native Rust Code
-
-### 1. Atomic Database Transactions
-
-All multi-record operations (bulk product inserts, catalog deletion with cascades, feed sync) **MUST** execute within an explicit `rusqlite::Transaction`:
-
-```rust
-let mut conn = pool.get()?;
-let tx = conn.transaction()?;
-// Execute bulk statements...
-tx.commit()?;
-```
-
-### 2. Zero Unhandled Panics (`unwrap()` / `expect()`)
-
-Never use `unwrap()` or `expect()` in production Tauri commands. Every error must map to a structured error enum using `thiserror`:
-
-```rust
-#[derive(Debug, thiserror::Error)]
-pub enum AppError {
-    #[error("Database error: {0}")]
-    Database(#[from] rusqlite::Error),
-    #[error("Keychain error: {0}")]
-    Keychain(#[from] keyring::Error),
-    #[error("Not found: {0}")]
-    NotFound(String),
-}
-
-// Convert into string for Tauri command boundary:
-impl serde::Serialize for AppError {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-    {
-        serializer.serialize_str(self.to_string().as_ref())
-    }
-}
-```
-
-### 3. Cascading Deletions in SQLite
-
-Foreign keys must have `PRAGMA foreign_keys = ON;` enabled on every connection. Deleting a supplier or feed **MUST** automatically cascade-delete products and local media to prevent orphan records.
-
-### 4. Zero Command Injection (Safe OS Calls)
-
-Never invoke `std::process::Command::new("sh")` with string interpolation. Use discrete argument vectors without shell evaluation:
-
-```rust
-Command::new("open")
-    .arg(&path)
-    .spawn()?;
-```
-
----
-
-## 🧪 Verification Protocol
-
-After modifying any Rust files in `apps/desktop/src-tauri`:
-
-```bash
-# 1. Verify Rust compiles and passes clippy
-pnpm verify:rust
-
-# 2. Or direct cargo check inside src-tauri
-cargo clippy --manifest-path apps/desktop/src-tauri/Cargo.toml --all-targets -- -D warnings
-```
-
----
-
-## ✅ Pre-Completion Checklist
-
-- [ ] Zero `unwrap()` calls on user-supplied inputs or database queries
-- [ ] Multi-row updates are wrapped in `tx.commit()?` transactions
-- [ ] TypeScript IPC types in `apps/desktop/src/types` match Rust serde structs
-- [ ] `pnpm verify:rust` passes with 0 warnings/errors
+1. Native runtime separation: The Desktop Client (`apps/desktop`) operates with its own native SQLite database in Rust (`src-tauri/src/db.rs`). Product catalogs, feed parsing, local feed imports, and local counters are handled directly in Rust, not routed through NestJS.
+2. Atomic database transactions: Wrap all multi-row operations (bulk product inserts, catalog imports, supplier deletions) in explicit `rusqlite::Transaction` blocks. Call `tx.commit()?` only after all statements succeed.
+3. Zero unhandled panics: Never use `.unwrap()` or `.expect()` in production Tauri command handlers. Map all errors to structured enums using `thiserror` and serialize errors as strings across IPC.
+4. Foreign key enforcement and cascading deletes: Always enable `PRAGMA foreign_keys = ON;` upon opening every SQLite connection. Deleting a supplier or feed must automatically cascade-delete products and local media to prevent orphan records.
+5. Safe operating system execution: Never invoke system shells (`sh -c` or `cmd.exe /c`) with interpolated strings (CWE-78). Use `std::process::Command` with discrete arguments array without shell evaluation.
+6. Lint verification: After editing Rust code in `apps/desktop/src-tauri`, run `cargo clippy --manifest-path apps/desktop/src-tauri/Cargo.toml --all-targets -- -D warnings` and confirm zero warnings.

@@ -56,3 +56,6 @@ blob-report/
 
 # Cloudflare / Wrangler
 .wrangler/
+
+# Temporary files
+.temp/

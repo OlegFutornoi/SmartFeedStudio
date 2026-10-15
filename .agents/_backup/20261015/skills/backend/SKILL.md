@@ -1,0 +1,531 @@
+---
+name: backend
+description: >-
+  Enterprise full-cycle backend engineering master skill for SmartFeed Studio (NestJS 11 CQRS,
+  Prisma ORM, PostgreSQL, Redis, BullMQ, Tauri v2 Rust native SQLite). Consolidates ALL backend skills: architecture
+  (nestjs-best-practices, contract-first-api, rust-native-backend), database (prisma-postgres-mastery,
+  postgresql-optimization, streaming-large-feeds), queue & background jobs (bullmq-jobs, idempotency-and-outbox),
+  business logic & security (subscription-lifecycle, security-and-hardening), planning (planning-and-lifecycle,
+  spec-driven-development, incremental-implementation), QA & testing (test-driven-development, mock-real-parity,
+  systematic-debugging), and review (code-review-and-quality, review).
+  Guides the complete 7-stage backend lifecycle: 1. Task Analysis, 2. Architecture Planning,
+  3. Solution Exploration, 4. Test-Driven Development (TDD RED), 5. Implementation with 4-Layer Defense GREEN,
+  6. Code Review & Verification, 7. Systematic Debugging. Enforces zero-defect security,
+  PostgreSQL indexing, 100% test isolation with cleanDatabase, zero God-files (<250-300 lines),
+  and strict CQRS boundaries. Use whenever designing, implementing, refactoring, securing, testing,
+  reviewing, or planning backend services, controllers, handlers, database schemas, background jobs, or Tauri Rust commands.
+  Triggers on any NestJS, Prisma, PostgreSQL, Redis, BullMQ, CQRS, API, authentication, migration,
+  Rust native SQLite, or backend architecture task.
+---
+
+# 🛡️ Enterprise Backend Engineering Lifecycle (SmartFeed Studio)
+
+A comprehensive, full-cycle backend engineering **master skill** for SmartFeed Studio. It consolidates ALL backend-related specialized skills, Prisma ORM skills, project rules, security standards, and planning/review protocols.
+
+---
+
+## 🧭 1. Consolidated Skills Architecture
+
+```text
+                               ┌────────────────────────────────────┐
+                               │       backend (Master Skill)       │
+                               └─────────────────┬──────────────────┘
+           ┌──────────────────────┬──────────────┴─────┬──────────────────────┬──────────────────────┐
+           ▼                      ▼                    ▼                      ▼                      ▼
+┌──────────────────────┐ ┌──────────────────┐ ┌──────────────────┐ ┌──────────────────┐ ┌──────────────────┐
+│   Architecture/API   │ │    DB & Prisma   │ │ Queues & Security│ │  Planning & TDD  │ │ Review & Quality │
+├──────────────────────┤ ├──────────────────┤ ├──────────────────┤ ├──────────────────┤ ├──────────────────┤
+│ nestjs-best-practices│ │ prisma-pg-mastery│ │ bullmq-jobs      │ │ plan-lifecycle   │ │ code-review-qual │
+│ contract-first-api   │ │ postgresql-opt   │ │ security-harden  │ │ tdd-cycle        │ │ code-simplify    │
+│ rust-native-backend  │ │ stream-large-feed│ │ idempotency-box  │ │ mock-real-parity │ │ doubt-driven-dev │
+│ turborepo            │ │ subscribe-life   │ │                  │ │ spec-driven-dev  │ │                  │
+└──────────────────────┘ └──────────────────┘ └──────────────────┘ └──────────────────┘ └──────────────────┘
+```
+
+### 📋 Операційна матриця підскілів бекенду
+
+| Підскіл                       | Що робить (Функціонал)                                                              | Коли активується | Застосування в SmartFeed Studio                                                             |
+| :---------------------------- | :---------------------------------------------------------------------------------- | :--------------- | :------------------------------------------------------------------------------------------ |
+| **`nestjs-best-practices`**   | Стандарти NestJS 11: CQRS, нуль циклічних залежностей, DI синглтони, ValidationPipe | Фази 1–3, 5      | Модулі, хендлери, розділення `UsersModule` та `AuthModule`, `GlobalHttpExceptionFilter`.    |
+| **`contract-first-api`**      | Спільні DTO, Zod-схеми, єдині типи контрактів у `@smartfeed/shared`                 | Фази 2, 5        | Контракти API між клієнтами та бекендом, виключення дублювання типів.                       |
+| **`rust-native-backend`**     | Нативний Rust SQLCipher бекенд у Tauri v2 (`db.rs`), транзакції, міграції, Clippy   | Фази 3, 5        | Локальний каталог товарів, шифрування SQLite, IPC команди та Keychain токени.               |
+| **`prisma-postgres-mastery`** | 100% FK індексів, snake_case мапінг (`@@map`), pooling (`@prisma/adapter-pg`), CUID | Фази 3, 5        | Робота зі `schema.prisma`, безпечні транзакції, відсутність N+1 запитів.                    |
+| **`postgresql-optimization`** | JSONB з GIN індексами, pg_trgm пошук, курсорна пагінація замість OFFSET             | Фази 3, 5        | Повнотекстовий пошук товарів, великі каталоги, оптимізація повільних запитів.               |
+| **`streaming-large-feeds`**   | Потоковий SAX XML/CSV парсинг з бекпрешером пам'яті для 100k+ SKU                   | Фази 3, 5        | Фоновий імпорт фідів постачальників без переповнення пам'яті Node.js (OOM).                 |
+| **`bullmq-jobs`**             | Черги BullMQ, експоненційний backoff, DLQ, воркери, захист від OOM                  | Фази 3, 5        | Асинхронний імпорт фідів, черга листів `MailModule`, обробка зображень.                     |
+| **`subscription-lifecycle`**  | Quotas, grace-періоди, авто-даунгрейди, підрахунок лімітів ліцензій                 | Фази 1, 3        | Запрошення користувачів (seats), імпорт товарів (SKU limits), ліміти S3.                    |
+| **`idempotency-and-outbox`**  | Redis idempotency keys, Prisma transactional outbox pattern                         | Фази 3, 5        | Вебхуки WayForPay, асинхронні повідомлення, захист від повторних списань.                   |
+| **`security-and-hardening`**  | 4-шаровий захист, OWASP Top 10, JWT безпека, безпечне виконання `execFile`          | Фази 3, 5        | Захист від CWE-78, валідація вхідних URL (SSRF захист), Argon2id хешування.                 |
+| **`secret-serialization`**    | Блокування витоку секретів у JSON.stringify, логах, Sentry спанах та DTO            | Фази 5, 6        | Захист від витоку passwordHash, токенів, API-ключів у телеметрію та HTTP-відповіді.         |
+| **`planning-and-lifecycle`**  | Детерміновані плани в `plans/active/`, інваріанти, архітектура перед кодом          | Фаза 2           | Усі нетривіальні зміни бекенду; фіксація DoD та переведення в `completed/`.                 |
+| **`test-driven-development`** | Цикл TDD RED → GREEN, повне очищення даних через `cleanDatabase`                    | Фази 4, 5        | Supertest E2E тести, відсутність витоку даних, захист від регресій.                         |
+| **`api-security-testing`**    | Тестування вразливостей OWASP API Top 10 (BOLA/IDOR, Mass Assignment, auth bypass)  | Фази 1, 4, 6     | Негативні тести на спроби маніпуляцій чужими об'єктами, захист від підміни системних полів. |
+| **`mock-real-parity`**        | 100% паритет між локальним Mock, SQLite та сервером NestJS                          | Фази 4, 6        | Перевірка ідентичності гідратації зв'язків (`supplierName`), квот та каскадних видалень.    |
+| **`systematic-debugging`**    | 4-фазний дебаг: відтворення тестом → трейсинг до першопричини → чистий фікс         | Фаза 7           | Розслідування падіння транзакцій, блокування пулу чи помилок воркерів.                      |
+| **`code-review-and-quality`** | 5-осьовий аудит, ліміт <250-300 рядків, нуль dead code, 100% перевірка DTO          | Фаза 6           | Фінальна верифікація перед здачею задачі, запуск `tsc --noEmit`.                            |
+
+### 💎 Iron Laws of Backend Engineering
+
+1. **Architecture & Scalability > Speed & Naive Simplicity**: "Working" is not enough. Modular design, CQRS, and concurrency safety from day one.
+2. **Zero God-Files (<250–300 lines)**: Every file (controller, handler, service, DTO, repository, utility) < **250–300 lines**. Monoliths and giant utility files strictly prohibited.
+3. **No Code Without a Failing Test First (TDD)**: Write test → observe RED → implement minimal GREEN.
+4. **4-Layer Defense-in-Depth**: Validate at DTO, Domain/Quota, Security/Guard, and DB Constraint layers.
+5. **PostgreSQL 100% snake_case & Indexed**: All models must have `@@map("snake_case")` and columns `@map("snake_case")`. Every foreign key MUST have an explicit `@@index([fkColumn])`.
+6. **Zero Silent Failures & Zero `as any`**: No empty `catch {}`, no `as any` (use Prisma-generated types like `Prisma.TariffPlanWhereInput[]`), no `exec` with string interpolation (CWE-78: use `execFile`).
+7. **Concurrency & TOCTOU Protection**: Sensitive quota operations (invitations, seats, credits) MUST use mutex locks (`OrganizationMutex`) or serializable transactions to prevent race conditions.
+8. **Always Validated DTOs & Zero Raw Query Params**: Never accept untyped `@Body() body: unknown` or raw `@Query('limit')`. Every body and query parameter must be a dedicated DTO class decorated with `class-validator` (`@IsInt()`, `@Min()`, `@Max()`, `@Type(() => Number)`).
+9. **Strict CQRS Modularity (1 File = 1 Handler)**: Each Command or Query Handler lives in its own dedicated file (<120-150 lines). Bundling 5+ handlers into a single file is strictly prohibited. Command Handlers return `{ id }` or void, never full read DTOs.
+10. **Zero Headless Server GUI Spawns**: Never invoke OS file explorers (`open`, `explorer`, `xdg-open`) inside cloud backend API (CWE-400). GUI actions belong strictly to desktop client.
+11. **OWASP API4 & Secret Masking**: Commercial plan changes (price > 0) strictly require an approved `PaymentTransaction` reference. `merchantSecretKey` and merchant tokens must NEVER be returned in plaintext in REST responses.
+12. **Zero Test Data Leftovers**: Every test uses `cleanDatabase` in `beforeAll` AND `afterAll` with FK-safe teardown.
+13. **Zero Inline Types**: All DTOs, Zod schemas, enums in `@smartfeed/shared`. Never duplicate types between backend and client.
+14. **Upfront Research via `context7` & MCPs**: Before implementing features or designing architecture, refresh library APIs and official docs via `context7` (`resolve-library-id`, `query-docs`) and relevant MCPs (`postgres`, `redis`).
+15. **Strict Zero Plan Dumping in Chat**: Write all detailed plans into `plans/active/<task>.md`. Chat responses must contain ONLY a concise 1-2 sentence summary, status, and clickable file link `[План](file:///...)`.
+16. **100% Protected Mutation Endpoints (Zero Unauthenticated Mutations)**: Every `POST`, `PUT`, `DELETE`, `PATCH` endpoint in controllers MUST declare `@UseGuards(JwtAuthGuard, ...)` (and `@Roles(...)` if administrative) UNLESS explicitly decorated with `@Public()`. Unauthenticated mutations are critical defects.
+17. **Zero Hardcoded Secrets / Fallback Keys (CWE-798)**: Never use string fallbacks (`|| 'fallback-secret'`, `?? 'key'`) for JWT secrets, webhook HMAC keys, encryption keys, or API tokens. Throw `InternalServerErrorException` or fail fast at bootstrap.
+18. **Guard-Decorator Parity**: Whenever `@CurrentUser()` is used in a controller handler, the route MUST have `@UseGuards(JwtAuthGuard)` or `@UseGuards(OptionalJwtAuthGuard)`. Without an active Passport guard, `request.user` is never populated.
+19. **Strict Native vs Cloud Runtime Segregation**: Cloud NestJS backend runs headless in Docker/Railway. It must NEVER manipulate local desktop workspace filesystem (`fs.unlinkSync`, `fs.mkdirSync`, `fs.rmSync`). Desktop workspaces and SQLite catalogs belong 100% to Tauri v2 Rust (`src-tauri`).
+20. **Mandatory `@db.Timestamptz(6)`**: All `DateTime` fields in `schema.prisma` MUST explicitly include `@db.Timestamptz(6)` for timezone awareness in PostgreSQL 16.
+21. **Zero Silent Failures**: No empty or comment-only `catch {}` blocks. Every catch block MUST at minimum log via `this.logger.warn(...)` or throw a domain `HttpException`.
+22. **Zero Fake Stubs & Zero `as any` in Production Controllers**: Production controllers must not return fake hardcoded stubs with `as any` bypasses; asynchronous background workloads MUST integrate with BullMQ queues.
+23. **Prisma Zero N+1 & Cursor Pagination**: Never execute queries inside loops (`.map()`, `for`); use `findMany({ where: { id: { in: ids } } })` or `include`/`select`. High-volume catalog/feed endpoints must use cursor pagination (`take`, `skip: cursor ? 1 : 0`, `cursor: { id }`). `OFFSET` pagination is strictly forbidden.
+24. **Prisma Versioned Migrations & Expand/Contract**: Production releases strictly use `prisma migrate dev/deploy` with `lock_timeout = '2s'`. Using `prisma db push` in production is strictly prohibited.
+25. **Strict Prisma Types & Short `$transaction()`**: Zero `as any` in Prisma `where`/`data` clauses. `$transaction()` must never wrap external HTTP calls, S3 presigned URL generation, emails, or queue pushes.
+26. **PostgreSQL Cascade Deletions (`onDelete: Cascade`)**: Every child model in `schema.prisma` must define `onDelete: Cascade` on its foreign key relation to guarantee zero orphaned records upon parent deletion (L-001).
+
+---
+
+### 🐘 1.5. Prisma ORM & PostgreSQL 16 Standard (10 Mandatory Commandments)
+
+Whenever reading, writing, migrating, or querying via Prisma ORM in `services/backend-api`, the backend agent MUST strictly adhere to these 10 commandments:
+
+1. **100% Foreign Key Indexes (`@@index([fkColumn])`)**: PostgreSQL does NOT auto-index foreign keys. Missing indexes trigger catastrophic full table scans on joins and deletes.
+2. **Mandatory `@db.Timestamptz(6)` on 100% of DateTime Fields**: PostgreSQL stores unadorned `DateTime` as `timestamp without time zone`. All timestamps must be declared as `DateTime @default(now()) @db.Timestamptz(6)` to eliminate timezone drift.
+3. **100% `snake_case` Mapping**: Every model declares `@@map("table_names")` and every field declares `@map("column_name")`. Never leak camelCase into PostgreSQL tables or columns.
+4. **Time-Ordered CUID Primary Keys**: Use `@id @default(cuid())` for distributed, collision-resistant, time-ordered B-tree indexing that prevents index page splits.
+5. **Cascade Deletions (`onDelete: Cascade`)**: Every parent-child relationship (feed → products, user → tokens, organization → members) MUST specify `onDelete: Cascade` to ensure zero orphaned records (L-001).
+6. **Zero N+1 Queries (Batching & Eager-Loading)**: Never loop with individual Prisma calls (`await Promise.all(items.map(...findUnique))`). Use `findMany({ where: { id: { in: ids } } })` or `include`/`select`.
+7. **Cursor Pagination on High-Volume Catalogs**: On catalogs and feeds (>1,000 items), `OFFSET` pagination is strictly forbidden. Always use cursor-based pagination:
+   ```typescript
+   await prisma.product.findMany({
+     take: limit,
+     skip: cursor ? 1 : 0,
+     cursor: cursor ? { id: cursor } : undefined,
+     orderBy: { id: 'asc' },
+   });
+   ```
+8. **Short `$transaction()` Bounds (DB-Only)**: Keep transactions atomic and microsecond-fast. NEVER wrap external HTTP calls, S3 presigned URL generation, email sending, or BullMQ queue pushes inside `$transaction()`.
+9. **Strict Generated Prisma Types (Zero `as any`)**: Always import and use Prisma's generated types:
+   ```typescript
+   import { Prisma } from '@prisma/client';
+   const where: Prisma.UserWhereInput = { email: { contains: term } };
+   ```
+10. **Versioned Expand/Contract Migrations**: Production deployments use `prisma migrate dev --name <migration_name>` and `prisma migrate deploy` with `SET lock_timeout = '2s'`. Using `prisma db push` in production environments is strictly prohibited.
+
+---
+
+### 🚫 Anti-Patterns & Remediation Lessons (Learned from Audits)
+
+| ❌ Severe Anti-Pattern                                                       | Why It Fails                                                                                                             | ✅ Mandatory Correct Implementation                                                                                                         |
+| :--------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Unauthenticated Mutation Endpoint** (`PUT /page-guides/assistant/profile`) | Anyone anonymous on the internet can overwrite platform settings, avatars, or instructions (BOLA/Broken Access Control). | **100% Mutation Guarding**: Apply `@UseGuards(JwtAuthGuard, RolesGuard)` and `@Roles(Role.ADMIN, Role.SUPER_ADMIN)` to all mutation routes. |
+| **Hardcoded Secret Fallback** (`secretKey \|\| 'flk3409refn54t54vk...'`)     | Known public test strings allow signature forgery when env var is missing or misconfigured (CWE-798).                    | **Fail-Fast Missing Secrets**: Throw `InternalServerErrorException('Configuration for <SECRET> is missing')` if key is undefined.           |
+| **`@CurrentUser()` on Unguarded Route** (`acceptInvitation`)                 | Passport never executes, `request.user` is undefined, and user context is silently lost.                                 | **Guard-Decorator Parity**: Use `@UseGuards(OptionalJwtAuthGuard)` or `JwtAuthGuard` whenever `@CurrentUser()` is declared.                 |
+| **Server-Side Desktop Workspace FS Manipulation** (`/storage/workspace/*`)   | Cloud Docker container executes `fs.unlinkSync`/`fs.rmSync` on host instead of user's local machine; breaks sandbox.     | **Strict Runtime Segregation**: Desktop catalogs live in Tauri SQLite; cloud backend handles cloud S3/R2 files only.                        |
+| **Missing `@db.Timestamptz(6)` on DateTime**                                 | PostgreSQL stores timezone-unaware `timestamp without time zone`, causing desync across timezones and daylight saving.   | **Explicit Timestamptz**: Add `@db.Timestamptz(6)` to 100% of `DateTime` fields in `schema.prisma`.                                         |
+| **Comment-Only `catch { // Ignore }` Blocks**                                | Silently swallows disk errors, lock timeouts, and network issues, leaving system in corrupted state without telemetry.   | **Structured Logging**: `this.logger.warn('[Context] Failed to perform operation:', err)` in every catch block.                             |
+| **Hardcoded Stub with `status: 'COMPLETED' as any`**                         | Bypasses compiler type checking, returns deceptive status to frontend, and leaves background tasks unexecuted.           | **BullMQ Job Architecture**: Enqueue real job or return strongly typed domain DTO without `as any`.                                         |
+| **Bundling 5+ CQRS Handlers in One File** (`suppliers.handlers.ts`)          | Exceeds modularity budget (>300 lines), violates single responsibility, and blurs command/query separation.              | **1 File = 1 Handler**: Split into `create-supplier.handler.ts`, `update-supplier.handler.ts`, each <120 lines returning `{ id }`.          |
+| **Loose `@Query()` Parameters Without DTO** (`@Query('limit')`)              | Bypasses `ValidationPipe({ whitelist: true })`, allows negative numbers or extreme values causing memory DoS.            | **Validated Query DTO Classes**: Create `GetUsersQueryDto` with `@Type(() => Number) @IsInt() @Min(1) @Max(100) limit`.                     |
+| **Server-Side GUI Process Spawning** (`execFile('open', [path])`)            | Cloud backend running in headless Docker hangs or errors trying to open OS window (CWE-400).                             | **Client-Side Navigation**: Return path in JSON payload; let client open folder natively via Tauri IPC.                                     |
+| **Unverified Paid Plan Selection** (`selectPlan` without payment)            | Broken business logic (OWASP API4): users can bypass payment gateways and grant themselves Enterprise privileges.        | **Gated Plan Changes**: Require approved `transactionId` in database for paid tiers (price > 0), or return 402 Payment Required.            |
+| **Plaintext Gateway Secrets in REST Responses**                              | Returning raw `merchantSecretKey` leaks credentials to browser inspection, logs, and compromised tokens.                 | **Masked Secret Output**: Return `••••••••` + last 4 characters, or boolean flag `isSecretConfigured: true`.                                |
+| **Missing `@@map` / `@map` in Prisma**                                       | Leads to mixed camelCase and snake_case in PostgreSQL, breaking standard SQL conventions and migration consistency.      | **100% snake_case Mapping**: Every model has `@@map("model_plural")` and every column has `@map("column_name")`.                            |
+| **`whereClause as any` in Prisma Queries**                                   | Disables TypeScript compiler checks; leads to runtime errors when schema fields change.                                  | **Strict Prisma Types**: Use generated types: `const where: Prisma.TariffPlanWhereInput = { ... };`.                                        |
+| **Prisma N+1 in Loops** (`items.map(async i => prisma.findUnique)`)          | Multiplies DB queries by N, exhausts PostgreSQL connection pool, and causes massive latency spikes.                      | **Prisma Batching**: Use `findMany({ where: { id: { in: ids } } })` or relation `include`/`select`.                                         |
+| **Production Deploy via `prisma db push`**                                   | Unversioned, non-deterministic, can drop columns or data in production without safe migrations.                          | **Versioned Migrations**: Use `prisma migrate dev` locally and `prisma migrate deploy` in CI/CD with Expand/Contract.                       |
+| **OFFSET Pagination on Catalogs/Feeds** (`skip: 50000`)                      | PostgreSQL scans and discards 50,000 rows before returning 20, causing heavy CPU and buffer pool thrashing.              | **Cursor Pagination**: Use `cursor: { id: lastSeenId }, take: 50, skip: 1` indexed by sequential PK.                                        |
+| **Unbounded `$transaction()` Wrapping S3/HTTP**                              | Holds database connections open while waiting for external network I/O, leading to connection starvation.                | **Short DB-Only Transactions**: Perform HTTP and S3 calls outside `$transaction()`; use transactions strictly for SQL.                      |
+| **Missing `onDelete: Cascade` in Prisma Relations**                          | Deleting parent entity leaves orphan rows or crashes with FK constraint violation.                                       | **Cascade Configuration**: Explicitly declare `onDelete: Cascade` on 100% of child-to-parent Prisma relations (L-001).                      |
+| **`child_process.exec(\`open "${path}"\`)`**                                 | CWE-78 Command Injection vulnerability. Metacharacters in file paths execute arbitrary OS commands.                      | **Safe OS Execution**: `execFile(binary, [args], { shell: false })` with `path.normalize()` and `path.resolve()`.                           |
+| **Untyped Controller Payloads** (`@Body() body: unknown`)                    | Swagger documentation lacks schemas; `ValidationPipe({ whitelist: true })` cannot validate fields.                       | **Decorated DTO Classes**: Create dedicated DTO classes with `@IsString()`, `@IsOptional()`, `@ApiProperty()`.                              |
+| **TOCTOU Race Condition on Quotas**                                          | Rapid parallel requests (e.g. 10 simultaneous invites) bypass seat quotas before records are written.                    | **Mutex Synchronization**: Wrap quota-check-and-write logic in an in-memory tenant mutex (`OrganizationMutex.runExclusive(...)`).           |
+| **Giant Monolithic Utility Files** (`workspace-utils.ts` > 400 lines)        | Violates single responsibility principle; causes circular dependencies and difficult unit testing.                       | **Modular Utility Decomposition**: Split into focused modules under `workspace-utils/` (<250 lines each).                                   |
+| **Discrepancy in Quota Error Messages**                                      | Frontend cannot recognize error code to display localized translation to user.                                           | **Standard Error Keys**: Throw `ForbiddenException` with standardized machine-readable error codes (`QUOTA_EXCEEDED`, `SEATS_EXCEEDED`).    |
+
+---
+
+## 🔌 2. MCP Research Tools — Use During Development
+
+Бери ці інструменти **проактивно** під час написання коду — не чекай запиту від користувача.
+
+### 📚 context7 — Документація бібліотек
+
+Використовуй для **актуальної документації** перед написанням коду:
+
+```
+# Крок 1: Знайти ID бібліотеки
+call_mcp_tool(ServerName: "context7", ToolName: "resolve-library-id",
+  Arguments: { libraryName: "prisma" })
+
+# Крок 2: Отримати документацію
+call_mcp_tool(ServerName: "context7", ToolName: "query-docs",
+  Arguments: { context7CompatibleLibraryID: "/prisma/prisma",
+               topic: "$transaction isolation level" })
+```
+
+**Коли використовувати**:
+
+- NestJS 11 → CQRS patterns, нові decorator API, exception filters
+- Prisma ORM → `$transaction`, `findMany`, filters, `@@index`, v7 breaking changes
+- BullMQ → queue/worker configuration, job retry strategies
+- `@nestjs/bullmq` → processor decorators, concurrency settings
+- `@aws-sdk/s3-request-presigner` → presigned URL generation
+- `class-validator` / `class-transformer` → decorator syntax
+- Argon2, bcrypt → hashing configuration
+- `ThrottlerGuard` → rate limiting setup in NestJS
+
+### 🔥 firecrawl — Пошук & Аналіз
+
+Використовуй для **дослідження best practices** та аналізу чужого коду:
+
+```
+# Пошук best practices
+call_mcp_tool(ServerName: "firecrawl", ToolName: "firecrawl_search",
+  Arguments: { query: "NestJS CQRS event bus best practices 2024",
+               limit: 5 })
+
+# Офіційна документація безпеки
+call_mcp_tool(ServerName: "firecrawl", ToolName: "firecrawl_scrape",
+  Arguments: { url: "https://docs.nestjs.com/techniques/caching" })
+
+# OWASP / безпекові патерни
+call_mcp_tool(ServerName: "firecrawl", ToolName: "firecrawl_search",
+  Arguments: { query: "CWE-78 command injection prevention Node.js execFile" })
+```
+
+**Коли використовувати**:
+
+- Дослідження патернів OWASP Top 10 для конкретного сценарію
+- Аналіз NestJS офіційної документації (завжди актуальна)
+- PostgreSQL індекс strategies для специфічних запитів
+- Дослідження Redis / BullMQ patterns
+- Реальні приклади subscription lifecycle / grace period implementation
+
+### 🎭 playwright MCP — Перевірка API і Swagger
+
+**ЗАМІСТЬ** `browser_subagent` (macOS ARM64 не підтримується):
+
+```
+# Відкрити Swagger UI для аналізу ендпоінтів
+call_mcp_tool(ServerName: "playwright", ToolName: "browser_navigate",
+  Arguments: { url: "http://localhost:4000/api/docs" })
+
+call_mcp_tool(ServerName: "playwright", ToolName: "browser_take_screenshot",
+  Arguments: {})
+
+# Перевірка відповідей API в браузері
+call_mcp_tool(ServerName: "playwright", ToolName: "browser_navigate",
+  Arguments: { url: "http://localhost:4000/api/plans" })
+
+call_mcp_tool(ServerName: "playwright", ToolName: "browser_snapshot",
+  Arguments: {})
+```
+
+**Коли використовувати**:
+
+- Перевірка Swagger UI після додавання нових endpoints
+- Візуальна перевірка відповідей API в браузері
+- Перевірка MinIO Console / Prisma Studio
+- Аналіз відповідей для дебагу API issues
+
+---
+
+## 🔄 3. The 7-Stage Backend Development Workflow
+
+```mermaid
+flowchart TD
+    S1[Phase 1: Task Analysis & Scope Discovery] --> S2[Phase 2: Task Planning & Shared Contracts]
+    S2 --> S3[Phase 3: Solution & Architectural Design]
+    S3 --> S4[Phase 4: TDD - Failing Automated Tests RED]
+    S4 --> S5[Phase 5: Implementation & 4-Layer Defense GREEN]
+    S5 --> S6[Phase 6: Rigorous Code Review & Verification]
+    S6 --> S7[Phase 7: Systematic Debugging & Error Remediation]
+```
+
+---
+
+### 🔍 Phase 1: Task Analysis & Scope Discovery
+
+> 💡 **MCP at this phase**: Use `firecrawl_search` to research domain patterns (subscription lifecycle, quota enforcement, OWASP) before designing the solution.
+
+Before any code or schema modification:
+
+1. **Target Boundary & Runtime**:
+   - Cloud backend (`services/backend-api` NestJS) or desktop local backend (`apps/desktop` Tauri/SQLite)?
+   - _Never route local desktop catalog ops through cloud NestJS._
+2. **Actor Scoping & RBAC**: `SUPER_ADMIN`, `ADMIN`, `USER`, or Public? Tenant scoping with `organizationId`?
+3. **Data Flow & Resource Quotas**: Map inputs, query params, responses, side effects. Check license quotas: seats, SKU counts, storage limits.
+4. **Failure Modes**: Network timeouts, concurrent duplicates, DB unique collisions, third-party downtime.
+5. **Sentry Bug Prevention** (`sentry-backend-bugs`): Identify potential null checks on relations, race conditions, stream leaks, connection starvation.
+
+> **Gate 1**: Actors, tenant boundaries, inputs, outputs, failure modes, and quota implications fully clarified?
+
+---
+
+### 📋 Phase 2: Task Planning & Shared Contracts
+
+_Rules: [plans_lifecycle.md](../../rules/plans_lifecycle.md) · [engineering_discipline_and_planning.md](../../rules/engineering_discipline_and_planning.md)_
+_Skills: [planning-and-lifecycle](../planning-and-lifecycle/SKILL.md) · [contract-first-api](../contract-first-api/SKILL.md) · [spec-driven-development](../spec-driven-development/SKILL.md) · [incremental-implementation](../incremental-implementation/SKILL.md)_
+
+1. **Shared Contracts First (`packages/shared`)**:
+   - Define TypeScript interfaces, Zod schemas, and Enums BEFORE backend handlers.
+   - Run `pnpm --filter @smartfeed/shared build`. **Zero Inline Types.**
+2. **Component Modularity Budget**: Decompose immediately into distinct files (<250 lines):
+   - `*.controller.ts` (Routing & Swagger only)
+   - `*.dto.ts` (class-validator decorators)
+   - `*.command.ts` / `*.query.ts` (CQRS payloads)
+   - `*.handler.ts` (Business execution)
+   - `*.service.ts` / `*.repository.ts` (Prisma data queries)
+3. **4-Layer Defense Planning**: Document all 4 validation layers in the plan before coding.
+4. **Execution Strategy**: For complex features, use `subagent-driven-development` or `dispatching-parallel-agents`.
+5. **Plan Artifact**: Create `plans/active/<feature_name>.md`. **Await explicit user approval before coding.**
+
+> **Gate 2**: Plan in `plans/active/`, contracts in `@smartfeed/shared`, user approval received?
+
+---
+
+### 🏗️ Phase 3: Architectural & Solution Design
+
+> 💡 **MCP at this phase**: Use `context7` for Prisma/NestJS/BullMQ API docs. Use `firecrawl_search` for PostgreSQL index strategies and security patterns.
+
+_Read [references/architecture-patterns.md](references/architecture-patterns.md) · [references/api-design-and-security.md](references/api-design-and-security.md) · Rules: [postgres_skills.md](../../rules/postgres_skills.md)_
+_Skills: [prisma-postgres-mastery](../prisma-postgres-mastery/SKILL.md) · [postgresql-optimization](../postgresql-optimization/SKILL.md) · [nestjs-best-practices](../nestjs-best-practices/SKILL.md) · [bullmq-jobs](../bullmq-jobs/SKILL.md) · [rust-native-backend](../rust-native-backend/SKILL.md)_
+
+1. **CQRS Boundaries** (`nestjs-best-practices`):
+   - `UsersModule`: Pure data layer via Prisma. Zero JWT/Auth imports.
+   - `AuthModule`: Communicates via `CommandBus` (`CreateUserCommand`) and `QueryBus`.
+   - `LicensesModule`: Listens to `UserCreatedEvent` on `EventBus`.
+2. **Heavy Operations**: Never run XML parsing, feed generation, image processing in HTTP handlers. Offload to BullMQ (`@nestjs/bullmq`) with Redis queues.
+3. **S3 Uploads**: Generate Presigned S3 PUT/GET URLs via `StorageModule`. Never stream multi-MB files through NestJS RAM.
+4. **PostgreSQL & Prisma Design** (`supabase-postgres-best-practices`):
+   - ✅ **100% FK Indexes**: `@@index([fkColumn])` for every FK column.
+   - ✅ **Snake_case Mapping**: `@@map("snake_case")` and `@map("column_name")` everywhere.
+   - ✅ **Timestamptz**: All `DateTime` fields → `timestamptz`.
+   - ✅ **Cursor Pagination**: `WHERE createdAt < cursor LIMIT N`. Never `OFFSET`.
+   - ✅ **Zero N+1**: `findMany({ where: { id: { in: ids } } })` or `include`.
+   - ✅ **Short Transactions**: `$transaction` contains only DB queries. Never S3, emails, HTTP calls.
+   - ✅ **GIN Indexes**: `gin_trgm_ops` for `ILIKE '%term%'` searches.
+   - ✅ **Ordered PKs**: `@default(cuid())` for sequential B-tree indexing.
+5. **Concurrency & Race Conditions**: Mutex locks or atomic DB updates (`increment`/`decrement`) for shared state (refresh tokens, quota balances).
+6. **Subscription Lifecycle** (`subscription-lifecycle`): Dynamic expiration calculations, grace periods, automatic downgrade fallbacks, quota enforcement across seats/SKUs/credits/storage.
+7. **REST API Design** (`backend-development`):
+   - Plural nouns, kebab-case: `/api/catalogs`, `/api/tariff-plans`.
+   - Single canonical endpoint per business process.
+   - HTTP codes: 200/201/400/401/403/404/409/429.
+   - OpenAPI: `@ApiTags()`, `@ApiOperation()`, `@ApiResponse()`, `@ApiBearerAuth()`.
+   - Zero secret leaks: never return `passwordHash`. Use `@Exclude()` or explicit DTO mappers.
+   - Rate limiting: `ThrottlerGuard` on public auth endpoints.
+8. **Safe OS Execution**: ALWAYS `execFile(binary, [args], { shell: false })`. NEVER `exec` with string concatenation (CWE-78).
+
+> **Gate 3**: Architecture respects CQRS, BullMQ async, presigned S3, all PostgreSQL rules, REST standards, and CWE-78 safety?
+
+---
+
+### 🧪 Phase 4: TDD — RED Phase
+
+_Skills: [test-driven-development](../test-driven-development/SKILL.md) · [mock-real-parity](../mock-real-parity/SKILL.md)_
+_Rules: [testing_and_quality.md](../../rules/testing_and_quality.md)_
+
+1. **Iron Law**: **NO PRODUCTION CODE WITHOUT A FAILING TEST FIRST.**
+2. **E2E Test Structure**: `services/backend-api/test/<feature>.e2e-spec.ts`. Supertest + real NestJS + PostgreSQL/Redis.
+3. **Mandatory Teardown (`cleanDatabase`)**:
+   ```typescript
+   import { cleanDatabase } from '../utils/teardown.helper';
+   beforeAll(async () => {
+     await cleanDatabase(prisma);
+   });
+   afterAll(async () => {
+     await cleanDatabase(prisma);
+   });
+   ```
+   FK-safe order: `Snapshot`/`ProductImage` → `OrganizationInvitation` → `OrganizationMember` → `License` → `Organization` → `User` → `TariffPlan`/`NavigationItem`.
+4. **Anti-Patterns** (`testing-anti-patterns`):
+   - ❌ Never test mock behavior or mock existence.
+   - ❌ Never add test-only methods to production classes.
+   - ❌ Never use incomplete mocks — mirror real payload completely.
+   - ❌ Never use arbitrary `sleep()` — use condition polling (`condition-based-waiting`).
+5. **Execute RED**: `pnpm --filter @smartfeed/backend-api test:e2e -- <feature>.e2e-spec.ts`. Verify test fails for expected assertion reason (not syntax errors).
+
+> **Gate 4**: Failing test written, executed, fails for the exact expected functional reason?
+
+---
+
+### 💻 Phase 5: Implementation & 4-Layer Defense — GREEN Phase
+
+_Skills: [security-and-hardening](../security-and-hardening/SKILL.md) · [idempotency-and-outbox](../idempotency-and-outbox/SKILL.md) · [subscription-lifecycle](../subscription-lifecycle/SKILL.md) · [streaming-large-feeds](../streaming-large-feeds/SKILL.md)_
+
+#### Layer 1: Entry Point & DTO Validation
+
+- Every DTO property: `@IsString()`, `@IsEnum()`, `@IsOptional()`, `@IsInt()`, `@Min()`.
+- Controller: `ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true })`.
+
+#### Layer 2: Domain & Quota Validation
+
+- Business logic in CQRS Command/Query Handlers.
+- Verify: license active, team seats not exceeded, SKU quota within plan limits.
+
+#### Layer 3: Security, RBAC & Guards
+
+- `@UseGuards(JwtAuthGuard, RequireActiveLicenseGuard, RolesGuard)`.
+- Tenant scoping: verify `user.organizationId` matches requested resource.
+- Password security: Argon2id or bcrypt. Zero plain-text storage.
+- OS execution: `execFile(binary, [arg1, arg2], { shell: false })`.
+
+#### Layer 4: Database Integrity & Forensics
+
+- FKs with `ON DELETE CASCADE` or `RESTRICT`.
+- Unique composite constraints in Prisma schema.
+- Short atomic `$transaction()` for multi-step mutations.
+- `GlobalHttpExceptionFilter` for centralized exception handling.
+- Structured logging: `this.logger.error('[Module:Ctx] Message', err)`. **Zero empty `catch {}`.**
+
+#### Verify GREEN:
+
+```bash
+pnpm --filter @smartfeed/backend-api test:e2e -- <feature>.e2e-spec.ts
+```
+
+> **Gate 5**: All code passes tests, respects 4-layer defense, no `as any`, no empty `catch`?
+
+---
+
+### 🔍 Phase 6: Code Review & Pre-Commit Audit
+
+_Skills: [code-review-and-quality](../code-review-and-quality/SKILL.md) · [code-simplification](../code-simplification/SKILL.md) · [doubt-driven-development](../doubt-driven-development/SKILL.md)_
+
+**Step 1 — Dispatch Self-Review** (`requesting-code-review`): Before claiming complete, dispatch review subagent.
+
+**Step 2 — 11-Point Backend Quality Checklist**:
+
+| #   | Check Item                      | Verification Method                                                              |
+| --- | ------------------------------- | -------------------------------------------------------------------------------- |
+| 1   | **CQRS Boundaries**             | `UsersModule` isolated; Auth via CommandBus/QueryBus; events for side effects.   |
+| 2   | **4-Layer Defense**             | DTO validated; domain quotas checked; guards active; FKs intact.                 |
+| 3   | **Modularity (<250-300 lines)** | No God-files; controllers/handlers/services decomposed.                          |
+| 4   | **Zero Dead Code**              | No unused imports, variables, or unreferenced types.                             |
+| 5   | **Zero Silent Failures**        | 0 empty `catch {}`; structured logging or domain HTTP exceptions.                |
+| 6   | **Zero Type Bypasses**          | 0 `as any`; strict TypeScript types and type guards.                             |
+| 7   | **Zero Test Leftovers**         | `cleanDatabase` in `beforeAll` and `afterAll` in every test file.                |
+| 8   | **PostgreSQL Compliance**       | 100% FK indexes; snake_case; timestamptz; cursor pagination; short transactions. |
+| 9   | **Static Typecheck**            | `pnpm --filter @smartfeed/backend-api exec tsc --noEmit` → 0 errors.             |
+| 10  | **Shared Contracts Build**      | `pnpm --filter @smartfeed/shared build` → 0 errors.                              |
+| 11  | **Code Formatting**             | `pnpm format` executed cleanly.                                                  |
+
+**Step 3 — Receive Review Feedback** (`code-review-reception`): Technical rigor, not blind agreement. Verify every fix.
+
+**Step 4 — Lifecycle Close**:
+
+1. Run full E2E: `pnpm --filter @smartfeed/backend-api test:e2e`.
+2. Move `plans/active/<feature>.md` → `plans/completed/<feature>.md` with `✅ Реалізовано та протестовано`.
+3. Update `plans/README.md`.
+4. Update coverage tables in `services/backend-api/README.md` and `services/backend-api/AGENTS.md`.
+
+> **Gate 6**: All 11 checks verified, docs synchronized, plans in `completed/`?
+
+---
+
+### 🛠️ Phase 7: Systematic Debugging & Error Remediation
+
+_Skills: [systematic-debugging](../systematic-debugging/SKILL.md) · [observability-and-instrumentation](../observability-and-instrumentation/SKILL.md)_
+
+```text
+NO FIXES WITHOUT ROOT CAUSE INVESTIGATION FIRST
+```
+
+**4-Phase Debugging Process**:
+
+1. **Root Cause**: Read full stack traces. Reproduce with minimal failing test. Trace data flow backward.
+2. **Pattern Analysis**: Compare with working handlers/repositories. Identify exact behavioral differences.
+3. **Hypothesis & Minimal Test**: _"I think X fails because Y."_ Test smallest possible change.
+4. **Implementation & Verification**: Write failing test reproducing the bug → implement root-cause fix → verify no regressions.
+
+**🚨 Circuit Breaker (3-Fix Rule)**: If 3+ fixes fail → STOP. Signals architectural defect. Discuss refactoring with user.
+
+---
+
+## 🧬 8. Self-Evolution & Continuous Skill Upgrade Protocol (Механізм самопрокачування через skill-creator)
+
+Коли бекенд-інженер виявляє дефект, неврахований бізнес-кейс (як-от видалення зв'язаних товарів при видаленні фіду), антипатерн безпеки або нову вимогу користувача, **яких ще немає в інструкціях чи правилах**, він зобов'язаний запустити цикл самопрокачування:
+
+```text
+ ┌────────────────────────────────────────────────────────────────────────────────────────┐
+ │            КОНТУР САМОПРОКАЧУВАННЯ BACKEND-АГЕНТА (SELF-EVOLUTION LOOP)                │
+ └──────────────────────────────────────────┬─────────────────────────────────────────────┘
+                                            │
+    ┌───────────────────────────────────────▼───────────────────────────────────────┐
+    │ 1. ДЕТЕКЦІЯ: ВИЯВЛЕННЯ НЕЗАКОДОВАНОЇ ПРОБЛЕМИ АБО АНТИПАТЕРНУ                  │
+    │    • Баг цілісності даних (осиротілі записи в БД при видаленні батьків)       │
+    │    • Вразливість безпеки (SSRF при викачуванні за URL, command injection)     │
+    │    • Гонка конкурентності (TOCTOU обхід квот при паралельних запитах)         │
+    │    • Зауваження користувача (наприклад: паритет Mock/Real, заборона ../)      │
+    └───────────────────────────────────────┬───────────────────────────────────────┘
+                                            │
+    ┌───────────────────────────────────────▼───────────────────────────────────────┐
+    │ 2. СИНТЕЗ КОРЕНЕВОЇ ПРИЧИНИ (ROOT CAUSE SYNTHESIS)                            │
+    │    • Скіли: systematic-debugging, doubt-driven-development, lessons-learned   │
+    │    • Чому база або сервіс дозволили цей стан? Якого шару валідації бракувало? │
+    │    • Як вирішити системно (ON DELETE CASCADE, Mutex, execFile)?               │
+    └───────────────────────────────────────┬───────────────────────────────────────┘
+                                            │
+    ┌───────────────────────────────────────▼───────────────────────────────────────┐
+    │ 3. КОДИФІКАЦІЯ ТА ЗБЕРЕЖЕННЯ ІНВАРІАНТУ                                       │
+    │    • Оновлення інваріантів у lessons-learned-registry та automated-guardrails │
+    │    • Створення або вдосконалення скіла через skill-creator                   │
+    │    • Оновлення правил проекту у .agents/rules/*.md (<12k символів)            │
+    └───────────────────────────────────────┬───────────────────────────────────────┘
+                                            │
+    ┌───────────────────────────────────────▼───────────────────────────────────────┐
+    │ 4. ЗАКРІПЛЕННЯ АВТОТЕСТОМ (TEST LOCK-IN)                                      │
+    │    • Написання падаючого E2E тесту (Supertest + cleanDatabase)                │
+    │    • Перевірка каскадного видалення або блокування невалідних операцій        │
+    │    • Тепер регресія неможлива — тест заблокує спробу порушити інваріант!      │
+    └───────────────────────────────────────┬───────────────────────────────────────┘
+                                            │
+    ┌───────────────────────────────────────▼───────────────────────────────────────┐
+    │ 5. СИНХРОНІЗАЦІЯ З КОМАНДОЮ АГЕНТІВ                                           │
+    │    • Оновлення таблиці Anti-Patterns у backend/SKILL.md                       │
+    │    • Повідомлення agents_review для включення в чеклист аудиту                │
+    │    • Оновлення навігаційної матриці в .agents/AGENTS.md                       │
+    └───────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 📚 Bundled References
+
+| File                                                                           | Purpose                                                  |
+| ------------------------------------------------------------------------------ | -------------------------------------------------------- |
+| [references/checklist.md](references/checklist.md)                             | Pre-commit & quality checklist                           |
+| [references/architecture-patterns.md](references/architecture-patterns.md)     | CQRS, BullMQ, transactional boundaries, S3               |
+| [references/api-design-and-security.md](references/api-design-and-security.md) | REST conventions, HTTP codes, OpenAPI, data sanitization |
+
+**Related Project Rules & Playbooks** (always active / load on-demand):
+
+- [agents_backend.md](../../references/agents_backend.md) — Повний 86КБ інженерний плейбук бекенду (детальні CQRS специфікації, DTO шаблони, E2E Jest приклади)
+- [rules.md](../../rules/rules.md) — Architecture, CQRS, Native vs Cloud backend
+- [postgres_skills.md](../../rules/postgres_skills.md) — PostgreSQL index checklist
+- [engineering_discipline_and_planning.md](../../rules/engineering_discipline_and_planning.md) — Zero God-files, mutex, safe OS exec
+- [testing_and_quality.md](../../rules/testing_and_quality.md) — cleanDatabase, 100% i18n, Git policy
+- [plans_lifecycle.md](../../rules/plans_lifecycle.md) — Plans lifecycle management
+
+**Related Backend Skills** (load as needed):
+
+- [bullmq-jobs](../bullmq-jobs/SKILL.md) — Асинхронні черги BullMQ, експоненційний backoff, DLQ, memory backpressure
+- [rust-native-backend](../rust-native-backend/SKILL.md) — Нативний Rust SQLCipher SQLite бекенд у Tauri v2, транзакції, Clippy
+- [mock-real-parity](../mock-real-parity/SKILL.md) — 100% поведінковий паритет між локальним Mock, SQLite та PostgreSQL
+- [prisma-postgres-mastery](../prisma-postgres-mastery/SKILL.md) — 100% FK indexes, pooling, CUID, migrations
+- [postgresql-optimization](../postgresql-optimization/SKILL.md) — GIN pg_trgm, JSONB, tsvector, EXPLAIN
+- [streaming-large-feeds](../streaming-large-feeds/SKILL.md) — SAX XML/CSV streaming for 100k+ SKU catalogs
+- [idempotency-and-outbox](../idempotency-and-outbox/SKILL.md) — Redis idempotency keys, transactional outbox pattern
+- [contract-first-api](../contract-first-api/SKILL.md) — Shared contracts, DTOs & Zod in `@smartfeed/shared`

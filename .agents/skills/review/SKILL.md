@@ -1,56 +1,56 @@
 ---
 name: review
-description: >-
-  Enterprise full-cycle code review, quality audit, and security inspection master skill for
-  SmartFeed Studio. Consolidates review and audit skills (code-review-and-quality,
-  code-simplification, doubt-driven-development, postgresql-optimization, security-and-hardening,
-  performance-optimization, i18n-localization, mock-real-parity, bullmq-jobs). Guides the complete 8-stage audit lifecycle: 1. Reconnaissance,
-  2. CQRS & Boundary Audit, 3. 4-Layer Security Audit, 4. Frontend & UX Audit, 5. Database & Schema Audit,
-  6. Adversarial Stress-Test, 7. Remediation Plan Generation (plans/active/remediation_*.md), 8. Final Report.
-  Use whenever inspecting code quality, running audits, finding regressions, checking database indexing,
-  verifying component modularity, or reviewing PRs/branches.
+description: Enterprise full-cycle code review and quality assurance audit orchestrator for SmartFeed Studio. Use when inspecting code quality, auditing architecture boundaries, detecting security flaws, verifying PostgreSQL indexing, checking component modularity, or reviewing pull requests. Do not use for writing production feature code; use frontend or backend instead.
+rules: [core, backend, database, frontend, security, testing]
 ---
 
-# 🔍 Enterprise Code Review, Audit & Quality Lifecycle (SmartFeed Studio)
+# Code Review & Quality Audit Master Orchestrator
 
-A comprehensive, full-cycle code review **master skill** for SmartFeed Studio.
+## Step 0 - Load rules (mandatory, before any analysis or code)
 
-## 🧭 1. Consolidated Review Architecture
+1. Read `.agents/rules/core.md`, `.agents/rules/backend.md`, `.agents/rules/database.md`, `.agents/rules/frontend.md`, `.agents/rules/security.md`, `.agents/rules/testing.md`.
+2. Extract all invariant IDs relevant to the files under review.
+3. If reviewing code using external libraries, verify API signatures via context7: `resolve-library-id {libraryName, query}` then `query-docs {libraryId, query}`.
+4. Do not perform audit or generate findings until steps 1-3 are complete.
 
-```text
-                        ┌──────────────────────────────────────┐
-                        │        review (Master Skill)         │
-                        └──────────────────┬───────────────────┘
-                                           │
-         ┌──────────────────┬──────────────┴─────┬──────────────────┬──────────────────┐
-         ▼                  ▼                    ▼                  ▼                  ▼
-┌──────────────────┐ ┌──────────────┐ ┌────────────────────┐ ┌──────────────┐ ┌────────────────────┐
-│ CQRS & Boundary  │ │ 4-Layer Sec  │ │ DB & Background  │ │ Frontend/UX  │ │ Adversarial & Race │
-├──────────────────┤ ├──────────────┤ ├────────────────────┤ ├──────────────┤ ├────────────────────┤
-│ code-review-qual │ │ defense-4l   │ │ postgresql-opt     │ │ ui-ux-pro-max│ │ doubt-driven-dev   │
-│ nestjs-best-prac │ │ security-hard│ │ prisma-pg-mastery  │ │ net-dedup    │ │ mutex-concurrency  │
-│ contract-first   │ │ quotas-life  │ │ bullmq-jobs        │ │ i18n-localiz │ │ mock-real-parity   │
-└──────────────────┘ └──────────────┘ └────────────────────┘ └──────────────┘ └────────────────────┘
-```
+## Inputs
 
-## 📋 2. The 8-Stage Review Protocol
+- Target branch, pull request, or modified file paths (`git diff origin/main...HEAD`).
+- Governing rule files in `.agents/rules/`.
+- Invariant ledger in `.agents/_backup/20261015/invariant_ledger.md`.
 
-1. **Stage 1: Reconnaissance**: Check git diff, `project-context-map`, and `lessons-learned-registry`. Verify whether solution is grounded in official docs via `context7` MCP (`resolve-library-id`, `query-docs`) and audit against naive "working is enough" hacks.
-2. **Stage 2: CQRS & Boundaries**: Ensure clean decoupling, no JWT in data layers, no business logic in controllers.
-3. **Stage 3: 4-Layer Defense**: Class-validator on 100% DTOs, quota checks, RBAC tenant scoping, DB constraints.
-4. **Stage 4: Frontend & UX**: 100% solid sticky headers, zero duplicate CTAs, zero off-scheme colors, 100% i18n (`pnpm i18n:check`), zero-duplicate API requests.
-5. **Stage 5: Database & Background Queues**: 100% FK indexes, snake_case mapping, timestamptz, no OFFSET on large feeds, zero N+1, BullMQ exponential backoff & DLQ.
-6. **Stage 6: Adversarial Stress-Test**: Concurrency race conditions, TOCTOU, cleanDatabase teardown in tests, `mock-real-parity` between browser Mock, SQLite, and PostgreSQL.
-7. **Stage 7: Remediation Plan (Zero Plan Dumping)**: If defects found, write detailed plan to `plans/active/remediation_<target>.md`. Do not dump the plan into chat; output ONLY a 1-2 sentence summary and clickable file link `[План](file:///...)`. Do not patch code silently.
-8. **Stage 8: Final Report**: Structured findings report by severity written to file/artifact with brief summary in chat.
+## Procedure
 
----
+1. Stage 1 - Scope Discovery and Git Diff Mapping: inspect changed files (`git diff --stat origin/main`). Identify modified layers (client UI, CQRS handlers, Prisma schema, contracts, tests).
+2. Stage 2 - CQRS and Module Boundary Audit: verify strict CQRS decoupling (`ARCH-04`). Confirm Command Handlers return `{ id }` or void. Verify UsersModule has zero JWT awareness (`ARCH-05`). Confirm controller files are under 250 lines (`CORE-04`).
+3. Stage 3 - 4-Layer Defense and Security Audit: verify `class-validator` coverage on 100% of DTO fields (`BE-01`). Verify `@UseGuards(JwtAuthGuard)` on 100% of mutations (`BE-02`). Verify zero hardcoded fallback secrets via grep (`BE-04`). Verify secret masking on response DTOs (`SEC-03`). Check for CWE-78 command injection (`CORE-05`).
+4. Stage 4 - Frontend, UX, and Theme Audit: verify 100% solid sticky headers (`UI-01`). Verify zero off-scheme arbitrary colors (`UI-02`). Verify zero duplicate CTA buttons (`UI-04`). Verify `useRef` network deduplication (`FE-01`). Verify 100% bilingual parity via `pnpm i18n:check` (`I18N-01`).
+5. Stage 5 - Database and Schema Audit: verify 100% FK indexes (`DB-01`). Verify timestamptz(6) on all DateTime columns (`DB-02`). Verify snake_case mapping (`DB-03`). Verify CUID primary keys (`DB-04`). Verify cascade deletes (`DB-05`). Verify zero N+1 query loops (`DB-06`). Verify short `$transaction` blocks (`DB-08`).
+6. Stage 6 - Adversarial Stress-Test: analyze concurrent mutation race conditions (`BE-07`). Verify mutex locks on quota checks. Verify `cleanDatabase` teardown in test suites (`TEST-01`). Verify behavioral parity between mock driver and real backend (`FE-08`).
+7. Stage 7 - Remediation Plan Generation: if architectural, security, or quality defects are discovered, generate `plans/active/remediation_<target>.md`. Group findings by severity (P0 Critical, P1 High, P2 Medium, P3 Low) citing exact invariant IDs and file:line locations. Never silently modify production code during an audit.
+8. Stage 8 - Final Review Report: format audit findings in the standardized report structure. Output a 1-2 sentence summary in chat with a link to the remediation plan or report artifact.
 
-## 📚 References & Specialized Playbooks
+## Outputs
 
-- [agents_review.md](../../references/agents_review.md) — Повний 88КБ плейбук аудиту коду (8 етапів, CQRS аудит, 4-шаровий захист, стрес-тести гонок, шаблони звітів)
-- [code_review_and_skills.md](../../rules/code_review_and_skills.md) — Mandatory Domain Skills Matrix & Pre-Commit Checklist
-- [code-review-and-quality](../code-review-and-quality/SKILL.md) — 5-axis code review master
-- [doubt-driven-development](../doubt-driven-development/SKILL.md) — Adversarial cross-examination
-- [mock-real-parity](../mock-real-parity/SKILL.md) — Parity between Mock, SQLite, and PostgreSQL
-- [i18n-localization](../i18n-localization/SKILL.md) — 100% i18n parity check gate (`pnpm i18n:check`)
+- Structured audit report or remediation plan in `plans/active/remediation_<target>.md`.
+- Findings grouped by severity P0-P3, citing invariant IDs, file paths, and exact line numbers.
+- Verification status for static typechecking (`tsc --noEmit`) and formatting (`pnpm format`).
+
+## Gate (stop condition)
+
+- 100% of modified lines inspected against invariant IDs.
+- Findings categorized strictly by severity P0-P3 with reproduction steps.
+- Remediation plan authored and linked in chat.
+
+## Never
+
+- Never silently modify production code during a code review pass without explicit user instruction.
+- Never pass code with unindexed foreign keys in Prisma schemas (violates `DB-01`).
+- Never pass mutations lacking JwtAuthGuard protection (violates `BE-02`).
+- Never pass translucent sticky headers lacking solid backgrounds (violates `UI-01`).
+- Never dump full review reports into chat (violates `CORE-07`).
+
+## References
+
+- `references/checklist.md` - read for the 15-point pre-commit review checklist.
+- `references/5-axis-review.md` - read for detailed criteria across correctness, security, architecture, performance, and readability.

@@ -1,28 +1,25 @@
 ---
 name: lessons-learned-registry
-version: 1.0.0
-description: 'Use before starting any task and after any bug/user correction: reads the registry of already-fixed error classes (invariants) and appends new ones, so agents never repeat a mistake and self-evolve.'
+description: Historical registry of solved error classes, known project gotchas, and architectural invariants. Use at the start of tasks to review known pitfalls and after bug fixes to codify new invariants.
+rules:
+  - core
+  - docs_and_ops
 ---
 
 # Lessons Learned Registry
 
-Пам'ять агентів про вже виправлені класи помилок. Джерело істини: [`registry.md`](references/registry.md).
+## Step 0 - Load rules (mandatory, before any analysis or code)
 
-## Загальні принципи
+1. Read `.agents/rules/core.md` and `.agents/rules/docs_and_ops.md`.
+2. Search `references/registry.md` for task domain keywords before designing architecture.
+3. If an invariant is discovered or updated, record it in `references/registry.md`.
+4. Do not commit bug fixes without recording the structural prevention mechanism.
 
-1. **Читати перед задачею**: `grep -i` у `registry.md` за ключовими словами задачі (сутність, шар, тип операції) — не читати файл цілком, якщо він великий.
-2. **Писати після виправлення**: кожен баг, який користувач помітив раніше за агента, або будь-яка повторна помилка = новий запис.
-3. **Запис = інваріант + захист**: лише перевірюване правило і спосіб його автоматичної перевірки (тест/lint), без історій.
-4. **Без дублів**: перед записом `grep` по реєстру та `.agents/rules/`.
+## Operating protocol
 
-## Reference — індекс
-
-| Тригер                                                     | Reference                                             |
-| ---------------------------------------------------------- | ----------------------------------------------------- |
-| Старт будь-якої задачі; перед проєктуванням; перед рев'ю   | [`registry.md`](references/registry.md)               |
-| Знайдено баг / користувач виправив агента / помилка вдруге | [`record-template.md`](references/record-template.md) |
-
-## Заборони
-
-- Не додавати запис без способу перевірки (тест, lint-правило або пункт чеклиста).
-- Не перевищувати 250 рядків у `registry.md`: при росту розбити на `registry-backend.md`, `registry-frontend.md`, `registry-testing.md`.
+1. Pre-task inspection: Run ripgrep (`grep_search`) against `references/registry.md` using terms relevant to the task (e.g. `cascade`, `foreign key`, `sticky`, `dedup`, `import`, `quota`).
+2. Post-fix recording: Whenever a bug is remediated or a user corrects an agent mistake:
+   - Append a new invariant entry to `references/registry.md` using the record template.
+   - Specify: Invariant ID, Problem statement, Structural root cause, Automated prevention mechanism (test or lint rule).
+3. Zero duplicate records: Search existing registry entries and `.agents/rules/` before authoring new entries.
+4. File size limits: Maintain modular sub-registries (`registry-backend.md`, `registry-frontend.md`) if `references/registry.md` approaches 250 lines.

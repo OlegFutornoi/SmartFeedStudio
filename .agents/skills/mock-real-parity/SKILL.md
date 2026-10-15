@@ -1,71 +1,50 @@
 ---
 name: mock-real-parity
-description: Enforces 100% behavioral and data parity between local browser mock mode (in-memory / mockDatabaseDriver), local SQLite (Tauri), and real backend API (NestJS + PostgreSQL). Use when implementing or testing data hydration, catalog operations, supplier feeds, deletion cascades, and quota validations across development environments.
+description: Enforces 100% behavioral and data parity between browser in-memory mock mode (mockDatabaseDriver), desktop native SQLite (Tauri v2), and cloud backend API (NestJS + PostgreSQL) in SmartFeed Studio. Use when designing mock drivers, implementing catalog operations, verifying relation hydration, testing cascade deletions, or aligning error responses. Do not use for general frontend styling; use frontend or ui-ux-pro-max instead.
+rules: [core, frontend, backend, database]
 ---
 
-# ⚖️ Mock vs Real Parity Mastery
+# Mock ⇄ Real Tier Parity Mastery
 
-## 📌 Mission & Core Invariant
+## Step 0 - Load rules (mandatory, before any analysis or code)
 
-SmartFeed Studio operates across three execution tiers:
+1. Read `.agents/rules/core.md`, `.agents/rules/frontend.md`, `.agents/rules/backend.md`, `.agents/rules/database.md`.
+2. Verify invariant `FE-08`: 100% behavioral parity across mock, SQLite, and NestJS API tiers.
+3. Verify invariant `DB-05`: cascade deletions must mirror across all tiers.
+4. Verify invariant `TEST-03`: assert real business data, never column header placeholders.
+5. Do not write or update mock drivers until steps 1-4 are verified.
 
-1. **Local Browser Mock** (In-memory `mockDatabaseDriver` for rapid UI development in Vite)
-2. **Desktop Native SQLite** (Rust SQLCipher in Tauri v2 production build)
-3. **Cloud Backend** (NestJS CQRS + PostgreSQL + Prisma)
+## Inputs
 
-> [!IMPORTANT]
-> **100% Behavioral Parity**: All three tiers **MUST** produce identical data structures, relationships, cascade semantics, error codes, and quota calculations. A feature that works in Mock mode but fails in Real mode is considered broken.
+- Entity model or DTO contract from `packages/shared`.
+- Target mock driver file in `apps/desktop/src/lib/mock-*.ts`.
+- Real database repository or controller.
 
----
+## Procedure
 
-## 🛠 Key Parity Dimensions
+1. Step 1 - Relation Hydration Synchronization: whenever a real backend entity includes hydrated relation fields (e.g. `supplierName`, `categories`, `productsCount`), update `mockDatabaseDriver` to hydrate the exact same fields. Never leave relation fields empty or populated with column names.
+2. Step 2 - Cascade Deletion Mirroring: when an entity is deleted in mock mode (e.g. supplier feed), remove all child entities (products, images) and decrement quotas atomically, mirroring PostgreSQL `ON DELETE CASCADE`.
+3. Step 3 - Error Code and Status Alignment: ensure business rule rejections (quota limits, duplicate SKU) return identical error structures (`statusCode`, `message`, `code`) in mock and backend responses.
+4. Step 4 - Quota Recalculation: ensure quota deductions and license counts recalculate in mock driver identically to cloud subscription handlers.
+5. Step 5 - Parity Test Verification: author Playwright tests asserting real hydrated values (`expect(val).not.toBe('Постачальник')`).
 
-### 1. Relation Hydration Parity
+## Outputs
 
-Never return raw foreign key IDs without hydrated display fields:
+- Synchronized mock drivers in `apps/desktop/src/lib/mock-*.ts`.
+- Consistent entity responses across local dev, desktop SQLite, and cloud API.
 
-- If `supplierId` is present, `supplierName` **MUST** be populated in both mock and real responses.
-- If a catalog has feeds, `activeFeedsCount` and `productsCount` must match across all environments.
-- Prevent table column names or technical placeholders leaking into UI components.
+## Gate (stop condition)
 
-### 2. Cascade Deletion Parity
+- UI renders identical data structures in both mock mode and backend mode.
+- Deletion in mock mode decrements product counts and quotas correctly.
+- Targeted tests pass identically across environments.
 
-When deleting an entity (e.g. a supplier feed or catalog):
+## Never
 
-- **Mock**: Remove associated products from the mock collection and recalculate quotas.
-- **SQLite**: Execute cascade deletes or transactional cleanups.
-- **PostgreSQL**: Trigger foreign key `ON DELETE CASCADE` and decrement counters.
+- Never return raw unhydrated foreign keys in mock mode when real backend returns joined names.
+- Never leak table column names as data values in mock collections (violates `TEST-03`).
+- Never allow orphaned child records in mock mode upon parent deletion (violates `DB-05`).
 
-### 3. Error Code & Status Parity
+## References
 
-When business rules fail (quota exceeded, duplicate SKU, unauthenticated):
-
-- Return identical structured error responses (`statusCode`, `message`, `code: "QUOTA_EXCEEDED"`).
-- Ensure client-side UI error handlers and toasts respond identically in dev mock and production.
-
----
-
-## 🧪 Parity Testing Pattern
-
-When writing automated Playwright tests, assert both data content and business logic invariants:
-
-```typescript
-// Assert real data hydration, never table header leakage
-await expect(page.getByTestId('supplier-name')).not.toHaveText('Постачальник');
-await expect(page.getByTestId('supplier-name')).toHaveText(/Brain Distribution|MMM/);
-
-// Assert cascade deletion invariants
-const initialCount = await getProductCount();
-await deleteSupplierFeed('Feed-1');
-const finalCount = await getProductCount();
-expect(finalCount).toBeLessThan(initialCount);
-```
-
----
-
-## ✅ Pre-Completion Checklist
-
-- [ ] Local mock driver (`mockDatabaseDriver`) hydrates the exact same fields as the backend DTO
-- [ ] Deleting a parent entity in Mock mode clears child items identically to SQLite / PostgreSQL
-- [ ] Business rule validations (quotas, duplicates) trigger in all environments
-- [ ] Playwright E2E tests pass identically against both dev server and backend
+- `references/mock-architecture.md` - read for domain mock driver structure and storage seeding patterns.

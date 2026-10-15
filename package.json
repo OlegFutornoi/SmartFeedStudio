@@ -29,6 +29,7 @@
     "test:admin:headed": "pnpm --filter @smartfeed/admin-portal test:e2e:headed",
     "test:admin:ui": "pnpm --filter @smartfeed/admin-portal test:e2e:ui",
     "i18n:check": "node scripts/check-i18n.mjs",
+    "agents:check": "python3 .agents/scripts/validate_agents.py",
     "version:sync": "node scripts/sync-desktop-version.mjs",
     "version:bump": "node scripts/bump-version.mjs",
     "verify:rust": "node scripts/verify-rust.mjs",

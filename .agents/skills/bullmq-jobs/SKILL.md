@@ -1,77 +1,26 @@
 ---
 name: bullmq-jobs
-description: Production-grade asynchronous job queue engineering with NestJS 11 and BullMQ. Governs job retries, exponential backoff, dead letter queues (DLQ), worker concurrency, memory backpressure during large feed imports (100k+ SKUs), idempotent processing, and graceful shutdown. Use when designing or debugging background workers, feed sync jobs, email queues, or image processing pipelines.
+description: Asynchronous job queue processing with NestJS 11 and BullMQ on Redis 7. Governs bounded retries, exponential backoff, dead letter queues (DLQ), worker concurrency, memory backpressure, and idempotent processors.
+rules:
+  - core
+  - backend
 ---
 
-# 🐂 BullMQ Job Queues & Asynchronous Processing Mastery
+# BullMQ Job Queues
 
-## 📌 Architecture & Responsibilities
+## Step 0 - Load rules (mandatory, before any analysis or code)
 
-In SmartFeed Studio, heavy operations (feed parsing, catalog exports, image sync, email dispatch) are offloaded from HTTP threads into Redis-backed BullMQ queues:
+1. Read `.agents/rules/core.md` and `.agents/rules/backend.md`.
+2. Note all queue and concurrency invariants in working notes.
+3. If using BullMQ APIs, call context7: `resolve-library-id {libraryName: "bullmq", query: "..."}` and `query-docs`.
+4. Do not write queue producers or processors until steps 1-3 are complete.
 
-- **Module**: `services/backend-api/src/modules/feeds` and `services/backend-api/src/modules/mail`
-- **Infrastructure**: Redis 7 on port 6379 via `BullModule.forRootAsync()` in `AppModule`
+## Queue architecture and job design
 
----
-
-## 🔒 Iron Rules for Queue Architecture
-
-### 1. Exponential Backoff & Finite Retries
-
-Every queued job **MUST** define bounded retry attempts with exponential backoff:
-
-```typescript
-await this.feedQueue.add(
-  'process-feed',
-  { feedId, organizationId },
-  {
-    attempts: 5,
-    backoff: {
-      type: 'exponential',
-      delay: 3000, // 3s, 6s, 12s, 24s, 48s
-    },
-    removeOnComplete: { count: 100 }, // Keep last 100 completed for audit
-    removeOnFail: { count: 500 }, // Retain failed jobs for DLQ investigation
-  },
-);
-```
-
-### 2. Idempotent Processors
-
-Workers can be retried or restarted during network hiccups. The worker **MUST** be idempotent:
-
-- Use unique job IDs (`jobId: \`feed-\${feedId}-\${syncTimestamp}\``) to prevent duplicate jobs.
-- Update database statuses inside transactions with conditional checks (`WHERE status = 'PENDING'`).
-
-### 3. Memory Backpressure on 100k+ SKU Feeds
-
-Never accumulate full XML/CSV feed payloads in Redis job data or worker memory:
-
-- Job payload passes only metadata: `{ feedId, storageKey, tenantId }`.
-- The worker streams the file using SAX/CSV streaming and batches DB inserts (`bulkUpsert` in chunks of 500-1000 items).
-
-### 4. Graceful Shutdown
-
-All workers must complete in-flight transactions or pause cleanly upon SIGTERM:
-
-- Enable `app.enableShutdownHooks()` in `main.ts` (already active).
-- Handlers should check worker token cancellation if processing long loops.
-
----
-
-## 🔍 Monitoring & Debugging with Redis MCP
-
-Use `redis-mcp-server` via `call_mcp_tool` (`ServerName: "redis"`) to inspect queues:
-
-- Check waiting jobs: `LLEN bull:process-feed:wait`
-- Check failed jobs: `ZCARD bull:process-feed:failed`
-- Inspect active jobs: `HGETALL bull:process-feed:<jobId>`
-
----
-
-## ✅ Pre-Completion Checklist
-
-- [ ] Jobs configure bounded `attempts` and exponential `backoff`
-- [ ] Large payloads (files/items) are not stored in Redis job data; only storage references
-- [ ] Worker processor handles idempotency and doesn't create duplicate database records
-- [ ] Failed jobs are tracked and logged to Sentry / structured logger
+1. Bounded retries with exponential backoff: Every job added to a queue must specify bounded attempts (3 to 5) and exponential backoff with delay (e.g., `attempts: 5`, `backoff: { type: 'exponential', delay: 3000 }`).
+2. Payload size limits: Never store large XML/CSV files or full product arrays in Redis job data. Pass only lightweight metadata references (`{ feedId, storageKey, organizationId }`).
+3. Retention limits: Configure `removeOnComplete: { count: 100 }` and `removeOnFail: { count: 500 }` to prevent Redis memory exhaustion while retaining audit trails.
+4. Idempotent worker execution: Workers must tolerate retries without creating duplicate rows or double-billing. Use deterministic `jobId` values (e.g., `feed-${feedId}-${syncTimestamp}`) and perform database status updates conditionally (`WHERE status = 'PENDING'`).
+5. Dead letter queue handling: When jobs exhaust retry attempts, capture failed jobs in a dead letter queue or log structured error reports to Sentry. Never silently drop failed jobs.
+6. Graceful worker shutdown: Ensure workers complete current operations or release locks when SIGTERM is received. Enable NestJS shutdown hooks (`app.enableShutdownHooks()`).
+7. Redis inspection: Use the `redis` MCP server to inspect queue states (`LLEN bull:<queue>:wait`, `ZCARD bull:<queue>:failed`, `HGETALL bull:<queue>:<jobId>`).
