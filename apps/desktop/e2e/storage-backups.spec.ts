@@ -210,9 +210,9 @@ test.describe('Desktop App — Cloud Backups & Files Browser (E2E)', () => {
       });
     });
 
-    let orphanPayload: any = null;
+    let orphanPayload: { activeKeys?: string[] } | null = null;
     await page.route('**/api/storage/cleanup-orphans', async (route) => {
-      orphanPayload = route.request().postDataJSON();
+      orphanPayload = route.request().postDataJSON() as { activeKeys?: string[] };
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -246,8 +246,9 @@ test.describe('Desktop App — Cloud Backups & Files Browser (E2E)', () => {
     const purgeInBackgroundBtn = dialog.locator('button', { hasText: 'Очистити у фоні' });
     await expect(purgeInBackgroundBtn).toBeVisible();
 
-    expect(orphanPayload).toHaveProperty('activeKeys');
-    expect(Array.isArray(orphanPayload.activeKeys)).toBe(true);
+    const capturedPayload = orphanPayload as { activeKeys?: string[] } | null;
+    expect(capturedPayload).toHaveProperty('activeKeys');
+    expect(Array.isArray(capturedPayload?.activeKeys)).toBe(true);
 
     // Click background purge: modal closes immediately without blocking user
     await purgeInBackgroundBtn.click();

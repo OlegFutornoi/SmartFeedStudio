@@ -81,7 +81,40 @@ export class FetchFeedUrlHandler implements IQueryHandler<FetchFeedUrlQuery, Fet
           throw new BadRequestException('Remote feed exceeds maximum supported size (50MB)');
         }
 
-        const text = await response.text();
+        // BE-09: Bounded stream reader prevents OOM crashes on chunked transfer responses
+        let text = '';
+        let totalBytes = 0;
+
+        if (response.body) {
+          const reader = response.body.getReader();
+          const decoder = new TextDecoder();
+          try {
+            while (true) {
+              const { done, value } = await reader.read();
+              if (done) break;
+              if (value) {
+                totalBytes += value.length;
+                if (totalBytes > MAX_FEED_SIZE_BYTES) {
+                  await reader.cancel();
+                  throw new BadRequestException(
+                    'Remote feed exceeds maximum supported size (50MB)',
+                  );
+                }
+                text += decoder.decode(value, { stream: true });
+              }
+            }
+            text += decoder.decode();
+          } catch (streamErr: unknown) {
+            if (streamErr instanceof BadRequestException) {
+              throw streamErr;
+            }
+            this.logger.warn(`Stream reading interrupted for URL ${currentUrl}:`, streamErr);
+            throw new BadGatewayException('Failed to read feed stream from remote server');
+          }
+        } else {
+          text = await response.text();
+        }
+
         if (!text || text.trim().length < 10) {
           throw new BadRequestException('Remote server returned an empty feed response');
         }
@@ -198,7 +231,15 @@ export class FetchFeedUrlHandler implements IQueryHandler<FetchFeedUrlQuery, Fet
     if (/^172\.(1[6-9]|2[0-9]|3[0-1])\./.test(cleanIp)) {
       return true;
     }
-    if (cleanIp.startsWith('169.254.')) {
+    if (cleanIp.startsWith('169.254.') || cleanIp.startsWith('100.64.')) {
+      return true;
+    }
+    if (
+      cleanIp.startsWith('192.0.2.') ||
+      cleanIp.startsWith('198.51.100.') ||
+      cleanIp.startsWith('203.0.113.') ||
+      cleanIp.startsWith('224.') // Multicast
+    ) {
       return true;
     }
     if (cleanIp.startsWith('fc00:') || cleanIp.startsWith('fd') || cleanIp.startsWith('fe80:')) {

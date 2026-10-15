@@ -1,0 +1,90 @@
+export function prepareTauriArgs(command: string, args: unknown): Record<string, unknown> {
+  const raw = (args || {}) as Record<string, unknown>;
+
+  switch (command) {
+    case 'db_get_supplier_by_id':
+      return {
+        id: raw.id,
+      };
+
+    case 'db_get_categories_summary':
+      return {
+        supplierId: raw.supplierId || undefined,
+        supplier_id: raw.supplierId || undefined,
+      };
+
+    case 'db_create_supplier':
+      return {
+        dto: raw.payload || raw.dto || raw,
+      };
+
+    case 'db_update_supplier':
+      return {
+        id: raw.id,
+        dto: raw.payload || raw.dto || raw,
+      };
+
+    case 'db_create_feed_source': {
+      const p = (raw.payload || {}) as Record<string, unknown>;
+      const dto = {
+        id: p.id || undefined,
+        supplierId: raw.supplierId || p.supplierId,
+        name: p.name,
+        sourceType: p.sourceType,
+        fileFormat: p.format || p.fileFormat,
+        sourceUrl: p.url || p.sourceUrl,
+        authHeaderName: p.authHeaderName,
+        authHeaderValue: p.authHeaderValue,
+        syncIntervalHours: p.syncIntervalHours || 24,
+        autoUpdatePrices: p.autoUpdatePrices ?? true,
+        autoUpdateStocks: p.autoUpdateStocks ?? true,
+        autoCreateNewProducts: p.autoCreateNewProducts ?? true,
+        mappingRules: typeof p.mappingRules === 'string' ? p.mappingRules : undefined,
+      };
+      return { dto };
+    }
+
+    case 'db_delete_feed_source':
+      return {
+        id: raw.id,
+        deleteProducts: raw.deleteProducts ?? true,
+        delete_products: raw.deleteProducts ?? true,
+      };
+
+    case 'db_get_supplier_feed_sources':
+      return {
+        supplierId: raw.supplierId,
+        supplier_id: raw.supplierId,
+      };
+
+    case 'db_bulk_delete_products': {
+      const p = raw.payload as { productIds?: string[] } | undefined;
+      return {
+        ids: p?.productIds || raw.ids || [],
+      };
+    }
+
+    default:
+      return raw;
+  }
+}
+
+export const REGISTERED_TAURI_COMMANDS = new Set([
+  'db_get_counters',
+  'db_get_suppliers',
+  'db_get_supplier_by_id',
+  'db_create_supplier',
+  'db_update_supplier',
+  'db_delete_supplier',
+  'db_get_supplier_feed_sources',
+  'db_create_feed_source',
+  'db_delete_feed_source',
+  'db_get_products',
+  'db_get_categories_summary',
+  'db_bulk_upsert_products',
+  'db_bulk_delete_products',
+  'db_get_product_images',
+  'db_delete_product_image',
+  'db_update_product_images_order',
+  'db_download_product_image',
+]);

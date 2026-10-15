@@ -1,5 +1,9 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  NotFoundException,
+  BadRequestException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
 import { CreatePaymentInvoiceCommand } from '@/modules/payments/commands/create-payment-invoice.command';
 import { WayForPayService } from '@/modules/payments/services/wayforpay.service';
@@ -65,12 +69,29 @@ export class CreatePaymentInvoiceHandler implements ICommandHandler<CreatePaymen
       where: { provider: PaymentProvider.WAYFORPAY },
     });
 
-    const merchantAccount =
-      setting?.merchantAccount || process.env.WAYFORPAY_MERCHANT_ACCOUNT || 'test_merch_n1';
+    const isSandbox = Boolean(setting?.isTestMode) || process.env.NODE_ENV === 'test';
     const merchantSecretKey =
       setting?.merchantSecretKey ||
       process.env.WAYFORPAY_MERCHANT_SECRET_KEY ||
-      'flk3409refn54t54t*FNJRET';
+      (isSandbox ? 'flk3409refn54t54t*FNJRET' : undefined);
+
+    if (!merchantSecretKey) {
+      throw new InternalServerErrorException(
+        'Critical payment configuration missing: WAYFORPAY_MERCHANT_SECRET_KEY must be configured',
+      );
+    }
+
+    const merchantAccount =
+      setting?.merchantAccount ||
+      process.env.WAYFORPAY_MERCHANT_ACCOUNT ||
+      (isSandbox ? 'test_merch_n1' : undefined);
+
+    if (!merchantAccount) {
+      throw new InternalServerErrorException(
+        'Critical payment configuration missing: WAYFORPAY_MERCHANT_ACCOUNT must be configured',
+      );
+    }
+
     const merchantDomainName =
       merchantAccount === 'test_merch_n1'
         ? setting?.merchantDomain && setting.merchantDomain !== 'localhost'

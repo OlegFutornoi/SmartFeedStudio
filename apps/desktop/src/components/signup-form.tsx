@@ -1,16 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import {
-  AlertCircle,
-  User,
-  Building2,
-  Mail,
-  Lock,
-  Eye,
-  EyeOff,
-  ArrowRight,
-  CheckCircle2,
-} from 'lucide-react';
+import { AlertCircle, User, Building2, Mail, ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTranslation, getErrorMessage } from '@/i18n';
@@ -19,6 +9,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { captureException } from '@/lib/sentry';
+import { SignupPasswordFields } from '@/components/auth/SignupPasswordFields';
+import { SignupTermsAgreement } from '@/components/auth/SignupTermsAgreement';
 
 interface SignupFormProps extends React.ComponentPropsWithoutRef<'div'> {
   onOpenLegal?: (type: 'terms' | 'privacy') => void;
@@ -172,115 +164,27 @@ export function SignupForm({ className, onOpenLegal, ...props }: SignupFormProps
         </div>
 
         {/* Password & Confirm Password Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-          <div className="grid gap-1">
-            <Label htmlFor="password" className="text-xs font-medium">
-              {t('passwordLabel')}
-            </Label>
-            <div className="relative">
-              <Lock className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                id="password"
-                type={showPassword ? 'text' : 'password'}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                data-testid="password-input"
-                required
-                autoComplete="new-password"
-                disabled={isLoading}
-                className="pl-8 pr-8 h-8.5 text-xs sm:text-sm"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground p-0.5"
-              >
-                {showPassword ? (
-                  <EyeOff className="h-3.5 w-3.5" />
-                ) : (
-                  <Eye className="h-3.5 w-3.5" />
-                )}
-              </button>
-            </div>
-          </div>
+        <SignupPasswordFields
+          password={password}
+          setPassword={setPassword}
+          confirmPassword={confirmPassword}
+          setConfirmPassword={setConfirmPassword}
+          showPassword={showPassword}
+          setShowPassword={setShowPassword}
+          showConfirmPassword={showConfirmPassword}
+          setShowConfirmPassword={setShowConfirmPassword}
+          isPasswordValid={isPasswordValid}
+          isLoading={isLoading}
+          t={t}
+        />
 
-          <div className="grid gap-1">
-            <Label htmlFor="confirm-password" className="text-xs font-medium">
-              {t('confirmPasswordLabel')}
-            </Label>
-            <div className="relative">
-              <Lock className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                id="confirm-password"
-                type={showConfirmPassword ? 'text' : 'password'}
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                data-testid="confirm-password-input"
-                required
-                autoComplete="new-password"
-                disabled={isLoading}
-                className="pl-8 pr-8 h-8.5 text-xs sm:text-sm"
-              />
-              <button
-                type="button"
-                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground p-0.5"
-              >
-                {showConfirmPassword ? (
-                  <EyeOff className="h-3.5 w-3.5" />
-                ) : (
-                  <Eye className="h-3.5 w-3.5" />
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Password Hint */}
-        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-          <CheckCircle2
-            className={cn(
-              'h-3.5 w-3.5 transition-colors',
-              isPasswordValid ? 'text-emerald-500' : 'text-muted-foreground/60',
-            )}
-          />
-          <span>{t('passwordNote')}</span>
-        </div>
-
-        {/* Terms Agreement Checkbox with Interactive Modal Triggers */}
-        <label className="flex items-start gap-2 cursor-pointer text-xs text-muted-foreground select-none leading-tight">
-          <input
-            type="checkbox"
-            checked={agreedToTerms}
-            onChange={(e) => setAgreedToTerms(e.target.checked)}
-            className="mt-0.5 h-3.5 w-3.5 rounded border-border text-primary focus:ring-primary"
-          />
-          <span>
-            {t('termsAgreement')}{' '}
-            <button
-              type="button"
-              onClick={(e) => {
-                e.preventDefault();
-                onOpenLegal?.('terms');
-              }}
-              className="underline hover:text-foreground font-medium transition-colors"
-            >
-              {t('termsOfService')}
-            </button>{' '}
-            {t('and')}{' '}
-            <button
-              type="button"
-              onClick={(e) => {
-                e.preventDefault();
-                onOpenLegal?.('privacy');
-              }}
-              className="underline hover:text-foreground font-medium transition-colors"
-            >
-              {t('privacyPolicy')}
-            </button>
-            .
-          </span>
-        </label>
+        {/* Terms Agreement Checkbox */}
+        <SignupTermsAgreement
+          agreedToTerms={agreedToTerms}
+          setAgreedToTerms={setAgreedToTerms}
+          onOpenLegal={onOpenLegal}
+          t={t}
+        />
 
         {/* Submit Button */}
         <Button

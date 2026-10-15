@@ -69,8 +69,12 @@ export class HandleWayForPayWebhookHandler implements ICommandHandler<HandleWayF
     }
 
     if (isApproved) {
-      await this.prisma.paymentTransaction.update({
-        where: { id: transaction.id },
+      // BE-07: Atomic conditional update ensures single license provisioning under concurrent webhook deliveries
+      const updateResult = await this.prisma.paymentTransaction.updateMany({
+        where: {
+          id: transaction.id,
+          status: { not: 'APPROVED' },
+        },
         data: {
           status: 'APPROVED',
           providerPaymentId: payload.authCode || undefined,
@@ -81,6 +85,13 @@ export class HandleWayForPayWebhookHandler implements ICommandHandler<HandleWayF
           metadata: payload as unknown as Prisma.InputJsonValue,
         },
       });
+
+      if (updateResult.count === 0) {
+        this.logger.log(
+          `Transaction ${payload.orderReference} already APPROVED by concurrent execution. Returning idempotent response.`,
+        );
+        return this.wayforpayService.generateAcceptResponse(payload.orderReference, secretKey);
+      }
 
       // 5. Automatically provision / extend License for user
       const interval = transaction.billingInterval === 'YEARLY' ? 'yearly' : 'monthly';

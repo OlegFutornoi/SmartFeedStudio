@@ -8,7 +8,10 @@ import {
 } from '@nestjs/common';
 import { Role, PlanType, UserListItemDto } from '@smartfeed/shared';
 import { PrismaService } from '@/prisma/prisma.service';
+import { RedisCacheService } from '@/common/cache/redis-cache.service';
 import { UpdateUserStatusCommand } from '@/modules/users/commands/update-user-status.command';
+
+const TOKEN_EXPIRY_SECONDS = 30 * 24 * 60 * 60; // 30 days
 
 @Injectable()
 @CommandHandler(UpdateUserStatusCommand)
@@ -18,7 +21,10 @@ export class UpdateUserStatusHandler implements ICommandHandler<
 > {
   private readonly logger = new Logger(UpdateUserStatusHandler.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly cache: RedisCacheService,
+  ) {}
 
   async execute(command: UpdateUserStatusCommand): Promise<UserListItemDto> {
     const { userId, isActive, requesterId } = command;
@@ -88,6 +94,17 @@ export class UpdateUserStatusHandler implements ICommandHandler<
     });
 
     this.logger.log(`Updated user ${updated.email} (ID: ${userId}) status to isActive=${isActive}`);
+
+    // Invalidate profile cache immediately
+    await this.cache.del(`auth:user:${userId}`);
+    if (!isActive) {
+      const revocationTimestamp = Math.floor(Date.now() / 1000);
+      await this.cache.set(
+        `auth:revoked_before:${userId}`,
+        revocationTimestamp,
+        TOKEN_EXPIRY_SECONDS,
+      );
+    }
 
     const primaryMembership =
       updated.organizationMemberships.find((m) => m.role === 'OWNER') ||

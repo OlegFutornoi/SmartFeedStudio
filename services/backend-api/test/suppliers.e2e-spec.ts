@@ -117,9 +117,11 @@ describe('Suppliers & Multi-Currency Management (E2E)', () => {
 
     expect(Array.isArray(res.body)).toBe(true);
     expect(res.body.length).toBeGreaterThanOrEqual(1);
-    const target = res.body.find((s: any) => s.id === createdSupplierId);
+    const target = (res.body as Array<{ id: string; name: string }>).find(
+      (s) => s.id === createdSupplierId,
+    );
     expect(target).toBeDefined();
-    expect(target.name).toBe('Brain Distribution Inc');
+    expect(target?.name).toBe('Brain Distribution Inc');
   });
 
   it('3. GET /api/suppliers/:id — returns supplier details by ID', async () => {
