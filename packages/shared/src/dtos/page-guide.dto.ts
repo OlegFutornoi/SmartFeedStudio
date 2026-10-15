@@ -49,4 +49,4 @@ export const PageGuideDtoSchema = z.object({
 
 export type PageGuideDto = z.infer<typeof PageGuideDtoSchema>;
 
-export { DEFAULT_AI_ASSISTANT_PROFILE, DEFAULT_PAGE_GUIDES } from '@/dtos/page-guide-defaults';
+export { DEFAULT_AI_ASSISTANT_PROFILE, DEFAULT_PAGE_GUIDES } from './page-guide-defaults';

@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { PlanType } from '@/enums';
+import { PlanType } from '../enums/index.js';
 
 export const LicenseDtoSchema = z.object({
   id: z.string().uuid(),

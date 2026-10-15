@@ -1,5 +1,5 @@
-import { Role, PlanType } from '@/enums';
-import type { TariffPlanDto } from '@/dtos/tariff-plan.dto';
+import { Role, PlanType } from '../enums/index.js';
+import type { TariffPlanDto } from '../dtos/tariff-plan.dto.js';
 
 // ==========================================
 // User Commands & Queries Contracts

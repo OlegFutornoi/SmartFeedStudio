@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { MemberRole, InvitationStatus } from '@/enums';
+import { MemberRole, InvitationStatus } from '../enums/index.js';
 
 export const OrganizationMemberDtoSchema = z.object({
   id: z.string(),

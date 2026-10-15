@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { FeedFormat, FeedSourceType, ImportJobStatus } from '@/enums';
+import { FeedFormat, FeedSourceType, ImportJobStatus } from '../enums/index.js';
 
 export const CategorySummaryDtoSchema = z.object({
   id: z.string(),

@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { ProductStatus } from '@/enums';
+import { ProductStatus } from '../enums/index.js';
 
 export const ProductAttributeDtoSchema = z.object({
   id: z.string().optional(),

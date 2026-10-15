@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { Role, MemberRole } from '@/enums';
+import { Role, MemberRole } from '../enums/index.js';
 
 export const RegisterDtoSchema = z.object({
   email: z.string().email('Invalid email address format'),

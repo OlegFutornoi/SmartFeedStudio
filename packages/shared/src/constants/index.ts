@@ -1,5 +1,5 @@
-import { PlanType } from '@/enums';
-import { PlanLimits } from '@/dtos/license.dto';
+import { PlanType } from '../enums/index.js';
+import { PlanLimits } from '../dtos/license.dto.js';
 
 export const PLAN_LIMITS_MAP: Record<PlanType, PlanLimits> = {
   [PlanType.STARTER]: {
