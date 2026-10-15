@@ -1,4 +1,9 @@
-import type { CreateUserByAdminDto, UserListItemDto, UsersStatsDto } from '@smartfeed/shared';
+import type {
+  AdminDashboardOverviewDto,
+  CreateUserByAdminDto,
+  UserListItemDto,
+  UsersStatsDto,
+} from '@smartfeed/shared';
 import { baseClient } from '@/lib/api/client';
 
 export interface GetUsersParams {
@@ -24,6 +29,10 @@ export async function getUsers(params?: GetUsersParams): Promise<UserListItemDto
 
 export async function getUsersStats(): Promise<UsersStatsDto> {
   return baseClient.request<UsersStatsDto>('/users/stats');
+}
+
+export async function getDashboardOverview(): Promise<AdminDashboardOverviewDto> {
+  return baseClient.request<AdminDashboardOverviewDto>('/users/dashboard-overview');
 }
 
 export async function createUser(dto: CreateUserByAdminDto): Promise<UserListItemDto> {

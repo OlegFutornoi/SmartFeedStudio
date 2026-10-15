@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Truck,
@@ -37,22 +37,37 @@ export function HomePage() {
   const [latestSuppliers, setLatestSuppliers] = useState<SupplierDto[]>([]);
   const [totalSuppliersDB, setTotalSuppliersDB] = useState<number>(0);
 
-  const loadSuppliers = useCallback(async () => {
-    try {
-      const suppliers = await getSuppliers(token || undefined);
-      setTotalSuppliersDB(suppliers.length);
-      // Get first 3 as "latest"
-      setLatestSuppliers(suppliers.slice(0, 3));
-    } catch (err) {
-      console.error(err);
-    }
-  }, [token]);
+  const isFetchingRef = useRef<boolean>(false);
+  const lastFetchedTokenRef = useRef<string | null>(null);
+
+  const loadSuppliers = useCallback(
+    async (force = false) => {
+      if (!token) return;
+      if (!force && lastFetchedTokenRef.current === token) return;
+      if (isFetchingRef.current) return;
+      isFetchingRef.current = true;
+      lastFetchedTokenRef.current = token;
+
+      try {
+        const suppliers = await getSuppliers(token || undefined);
+        setTotalSuppliersDB(suppliers.length);
+        // Get first 3 as "latest"
+        setLatestSuppliers(suppliers.slice(0, 3));
+      } catch (err) {
+        lastFetchedTokenRef.current = null;
+        console.error(err);
+      } finally {
+        isFetchingRef.current = false;
+      }
+    },
+    [token],
+  );
 
   useEffect(() => {
     loadSuppliers();
   }, [loadSuppliers]);
 
-  useDataSync(['suppliers', 'all'], loadSuppliers);
+  useDataSync(['suppliers', 'all'], () => loadSuppliers(true));
 
   const suppliersCount = quotas?.suppliers?.used ?? 0;
   const productsCount = quotas?.products?.used ?? 0;

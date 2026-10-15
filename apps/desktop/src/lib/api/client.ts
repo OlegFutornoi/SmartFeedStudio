@@ -97,10 +97,10 @@ export async function refreshAuthSession(): Promise<string | null> {
   return refreshPromise;
 }
 
-/**
- * Authenticated Fetch wrapper with automatic silent 401 token refresh & request retry.
- */
-export async function fetchWithAuth(
+// Global in-flight GET requests cache to deduplicate concurrent requests across components (FE-09)
+const inFlightRequests = new Map<string, Promise<Response>>();
+
+async function executeFetchWithAuth(
   endpoint: string,
   options: RequestInit = {},
   tokenOverride?: string,
@@ -155,4 +155,37 @@ export async function fetchWithAuth(
   }
 
   return response;
+}
+
+/**
+ * Authenticated Fetch wrapper with automatic silent 401 token refresh, request retry,
+ * and concurrent in-flight GET request deduplication (FE-09).
+ */
+export async function fetchWithAuth(
+  endpoint: string,
+  options: RequestInit = {},
+  tokenOverride?: string,
+): Promise<Response> {
+  const method = (options.method || 'GET').toUpperCase();
+
+  // Deduplicate concurrent in-flight GET requests per FE-09
+  if (method === 'GET') {
+    const token = tokenOverride || localStorage.getItem(TOKEN_KEY);
+    const cacheKey = `${token || 'anon'}:${endpoint}`;
+    const existing = inFlightRequests.get(cacheKey);
+    if (existing) {
+      const resp = await existing;
+      return resp.clone();
+    }
+
+    const promise = executeFetchWithAuth(endpoint, options, tokenOverride).finally(() => {
+      inFlightRequests.delete(cacheKey);
+    });
+
+    inFlightRequests.set(cacheKey, promise);
+    const resp = await promise;
+    return resp.clone();
+  }
+
+  return executeFetchWithAuth(endpoint, options, tokenOverride);
 }

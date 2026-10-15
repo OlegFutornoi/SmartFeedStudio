@@ -70,8 +70,8 @@ export function useStorageQuota(): StorageQuotaState {
     fetchQuota();
   }, [fetchQuota]);
 
-  // Synchronize across all components when storage or quota changes
-  useDataSync(['storage', 'quotas', 'licenses', 'all'], () => {
+  // Synchronize strictly when storage or quota metrics change (FE-13)
+  useDataSync(['storage', 'quotas'], () => {
     fetchQuota(true);
   });
 

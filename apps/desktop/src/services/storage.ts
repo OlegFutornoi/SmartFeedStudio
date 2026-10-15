@@ -9,6 +9,7 @@ import {
   CleanupOrphansRequestDto,
   CleanupOrphansResponseDto,
 } from '@smartfeed/shared';
+import { fetchWithAuth } from '@/lib/api/client';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
 
@@ -53,7 +54,13 @@ export async function getStorageQuota(
   }
 
   const now = Date.now();
-  if (!force && cachedQuota && lastQuotaToken === accessToken && now - lastQuotaTime < 1000) {
+  const STORAGE_QUOTA_TTL_MS = 60000; // 60s in-memory TTL per FE-14
+  if (
+    !force &&
+    cachedQuota &&
+    lastQuotaToken === accessToken &&
+    now - lastQuotaTime < STORAGE_QUOTA_TTL_MS
+  ) {
     return cachedQuota;
   }
   if (!force && inFlightQuotaPromise && lastQuotaToken === accessToken) {
@@ -63,12 +70,7 @@ export async function getStorageQuota(
   lastQuotaToken = accessToken;
   inFlightQuotaPromise = (async () => {
     try {
-      const res = await fetch(`${API_BASE_URL}/storage/quota`, {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
+      const res = await fetchWithAuth('/storage/quota', { method: 'GET' }, accessToken);
 
       if (!res.ok) {
         throw new Error(`Failed to fetch storage quota: ${res.statusText}`);

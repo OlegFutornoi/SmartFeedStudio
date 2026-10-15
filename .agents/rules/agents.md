@@ -19,11 +19,17 @@ description: Autonomous specialized agent router and dispatching directives for 
 
 - Every specialized agent must execute its task through eight sequential stages:
   1. Discovery, scope analysis, and upfront research.
-  2. Planning, shared contracts, and modularity budgeting.
+  2. Planning, shared contracts, and modularity budgeting: create active plans in `plans/active/<name>.md`. Writing long analytical sheets or audit matrices directly into chat is strictly prohibited (`CORE-07`, `PLAN-01`).
   3. Architecture and domain constraints.
   4. Automated test design (TDD RED).
   5. Implementation and domain hardening (GREEN).
   6. Code review and DoD verification against invariant IDs.
-  7. Systematic debugging and root cause isolation.
-  8. Documentation, test coverage synchronization, and plan completion.
-- Reason: Strict stage progression prevents premature coding, skipped tests, and unverified deployments.
+  7. Systematic debugging and root cause isolation: when defects, performance bottlenecks, or anti-patterns are uncovered, codify preventive invariants directly into the corresponding domain rule (`.agents/rules/<domain>.md`) and skill (`.agents/skills/<skill>/SKILL.md`) to permanently prevent defect repetition.
+  8. Documentation, test coverage synchronization, and plan completion: move plan to `plans/completed/`. Chat output is strictly limited to 1-2 sentence summary with a clickable link to the plan (`CORE-07`).
+- Reason: Strict stage progression prevents premature coding, skipped tests, context pollution, and unverified deployments.
+
+## AGENT-03: Invariant & Skill Codification Loop
+
+- Whenever an agent discovers a defect, anti-pattern, concurrency flaw, or unhandled bottleneck during review, QA, security audit, or development, the agent must update the relevant domain rule (`.agents/rules/<domain>.md`) and governing skill (`.agents/skills/<skill>/SKILL.md`).
+- Define the new invariant with a concrete invariant ID (e.g., `FE-xx`, `BE-xx`, `SEC-xx`), explicit constraints, and technical rationale.
+- Reason: Fixing a bug or pointing out an architectural defect without codifying the invariant into governing rules allows identical errors to recur across subsequent turns.

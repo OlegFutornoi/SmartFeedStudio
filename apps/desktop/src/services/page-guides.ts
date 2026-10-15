@@ -4,44 +4,53 @@ import {
   DEFAULT_PAGE_GUIDES,
   DEFAULT_AI_ASSISTANT_PROFILE,
 } from '@smartfeed/shared';
-
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
+import { fetchWithAuth } from '@/lib/api/client';
 
 let cachedAssistantProfile: AiAssistantProfileDto | null = null;
 let cachedGuides: Record<string, PageGuideDto> = {};
 let lastFetchTime = 0;
+let inFlightProfilePromise: Promise<AiAssistantProfileDto> | null = null;
+const inFlightRequests: Record<string, Promise<PageGuideDto> | undefined> = {};
+
+// 2-minute memory TTL for static guides per FE-14
+const PROFILE_TTL_MS = 120000;
 
 /**
- * Fetch current AI Assistant profile (photo & metadata) with offline fallback.
+ * Fetch current AI Assistant profile (photo & metadata) with in-flight dedup and offline fallback.
  */
 export async function getAiAssistantProfile(token?: string): Promise<AiAssistantProfileDto> {
   const now = Date.now();
-  if (cachedAssistantProfile && now - lastFetchTime < 10000) {
+  if (cachedAssistantProfile && now - lastFetchTime < PROFILE_TTL_MS) {
     return cachedAssistantProfile;
   }
 
-  try {
-    const headers: Record<string, string> = {};
-    if (token) headers['Authorization'] = `Bearer ${token}`;
-
-    const res = await fetch(`${API_BASE_URL}/page-guides/assistant/profile`, { headers });
-    if (res.ok) {
-      const data = await res.json();
-      cachedAssistantProfile = data;
-      lastFetchTime = now;
-      return data;
-    }
-  } catch (err) {
-    console.warn('[PageGuides] Offline fallback for AI Assistant profile:', err);
+  if (inFlightProfilePromise) {
+    return inFlightProfilePromise;
   }
 
-  return DEFAULT_AI_ASSISTANT_PROFILE;
+  inFlightProfilePromise = (async () => {
+    try {
+      const res = await fetchWithAuth('/page-guides/assistant/profile', { method: 'GET' }, token);
+      if (res.ok) {
+        const data = await res.json();
+        cachedAssistantProfile = data;
+        lastFetchTime = Date.now();
+        return data;
+      }
+    } catch (err) {
+      console.warn('[PageGuides] Offline fallback for AI Assistant profile:', err);
+    } finally {
+      inFlightProfilePromise = null;
+    }
+
+    return cachedAssistantProfile || DEFAULT_AI_ASSISTANT_PROFILE;
+  })();
+
+  return inFlightProfilePromise;
 }
 
-const inFlightRequests: Record<string, Promise<PageGuideDto> | undefined> = {};
-
 /**
- * Fetch page guide for a specific route with instant offline fallback.
+ * Fetch page guide for a specific route with in-flight dedup and instant offline fallback.
  */
 export async function getPageGuide(route: string, token?: string): Promise<PageGuideDto> {
   const normalizedRoute = route.startsWith('/') ? route : `/${route}`;
@@ -58,12 +67,11 @@ export async function getPageGuide(route: string, token?: string): Promise<PageG
 
   const promise = (async () => {
     try {
-      const headers: Record<string, string> = {};
-      if (token) headers['Authorization'] = `Bearer ${token}`;
-
-      const res = await fetch(`${API_BASE_URL}/page-guides/${encodeURIComponent(routeKey)}`, {
-        headers,
-      });
+      const res = await fetchWithAuth(
+        `/page-guides/${encodeURIComponent(routeKey)}`,
+        { method: 'GET' },
+        token,
+      );
       if (res.ok) {
         const data = await res.json();
         cachedGuides[normalizedRoute] = data;
@@ -78,6 +86,7 @@ export async function getPageGuide(route: string, token?: string): Promise<PageG
     // Instant canonical fallback
     const fallback =
       DEFAULT_PAGE_GUIDES[normalizedRoute] ||
+      (normalizedRoute === '/plans' ? DEFAULT_PAGE_GUIDES['/license'] : undefined) ||
       (normalizedRoute === '/ai-enrichment' ? DEFAULT_PAGE_GUIDES['/ai'] : undefined) ||
       DEFAULT_PAGE_GUIDES['/'];
     const profile = cachedAssistantProfile || DEFAULT_AI_ASSISTANT_PROFILE;

@@ -12,7 +12,12 @@ rules: [core, frontend]
 2. Verify invariant `FE-01`: zero duplicate API calls via `useRef` guards.
 3. Verify invariant `FE-02`: no `React.StrictMode` double-mounting in desktop or admin apps.
 4. Verify invariant `FE-04`: lean `useCallback` dependency arrays without UI translation flags.
-5. Do not write data-fetching hooks or component memoization until steps 1-4 are complete.
+5. Verify invariant `FE-09`: client-level in-flight request deduplication via `inFlightRequests Map`.
+6. Verify invariant `FE-10`: zero duplicate context data re-fetching from child components.
+7. Verify invariant `FE-12`: zero raw `fetch()` bypasses in services; enforce `fetchWithAuth`.
+8. Verify invariant `FE-13`: scoped domain subscriptions in `useDataSync` without catch-all `'all'`.
+9. Verify invariant `FE-14`: in-memory TTL & navigation cache for reference data.
+10. Do not write data-fetching hooks or component memoization until steps 1-9 are complete.
 
 ## Inputs
 
@@ -44,6 +49,11 @@ rules: [core, frontend]
 - Never fire cascaded `GET /auth/me` calls immediately after login or register (violates `FE-03`).
 - Never wrap root desktop `<App />` in `<React.StrictMode>` (violates `FE-02`).
 - Never pass inline arrow functions as callbacks inside un-memoized table row maps.
+- Never dispatch duplicate API calls from child pages for entities already managed by parent Context providers (violates `FE-10`).
+- Never execute raw HTTP requests in API clients without in-flight GET Promise deduplication (violates `FE-09`).
+- Never use raw direct `fetch()` in frontend services instead of `fetchWithAuth` (violates `FE-12`).
+- Never subscribe domain hooks to catch-all `'all'` in `useDataSync` when observing narrow settings or entities (violates `FE-13`).
+- Never leave static reference data uncached, triggering full network refetches on every sidebar menu navigation (violates `FE-14`).
 
 ## References
 

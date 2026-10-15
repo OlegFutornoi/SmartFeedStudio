@@ -1,5 +1,7 @@
 import { z } from 'zod';
 import { Role, PlanType } from '../enums/index.js';
+import type { PaymentStatsDto, PaymentTransactionDto } from './payment.dto.js';
+import type { AdminLicenseItemDto } from './tariff-plan.dto.js';
 
 export interface UserLicenseSummary {
   licenseKey: string;
@@ -75,3 +77,11 @@ export const CreateUserByAdminDtoSchema = z.object({
 });
 
 export type CreateUserByAdminDto = z.infer<typeof CreateUserByAdminDtoSchema>;
+
+export interface AdminDashboardOverviewDto {
+  stats: UsersStatsDto;
+  paymentStats: PaymentStatsDto | null;
+  recentUsers: UserListItemDto[];
+  recentTransactions: PaymentTransactionDto[];
+  recentLicenses: AdminLicenseItemDto[];
+}

@@ -25,26 +25,41 @@ export default function DashboardOverviewPage() {
   const [recentTransactions, setRecentTransactions] = useState<PaymentTransactionDto[]>([]);
   const [recentLicenses, setRecentLicenses] = useState<AdminLicenseItemDto[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const isFetchingRef = React.useRef(false);
 
   useEffect(() => {
     async function loadDashboardData() {
+      if (isFetchingRef.current) return;
+      isFetchingRef.current = true;
+
       try {
-        const [statsData, usersData, paymentData, txData, licensesData] = await Promise.all([
-          api.getUsersStats(),
-          api.getUsers({ limit: 5 }),
-          api.getPaymentStats().catch(() => null),
-          api.getPaymentTransactions({ limit: 5 }).catch(() => ({ transactions: [], total: 0 })),
-          api.getAdminLicenses({ limit: 5 }).catch(() => []),
-        ]);
-        setStats(statsData);
-        setRecentUsers(usersData);
-        if (paymentData) setPaymentStats(paymentData);
-        if (txData?.transactions) setRecentTransactions(txData.transactions);
-        if (Array.isArray(licensesData)) setRecentLicenses(licensesData);
+        const overview = await api.getDashboardOverview();
+        setStats(overview.stats);
+        setRecentUsers(overview.recentUsers);
+        if (overview.paymentStats) setPaymentStats(overview.paymentStats);
+        if (overview.recentTransactions) setRecentTransactions(overview.recentTransactions);
+        if (Array.isArray(overview.recentLicenses)) setRecentLicenses(overview.recentLicenses);
       } catch (error) {
-        console.error('Failed to load dashboard data:', error);
+        console.warn('Failed to load aggregated dashboard data, falling back:', error);
+        try {
+          const [statsData, usersData, paymentData, txData, licensesData] = await Promise.all([
+            api.getUsersStats(),
+            api.getUsers({ limit: 5 }),
+            api.getPaymentStats().catch(() => null),
+            api.getPaymentTransactions({ limit: 5 }).catch(() => ({ transactions: [], total: 0 })),
+            api.getAdminLicenses({ limit: 5 }).catch(() => []),
+          ]);
+          setStats(statsData);
+          setRecentUsers(usersData);
+          if (paymentData) setPaymentStats(paymentData);
+          if (txData?.transactions) setRecentTransactions(txData.transactions);
+          if (Array.isArray(licensesData)) setRecentLicenses(licensesData);
+        } catch (fallbackError) {
+          console.error('Fallback dashboard load error:', fallbackError);
+        }
       } finally {
         setIsLoading(false);
+        isFetchingRef.current = false;
       }
     }
 

@@ -1,5 +1,5 @@
 import type { LicenseEntity, TariffPlanDto, CheckoutResponseDto } from '@smartfeed/shared';
-import { API_BASE_URL, ApiError, fetchWithAuth } from '@/lib/api/client';
+import { ApiError, fetchWithAuth } from '@/lib/api/client';
 
 export async function getMyLicense(token?: string): Promise<LicenseEntity> {
   const response = await fetchWithAuth('/licenses/my', { method: 'GET' }, token);
@@ -14,18 +14,26 @@ export async function getMyLicense(token?: string): Promise<LicenseEntity> {
   return data as LicenseEntity;
 }
 
-export async function getTariffPlans(): Promise<TariffPlanDto[]> {
-  const response = await fetch(`${API_BASE_URL}/plans`, {
-    method: 'GET',
-  });
+let cachedTariffPlans: TariffPlanDto[] | null = null;
+let lastTariffPlansTime = 0;
+const TARIFF_PLANS_TTL_MS = 300000; // 5 minutes TTL per FE-14
 
+export async function getTariffPlans(force = false): Promise<TariffPlanDto[]> {
+  const now = Date.now();
+  if (!force && cachedTariffPlans && now - lastTariffPlansTime < TARIFF_PLANS_TTL_MS) {
+    return cachedTariffPlans;
+  }
+
+  const response = await fetchWithAuth('/plans', { method: 'GET' });
   const data = await response.json().catch(() => []);
 
   if (!response.ok) {
-    return [];
+    return cachedTariffPlans || [];
   }
 
-  return data as TariffPlanDto[];
+  cachedTariffPlans = data as TariffPlanDto[];
+  lastTariffPlansTime = Date.now();
+  return cachedTariffPlans;
 }
 
 export function getCheckoutUrl(

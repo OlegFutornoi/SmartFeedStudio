@@ -56,6 +56,42 @@ description: Frontend architecture, React 18, Next.js 14, Tauri v2, design syste
 - Never render column header names as data values in mock mode.
 - Reason: Logic divergence between mock and real drivers hides bugs until production deployment.
 
+## FE-09: Client-Level In-Flight Request Deduplication
+
+- API clients (`fetchWithAuth`, `BaseApiClient`) across Desktop and Web must deduplicate concurrent in-flight GET requests via an `inFlightRequests Map`.
+- If multiple components or hooks trigger the same GET endpoint simultaneously, they must share the identical in-flight Promise instead of dispatching redundant HTTP requests.
+- Reason: Component-level ref guards do not prevent duplicate requests dispatched across separate unshared component subtrees mounted in parallel.
+
+## FE-10: Zero Duplicate Context Data Re-Fetching
+
+- Child pages and nested views must consume shared global entities (user profile, license, quotas, navigation) from their respective Context hooks (`useAuth`, `useLicense`, `useQuotas`, `useNavigation`) rather than re-fetching the underlying API endpoints directly.
+- Direct endpoint calls (e.g. `getMyLicense()` inside `usePlansPageData`) when a parent provider already holds the canonical state are strictly prohibited.
+- Reason: Redundant re-fetching triggers network waterfalls, causes visual flicker, and increases backend load on page navigation.
+
+## FE-11: Aggregated Startup Bootstrap
+
+- On application boot or hard reload, avoid firing 5+ fragmented HTTP requests from isolated context providers.
+- Use an aggregated bootstrap payload (`/api/bootstrap` or `/api/admin/dashboard/overview`) where possible to hydrate multiple contexts in a single round-trip.
+- Reason: Independent provider mounting cascades network requests, stalls First Contentful Paint, and overloads connection pools.
+
+## FE-12: Zero Raw Fetch Bypasses in Services
+
+- All frontend services, utilities, and helper modules making HTTP requests to the backend must strictly use `fetchWithAuth` or `BaseApiClient`.
+- Raw direct `fetch()` calls to application API endpoints are strictly prohibited.
+- Reason: Raw `fetch()` bypasses client-side in-flight promise deduplication (`FE-09`), automatic 401 token refreshing, error normalization, and authorization header management.
+
+## FE-13: Scoped Domain DataSync Subscriptions
+
+- Hooks and components utilizing `useDataSync` must specify strictly the narrow domain keys they react to (e.g. `['settings']`, `['suppliers']`).
+- Subscribing to the catch-all `'all'` domain is prohibited unless the subscriber is a root catalog/quota reconciler.
+- Reason: Catch-all `'all'` subscriptions trigger avalanche re-fetch cascades whenever any unrelated background task or sync event completes.
+
+## FE-14: In-Memory TTL & Navigation Cache for Reference Data
+
+- Static and semi-static reference data (tariff plans, page-guides, system profiles, storage settings) must maintain an in-memory TTL cache (e.g. 60–300s) on the client.
+- Switching between tabs or navigating through sidebar menu items must resolve instantaneously from memory without dispatching duplicate HTTP requests.
+- Reason: Uncached menu navigation floods the network with redundant GET calls, degrades user responsiveness, and multiplies backend load.
+
 ## UI-01: 100% Solid Sticky Headers
 
 - Sticky table headers (`thead.sticky.top-0`) and modal headers/footers must have solid opaque backgrounds (`bg-card`, `bg-muted`, `bg-background`).

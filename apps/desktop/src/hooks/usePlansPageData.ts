@@ -9,19 +9,26 @@ import type { LicenseEntity, TariffPlanDto, BillingInterval } from '@smartfeed/s
 
 export function usePlansPageData() {
   const { token, user } = useAuth();
-  const { refreshLicense } = useLicense();
+  const { license, refreshLicense } = useLicense();
   const { refreshNavigation } = useNavigation();
   const { refreshQuotas } = useQuotas();
   const { t } = useTranslation(['plans', 'common', 'errors']);
 
   const [plans, setPlans] = useState<TariffPlanDto[]>([]);
-  const [currentLicense, setCurrentLicense] = useState<LicenseEntity | null>(null);
+  const [currentLicense, setCurrentLicense] = useState<LicenseEntity | null>(license);
   const [viewMode, setViewMode] = useState<'cards' | 'comparison'>('cards');
   const [billingInterval, setBillingInterval] = useState<BillingInterval>('monthly');
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isSubmitting, setIsSubmitting] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [rawError, setRawError] = useState<unknown>(null);
+
+  // Sync currentLicense with context license when it updates
+  useEffect(() => {
+    if (license) {
+      setCurrentLicense(license);
+    }
+  }, [license]);
 
   // Checkout modal state
   const [isCheckoutOpen, setIsCheckoutOpen] = useState<boolean>(false);
@@ -59,13 +66,13 @@ export function usePlansPageData() {
         setIsLoading(true);
         setRawError(null);
 
-        const [plansData, licenseData] = await Promise.all([
-          getTariffPlans(),
-          getMyLicense(token).catch(() => null),
-        ]);
+        if (force) {
+          await refreshLicense();
+        }
+
+        const plansData = await getTariffPlans();
         lastFetchedTokenRef.current = token;
         setPlans(plansData || []);
-        setCurrentLicense(licenseData);
       } catch (err) {
         setRawError(err);
       } finally {
@@ -73,7 +80,7 @@ export function usePlansPageData() {
         setIsLoading(false);
       }
     },
-    [token, plans.length],
+    [token, plans.length, refreshLicense],
   );
 
   useEffect(() => {

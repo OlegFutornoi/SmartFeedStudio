@@ -124,12 +124,21 @@ describe('Page Guides & AI Assistant (E2E)', () => {
     expect(cloudGuide.assistant).toBeDefined();
   });
 
-  it('3. GET /api/page-guides/:routeKey returns specific page guide', async () => {
+  it('3. GET /api/page-guides/:routeKey returns specific page guide with route aliasing', async () => {
     const res = await request(app.getHttpServer()).get('/api/page-guides/cloud-sync').expect(200);
 
     expect(res.body.route).toBe('/cloud-sync');
     expect(res.body.featuresUk.length).toBeGreaterThan(0);
     expect(res.body.proTipUk).toBeDefined();
+
+    // Verify canonical aliasing for /dashboard and /plans
+    const dashboardRes = await request(app.getHttpServer())
+      .get('/api/page-guides/dashboard')
+      .expect(200);
+    expect(dashboardRes.body.route).toBe('/');
+
+    const plansRes = await request(app.getHttpServer()).get('/api/page-guides/plans').expect(200);
+    expect(plansRes.body.route).toBe('/license');
   });
 
   it('4. GET /api/page-guides/:routeKey returns 404 for unknown route', async () => {

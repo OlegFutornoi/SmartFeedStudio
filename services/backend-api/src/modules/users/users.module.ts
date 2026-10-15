@@ -11,6 +11,8 @@ import { GetUserByEmailHandler } from '@/modules/users/queries/get-user-by-email
 import { GetUserByIdHandler } from '@/modules/users/queries/get-user-by-id.handler';
 import { GetUsersListHandler } from '@/modules/users/queries/get-users-list.handler';
 import { GetUsersStatsHandler } from '@/modules/users/queries/get-users-stats.handler';
+import { GetAdminDashboardOverviewHandler } from '@/modules/users/queries/get-admin-dashboard-overview.handler';
+import { GetBootstrapHandler } from '@/modules/users/queries/get-bootstrap.handler';
 import { UsersController } from '@/modules/users/users.controller';
 
 export const CommandHandlers = [
@@ -27,6 +29,8 @@ export const QueryHandlers = [
   GetUserByIdHandler,
   GetUsersListHandler,
   GetUsersStatsHandler,
+  GetAdminDashboardOverviewHandler,
+  GetBootstrapHandler,
 ];
 
 @Module({

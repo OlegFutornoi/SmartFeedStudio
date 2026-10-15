@@ -3,9 +3,30 @@ import { localDb } from '@/services/local-db';
 import { isTauri } from '@/lib/runtime';
 import { ApiError, fetchWithAuth } from '@/lib/api/client';
 
-export async function getSuppliers(token?: string, search?: string): Promise<SupplierDto[]> {
+let cachedSuppliers: { [key: string]: { data: SupplierDto[]; timestamp: number } } = {};
+const SUPPLIERS_TTL_MS = 30000; // 30s navigation TTL per FE-14
+
+export function invalidateSuppliersCache(): void {
+  cachedSuppliers = {};
+}
+
+export async function getSuppliers(
+  token?: string,
+  search?: string,
+  force = false,
+): Promise<SupplierDto[]> {
   if (isTauri()) {
     return localDb.suppliers.getSuppliers(search);
+  }
+
+  const cacheKey = `${token || 'anon'}:${search || ''}`;
+  const now = Date.now();
+  if (
+    !force &&
+    cachedSuppliers[cacheKey] &&
+    now - cachedSuppliers[cacheKey].timestamp < SUPPLIERS_TTL_MS
+  ) {
+    return cachedSuppliers[cacheKey].data;
   }
 
   try {
@@ -13,7 +34,10 @@ export async function getSuppliers(token?: string, search?: string): Promise<Sup
     const response = await fetchWithAuth(`/suppliers${query}`, { method: 'GET' }, token);
     if (response.ok) {
       const data = await response.json();
-      if (Array.isArray(data)) return data;
+      if (Array.isArray(data)) {
+        cachedSuppliers[cacheKey] = { data, timestamp: Date.now() };
+        return data;
+      }
     }
   } catch (err) {
     console.warn('[ApiClient] Remote call failed, using local fallback:', err);
@@ -50,6 +74,7 @@ export async function createSupplier(
   payload: CreateSupplierDto,
   token?: string,
 ): Promise<SupplierDto> {
+  invalidateSuppliersCache();
   if (isTauri()) {
     return localDb.suppliers.createSupplier(payload);
   }
@@ -79,6 +104,7 @@ export async function updateSupplier(
   payload: UpdateSupplierDto,
   token?: string,
 ): Promise<SupplierDto> {
+  invalidateSuppliersCache();
   if (isTauri()) {
     return localDb.suppliers.updateSupplier(id, payload);
   }
@@ -104,6 +130,7 @@ export async function updateSupplier(
 }
 
 export async function deleteSupplier(id: string, token?: string): Promise<{ success: boolean }> {
+  invalidateSuppliersCache();
   if (isTauri()) {
     const success = await localDb.suppliers.deleteSupplier(id);
     return { success };

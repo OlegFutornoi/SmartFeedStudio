@@ -1,5 +1,8 @@
 import { z } from 'zod';
 import { Role, MemberRole } from '../enums/index.js';
+import type { LicenseEntity } from '../contracts/cqrs.js';
+import type { UserQuotasDto } from './license.dto.js';
+import type { NavigationItemDto } from './navigation.dto.js';
 
 export const RegisterDtoSchema = z.object({
   email: z.string().email('Invalid email address format'),
@@ -97,4 +100,12 @@ export interface JwtPayload {
   role: Role;
   iat?: number;
   exp?: number;
+}
+
+export interface BootstrapResponseDto {
+  user: UserProfile;
+  license: LicenseEntity | null;
+  quotas: UserQuotasDto | null;
+  activeJobsCount: number;
+  navigation: NavigationItemDto[];
 }

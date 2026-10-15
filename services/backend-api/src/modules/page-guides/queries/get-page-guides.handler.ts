@@ -33,9 +33,22 @@ export class GetPageGuidesHandler implements IQueryHandler<
     // If specific route requested
     if (routeKey) {
       const normalizedRoute = routeKey.startsWith('/') ? routeKey : `/${routeKey}`;
-      const dbGuide = await this.prisma.pageGuide.findUnique({
+      const canonicalRoute =
+        normalizedRoute === '/dashboard'
+          ? '/'
+          : normalizedRoute === '/plans'
+            ? '/license'
+            : normalizedRoute;
+
+      let dbGuide = await this.prisma.pageGuide.findUnique({
         where: { route: normalizedRoute },
       });
+
+      if (!dbGuide && canonicalRoute !== normalizedRoute) {
+        dbGuide = await this.prisma.pageGuide.findUnique({
+          where: { route: canonicalRoute },
+        });
+      }
 
       if (dbGuide) {
         return {
@@ -61,10 +74,11 @@ export class GetPageGuidesHandler implements IQueryHandler<
       // Fallback from canonical default guides with route aliasing
       const defaultGuide =
         DEFAULT_PAGE_GUIDES[normalizedRoute] ||
+        DEFAULT_PAGE_GUIDES[canonicalRoute] ||
         (normalizedRoute === '/ai-enrichment' ? DEFAULT_PAGE_GUIDES['/ai'] : undefined) ||
         (normalizedRoute === '/ai' ? DEFAULT_PAGE_GUIDES['/ai-enrichment'] : undefined) ||
         (normalizedRoute === '/channels' ? DEFAULT_PAGE_GUIDES['/catalogs'] : undefined) ||
-        (normalizedRoute === '/quota' ? DEFAULT_PAGE_GUIDES['/plans'] : undefined);
+        (normalizedRoute === '/quota' ? DEFAULT_PAGE_GUIDES['/license'] : undefined);
 
       if (defaultGuide) {
         return {

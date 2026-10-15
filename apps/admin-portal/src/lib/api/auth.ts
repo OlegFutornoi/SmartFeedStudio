@@ -1,4 +1,11 @@
-import type { AuthResponseDto, ChangePasswordDto, LoginDto, UserProfile } from '@smartfeed/shared';
+import { TargetApp } from '@smartfeed/shared';
+import type {
+  AuthResponseDto,
+  ChangePasswordDto,
+  LoginDto,
+  UserProfile,
+  BootstrapResponseDto,
+} from '@smartfeed/shared';
 import { baseClient } from '@/lib/api/client';
 
 export async function login(dto: LoginDto): Promise<AuthResponseDto> {
@@ -14,6 +21,13 @@ export async function login(dto: LoginDto): Promise<AuthResponseDto> {
 
 export async function getMe(): Promise<UserProfile> {
   return baseClient.request<UserProfile>('/auth/me');
+}
+
+export async function getBootstrap(
+  app: TargetApp = TargetApp.ADMIN_PORTAL,
+): Promise<BootstrapResponseDto> {
+  const query = app ? `?app=${app}` : '';
+  return baseClient.request<BootstrapResponseDto>(`/auth/bootstrap${query}`);
 }
 
 export async function changePassword(

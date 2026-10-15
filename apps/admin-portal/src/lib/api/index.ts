@@ -25,12 +25,14 @@ export const api = {
   // Auth
   login: auth.login,
   getMe: auth.getMe,
+  getBootstrap: auth.getBootstrap,
   changePassword: auth.changePassword,
   updateAvatar: auth.updateAvatar,
 
   // Users
   getUsers: users.getUsers,
   getUsersStats: users.getUsersStats,
+  getDashboardOverview: users.getDashboardOverview,
   createUser: users.createUser,
   updateUserStatus: users.updateUserStatus,
   deleteUser: users.deleteUser,

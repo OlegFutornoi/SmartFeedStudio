@@ -22,6 +22,7 @@ export type {
   OrganizationDto,
   UserOrganizationDto,
   OrganizationInvitationDto,
+  BootstrapResponseDto,
   LicenseEntity,
   TariffPlanDto,
   SupplierDto,

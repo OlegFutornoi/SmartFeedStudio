@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import defaultAvatarImg from '@/assets/ai-copilot-agent.jpg';
 import { useAuth } from '@/contexts/AuthContext';
 import { getAiAssistantProfile, invalidatePageGuidesCache } from '@/services/page-guides';
@@ -22,30 +22,42 @@ export function useAiAssistantProfile(): AiAssistantProfileState {
   const [profile, setProfile] = useState<AiAssistantProfileDto>(DEFAULT_AI_ASSISTANT_PROFILE);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const fetchProfile = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      const data = await getAiAssistantProfile(token || undefined);
-      setProfile(data);
-    } catch (err) {
-      console.warn(
-        '[useAiAssistantProfile] Failed to fetch AI assistant profile, using default:',
-        err,
-      );
-      setProfile(DEFAULT_AI_ASSISTANT_PROFILE);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [token]);
+  const isFetchingRef = useRef<boolean>(false);
+  const lastFetchedTokenRef = useRef<string | null>(null);
+
+  const fetchProfile = useCallback(
+    async (force = false) => {
+      if (!force && lastFetchedTokenRef.current === (token || 'anon')) return;
+      if (isFetchingRef.current) return;
+      isFetchingRef.current = true;
+
+      try {
+        setIsLoading(true);
+        const data = await getAiAssistantProfile(token || undefined);
+        setProfile(data);
+        lastFetchedTokenRef.current = token || 'anon';
+      } catch (err) {
+        console.warn(
+          '[useAiAssistantProfile] Failed to fetch AI assistant profile, using default:',
+          err,
+        );
+        setProfile(DEFAULT_AI_ASSISTANT_PROFILE);
+      } finally {
+        isFetchingRef.current = false;
+        setIsLoading(false);
+      }
+    },
+    [token],
+  );
 
   useEffect(() => {
     fetchProfile();
   }, [fetchProfile]);
 
-  // Synchronize when settings or system configuration changes
-  useDataSync(['settings', 'all'], () => {
+  // Synchronize strictly when AI assistant / page guide settings change (FE-13)
+  useDataSync(['settings'], () => {
     invalidatePageGuidesCache();
-    fetchProfile();
+    fetchProfile(true);
   });
 
   const avatarUrl = profile.avatarUrl || defaultAvatarImg;

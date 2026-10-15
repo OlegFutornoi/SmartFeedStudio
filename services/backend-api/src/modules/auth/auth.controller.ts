@@ -6,6 +6,7 @@ import {
   HttpStatus,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -21,12 +22,15 @@ import { JwtAuthGuard } from '@/modules/auth/guards/jwt-auth.guard';
 import { CurrentUser } from '@/modules/auth/decorators/current-user.decorator';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { GetUserByIdQuery } from '@/modules/users/queries/get-user-by-id.query';
+import { GetBootstrapQuery } from '@/modules/users/queries/get-bootstrap.query';
 import { ChangePasswordCommand } from '@/modules/users/commands/change-password.command';
 import { UpdateUserAvatarCommand } from '@/modules/users/commands/update-user-avatar.command';
 import { ChangePasswordDto } from '@/modules/auth/dto/change-password.dto';
 import {
+  BootstrapResponseDto,
   ForgotPasswordResponseDto,
   ResetPasswordResponseDto,
+  TargetApp,
   UserProfile,
 } from '@smartfeed/shared';
 
@@ -75,6 +79,19 @@ export class AuthController {
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async getProfile(@CurrentUser('id') userId: string): Promise<UserProfile> {
     return this.queryBus.execute(new GetUserByIdQuery(userId));
+  }
+
+  @Get('bootstrap')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get unified initial application bootstrap payload' })
+  @ApiResponse({ status: 200, description: 'Bootstrap payload returned' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async getBootstrap(
+    @CurrentUser('id') userId: string,
+    @Query('app') app?: TargetApp,
+  ): Promise<BootstrapResponseDto> {
+    return this.queryBus.execute(new GetBootstrapQuery(userId, app || TargetApp.DESKTOP));
   }
 
   @Post('forgot-password')

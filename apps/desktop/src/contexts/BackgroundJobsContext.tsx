@@ -42,47 +42,56 @@ const BackgroundJobsContext = createContext<BackgroundJobsContextType | undefine
 export function BackgroundJobsProvider({ children }: { children: React.ReactNode }) {
   const { token, isAuthenticated } = useAuth();
   const { refreshQuotas } = useQuotas();
+  const refreshQuotasRef = useRef(refreshQuotas);
+  refreshQuotasRef.current = refreshQuotas;
+
   const [activeJobs, setActiveJobs] = useState<ImportJobDto[]>([]);
   const [backgroundTasks, setBackgroundTasks] = useState<BackgroundTaskItem[]>([]);
   const trackedJobIdsRef = useRef<Set<string>>(new Set());
   const isPollingRef = useRef<boolean>(false);
+  const lastFetchedTokenRef = useRef<string | null>(null);
 
-  const refreshActiveJobs = useCallback(async () => {
-    if (!token || !isAuthenticated || isPollingRef.current) return;
+  const refreshActiveJobs = useCallback(
+    async (force = false) => {
+      if (!token || !isAuthenticated || isPollingRef.current) return;
+      if (!force && lastFetchedTokenRef.current === token) return;
 
-    try {
-      isPollingRef.current = true;
-      const jobs = await getActiveImportJobs(token);
-      setActiveJobs(jobs);
+      try {
+        isPollingRef.current = true;
+        const jobs = await getActiveImportJobs(token);
+        setActiveJobs(jobs);
+        lastFetchedTokenRef.current = token;
 
-      // Check if any previously tracked jobs finished
-      for (const id of Array.from(trackedJobIdsRef.current)) {
-        const stillActive = jobs.some((j) => j.id === id);
-        if (!stillActive) {
-          // Job finished! Check status once
-          try {
-            const finishedJob = await getImportJobStatus(id, token);
-            if (finishedJob.status === 'COMPLETED') {
-              await refreshQuotas(true);
-              emitDataSync('all', { force: true });
+        // Check if any previously tracked jobs finished
+        for (const id of Array.from(trackedJobIdsRef.current)) {
+          const stillActive = jobs.some((j) => j.id === id);
+          if (!stillActive) {
+            // Job finished! Check status once
+            try {
+              const finishedJob = await getImportJobStatus(id, token);
+              if (finishedJob.status === 'COMPLETED') {
+                await refreshQuotasRef.current(true);
+                emitDataSync('all', { force: true });
+              }
+            } catch (err) {
+              console.warn('[BackgroundJobs] Finished job status fetch error:', err);
             }
-          } catch (err) {
-            console.warn('[BackgroundJobs] Finished job status fetch error:', err);
+            trackedJobIdsRef.current.delete(id);
           }
-          trackedJobIdsRef.current.delete(id);
         }
+      } catch (err) {
+        console.warn('[BackgroundJobs] Polling error:', err);
+      } finally {
+        isPollingRef.current = false;
       }
-    } catch (err) {
-      console.warn('[BackgroundJobs] Polling error:', err);
-    } finally {
-      isPollingRef.current = false;
-    }
-  }, [token, isAuthenticated, refreshQuotas]);
+    },
+    [token, isAuthenticated],
+  );
 
   const addTrackedJob = useCallback(
     (jobId: string) => {
       trackedJobIdsRef.current.add(jobId);
-      refreshActiveJobs();
+      refreshActiveJobs(true);
     },
     [refreshActiveJobs],
   );
@@ -124,7 +133,7 @@ export function BackgroundJobsProvider({ children }: { children: React.ReactNode
         );
 
         // Auto-refresh quotas and dispatch unified sync event
-        await refreshQuotas(true);
+        await refreshQuotasRef.current(true);
         emitDataSync('all', { force: true });
 
         // Auto remove completed task after 2s
@@ -149,7 +158,7 @@ export function BackgroundJobsProvider({ children }: { children: React.ReactNode
         throw err;
       }
     },
-    [refreshQuotas],
+    [],
   );
 
   const dismissTask = useCallback((taskId: string) => {
@@ -175,7 +184,7 @@ export function BackgroundJobsProvider({ children }: { children: React.ReactNode
     if (!hasJobsToTrack) return;
 
     const interval = setInterval(() => {
-      refreshActiveJobs();
+      refreshActiveJobs(true);
     }, 2000);
 
     return () => clearInterval(interval);

@@ -1,4 +1,12 @@
-import React, { createContext, useContext, useEffect, useState, useCallback, useMemo } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useCallback,
+  useMemo,
+  useRef,
+} from 'react';
 import type { UserProfile } from '@smartfeed/shared';
 import {
   loginUser,
@@ -26,7 +34,7 @@ interface AuthContextType {
     user: UserProfile;
   }) => void;
   logout: () => void;
-  refreshProfile: () => Promise<void>;
+  refreshProfile: (force?: boolean) => Promise<void>;
   updateAvatar: (avatarUrl: string | null) => Promise<void>;
 }
 
@@ -40,6 +48,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   );
   const [isLoading, setIsLoading] = useState<boolean>(() => !!authSessionStorage.getInitialToken());
 
+  // In-flight request deduplication refs per FE-01
+  const isFetchingRef = useRef<boolean>(false);
+  const lastFetchedTokenRef = useRef<string | null>(null);
+
   // Listen to global user-suspended events dispatched by API client on 403 Forbidden
   useEffect(() => {
     const handleSuspended = () => {
@@ -51,6 +63,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const logout = useCallback(() => {
+    isFetchingRef.current = false;
+    lastFetchedTokenRef.current = null;
     authSessionStorage.clearSession();
     setToken(null);
     setUser(null);
@@ -66,6 +80,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const userProfile = authResponse.user;
 
       authSessionStorage.saveSession(authResponse.tokens, userProfile);
+      lastFetchedTokenRef.current = accessToken;
       setToken(accessToken);
       setUser(userProfile);
       setIsSuspended(userProfile.isActive === false);
@@ -73,46 +88,59 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     [],
   );
 
-  const refreshProfile = useCallback(async () => {
-    const activeToken = authSessionStorage.getInitialToken();
-    if (!activeToken) {
-      setIsLoading(false);
-      return;
-    }
-
-    try {
-      const profile = await getCurrentUser(activeToken);
-      setIsSuspended(profile.isActive === false);
-
-      const localAvatar = await getLocalAvatar(profile.id);
-      if (localAvatar === '') {
-        profile.avatarUrl = null;
-      } else if (localAvatar) {
-        profile.avatarUrl = localAvatar;
-      }
-
-      setUser(profile);
-      authSessionStorage.saveUser(profile);
-
-      const currentStoredToken = authSessionStorage.getInitialToken();
-      if (currentStoredToken && currentStoredToken !== activeToken) {
-        setToken(currentStoredToken);
-      }
-    } catch (e: unknown) {
-      console.warn('[AuthContext:refreshProfile] Failed to refresh user profile:', e);
-      const err = e as { statusCode?: number; data?: { code?: string } };
-      if (err?.statusCode === 403 || err?.data?.code === 'USER_SUSPENDED') {
-        setIsSuspended(true);
-        setUser((prev) => (prev ? { ...prev, isActive: false } : prev));
+  const refreshProfile = useCallback(
+    async (force = false) => {
+      const activeToken = authSessionStorage.getInitialToken();
+      if (!activeToken) {
+        setIsLoading(false);
         return;
       }
-      if (!authSessionStorage.getRefreshToken()) {
-        logout();
+
+      if (!force && lastFetchedTokenRef.current === activeToken) {
+        setIsLoading(false);
+        return;
       }
-    } finally {
-      setIsLoading(false);
-    }
-  }, [logout]);
+
+      if (isFetchingRef.current) return;
+      isFetchingRef.current = true;
+
+      try {
+        const profile = await getCurrentUser(activeToken);
+        setIsSuspended(profile.isActive === false);
+
+        const localAvatar = await getLocalAvatar(profile.id);
+        if (localAvatar === '') {
+          profile.avatarUrl = null;
+        } else if (localAvatar) {
+          profile.avatarUrl = localAvatar;
+        }
+
+        setUser(profile);
+        authSessionStorage.saveUser(profile);
+        lastFetchedTokenRef.current = activeToken;
+
+        const currentStoredToken = authSessionStorage.getInitialToken();
+        if (currentStoredToken && currentStoredToken !== activeToken) {
+          setToken(currentStoredToken);
+        }
+      } catch (e: unknown) {
+        console.warn('[AuthContext:refreshProfile] Failed to refresh user profile:', e);
+        const err = e as { statusCode?: number; data?: { code?: string } };
+        if (err?.statusCode === 403 || err?.data?.code === 'USER_SUSPENDED') {
+          setIsSuspended(true);
+          setUser((prev) => (prev ? { ...prev, isActive: false } : prev));
+          return;
+        }
+        if (!authSessionStorage.getRefreshToken()) {
+          logout();
+        }
+      } finally {
+        isFetchingRef.current = false;
+        setIsLoading(false);
+      }
+    },
+    [logout],
+  );
 
   useEffect(() => {
     const activeToken = authSessionStorage.getInitialToken();

@@ -19,7 +19,9 @@ import { Roles } from '@/modules/auth/decorators/roles.decorator';
 import { CurrentUser } from '@/modules/auth/decorators/current-user.decorator';
 import { GetUsersListQuery } from '@/modules/users/queries/get-users-list.query';
 import { GetUsersStatsQuery } from '@/modules/users/queries/get-users-stats.query';
+import { GetAdminDashboardOverviewQuery } from '@/modules/users/queries/get-admin-dashboard-overview.query';
 import {
+  AdminDashboardOverviewDto,
   CreateUserByAdminDto,
   CreateUserByAdminDtoSchema,
   Role,
@@ -73,6 +75,16 @@ export class UsersController {
   @ApiResponse({ status: 403, description: 'Forbidden: Admin access required' })
   async getStats(): Promise<UsersStatsDto> {
     return this.queryBus.execute(new GetUsersStatsQuery());
+  }
+
+  @Get('dashboard-overview')
+  @UseGuards(RolesGuard)
+  @Roles(Role.SUPER_ADMIN, Role.ADMIN)
+  @ApiOperation({ summary: 'Get aggregated admin dashboard overview data' })
+  @ApiResponse({ status: 200, description: 'Aggregated dashboard overview data returned' })
+  @ApiResponse({ status: 403, description: 'Forbidden: Admin access required' })
+  async getDashboardOverview(): Promise<AdminDashboardOverviewDto> {
+    return this.queryBus.execute(new GetAdminDashboardOverviewQuery());
   }
 
   @Post()

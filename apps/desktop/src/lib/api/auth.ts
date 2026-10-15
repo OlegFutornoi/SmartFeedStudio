@@ -1,4 +1,11 @@
-import type { AuthResponseDto, UserProfile, Role, NavigationItemDto } from '@smartfeed/shared';
+import { TargetApp } from '@smartfeed/shared';
+import type {
+  AuthResponseDto,
+  UserProfile,
+  Role,
+  NavigationItemDto,
+  BootstrapResponseDto,
+} from '@smartfeed/shared';
 import {
   API_BASE_URL,
   TOKEN_KEY,
@@ -268,4 +275,20 @@ export async function updateUserAvatar(avatarUrl: string | null): Promise<UserPr
     throw new ApiError('Failed to update avatar on server', res.status);
   }
   return res.json();
+}
+
+export async function getBootstrap(
+  token?: string,
+  app: TargetApp = TargetApp.DESKTOP,
+): Promise<BootstrapResponseDto> {
+  const query = app ? `?app=${app}` : '';
+  const response = await fetchWithAuth(`/auth/bootstrap${query}`, { method: 'GET' }, token);
+  const data = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    const message = data.message || 'Не вдалося завантажити сесію';
+    throw new ApiError(message, response.status, data);
+  }
+
+  return data as BootstrapResponseDto;
 }
