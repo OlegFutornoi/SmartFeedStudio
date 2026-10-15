@@ -14,6 +14,7 @@ import { SupplierDto, getCurrencySymbol } from '@smartfeed/shared';
 import { Switch } from '@/components/ui/switch';
 import { useTranslation } from '@/i18n';
 import type { SupplierColumnId } from '@/modules/suppliers/types';
+import { SupplierAvatar } from '@/modules/suppliers/components/common/SupplierAvatar';
 
 export interface SupplierTableRowProps {
   supplier: SupplierDto;
@@ -39,13 +40,6 @@ export const SupplierTableRow: React.FC<SupplierTableRowProps> = ({
   const { t } = useTranslation(['suppliers', 'common']);
   const visible = (id: SupplierColumnId) => (isColumnVisible ? isColumnVisible(id) : true);
 
-  const initials = (s.name || 'V')
-    .split(' ')
-    .map((w) => w[0])
-    .slice(0, 2)
-    .join('')
-    .toUpperCase();
-
   const currencySym = getCurrencySymbol(s.baseCurrency || 'UAH');
 
   return (
@@ -57,11 +51,14 @@ export const SupplierTableRow: React.FC<SupplierTableRowProps> = ({
       {/* Vendor Name & Code */}
       <TableCell className="pl-3.5 py-2">
         <div className="flex items-center gap-2.5">
-          <div
-            onClick={() => onOpenDetails(s)}
-            className="size-8 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center font-bold text-primary text-xs shrink-0 cursor-pointer hover:bg-primary/20 transition-colors"
-          >
-            {initials}
+          <div onClick={() => onOpenDetails(s)} className="cursor-pointer">
+            <SupplierAvatar
+              logoUrl={s.logoUrl}
+              name={s.name}
+              size="sm"
+              className="hover:border-primary/50 transition-colors"
+              dataTestId={`supplier-row-avatar-${s.id}`}
+            />
           </div>
           <div className="min-w-0">
             <button
@@ -199,7 +196,7 @@ export const SupplierTableRow: React.FC<SupplierTableRowProps> = ({
             <PlusCircle className="size-3.5" />
           </Button>
 
-          <DropdownMenu>
+          <DropdownMenu modal={false}>
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"

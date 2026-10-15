@@ -7,6 +7,7 @@ import { seedTariffPlans, tariffPlansSeedData } from '@/prisma/seeds/tariffPlans
 import { seedUsersAndOrgs } from '@/prisma/seeds/users.seed';
 import { seedNavigation, navigationItemsSeedData } from '@/prisma/seeds/navigation.seed';
 import { seedPaymentSettings } from '@/prisma/seeds/paymentSettings.seed';
+import { seedBankProviders, defaultBankProvidersSeedData } from '@/prisma/seeds/bankProviders.seed';
 
 dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
 dotenv.config();
@@ -41,6 +42,9 @@ async function main() {
   // 4. Seed Payment Gateway Settings
   await seedPaymentSettings(prisma);
 
+  // 5. Seed Bank Currency Providers
+  await seedBankProviders(prisma);
+
   console.log('✅ Seeding completed:');
   console.log(
     `   - Seeded ${tariffPlansSeedData.length} tariff plans: STARTER, GROWTH, PRO, ENTERPRISE`,
@@ -48,6 +52,9 @@ async function main() {
   console.log(`   - Super Admin: ${adminEmail} (Role: SUPER_ADMIN)`);
   console.log(`   - Seeded ${navigationItemsSeedData.length} dynamic navigation items`);
   console.log(`   - Seeded default WayForPay Sandbox payment gateway settings`);
+  console.log(
+    `   - Seeded ${defaultBankProvidersSeedData.length} bank currency providers (NBU, PrivatBank, Monobank, etc.)`,
+  );
 }
 
 main()

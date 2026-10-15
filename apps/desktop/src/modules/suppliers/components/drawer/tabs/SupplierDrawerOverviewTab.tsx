@@ -1,5 +1,16 @@
 import React from 'react';
-import { Package, Rss, Sliders, DollarSign, Mail, Phone, User, Globe, Coins } from 'lucide-react';
+import {
+  Package,
+  Rss,
+  Sliders,
+  DollarSign,
+  Mail,
+  Phone,
+  User,
+  Globe,
+  Coins,
+  ExternalLink,
+} from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useTranslation } from '@/i18n';
 import type { SupplierDto } from '@smartfeed/shared';
@@ -44,7 +55,7 @@ export const SupplierDrawerOverviewTab: React.FC<SupplierDrawerOverviewTabProps>
             <span className="text-xs font-medium">
               {t('suppliers:columnFeeds', { defaultValue: 'Джерела фідів' })}
             </span>
-            <Rss className="size-3.5 text-blue-500" />
+            <Rss className="size-3.5 text-primary" />
           </div>
           <span className="text-lg font-bold text-foreground tabular-nums">
             {supplier.activeFeedsCount || 0}
@@ -60,7 +71,7 @@ export const SupplierDrawerOverviewTab: React.FC<SupplierDrawerOverviewTabProps>
             <span className="text-xs font-medium">
               {t('suppliers:tabCategories', { defaultValue: 'Категорії' })}
             </span>
-            <Sliders className="size-3.5 text-amber-500" />
+            <Sliders className="size-3.5 text-primary" />
           </div>
           <span className="text-lg font-bold text-foreground tabular-nums">
             {supplier.categoriesCount || supplier.activeCategoriesCount || 0}
@@ -76,7 +87,7 @@ export const SupplierDrawerOverviewTab: React.FC<SupplierDrawerOverviewTabProps>
             <span className="text-xs font-medium">
               {t('suppliers:filterCurrency', { defaultValue: 'Валюта' })}
             </span>
-            <DollarSign className="size-3.5 text-emerald-500" />
+            <DollarSign className="size-3.5 text-primary" />
           </div>
           <span className="text-lg font-bold text-foreground tabular-nums">
             {supplier.baseCurrency || 'UAH'}
@@ -128,9 +139,24 @@ export const SupplierDrawerOverviewTab: React.FC<SupplierDrawerOverviewTabProps>
                 <Globe className="size-3 text-muted-foreground" />
                 {t('common:website', { defaultValue: 'Вебсайт' })}
               </span>
-              <span className="font-medium text-foreground truncate max-w-[160px]">
-                {supplier.website || '—'}
-              </span>
+              {supplier.website ? (
+                <a
+                  href={
+                    supplier.website.startsWith('http')
+                      ? supplier.website
+                      : `https://${supplier.website}`
+                  }
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-medium text-primary hover:underline flex items-center gap-1 truncate max-w-[170px]"
+                  title={supplier.website}
+                >
+                  <span className="truncate">{supplier.website.replace(/^https?:\/\//, '')}</span>
+                  <ExternalLink className="size-3 shrink-0" />
+                </a>
+              ) : (
+                <span className="font-medium text-muted-foreground">—</span>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -162,7 +188,7 @@ export const SupplierDrawerOverviewTab: React.FC<SupplierDrawerOverviewTabProps>
               <span className="text-muted-foreground">
                 {t('suppliers:columnCurrencyMarkup', { defaultValue: 'Базова націнка' })}
               </span>
-              <span className="font-medium text-emerald-600 dark:text-emerald-400">
+              <span className="font-medium text-primary">
                 +{supplier.defaultMarginPercent || 0}%
                 {supplier.defaultFixedMarkup ? ` +${supplier.defaultFixedMarkup} ₴` : ''}
               </span>

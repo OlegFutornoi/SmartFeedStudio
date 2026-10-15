@@ -508,3 +508,22 @@ model SupplierPricingRule {
   @@map("supplier_pricing_rules")
 }
 
+model BankCurrencyProvider {
+  id                String   @id @default(cuid())
+  bankId            String   @unique @map("bank_id")
+  bankName          String   @map("bank_name")
+  badge             String   @map("badge")
+  isEnabled         Boolean  @default(true) @map("is_enabled")
+  isDefault         Boolean  @default(false) @map("is_default")
+  sourceType        String   @default("API_DIRECT") @map("source_type")
+  sellSpreadPercent Decimal  @default(0) @db.Decimal(5, 2) @map("sell_spread_percent")
+  buySpreadPercent  Decimal  @default(0) @db.Decimal(5, 2) @map("buy_spread_percent")
+  logoUrl           String?  @map("logo_url")
+  sortOrder         Int      @default(0) @map("sort_order")
+  createdAt         DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt         DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@index([isEnabled])
+  @@map("bank_currency_providers")
+}
+

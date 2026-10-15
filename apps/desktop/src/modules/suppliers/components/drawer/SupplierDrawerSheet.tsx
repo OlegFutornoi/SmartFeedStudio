@@ -53,11 +53,13 @@ export const SupplierDrawerSheet: React.FC<SupplierDrawerSheetProps> = ({
   if (!supplier) return null;
 
   return (
-    <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()}>
+    <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()} modal={false}>
       <SheetContent
         side="right"
+        hideOverlay={true}
+        onPointerDownOutside={onClose}
         className={cn(
-          'p-0 flex flex-col h-full bg-background border-l border-border/80 shadow-2xl z-50 overflow-hidden transition-all duration-300 ease-in-out',
+          'p-0 flex flex-col h-full bg-background border-l border-border/80 shadow-2xl z-50 overflow-hidden outline-none focus:outline-none focus-visible:outline-none ring-0 focus:ring-0 transition-all duration-300 ease-in-out',
           isExpanded
             ? 'w-full max-w-none'
             : 'w-full sm:max-w-2xl md:max-w-3xl lg:max-w-4xl xl:max-w-5xl 2xl:max-w-6xl',
@@ -73,12 +75,12 @@ export const SupplierDrawerSheet: React.FC<SupplierDrawerSheetProps> = ({
           onValueChange={setActiveTab}
           className="flex-1 flex flex-col min-h-0 overflow-hidden"
         >
-          {/* Horizontal Tabs Header Bar (NexaCRM style) */}
-          <div className="px-5 border-b border-border/80 bg-muted/20 shrink-0">
-            <TabsList className="h-10 bg-transparent p-0 gap-1 overflow-x-auto justify-start w-full">
+          {/* Horizontal Tabs Header Bar (Menu pill style, zero borders) */}
+          <div className="px-5 py-2 border-b border-border/60 bg-muted/20 shrink-0">
+            <TabsList className="h-9 bg-muted/40 p-1 rounded-xl gap-1 overflow-x-auto justify-start w-full border-0">
               <TabsTrigger
                 value="overview"
-                className="h-9 px-3 text-xs gap-1.5 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:text-primary font-medium"
+                className="h-7 px-3 text-xs gap-1.5 rounded-lg border-0 transition-colors text-muted-foreground hover:text-foreground hover:bg-muted/60 data-[state=active]:bg-primary/10 data-[state=active]:text-primary font-medium"
                 data-testid="supplier-drawer-tab-overview"
               >
                 <Home className="size-3.5" />
@@ -87,7 +89,7 @@ export const SupplierDrawerSheet: React.FC<SupplierDrawerSheetProps> = ({
 
               <TabsTrigger
                 value="feeds"
-                className="h-9 px-3 text-xs gap-1.5 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:text-primary font-medium"
+                className="h-7 px-3 text-xs gap-1.5 rounded-lg border-0 transition-colors text-muted-foreground hover:text-foreground hover:bg-muted/60 data-[state=active]:bg-primary/10 data-[state=active]:text-primary font-medium"
                 data-testid="supplier-drawer-tab-feeds"
               >
                 <Rss className="size-3.5" />
@@ -96,7 +98,7 @@ export const SupplierDrawerSheet: React.FC<SupplierDrawerSheetProps> = ({
 
               <TabsTrigger
                 value="categories"
-                className="h-9 px-3 text-xs gap-1.5 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:text-primary font-medium"
+                className="h-7 px-3 text-xs gap-1.5 rounded-lg border-0 transition-colors text-muted-foreground hover:text-foreground hover:bg-muted/60 data-[state=active]:bg-primary/10 data-[state=active]:text-primary font-medium"
                 data-testid="supplier-drawer-tab-categories"
               >
                 <FolderTree className="size-3.5" />
@@ -105,7 +107,7 @@ export const SupplierDrawerSheet: React.FC<SupplierDrawerSheetProps> = ({
 
               <TabsTrigger
                 value="pricing"
-                className="h-9 px-3 text-xs gap-1.5 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:text-primary font-medium"
+                className="h-7 px-3 text-xs gap-1.5 rounded-lg border-0 transition-colors text-muted-foreground hover:text-foreground hover:bg-muted/60 data-[state=active]:bg-primary/10 data-[state=active]:text-primary font-medium"
                 data-testid="supplier-drawer-tab-pricing"
               >
                 <TrendingUp className="size-3.5" />
@@ -114,7 +116,7 @@ export const SupplierDrawerSheet: React.FC<SupplierDrawerSheetProps> = ({
 
               <TabsTrigger
                 value="currencies"
-                className="h-9 px-3 text-xs gap-1.5 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:text-primary font-medium"
+                className="h-7 px-3 text-xs gap-1.5 rounded-lg border-0 transition-colors text-muted-foreground hover:text-foreground hover:bg-muted/60 data-[state=active]:bg-primary/10 data-[state=active]:text-primary font-medium"
                 data-testid="supplier-drawer-tab-currencies"
               >
                 <DollarSign className="size-3.5" />
@@ -123,7 +125,7 @@ export const SupplierDrawerSheet: React.FC<SupplierDrawerSheetProps> = ({
 
               <TabsTrigger
                 value="products"
-                className="h-9 px-3 text-xs gap-1.5 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:text-primary font-medium"
+                className="h-7 px-3 text-xs gap-1.5 rounded-lg border-0 transition-colors text-muted-foreground hover:text-foreground hover:bg-muted/60 data-[state=active]:bg-primary/10 data-[state=active]:text-primary font-medium"
                 data-testid="supplier-drawer-tab-products"
               >
                 <Package className="size-3.5" />

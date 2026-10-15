@@ -11,6 +11,7 @@ import {
   Sparkles,
   FileText,
   FileCheck,
+  Landmark,
 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -152,6 +153,43 @@ export default function SettingsPage() {
                 className="w-full h-8 text-xs gap-1.5 justify-between"
               >
                 <span>{isUk ? 'Редагувати документи' : 'Manage Legal'}</span>
+                <ArrowRight className="size-3.5 text-muted-foreground" />
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+
+        {/* Currency Rates & Banks Card */}
+        <Card className="border-border/80 bg-card/60 backdrop-blur-xs shadow-xs flex flex-col justify-between">
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Landmark className="size-4 text-primary" />
+                <CardTitle className="text-sm font-semibold">
+                  {isUk ? 'Курси валют & Банки' : 'Currency Rates & Banks'}
+                </CardTitle>
+              </div>
+              <Badge
+                variant="outline"
+                className="text-2xs gap-1 font-mono bg-primary/10 text-primary border-primary/20"
+              >
+                <span>5 {isUk ? 'банків' : 'banks'}</span>
+              </Badge>
+            </div>
+            <CardDescription className="text-xs">
+              {isUk
+                ? 'Керування банками України, маржею купівлі/продажу та синхронізацією курсів'
+                : 'Configure Ukrainian banks, buy/sell spreads, and live NBU rates'}
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="pt-0">
+            <Link href="/settings/currencies">
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full h-8 text-xs gap-1.5 justify-between"
+              >
+                <span>{isUk ? 'Керувати курсами' : 'Manage Currencies'}</span>
                 <ArrowRight className="size-3.5 text-muted-foreground" />
               </Button>
             </Link>

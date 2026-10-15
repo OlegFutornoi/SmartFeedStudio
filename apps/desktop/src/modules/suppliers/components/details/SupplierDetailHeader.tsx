@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { SupplierDto, getCurrencySymbol } from '@smartfeed/shared';
 import { useTranslation } from '@/i18n';
+import { SupplierAvatar } from '@/modules/suppliers/components/common/SupplierAvatar';
 
 interface SupplierDetailHeaderProps {
   supplier: SupplierDto;
@@ -25,13 +26,6 @@ export const SupplierDetailHeader: React.FC<SupplierDetailHeaderProps> = ({
   onToggleStatus,
 }) => {
   const { t } = useTranslation(['suppliers', 'common']);
-
-  const initials = (supplier.name || 'V')
-    .split(' ')
-    .map((w) => w[0])
-    .slice(0, 2)
-    .join('')
-    .toUpperCase();
 
   const currencySym = getCurrencySymbol(supplier.baseCurrency || 'UAH');
 
@@ -94,9 +88,12 @@ export const SupplierDetailHeader: React.FC<SupplierDetailHeaderProps> = ({
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-5 pt-1">
         {/* Left: Avatar & Meta */}
         <div className="flex items-center gap-4">
-          <div className="size-14 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center font-bold text-primary text-xl shadow-xs shrink-0">
-            {initials}
-          </div>
+          <SupplierAvatar
+            logoUrl={supplier.logoUrl}
+            name={supplier.name}
+            size="lg"
+            dataTestId="supplier-detail-avatar"
+          />
           <div>
             <div className="flex items-center gap-2.5 flex-wrap">
               <h2 className="text-xl font-bold tracking-tight text-foreground">{supplier.name}</h2>

@@ -20,6 +20,7 @@ import { FeedsModule } from '@/modules/feeds/feeds.module';
 import { LegalModule } from '@/modules/legal/legal.module';
 import { PageGuidesModule } from '@/modules/page-guides/page-guides.module';
 import { SuppliersModule } from '@/modules/suppliers/suppliers.module';
+import { CurrenciesModule } from '@/modules/currencies/currencies.module';
 
 @Module({
   imports: [
@@ -85,6 +86,7 @@ import { SuppliersModule } from '@/modules/suppliers/suppliers.module';
     LegalModule,
     PageGuidesModule,
     SuppliersModule,
+    CurrenciesModule,
   ],
   providers: [
     {

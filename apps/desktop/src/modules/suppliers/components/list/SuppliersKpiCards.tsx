@@ -71,7 +71,7 @@ export const SuppliersKpiCards: React.FC<SuppliersKpiCardsProps> = ({
                 {activeFeedsCount}
               </h3>
             </div>
-            <div className="size-9 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+            <div className="size-9 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
               <Rss className="size-4.5" />
             </div>
           </div>
@@ -93,7 +93,7 @@ export const SuppliersKpiCards: React.FC<SuppliersKpiCardsProps> = ({
                 {totalProductsCount.toLocaleString()}
               </h3>
             </div>
-            <div className="size-9 rounded-lg bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sky-600 dark:text-sky-400">
+            <div className="size-9 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
               <Package className="size-4.5" />
             </div>
           </div>
@@ -117,7 +117,7 @@ export const SuppliersKpiCards: React.FC<SuppliersKpiCardsProps> = ({
                 {activeRulesCount}
               </h3>
             </div>
-            <div className="size-9 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-600 dark:text-amber-400">
+            <div className="size-9 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
               <SlidersHorizontal className="size-4.5" />
             </div>
           </div>

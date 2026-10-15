@@ -172,9 +172,9 @@ export const SupplierFeedsTab: React.FC<SupplierFeedsTabProps> = ({
                     <TableCell className="pl-3.5 py-2 font-medium text-foreground">
                       <div className="flex items-center gap-2">
                         {isFile ? (
-                          <FileText className="size-4 text-amber-500 shrink-0" />
+                          <FileText className="size-4 text-muted-foreground shrink-0" />
                         ) : (
-                          <Globe className="size-4 text-sky-500 shrink-0" />
+                          <Globe className="size-4 text-muted-foreground shrink-0" />
                         )}
                         <div className="truncate max-w-[220px]">
                           <p className="font-medium truncate">{src.name}</p>

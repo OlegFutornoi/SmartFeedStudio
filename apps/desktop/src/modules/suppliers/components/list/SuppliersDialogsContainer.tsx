@@ -1,7 +1,7 @@
 import React from 'react';
 import { SupplierDto, CreateSupplierDto } from '@smartfeed/shared';
 import { SupplierDrawerSheet } from '@/modules/suppliers/components/drawer/SupplierDrawerSheet';
-import { SupplierCreateDialog } from '@/modules/suppliers/components/forms/SupplierCreateDialog';
+import { SupplierFormSheet } from '@/modules/suppliers/components/forms/SupplierFormSheet';
 import { ImportFeedWizardDialog } from '@/components/feeds/ImportFeedWizardDialog';
 import { ConfirmDeleteDialog } from '@/components/ui/ConfirmDeleteDialog';
 import { useTranslation } from '@/i18n';
@@ -84,9 +84,9 @@ export const SuppliersDialogsContainer: React.FC<SuppliersDialogsContainerProps>
         onSuccess={onFeedWizardSuccess}
       />
 
-      {/* Create / Edit Dialog */}
-      <SupplierCreateDialog
-        isOpen={isCreateOpen || !!supplierToEdit}
+      {/* Create / Edit Slide-Over Sheet (Zero Modals, side="left") */}
+      <SupplierFormSheet
+        isOpen={isCreateOpen || Boolean(supplierToEdit)}
         supplierToEdit={supplierToEdit}
         onClose={onCloseCreateOrEdit}
         onSave={onSaveSupplier}

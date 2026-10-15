@@ -46,7 +46,7 @@ export const CreateSupplierDtoSchema = z.object({
   contactEmail: z.string().email('Invalid email address').optional().or(z.literal('')),
   website: z.string().url('Invalid URL').optional().or(z.literal('')),
   notes: z.string().optional(),
-  logoUrl: z.string().optional(),
+  logoUrl: z.string().nullable().optional(),
 
   baseCurrency: z.nativeEnum(CurrencyCode).default(CurrencyCode.UAH).optional(),
   targetCurrency: z.nativeEnum(CurrencyCode).default(CurrencyCode.UAH).optional(),

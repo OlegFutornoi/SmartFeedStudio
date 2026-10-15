@@ -10,4 +10,7 @@ export * from '@/modules/suppliers/components/details/tabs/SupplierCategoriesTab
 export * from '@/modules/suppliers/components/details/tabs/SupplierPricingTab';
 export * from '@/modules/suppliers/components/details/tabs/SupplierCurrenciesTab';
 export * from '@/modules/suppliers/components/details/tabs/SupplierProductsTab';
-export * from '@/modules/suppliers/components/forms/SupplierCreateDialog';
+export * from '@/modules/suppliers/components/common/SupplierAvatar';
+export * from '@/modules/suppliers/components/forms/SupplierAvatarPicker';
+export * from '@/modules/suppliers/components/forms/SupplierFormFields';
+export * from '@/modules/suppliers/components/forms/SupplierFormSheet';

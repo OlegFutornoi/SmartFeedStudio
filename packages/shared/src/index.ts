@@ -17,6 +17,7 @@ export * from './dtos/pricing-rule.dto';
 export * from './dtos/legal.dto';
 export * from './dtos/page-guide.dto';
 export * from './dtos/supplier-category.dto';
+export * from './dtos/currency.dto';
 export * from './utils/currency-calculator';
 export * from './utils/pricing-calculator';
 export * from './utils/media-naming';

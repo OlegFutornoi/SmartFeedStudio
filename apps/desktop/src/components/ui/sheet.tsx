@@ -28,12 +28,14 @@ SheetOverlay.displayName = DialogPrimitive.Overlay.displayName;
 
 interface SheetContentProps extends React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content> {
   side?: 'top' | 'bottom' | 'left' | 'right';
+  hideOverlay?: boolean;
+  overlayClassName?: string;
 }
 
 const SheetContent = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Content>,
   SheetContentProps
->(({ side = 'right', className, children, ...props }, ref) => {
+>(({ side = 'right', hideOverlay, overlayClassName, className, children, ...props }, ref) => {
   const sideClasses = {
     top: 'inset-x-0 top-0 border-b data-[state=closed]:slide-out-to-top data-[state=open]:slide-in-from-top',
     bottom:
@@ -43,13 +45,26 @@ const SheetContent = React.forwardRef<
       'inset-y-0 right-0 h-full w-full border-l data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right',
   };
 
+  React.useEffect(() => {
+    return () => {
+      // Failsafe cleanup for Radix pointer-events leak
+      requestAnimationFrame(() => {
+        const openDialogs = document.querySelectorAll('[role="dialog"]');
+        if (openDialogs.length === 0) {
+          document.body.style.pointerEvents = '';
+          document.body.removeAttribute('data-scroll-locked');
+        }
+      });
+    };
+  }, []);
+
   return (
     <SheetPortal>
-      <SheetOverlay />
+      {!hideOverlay && <SheetOverlay className={overlayClassName} />}
       <DialogPrimitive.Content
         ref={ref}
         className={cn(
-          'fixed z-50 gap-4 bg-background p-0 shadow-2xl transition ease-in-out duration-300 data-[state=open]:animate-in data-[state=closed]:animate-out flex flex-col',
+          'fixed z-50 gap-4 bg-background p-0 shadow-2xl transition ease-in-out duration-300 data-[state=open]:animate-in data-[state=closed]:animate-out flex flex-col outline-none focus:outline-none focus-visible:outline-none ring-0 focus:ring-0 focus-visible:ring-0',
           sideClasses[side],
           className,
         )}

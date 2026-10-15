@@ -52,6 +52,7 @@ const config: Config = {
       },
       fontSize: {
         '2xs': ['0.625rem', { lineHeight: '0.875rem' }],
+        '3xs': ['0.5625rem', { lineHeight: '0.75rem' }],
       },
     },
   },

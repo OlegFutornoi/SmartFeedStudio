@@ -4,7 +4,7 @@ import { WizardStepSource } from '@/components/feeds/WizardStepSource';
 import { WizardStepSupplier } from '@/components/feeds/WizardStepSupplier';
 import { WizardStepPreview } from '@/components/feeds/WizardStepPreview';
 import { WizardStepProgress } from '@/components/feeds/WizardStepProgress';
-import { CreateSupplierDialog } from '@/components/suppliers/CreateSupplierDialog';
+import { SupplierFormSheet } from '@/modules/suppliers/components/forms/SupplierFormSheet';
 import { WizardDialogHeader } from '@/components/feeds/WizardDialogHeader';
 import { WizardDialogFooter } from '@/components/feeds/WizardDialogFooter';
 import { AlertCircle } from 'lucide-react';
@@ -196,7 +196,7 @@ export function ImportFeedWizardDialog({
       </Sheet>
 
       {isCreateSupplierOpen && (
-        <CreateSupplierDialog
+        <SupplierFormSheet
           isOpen={isCreateSupplierOpen}
           onClose={() => setIsCreateSupplierOpen(false)}
           onSave={handleSaveSupplier}

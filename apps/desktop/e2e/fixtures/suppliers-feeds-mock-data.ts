@@ -216,6 +216,27 @@ export async function setupSuppliersFeedsRoutes(page: Page) {
   const currentSuppliers = [...mockSuppliers.map((s) => ({ ...s }))];
 
   await page.route(/\/api\/suppliers(\?|$)/, async (route) => {
+    if (route.request().method() === 'POST') {
+      const payload = route.request().postDataJSON() || {};
+      const newSup = {
+        id: `sup_new_${Date.now()}`,
+        userId: mockUser.id,
+        productsCount: 0,
+        activeFeedsCount: 0,
+        categoriesCount: 0,
+        ...payload,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      currentSuppliers.unshift(newSup);
+      await route.fulfill({
+        status: 201,
+        contentType: 'application/json',
+        body: JSON.stringify(newSup),
+      });
+      return;
+    }
+
     await route.fulfill({
       status: 200,
       contentType: 'application/json',

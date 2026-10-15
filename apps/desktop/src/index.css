@@ -208,6 +208,11 @@
       Arial,
       sans-serif;
   }
+
+  /* Prevent Radix Dialog / DropdownMenu pointer-events leak from freezing the app */
+  body:not(:has([data-state='open'][role='dialog'])) {
+    pointer-events: auto !important;
+  }
 }
 
 @layer utilities {
