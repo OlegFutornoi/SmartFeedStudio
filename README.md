@@ -4,11 +4,13 @@ Enterprise-grade architecture for **SmartFeed Studio** built with `pnpm workspac
 
 ---
 
-## 📚 Project Knowledge Base & Documentation (WIKI)
+## 📚 Project Knowledge Base & Documentation Portal
 
-> **Complete architectural knowledge base, database schemas, CQRS diagrams, UI flows, and FAQs:**  
-> 👉 **[Explore the SmartFeed Studio WIKI](./wiki/README.md)**
+> **Офіційний двомовний портал документації (Live Docs-as-Code на Cloudflare Pages):**  
+> 🌐 **[https://smartfeed-docs.pages.dev](https://smartfeed-docs.pages.dev)**  
+> 📖 **[База знань у монорепозиторії (WIKI)](./wiki/README.md)**
 
+- [🌐 Живий портал документації (UA / EN)](https://smartfeed-docs.pages.dev)
 - [🎯 01. Overview & Vision](./wiki/01-overview/product-vision.md)
 - [🛠 02. Technology Stack Matrix](./wiki/02-tech-stack/stack-matrix.md)
 - [🗄 03. Database Schema & Prisma Models](./wiki/03-database-schema/prisma-models.md)
@@ -81,7 +83,8 @@ graph TD
 .
 ├── apps/
 │   ├── admin-portal/        # Next.js 14 (App Router) + Tailwind CSS + shadcn/ui
-│   └── desktop/             # Tauri v2 (Rust) + React + Vite + SQLCipher & Keychain
+│   ├── desktop/             # Tauri v2 (Rust) + React + Vite + SQLCipher & Keychain
+│   └── docs/                # Astro Starlight Docs-as-Code (UA/EN, Pagefind, Cloudflare Pages)
 ├── services/
 │   └── backend-api/         # NestJS 11 + @nestjs/cqrs + Prisma + BullMQ + MinIO/S3
 ├── packages/
@@ -152,6 +155,9 @@ pnpm dev:admin
 # Запустити тільки фронтенд десктоп-клієнта у браузері (Vite на http://localhost:1420)
 pnpm dev:desktop
 
+# Запустити портал документації Astro Starlight (на http://localhost:4321)
+pnpm dev:docs
+
 # Запустити спільний пакет у режимі watch для автоматичної компіляції типів
 pnpm --filter @smartfeed/shared dev
 ```
@@ -175,6 +181,9 @@ pnpm build:admin
 
 # Зібрати фронтенд десктоп-клієнта (@smartfeed/desktop)
 pnpm build:desktop
+
+# Зібрати статичний портал документації з індексацією Pagefind (@smartfeed/docs)
+pnpm build:docs
 ```
 
 ---
@@ -266,18 +275,20 @@ pnpm --filter @smartfeed/desktop tauri:build
 
 ## 🌐 Таблиця доступів та портів сервісів
 
-| Сервіс / Застосунок      | Адреса / Порт                    | Облікові дані (Default)                                              | Опис                                          |
-| :----------------------- | :------------------------------- | :------------------------------------------------------------------- | :-------------------------------------------- |
-| **Backend REST API**     | `http://localhost:4000/api`      | JWT Bearer Token                                                     | Центральний REST API із CQRS                  |
-| **Swagger Docs**         | `http://localhost:4000/api/docs` | —                                                                    | Інтерактивна OpenAPI документація             |
-| **Next.js Admin Portal** | `http://localhost:3000`          | —                                                                    | Панель управління користувачами та ліцензіями |
-| **Desktop Vite Client**  | `http://localhost:1420`          | —                                                                    | Веб-інтерфейс десктоп-клієнта                 |
-| **Prisma Studio (GUI)**  | `http://localhost:5555`          | —                                                                    | Візуальний перегляд та редагування таблиць БД |
-| **Mailpit Web UI**       | `http://localhost:8025`          | —                                                                    | Перегляд надісланих email-листів та інвайтів  |
-| **PostgreSQL 16**        | `localhost:5432`                 | DB: `smartfeed_db`<br/>User: `postgres`<br/>Pass: `postgrespassword` | Основна реляційна база даних                  |
-| **Redis 7**              | `localhost:6379`                 | Без пароля                                                           | Черги фонових задач BullMQ                    |
-| **MinIO S3 API**         | `http://localhost:9000`          | Key: `minioadmin`<br/>Secret: `minioadminpassword`                   | S3-сумісне об'єктне сховище                   |
-| **MinIO Web Console**    | `http://localhost:9001`          | User: `minioadmin`<br/>Pass: `minioadminpassword`                    | Веб-панель керування S3 бакетами              |
+| Сервіс / Застосунок              | Адреса / Порт                      | Облікові дані (Default)                                              | Опис                                                      |
+| :------------------------------- | :--------------------------------- | :------------------------------------------------------------------- | :-------------------------------------------------------- |
+| **Backend REST API**             | `http://localhost:4000/api`        | JWT Bearer Token                                                     | Центральний REST API із CQRS                              |
+| **Swagger Docs**                 | `http://localhost:4000/api/docs`   | —                                                                    | Інтерактивна OpenAPI документація                         |
+| **Next.js Admin Portal**         | `http://localhost:3000`            | —                                                                    | Панель управління користувачами та ліцензіями             |
+| **Documentation Portal (Local)** | `http://localhost:4321`            | —                                                                    | Двомовний локальний портал документації (Astro Starlight) |
+| **Documentation Portal (Cloud)** | `https://smartfeed-docs.pages.dev` | —                                                                    | Офіційний хмарний портал (Cloudflare Pages CDN)           |
+| **Desktop Vite Client**          | `http://localhost:1420`            | —                                                                    | Веб-інтерфейс десктоп-клієнта                             |
+| **Prisma Studio (GUI)**          | `http://localhost:5555`            | —                                                                    | Візуальний перегляд та редагування таблиць БД             |
+| **Mailpit Web UI**               | `http://localhost:8025`            | —                                                                    | Перегляд надісланих email-листів та інвайтів              |
+| **PostgreSQL 16**                | `localhost:5432`                   | DB: `smartfeed_db`<br/>User: `postgres`<br/>Pass: `postgrespassword` | Основна реляційна база даних                              |
+| **Redis 7**                      | `localhost:6379`                   | Без пароля                                                           | Черги фонових задач BullMQ                                |
+| **MinIO S3 API**                 | `http://localhost:9000`            | Key: `minioadmin`<br/>Secret: `minioadminpassword`                   | S3-сумісне об'єктне сховище                               |
+| **MinIO Web Console**            | `http://localhost:9001`            | User: `minioadmin`<br/>Pass: `minioadminpassword`                    | Веб-панель керування S3 бакетами                          |
 
 ---
 

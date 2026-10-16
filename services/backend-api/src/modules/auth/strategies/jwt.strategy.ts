@@ -26,7 +26,8 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     private readonly queryBus: QueryBus,
     private readonly cacheService: RedisCacheService,
   ) {
-    const secretOrKey = configService.get<string>('JWT_ACCESS_SECRET');
+    const secretOrKey =
+      configService.get<string>('JWT_ACCESS_SECRET') || configService.get<string>('JWT_SECRET');
     if (!secretOrKey) {
       throw new InternalServerErrorException(
         'Critical configuration missing: JWT_ACCESS_SECRET must be defined',

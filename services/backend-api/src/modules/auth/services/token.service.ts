@@ -20,7 +20,9 @@ export class TokenService {
   ) {}
 
   private getAccessSecret(): string {
-    const secret = this.configService.get<string>('JWT_ACCESS_SECRET');
+    const secret =
+      this.configService.get<string>('JWT_ACCESS_SECRET') ||
+      this.configService.get<string>('JWT_SECRET');
     if (!secret) {
       throw new InternalServerErrorException(
         'Critical configuration missing: JWT_ACCESS_SECRET must be defined',
@@ -30,7 +32,9 @@ export class TokenService {
   }
 
   private getRefreshSecret(): string {
-    const secret = this.configService.get<string>('JWT_REFRESH_SECRET');
+    const secret =
+      this.configService.get<string>('JWT_REFRESH_SECRET') ||
+      this.configService.get<string>('JWT_SECRET');
     if (!secret) {
       throw new InternalServerErrorException(
         'Critical configuration missing: JWT_REFRESH_SECRET must be defined',

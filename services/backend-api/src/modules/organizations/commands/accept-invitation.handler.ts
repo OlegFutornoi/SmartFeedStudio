@@ -185,8 +185,12 @@ export class AcceptInvitationHandler implements ICommandHandler<
         role: targetUser.role as Role,
       };
 
-      const accessSecret = this.configService.get<string>('JWT_ACCESS_SECRET');
-      const refreshSecret = this.configService.get<string>('JWT_REFRESH_SECRET');
+      const accessSecret =
+        this.configService.get<string>('JWT_ACCESS_SECRET') ||
+        this.configService.get<string>('JWT_SECRET');
+      const refreshSecret =
+        this.configService.get<string>('JWT_REFRESH_SECRET') ||
+        this.configService.get<string>('JWT_SECRET');
 
       if (!accessSecret || !refreshSecret) {
         throw new InternalServerErrorException(
