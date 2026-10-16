@@ -6,6 +6,7 @@ Enterprise platform for parsing, editing, and syncing XML/CSV product feeds with
 
 - Admin Portal: Next.js 14 App Router (`apps/admin-portal`, port 3000)
 - Desktop Client: Tauri v2 + React 18 (`apps/desktop`, port 1420) — Native SQLite (SQLCipher) + OS Keychain
+- Documentation Portal: Astro Starlight (`apps/docs`, port 4321) — Bilingual Docs-as-Code & Cloudflare Pages
 - Backend API: NestJS 11 CQRS + Prisma + BullMQ (`services/backend-api`, port 4000)
 - Contracts: `@smartfeed/shared`
 - Infrastructure: PostgreSQL 16 (port 5432), Redis 7 (port 6379), MinIO S3 (port 9000/9001), Cloudflare R2
@@ -37,7 +38,8 @@ All invariants are indexed by unique IDs and partitioned into 9 domain files:
 ## 4. Key Commands
 
 - Infrastructure: `pnpm docker:up` / `pnpm docker:down`
-- Dev servers: `pnpm dev` / `pnpm dev:backend` / `pnpm dev:admin` / `pnpm dev:desktop`
+- Dev servers: `pnpm dev` / `pnpm dev:backend` / `pnpm dev:admin` / `pnpm dev:desktop` / `pnpm dev:docs`
+- Docs portal build: `pnpm build:docs`
 - Testing: `pnpm --filter @smartfeed/backend-api test:e2e` / `pnpm test:desktop` / `pnpm test:admin`
 - Contracts build: `pnpm --filter @smartfeed/shared build`
 - Typecheck: `pnpm --filter @smartfeed/backend-api exec tsc --noEmit`

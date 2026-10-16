@@ -1,0 +1,38 @@
+---
+title: SmartFeed Studio Documentation
+description: Enterprise platform for parsing XML/CSV feeds, encrypted local SQLite database (Tauri v2), and NestJS 11 CQRS backend.
+template: splash
+hero:
+  tagline: Comprehensive engineering reference, architectural invariants, CQRS contracts, and development guides.
+  actions:
+    - text: Getting Started
+      link: /en/overview/introduction/
+      icon: right-arrow
+      variant: primary
+    - text: Backend Architecture
+      link: /en/backend/cqrs-architecture/
+      icon: puzzle
+      variant: secondary
+    - text: GitHub
+      link: https://github.com/OlegFutornoi/SmartFeedStudio
+      icon: external
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+## Key Architectural Highlights
+
+<CardGrid stagger>
+  <Card title="NestJS 11 CQRS & PostgreSQL 16" icon="setting">
+    Clean business logic isolation: 1 handler per file, Transactional Outbox pattern, BullMQ queues, and 100% foreign key indexing in Prisma ORM.
+  </Card>
+  <Card title="Tauri v2 + SQLCipher" icon="laptop">
+    Native desktop client with hardware-grade SQLite encryption via OS Keychain (Touch ID / DPAPI).
+  </Card>
+  <Card title="Streaming 100k+ SKU Feeds" icon="rocket">
+    SAX/CSV streaming parser with backpressure control for dependable high-volume supplier catalog ingestion without Node.js heap exhaustion.
+  </Card>
+  <Card title="Bilingual & Hardened Security" icon="document">
+    100% parity across Ukrainian and English (`uk`/`en`), 4-layer defense model (DTO, Quotas, RBAC, DB constraints), and SSRF IP pinning.
+  </Card>
+</CardGrid>

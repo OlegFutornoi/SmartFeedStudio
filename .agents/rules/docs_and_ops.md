@@ -35,6 +35,7 @@ description: DevOps, Docker, Railway, SemVer releases, and documentation synchro
 - Backend API: port 4000 (`http://localhost:4000/api`, Swagger: `/api/docs`).
 - Admin Web Portal: port 3000 (`http://localhost:3000`).
 - Desktop UI: port 1420 (`http://localhost:1420`).
+- Documentation Portal: port 4321 (`http://localhost:4321`).
 - PostgreSQL: port 5432 (`smartfeed_db`).
 - Redis: port 6379.
 - MinIO S3: port 9000 (API) and 9001 (Console).

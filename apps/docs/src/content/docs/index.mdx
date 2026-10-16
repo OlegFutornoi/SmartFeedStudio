@@ -1,0 +1,38 @@
+---
+title: Документація SmartFeed Studio
+description: Корпоративна платформа для обробки XML/CSV фідів, шифрованої бази даних SQLite (Tauri v2) та бекенду NestJS 11 CQRS.
+template: splash
+hero:
+  tagline: Повний інженерний довідник, архітектурні інваріанти, CQRS-контракти та гайди розробки.
+  actions:
+    - text: Почати знайомство
+      link: /overview/introduction/
+      icon: right-arrow
+      variant: primary
+    - text: Архітектура бекенду
+      link: /backend/cqrs-architecture/
+      icon: puzzle
+      variant: secondary
+    - text: GitHub
+      link: https://github.com/OlegFutornoi/SmartFeedStudio
+      icon: external
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+## Ключові архітектурні напрямки
+
+<CardGrid stagger>
+  <Card title="NestJS 11 CQRS & PostgreSQL 16" icon="setting">
+    Чиста ізоляція бізнес-логіки: 1 хендлер на файл, транзакційний Outbox, BullMQ черги та 100% покриття FK-індексами в Prisma ORM.
+  </Card>
+  <Card title="Tauri v2 + SQLCipher" icon="laptop">
+    Нативний десктопний клієнт з апаратним шифруванням локальної SQLite бази даних через OS Keychain (Touch ID / DPAPI).
+  </Card>
+  <Card title="Обробка 100k+ SKU фідів" icon="rocket">
+    Потоковий SAX/CSV парсер з керуванням backpressure пам'яті для стабільного імпорту важких каталогів постачальників без переповнення heap.
+  </Card>
+  <Card title="Двомовність & Безпека" icon="document">
+    Повний паритет української та англійської локалізації (`uk`/`en`), 4-рівневий захист (DTO, Quotas, RBAC, DB constraints) та SSRF захист.
+  </Card>
+</CardGrid>
