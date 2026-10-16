@@ -19,8 +19,8 @@ description: DevOps, Docker, Railway, SemVer releases, and documentation synchro
 
 ## OPS-03: SemVer Release Governance
 
-- Regular development commits push directly to remote without git tags or triggering release builds.
-- SemVer releases are triggered strictly via `/git-commit --release [patch|minor|major]`.
+- Regular development commits append `[skip ci]` by default and push directly to remote without git tags or triggering release builds.
+- SemVer releases are triggered strictly via `/git-commit -r` or `/git-commit --release [patch|minor|major]`.
 - The release command bumps the version, creates an annotated git tag `v*`, and pushes with tags to trigger GitHub Action release pipelines.
 - Reason: Accidental automated tag pushes trigger expensive multi-platform desktop release builds.
 

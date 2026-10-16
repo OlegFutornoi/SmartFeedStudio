@@ -66,8 +66,8 @@ description: Core universal engineering invariants applied across all tasks and 
 
 - Never automatically execute `git commit` or `git push`.
 - Staging and committing code occurs strictly when the user issues an explicit command (`/git-commit`, `commit`).
-- Regular commits push directly to remote; release commits (`/git-commit --release [patch|minor|major]`) create version tags.
-- Reason: Autonomous commits bypass user review and risk pushing unverified work to production branches.
+- Regular commits append `[skip ci]` by default and push directly to remote without tags; release commits (`/git-commit -r` or `/git-commit --release [patch|minor|major]`) omit `[skip ci]`, bump versions, and create version tags `v*`.
+- Reason: Autonomous commits bypass user review; skipping CI on regular commits saves runner minutes, reserving CI builds strictly for releases (`-r`).
 
 ## CORE-11: Targeted Feature-Scoped Testing
 

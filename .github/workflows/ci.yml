@@ -3,8 +3,18 @@ name: Continuous Integration
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - '**.md'
+      - 'apps/docs/**'
+      - '.agents/**'
+      - 'plans/**'
   pull_request:
     branches: [main]
+    paths-ignore:
+      - '**.md'
+      - 'apps/docs/**'
+      - '.agents/**'
+      - 'plans/**'
 
 permissions:
   contents: read
