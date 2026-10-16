@@ -111,6 +111,8 @@ Central intelligence orchestrator connecting 7 specialized autonomous engineerin
 - `project-context-map`: Live system topology, ports, and inter-service connection map.
 - `lessons-learned-registry`: Historical defect registry (L-xxx) and project invariant index.
 - `source-driven-development`: Authoritative documentation fetching before implementation.
+- `task-memory-and-state`: Task context persistence, execution state checkpointing, session handoff, and prompt token optimization in `.agents/state/active_task.json`.
+- `handoff`: Conversation and session compaction for inter-agent context transfer.
 - `context-engineering`: Token economy and prompt context hygiene.
 - `ai-sdk`: Vercel AI SDK streaming integration and LLM catalog enrichment.
 - `firecrawl-parse`: External catalog and documentation scraping into markdown.

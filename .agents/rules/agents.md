@@ -19,14 +19,14 @@ description: Autonomous specialized agent router and dispatching directives for 
 ## AGENT-02: Mandatory 8-Stage Execution Loop
 
 - Every specialized agent must execute its task through eight sequential stages:
-  1. Discovery, scope analysis, and upfront research.
+  1. Discovery, scope analysis, and task state loading: load `task-memory-and-state` and read `.agents/state/active_task.json` to acquire immediate context, active plan, modified files, and unblocked next actions before performing any searches or file reads.
   2. Planning, shared contracts, and modularity budgeting: create active plans in `plans/active/<name>.md`. Writing long analytical sheets or audit matrices directly into chat is strictly prohibited (`CORE-07`, `PLAN-01`).
   3. Architecture and domain constraints.
   4. Automated test design (TDD RED).
   5. Implementation and domain hardening (GREEN).
   6. Code review and DoD verification against invariant IDs.
   7. Systematic debugging and root cause isolation: when defects, performance bottlenecks, or anti-patterns are uncovered, codify preventive invariants directly into the corresponding domain rule (`.agents/rules/<domain>.md`) and skill (`.agents/skills/<skill>/SKILL.md`) to permanently prevent defect repetition.
-  8. Documentation, test coverage synchronization, and plan completion: move plan to `plans/completed/`. Chat output is strictly limited to 1-2 sentence summary with a clickable link to the plan (`CORE-07`).
+  8. Documentation, task state persistence, and plan completion: update `.agents/state/active_task.json` with modified files, test results, and next actions. Move completed plans to `plans/completed/`. Chat output is strictly limited to 1-2 sentence summary with a clickable link to the plan (`CORE-07`).
 - Reason: Strict stage progression prevents premature coding, skipped tests, context pollution, and unverified deployments.
 
 ## AGENT-03: Invariant & Skill Codification Loop
