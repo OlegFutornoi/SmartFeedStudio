@@ -7,6 +7,7 @@ description: Autonomous specialized agent router and dispatching directives for 
 
 ## AGENT-01: Agent Roles and Dispatching
 
+- Route planning and system architecture tasks to Planner Agent (`@agents_planner` / `@agents-planner`): Requirements discovery, domain boundary modeling, tracer-bullet vertical slicing, ADRs, contract-first design, and implementation plan authoring. Specification: `.agents/agents/planner.md`.
 - Route frontend tasks to Frontend Agent (`@agents_frontend` / `@agents-frontend`): UI, UX, React 18, Next.js 14, Tauri v2 desktop UI, Tailwind CSS, shadcn/ui, Playwright. Specification: `.agents/agents/frontend.md`.
 - Route backend tasks to Backend Agent (`@agents_backend` / `@agents-backend`): NestJS 11 CQRS, Prisma ORM, PostgreSQL 16, Redis, BullMQ, shared contracts. Specification: `.agents/agents/backend.md`.
 - Route review tasks to Review Agent (`@agents_review` / `@agents-review`): 5-axis code review, architecture compliance, invariant audits, adversarial testing. Specification: `.agents/agents/review.md`.

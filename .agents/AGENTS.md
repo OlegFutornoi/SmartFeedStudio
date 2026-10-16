@@ -2,9 +2,14 @@
 
 ## 1. System Overview
 
-Central intelligence orchestrator connecting 6 specialized autonomous engineering agents with modular skills. All agents execute through an 8-stage lifecycle and enforce domain rules from `.agents/rules/`.
+Central intelligence orchestrator connecting 7 specialized autonomous engineering agents with modular skills. All agents execute through an 8-stage lifecycle and enforce domain rules from `.agents/rules/`.
 
 ## 2. Specialized Autonomous Agents
+
+- Planner & Architecture Agent: `@agents_planner` / `@agents-planner`
+  - Domain: Requirements discovery, domain boundary modeling, tracer-bullet vertical slicing, ADRs, contract-first design, and implementation plan authoring.
+  - Specification: `.agents/agents/planner.md`
+  - Rules: `core.md`, `agents.md`, `backend.md`, `database.md`, `frontend.md`, `security.md`, `docs_and_ops.md`
 
 - Frontend Agent: `@agents_frontend` / `@agents-frontend`
   - Domain: UI, UX, React 18, Next.js 14, Tauri v2 desktop UI, Tailwind CSS, shadcn/ui, Playwright E2E.
@@ -96,6 +101,9 @@ Central intelligence orchestrator connecting 6 specialized autonomous engineerin
 - `release-and-rollback`: SemVer release governance, smoke checks, and rollback runbooks.
 - `observability-and-instrumentation`: Structured logging, Sentry monitoring, incident tracing.
 - `planning-and-lifecycle`: Deterministic plans lifecycle in `plans/active/`, `plans/backlog/`, `plans/completed/`.
+- `writing-plans`: Bite-sized, testable TDD implementation steps (2-5 min) with explicit file boundaries and interfaces.
+- `to-tickets`: Tracer-bullet vertical slicing through all architectural layers, declaring explicit blocking edges.
+- `brainstorming`: Deep user-need discovery, non-obvious goal mapping, and pre-implementation solution probing.
 - `interview-me`: Focused requirements elicitation, 1 question at a time.
 - `spec-driven-development`: Specification of requirements and contracts before coding.
 - `incremental-implementation`: Thin vertical slices (<250 lines) with iterative verification.

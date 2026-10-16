@@ -26,6 +26,7 @@ All invariants are indexed by unique IDs and partitioned into 9 domain files:
 
 ## 3. Specialized Autonomous Agents
 
+- Planner & Architecture Agent: `@agents_planner` / `@agents-planner` (`.agents/agents/planner.md`)
 - Frontend Agent: `@agents_frontend` / `@agents-frontend` (`.agents/agents/frontend.md`)
 - Backend Agent: `@agents_backend` / `@agents-backend` (`.agents/agents/backend.md`)
 - Code Review Agent: `@agents_review` / `@agents-review` (`.agents/agents/review.md`)

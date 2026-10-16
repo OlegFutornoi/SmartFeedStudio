@@ -24,18 +24,40 @@ rules:
 
 ## Mandatory plan structure and invariants
 
-Every plan authored in `plans/active/<feature>.md` must include:
+Every plan authored in `plans/active/<feature>.md` must follow the standardized specification structure:
 
-1. Shared contracts: Explicitly define DTOs, Zod schemas, and TypeScript interfaces in `@smartfeed/shared` before creating UI or backend services. Never use `any`.
-2. Four-layer defense model:
-   - Layer 1 (DTO): class-validator on backend and Zod on client.
-   - Layer 2 (Domain/Quota): Subscription limits, SKU quotas, team seat checks.
+1. Metadata & Runtime Scope:
+   - State Target Runtime: Web Portal (`apps/admin-portal`), Desktop Client (`apps/desktop` Tauri v2/SQLite), or Cloud Backend (`services/backend-api`).
+   - If touches catalog data, verify `mockDatabaseDriver` behavioral parity (`mock-real-parity`).
+2. Shared contracts first:
+   - Explicitly define DTOs, Zod schemas, and TypeScript interfaces in `@smartfeed/shared` before creating UI or backend services. Never use `any`.
+3. Four-layer defense model:
+   - Layer 1 (DTO): `class-validator` on backend and Zod on client.
+   - Layer 2 (Domain/Quota): Subscription limits, SKU quotas, team seat checks (`subscription-lifecycle`).
    - Layer 3 (Security/RBAC): Tenant scoping, JWT guards, permissions.
-   - Layer 4 (Database): Foreign key indexes, unique constraints, atomic transactions.
-3. Modularity budgets: Decompose components and files expected to exceed 250 lines into focused sub-modules.
-4. Failure modes and bilingual localization: Define offline behaviors, network drops, and translations in both `uk` and `en`.
-5. Upfront research: Document API signatures confirmed via context7.
-6. Zero plan dumping in chat: The complete plan text must be written directly to `plans/active/<feature>.md`. The chat response must contain only a 1-2 sentence summary and clickable markdown link (`[План](file:///...)`).
+   - Layer 4 (Database): Foreign key indexes (`@@index([fk])`), unique constraints, atomic transactions.
+4. Tracer-Bullet Vertical Slices:
+   - Decompose tasks into tracer-bullet vertical slices cutting through DB -> API -> Shared -> UI -> Tests.
+   - Each slice must be demoable or verifiable on its own and sized to fit in a single context window (<250 lines).
+   - Wide refactors must be sequenced via Expand-Contract (add new -> migrate callers -> contract old).
+   - Declare blocking edges (`Blocked by: Task X`) for every slice.
+5. Task Step Structure (TDD RED -> GREEN):
+   - For every task, define:
+     - Exact file paths: `Create: ...`, `Modify: ...`, `Test: ...`
+     - Interfaces: `Consumes: ...`, `Produces: ...`
+     - Step 1: Write failing test with exact assertions (RED).
+     - Step 2: Run test command and verify expected failure output.
+     - Step 3: Implement minimal code to satisfy test (GREEN).
+     - Step 4: Run targeted test and verify clean PASS.
+6. Modularity budgets & CQRS standards:
+   - Keep files under 250 lines (`CORE-04`). Split backend into 1 handler per file (<120 lines).
+   - Decompose complex React views into focused sub-components with solid sticky headers.
+7. Failure modes, bilingual localization & edge cases:
+   - Define offline behaviors, network drops, and translations in both `uk` and `en` (`i18n-localization`).
+   - Adversarially stress-test TOCTOU concurrency races and payment webhook idempotency (`doubt-driven-development`).
+8. Zero plan dumping in chat:
+   - The complete plan text must be written directly to `plans/active/<feature>.md`.
+   - The chat response must contain only a 1-2 sentence summary and clickable markdown link (`[План](file:///...)`) with the recommended executing agent.
 
 ## Plan completion and transition to completed
 
