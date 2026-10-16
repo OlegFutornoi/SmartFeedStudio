@@ -1,7 +1,8 @@
+// @golden - Reference pattern for 100% solid non-translucent sticky drawer header (UI-01, UI-05)
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
-import { Package, Rss, FolderTree, TrendingUp, ExternalLink } from 'lucide-react';
+import { ExternalLink } from 'lucide-react';
 import { useTranslation } from '@/i18n';
 import type { SupplierDto } from '@smartfeed/shared';
 import { SupplierAvatar } from '@/modules/suppliers/components/common/SupplierAvatar';
@@ -27,7 +28,7 @@ export const SupplierDrawerHeader: React.FC<SupplierDrawerHeaderProps> = ({
 
   return (
     <div
-      className="p-5 pb-4 border-b border-border/80 bg-card/60 backdrop-blur-xs space-y-3.5 pr-10"
+      className="p-4 px-5 border-b border-border/80 bg-card pr-10"
       data-testid="supplier-drawer-header"
     >
       {/* Top Vendor Info & Status */}
@@ -79,7 +80,8 @@ export const SupplierDrawerHeader: React.FC<SupplierDrawerHeaderProps> = ({
               {(supplier.contactEmail || supplier.website) && formattedDate && <span>•</span>}
               {formattedDate && (
                 <span>
-                  {t('suppliers:lastSynced', { defaultValue: 'Додано' })}: {formattedDate}
+                  {t('common:created', { defaultValue: 'Додано' }).replace(/:$/, '')}:{' '}
+                  {formattedDate}
                 </span>
               )}
             </div>
@@ -89,7 +91,7 @@ export const SupplierDrawerHeader: React.FC<SupplierDrawerHeaderProps> = ({
         {/* Status Switch */}
         <div className="flex items-center gap-2 shrink-0">
           <span
-            className={`text-xs font-medium ${supplier.isActive ? 'text-emerald-600 dark:text-emerald-400' : 'text-muted-foreground'}`}
+            className={`text-xs font-medium ${supplier.isActive ? 'text-success' : 'text-muted-foreground'}`}
           >
             {supplier.isActive
               ? t('suppliers:statusActive', { defaultValue: 'Активний' })
@@ -102,60 +104,6 @@ export const SupplierDrawerHeader: React.FC<SupplierDrawerHeaderProps> = ({
             data-testid="supplier-drawer-active-toggle"
             aria-label={t('suppliers:columnStatus', { defaultValue: 'Статус' })}
           />
-        </div>
-      </div>
-
-      {/* Commerceo Top KPI Statistics Row */}
-      <div
-        className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 border-t border-border/50"
-        data-testid="supplier-drawer-kpi-row"
-      >
-        <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-muted/40 border border-border/50">
-          <Package className="size-3.5 text-primary shrink-0" />
-          <div className="min-w-0">
-            <div className="text-2xs text-muted-foreground truncate">
-              {t('suppliers:columnProducts', { defaultValue: 'Товари' })}
-            </div>
-            <div className="text-xs font-bold text-foreground tabular-nums">
-              {supplier.productsCount || 0}
-            </div>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-muted/40 border border-border/50">
-          <Rss className="size-3.5 text-primary shrink-0" />
-          <div className="min-w-0">
-            <div className="text-2xs text-muted-foreground truncate">
-              {t('suppliers:columnFeeds', { defaultValue: 'Джерела фідів' })}
-            </div>
-            <div className="text-xs font-bold text-foreground tabular-nums">
-              {supplier.activeFeedsCount || 0}
-            </div>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-muted/40 border border-border/50">
-          <FolderTree className="size-3.5 text-primary shrink-0" />
-          <div className="min-w-0">
-            <div className="text-2xs text-muted-foreground truncate">
-              {t('suppliers:tabCategories', { defaultValue: 'Категорії' })}
-            </div>
-            <div className="text-xs font-bold text-foreground tabular-nums">
-              {supplier.categoriesCount || supplier.activeCategoriesCount || 0}
-            </div>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-muted/40 border border-border/50">
-          <TrendingUp className="size-3.5 text-primary shrink-0" />
-          <div className="min-w-0">
-            <div className="text-2xs text-muted-foreground truncate">
-              {t('suppliers:columnCurrencyMarkup', { defaultValue: 'Націнка' })}
-            </div>
-            <div className="text-xs font-bold text-foreground tabular-nums">
-              +{supplier.defaultMarginPercent || 0}% ({supplier.baseCurrency || 'UAH'})
-            </div>
-          </div>
         </div>
       </div>
     </div>

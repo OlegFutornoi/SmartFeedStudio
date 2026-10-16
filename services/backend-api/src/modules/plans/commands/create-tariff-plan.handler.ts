@@ -23,49 +23,51 @@ export class CreateTariffPlanHandler implements ICommandHandler<
     const { dto } = command;
     const normalizedCode = dto.code.toUpperCase().trim();
 
-    const existing = await this.prisma.tariffPlan.findUnique({
-      where: { code: normalizedCode },
-    });
+    const plan = await this.prisma.$transaction(async (tx) => {
+      const existing = await tx.tariffPlan.findUnique({
+        where: { code: normalizedCode },
+      });
 
-    if (existing) {
-      throw new ConflictException(`Tariff plan with code "${normalizedCode}" already exists`);
-    }
+      if (existing) {
+        throw new ConflictException(`Tariff plan with code "${normalizedCode}" already exists`);
+      }
 
-    const plan = await this.prisma.tariffPlan.create({
-      data: {
-        code: normalizedCode,
-        nameUk: dto.nameUk.trim(),
-        nameEn: dto.nameEn.trim(),
-        descriptionUk: dto.descriptionUk?.trim() || null,
-        descriptionEn: dto.descriptionEn?.trim() || null,
-        priceMonthly: dto.priceMonthly,
-        priceYearly: dto.priceYearly ?? null,
-        currency: dto.currency || 'USD',
-        maxXmlLimit: dto.maxXmlLimit,
-        aiCredits: dto.aiCredits,
-        canCloudBackup: dto.canCloudBackup ?? false,
-        maxFeedsLimit: dto.maxFeedsLimit ?? 1,
-        maxChannelsLimit: dto.maxChannelsLimit ?? 1,
-        syncFrequencyHours: dto.syncFrequencyHours ?? 0,
-        maxStorageGb: dto.maxStorageGb ?? 0,
-        maxTeamSeats: dto.maxTeamSeats ?? 1,
-        maxSuppliersLimit: dto.maxSuppliersLimit ?? 1,
-        hasApiAccess: dto.hasApiAccess ?? false,
-        hasWebhooks: dto.hasWebhooks ?? false,
-        hasFeedDiff: dto.hasFeedDiff ?? false,
-        hasWhiteLabel: dto.hasWhiteLabel ?? false,
-        hasSso: dto.hasSso ?? false,
-        hasAuditLog: dto.hasAuditLog ?? false,
-        hasCustomS3: dto.hasCustomS3 ?? false,
-        hasPriorityAi: dto.hasPriorityAi ?? false,
-        slaUptimePercent: dto.slaUptimePercent ?? null,
-        isPopular: dto.isPopular ?? false,
-        isActive: dto.isActive ?? true,
-        order: dto.order ?? 0,
-        durationDays: dto.durationDays !== undefined ? dto.durationDays : 7,
-        featuresUk: dto.featuresUk || [],
-        featuresEn: dto.featuresEn || [],
-      },
+      return tx.tariffPlan.create({
+        data: {
+          code: normalizedCode,
+          nameUk: dto.nameUk.trim(),
+          nameEn: dto.nameEn.trim(),
+          descriptionUk: dto.descriptionUk?.trim() || null,
+          descriptionEn: dto.descriptionEn?.trim() || null,
+          priceMonthly: dto.priceMonthly,
+          priceYearly: dto.priceYearly ?? null,
+          currency: dto.currency || 'USD',
+          maxXmlLimit: dto.maxXmlLimit,
+          aiCredits: dto.aiCredits,
+          canCloudBackup: dto.canCloudBackup ?? false,
+          maxFeedsLimit: dto.maxFeedsLimit ?? 1,
+          maxChannelsLimit: dto.maxChannelsLimit ?? 1,
+          syncFrequencyHours: dto.syncFrequencyHours ?? 0,
+          maxStorageGb: dto.maxStorageGb ?? 0,
+          maxTeamSeats: dto.maxTeamSeats ?? 1,
+          maxSuppliersLimit: dto.maxSuppliersLimit ?? 1,
+          hasApiAccess: dto.hasApiAccess ?? false,
+          hasWebhooks: dto.hasWebhooks ?? false,
+          hasFeedDiff: dto.hasFeedDiff ?? false,
+          hasWhiteLabel: dto.hasWhiteLabel ?? false,
+          hasSso: dto.hasSso ?? false,
+          hasAuditLog: dto.hasAuditLog ?? false,
+          hasCustomS3: dto.hasCustomS3 ?? false,
+          hasPriorityAi: dto.hasPriorityAi ?? false,
+          slaUptimePercent: dto.slaUptimePercent ?? null,
+          isPopular: dto.isPopular ?? false,
+          isActive: dto.isActive ?? true,
+          order: dto.order ?? 0,
+          durationDays: dto.durationDays !== undefined ? dto.durationDays : 7,
+          featuresUk: dto.featuresUk || [],
+          featuresEn: dto.featuresEn || [],
+        },
+      });
     });
 
     this.logger.log(`Created tariff plan: code=${plan.code}, nameUk="${plan.nameUk}"`);

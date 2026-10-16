@@ -94,19 +94,20 @@ description: Frontend architecture, React 18, Next.js 14, Tauri v2, design syste
 
 ## UI-01: 100% Solid Sticky Headers
 
-- Sticky table headers (`thead.sticky.top-0`) and modal headers/footers must have solid opaque backgrounds (`bg-card`, `bg-muted`, `bg-background`).
-- Translucent `backdrop-blur` without an opaque background is strictly prohibited.
+- Sticky table headers (`thead.sticky.top-0`) and modal/drawer headers/footers must have solid opaque backgrounds (`bg-card`, `bg-muted`, `bg-background`).
+- Translucent backgrounds (`bg-card/60`, `bg-background/80`) and `backdrop-blur-*` on headers/footers are strictly prohibited.
 - Reason: Translucent sticky headers bleed underlying table text through the header during scrolling, destroying legibility.
 
-## UI-02: Zero Off-Scheme Palette Colors
+## UI-02: Zero Off-Scheme Palette Colors & Rainbow Elements
 
 - Strictly use semantic design tokens: `bg-background`, `bg-card`, `text-foreground`, `text-muted-foreground`, `border-border`, `bg-primary`, `bg-destructive`, `bg-muted`, `bg-success`.
-- Hardcoded arbitrary colors (`purple-*`, `violet-*`, `fuchsia-*`, `pink-*`) are strictly prohibited.
-- Reason: Hardcoded palette colors break dark/light mode switching and create visually fragmented interfaces.
+- Hardcoded arbitrary palette colors (`emerald-*`, `green-*`, `blue-*`, `amber-*`, `yellow-*`, `orange-*`, `purple-*`, `violet-*`, `fuchsia-*`, `pink-*`, `sky-*`, `indigo-*`, `teal-*`, `cyan-*`) are strictly prohibited across components, cards, badges, borders, and icons.
+- Reason: Hardcoded palette colors break dark/light mode switching, violate the brand identity, and create visually fragmented "circus" interfaces.
 
 ## UI-03: Semantic Success Status Badge
 
 - Success status badges and pills must use the semantic `--success` token (e.g. `bg-success/15 text-success border-success/30`), mapping to emerald/green without ad-hoc palette overrides.
+- Never use `bg-emerald-*`, `text-emerald-*`, `bg-green-*`, or `text-green-*`.
 - Reason: Resolves the conflict between semantic theming and green success state assertions.
 
 ## UI-04: Zero Duplicate Action / CTA Buttons
@@ -115,15 +116,24 @@ description: Frontend architecture, React 18, Next.js 14, Tauri v2, design syste
 - Never present two identical action buttons simultaneously on the same screen.
 - Reason: Duplicate action buttons confuse users and violate visual hierarchy principles.
 
-## UI-05: Mandatory Official shadcn Installation
+## UI-05: Strict Official shadcn Component Architecture (Zero Custom Re-invention)
 
-- Base UI primitives (dialog, button, select, tabs, progress, dropdown) must be installed via official CLI (`npx shadcn@latest add <component> -y`).
-- Never hand-roll base UI primitives from scratch.
+- User interfaces across Desktop and Web MUST be strictly constructed using official, ready-made, accessible, and responsive shadcn primitives (`@/components/ui/*`: `Button`, `Card`, `Tabs`, `Dialog`, `Sheet`, `Select`, `Switch`, `Badge`, `ScrollArea`, `Label`, `DropdownMenu`, `Table`, `Input`, `Tooltip`).
+- Inventing custom ad-hoc controls, custom styled buttons, raw `<label>` tags, custom popups, or hand-rolled primitives when ready-made responsive shadcn components already exist is STRICTLY PROHIBITED.
+- If a required primitive is missing from `@/components/ui/`, install it directly via official CLI (`npx shadcn@latest add <component> -y`) instead of inventing ad-hoc HTML/CSS.
 - Maintain an up-to-date registry of installed components in `apps/desktop/src/components/ui/COMPONENTS.md`.
-- Reason: Official shadcn components provide tested accessibility, ARIA attributes, keyboard navigation, and theme harmony.
+- Reason: Official shadcn primitives guarantee battle-tested accessibility (ARIA), keyboard navigation, seamless dark/light mode theming, and responsive design, eliminating visual defects and layout bugs.
 
-## UI-06: Compact Typography and Tabular Numbers
+## UI-06: Compact Typography, Tabular Numbers & Clean Metrics
 
 - DataTable cells use `text-xs` (`px-3 py-2`), `h-9` headers, and `tabular-nums` for counters, IDs, and financial values.
+- In numeric table cells where the column header already defines the entity (e.g. "Feeds", "Products", "Categories"), render strictly clean numeric values/badges (`{count}`). NEVER append nouns or text suffixes (`3 фідів`, `10 товарів`) inside the cell.
 - Flex children containing text must use `min-w-0` to allow truncation without overflowing table columns.
-- Reason: Data density is essential for catalog management; default large typography limits visible products per screen.
+- Reason: Data density and visual clarity are essential for catalog management; appending redundant noun suffixes inside cells clutters tables, breaks alignment, and creates awkward pluralization edge cases.
+
+## UI-07: Strict Icon & Control Semantic Styling (Zero Rainbow Icons)
+
+- All icons in forms, cards, tabs, and toggles must strictly use neutral semantic tokens: `text-muted-foreground` by default, `text-foreground` on active/focused states, or brand `text-primary`.
+- Never assign rainbow colors (`text-blue-500`, `text-amber-500`, `text-yellow-500`, `text-emerald-500`, etc.) to icons to visually differentiate cards, inputs, tabs, or toggles.
+- Semantic status colors (`text-destructive`, `text-success`) are reserved exclusively for actual functional runtime outcomes (e.g. sync error, sync success), never for decorative variety.
+- Reason: Coloring every icon a different random hue turns professional software into a cluttered carnival and degrades visual hierarchy.

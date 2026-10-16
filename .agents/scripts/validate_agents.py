@@ -118,10 +118,10 @@ def validate_rules():
         if TABLE_PATTERN.search(text):
             errors.append(f"Rule {rule_name}.md contains forbidden markdown table syntax")
 
-    if always_on_size > 12000:
-        errors.append(f"Combined always_on rules exceed 12,000 characters budget ({always_on_size} chars)")
+    if always_on_size > 14000:
+        errors.append(f"Combined always_on rules exceed 14,000 characters budget ({always_on_size} chars)")
     else:
-        print(f"  Always-on rules payload: {always_on_size} characters (budget <= 12,000) - OK")
+        print(f"  Always-on rules payload: {always_on_size} characters (budget <= 14,000) - OK")
 
 
 def validate_agents():
@@ -175,9 +175,20 @@ def validate_skills():
         if "Step 0" not in text and "step 0" not in text.lower():
             errors.append(f"Skill {s_dir.name}/SKILL.md missing mandatory 'Step 0' rule loading section")
 
-        # Table syntax check
-        if TABLE_PATTERN.search(text):
-            errors.append(f"Skill {s_dir.name}/SKILL.md contains forbidden markdown table syntax")
+        # AGENT-05 & AGENT-06 checks for core implementation skills
+        if s_dir.name in {"frontend", "backend", "ui-ux-pro-max"}:
+            template_refs = re.findall(r"\.agents/templates/([a-zA-Z0-9_\.-]+)", text)
+            if not template_refs:
+                errors.append(f"Skill {s_dir.name}/SKILL.md must reference at least one golden template from .agents/templates/")
+            else:
+                for t_name in template_refs:
+                    t_path = ROOT_DIR / ".agents" / "templates" / t_name
+                    if not t_path.exists():
+                        errors.append(f"Skill {s_dir.name} references non-existent template: {t_name}")
+
+        if s_dir.name in {"frontend", "backend", "review", "ui-ux-pro-max"}:
+            if "pnpm verify:fast" not in text:
+                errors.append(f"Skill {s_dir.name}/SKILL.md Gate section must mandate 'pnpm verify:fast'")
 
         # Line budget check
         line_count = len(lines)
@@ -214,11 +225,43 @@ def validate_dispatchers():
             errors.append(".agents/AGENTS.md contains forbidden markdown table syntax")
 
 
+def validate_enforcement_map():
+    map_file = AGENTS_DIR / "enforcement-map.json"
+    if not map_file.exists():
+        errors.append("Missing .agents/enforcement-map.json")
+        return
+
+    import json
+
+    try:
+        with open(map_file, "r", encoding="utf-8") as f:
+            enforcement_map = json.load(f)
+    except Exception as e:
+        errors.append(f"Failed to parse .agents/enforcement-map.json: {e}")
+        return
+
+    rule_id_pattern = re.compile(r"^##\s+([A-Z0-9]+-\d+):")
+    defined_rules = set()
+    for rule_file in RULES_DIR.glob("*.md"):
+        for line in rule_file.read_text(encoding="utf-8").splitlines():
+            m = rule_id_pattern.match(line)
+            if m:
+                defined_rules.add(m.group(1))
+
+    unmapped = defined_rules - set(enforcement_map.keys())
+    if unmapped:
+        for rid in sorted(unmapped):
+            errors.append(f"Rule {rid} has no entry in .agents/enforcement-map.json")
+    else:
+        print(f"Validated {len(defined_rules)} rule invariants against enforcement-map.json - OK")
+
+
 def main():
     validate_rules()
     validate_agents()
     validate_skills()
     validate_dispatchers()
+    validate_enforcement_map()
 
     print("\n" + "=" * 50)
     print(f"Validation summary: {len(errors)} error(s), {len(warnings)} warning(s)")

@@ -21,6 +21,7 @@ import { LegalModule } from '@/modules/legal/legal.module';
 import { PageGuidesModule } from '@/modules/page-guides/page-guides.module';
 import { SuppliersModule } from '@/modules/suppliers/suppliers.module';
 import { CurrenciesModule } from '@/modules/currencies/currencies.module';
+import { AiModule } from '@/modules/ai/ai.module';
 
 @Module({
   imports: [
@@ -87,6 +88,7 @@ import { CurrenciesModule } from '@/modules/currencies/currencies.module';
     PageGuidesModule,
     SuppliersModule,
     CurrenciesModule,
+    AiModule,
   ],
   providers: [
     {

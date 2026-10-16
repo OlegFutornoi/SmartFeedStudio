@@ -61,13 +61,14 @@ export const SupplierTableRow: React.FC<SupplierTableRowProps> = ({
             />
           </div>
           <div className="min-w-0">
-            <button
+            <Button
+              variant="link"
               onClick={() => onOpenDetails(s)}
-              className="font-medium text-foreground hover:text-primary transition-colors text-left truncate block max-w-[190px]"
+              className="p-0 h-auto font-medium text-foreground hover:text-primary hover:no-underline transition-colors text-left truncate block max-w-[190px]"
               data-testid={`supplier-name-${s.id}`}
             >
               {s.name}
-            </button>
+            </Button>
             <div className="flex items-center gap-1.5 mt-0.5">
               <span className="text-2xs font-mono text-muted-foreground uppercase bg-muted px-1.5 py-0.2 rounded">
                 {s.code}
@@ -80,23 +81,35 @@ export const SupplierTableRow: React.FC<SupplierTableRowProps> = ({
       {/* Contacts */}
       {visible('contacts') && (
         <TableCell className="py-2">
-          <div className="flex flex-col gap-0.5 text-xs text-muted-foreground">
-            {s.contactEmail && (
-              <div className="flex items-center gap-1 truncate max-w-[190px]">
-                <Mail className="size-3 shrink-0" />
-                <span className="truncate">{s.contactEmail}</span>
+          {(() => {
+            const hasPhone = Boolean(s.contactPhone && /\d/.test(s.contactPhone));
+            const hasEmail = Boolean(s.contactEmail && s.contactEmail.includes('@'));
+
+            if (!hasEmail && !hasPhone) {
+              return (
+                <div className="flex flex-col gap-0.5 text-xs text-muted-foreground">
+                  <span className="text-muted-foreground/60 italic">—</span>
+                </div>
+              );
+            }
+
+            return (
+              <div className="flex flex-col gap-0.5 text-xs text-muted-foreground">
+                {hasEmail && (
+                  <div className="flex items-center gap-1 truncate max-w-[190px]">
+                    <Mail className="size-3 shrink-0" />
+                    <span className="truncate">{s.contactEmail}</span>
+                  </div>
+                )}
+                {hasPhone && (
+                  <div className="flex items-center gap-1 truncate">
+                    <Phone className="size-3 shrink-0" />
+                    <span>{s.contactPhone}</span>
+                  </div>
+                )}
               </div>
-            )}
-            {s.contactPhone && (
-              <div className="flex items-center gap-1 truncate">
-                <Phone className="size-3 shrink-0" />
-                <span>{s.contactPhone}</span>
-              </div>
-            )}
-            {!s.contactEmail && !s.contactPhone && (
-              <span className="text-muted-foreground/60 italic">—</span>
-            )}
-          </div>
+            );
+          })()}
         </TableCell>
       )}
 
@@ -105,11 +118,11 @@ export const SupplierTableRow: React.FC<SupplierTableRowProps> = ({
         <TableCell className="py-2 text-center">
           <Badge
             variant="outline"
-            className="text-xs font-medium h-5.5 px-2 cursor-pointer hover:bg-muted"
+            className="text-xs font-mono font-medium h-5.5 px-2 cursor-pointer hover:bg-muted"
             onClick={() => (onOpenFeeds ? onOpenFeeds(s) : onOpenDetails(s))}
             data-testid={`view-supplier-feeds-btn-${s.id}`}
           >
-            {s.activeFeedsCount || 0} фідів
+            {s.activeFeedsCount || 0}
           </Badge>
         </TableCell>
       )}
@@ -165,7 +178,7 @@ export const SupplierTableRow: React.FC<SupplierTableRowProps> = ({
           <div className="flex items-center justify-center">
             {s.isActive ? (
               <span
-                className="inline-flex items-center px-2 py-0.5 rounded-full text-2xs font-medium bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"
+                className="inline-flex items-center px-2 py-0.5 rounded-full text-2xs font-medium bg-success/15 text-success border border-success/30"
                 data-testid="status-badge"
               >
                 {t('suppliers:statusActive', { defaultValue: 'Активний' })}

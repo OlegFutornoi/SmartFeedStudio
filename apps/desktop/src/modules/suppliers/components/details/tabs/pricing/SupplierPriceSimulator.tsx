@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { SlidersHorizontal } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import {
   SupplierPricingRuleDto,
@@ -59,9 +60,9 @@ export const SupplierPriceSimulator: React.FC<SupplierPriceSimulatorProps> = ({
       </CardHeader>
       <CardContent className="space-y-4">
         <div>
-          <label className="text-xs font-medium text-foreground block mb-1">
+          <Label className="text-xs font-medium text-foreground block mb-1">
             Вхідна ціна постачальника (₴):
-          </label>
+          </Label>
           <Input
             type="number"
             min="0"
@@ -96,7 +97,7 @@ export const SupplierPriceSimulator: React.FC<SupplierPriceSimulatorProps> = ({
           </div>
           <div className="flex items-center justify-between text-xs">
             <span className="text-muted-foreground">Маржинальний дохід:</span>
-            <span className="font-semibold text-emerald-600 dark:text-emerald-400">
+            <span className="font-semibold text-success">
               +{(simulation.sellingPrice - simCost).toFixed(2)} ₴
             </span>
           </div>

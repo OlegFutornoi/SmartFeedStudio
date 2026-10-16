@@ -101,23 +101,23 @@ test.describe('Desktop App — Преміальна UX-панель постач
     await currenciesTab.click();
 
     // 5. Перевіряємо наявність преміум-віджета курсів 5 провідних банків
-    const banksWidget = page.getByTestId('bank-exchange-rates-widget');
-    await expect(banksWidget).toBeVisible();
+    const banksTable = page.getByTestId('compact-bank-rates-table');
+    await expect(banksTable).toBeVisible();
 
-    // Перевіряємо наявність карток усіх 5 банків
-    await expect(page.getByTestId('bank-rate-card-nbu')).toBeVisible();
-    await expect(page.getByTestId('bank-rate-card-privat')).toBeVisible();
-    await expect(page.getByTestId('bank-rate-card-mono')).toBeVisible();
-    await expect(page.getByTestId('bank-rate-card-raiffeisen')).toBeVisible();
-    await expect(page.getByTestId('bank-rate-card-pumb')).toBeVisible();
+    // Перевіряємо наявність рядків усіх 5 банків
+    await expect(page.getByTestId('bank-row-nbu')).toBeVisible();
+    await expect(page.getByTestId('bank-row-privat')).toBeVisible();
+    await expect(page.getByTestId('bank-row-mono')).toBeVisible();
+    await expect(page.getByTestId('bank-row-raiffeisen')).toBeVisible();
+    await expect(page.getByTestId('bank-row-pumb')).toBeVisible();
 
-    // 6. Тестуємо застосування курсу Monobank в 1 клік
-    const applyMonoBtn = page.getByTestId('apply-bank-rate-mono');
-    await expect(applyMonoBtn).toBeVisible();
-    await applyMonoBtn.click();
+    // 6. Тестуємо застосування курсу Monobank в 1 клік на рядок
+    const monoRow = page.getByTestId('bank-row-mono');
+    await expect(monoRow).toBeVisible();
+    await monoRow.click();
 
-    // Перевіряємо, що Monobank позначено як обраний
-    await expect(page.getByTestId('apply-bank-rate-mono')).toContainText(/Обрано/i);
+    // Перевіряємо, що рядок Monobank позначено як обраний
+    await expect(monoRow).toHaveClass(/bg-primary\/10/);
 
     // Перевіряємо наявність блоку калькулятора та кнопки збереження
     await expect(page.getByTestId('exchange-rate-input')).toBeVisible();

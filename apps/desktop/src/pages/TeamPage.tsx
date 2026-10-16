@@ -18,6 +18,7 @@ import type {
   OrganizationInvitationDto,
   LicenseEntity,
 } from '@smartfeed/shared';
+import { Button } from '@/components/ui/button';
 import { TeamHeader } from '@/components/team/TeamHeader';
 import { TeamSeatsQuotaCard } from '@/components/team/TeamSeatsQuotaCard';
 import { TeamMembersList } from '@/components/team/TeamMembersList';
@@ -161,13 +162,14 @@ export const TeamPage: React.FC = () => {
             <CheckCircle2 className="h-4 w-4 shrink-0" />
             <span>{successMessage}</span>
           </div>
-          <button
-            type="button"
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={() => setSuccessMessage(null)}
-            className="text-xs hover:underline opacity-80"
+            className="h-6 w-6 p-0 text-xs hover:bg-transparent opacity-80"
           >
             ✕
-          </button>
+          </Button>
         </div>
       )}
 
@@ -181,13 +183,14 @@ export const TeamPage: React.FC = () => {
             <AlertTriangle className="h-4 w-4 shrink-0" />
             <span>{errorMessage}</span>
           </div>
-          <button
-            type="button"
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={() => setErrorMessage(null)}
-            className="text-xs hover:underline opacity-80"
+            className="h-6 w-6 p-0 text-xs hover:bg-transparent opacity-80 text-destructive"
           >
             ✕
-          </button>
+          </Button>
         </div>
       )}
 

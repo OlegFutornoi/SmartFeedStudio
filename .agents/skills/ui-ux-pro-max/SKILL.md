@@ -9,12 +9,13 @@ rules: [core, frontend, i18n]
 ## Step 0 - Load rules (mandatory, before any analysis or code)
 
 1. Read `.agents/rules/core.md`, `.agents/rules/frontend.md`, `.agents/rules/i18n.md`.
-2. Verify invariant `UI-01`: 100% solid sticky headers (`thead.sticky.top-0 bg-card` or `bg-background`).
-3. Verify invariant `UI-02`: zero off-scheme arbitrary colors; strictly semantic tokens.
-4. Verify invariant `UI-04`: zero duplicate CTA buttons between header toolbar and empty state cards.
-5. Verify invariant `UI-05`: base UI primitives must be installed via shadcn CLI.
-6. If researching component variants, call context7 or shadcn MCP tool.
-7. Do not write markup or styles until steps 1-6 are complete.
+2. Follow `AGENT-05` reference hierarchy: use golden templates (`.agents/templates/solid-sheet-header.tsx.md`, `table-numeric-cell.tsx.md`, `success-badge.tsx.md`) or `// @golden` files.
+3. Verify invariant `UI-01`: 100% solid sticky headers (`thead.sticky.top-0 bg-card` or `bg-background`).
+4. Verify invariant `UI-02` & `UI-07`: zero off-scheme arbitrary colors (`blue-*`, `amber-*`, `yellow-*`, `orange-*`, `purple-*`); zero rainbow/circus decorative icons; strictly neutral (`text-muted-foreground`) or semantic (`text-primary`) tokens.
+5. Verify invariant `UI-04`: zero duplicate CTA buttons between header toolbar and empty state cards.
+6. Verify invariant `UI-05`: base UI primitives must be installed via shadcn CLI.
+7. If researching component variants, call context7 or shadcn MCP tool.
+8. Do not write markup or styles until steps 1-7 are complete.
 
 ## Inputs
 
@@ -23,7 +24,7 @@ rules: [core, frontend, i18n]
 
 ## Procedure
 
-1. Step 1 - Semantic Token Mapping: map all background, foreground, border, and accent colors to semantic CSS variables (`bg-background`, `bg-card`, `text-foreground`, `text-muted-foreground`, `border-border`, `bg-primary`, `bg-destructive`, `bg-muted`, `bg-success`). Never introduce raw hex codes or off-scheme classes.
+1. Step 1 - Semantic Token & Icon Mapping: map all background, foreground, border, and accent colors to semantic CSS variables (`bg-background`, `bg-card`, `text-foreground`, `text-muted-foreground`, `border-border`, `bg-primary`, `bg-destructive`, `bg-muted`, `bg-success`). Icons in forms, cards, tabs, and toggles must strictly use `text-muted-foreground` or `text-primary` (`UI-07`). Never introduce raw hex codes or off-scheme palette classes (`blue-*`, `amber-*`, `yellow-*`, `purple-*`).
 2. Step 2 - Solid Sticky Header Enforcement: assign `sticky top-0 z-10 bg-card border-b border-border` to all table `<thead>` elements. Translucent backdrops without solid background are strictly prohibited.
 3. Step 3 - Empty State and CTA Deduplication: if an empty state card provides an action button (e.g. "Create Supplier"), conditionally hide the toolbar action button (`items.length === 0 && !search ? null : <Button ...>`).
 4. Step 4 - Install Official shadcn Primitives: if a required primitive (Dialog, Tooltip, Select, Progress, Tabs, Table) is missing, install it directly: `npx shadcn@latest add <component> -y`. Record the component in `apps/desktop/src/components/ui/COMPONENTS.md`.
@@ -37,15 +38,21 @@ rules: [core, frontend, i18n]
 
 ## Gate (stop condition)
 
-- 0 hardcoded palette colors (`purple-*`, `violet-*`, `fuchsia-*`, `pink-*`) in component files.
-- Sticky table headers maintain 100% solid background during scrolling.
+- Automated gates pass with 0 regressions: `pnpm verify:fast`.
+- 0 hardcoded palette colors (`emerald-*`, `green-*`, `blue-*`, `amber-*`, `yellow-*`, `orange-*`, `purple-*`, `violet-*`, `fuchsia-*`, `pink-*`) in component files (`UI-02`).
+- 0 rainbow decorative icons on form fields, cards, tabs, or toggles (`UI-07`).
+- Sticky table and drawer headers maintain 100% solid background (`bg-card`, zero `backdrop-blur-*`, zero `bg-*/<opacity>`).
+- Numeric table cells render clean numbers/badges only; zero redundant noun suffixes (`UI-06`).
 - 0 duplicate action buttons visible simultaneously.
 - Component file is under 250 lines.
 
 ## Never
 
 - Never use `${CLAUDE_PLUGIN_ROOT}` or undefined environment variables in script executions.
-- Never use translucent `backdrop-blur` without an opaque background for sticky table headers (violates `UI-01`).
+- Never use `emerald-*`, `green-*`, `blue-*`, `amber-*`, `yellow-*` palette classes; use semantic tokens `text-success`, `bg-success/15 border-success/30`, `text-primary` (violates `UI-02`, `UI-03`).
+- Never append noun text suffixes inside table cells whose column headers already name the entity (e.g. `3 фідів`, `10 товарів`); render clean numeric values or badges only (violates `UI-06`).
+- Never assign decorative rainbow colors (`blue-*`, `amber-*`, `yellow-*`) to form or card icons (violates `UI-02`, `UI-07`).
+- Never use translucent `backdrop-blur` or opacity modifiers (`bg-card/60`) for sticky headers or sheet drawers (violates `UI-01`).
 - Never write base UI primitives from scratch instead of using shadcn CLI (violates `UI-05`).
 - Never omit `aria-label` on icon-only action buttons.
 

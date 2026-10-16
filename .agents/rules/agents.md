@@ -34,3 +34,34 @@ description: Autonomous specialized agent router and dispatching directives for 
 - Whenever an agent discovers a defect, anti-pattern, concurrency flaw, or unhandled bottleneck during review, QA, security audit, or development, the agent must update the relevant domain rule (`.agents/rules/<domain>.md`) and governing skill (`.agents/skills/<skill>/SKILL.md`).
 - Define the new invariant with a concrete invariant ID (e.g., `FE-xx`, `BE-xx`, `SEC-xx`), explicit constraints, and technical rationale.
 - Reason: Fixing a bug or pointing out an architectural defect without codifying the invariant into governing rules allows identical errors to recur across subsequent turns.
+
+## AGENT-04: Full-Stack Orchestra Protocol (Zero Siloed & Zero Raw Tasks)
+
+- Multi-Agent Orchestration Mandate: specialized agents must operate as a synchronized symphony, never in isolated silos.
+  1. Planner Agent (`@agents_planner`): Every vertical slice must tightly couple backend and frontend. Designing isolated backend endpoints without frontend views, or creating frontend screens with dead fake mocks is strictly prohibited.
+  2. Backend Agent (`@agents_backend`): Non-negotiable TDD (RED -> GREEN). Must author Supertest E2E tests (`test/*.e2e-spec.ts`) FIRST. Writing application code before tests fail (RED) is forbidden. Code until 100% GREEN, and immediately execute `pnpm --filter @smartfeed/backend-api build` to keep `dist/` synchronized.
+  3. Frontend Agent (`@agents_frontend`): Strict shadcn architecture (`UI-05`). User interfaces must be assembled exclusively using official ready-made shadcn components (`@/components/ui/*`). Never invent custom ad-hoc controls, custom styled buttons, or raw `<label>` tags. Zero rainbow icons (`UI-07`).
+  4. QA Agent (`@agents_qa`): Assert live contract execution in the browser with real business data (`TEST-03`), zero 400 Bad Requests, zero console errors, zero text clipping.
+  5. 6-Point Non-Negotiable Definition of Done (DoD): A task is NEVER complete or handed to the user while it is raw ("сира"). All 6 gates must pass:
+     - Backend E2E tests pass 100% on real database.
+     - Backend `dist/` is compiled and verified fresh.
+     - Frontend Playwright tests pass 100% asserting real data.
+     - Static typechecking (`tsc --noEmit`) passes with 0 errors across all packages.
+     - Bilingual dictionary parity (`pnpm i18n:check`) passes 100%.
+     - Automated domain invariants check (`pnpm invariants:check`) passes with 0 violations across UI semantic tokens, solid headers, CQRS single-handler structure, and controller DTOs.
+- Reason: Siloed development causes runtime contract mismatches, dead UIs, 400 Bad Request errors, and half-baked ("сирі") deliverables.
+
+## AGENT-05: Reference-Pattern Hierarchy
+
+- When writing new code or adapting existing patterns, agents must adhere to a strict three-tier reference hierarchy:
+  1. Golden Templates (`.agents/templates/*`): Authoritative reference scaffolds for controllers, CQRS handlers, UI cells, and badges.
+  2. Golden Source Files (`// @golden` header): In-tree implementations verified against all active invariants.
+  3. Untrusted Code: All unannotated codebase files are treated as legacy; agents must never blindly mimic them without validating against `.agents/rules/`.
+- Reason: Unverified legacy files contain historical anti-patterns that induce few-shot regression loops.
+
+## AGENT-06: Pre- and Post-Flight Verification Gate
+
+- Stage 1 (Discovery): Record pre-flight baseline via `pnpm guardrails:check` or `pnpm verify:fast`.
+- Stage 6 (Verification): Run `pnpm verify:fast` to guarantee zero regressions against the ratchet baseline.
+- Final Turn: Provide the exact mechanical gate summary line in the report instead of unverified textual claims.
+- Reason: Mandatory mechanical execution catches regressions before user handover.

@@ -1,78 +1,27 @@
-import { INestApplication, ValidationPipe } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
-import { AppModule } from '@/app.module';
-import { PrismaService } from '@/prisma/prisma.service';
-import { Role, CurrencyCode, ExchangeRateMode, PriceRoundingMode } from '@smartfeed/shared';
-import { cleanDatabase } from '@test/utils/teardown.helper';
+import { CurrencyCode, ExchangeRateMode, PriceRoundingMode } from '@smartfeed/shared';
+import type { INestApplication } from '@nestjs/common';
+import {
+  bootstrapSuppliersTestContext,
+  type SuppliersTestContext,
+} from '@test/utils/suppliers-app.helper';
 
 describe('Suppliers & Multi-Currency Management (E2E)', () => {
+  let ctx: SuppliersTestContext;
   let app: INestApplication;
-  let prisma: PrismaService;
-
-  const timestamp = Date.now();
+  let timestamp: number;
   let userToken: string;
   let user2Token: string;
   let createdSupplierId: string;
   let createdPricingRuleId: string;
 
-  const createdEmails: string[] = [];
-
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
-
-    app = moduleFixture.createNestApplication();
-    prisma = moduleFixture.get<PrismaService>(PrismaService);
-
-    app.setGlobalPrefix('api');
-    app.useGlobalPipes(
-      new ValidationPipe({
-        whitelist: true,
-        transform: true,
-        forbidNonWhitelisted: true,
-        transformOptions: {
-          enableImplicitConversion: true,
-        },
-      }),
-    );
-
-    await app.init();
-
-    await cleanDatabase(prisma, {
-      emailPrefixes: ['sup.test1+', 'sup.test2+'],
-    });
-
-    // 1. Register User 1
-    const user1Email = `sup.test1+${timestamp}@smartfeed.local`;
-    createdEmails.push(user1Email);
-    const u1Res = await request(app.getHttpServer()).post('/api/auth/register').send({
-      email: user1Email,
-      password: 'UserPassword123!',
-      fullName: 'Supplier Test User 1',
-      role: Role.USER,
-    });
-    userToken = u1Res.body.tokens.accessToken;
-
-    // 2. Register User 2 (for multi-tenant isolation testing)
-    const user2Email = `sup.test2+${timestamp}@smartfeed.local`;
-    createdEmails.push(user2Email);
-    const u2Res = await request(app.getHttpServer()).post('/api/auth/register').send({
-      email: user2Email,
-      password: 'UserPassword123!',
-      fullName: 'Supplier Test User 2',
-      role: Role.USER,
-    });
-    user2Token = u2Res.body.tokens.accessToken;
+    ctx = await bootstrapSuppliersTestContext('sup.test');
+    ({ app, timestamp, userToken, user2Token } = ctx);
   });
 
   afterAll(async () => {
-    await cleanDatabase(prisma, {
-      userEmails: createdEmails,
-      emailPrefixes: ['sup.test1+', 'sup.test2+'],
-    });
-    await app.close();
+    await ctx.teardown();
   });
 
   it('1. POST /api/suppliers — creates a new supplier with currency & markup settings', async () => {
@@ -84,6 +33,20 @@ describe('Suppliers & Multi-Currency Management (E2E)', () => {
         code: `BRAIN_${timestamp}`,
         contactEmail: 'sales@brain.local',
         contactPhone: '+380501112233',
+        website: 'https://brain.com.ua',
+        legalName: 'ТОВ «Брейн Дистрибʼюшн»',
+        taxId: '30370505',
+        industry: 'Електроніка та IT',
+        segment: 'Офіційний дистрибʼютор',
+        managerName: 'Олександр Коваленко',
+        managerPosition: 'Key Account Manager',
+        managerPhone: '+380674445566',
+        managerEmail: 'b2b@brain.local',
+        managerTelegram: '@brain_b2b',
+        country: 'Україна',
+        city: 'Київ',
+        address: 'вул. Степана Бандери, 21',
+        postcode: '04073',
         baseCurrency: CurrencyCode.USD,
         targetCurrency: CurrencyCode.UAH,
         exchangeRateMode: ExchangeRateMode.MANUAL,
@@ -98,6 +61,16 @@ describe('Suppliers & Multi-Currency Management (E2E)', () => {
 
     expect(res.body.id).toBeDefined();
     expect(res.body.name).toBe('Brain Distribution Inc');
+    expect(res.body.legalName).toBe('ТОВ «Брейн Дистрибʼюшн»');
+    expect(res.body.taxId).toBe('30370505');
+    expect(res.body.industry).toBe('Електроніка та IT');
+    expect(res.body.segment).toBe('Офіційний дистрибʼютор');
+    expect(res.body.managerName).toBe('Олександр Коваленко');
+    expect(res.body.managerPosition).toBe('Key Account Manager');
+    expect(res.body.managerTelegram).toBe('@brain_b2b');
+    expect(res.body.city).toBe('Київ');
+    expect(res.body.address).toBe('вул. Степана Бандери, 21');
+    expect(res.body.postcode).toBe('04073');
     expect(res.body.baseCurrency).toBe('USD');
     expect(res.body.targetCurrency).toBe('UAH');
     expect(res.body.exchangeRate).toBe(41.5);
@@ -134,7 +107,7 @@ describe('Suppliers & Multi-Currency Management (E2E)', () => {
     expect(res.body.exchangeRate).toBe(41.5);
   });
 
-  it('4. PATCH /api/suppliers/:id — updates supplier and toggles isActive status', async () => {
+  it('4. PATCH /api/suppliers/:id — updates supplier, CRM fields and toggles isActive status', async () => {
     const res = await request(app.getHttpServer())
       .patch(`/api/suppliers/${createdSupplierId}`)
       .set('Authorization', `Bearer ${userToken}`)
@@ -142,12 +115,16 @@ describe('Suppliers & Multi-Currency Management (E2E)', () => {
         isActive: false,
         exchangeRate: 42.0,
         defaultMarginPercent: 30,
+        managerPosition: 'Head of Commercial B2B',
+        city: 'Львів',
       })
       .expect(200);
 
     expect(res.body.isActive).toBe(false);
     expect(res.body.exchangeRate).toBe(42.0);
     expect(res.body.defaultMarginPercent).toBe(30);
+    expect(res.body.managerPosition).toBe('Head of Commercial B2B');
+    expect(res.body.city).toBe('Львів');
   });
 
   it('5. Multi-Tenant Protection — User 2 cannot access or edit User 1 supplier', async () => {
@@ -216,7 +193,7 @@ describe('Suppliers & Multi-Currency Management (E2E)', () => {
     expect(listRes.body.length).toBe(0);
   });
 
-  it('8. DELETE /api/suppliers/:id — cascades and deletes supplier cleanly', async () => {
+  it('10. DELETE /api/suppliers/:id — cascades and deletes supplier cleanly', async () => {
     await request(app.getHttpServer())
       .delete(`/api/suppliers/${createdSupplierId}`)
       .set('Authorization', `Bearer ${userToken}`)

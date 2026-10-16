@@ -10,6 +10,7 @@ import {
   TableCell,
 } from '@/components/ui/table';
 import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { SupplierDto, ProductDto, getCurrencySymbol } from '@smartfeed/shared';
 import { getProducts } from '@/lib/api';
 import { useAuth } from '@/contexts/AuthContext';
@@ -147,13 +148,16 @@ export const SupplierProductsTab: React.FC<SupplierProductsTabProps> = ({ suppli
                     </TableCell>
                     <TableCell className="pr-3.5 py-1.5 text-center">
                       {prod.inStock ? (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-2xs font-medium bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                        <Badge
+                          variant="outline"
+                          className="border-success/30 bg-success/15 text-success text-2xs font-medium"
+                        >
                           В наявності
-                        </span>
+                        </Badge>
                       ) : (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-2xs font-medium bg-muted text-muted-foreground">
+                        <Badge variant="secondary" className="text-2xs font-medium">
                           Немає
-                        </span>
+                        </Badge>
                       )}
                     </TableCell>
                   </TableRow>

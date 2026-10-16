@@ -28,7 +28,7 @@ description: Backend API and CQRS engineering invariants for NestJS, Prisma, Bul
 ## ARCH-04: Strict CQRS Modularity (1 File = 1 Handler)
 
 - Each Command Handler and Query Handler must reside in its own dedicated file (<120-150 lines).
-- Bundling multiple handlers into a single file is strictly prohibited.
+- Bundling multiple handlers into a single file is strictly prohibited. Maximum 1 `@CommandHandler` or `@QueryHandler` per file.
 - Command Handlers return `{ id }` or void, never full read entities.
 - Reason: Isolated handler files enforce single responsibility, prevent merge conflicts, and keep unit tests small.
 
@@ -69,10 +69,19 @@ description: Backend API and CQRS engineering invariants for NestJS, Prisma, Bul
 - Gated sandbox simulations are strictly prohibited in production mode.
 - Reason: Direct plan selection without payment validation creates critical broken business logic vulnerabilities.
 
-## BE-07: Concurrency & Mutex Protection
+## BE-07: Concurrency, Atomic Upserts & Mutex Protection
 
 - Sensitive shared state transitions (seat allocations, credit deductions, invitation acceptance) must use mutex locks (`OrganizationMutex`) or serializable transactions.
-- Reason: Parallel concurrent requests exploit time-of-check to time-of-use (TOCTOU) windows to exceed license quotas.
+- Settings, configurations, and 1-to-1 relation updates must strictly use atomic `prisma.<model>.upsert` instead of sequential `findFirst` + `create/update` blocks to eliminate TOCTOU unique constraint collisions (`P2002`).
+- Reason: Parallel concurrent requests exploit time-of-check to time-of-use (TOCTOU) windows to exceed license quotas or trigger unique key collision crashes.
+
+## BE-08: Non-Negotiable TDD RED -> GREEN Execution
+
+- Backend Agent is strictly required to author or update automated Jest / Supertest E2E tests (`services/backend-api/test/*.e2e-spec.ts`) FIRST before writing or modifying any backend CQRS handlers, services, controllers, or DTOs (`TEST-06`).
+- Execute the test and verify it fails with the expected domain reason (RED).
+- Implement backend application code strictly until the test suite turns 100% GREEN.
+- Execute `pnpm --filter @smartfeed/backend-api build` immediately after changes to guarantee `dist/` is synchronized with source code, preventing stale runtime 400 Bad Request / DTO errors.
+- Reason: Writing tests after implementation causes biased assertions, and untracked DTO changes cause runtime schema validation failures.
 
 ## BE-09: Large Feed SAX Streaming Backpressure
 

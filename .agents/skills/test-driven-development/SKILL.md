@@ -17,9 +17,9 @@ rules:
 
 ## The RED-GREEN-REFACTOR cycle
 
-1. RED phase: Write a minimal automated test representing the expected behavior or defect reproduction. Execute the targeted test and confirm it fails for the expected reason.
-2. GREEN phase: Implement the minimal production code necessary to make the failing test pass. Avoid speculative features or unrequested complexity.
-3. REFACTOR phase: Clean up the implementation. Enforce the <250 line budget, extract helpers, eliminate duplication, and verify the test remains green.
+1. RED phase: Write a minimal automated test representing the expected behavior or defect reproduction (Supertest for backend, Playwright for frontend). Execute the targeted test and confirm it fails for the expected reason. Never write production code before this step.
+2. GREEN phase: Implement the minimal production code necessary to make the failing test pass. For backend changes, immediately compile the bundle with `pnpm --filter @smartfeed/backend-api build` to ensure `dist/` is updated and matches the passing tests. Avoid speculative features or unrequested complexity.
+3. REFACTOR phase: Clean up the implementation. Enforce the <250 line budget, extract helpers, eliminate duplication, and verify the test remains green. All 5 criteria of the Definition of Done (`AGENT-04`) must be verified.
 
 ## Mandatory testing standards
 

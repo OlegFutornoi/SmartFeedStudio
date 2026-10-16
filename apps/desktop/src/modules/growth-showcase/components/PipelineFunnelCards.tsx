@@ -1,6 +1,7 @@
 import type { FunnelStageItem, ShowcaseStageId } from '@/modules/growth-showcase/types';
 import { PackageCheck, Rocket, TrendingUp } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { Card } from '@/components/ui/card';
 
 interface PipelineFunnelCardsProps {
   stages: FunnelStageItem[];
@@ -16,7 +17,7 @@ export function PipelineFunnelCards({
   isUk,
 }: PipelineFunnelCardsProps) {
   const getIcon = (iconName: FunnelStageItem['iconName'], isActive: boolean) => {
-    const className = `h-3.5 w-3.5 ${isActive ? 'text-emerald-500' : 'text-muted-foreground'}`;
+    const className = `h-3.5 w-3.5 ${isActive ? 'text-success' : 'text-muted-foreground'}`;
     switch (iconName) {
       case 'PackageCheck':
         return <PackageCheck className={className} />;
@@ -33,14 +34,21 @@ export function PipelineFunnelCards({
         const isActive = stage.id === activeStageId;
 
         return (
-          <button
+          <Card
             key={stage.id}
-            type="button"
+            role="button"
+            tabIndex={0}
             onClick={() => onSelectStage(stage.id)}
-            className={`group relative flex flex-col text-left justify-between gap-1 rounded-xl border p-2 transition-all duration-300 ${
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                onSelectStage(stage.id);
+              }
+            }}
+            className={`group relative flex flex-col text-left justify-between gap-1 rounded-xl border p-2 transition-all duration-300 cursor-pointer ${
               isActive
-                ? 'border-emerald-500/50 bg-emerald-500/5 shadow-xs ring-1 ring-emerald-500/30'
-                : 'border-border/60 bg-card/40 hover:border-border hover:bg-card/70'
+                ? 'border-success/50 bg-success/5 shadow-xs ring-1 ring-success/30'
+                : 'border-border/60 bg-card hover:border-border hover:bg-muted/40'
             }`}
           >
             {/* Header: Icon, Step # & Badge */}
@@ -56,7 +64,7 @@ export function PipelineFunnelCards({
                 variant="outline"
                 className={`px-1.5 py-0 text-[9px] font-semibold ${
                   isActive
-                    ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
+                    ? 'border-success/40 bg-success/15 text-success'
                     : 'border-border text-muted-foreground'
                 }`}
               >
@@ -83,7 +91,7 @@ export function PipelineFunnelCards({
                 {isUk ? stage.statSecondaryUk : stage.statSecondaryEn}
               </span>
             </div>
-          </button>
+          </Card>
         );
       })}
     </div>

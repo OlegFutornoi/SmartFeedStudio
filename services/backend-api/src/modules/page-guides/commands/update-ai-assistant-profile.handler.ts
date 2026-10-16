@@ -14,25 +14,26 @@ export class UpdateAiAssistantProfileHandler implements ICommandHandler<
 
   async execute(command: UpdateAiAssistantProfileCommand): Promise<AiAssistantProfileDto> {
     const { dto } = command;
-    const existing = await this.prisma.aiAssistantSetting.findFirst({
-      orderBy: { createdAt: 'desc' },
-    });
-
-    let updatedSetting;
-    if (existing) {
-      updatedSetting = await this.prisma.aiAssistantSetting.update({
-        where: { id: existing.id },
-        data: {
-          ...(dto.name !== undefined ? { name: dto.name } : {}),
-          ...(dto.avatarUrl !== undefined ? { avatarUrl: dto.avatarUrl } : {}),
-          ...(dto.roleUk !== undefined ? { roleUk: dto.roleUk } : {}),
-          ...(dto.roleEn !== undefined ? { roleEn: dto.roleEn } : {}),
-          ...(dto.badgeUk !== undefined ? { badgeUk: dto.badgeUk } : {}),
-          ...(dto.badgeEn !== undefined ? { badgeEn: dto.badgeEn } : {}),
-        },
+    const updatedSetting = await this.prisma.$transaction(async (tx) => {
+      const existing = await tx.aiAssistantSetting.findFirst({
+        orderBy: { createdAt: 'desc' },
       });
-    } else {
-      updatedSetting = await this.prisma.aiAssistantSetting.create({
+
+      if (existing) {
+        return tx.aiAssistantSetting.update({
+          where: { id: existing.id },
+          data: {
+            ...(dto.name !== undefined ? { name: dto.name } : {}),
+            ...(dto.avatarUrl !== undefined ? { avatarUrl: dto.avatarUrl } : {}),
+            ...(dto.roleUk !== undefined ? { roleUk: dto.roleUk } : {}),
+            ...(dto.roleEn !== undefined ? { roleEn: dto.roleEn } : {}),
+            ...(dto.badgeUk !== undefined ? { badgeUk: dto.badgeUk } : {}),
+            ...(dto.badgeEn !== undefined ? { badgeEn: dto.badgeEn } : {}),
+          },
+        });
+      }
+
+      return tx.aiAssistantSetting.create({
         data: {
           name: dto.name || DEFAULT_AI_ASSISTANT_PROFILE.name,
           avatarUrl: dto.avatarUrl,
@@ -42,7 +43,7 @@ export class UpdateAiAssistantProfileHandler implements ICommandHandler<
           badgeEn: dto.badgeEn || DEFAULT_AI_ASSISTANT_PROFILE.badgeEn,
         },
       });
-    }
+    });
 
     return {
       name: updatedSetting.name,

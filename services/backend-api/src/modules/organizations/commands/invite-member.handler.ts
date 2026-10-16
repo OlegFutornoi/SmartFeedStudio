@@ -106,54 +106,51 @@ export class InviteMemberHandler implements ICommandHandler<InviteMemberCommand>
 
       const maxTeamSeats = activeLicense?.maxTeamSeats || 1;
 
-      // Check if there is already a PENDING invitation for this email
-      const existingInvitation = await this.prisma.organizationInvitation.findFirst({
-        where: {
-          organizationId,
-          email: normalizedEmail,
-          status: 'PENDING',
-        },
-      });
-
-      // If renewing an existing invite for the same email, it already occupies a slot
-      const totalOccupiedSeats = currentMembersCount + pendingInvitesCount;
-      const effectiveOccupiedSeats = existingInvitation
-        ? totalOccupiedSeats - 1
-        : totalOccupiedSeats;
-
-      if (effectiveOccupiedSeats >= maxTeamSeats) {
-        this.logger.warn(
-          `Team seats limit reached for organization "${organizationId}": current=${effectiveOccupiedSeats}, max=${maxTeamSeats}`,
-        );
-        throw new ForbiddenException({
-          statusCode: 403,
-          error: 'Forbidden',
-          code: 'TEAM_SEATS_LIMIT_EXCEEDED',
-          message: `Ліміт місць у команді вичерпано (${effectiveOccupiedSeats}/${maxTeamSeats} місць у команді). Зверніться до власника для апгрейду тарифу.`,
-          currentMembersCount: effectiveOccupiedSeats,
-          maxTeamSeats,
-        });
-      }
-
       // 5. Generate secure token & expiration (7 days)
       const token = `SF-INV-${crypto.randomBytes(24).toString('hex')}`;
       const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
       const memberRole = (role as MemberRole) || MemberRole.MEMBER;
 
-      let invitation;
-      if (existingInvitation) {
-        invitation = await this.prisma.organizationInvitation.update({
-          where: { id: existingInvitation.id },
-          data: {
-            token,
-            role: memberRole,
-            expiresAt,
-            invitedById: requesterUserId,
+      const invitation = await this.prisma.$transaction(async (tx) => {
+        // Check if there is already a PENDING invitation for this email
+        const existingInvitation = await tx.organizationInvitation.findFirst({
+          where: {
+            organizationId,
+            email: normalizedEmail,
+            status: 'PENDING',
           },
         });
-        this.logger.log(`Refreshed existing invitation for ${normalizedEmail} (token renewed)`);
-      } else {
-        invitation = await this.prisma.organizationInvitation.create({
+
+        // If renewing an existing invite for the same email, it already occupies a slot
+        const totalOccupiedSeats = currentMembersCount + pendingInvitesCount;
+        const effectiveOccupiedSeats = existingInvitation
+          ? totalOccupiedSeats - 1
+          : totalOccupiedSeats;
+
+        if (effectiveOccupiedSeats >= maxTeamSeats) {
+          throw new ForbiddenException({
+            statusCode: 403,
+            error: 'Forbidden',
+            code: 'TEAM_SEATS_LIMIT_EXCEEDED',
+            message: `Ліміт місць у команді вичерпано (${effectiveOccupiedSeats}/${maxTeamSeats} місць у команді). Зверніться до власника для апгрейду тарифу.`,
+            currentMembersCount: effectiveOccupiedSeats,
+            maxTeamSeats,
+          });
+        }
+
+        if (existingInvitation) {
+          return tx.organizationInvitation.update({
+            where: { id: existingInvitation.id },
+            data: {
+              token,
+              role: memberRole,
+              expiresAt,
+              invitedById: requesterUserId,
+            },
+          });
+        }
+
+        return tx.organizationInvitation.create({
           data: {
             organizationId,
             email: normalizedEmail,
@@ -163,10 +160,7 @@ export class InviteMemberHandler implements ICommandHandler<InviteMemberCommand>
             invitedById: requesterUserId,
           },
         });
-        this.logger.log(
-          `Created new invitation for ${normalizedEmail} to org ${organization.name}`,
-        );
-      }
+      });
 
       // 6. Form invite URL
       const appUrl = this.configService.get<string>('APP_URL', 'http://localhost:1420');

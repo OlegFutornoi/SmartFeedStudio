@@ -7,6 +7,7 @@ export * from '@/lib/api/organizations';
 export * from '@/lib/api/suppliers';
 export * from '@/lib/api/feeds';
 export * from '@/lib/api/feed-sources';
+export * from '@/lib/api/supplier-sync';
 export * from '@/lib/api/products';
 export * from '@/lib/api/pricing';
 export * from '@/lib/api/currencies';

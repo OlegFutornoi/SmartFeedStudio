@@ -1,0 +1,1 @@
+export const badCommand = () => 'bad';

@@ -49,7 +49,7 @@ export function RevenueGrowthChart({
   return (
     <div
       data-testid="growth-revenue-chart"
-      className="flex flex-col gap-2 rounded-xl border border-border/80 bg-card/60 p-3.5 shadow-sm backdrop-blur-md"
+      className="flex flex-col gap-2 rounded-xl border border-border/80 bg-card p-3.5 shadow-sm"
     >
       {/* KPI Top Bar: Dynamic Live Currency Counter */}
       <div className="flex items-center justify-between border-b border-border/60 pb-2">
@@ -64,7 +64,7 @@ export function RevenueGrowthChart({
             <span className="text-xs text-muted-foreground">/ {isUk ? 'міс' : 'mo'}</span>
             <Badge
               variant="outline"
-              className="gap-0.5 border-emerald-500/30 bg-emerald-500/10 px-1.5 py-0 text-2xs font-semibold text-emerald-600 dark:text-emerald-400"
+              className="gap-0.5 border-success/30 bg-success/15 px-1.5 py-0 text-2xs font-semibold text-success"
             >
               <ArrowUpRight className="h-3 w-3" />
               <span>+{Math.round((currentPoint.revenue / timeline[0].revenue - 1) * 100)}%</span>
@@ -76,7 +76,7 @@ export function RevenueGrowthChart({
           <span className="text-2xs font-medium text-muted-foreground">
             {isUk ? 'Чистий прибуток' : 'Net Profit'}
           </span>
-          <span className="font-mono text-sm font-semibold text-emerald-600 dark:text-emerald-400">
+          <span className="font-mono text-sm font-semibold text-success">
             {formatCurrency(currentPoint.profit)}
           </span>
           <span className="text-2xs text-muted-foreground">
@@ -140,16 +140,16 @@ export function RevenueGrowthChart({
                   if (!active || !payload || !payload.length) return null;
                   const item = payload[0].payload as RevenueGrowthPoint;
                   return (
-                    <div className="rounded-lg border border-border bg-popover/95 p-2 shadow-xl backdrop-blur-md">
+                    <div className="rounded-lg border border-border bg-popover p-2 shadow-xl">
                       <div className="text-xs font-semibold text-foreground">
                         {isUk ? item.monthLabelUk : item.monthLabelEn}
                       </div>
                       <div className="mt-1 flex flex-col gap-0.5 text-2xs">
-                        <div className="flex items-center justify-between gap-3 text-emerald-500 font-medium">
+                        <div className="flex items-center justify-between gap-3 text-success font-medium">
                           <span>{isUk ? 'Виручка:' : 'Revenue:'}</span>
                           <span className="font-mono">{formatCurrency(item.revenue)}</span>
                         </div>
-                        <div className="flex items-center justify-between gap-3 text-cyan-500 font-medium">
+                        <div className="flex items-center justify-between gap-3 text-primary font-medium">
                           <span>{isUk ? 'Прибуток:' : 'Profit:'}</span>
                           <span className="font-mono">{formatCurrency(item.profit)}</span>
                         </div>
@@ -190,11 +190,11 @@ export function RevenueGrowthChart({
       <div className="flex items-center justify-between border-t border-border/60 pt-2 text-2xs">
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1">
-            <span className="h-2 w-2 rounded-full bg-emerald-500" />
+            <span className="h-2 w-2 rounded-full bg-success" />
             <span className="text-muted-foreground">{isUk ? 'Виручка' : 'Revenue'}</span>
           </div>
           <div className="flex items-center gap-1">
-            <span className="h-2 w-2 rounded-full bg-cyan-500" />
+            <span className="h-2 w-2 rounded-full bg-primary" />
             <span className="text-muted-foreground">{isUk ? 'Прибуток' : 'Profit'}</span>
           </div>
         </div>
@@ -202,13 +202,20 @@ export function RevenueGrowthChart({
         {/* Milestone Indicator dots */}
         <div className="flex items-center gap-1">
           {timeline.map((_, idx) => (
-            <button
+            <span
+              role="button"
+              tabIndex={0}
               key={idx}
-              type="button"
               onClick={() => onSelectPoint(idx)}
-              className={`h-1.5 transition-all duration-300 rounded-full ${
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  onSelectPoint(idx);
+                }
+              }}
+              className={`h-1.5 transition-all duration-300 rounded-full cursor-pointer ${
                 idx === currentIndex
-                  ? 'w-4 bg-emerald-500 shadow-xs'
+                  ? 'w-4 bg-success shadow-xs'
                   : 'w-1.5 bg-muted-foreground/30 hover:bg-muted-foreground/60'
               }`}
               title={`Month ${idx + 1}`}

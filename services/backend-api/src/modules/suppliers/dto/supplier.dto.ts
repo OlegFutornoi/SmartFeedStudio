@@ -7,7 +7,7 @@ import {
   Min,
   Max,
   IsEmail,
-  IsUrl,
+  ValidateIf,
 } from 'class-validator';
 import { CurrencyCode, ExchangeRateMode, PriceRoundingMode } from '@smartfeed/shared';
 
@@ -23,11 +23,12 @@ export class CreateSupplierDto {
   contactPhone?: string;
 
   @IsOptional()
+  @ValidateIf((e) => Boolean(e.contactEmail && e.contactEmail.trim().length > 0))
   @IsEmail()
   contactEmail?: string;
 
   @IsOptional()
-  @IsUrl()
+  @IsString()
   website?: string;
 
   @IsOptional()
@@ -37,6 +38,59 @@ export class CreateSupplierDto {
   @IsOptional()
   @IsString()
   logoUrl?: string;
+
+  @IsOptional()
+  @IsString()
+  legalName?: string;
+
+  @IsOptional()
+  @IsString()
+  taxId?: string;
+
+  @IsOptional()
+  @IsString()
+  industry?: string;
+
+  @IsOptional()
+  @IsString()
+  segment?: string;
+
+  @IsOptional()
+  @IsString()
+  managerName?: string;
+
+  @IsOptional()
+  @IsString()
+  managerPosition?: string;
+
+  @IsOptional()
+  @IsString()
+  managerPhone?: string;
+
+  @IsOptional()
+  @ValidateIf((e) => Boolean(e.managerEmail && e.managerEmail.trim().length > 0))
+  @IsEmail()
+  managerEmail?: string;
+
+  @IsOptional()
+  @IsString()
+  managerTelegram?: string;
+
+  @IsOptional()
+  @IsString()
+  country?: string;
+
+  @IsOptional()
+  @IsString()
+  city?: string;
+
+  @IsOptional()
+  @IsString()
+  address?: string;
+
+  @IsOptional()
+  @IsString()
+  postcode?: string;
 
   @IsOptional()
   @IsEnum(CurrencyCode)
@@ -94,11 +148,12 @@ export class UpdateSupplierDto {
   contactPhone?: string;
 
   @IsOptional()
+  @ValidateIf((e) => Boolean(e.contactEmail && e.contactEmail.trim().length > 0))
   @IsEmail()
   contactEmail?: string;
 
   @IsOptional()
-  @IsUrl()
+  @IsString()
   website?: string;
 
   @IsOptional()
@@ -108,6 +163,59 @@ export class UpdateSupplierDto {
   @IsOptional()
   @IsString()
   logoUrl?: string;
+
+  @IsOptional()
+  @IsString()
+  legalName?: string;
+
+  @IsOptional()
+  @IsString()
+  taxId?: string;
+
+  @IsOptional()
+  @IsString()
+  industry?: string;
+
+  @IsOptional()
+  @IsString()
+  segment?: string;
+
+  @IsOptional()
+  @IsString()
+  managerName?: string;
+
+  @IsOptional()
+  @IsString()
+  managerPosition?: string;
+
+  @IsOptional()
+  @IsString()
+  managerPhone?: string;
+
+  @IsOptional()
+  @ValidateIf((e) => Boolean(e.managerEmail && e.managerEmail.trim().length > 0))
+  @IsEmail()
+  managerEmail?: string;
+
+  @IsOptional()
+  @IsString()
+  managerTelegram?: string;
+
+  @IsOptional()
+  @IsString()
+  country?: string;
+
+  @IsOptional()
+  @IsString()
+  city?: string;
+
+  @IsOptional()
+  @IsString()
+  address?: string;
+
+  @IsOptional()
+  @IsString()
+  postcode?: string;
 
   @IsOptional()
   @IsEnum(CurrencyCode)

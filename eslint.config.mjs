@@ -2,6 +2,7 @@ import js from '@eslint/js';
 import tseslint from 'typescript-eslint';
 import prettierConfig from 'eslint-config-prettier';
 import reactHooks from 'eslint-plugin-react-hooks';
+import { invariantsConfig, typedLintConfig } from './tools/guardrails/eslint-invariants.mjs';
 
 export default tseslint.config(
   {
@@ -73,6 +74,13 @@ export default tseslint.config(
     rules: {
       'react-hooks/rules-of-hooks': 'off',
     },
+  },
+  ...invariantsConfig,
+  ...typedLintConfig,
+  {
+    // Node tooling: sibling imports are the norm (no tsconfig path aliases exist here).
+    files: ['tools/**', 'eslint.config.mjs'],
+    rules: { 'no-restricted-imports': 'off' },
   },
   {
     files: ['packages/shared/**'],

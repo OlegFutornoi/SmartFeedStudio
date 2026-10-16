@@ -1,15 +1,12 @@
 import type { Page } from '@playwright/test';
+import { setupSupplierSyncRoutes } from '@e2e/fixtures/supplier-sync-routes';
 
 export const mockUser = {
   id: 'usr_test_123',
   email: 'supplier.test@smartfeed.local',
   fullName: 'Supplier Test User',
   role: 'USER',
-  organization: {
-    id: 'org-test-1',
-    name: 'Test Org LLC',
-    role: 'OWNER',
-  },
+  organization: { id: 'org-test-1', name: 'Test Org LLC', role: 'OWNER' },
 };
 
 export const mockLicenseState = {
@@ -43,14 +40,7 @@ export const mockQuotas = {
     isExceeded: false,
     remaining: 4750,
   },
-  feeds: {
-    used: 1,
-    max: 20,
-    isUnlimited: false,
-    percentUsed: 5,
-    isExceeded: false,
-    remaining: 19,
-  },
+  feeds: { used: 1, max: 20, isUnlimited: false, percentUsed: 5, isExceeded: false, remaining: 19 },
   aiCredits: {
     used: 10,
     max: 500,
@@ -90,6 +80,19 @@ export const mockSuppliers = [
     contactEmail: 'sales@livolo.ua',
     contactPhone: '+380501112233',
     website: 'https://livolo.ua',
+    legalName: 'ТОВ «Ліволо Україна»',
+    taxId: '38942104',
+    industry: 'Розумний дім та електрофурнітура',
+    segment: 'Ексклюзивний імпортер',
+    managerName: 'Артем Васильєв',
+    managerPosition: 'Директор з оптових продажів',
+    managerPhone: '+380501112233',
+    managerEmail: 'a.vasyliev@livolo.ua',
+    managerTelegram: '@livolo_b2b',
+    country: 'Україна',
+    city: 'Київ',
+    address: 'вул. Глибочицька, 17',
+    postcode: '04050',
   },
   {
     id: 'sup_test_2',
@@ -106,45 +109,12 @@ export const mockSuppliers = [
   },
 ];
 
-export const mockFeedSources = [
-  {
-    id: 'src_feed_1',
-    supplierId: 'sup_test_1',
-    name: 'Livolo Main XML',
-    sourceType: 'URL',
-    fileFormat: 'XML_ROZETKA',
-    sourceUrl: 'https://livolo.kiev.ua/products_feed.xml',
-    autoUpdatePrices: true,
-    autoUpdateStocks: true,
-    lastSyncedAt: new Date().toISOString(),
-    lastSyncStatus: 'SUCCESS',
-    productsCount: 250,
-  },
-];
-
-export const mockAnalysis = {
-  format: 'XML_ROZETKA',
-  totalDetected: 50,
-  categoriesCount: 3,
-  categories: [
-    { id: '101', externalId: '101', name: 'Сенсорні вимикачі', productCount: 30 },
-    { id: '102', externalId: '102', name: 'Розумні розетки', productCount: 15 },
-    { id: '103', externalId: '103', name: 'Рамки для вимикачів', productCount: 5 },
-  ],
-  sampleCategories: [{ externalId: '101', name: 'Сенсорні вимикачі' }],
-  sampleProducts: [
-    {
-      sku: 'VL-C701-11',
-      titleUk: 'Сенсорний вимикач 1-клавішний білий',
-      costPrice: 500,
-      price: 725,
-      currency: 'UAH',
-      stockQuantity: 20,
-      inStock: true,
-      images: [],
-    },
-  ],
-};
+export {
+  mockFeedSources,
+  mockAnalysis,
+  constrainedFeedAnalysis,
+} from '@e2e/fixtures/feeds-mock-data';
+import { mockFeedSources, mockAnalysis } from '@e2e/fixtures/feeds-mock-data';
 
 export const constrainedQuotas = {
   ...mockQuotas,
@@ -156,26 +126,6 @@ export const constrainedQuotas = {
     isExceeded: false,
     remaining: 40,
   },
-};
-
-export const constrainedFeedAnalysis = {
-  format: 'XML_ROZETKA',
-  totalDetected: 55,
-  categoriesCount: 2,
-  categories: [
-    { id: 'cat_1', name: 'Сенсорні вимикачі', productCount: 30 },
-    { id: 'cat_2', name: 'Розумні розетки', productCount: 25 },
-  ],
-  sampleProducts: [
-    {
-      sku: 'VL-C701-11',
-      titleUk: 'Сенсорний вимикач 1-клавішний білий',
-      price: 900,
-      costPrice: 650,
-      inStock: true,
-      images: [],
-    },
-  ],
 };
 
 export async function setupSuppliersFeedsRoutes(page: Page) {
@@ -291,11 +241,7 @@ export async function setupSuppliersFeedsRoutes(page: Page) {
   });
 
   await page.route('**/api/feeds/jobs/active', async (route) => {
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify([]),
-    });
+    await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify([]) });
   });
 
   await page.route('**/api/feeds/suppliers/sup_test_1/sources', async (route) => {
@@ -313,4 +259,21 @@ export async function setupSuppliersFeedsRoutes(page: Page) {
       body: JSON.stringify(mockAnalysis),
     });
   });
+
+  await setupSupplierSyncRoutes(page);
+
+  await page.route(
+    /\/api\/feeds\/suppliers\/([^/?#]+)\/sources\/([^/?#]+)\/sync/,
+    async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          success: true,
+          jobId: `job_${Date.now()}`,
+          updatedCount: 50,
+        }),
+      });
+    },
+  );
 }

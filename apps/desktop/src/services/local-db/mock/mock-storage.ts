@@ -40,6 +40,8 @@ export function saveMockDbToStorage(state: MockDbState, userId?: string | null):
       suppliers: state.suppliers,
       pricingRules: Array.from(state.pricingRules.entries()),
       supplierCategories: Array.from(state.supplierCategories.entries()),
+      syncSettings: Array.from(state.syncSettings.entries()),
+      syncLogs: Array.from(state.syncLogs.entries()),
       exportChannels: state.exportChannels,
       exportPricingRules: Array.from(state.exportPricingRules.entries()),
       products: state.products,
@@ -60,6 +62,8 @@ export function restoreMockDbFromStorage(state: MockDbState, dataStr: string): v
     if (data.suppliers) state.suppliers = data.suppliers;
     if (data.pricingRules) state.pricingRules = new Map(data.pricingRules);
     if (data.supplierCategories) state.supplierCategories = new Map(data.supplierCategories);
+    if (data.syncSettings) state.syncSettings = new Map(data.syncSettings);
+    if (data.syncLogs) state.syncLogs = new Map(data.syncLogs);
     if (data.exportChannels) state.exportChannels = data.exportChannels;
     if (data.exportPricingRules) state.exportPricingRules = new Map(data.exportPricingRules);
     if (data.products) state.products = data.products;
@@ -80,6 +84,8 @@ export const MUTATING_METHODS = [
   'createPricingRule',
   'updatePricingRule',
   'deletePricingRule',
+  'updateSupplierSyncSettings',
+  'addSupplierSyncLog',
   'toggleSupplierCategory',
   'batchToggleSupplierCategories',
   'updateSupplierCategoryRule',

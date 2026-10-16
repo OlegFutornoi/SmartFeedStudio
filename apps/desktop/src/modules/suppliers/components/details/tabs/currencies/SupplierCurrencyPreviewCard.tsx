@@ -89,9 +89,7 @@ export const SupplierCurrencyPreviewCard: React.FC<SupplierCurrencyPreviewCardPr
           </div>
           <div className="flex items-center justify-between">
             <span className="text-muted-foreground">Валютний буфер у сумі:</span>
-            <span className="font-mono text-emerald-600 dark:text-emerald-400">
-              +{conversion.bufferApplied} ₴
-            </span>
+            <span className="font-mono text-success">+{conversion.bufferApplied} ₴</span>
           </div>
           <div className="pt-2 border-t border-border/80 flex items-center justify-between">
             <span className="font-bold text-foreground">Конвертовано в UAH:</span>

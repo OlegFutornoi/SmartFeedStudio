@@ -131,7 +131,7 @@ export const SupplierCategoriesTab: React.FC<SupplierCategoriesTabProps> = ({
             className="h-8 text-xs gap-1"
             data-testid="activate-all-categories-btn"
           >
-            <CheckCircle2 className="size-3 text-emerald-500" />
+            <CheckCircle2 className="size-3 text-success" />
             {t('suppliers:activateAll', { defaultValue: 'Увімкнути всі' })}
           </Button>
 
@@ -231,7 +231,7 @@ export const SupplierCategoriesTab: React.FC<SupplierCategoriesTabProps> = ({
                     <Switch
                       checked={cat.isActive}
                       onCheckedChange={() => handleToggleStatus(cat.id, cat.isActive)}
-                      className="data-[state=checked]:bg-emerald-500 scale-90"
+                      className="data-[state=checked]:bg-success scale-90"
                       data-testid={`toggle-category-${cat.id}`}
                     />
                   </TableCell>

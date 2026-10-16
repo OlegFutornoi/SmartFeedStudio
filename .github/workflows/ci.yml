@@ -45,8 +45,8 @@ jobs:
       - name: Generate Prisma Client
         run: pnpm prisma:generate
 
-      - name: Run ESLint Code Quality Checks
-        run: pnpm lint
+      - name: Run Fast Verification (ESLint, i18n, Invariants Ratchet, Agents, TypeScript)
+        run: pnpm verify:fast
 
       - name: Build Monorepo Workspaces (Turborepo)
         run: pnpm build # Compiles @smartfeed/shared, backend-api, admin-portal, and desktop web assets

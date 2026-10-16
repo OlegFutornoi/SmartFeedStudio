@@ -35,6 +35,19 @@ export class UpdateSupplierHandler implements ICommandHandler<UpdateSupplierComm
     if (dto.website !== undefined) data.website = dto.website;
     if (dto.notes !== undefined) data.notes = dto.notes;
     if (dto.logoUrl !== undefined) data.logoUrl = dto.logoUrl;
+    if (dto.legalName !== undefined) data.legalName = dto.legalName;
+    if (dto.taxId !== undefined) data.taxId = dto.taxId;
+    if (dto.industry !== undefined) data.industry = dto.industry;
+    if (dto.segment !== undefined) data.segment = dto.segment;
+    if (dto.managerName !== undefined) data.managerName = dto.managerName;
+    if (dto.managerPosition !== undefined) data.managerPosition = dto.managerPosition;
+    if (dto.managerPhone !== undefined) data.managerPhone = dto.managerPhone;
+    if (dto.managerEmail !== undefined) data.managerEmail = dto.managerEmail;
+    if (dto.managerTelegram !== undefined) data.managerTelegram = dto.managerTelegram;
+    if (dto.country !== undefined) data.country = dto.country;
+    if (dto.city !== undefined) data.city = dto.city;
+    if (dto.address !== undefined) data.address = dto.address;
+    if (dto.postcode !== undefined) data.postcode = dto.postcode;
     if (dto.baseCurrency !== undefined) data.baseCurrency = dto.baseCurrency;
     if (dto.targetCurrency !== undefined) data.targetCurrency = dto.targetCurrency;
     if (dto.exchangeRateMode !== undefined) data.exchangeRateMode = dto.exchangeRateMode;
@@ -63,6 +76,19 @@ export class UpdateSupplierHandler implements ICommandHandler<UpdateSupplierComm
       website: updated.website,
       notes: updated.notes,
       logoUrl: updated.logoUrl,
+      legalName: updated.legalName,
+      taxId: updated.taxId,
+      industry: updated.industry,
+      segment: updated.segment,
+      managerName: updated.managerName,
+      managerPosition: updated.managerPosition,
+      managerPhone: updated.managerPhone,
+      managerEmail: updated.managerEmail,
+      managerTelegram: updated.managerTelegram,
+      country: updated.country,
+      city: updated.city,
+      address: updated.address,
+      postcode: updated.postcode,
       baseCurrency: updated.baseCurrency,
       targetCurrency: updated.targetCurrency,
       exchangeRateMode: updated.exchangeRateMode,

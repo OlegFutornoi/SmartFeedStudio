@@ -113,9 +113,7 @@ export const SupplierDetailHeader: React.FC<SupplierDetailHeaderProps> = ({
                 />
                 <span
                   className={`text-xs font-medium select-none ${
-                    supplier.isActive
-                      ? 'text-emerald-600 dark:text-emerald-400 font-semibold'
-                      : 'text-muted-foreground'
+                    supplier.isActive ? 'text-success font-semibold' : 'text-muted-foreground'
                   }`}
                   data-testid="supplier-active-status-text"
                 >
@@ -137,7 +135,7 @@ export const SupplierDetailHeader: React.FC<SupplierDetailHeaderProps> = ({
                   <span>{supplier.contactEmail}</span>
                 </a>
               )}
-              {supplier.contactPhone && (
+              {supplier.contactPhone && /\d/.test(supplier.contactPhone) && (
                 <a
                   href={`tel:${supplier.contactPhone}`}
                   className="flex items-center gap-1 hover:text-foreground transition-colors"

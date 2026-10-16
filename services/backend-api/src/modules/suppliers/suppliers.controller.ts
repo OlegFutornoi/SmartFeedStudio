@@ -31,6 +31,8 @@ import {
   GetSupplierByIdQuery,
   GetSupplierCategoriesQuery,
   GetSupplierPricingRulesQuery,
+  GetSupplierSyncSettingsQuery,
+  GetSupplierSyncLogsQuery,
 } from '@/modules/suppliers/queries/suppliers.queries';
 import {
   CreateSupplierCommand,
@@ -40,7 +42,14 @@ import {
   CreateSupplierPricingRuleCommand,
   UpdateSupplierPricingRuleCommand,
   DeleteSupplierPricingRuleCommand,
+  UpdateSupplierSyncSettingsCommand,
+  SyncSupplierFeedCommand,
 } from '@/modules/suppliers/commands/suppliers.commands';
+import {
+  UpdateSupplierSyncSettingDto,
+  TriggerSupplierSyncDto,
+  GetSupplierSyncLogsQueryDto,
+} from '@/modules/suppliers/dto/supplier-sync.dto';
 
 @ApiTags('Suppliers')
 @Controller('suppliers')
@@ -160,5 +169,45 @@ export class SuppliersController {
     return this.commandBus.execute(
       new DeleteSupplierPricingRuleCommand(supplierId, ruleId, user.id),
     );
+  }
+
+  // Supplier Sync (Prom / Rozetka Pattern)
+  @Get(':id/sync-settings')
+  @ApiOperation({ summary: 'Get supplier feed sync settings' })
+  async getSyncSettings(@Param('id') supplierId: string, @CurrentUser() user: { id: string }) {
+    return this.queryBus.execute(new GetSupplierSyncSettingsQuery(supplierId, user.id));
+  }
+
+  @Patch(':id/sync-settings')
+  @ApiOperation({ summary: 'Update supplier feed sync settings' })
+  async updateSyncSettings(
+    @Param('id') supplierId: string,
+    @CurrentUser() user: { id: string },
+    @Body() dto: UpdateSupplierSyncSettingDto,
+  ) {
+    return this.commandBus.execute(new UpdateSupplierSyncSettingsCommand(supplierId, user.id, dto));
+  }
+
+  @Get(':id/sync-logs')
+  @ApiOperation({ summary: 'Get supplier feed sync audit logs' })
+  async getSyncLogs(
+    @Param('id') supplierId: string,
+    @CurrentUser() user: { id: string },
+    @Query() query: GetSupplierSyncLogsQueryDto,
+  ) {
+    return this.queryBus.execute(
+      new GetSupplierSyncLogsQuery(supplierId, user.id, query.limit || 50),
+    );
+  }
+
+  @Post(':id/sync')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Trigger manual supplier feed sync' })
+  async triggerSync(
+    @Param('id') supplierId: string,
+    @CurrentUser() user: { id: string },
+    @Body() dto: TriggerSupplierSyncDto,
+  ) {
+    return this.commandBus.execute(new SyncSupplierFeedCommand(supplierId, user.id, dto || {}));
   }
 }

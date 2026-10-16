@@ -13,6 +13,25 @@ export const SupplierDtoSchema = z.object({
   notes: z.string().nullable().optional(),
   logoUrl: z.string().nullable().optional(),
 
+  // CRM: Company & Business metadata
+  legalName: z.string().nullable().optional(),
+  taxId: z.string().nullable().optional(),
+  industry: z.string().nullable().optional(),
+  segment: z.string().nullable().optional(),
+
+  // CRM: Manager / Account owner
+  managerName: z.string().nullable().optional(),
+  managerPosition: z.string().nullable().optional(),
+  managerPhone: z.string().nullable().optional(),
+  managerEmail: z.string().email().nullable().optional().or(z.literal('')),
+  managerTelegram: z.string().nullable().optional(),
+
+  // CRM: Warehouse & Physical address
+  country: z.string().nullable().optional(),
+  city: z.string().nullable().optional(),
+  address: z.string().nullable().optional(),
+  postcode: z.string().nullable().optional(),
+
   // Currency & Multi-Currency configuration
   baseCurrency: z.nativeEnum(CurrencyCode).default(CurrencyCode.UAH),
   targetCurrency: z.nativeEnum(CurrencyCode).default(CurrencyCode.UAH),
@@ -47,6 +66,25 @@ export const CreateSupplierDtoSchema = z.object({
   website: z.string().url('Invalid URL').optional().or(z.literal('')),
   notes: z.string().optional(),
   logoUrl: z.string().nullable().optional(),
+
+  // CRM: Company & Business metadata
+  legalName: z.string().optional(),
+  taxId: z.string().optional(),
+  industry: z.string().optional(),
+  segment: z.string().optional(),
+
+  // CRM: Manager / Account owner
+  managerName: z.string().optional(),
+  managerPosition: z.string().optional(),
+  managerPhone: z.string().optional(),
+  managerEmail: z.string().email('Invalid email address').optional().or(z.literal('')),
+  managerTelegram: z.string().optional(),
+
+  // CRM: Warehouse & Physical address
+  country: z.string().optional(),
+  city: z.string().optional(),
+  address: z.string().optional(),
+  postcode: z.string().optional(),
 
   baseCurrency: z.nativeEnum(CurrencyCode).default(CurrencyCode.UAH).optional(),
   targetCurrency: z.nativeEnum(CurrencyCode).default(CurrencyCode.UAH).optional(),

@@ -1,19 +1,19 @@
 import React from 'react';
 import {
-  Package,
-  Rss,
-  Sliders,
-  DollarSign,
   Mail,
   Phone,
   User,
   Globe,
   Coins,
   ExternalLink,
+  Building2,
+  MapPin,
+  Send,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useTranslation } from '@/i18n';
 import type { SupplierDto } from '@smartfeed/shared';
+import { SupplierDrawerKpiMetrics } from '@/modules/suppliers/components/drawer/tabs/SupplierDrawerKpiMetrics';
 
 interface SupplierDrawerOverviewTabProps {
   supplier: SupplierDto;
@@ -26,116 +26,180 @@ export const SupplierDrawerOverviewTab: React.FC<SupplierDrawerOverviewTabProps>
 }) => {
   const { t } = useTranslation(['suppliers', 'common']);
 
+  const telegramHandle = supplier.managerTelegram?.replace(/^@/, '');
+
   return (
     <div className="space-y-4 p-5" data-testid="supplier-drawer-overview-tab">
       {/* 4 KPI Metrics */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-        <div
-          onClick={() => onNavigateToTab?.('products')}
-          className="p-3 rounded-xl border border-border/70 bg-card shadow-xs flex flex-col justify-between cursor-pointer hover:border-primary/50 transition-colors"
-          data-testid="overview-kpi-products"
-        >
-          <div className="flex items-center justify-between text-muted-foreground mb-1">
-            <span className="text-xs font-medium">
-              {t('suppliers:columnProducts', { defaultValue: 'Товари' })}
-            </span>
-            <Package className="size-3.5 text-primary" />
-          </div>
-          <span className="text-lg font-bold text-foreground tabular-nums">
-            {supplier.productsCount || 0}
-          </span>
-        </div>
+      <SupplierDrawerKpiMetrics supplier={supplier} onNavigateToTab={onNavigateToTab} />
 
-        <div
-          onClick={() => onNavigateToTab?.('feeds')}
-          className="p-3 rounded-xl border border-border/70 bg-card shadow-xs flex flex-col justify-between cursor-pointer hover:border-primary/50 transition-colors"
-          data-testid="overview-kpi-feeds"
-        >
-          <div className="flex items-center justify-between text-muted-foreground mb-1">
-            <span className="text-xs font-medium">
-              {t('suppliers:columnFeeds', { defaultValue: 'Джерела фідів' })}
-            </span>
-            <Rss className="size-3.5 text-primary" />
-          </div>
-          <span className="text-lg font-bold text-foreground tabular-nums">
-            {supplier.activeFeedsCount || 0}
-          </span>
-        </div>
-
-        <div
-          onClick={() => onNavigateToTab?.('categories')}
-          className="p-3 rounded-xl border border-border/70 bg-card shadow-xs flex flex-col justify-between cursor-pointer hover:border-primary/50 transition-colors"
-          data-testid="overview-kpi-categories"
-        >
-          <div className="flex items-center justify-between text-muted-foreground mb-1">
-            <span className="text-xs font-medium">
-              {t('suppliers:tabCategories', { defaultValue: 'Категорії' })}
-            </span>
-            <Sliders className="size-3.5 text-primary" />
-          </div>
-          <span className="text-lg font-bold text-foreground tabular-nums">
-            {supplier.categoriesCount || supplier.activeCategoriesCount || 0}
-          </span>
-        </div>
-
-        <div
-          onClick={() => onNavigateToTab?.('currencies')}
-          className="p-3 rounded-xl border border-border/70 bg-card shadow-xs flex flex-col justify-between cursor-pointer hover:border-primary/50 transition-colors"
-          data-testid="overview-kpi-currencies"
-        >
-          <div className="flex items-center justify-between text-muted-foreground mb-1">
-            <span className="text-xs font-medium">
-              {t('suppliers:filterCurrency', { defaultValue: 'Валюта' })}
-            </span>
-            <DollarSign className="size-3.5 text-primary" />
-          </div>
-          <span className="text-lg font-bold text-foreground tabular-nums">
-            {supplier.baseCurrency || 'UAH'}
-          </span>
-        </div>
-      </div>
-
-      {/* Description / Notes */}
-      {supplier.notes && (
-        <Card className="shadow-xs border-border/80">
+      {/* 2x2 Grid of CRM Information Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        {/* Card 1: Company & Business Details */}
+        <Card className="shadow-xs border-border/80" data-testid="supplier-overview-company-card">
           <CardHeader className="py-2.5 px-4 border-b border-border/60">
-            <CardTitle className="text-xs font-semibold text-foreground">
-              {t('common:description', { defaultValue: 'Опис постачальника' })}
+            <CardTitle className="text-xs font-semibold text-foreground flex items-center gap-1.5">
+              <Building2 className="size-3.5 text-primary" />
+              {t('suppliers:companyCard', { defaultValue: 'Реквізити компанії' })}
             </CardTitle>
           </CardHeader>
-          <CardContent className="p-4 text-xs text-muted-foreground leading-relaxed">
-            {supplier.notes}
+          <CardContent className="p-4 space-y-2 text-xs">
+            <div className="flex items-center justify-between">
+              <span className="text-muted-foreground">
+                {t('suppliers:legalName', { defaultValue: 'Юридична назва' })}
+              </span>
+              <span
+                className="font-medium text-foreground text-right"
+                data-testid="supplier-overview-legal-name"
+              >
+                {supplier.legalName || '—'}
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-muted-foreground">
+                {t('suppliers:taxId', { defaultValue: 'ЄДРПОУ / ІПН' })}
+              </span>
+              <span
+                className="font-mono text-foreground font-medium"
+                data-testid="supplier-overview-tax-id"
+              >
+                {supplier.taxId || '—'}
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-muted-foreground">
+                {t('suppliers:industry', { defaultValue: 'Галузь' })}
+              </span>
+              <span
+                className="font-medium text-foreground"
+                data-testid="supplier-overview-industry"
+              >
+                {supplier.industry || '—'}
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-muted-foreground">
+                {t('suppliers:segment', { defaultValue: 'Сегмент' })}
+              </span>
+              <span className="font-medium text-foreground" data-testid="supplier-overview-segment">
+                {supplier.segment || '—'}
+              </span>
+            </div>
           </CardContent>
         </Card>
-      )}
 
-      {/* 2-Column Info Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        {/* Contact Information */}
-        <Card className="shadow-xs border-border/80">
+        {/* Card 2: Manager & Direct Contacts */}
+        <Card className="shadow-xs border-border/80" data-testid="supplier-overview-manager-card">
           <CardHeader className="py-2.5 px-4 border-b border-border/60">
             <CardTitle className="text-xs font-semibold text-foreground flex items-center gap-1.5">
               <User className="size-3.5 text-primary" />
-              {t('suppliers:columnContacts', { defaultValue: 'Контактна інформація' })}
+              {t('suppliers:managerCard', { defaultValue: 'Відповідальний менеджер' })}
             </CardTitle>
           </CardHeader>
-          <CardContent className="p-4 space-y-2.5 text-xs">
+          <CardContent className="p-4 space-y-2 text-xs">
             <div className="flex items-center justify-between">
-              <span className="text-muted-foreground flex items-center gap-1.5">
+              <span className="text-muted-foreground">
+                {t('suppliers:managerName', { defaultValue: 'ПІБ' })}
+              </span>
+              <span
+                className="font-medium text-foreground"
+                data-testid="supplier-overview-manager-name"
+              >
+                {supplier.managerName || '—'}
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-muted-foreground">
+                {t('suppliers:managerPosition', { defaultValue: 'Посада' })}
+              </span>
+              <span
+                className="font-medium text-foreground"
+                data-testid="supplier-overview-manager-position"
+              >
+                {supplier.managerPosition || '—'}
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-muted-foreground flex items-center gap-1">
                 <Phone className="size-3 text-muted-foreground" />
                 {t('common:phone', { defaultValue: 'Телефон' })}
               </span>
-              <span className="font-medium text-foreground">{supplier.contactPhone || '—'}</span>
+              <span
+                className="font-medium text-foreground"
+                data-testid="supplier-overview-manager-phone"
+              >
+                {(() => {
+                  const p = supplier.managerPhone || supplier.contactPhone;
+                  return p && /\d/.test(p) ? p : '—';
+                })()}
+              </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-muted-foreground flex items-center gap-1.5">
+              <span className="text-muted-foreground flex items-center gap-1">
                 <Mail className="size-3 text-muted-foreground" />
                 Email
               </span>
-              <span className="font-medium text-foreground">{supplier.contactEmail || '—'}</span>
+              <span
+                className="font-medium text-foreground truncate max-w-[170px]"
+                data-testid="supplier-overview-manager-email"
+              >
+                {supplier.managerEmail || supplier.contactEmail || '—'}
+              </span>
+            </div>
+            {telegramHandle && (
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground flex items-center gap-1">
+                  <Send className="size-3 text-primary" />
+                  Telegram
+                </span>
+                <a
+                  href={`https://t.me/${telegramHandle}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-medium text-primary hover:underline flex items-center gap-1"
+                  data-testid="supplier-overview-manager-telegram"
+                >
+                  @{telegramHandle}
+                  <ExternalLink className="size-2.5" />
+                </a>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Card 3: Warehouse & Address */}
+        <Card className="shadow-xs border-border/80" data-testid="supplier-overview-warehouse-card">
+          <CardHeader className="py-2.5 px-4 border-b border-border/60">
+            <CardTitle className="text-xs font-semibold text-foreground flex items-center gap-1.5">
+              <MapPin className="size-3.5 text-primary" />
+              {t('suppliers:warehouseCard', { defaultValue: 'Склад та логістика' })}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-4 space-y-2 text-xs">
+            <div className="flex items-center justify-between">
+              <span className="text-muted-foreground">
+                {t('suppliers:city', { defaultValue: 'Місто / Країна' })}
+              </span>
+              <span
+                className="font-medium text-foreground"
+                data-testid="supplier-overview-city-country"
+              >
+                {[supplier.city, supplier.country].filter(Boolean).join(', ') || '—'}
+              </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-muted-foreground flex items-center gap-1.5">
+              <span className="text-muted-foreground">
+                {t('suppliers:address', { defaultValue: 'Адреса' })}
+              </span>
+              <span
+                className="font-medium text-foreground truncate max-w-[180px]"
+                data-testid="supplier-overview-address"
+              >
+                {supplier.address || '—'}
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-muted-foreground flex items-center gap-1">
                 <Globe className="size-3 text-muted-foreground" />
                 {t('common:website', { defaultValue: 'Вебсайт' })}
               </span>
@@ -149,7 +213,7 @@ export const SupplierDrawerOverviewTab: React.FC<SupplierDrawerOverviewTabProps>
                   target="_blank"
                   rel="noopener noreferrer"
                   className="font-medium text-primary hover:underline flex items-center gap-1 truncate max-w-[170px]"
-                  title={supplier.website}
+                  data-testid="supplier-overview-website-link"
                 >
                   <span className="truncate">{supplier.website.replace(/^https?:\/\//, '')}</span>
                   <ExternalLink className="size-3 shrink-0" />
@@ -161,28 +225,23 @@ export const SupplierDrawerOverviewTab: React.FC<SupplierDrawerOverviewTabProps>
           </CardContent>
         </Card>
 
-        {/* Currency & Store Information */}
-        <Card className="shadow-xs border-border/80">
+        {/* Card 4: Currency & Commercial Markups */}
+        <Card
+          className="shadow-xs border-border/80"
+          data-testid="supplier-overview-commercial-card"
+        >
           <CardHeader className="py-2.5 px-4 border-b border-border/60">
             <CardTitle className="text-xs font-semibold text-foreground flex items-center gap-1.5">
               <Coins className="size-3.5 text-primary" />
-              {t('suppliers:storeInfo', { defaultValue: 'Параметри валюти та націнки' })}
+              {t('suppliers:commercialConditions', { defaultValue: 'Комерційні умови' })}
             </CardTitle>
           </CardHeader>
-          <CardContent className="p-4 space-y-2.5 text-xs">
+          <CardContent className="p-4 space-y-2 text-xs">
             <div className="flex items-center justify-between">
               <span className="text-muted-foreground">
                 {t('suppliers:filterCurrency', { defaultValue: 'Базова валюта' })}
               </span>
               <span className="font-medium text-foreground">{supplier.baseCurrency || 'UAH'}</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-muted-foreground">
-                {t('suppliers:filterCurrency', { defaultValue: 'Цільова валюта' })}
-              </span>
-              <span className="font-medium text-foreground">
-                {supplier.targetCurrency || 'UAH'}
-              </span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-muted-foreground">
@@ -204,6 +263,20 @@ export const SupplierDrawerOverviewTab: React.FC<SupplierDrawerOverviewTabProps>
           </CardContent>
         </Card>
       </div>
+
+      {/* Description / Notes */}
+      {supplier.notes && (
+        <Card className="shadow-xs border-border/80">
+          <CardHeader className="py-2.5 px-4 border-b border-border/60">
+            <CardTitle className="text-xs font-semibold text-foreground">
+              {t('common:description', { defaultValue: 'Примітки та умови співпраці' })}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-4 text-xs text-muted-foreground leading-relaxed whitespace-pre-wrap">
+            {supplier.notes}
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };

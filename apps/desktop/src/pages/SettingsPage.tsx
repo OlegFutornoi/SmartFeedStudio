@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Sliders, HardDrive } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { useTranslation } from '@/i18n';
 import { ThemeSelector } from '@/components/theme/ThemeSelector';
@@ -24,32 +25,32 @@ export function SettingsPage() {
         </div>
 
         <div className="flex items-center p-1 bg-secondary/50 rounded-xl border border-border/60 self-start sm:self-auto">
-          <button
-            type="button"
+          <Button
+            variant="ghost"
             onClick={() => setActiveTab('general')}
             data-testid="general-tab-btn"
-            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all ${
+            className={`flex items-center gap-2 px-3.5 py-1.5 h-auto rounded-lg text-xs font-medium transition-all ${
               activeTab === 'general'
-                ? 'bg-background text-foreground shadow-xs'
+                ? 'bg-background text-foreground shadow-xs hover:bg-background'
                 : 'text-muted-foreground hover:text-foreground'
             }`}
           >
             <Sliders className="size-3.5" />
             <span>{t('settings:appearanceTab')}</span>
-          </button>
-          <button
-            type="button"
+          </Button>
+          <Button
+            variant="ghost"
             onClick={() => setActiveTab('storage')}
             data-testid="storage-tab-btn"
-            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all ${
+            className={`flex items-center gap-2 px-3.5 py-1.5 h-auto rounded-lg text-xs font-medium transition-all ${
               activeTab === 'storage'
-                ? 'bg-background text-foreground shadow-xs'
+                ? 'bg-background text-foreground shadow-xs hover:bg-background'
                 : 'text-muted-foreground hover:text-foreground'
             }`}
           >
             <HardDrive className="size-3.5" />
             <span>{t('settings:databaseTab')}</span>
-          </button>
+          </Button>
         </div>
       </div>
 

@@ -16,6 +16,7 @@ import { FeedSourceType, SupplierDto } from '@smartfeed/shared';
 import {
   getSupplierFeedSources,
   deleteSupplierFeedSource,
+  syncSupplierFeedSource,
   type FeedSourceItemDto,
 } from '@/lib/api';
 import { useAuth } from '@/contexts/AuthContext';
@@ -72,10 +73,15 @@ export const SupplierFeedsTab: React.FC<SupplierFeedsTabProps> = ({
 
   const handleSyncSource = async (sourceId: string) => {
     setSyncingId(sourceId);
-    setTimeout(() => {
-      setSyncingId(null);
+    try {
+      await syncSupplierFeedSource(supplier.id, sourceId, token || undefined);
+      await loadSources();
       onRefreshSupplier();
-    }, 1200);
+    } catch (err) {
+      console.warn('[SupplierFeedsTab:handleSyncSource] Error:', err);
+    } finally {
+      setSyncingId(null);
+    }
   };
 
   return (
@@ -204,7 +210,7 @@ export const SupplierFeedsTab: React.FC<SupplierFeedsTabProps> = ({
 
                     <TableCell className="py-2">
                       <div className="flex items-center gap-1.5 text-muted-foreground">
-                        <CheckCircle2 className="size-3.5 text-emerald-500" />
+                        <CheckCircle2 className="size-3.5 text-success" />
                         <span>
                           {src.lastSyncedAt
                             ? new Date(src.lastSyncedAt).toLocaleDateString()

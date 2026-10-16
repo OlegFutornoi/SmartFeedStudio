@@ -50,9 +50,9 @@ export function GrowthShowcaseModule({
         <div className="flex items-center gap-2">
           <Badge
             variant="outline"
-            className="flex items-center gap-1.5 border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-xs font-semibold text-foreground backdrop-blur-sm"
+            className="flex items-center gap-1.5 border-success/30 bg-success/15 px-2 py-0.5 text-xs font-semibold text-foreground backdrop-blur-sm"
           >
-            <Sparkles className="h-3 w-3 text-emerald-500" />
+            <Sparkles className="h-3 w-3 text-success" />
             <span>SmartFeed AI 2.0</span>
           </Badge>
           <span className="text-xs text-muted-foreground">
@@ -106,16 +106,16 @@ export function GrowthShowcaseModule({
       {/* 6. Footer Trust & Enterprise Bar */}
       <div className="mt-1 flex flex-wrap items-center justify-between gap-2 border-t border-border/60 pt-1.5 text-2xs text-muted-foreground">
         <span className="flex items-center gap-1 font-medium text-foreground">
-          <Zap className="h-3 w-3 text-emerald-500" />
+          <Zap className="h-3 w-3 text-success" />
           <span>{isUk ? '10 000+ SKU за секунди' : '10,000+ SKUs in seconds'}</span>
         </span>
         <span>•</span>
         <span className="flex items-center gap-1">
-          <ShieldCheck className="h-3 w-3 text-cyan-500" />
+          <ShieldCheck className="h-3 w-3 text-muted-foreground" />
           <span>{isUk ? '99.98% точність залишків' : '99.98% stock accuracy'}</span>
         </span>
         <span>•</span>
-        <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-semibold">
+        <span className="flex items-center gap-1 text-success font-semibold">
           <span>Enterprise Autopilot</span>
           <ArrowRight className="h-3 w-3" />
         </span>

@@ -62,3 +62,19 @@ export class DeleteSupplierPricingRuleCommand {
     public readonly userId: string,
   ) {}
 }
+
+export class UpdateSupplierSyncSettingsCommand {
+  constructor(
+    public readonly supplierId: string,
+    public readonly userId: string,
+    public readonly dto: import('../dto/supplier-sync.dto').UpdateSupplierSyncSettingDto,
+  ) {}
+}
+
+export class SyncSupplierFeedCommand {
+  constructor(
+    public readonly supplierId: string,
+    public readonly userId: string,
+    public readonly dto: import('../dto/supplier-sync.dto').TriggerSupplierSyncDto,
+  ) {}
+}

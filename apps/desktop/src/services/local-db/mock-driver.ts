@@ -107,6 +107,16 @@ export class MockDatabaseDriver {
   public deletePricingRule = (sId: string, rId: string): boolean =>
     mock.deletePricingRule(this.state, sId, rId);
 
+  // Supplier Sync (Prom / Rozetka Pattern)
+  public getSupplierSyncSettings = (sId: string) => mock.getSupplierSyncSettings(this.state, sId);
+  public updateSupplierSyncSettings = (
+    sId: string,
+    p: Parameters<typeof mock.updateSupplierSyncSettings>[2],
+  ) => mock.updateSupplierSyncSettings(this.state, sId, p);
+  public getSupplierSyncLogs = (sId: string) => mock.getSupplierSyncLogs(this.state, sId);
+  public addSupplierSyncLog = (p: Parameters<typeof mock.addSupplierSyncLog>[1]) =>
+    mock.addSupplierSyncLog(this.state, p);
+
   // Export Channels
   public getExportChannels = (): ExportChannelDto[] => mock.getExportChannels(this.state);
   public getExportChannelById = (id: string): ExportChannelDto | null =>

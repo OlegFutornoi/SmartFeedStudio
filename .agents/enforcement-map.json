@@ -1,0 +1,542 @@
+{
+  "AGENT-01": {
+    "title": "Agent Roles and Dispatching",
+    "domain": "agents",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "AGENT-02": {
+    "title": "Mandatory 8-Stage Execution Loop",
+    "domain": "agents",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "AGENT-03": {
+    "title": "Invariant & Skill Codification Loop",
+    "domain": "agents",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "AGENT-04": {
+    "title": "Full-Stack Orchestra Protocol (Zero Siloed & Zero Raw Tasks)",
+    "domain": "agents",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "AGENT-05": {
+    "title": "Reference-Pattern Hierarchy",
+    "domain": "agents",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "AGENT-06": {
+    "title": "Pre- and Post-Flight Verification Gate",
+    "domain": "agents",
+    "enforcer": "package.json:verify:fast",
+    "mode": "manual"
+  },
+  "ARCH-01": {
+    "title": "Native vs Cloud Runtime Segregation",
+    "domain": "backend",
+    "enforcer": "depcruise:apps-never-import-backend",
+    "mode": "error"
+  },
+  "ARCH-02": {
+    "title": "Zero Headless Server GUI Spawns",
+    "domain": "backend",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "ARCH-03": {
+    "title": "Shared Contracts First",
+    "domain": "backend",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "ARCH-04": {
+    "title": "Strict CQRS Modularity (1 File = 1 Handler)",
+    "domain": "backend",
+    "enforcer": "invariants:structural/ARCH-04",
+    "mode": "ratchet"
+  },
+  "ARCH-05": {
+    "title": "UsersModule Zero JWT Awareness",
+    "domain": "backend",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "BE-01": {
+    "title": "100% Validated Controller DTOs",
+    "domain": "backend",
+    "enforcer": "eslint:invariants/backend-controllers",
+    "mode": "error"
+  },
+  "BE-02": {
+    "title": "100% Protected Mutation Endpoints",
+    "domain": "backend",
+    "enforcer": "invariants:structural/BE-02",
+    "mode": "ratchet"
+  },
+  "BE-03": {
+    "title": "Guard-Decorator Parity",
+    "domain": "backend",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "BE-04": {
+    "title": "Zero Hardcoded Fallback Secrets (CWE-798)",
+    "domain": "backend",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "BE-06": {
+    "title": "OWASP API4 Commercial Plan Upgrade Gating",
+    "domain": "backend",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "BE-07": {
+    "title": "Concurrency, Atomic Upserts & Mutex Protection",
+    "domain": "backend",
+    "enforcer": "invariants:structural/BE-07",
+    "mode": "ratchet"
+  },
+  "BE-08": {
+    "title": "Non-Negotiable TDD RED -> GREEN Execution",
+    "domain": "backend",
+    "enforcer": "jest:e2e",
+    "mode": "error"
+  },
+  "BE-09": {
+    "title": "Large Feed SAX Streaming Backpressure",
+    "domain": "backend",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "BE-10": {
+    "title": "BullMQ Queue Resilience",
+    "domain": "backend",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "CORE-01": {
+    "title": "Path Aliases and Import Boundaries",
+    "domain": "core",
+    "enforcer": "eslint:no-restricted-imports",
+    "mode": "error"
+  },
+  "CORE-02": {
+    "title": "Zero Silent Failures",
+    "domain": "core",
+    "enforcer": "eslint:no-empty",
+    "mode": "error"
+  },
+  "CORE-03": {
+    "title": "Zero `as any` Type Bypasses",
+    "domain": "core",
+    "enforcer": "eslint:no-explicit-any",
+    "mode": "error"
+  },
+  "CORE-04": {
+    "title": "File Size Budget (<250-300 Lines)",
+    "domain": "core",
+    "enforcer": "eslint:max-lines",
+    "mode": "error"
+  },
+  "CORE-05": {
+    "title": "Safe OS Execution",
+    "domain": "core",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "CORE-06": {
+    "title": "Upfront Research via context7 and Project MCPs",
+    "domain": "core",
+    "enforcer": "mcp:context7",
+    "mode": "review-only"
+  },
+  "CORE-07": {
+    "title": "Strict Chat Brevity and Zero Plan Dumping",
+    "domain": "core",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "CORE-08": {
+    "title": "100% MCP Auto-Approval",
+    "domain": "core",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "CORE-09": {
+    "title": "Ban of `browser_subagent`",
+    "domain": "core",
+    "enforcer": "invariants:check",
+    "mode": "error"
+  },
+  "CORE-10": {
+    "title": "Git Operations on Explicit Request Only",
+    "domain": "core",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "CORE-11": {
+    "title": "Targeted Feature-Scoped Testing",
+    "domain": "core",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "CORE-12": {
+    "title": "Quality and Reliability Over \"Working is Enough\"",
+    "domain": "core",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "PLAN-01": {
+    "title": "Three-Directory Plans Lifecycle",
+    "domain": "core",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "DB-01": {
+    "title": "100% Foreign Key Indexes",
+    "domain": "database",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "DB-02": {
+    "title": "Mandatory `@db.Timestamptz(6)`",
+    "domain": "database",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "DB-03": {
+    "title": "100% snake_case Database Identifiers",
+    "domain": "database",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "DB-04": {
+    "title": "CUID Primary Key Ordering",
+    "domain": "database",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "DB-05": {
+    "title": "Cascade Deletions (`onDelete: Cascade`)",
+    "domain": "database",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "DB-06": {
+    "title": "Zero N+1 Queries",
+    "domain": "database",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "DB-07": {
+    "title": "Cursor Pagination on High-Volume Feeds",
+    "domain": "database",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "DB-08": {
+    "title": "Short `$transaction()` Blocks",
+    "domain": "database",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "DB-09": {
+    "title": "Connection Pooling via `@prisma/adapter-pg`",
+    "domain": "database",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "DB-10": {
+    "title": "GIN `pg_trgm` Indexes for Text Search",
+    "domain": "database",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "DB-11": {
+    "title": "Zero-Downtime Expand/Contract Migrations",
+    "domain": "database",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "DB-12": {
+    "title": "Strict Prisma Types",
+    "domain": "database",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "OPS-01": {
+    "title": "Continuous WIKI and AGENTS.md Synchronization",
+    "domain": "docs_and_ops",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "OPS-02": {
+    "title": "Backend E2E Test Coverage Documentation",
+    "domain": "docs_and_ops",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "OPS-03": {
+    "title": "SemVer Release Governance",
+    "domain": "docs_and_ops",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "OPS-04": {
+    "title": "Rollback Runbook for Infrastructure Changes",
+    "domain": "docs_and_ops",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "OPS-05": {
+    "title": "Standard Monorepo Ports and Access",
+    "domain": "docs_and_ops",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "FE-01": {
+    "title": "Zero Duplicate API Calls via `useRef`",
+    "domain": "frontend",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "FE-02": {
+    "title": "No `React.StrictMode` Double Mounts",
+    "domain": "frontend",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "FE-03": {
+    "title": "Zero Redundant Post-Auth `/auth/me` Calls",
+    "domain": "frontend",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "FE-04": {
+    "title": "Lean `useCallback` Dependency Arrays",
+    "domain": "frontend",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "FE-05": {
+    "title": "Mandatory Table Row Extraction",
+    "domain": "frontend",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "FE-06": {
+    "title": "List Page Modularity & Dialogs Container",
+    "domain": "frontend",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "FE-07": {
+    "title": "Session Storage Decoupling",
+    "domain": "frontend",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "FE-08": {
+    "title": "Mock ⇄ Real Data Parity",
+    "domain": "frontend",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "FE-09": {
+    "title": "Client-Level In-Flight Request Deduplication",
+    "domain": "frontend",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "FE-10": {
+    "title": "Zero Duplicate Context Data Re-Fetching",
+    "domain": "frontend",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "FE-11": {
+    "title": "Aggregated Startup Bootstrap",
+    "domain": "frontend",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "FE-12": {
+    "title": "Zero Raw Fetch Bypasses in Services",
+    "domain": "frontend",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "FE-13": {
+    "title": "Scoped Domain DataSync Subscriptions",
+    "domain": "frontend",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "FE-14": {
+    "title": "In-Memory TTL & Navigation Cache for Reference Data",
+    "domain": "frontend",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "UI-01": {
+    "title": "100% Solid Sticky Headers",
+    "domain": "frontend",
+    "enforcer": "eslint:invariants/header",
+    "mode": "ratchet"
+  },
+  "UI-02": {
+    "title": "Zero Off-Scheme Palette Colors & Rainbow Elements",
+    "domain": "frontend",
+    "enforcer": "eslint:invariants/palette",
+    "mode": "ratchet"
+  },
+  "UI-03": {
+    "title": "Semantic Success Status Badge",
+    "domain": "frontend",
+    "enforcer": "eslint:invariants/palette",
+    "mode": "ratchet"
+  },
+  "UI-04": {
+    "title": "Zero Duplicate Action / CTA Buttons",
+    "domain": "frontend",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "UI-05": {
+    "title": "Strict Official shadcn Component Architecture (Zero Custom Re-invention)",
+    "domain": "frontend",
+    "enforcer": "eslint:invariants/shadcn",
+    "mode": "ratchet"
+  },
+  "UI-06": {
+    "title": "Compact Typography, Tabular Numbers & Clean Metrics",
+    "domain": "frontend",
+    "enforcer": "eslint:invariants/tableCell",
+    "mode": "ratchet"
+  },
+  "UI-07": {
+    "title": "Strict Icon & Control Semantic Styling (Zero Rainbow Icons)",
+    "domain": "frontend",
+    "enforcer": "eslint:invariants/palette",
+    "mode": "ratchet"
+  },
+  "I18N-01": {
+    "title": "100% Bilingual Parity (UK ⇄ EN)",
+    "domain": "i18n",
+    "enforcer": "i18n:check + eslint:invariants/i18n",
+    "mode": "ratchet"
+  },
+  "I18N-02": {
+    "title": "Zero Raw Untranslated Keys in UI",
+    "domain": "i18n",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "I18N-03": {
+    "title": "Translated HTML Attributes",
+    "domain": "i18n",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "I18N-04": {
+    "title": "Backend Error Response Mapping",
+    "domain": "i18n",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "I18N-05": {
+    "title": "Zero English Enums in UI Tables",
+    "domain": "i18n",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "I18N-06": {
+    "title": "Clean Numeric Metric Formatting",
+    "domain": "i18n",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "SEC-01": {
+    "title": "4-Layer Defense-in-Depth",
+    "domain": "security",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "SEC-02": {
+    "title": "Zero Secret Serialization Sinks (CWE-640)",
+    "domain": "security",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "SEC-03": {
+    "title": "Secret Masking on REST Endpoints",
+    "domain": "security",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "SEC-04": {
+    "title": "BOLA / IDOR Tenant Isolation",
+    "domain": "security",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "SEC-05": {
+    "title": "SSRF TOCTOU Defense",
+    "domain": "security",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "SEC-06": {
+    "title": "Tauri v2 IPC Security",
+    "domain": "security",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "TEST-01": {
+    "title": "Mandatory `cleanDatabase` Teardown (Zero Leftovers)",
+    "domain": "testing",
+    "enforcer": "jest:cleanDatabase",
+    "mode": "error"
+  },
+  "TEST-02": {
+    "title": "Frontend Test Isolation",
+    "domain": "testing",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "TEST-03": {
+    "title": "Real Business Data Assertions (Zero Superficial Tests)",
+    "domain": "testing",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "TEST-04": {
+    "title": "Client Avatar Assertions",
+    "domain": "testing",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "TEST-05": {
+    "title": "Single-Request Performance Tests",
+    "domain": "testing",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "TEST-06": {
+    "title": "Strict TDD RED -> GREEN Cycle",
+    "domain": "testing",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "TEST-07": {
+    "title": "Static Typecheck Clean (Zero Errors)",
+    "domain": "testing",
+    "enforcer": "tsc:noEmit",
+    "mode": "error"
+  }
+}

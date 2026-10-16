@@ -14,27 +14,29 @@ export class CreateNavigationItemHandler implements ICommandHandler<CreateNaviga
   async execute(command: CreateNavigationItemCommand) {
     const { dto } = command;
 
-    const existing = await this.prisma.navigationItem.findUnique({
-      where: { key: dto.key },
-    });
+    const created = await this.prisma.$transaction(async (tx) => {
+      const existing = await tx.navigationItem.findUnique({
+        where: { key: dto.key },
+      });
 
-    if (existing) {
-      throw new ConflictException(`Navigation item with key "${dto.key}" already exists`);
-    }
+      if (existing) {
+        throw new ConflictException(`Navigation item with key "${dto.key}" already exists`);
+      }
 
-    const created = await this.prisma.navigationItem.create({
-      data: {
-        key: dto.key,
-        labelUk: dto.labelUk,
-        labelEn: dto.labelEn,
-        path: dto.path,
-        icon: dto.icon || 'LayoutDashboard',
-        order: dto.order ?? 0,
-        isVisible: dto.isVisible ?? true,
-        requiredRoles: dto.requiredRoles,
-        requiredPlan: dto.requiredPlan,
-        targetApp: dto.targetApp,
-      },
+      return tx.navigationItem.create({
+        data: {
+          key: dto.key,
+          labelUk: dto.labelUk,
+          labelEn: dto.labelEn,
+          path: dto.path,
+          icon: dto.icon || 'LayoutDashboard',
+          order: dto.order ?? 0,
+          isVisible: dto.isVisible ?? true,
+          requiredRoles: dto.requiredRoles,
+          requiredPlan: dto.requiredPlan,
+          targetApp: dto.targetApp,
+        },
+      });
     });
 
     await this.cache.del('navigation:*');

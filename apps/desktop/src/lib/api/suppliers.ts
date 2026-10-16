@@ -92,7 +92,13 @@ export async function createSupplier(
     if (response.ok) {
       return (await response.json()) as SupplierDto;
     }
+    const errData = await response.json().catch(() => ({}));
+    const message = Array.isArray(errData?.message)
+      ? errData.message.join(', ')
+      : errData?.message || `Failed to create supplier (${response.status})`;
+    throw new ApiError(message, response.status, errData);
   } catch (err) {
+    if (err instanceof ApiError) throw err;
     console.warn('[ApiClient] Remote call failed, using local fallback:', err);
   }
 
@@ -122,11 +128,23 @@ export async function updateSupplier(
     if (response.ok) {
       return (await response.json()) as SupplierDto;
     }
+    if (response.status === 404) {
+      try {
+        return localDb.suppliers.updateSupplier(id, payload);
+      } catch {
+        // Fall through to error throwing below
+      }
+    }
+    const errData = await response.json().catch(() => ({}));
+    const message = Array.isArray(errData?.message)
+      ? errData.message.join(', ')
+      : errData?.message || `Failed to update supplier (${response.status})`;
+    throw new ApiError(message, response.status, errData);
   } catch (err) {
+    if (err instanceof ApiError) throw err;
     console.warn('[ApiClient] Remote call failed, using local fallback:', err);
+    return localDb.suppliers.updateSupplier(id, payload);
   }
-
-  return localDb.suppliers.updateSupplier(id, payload);
 }
 
 export async function deleteSupplier(id: string, token?: string): Promise<{ success: boolean }> {
@@ -141,7 +159,19 @@ export async function deleteSupplier(id: string, token?: string): Promise<{ succ
     if (response.ok) {
       return (await response.json()) as { success: boolean };
     }
+    if (response.status === 404) {
+      try {
+        const success = await localDb.suppliers.deleteSupplier(id);
+        return { success };
+      } catch {
+        // Fall through
+      }
+    }
+    const errData = await response.json().catch(() => ({}));
+    const message = errData?.message || `Failed to delete supplier (${response.status})`;
+    throw new ApiError(message, response.status, errData);
   } catch (err) {
+    if (err instanceof ApiError) throw err;
     console.warn('[ApiClient] Remote call failed, using local fallback:', err);
   }
 
@@ -149,131 +179,4 @@ export async function deleteSupplier(id: string, token?: string): Promise<{ succ
   return { success };
 }
 
-export async function getSupplierCategories(supplierId: string, token?: string, search?: string) {
-  if (isTauri()) {
-    return localDb.suppliers.getSupplierCategories(supplierId, search);
-  }
-
-  try {
-    const query = search ? `?search=${encodeURIComponent(search)}` : '';
-    const response = await fetchWithAuth(
-      `/suppliers/${supplierId}/categories${query}`,
-      { method: 'GET' },
-      token,
-    );
-    if (response.ok) {
-      const data = await response.json();
-      if (Array.isArray(data)) return data;
-    }
-  } catch (err) {
-    console.warn('[ApiClient] Remote getSupplierCategories failed, using local fallback:', err);
-  }
-
-  return localDb.suppliers.getSupplierCategories(supplierId, search);
-}
-
-export async function toggleSupplierCategory(
-  supplierId: string,
-  categoryId: string,
-  isActive: boolean,
-  token?: string,
-) {
-  if (isTauri()) {
-    return localDb.suppliers.toggleSupplierCategory(supplierId, categoryId, isActive);
-  }
-
-  try {
-    const response = await fetchWithAuth(
-      `/suppliers/${supplierId}/categories/${categoryId}/toggle`,
-      {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ isActive }),
-      },
-      token,
-    );
-    if (response.ok) {
-      return await response.json();
-    }
-  } catch (err) {
-    console.warn('[ApiClient] Remote toggleSupplierCategory failed, using local fallback:', err);
-  }
-
-  return localDb.suppliers.toggleSupplierCategory(supplierId, categoryId, isActive);
-}
-
-export async function batchToggleSupplierCategories(
-  supplierId: string,
-  categoryIds: string[],
-  isActive: boolean,
-  token?: string,
-) {
-  if (isTauri()) {
-    return localDb.suppliers.batchToggleSupplierCategories(supplierId, categoryIds, isActive);
-  }
-
-  try {
-    const response = await fetchWithAuth(
-      `/suppliers/${supplierId}/categories/batch-toggle`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ categoryIds, isActive }),
-      },
-      token,
-    );
-    if (response.ok) {
-      return await response.json();
-    }
-  } catch (err) {
-    console.warn(
-      '[ApiClient] Remote batchToggleSupplierCategories failed, using local fallback:',
-      err,
-    );
-  }
-
-  return localDb.suppliers.batchToggleSupplierCategories(supplierId, categoryIds, isActive);
-}
-
-export async function updateSupplierCategoryRule(
-  supplierId: string,
-  categoryId: string,
-  payload: { marginPercent?: number | null; fixedMarkup?: number | null },
-  token?: string,
-) {
-  if (isTauri()) {
-    return localDb.suppliers.updateSupplierCategoryRule(
-      supplierId,
-      categoryId,
-      payload.marginPercent,
-      payload.fixedMarkup,
-    );
-  }
-
-  try {
-    const response = await fetchWithAuth(
-      `/suppliers/${supplierId}/categories/${categoryId}`,
-      {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      },
-      token,
-    );
-    if (response.ok) {
-      return await response.json();
-    }
-  } catch (err) {
-    console.warn(
-      '[ApiClient] Remote updateSupplierCategoryRule failed, using local fallback:',
-      err,
-    );
-  }
-
-  return localDb.suppliers.updateSupplierCategoryRule(
-    supplierId,
-    categoryId,
-    payload.marginPercent,
-    payload.fixedMarkup,
-  );
-}
+export * from '@/lib/api/supplier-categories';

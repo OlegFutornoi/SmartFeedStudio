@@ -18,6 +18,7 @@ import { RefreshTokenDto } from '@/modules/auth/dto/refresh-token.dto';
 import { ForgotPasswordDto } from '@/modules/auth/dto/forgot-password.dto';
 import { ResetPasswordDto } from '@/modules/auth/dto/reset-password.dto';
 import { UpdateAvatarDto } from '@/modules/auth/dto/update-avatar.dto';
+import { BootstrapQueryDto } from '@/modules/auth/dto/bootstrap-query.dto';
 import { JwtAuthGuard } from '@/modules/auth/guards/jwt-auth.guard';
 import { CurrentUser } from '@/modules/auth/decorators/current-user.decorator';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
@@ -89,9 +90,9 @@ export class AuthController {
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async getBootstrap(
     @CurrentUser('id') userId: string,
-    @Query('app') app?: TargetApp,
+    @Query() query: BootstrapQueryDto,
   ): Promise<BootstrapResponseDto> {
-    return this.queryBus.execute(new GetBootstrapQuery(userId, app || TargetApp.DESKTOP));
+    return this.queryBus.execute(new GetBootstrapQuery(userId, query.app || TargetApp.DESKTOP));
   }
 
   @Post('forgot-password')

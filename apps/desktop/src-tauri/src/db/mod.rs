@@ -57,6 +57,19 @@ pub fn init_schema(conn: &Connection) -> Result<()> {
             website TEXT,
             notes TEXT,
             logo_url TEXT,
+            legal_name TEXT,
+            tax_id TEXT,
+            industry TEXT,
+            segment TEXT,
+            manager_name TEXT,
+            manager_position TEXT,
+            manager_phone TEXT,
+            manager_email TEXT,
+            manager_telegram TEXT,
+            country TEXT,
+            city TEXT,
+            address TEXT,
+            postcode TEXT,
             base_currency TEXT DEFAULT 'UAH',
             target_currency TEXT DEFAULT 'UAH',
             exchange_rate_mode TEXT DEFAULT 'MANUAL',
@@ -171,6 +184,52 @@ pub fn init_schema(conn: &Connection) -> Result<()> {
         CREATE INDEX IF NOT EXISTS idx_feeds_supplier ON local_feed_sources(supplier_id);
         CREATE INDEX IF NOT EXISTS idx_supplier_categories_supplier ON local_supplier_categories(supplier_id);
         CREATE INDEX IF NOT EXISTS idx_supplier_pricing_rules_supplier ON local_supplier_pricing_rules(supplier_id);
+
+        CREATE TABLE IF NOT EXISTS local_supplier_sync_settings (
+            id TEXT PRIMARY KEY,
+            supplier_id TEXT NOT NULL UNIQUE,
+            protect_edited_products INTEGER DEFAULT 1,
+            sync_prices INTEGER DEFAULT 1,
+            sync_stocks INTEGER DEFAULT 1,
+            image_sync_mode TEXT DEFAULT 'DO_NOT_UPDATE',
+            description_sync_mode TEXT DEFAULT 'DO_NOT_UPDATE',
+            attributes_sync_mode TEXT DEFAULT 'ADD_NEW_ONLY',
+            title_sync_mode TEXT DEFAULT 'DO_NOT_UPDATE',
+            category_sync_mode TEXT DEFAULT 'KEEP_MANUAL_MAPPING',
+            barcode_sync_mode TEXT DEFAULT 'FILL_EMPTY_ONLY',
+            price_source TEXT DEFAULT 'WHOLESALE',
+            zero_price_action TEXT DEFAULT 'OUT_OF_STOCK',
+            missing_products_action TEXT DEFAULT 'OUT_OF_STOCK',
+            new_products_action TEXT DEFAULT 'AUTO_PUBLISH',
+            sync_interval_hours INTEGER DEFAULT 0,
+            last_synced_at TEXT,
+            last_sync_status TEXT DEFAULT 'IDLE',
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+            updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY(supplier_id) REFERENCES local_suppliers(id) ON DELETE CASCADE
+        );
+
+        CREATE TABLE IF NOT EXISTS local_supplier_sync_logs (
+            id TEXT PRIMARY KEY,
+            supplier_id TEXT NOT NULL,
+            feed_source_id TEXT,
+            trigger TEXT DEFAULT 'MANUAL',
+            status TEXT DEFAULT 'RUNNING',
+            started_at TEXT DEFAULT CURRENT_TIMESTAMP,
+            completed_at TEXT,
+            duration_ms INTEGER,
+            total_products INTEGER DEFAULT 0,
+            created_count INTEGER DEFAULT 0,
+            updated_count INTEGER DEFAULT 0,
+            out_of_stock_count INTEGER DEFAULT 0,
+            errors_count INTEGER DEFAULT 0,
+            error_message TEXT,
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY(supplier_id) REFERENCES local_suppliers(id) ON DELETE CASCADE
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_sync_settings_supplier ON local_supplier_sync_settings(supplier_id);
+        CREATE INDEX IF NOT EXISTS idx_sync_logs_supplier ON local_supplier_sync_logs(supplier_id);
         "#,
     )?;
 
@@ -183,6 +242,19 @@ pub fn init_schema(conn: &Connection) -> Result<()> {
         ALTER TABLE local_suppliers ADD COLUMN exchange_rate REAL DEFAULT 1.0;
         ALTER TABLE local_suppliers ADD COLUMN currency_buffer_percent REAL DEFAULT 0;
         ALTER TABLE local_suppliers ADD COLUMN price_rounding TEXT DEFAULT 'NONE';
+        ALTER TABLE local_suppliers ADD COLUMN legal_name TEXT;
+        ALTER TABLE local_suppliers ADD COLUMN tax_id TEXT;
+        ALTER TABLE local_suppliers ADD COLUMN industry TEXT;
+        ALTER TABLE local_suppliers ADD COLUMN segment TEXT;
+        ALTER TABLE local_suppliers ADD COLUMN manager_name TEXT;
+        ALTER TABLE local_suppliers ADD COLUMN manager_position TEXT;
+        ALTER TABLE local_suppliers ADD COLUMN manager_phone TEXT;
+        ALTER TABLE local_suppliers ADD COLUMN manager_email TEXT;
+        ALTER TABLE local_suppliers ADD COLUMN manager_telegram TEXT;
+        ALTER TABLE local_suppliers ADD COLUMN country TEXT;
+        ALTER TABLE local_suppliers ADD COLUMN city TEXT;
+        ALTER TABLE local_suppliers ADD COLUMN address TEXT;
+        ALTER TABLE local_suppliers ADD COLUMN postcode TEXT;
     ");
     // Run migration for existing databases to guarantee category_name_uk exists
     let _ = conn.execute_batch("ALTER TABLE local_products ADD COLUMN category_name_uk TEXT;");

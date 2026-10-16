@@ -85,7 +85,6 @@ export function useSuppliersCrud({
   });
 
   const handleSaveSupplier = async (dto: CreateSupplierDto) => {
-    if (!token && !isTauri()) return;
     try {
       if (supplierToEdit) {
         const updated = await updateSupplier(supplierToEdit.id, dto, token || undefined);

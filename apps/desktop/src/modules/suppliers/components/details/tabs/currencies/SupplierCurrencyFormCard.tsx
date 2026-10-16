@@ -3,6 +3,7 @@ import { Coins, CheckCircle2 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
@@ -68,9 +69,9 @@ export const SupplierCurrencyFormCard: React.FC<SupplierCurrencyFormCardProps> =
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
           {/* Base Currency */}
           <div>
-            <label className="text-xs font-medium text-foreground block mb-1.5">
+            <Label className="text-xs font-medium text-foreground block mb-1.5">
               Базова валюта прайсу постачальника:
-            </label>
+            </Label>
             <Select
               value={baseCurrency}
               onValueChange={(val) => setBaseCurrency(val as CurrencyCode)}
@@ -94,9 +95,9 @@ export const SupplierCurrencyFormCard: React.FC<SupplierCurrencyFormCardProps> =
 
           {/* Rate Mode */}
           <div>
-            <label className="text-xs font-medium text-foreground block mb-1.5">
+            <Label className="text-xs font-medium text-foreground block mb-1.5">
               Режим отримання курсу до Гривні (UAH):
-            </label>
+            </Label>
             <Select
               value={exchangeMode}
               onValueChange={(val) => setExchangeMode(val as ExchangeRateMode)}
@@ -122,11 +123,11 @@ export const SupplierCurrencyFormCard: React.FC<SupplierCurrencyFormCardProps> =
         {/* Exchange Rate & Buffer */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-1">
           <div>
-            <label className="text-xs font-medium text-foreground block mb-1.5">
+            <Label className="text-xs font-medium text-foreground block mb-1.5">
               {exchangeMode === ExchangeRateMode.MANUAL
                 ? 'Курс обміну (вручну / обраний банк):'
                 : 'Поточний курс обміну:'}
-            </label>
+            </Label>
             <div className="relative">
               <Input
                 type="number"
@@ -145,9 +146,9 @@ export const SupplierCurrencyFormCard: React.FC<SupplierCurrencyFormCardProps> =
           </div>
 
           <div>
-            <label className="text-xs font-medium text-foreground block mb-1.5">
+            <Label className="text-xs font-medium text-foreground block mb-1.5">
               Валютний буфер ризику (% Buffer):
-            </label>
+            </Label>
             <div className="relative">
               <Input
                 type="number"
@@ -170,9 +171,9 @@ export const SupplierCurrencyFormCard: React.FC<SupplierCurrencyFormCardProps> =
 
         {/* Rounding Mode */}
         <div>
-          <label className="text-xs font-medium text-foreground block mb-1.5">
+          <Label className="text-xs font-medium text-foreground block mb-1.5">
             Правило маркетингового округлення цін:
-          </label>
+          </Label>
           <Select
             value={roundingMode}
             onValueChange={(val) => setRoundingMode(val as PriceRoundingMode)}

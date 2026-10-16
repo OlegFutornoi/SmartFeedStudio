@@ -9,21 +9,27 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { QueryBus } from '@nestjs/cqrs';
+import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import {
   type FetchFeedResultDto,
   type FeedSourceDto,
   type ImportJobDto,
+  type SupplierSyncResultDto,
   ImportJobStatus,
 } from '@smartfeed/shared';
 import { JwtAuthGuard } from '@/modules/auth/guards/jwt-auth.guard';
+import { CurrentUser } from '@/modules/auth/decorators/current-user.decorator';
 import { FetchFeedUrlDto, ImportFeedAsyncDto } from '@/modules/feeds/dto';
 import { FetchFeedUrlQuery } from '@/modules/feeds/queries/fetch-feed-url.query';
+import { SyncSupplierFeedCommand } from '@/modules/suppliers/commands/suppliers.commands';
 
 @ApiTags('Feeds')
 @Controller('feeds')
 export class FeedsController {
-  constructor(private readonly queryBus: QueryBus) {}
+  constructor(
+    private readonly queryBus: QueryBus,
+    private readonly commandBus: CommandBus,
+  ) {}
 
   @Post('fetch-url')
   @HttpCode(HttpStatus.OK)
@@ -56,6 +62,22 @@ export class FeedsController {
   @ApiResponse({ status: 200, description: 'List of supplier feed sources' })
   async getSupplierSources(@Param('supplierId') _supplierId: string): Promise<FeedSourceDto[]> {
     return [];
+  }
+
+  @Post('suppliers/:supplierId/sources/:sourceId/sync')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Trigger feed source synchronization' })
+  @ApiResponse({ status: 200, description: 'Feed source synchronized successfully' })
+  async syncSupplierSource(
+    @Param('supplierId') supplierId: string,
+    @Param('sourceId') sourceId: string,
+    @CurrentUser() user: { id: string },
+  ): Promise<SupplierSyncResultDto> {
+    return this.commandBus.execute(
+      new SyncSupplierFeedCommand(supplierId, user.id, { feedSourceId: sourceId }),
+    );
   }
 
   @Get('jobs/active')

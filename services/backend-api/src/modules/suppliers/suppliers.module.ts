@@ -16,7 +16,13 @@ import {
   CreateSupplierPricingRuleHandler,
   UpdateSupplierPricingRuleHandler,
   DeleteSupplierPricingRuleHandler,
+  UpdateSupplierSyncSettingsHandler,
+  SyncSupplierFeedHandler,
 } from '@/modules/suppliers/commands/suppliers.handlers';
+import {
+  GetSupplierSyncSettingsHandler,
+  GetSupplierSyncLogsHandler,
+} from '@/modules/suppliers/queries/supplier-sync.handlers';
 
 export const CommandHandlers = [
   CreateSupplierHandler,
@@ -26,6 +32,8 @@ export const CommandHandlers = [
   CreateSupplierPricingRuleHandler,
   UpdateSupplierPricingRuleHandler,
   DeleteSupplierPricingRuleHandler,
+  UpdateSupplierSyncSettingsHandler,
+  SyncSupplierFeedHandler,
 ];
 
 export const QueryHandlers = [
@@ -33,6 +41,8 @@ export const QueryHandlers = [
   GetSupplierByIdHandler,
   GetSupplierCategoriesHandler,
   GetSupplierPricingRulesHandler,
+  GetSupplierSyncSettingsHandler,
+  GetSupplierSyncLogsHandler,
 ];
 
 @Module({

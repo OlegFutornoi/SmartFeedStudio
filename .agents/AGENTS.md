@@ -7,7 +7,7 @@ Central intelligence orchestrator connecting 7 specialized autonomous engineerin
 ## 2. Specialized Autonomous Agents
 
 - Planner & Architecture Agent: `@agents_planner` / `@agents-planner`
-  - Domain: Requirements discovery, domain boundary modeling, tracer-bullet vertical slicing, ADRs, contract-first design, and implementation plan authoring.
+  - Domain: Requirements discovery, domain boundary modeling, tracer-bullet vertical slicing, ADRs, contract-first design, web-grounded research via Perplexity Agent API, and implementation plan authoring.
   - Specification: `.agents/agents/planner.md`
   - Rules: `core.md`, `agents.md`, `backend.md`, `database.md`, `frontend.md`, `security.md`, `docs_and_ops.md`
 
@@ -116,7 +116,24 @@ Central intelligence orchestrator connecting 7 specialized autonomous engineerin
 - `context-engineering`: Token economy and prompt context hygiene.
 - `ai-sdk`: Vercel AI SDK streaming integration and LLM catalog enrichment.
 - `firecrawl-parse`: External catalog and documentation scraping into markdown.
+- `perplexity-agent-api`: Web-grounded live search, marketplace research, and multi-provider reasoning via Perplexity Agent API (POST /v1/agent).
 
-## 4. Universal Invariant Protocol
+## 4. Full-Stack Orchestra Protocol (`AGENT-04`)
+
+To eliminate "raw / half-baked tasks" and disconnected development silos between Planner, Backend, and Frontend:
+
+1. **Vertical Tracer Slices Only**: All feature tasks must cut end-to-end through DB -> API -> Shared -> UI -> Tests. Developing backend endpoints without client consumer tests or developing frontend views without backend contract alignment is prohibited.
+2. **Strict TDD Order (RED -> GREEN)**: Backend agents MUST write failing Supertest E2E tests before implementing handlers (`BE-08`); Frontend agents MUST write failing Playwright tests before implementing components.
+3. **Mandatory Production Compilation**: Backend agents MUST run `pnpm --filter @smartfeed/backend-api build` upon turning tests green to guarantee the runtime bundle in `dist/` is fresh.
+4. **Official shadcn Exclusivity**: Frontend agents MUST compose views strictly with official shadcn components (`@/components/ui/*`, `UI-05`), semantic tokens (`UI-02`), and neutral muted icons (`UI-07`). No hand-rolled ad-hoc HTML elements or rainbow icons.
+5. **6-Point Definition of Done (DoD)**:
+   - Criteria 1: Backend Supertest E2E tests pass 100% on real database (`cleanDatabase` teardown).
+   - Criteria 2: Backend `dist/` is compiled and verified fresh (`pnpm --filter @smartfeed/backend-api build`).
+   - Criteria 3: Frontend Playwright tests pass 100% with real business data assertions.
+   - Criteria 4: Static typecheck (`tsc --noEmit`) passes with 0 errors across all monorepo packages.
+   - Criteria 5: Bilingual parity check (`pnpm i18n:check`) passes 100%.
+   - Criteria 6: Automated domain invariants check (`pnpm invariants:check`) passes with 0 violations across UI semantic tokens, solid headers, CQRS single-handler structure, and controller DTOs.
+
+## 5. Universal Invariant Protocol
 
 Every skill and agent must load its governing rules from `.agents/rules/` before writing or editing code. Step 0 rule loading is mandatory.

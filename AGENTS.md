@@ -45,3 +45,4 @@ All invariants are indexed by unique IDs and partitioned into 9 domain files:
 - Typecheck: `pnpm --filter @smartfeed/backend-api exec tsc --noEmit`
 - Format & lint: `pnpm lint:fix && pnpm format`
 - Localization check: `pnpm i18n:check`
+- Invariants guardrail check: `pnpm invariants:check`

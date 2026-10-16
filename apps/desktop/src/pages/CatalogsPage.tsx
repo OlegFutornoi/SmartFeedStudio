@@ -129,27 +129,27 @@ export function CatalogsPage() {
         {/* Tabs Navigation Bar */}
         <div className="flex flex-wrap items-center gap-1.5 p-1 bg-secondary/30 border border-border/80 rounded-xl w-fit">
           {/* Products Grid Tab */}
-          <button
-            type="button"
+          <Button
+            variant="ghost"
             onClick={() => setActiveTab('products')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold transition-all ${
+            className={`flex items-center gap-2 px-4 py-2 h-auto rounded-lg text-xs font-semibold transition-all ${
               activeTab === 'products'
-                ? 'bg-card text-foreground shadow-sm border border-border/60'
+                ? 'bg-card text-foreground shadow-sm border border-border/60 hover:bg-card'
                 : 'text-muted-foreground hover:text-foreground'
             }`}
             data-testid="tab-products"
           >
             <Package className="size-4 text-primary" />
             <span>{t('catalogs:tabProducts')}</span>
-          </button>
+          </Button>
 
           {/* Feed Sources Tab */}
-          <button
-            type="button"
+          <Button
+            variant="ghost"
             onClick={() => setActiveTab('catalogs')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold transition-all ${
+            className={`flex items-center gap-2 px-4 py-2 h-auto rounded-lg text-xs font-semibold transition-all ${
               activeTab === 'catalogs'
-                ? 'bg-card text-foreground shadow-sm border border-border/60'
+                ? 'bg-card text-foreground shadow-sm border border-border/60 hover:bg-card'
                 : 'text-muted-foreground hover:text-foreground'
             }`}
             data-testid="tab-catalogs"
@@ -159,22 +159,22 @@ export function CatalogsPage() {
             <Badge variant="secondary" className="text-xs px-2 py-0.5 h-5 font-semibold">
               {feeds.length}
             </Badge>
-          </button>
+          </Button>
 
           {/* Export Channels Tab */}
-          <button
-            type="button"
+          <Button
+            variant="ghost"
             onClick={() => setActiveTab('channels')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold transition-all ${
+            className={`flex items-center gap-2 px-4 py-2 h-auto rounded-lg text-xs font-semibold transition-all ${
               activeTab === 'channels'
-                ? 'bg-card text-foreground shadow-sm border border-border/60'
+                ? 'bg-card text-foreground shadow-sm border border-border/60 hover:bg-card'
                 : 'text-muted-foreground hover:text-foreground'
             }`}
             data-testid="tab-export-channels"
           >
             <Store className="size-4 text-primary" />
             <span>{t('catalogs:tabChannels')}</span>
-          </button>
+          </Button>
         </div>
 
         {/* Import Action Button */}

@@ -22,13 +22,14 @@ rules:
 ## Five-axis evaluation protocol
 
 1. Axis 1 - Correctness: Verify code fulfills requirements without regressions. Check edge cases, boundary numbers, nullability, and race conditions. Assert real business invariants in tests (`expect(name).not.toBe('Постачальник')`).
-2. Axis 2 - Readability and Modularity: Enforce component and file budget (<250 lines). Reject monolithic files. Eliminate dead code, unused imports, and nested ternaries. Confirm 100% `@/` path aliases (zero `../` relative imports).
+2. Axis 2 - Readability and Modularity: Enforce component and file budget (<250 lines). Reject monolithic files. Eliminate dead code, unused imports, and nested ternaries. Confirm 100% `@/` path aliases (zero `../` relative imports). Enforce semantic design tokens (`UI-02`, `UI-07`): zero off-scheme palette colors (`blue-*`, `amber-*`, `yellow-*`, `purple-*`), zero rainbow decorative icon styling on forms/cards.
 3. Axis 3 - Architecture and Boundaries: Enforce CQRS separation (1 handler per file, <120-150 lines). Ensure Cloud API never manipulates desktop client local workspace files. Confirm 100% bilingual i18n parity (`uk` and `en`).
 4. Axis 4 - Security: Verify 4-layer defense. Confirm all mutation routes have `@UseGuards()`. Ensure zero fallback secrets (`|| 'default-secret'`) and zero secret exposure in responses or logs. Verify `execFile` with argument arrays (zero CWE-78).
 5. Axis 5 - Performance and Database: Confirm 100% foreign key indexes (`@@index([fk])`), CUID primary keys, and snake_case mapping. Eliminate N+1 queries. Verify cursor pagination on catalog endpoints and `useRef` request deduplication in React.
 
 ## Review gating and report format
 
-1. Critical findings: Block merge on architectural violations, security holes, unindexed FKs, relative imports, or missing test teardown.
-2. Non-blocking suggestions: Note minor readability improvements without delaying delivery.
-3. For the complete rubric, see `references/5-axis-review.md`.
+1. Automated invariant verification: Run `pnpm invariants:check` before signing off on any review. Must exit with 0 violations.
+2. Critical findings: Block merge on architectural violations, security holes, unindexed FKs, relative imports, missing test teardown, hardcoded palette colors, or missing DTOs.
+3. Non-blocking suggestions: Note minor readability improvements without delaying delivery.
+4. For the complete rubric, see `references/5-axis-review.md`.

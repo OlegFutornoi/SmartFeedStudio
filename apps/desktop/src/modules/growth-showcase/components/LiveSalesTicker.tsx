@@ -30,13 +30,13 @@ export function LiveSalesTicker({ orders, isUk }: LiveSalesTickerProps) {
   return (
     <div
       data-testid="live-sales-ticker"
-      className="flex items-center justify-between gap-2 rounded-lg border border-border/60 bg-background/60 px-3 py-1.5 shadow-xs backdrop-blur-xs text-xs"
+      className="flex items-center justify-between gap-2 rounded-lg border border-border/60 bg-background px-3 py-1.5 shadow-xs text-xs"
     >
       {/* Left Marketplace & Pulse */}
       <div className="flex items-center gap-2 min-w-0">
         <span className="relative flex h-2 w-2 shrink-0">
-          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-          <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-success opacity-75" />
+          <span className="relative inline-flex h-2 w-2 rounded-full bg-success" />
         </span>
 
         <Badge
@@ -53,7 +53,7 @@ export function LiveSalesTicker({ orders, isUk }: LiveSalesTickerProps) {
 
       {/* Right Order Amount & Timestamp */}
       <div className="flex items-center gap-2 shrink-0">
-        <span className="flex items-center font-mono font-bold text-emerald-600 dark:text-emerald-400">
+        <span className="flex items-center font-mono font-bold text-success">
           <ArrowUpRight className="h-3 w-3" />
           <span>{formatAmount(order.amount)}</span>
         </span>
