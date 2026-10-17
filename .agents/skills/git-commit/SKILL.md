@@ -66,3 +66,4 @@ rules:
   ```
 - **Invariants**: NEVER pass `--tags` globally (which would push historical tags and trigger cascades of outdated workflows). Push ONLY the single new `refs/tags/vX.Y.Z`.
 - **Result**: Pushing the single `vX.Y.Z` tag triggers GitHub Actions release workflows for desktop installers (`release.yml`) and Docker images (`docker.yml`).
+- **Post-Release Monitoring**: Immediately after pushing the tag, run `gh run list --repo OlegFutornoi/SmartFeedStudio --limit 3` to verify that release workflows started. The agent must monitor and inform the user of the build status so the user never needs to manually inspect GitHub Actions.

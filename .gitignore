@@ -13,7 +13,8 @@ out/
 services/backend-api/src/generated/
 
 # Rust / Tauri
-src-tauri/target/
+**/src-tauri/target/
+**/src-tauri/gen/
 target/
 *.pdb
 
