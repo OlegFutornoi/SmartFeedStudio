@@ -3,12 +3,22 @@ import {
   Mail,
   Phone,
   User,
+  UserCheck,
+  Briefcase,
   Globe,
   Coins,
-  ExternalLink,
-  Building2,
+  Percent,
+  Sliders,
+  FileText,
+  Hash,
+  Factory,
+  Layers,
   MapPin,
+  Navigation,
+  Warehouse,
+  Building2,
   Send,
+  ExternalLink,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useTranslation } from '@/i18n';
@@ -43,9 +53,10 @@ export const SupplierDrawerOverviewTab: React.FC<SupplierDrawerOverviewTabProps>
               {t('suppliers:companyCard', { defaultValue: 'Реквізити компанії' })}
             </CardTitle>
           </CardHeader>
-          <CardContent className="p-4 space-y-2 text-xs">
+          <CardContent className="p-4 space-y-2.5 text-xs">
             <div className="flex items-center justify-between">
-              <span className="text-muted-foreground">
+              <span className="text-muted-foreground flex items-center gap-1.5">
+                <FileText className="size-3 text-muted-foreground shrink-0" />
                 {t('suppliers:legalName', { defaultValue: 'Юридична назва' })}
               </span>
               <span
@@ -56,7 +67,8 @@ export const SupplierDrawerOverviewTab: React.FC<SupplierDrawerOverviewTabProps>
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-muted-foreground">
+              <span className="text-muted-foreground flex items-center gap-1.5">
+                <Hash className="size-3 text-muted-foreground shrink-0" />
                 {t('suppliers:taxId', { defaultValue: 'ЄДРПОУ / ІПН' })}
               </span>
               <span
@@ -67,7 +79,8 @@ export const SupplierDrawerOverviewTab: React.FC<SupplierDrawerOverviewTabProps>
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-muted-foreground">
+              <span className="text-muted-foreground flex items-center gap-1.5">
+                <Factory className="size-3 text-muted-foreground shrink-0" />
                 {t('suppliers:industry', { defaultValue: 'Галузь' })}
               </span>
               <span
@@ -78,7 +91,8 @@ export const SupplierDrawerOverviewTab: React.FC<SupplierDrawerOverviewTabProps>
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-muted-foreground">
+              <span className="text-muted-foreground flex items-center gap-1.5">
+                <Layers className="size-3 text-muted-foreground shrink-0" />
                 {t('suppliers:segment', { defaultValue: 'Сегмент' })}
               </span>
               <span className="font-medium text-foreground" data-testid="supplier-overview-segment">
@@ -96,9 +110,10 @@ export const SupplierDrawerOverviewTab: React.FC<SupplierDrawerOverviewTabProps>
               {t('suppliers:managerCard', { defaultValue: 'Відповідальний менеджер' })}
             </CardTitle>
           </CardHeader>
-          <CardContent className="p-4 space-y-2 text-xs">
+          <CardContent className="p-4 space-y-2.5 text-xs">
             <div className="flex items-center justify-between">
-              <span className="text-muted-foreground">
+              <span className="text-muted-foreground flex items-center gap-1.5">
+                <UserCheck className="size-3 text-muted-foreground shrink-0" />
                 {t('suppliers:managerName', { defaultValue: 'ПІБ' })}
               </span>
               <span
@@ -109,7 +124,8 @@ export const SupplierDrawerOverviewTab: React.FC<SupplierDrawerOverviewTabProps>
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-muted-foreground">
+              <span className="text-muted-foreground flex items-center gap-1.5">
+                <Briefcase className="size-3 text-muted-foreground shrink-0" />
                 {t('suppliers:managerPosition', { defaultValue: 'Посада' })}
               </span>
               <span
@@ -120,8 +136,8 @@ export const SupplierDrawerOverviewTab: React.FC<SupplierDrawerOverviewTabProps>
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-muted-foreground flex items-center gap-1">
-                <Phone className="size-3 text-muted-foreground" />
+              <span className="text-muted-foreground flex items-center gap-1.5">
+                <Phone className="size-3 text-muted-foreground shrink-0" />
                 {t('common:phone', { defaultValue: 'Телефон' })}
               </span>
               <span
@@ -135,8 +151,8 @@ export const SupplierDrawerOverviewTab: React.FC<SupplierDrawerOverviewTabProps>
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-muted-foreground flex items-center gap-1">
-                <Mail className="size-3 text-muted-foreground" />
+              <span className="text-muted-foreground flex items-center gap-1.5">
+                <Mail className="size-3 text-muted-foreground shrink-0" />
                 Email
               </span>
               <span
@@ -148,8 +164,8 @@ export const SupplierDrawerOverviewTab: React.FC<SupplierDrawerOverviewTabProps>
             </div>
             {telegramHandle && (
               <div className="flex items-center justify-between">
-                <span className="text-muted-foreground flex items-center gap-1">
-                  <Send className="size-3 text-primary" />
+                <span className="text-muted-foreground flex items-center gap-1.5">
+                  <Send className="size-3 text-primary shrink-0" />
                   Telegram
                 </span>
                 <a
@@ -175,9 +191,10 @@ export const SupplierDrawerOverviewTab: React.FC<SupplierDrawerOverviewTabProps>
               {t('suppliers:warehouseCard', { defaultValue: 'Склад та логістика' })}
             </CardTitle>
           </CardHeader>
-          <CardContent className="p-4 space-y-2 text-xs">
+          <CardContent className="p-4 space-y-2.5 text-xs">
             <div className="flex items-center justify-between">
-              <span className="text-muted-foreground">
+              <span className="text-muted-foreground flex items-center gap-1.5">
+                <Navigation className="size-3 text-muted-foreground shrink-0" />
                 {t('suppliers:city', { defaultValue: 'Місто / Країна' })}
               </span>
               <span
@@ -188,7 +205,8 @@ export const SupplierDrawerOverviewTab: React.FC<SupplierDrawerOverviewTabProps>
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-muted-foreground">
+              <span className="text-muted-foreground flex items-center gap-1.5">
+                <Warehouse className="size-3 text-muted-foreground shrink-0" />
                 {t('suppliers:address', { defaultValue: 'Адреса' })}
               </span>
               <span
@@ -199,8 +217,8 @@ export const SupplierDrawerOverviewTab: React.FC<SupplierDrawerOverviewTabProps>
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-muted-foreground flex items-center gap-1">
-                <Globe className="size-3 text-muted-foreground" />
+              <span className="text-muted-foreground flex items-center gap-1.5">
+                <Globe className="size-3 text-muted-foreground shrink-0" />
                 {t('common:website', { defaultValue: 'Вебсайт' })}
               </span>
               {supplier.website ? (
@@ -236,16 +254,18 @@ export const SupplierDrawerOverviewTab: React.FC<SupplierDrawerOverviewTabProps>
               {t('suppliers:commercialConditions', { defaultValue: 'Комерційні умови' })}
             </CardTitle>
           </CardHeader>
-          <CardContent className="p-4 space-y-2 text-xs">
+          <CardContent className="p-4 space-y-2.5 text-xs">
             <div className="flex items-center justify-between">
-              <span className="text-muted-foreground">
-                {t('suppliers:filterCurrency', { defaultValue: 'Базова валюта' })}
+              <span className="text-muted-foreground flex items-center gap-1.5">
+                <Coins className="size-3 text-muted-foreground shrink-0" />
+                {t('suppliers:baseCurrencyShort', { defaultValue: 'Базова валюта' })}
               </span>
               <span className="font-medium text-foreground">{supplier.baseCurrency || 'UAH'}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-muted-foreground">
-                {t('suppliers:columnCurrencyMarkup', { defaultValue: 'Базова націнка' })}
+              <span className="text-muted-foreground flex items-center gap-1.5">
+                <Percent className="size-3 text-muted-foreground shrink-0" />
+                {t('suppliers:baseMarkupShort', { defaultValue: 'Базова націнка' })}
               </span>
               <span className="font-medium text-primary">
                 +{supplier.defaultMarginPercent || 0}%
@@ -253,8 +273,9 @@ export const SupplierDrawerOverviewTab: React.FC<SupplierDrawerOverviewTabProps>
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-muted-foreground">
-                {t('suppliers:storeInfo', { defaultValue: 'Крок округлення' })}
+              <span className="text-muted-foreground flex items-center gap-1.5">
+                <Sliders className="size-3 text-muted-foreground shrink-0" />
+                {t('suppliers:priceRoundingShort', { defaultValue: 'Крок округлення' })}
               </span>
               <span className="font-medium text-foreground">
                 {supplier.priceRounding || 'NONE'}

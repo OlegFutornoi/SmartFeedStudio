@@ -588,5 +588,8 @@
   "dragDropOrBrowse": "Перетягніть XML, YML або CSV файл сюди, або натисніть для вибору",
   "selectSupplierError": "Оберіть постачальника для привʼязки фіду",
   "cinemaPause": "Пауза",
-  "cinemaPlay": "Автоплей"
+  "cinemaPlay": "Автоплей",
+  "baseCurrencyShort": "Базова валюта",
+  "baseMarkupShort": "Базова націнка",
+  "priceRoundingShort": "Крок округлення"
 }

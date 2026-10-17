@@ -588,5 +588,8 @@
   "dragDropOrBrowse": "Drag and drop XML, YML, or CSV file here, or click to browse",
   "selectSupplierError": "Select a supplier to link the feed",
   "cinemaPause": "Pause",
-  "cinemaPlay": "Autoplay"
+  "cinemaPlay": "Autoplay",
+  "baseCurrencyShort": "Base Currency",
+  "baseMarkupShort": "Base Markup",
+  "priceRoundingShort": "Price Rounding"
 }
