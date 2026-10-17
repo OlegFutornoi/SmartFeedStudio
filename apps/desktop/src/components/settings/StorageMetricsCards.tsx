@@ -55,7 +55,7 @@ export const StorageMetricsCards: React.FC<StorageMetricsCardsProps> = ({ storag
             <div className="text-2xs text-muted-foreground mt-0.5 flex items-center gap-1">
               <Package className="size-2.5" />
               <span data-testid="local-products-count">{storageStats?.productsCount || 0}</span>
-              <span>товарів</span>
+              <span>{t('storage:productsUnit', { defaultValue: 'товарів' })}</span>
             </div>
           </div>
         </div>
@@ -81,7 +81,7 @@ export const StorageMetricsCards: React.FC<StorageMetricsCardsProps> = ({ storag
             <div className="text-2xs text-muted-foreground mt-0.5 flex items-center gap-1">
               <Radio className="size-2.5" />
               <span data-testid="local-feeds-count">{storageStats?.feedsCount || 0}</span>
-              <span>фідів</span>
+              <span>{t('storage:feedsUnit', { defaultValue: 'фідів' })}</span>
             </div>
           </div>
         </div>
@@ -107,7 +107,7 @@ export const StorageMetricsCards: React.FC<StorageMetricsCardsProps> = ({ storag
             <div className="text-2xs text-muted-foreground mt-0.5 flex items-center gap-1">
               <Building2 className="size-2.5" />
               <span data-testid="local-suppliers-count">{storageStats?.suppliersCount || 0}</span>
-              <span>постач.</span>
+              <span>{t('storage:suppliersUnit', { defaultValue: 'постач.' })}</span>
             </div>
           </div>
         </div>

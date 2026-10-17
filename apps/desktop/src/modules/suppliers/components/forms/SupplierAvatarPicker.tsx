@@ -108,7 +108,11 @@ export const SupplierAvatarPicker: React.FC<SupplierAvatarPickerProps> = ({
     const trimmed = customUrl.trim();
     if (!trimmed) return;
     if (!/^https?:\/\//i.test(trimmed) || /javascript:/i.test(trimmed)) {
-      setErrorMsg('Дозволено лише безпечні веб-посилання (https://)');
+      setErrorMsg(
+        t('suppliers:avatarSafeUrlOnly', {
+          defaultValue: 'Дозволено лише безпечні веб-посилання (https://)',
+        }),
+      );
       return;
     }
     setErrorMsg(null);
@@ -162,7 +166,9 @@ export const SupplierAvatarPicker: React.FC<SupplierAvatarPickerProps> = ({
               <>
                 <Camera className="size-4 text-primary" />
                 <span className="text-3xs font-medium uppercase tracking-wider">
-                  {logoUrl ? 'Змінити' : 'Завантажити'}
+                  {logoUrl
+                    ? t('suppliers:changeLogo', { defaultValue: 'Змінити' })
+                    : t('suppliers:uploadLogo', { defaultValue: 'Завантажити' })}
                 </span>
               </>
             )}
@@ -205,7 +211,10 @@ export const SupplierAvatarPicker: React.FC<SupplierAvatarPickerProps> = ({
                 disabled={disabled || isProcessing}
                 onClick={handleFetchDomainLogo}
                 className="h-7 px-2.5 text-xs gap-1.5 cursor-pointer rounded-lg text-primary bg-primary/10 hover:bg-primary/20"
-                title={`Пошук логотипу для ${domain}`}
+                title={t('suppliers:searchLogoForDomain', {
+                  domain,
+                  defaultValue: `Пошук логотипу для ${domain}`,
+                })}
                 data-testid="supplier-avatar-fetch-domain-btn"
               >
                 <Sparkles className="size-3.5 text-primary" />
@@ -220,7 +229,9 @@ export const SupplierAvatarPicker: React.FC<SupplierAvatarPickerProps> = ({
               disabled={disabled || isProcessing}
               onClick={() => setShowUrlInput((v) => !v)}
               className="h-7 px-2 text-xs gap-1 text-muted-foreground hover:text-foreground cursor-pointer"
-              title="Вставити посилання на логотип"
+              title={t('suppliers:insertLogoUrl', {
+                defaultValue: 'Вставити посилання на логотип',
+              })}
               data-testid="supplier-avatar-url-toggle-btn"
             >
               <Link2 className="size-3" />
@@ -245,7 +256,8 @@ export const SupplierAvatarPicker: React.FC<SupplierAvatarPickerProps> = ({
 
           <p className="text-2xs text-muted-foreground">
             {t('suppliers:avatarUploadHint', { defaultValue: 'Клікніть або перетягніть логотип' })}
-            {domain && ` • Визначено домен: ${domain}`}
+            {domain &&
+              ` • ${t('suppliers:detectedDomain', { defaultValue: 'Визначено домен' })}: ${domain}`}
           </p>
 
           {/* Collapsible Direct URL Input */}
@@ -266,7 +278,7 @@ export const SupplierAvatarPicker: React.FC<SupplierAvatarPickerProps> = ({
                 className="h-7 px-2.5 text-xs cursor-pointer"
                 data-testid="supplier-avatar-apply-url-btn"
               >
-                Застосувати
+                {t('common:apply', { defaultValue: 'Застосувати' })}
               </Button>
             </div>
           )}

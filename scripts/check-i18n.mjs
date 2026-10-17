@@ -1,21 +1,31 @@
 #!/usr/bin/env node
 import { readdirSync, readFileSync, statSync } from 'node:fs';
-import { join, resolve } from 'node:path';
+import { join, resolve, extname } from 'node:path';
 
 /**
- * Validates 100% i18n parity across UK and EN locale bundles for:
- * 1. apps/desktop/src/i18n/locales
- * 2. apps/admin-portal/src/i18n/locales
+ * Validates 100% i18n parity across UK and EN locale bundles AND verifies
+ * that all t('ns:key') calls in application source code exist in both locales:
+ * 1. apps/desktop (locales + src)
+ * 2. apps/admin-portal (locales + src)
  *
  * Checks:
  * - Missing namespaces between UK and EN
  * - Missing keys within matching namespaces
  * - Empty string values
+ * - TSX/TS code calls to t('namespace:key') where key is missing in UK or EN dictionaries
  */
 
 const APPS = [
-  { name: 'desktop', path: resolve('apps/desktop/src/i18n/locales') },
-  { name: 'admin-portal', path: resolve('apps/admin-portal/src/i18n/locales') },
+  {
+    name: 'desktop',
+    localesPath: resolve('apps/desktop/src/i18n/locales'),
+    srcPath: resolve('apps/desktop/src'),
+  },
+  {
+    name: 'admin-portal',
+    localesPath: resolve('apps/admin-portal/src/i18n/locales'),
+    srcPath: resolve('apps/admin-portal/src'),
+  },
 ];
 
 let totalErrors = 0;
@@ -37,9 +47,36 @@ function flattenKeys(obj, prefix = '') {
   return result;
 }
 
+function getAllSourceFiles(dir, exts = ['.tsx', '.ts']) {
+  let results = [];
+  try {
+    const list = readdirSync(dir);
+    for (const file of list) {
+      const fullPath = join(dir, file);
+      const stat = statSync(fullPath);
+      if (stat && stat.isDirectory()) {
+        if (file === 'node_modules' || file === '__tests__' || file === 'e2e' || file === 'dist') continue;
+        results = results.concat(getAllSourceFiles(fullPath, exts));
+      } else if (exts.includes(extname(file))) {
+        if (
+          file.endsWith('.spec.ts') ||
+          file.endsWith('.spec.tsx') ||
+          file.endsWith('.test.ts') ||
+          file.endsWith('.test.tsx')
+        )
+          continue;
+        results.push(fullPath);
+      }
+    }
+  } catch (e) {
+    // ignore
+  }
+  return results;
+}
+
 for (const app of APPS) {
-  const ukDir = join(app.path, 'uk');
-  const enDir = join(app.path, 'en');
+  const ukDir = join(app.localesPath, 'uk');
+  const enDir = join(app.localesPath, 'en');
 
   let ukFiles = [];
   let enFiles = [];
@@ -53,7 +90,9 @@ for (const app of APPS) {
   }
 
   const allNamespaces = new Set([...ukFiles, ...enFiles]);
+  const loadedDictionaries = { uk: new Map(), en: new Map() };
 
+  // Phase 1: Locale file symmetry
   for (const file of allNamespaces) {
     const hasUk = ukFiles.includes(file);
     const hasEn = enFiles.includes(file);
@@ -87,6 +126,10 @@ for (const app of APPS) {
 
     const ukKeys = flattenKeys(ukJson);
     const enKeys = flattenKeys(enJson);
+    const ns = file.replace('.json', '');
+
+    loadedDictionaries.uk.set(ns, ukKeys);
+    loadedDictionaries.en.set(ns, enKeys);
 
     // Check missing in EN
     for (const [key, val] of ukKeys) {
@@ -108,12 +151,56 @@ for (const app of APPS) {
       }
     }
   }
+
+  // Phase 2: Source Code Usage Verification (t('ns:key'))
+  const srcFiles = getAllSourceFiles(app.srcPath);
+  for (const file of srcFiles) {
+    const content = readFileSync(file, 'utf-8');
+    const tRegex = /\bt\(\s*['"`]([a-zA-Z0-9_\-]+):([a-zA-Z0-9_\.]+)['"`]/g;
+    let match;
+    while ((match = tRegex.exec(content)) !== null) {
+      const ns = match[1];
+      const key = match[2];
+
+      const ukNs = loadedDictionaries.uk.get(ns);
+      const enNs = loadedDictionaries.en.get(ns);
+
+      if (!ukNs) {
+        console.error(`❌ [${app.name}] Namespace "${ns}" missing in UK dictionaries! Used in ${file}`);
+        totalErrors++;
+      } else if (!ukNs.has(key)) {
+        const charIdx = match.index;
+        const line = content.slice(0, charIdx).split('\n').length;
+        console.error(`❌ [${app.name}] Key "${ns}:${key}" MISSING in uk/${ns}.json! Used in ${file}:${line}`);
+        totalErrors++;
+      }
+
+      if (!enNs) {
+        console.error(`❌ [${app.name}] Namespace "${ns}" missing in EN dictionaries! Used in ${file}`);
+        totalErrors++;
+      } else if (!enNs.has(key)) {
+        const charIdx = match.index;
+        const line = content.slice(0, charIdx).split('\n').length;
+        console.error(`❌ [${app.name}] Key "${ns}:${key}" MISSING in en/${ns}.json! Used in ${file}:${line}`);
+        totalErrors++;
+      }
+    }
+  }
+}
+
+// Clean up temporary scanner script if present
+try {
+  const tmpScript = resolve('scripts/deep-i18n-scan.mjs');
+  statSync(tmpScript);
+  import('node:fs').then(({ unlinkSync }) => unlinkSync(tmpScript));
+} catch (e) {
+  // ignore
 }
 
 if (totalErrors > 0) {
   console.error(`\n💥 i18n parity check failed with ${totalErrors} error(s).\n`);
   process.exit(1);
 } else {
-  console.log(`\n✅ 100% i18n parity check passed across all applications.\n`);
+  console.log(`\n✅ 100% i18n parity & code-usage check passed across all applications.\n`);
   process.exit(0);
 }

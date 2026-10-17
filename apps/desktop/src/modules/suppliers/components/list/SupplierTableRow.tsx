@@ -1,7 +1,6 @@
 import React from 'react';
 import { TableRow, TableCell } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -11,7 +10,6 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { MoreVertical, ExternalLink, Edit2, Trash2, PlusCircle, Mail, Phone } from 'lucide-react';
 import { SupplierDto, getCurrencySymbol } from '@smartfeed/shared';
-import { Switch } from '@/components/ui/switch';
 import { useTranslation } from '@/i18n';
 import type { SupplierColumnId } from '@/modules/suppliers/types';
 import { SupplierAvatar } from '@/modules/suppliers/components/common/SupplierAvatar';
@@ -70,9 +68,23 @@ export const SupplierTableRow: React.FC<SupplierTableRowProps> = ({
               {s.name}
             </Button>
             <div className="flex items-center gap-1.5 mt-0.5">
-              <span className="text-2xs font-mono text-muted-foreground uppercase bg-muted px-1.5 py-0.2 rounded">
-                {s.code}
-              </span>
+              {s.managerName ? (
+                <span
+                  className="text-xs text-muted-foreground truncate max-w-[190px]"
+                  title={s.managerName}
+                  data-testid={`supplier-manager-${s.id}`}
+                >
+                  {s.managerName}
+                </span>
+              ) : (
+                <span
+                  className="text-xs text-muted-foreground/50 italic truncate max-w-[190px]"
+                  title={t('suppliers:managerPlaceholder', { defaultValue: 'Прізвище та ім’я' })}
+                  data-testid={`supplier-no-manager-${s.id}`}
+                >
+                  {t('suppliers:managerPlaceholder', { defaultValue: 'Прізвище та ім’я' })}
+                </span>
+              )}
             </div>
           </div>
         </div>
@@ -113,84 +125,115 @@ export const SupplierTableRow: React.FC<SupplierTableRowProps> = ({
         </TableCell>
       )}
 
+      {/* Industry Column */}
+      {visible('industry') && (
+        <TableCell className="py-2 text-xs" data-testid={`supplier-industry-${s.id}`}>
+          {s.industry ? (
+            <span
+              className="text-foreground truncate max-w-[160px] block"
+              title={s.industry || undefined}
+            >
+              {s.industry}
+            </span>
+          ) : (
+            <span
+              className="text-muted-foreground/50 italic truncate max-w-[160px] block"
+              title={t('suppliers:noIndustry', { defaultValue: 'Галузь не вказана' })}
+            >
+              {t('suppliers:noIndustry', { defaultValue: 'Галузь не вказана' })}
+            </span>
+          )}
+        </TableCell>
+      )}
+
+      {/* Segment Column */}
+      {visible('segment') && (
+        <TableCell className="py-2 text-xs" data-testid={`supplier-segment-${s.id}`}>
+          {s.segment ? (
+            <span
+              className="text-foreground truncate max-w-[120px] block"
+              title={s.segment || undefined}
+            >
+              {s.segment}
+            </span>
+          ) : (
+            <span
+              className="text-muted-foreground/50 italic truncate max-w-[120px] block"
+              title={t('suppliers:noSegment', { defaultValue: 'Сегмент не вказано' })}
+            >
+              {t('suppliers:noSegment', { defaultValue: 'Сегмент не вказано' })}
+            </span>
+          )}
+        </TableCell>
+      )}
+
       {/* Feeds Count */}
       {visible('feeds') && (
-        <TableCell className="py-2 text-center">
-          <Badge
-            variant="outline"
-            className="text-xs font-mono font-medium h-5.5 px-2 cursor-pointer hover:bg-muted"
+        <TableCell className="py-2 text-center text-xs">
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="h-auto p-0 text-xs font-normal text-foreground hover:text-primary hover:bg-transparent"
             onClick={() => (onOpenFeeds ? onOpenFeeds(s) : onOpenDetails(s))}
             data-testid={`view-supplier-feeds-btn-${s.id}`}
           >
             {s.activeFeedsCount || 0}
-          </Badge>
+          </Button>
         </TableCell>
       )}
 
       {/* Products Count */}
       {visible('products') && (
-        <TableCell className="py-2 text-center font-mono font-medium">
+        <TableCell className="py-2 text-center text-xs font-normal text-foreground">
           {(s.productsCount || 0).toLocaleString()}
         </TableCell>
       )}
 
-      {/* Currency & Default Markup */}
+      {/* Currency (Strictly Currency Only) */}
       {visible('currencyMarkup') && (
-        <TableCell className="py-2 text-center">
-          <div className="flex flex-col items-center gap-0.5">
-            <Badge variant="secondary" className="text-2xs h-4.5 px-1.5 font-bold font-mono">
-              {s.baseCurrency || 'UAH'} ({currencySym})
-            </Badge>
-            <span className="text-xs text-muted-foreground">
-              +{s.defaultMarginPercent || 0}%
-              {s.defaultFixedMarkup ? ` +${s.defaultFixedMarkup} ₴` : ''}
-            </span>
-          </div>
-        </TableCell>
-      )}
-
-      {/* Active Switch Column (Strictly Switch) */}
-      {visible('isActiveToggle') && (
         <TableCell
-          className="w-[80px] py-2 text-center"
-          data-testid={`supplier-active-toggle-${s.id}`}
+          className="py-2 text-center text-xs font-normal text-foreground"
+          data-testid={`supplier-currency-${s.id}`}
         >
-          <div className="flex items-center justify-center">
-            <Switch
-              checked={s.isActive}
-              onCheckedChange={() => onToggleStatus?.(s)}
-              className="scale-75 cursor-pointer"
-              data-testid={`supplier-switch-${s.id}`}
-              aria-label={t('suppliers:columnIsActiveToggle', {
-                defaultValue: 'Активність',
-              })}
-            />
-          </div>
+          {s.baseCurrency || 'UAH'} ({currencySym})
         </TableCell>
       )}
 
-      {/* Status Badge Column (Strictly Status Badge) */}
+      {/* Status Badge Column */}
       {visible('status') && (
         <TableCell
-          className="w-[110px] py-2 text-center"
+          className="w-[110px] min-w-[110px] py-2 text-center"
           data-testid={`supplier-status-badge-${s.id}`}
         >
           <div className="flex items-center justify-center">
-            {s.isActive ? (
-              <span
-                className="inline-flex items-center px-2 py-0.5 rounded-full text-2xs font-medium bg-success/15 text-success border border-success/30"
-                data-testid="status-badge"
-              >
-                {t('suppliers:statusActive', { defaultValue: 'Активний' })}
-              </span>
-            ) : (
-              <span
-                className="inline-flex items-center px-2 py-0.5 rounded-full text-2xs font-medium bg-muted text-muted-foreground border border-border"
-                data-testid="status-badge"
-              >
-                {t('suppliers:statusInactive', { defaultValue: 'Неактивний' })}
-              </span>
-            )}
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => onToggleStatus?.(s)}
+              className="h-auto p-0 hover:bg-transparent cursor-pointer transition-opacity hover:opacity-80"
+              title={s.isActive ? t('suppliers:statusActive') : t('suppliers:statusInactive')}
+              data-testid={`supplier-status-toggle-${s.id}`}
+            >
+              {s.isActive ? (
+                <span
+                  className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-success/15 text-success border border-success/30 shadow-2xs w-[105px] justify-center"
+                  data-testid="status-badge"
+                >
+                  <span className="size-1.5 rounded-full bg-success animate-pulse shrink-0" />
+                  {t('suppliers:statusActive', { defaultValue: 'Активний' })}
+                </span>
+              ) : (
+                <span
+                  className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-muted text-muted-foreground border border-border w-[105px] justify-center"
+                  data-testid="status-badge"
+                >
+                  <span className="size-1.5 rounded-full bg-muted-foreground/40 shrink-0" />
+                  {t('suppliers:statusInactive', { defaultValue: 'Неактивний' })}
+                </span>
+              )}
+            </Button>
           </div>
         </TableCell>
       )}
@@ -198,17 +241,6 @@ export const SupplierTableRow: React.FC<SupplierTableRowProps> = ({
       {/* Row Actions Menu */}
       <TableCell className="pr-3.5 py-2 text-right">
         <div className="flex items-center justify-end gap-1">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => onAddFeed(s)}
-            className="size-7 text-muted-foreground hover:text-primary hover:bg-primary/10"
-            title={t('suppliers:actionAddFeed', { defaultValue: 'Підключити фід' })}
-            data-testid={`supplier-card-import-btn-${s.id}`}
-          >
-            <PlusCircle className="size-3.5" />
-          </Button>
-
           <DropdownMenu modal={false}>
             <DropdownMenuTrigger asChild>
               <Button

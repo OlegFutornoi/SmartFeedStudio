@@ -68,9 +68,19 @@ export const SuppliersDataTable: React.FC<SuppliersDataTableProps> = ({
                   {t('suppliers:columnContacts', { defaultValue: 'Контакти' })}
                 </TableHead>
               )}
+              {visible('industry') && (
+                <TableHead className="w-[170px] font-semibold text-foreground">
+                  {t('suppliers:columnIndustry', { defaultValue: 'Галузь' })}
+                </TableHead>
+              )}
+              {visible('segment') && (
+                <TableHead className="w-[130px] font-semibold text-foreground">
+                  {t('suppliers:columnSegment', { defaultValue: 'Сегмент' })}
+                </TableHead>
+              )}
               {visible('feeds') && (
                 <TableHead className="w-[120px] font-semibold text-foreground text-center">
-                  {t('suppliers:columnFeeds', { defaultValue: 'Джерела фідів' })}
+                  {t('suppliers:columnFeeds', { defaultValue: 'Фіди' })}
                 </TableHead>
               )}
               {visible('products') && (
@@ -79,17 +89,12 @@ export const SuppliersDataTable: React.FC<SuppliersDataTableProps> = ({
                 </TableHead>
               )}
               {visible('currencyMarkup') && (
-                <TableHead className="w-[130px] font-semibold text-foreground text-center">
-                  {t('suppliers:columnCurrencyMarkup', { defaultValue: 'Валюта / Націнка' })}
-                </TableHead>
-              )}
-              {visible('isActiveToggle') && (
-                <TableHead className="w-[80px] font-semibold text-foreground text-center">
-                  {t('suppliers:columnIsActiveToggle', { defaultValue: 'Активність' })}
+                <TableHead className="w-[120px] font-semibold text-foreground text-center">
+                  {t('suppliers:columnCurrencyMarkup', { defaultValue: 'Валюта' })}
                 </TableHead>
               )}
               {visible('status') && (
-                <TableHead className="w-[110px] font-semibold text-foreground text-center">
+                <TableHead className="w-[110px] min-w-[110px] font-semibold text-foreground text-center">
                   {t('suppliers:columnStatus', { defaultValue: 'Статус' })}
                 </TableHead>
               )}

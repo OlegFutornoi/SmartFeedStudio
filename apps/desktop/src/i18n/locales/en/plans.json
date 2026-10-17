@@ -139,6 +139,10 @@
   "paymentDeclinedDesc": "The transaction was not completed or was declined by the bank. Access remains locked until successful payment.",
   "startWorkingBtn": "Start Working",
   "tryAgainBtn": "Try Again",
-  "closeBtn": "Close",
-  "securePaymentNotice": "WayForPay gateway is secured with 256-bit SSL encryption. Supporting Visa, MasterCard, Apple Pay, Google Pay, and Privat24."
+  "securePaymentNotice": "WayForPay gateway is secured with 256-bit SSL encryption. Supporting Visa, MasterCard, Apple Pay, Google Pay, and Privat24.",
+  "quotaExceededTitle": "Quota Exceeded: {{resource}}",
+  "quotaExceededDesc": "Your current plan {{plan}} allows using up to {{max}} {{resource}}. You have already used {{current}}.",
+  "quotaHowToIncrease": "How to increase available quota?",
+  "quotaUpgradeAdvice": "Upgrade to a higher subscription plan (such as Pro or Enterprise) to get more suppliers, unlimited feeds, and an expanded SKU catalog.",
+  "viewPlansBtn": "View Plans"
 }

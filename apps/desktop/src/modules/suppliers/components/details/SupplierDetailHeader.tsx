@@ -149,12 +149,11 @@ export const SupplierDetailHeader: React.FC<SupplierDetailHeaderProps> = ({
                   href={supplier.website}
                   target="_blank"
                   rel="noreferrer"
-                  className="flex items-center gap-1 hover:text-foreground transition-colors"
+                  className="p-1 rounded text-muted-foreground hover:text-foreground hover:bg-muted transition-colors inline-flex items-center"
+                  title={supplier.website}
+                  data-testid="supplier-detail-website-icon"
                 >
-                  <Globe className="size-3.5 text-muted-foreground" />
-                  <span className="truncate max-w-[180px]">
-                    {supplier.website.replace(/^https?:\/\//, '')}
-                  </span>
+                  <Globe className="size-3.5" />
                 </a>
               )}
             </div>

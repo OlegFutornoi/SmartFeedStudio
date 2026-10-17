@@ -9,6 +9,7 @@ import {
   convertSupplierPrice,
   getCurrencySymbol,
 } from '@smartfeed/shared';
+import { useTranslation } from '@/i18n';
 
 interface SupplierCurrencyPreviewCardProps {
   baseCurrency: CurrencyCode;
@@ -27,6 +28,7 @@ export const SupplierCurrencyPreviewCard: React.FC<SupplierCurrencyPreviewCardPr
   isFetchingRates,
   onRefreshRates,
 }) => {
+  const { t } = useTranslation(['suppliers', 'common']);
   const [previewCost, setPreviewCost] = useState<number>(25);
 
   const conversion = useMemo(() => {
@@ -45,7 +47,7 @@ export const SupplierCurrencyPreviewCard: React.FC<SupplierCurrencyPreviewCardPr
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
           <CardTitle className="text-sm font-semibold text-foreground">
-            Конвертація в реальному часі
+            {t('suppliers:liveConversionTitle', { defaultValue: 'Конвертація в реальному часі' })}
           </CardTitle>
           <Button
             variant="ghost"
@@ -53,19 +55,24 @@ export const SupplierCurrencyPreviewCard: React.FC<SupplierCurrencyPreviewCardPr
             onClick={onRefreshRates}
             disabled={isFetchingRates}
             className="size-7"
-            title="Оновити курси НБУ"
+            title={t('suppliers:refreshNbuRatesTooltip', { defaultValue: 'Оновити курси НБУ' })}
           >
             <RefreshCw
               className={`size-3 text-muted-foreground ${isFetchingRates ? 'animate-spin' : ''}`}
             />
           </Button>
         </div>
-        <CardDescription className="text-xs">Тестовий розрахунок для товару</CardDescription>
+        <CardDescription className="text-xs">
+          {t('suppliers:liveConversionDesc', { defaultValue: 'Тестовий розрахунок для товару' })}
+        </CardDescription>
       </CardHeader>
       <CardContent className="space-y-3">
         <div>
           <span className="text-xs text-muted-foreground block mb-1">
-            Ціна у валюті постачальника ({getCurrencySymbol(baseCurrency)}):
+            {t('suppliers:costInSupplierCurrency', {
+              defaultValue: 'Ціна у валюті постачальника',
+            })}{' '}
+            ({getCurrencySymbol(baseCurrency)}):
           </span>
           <Input
             type="number"
@@ -78,21 +85,32 @@ export const SupplierCurrencyPreviewCard: React.FC<SupplierCurrencyPreviewCardPr
 
         <div className="p-3 rounded-xl bg-muted/40 border border-border/80 space-y-2 text-xs">
           <div className="flex items-center justify-between">
-            <span className="text-muted-foreground">Базовий курс:</span>
+            <span className="text-muted-foreground">
+              {t('suppliers:baseRateLabel', { defaultValue: 'Базовий курс:' })}
+            </span>
             <span className="font-mono">{conversion.baseExchangeRate} ₴</span>
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-muted-foreground">Ефективний курс (+{bufferPercent}%):</span>
+            <span className="text-muted-foreground">
+              {t('suppliers:effectiveRateLabel', {
+                buffer: bufferPercent,
+                defaultValue: `Ефективний курс (+${bufferPercent}%):`,
+              })}
+            </span>
             <span className="font-mono font-semibold text-foreground">
               {conversion.effectiveExchangeRate} ₴
             </span>
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-muted-foreground">Валютний буфер у сумі:</span>
+            <span className="text-muted-foreground">
+              {t('suppliers:bufferAmountLabel', { defaultValue: 'Валютний буфер у сумі:' })}
+            </span>
             <span className="font-mono text-success">+{conversion.bufferApplied} ₴</span>
           </div>
           <div className="pt-2 border-t border-border/80 flex items-center justify-between">
-            <span className="font-bold text-foreground">Конвертовано в UAH:</span>
+            <span className="font-bold text-foreground">
+              {t('suppliers:convertedToUahLabel', { defaultValue: 'Конвертовано в UAH:' })}
+            </span>
             <span
               className="text-base font-bold font-mono text-primary"
               data-testid="converted-currency-price"

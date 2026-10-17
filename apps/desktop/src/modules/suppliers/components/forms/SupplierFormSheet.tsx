@@ -171,7 +171,7 @@ export const SupplierFormSheet: React.FC<SupplierFormSheetProps> = ({
               {formState.isSubmitting ? (
                 <>
                   <Loader2 className="size-3.5 animate-spin" />
-                  Збереження...
+                  {t('common:saving', { defaultValue: 'Збереження...' })}
                 </>
               ) : formState.isEdit ? (
                 t('common:save', { defaultValue: 'Зберегти зміни' })

@@ -76,9 +76,8 @@ export const SupplierDrawerHeader: React.FC<SupplierDrawerHeaderProps> = ({
                 />
               </div>
             </div>
-            <div className="flex items-center gap-2 text-xs text-muted-foreground mt-0.5 flex-wrap">
+            <div className="flex items-center gap-1.5 text-xs text-muted-foreground mt-0.5 flex-wrap">
               {supplier.contactEmail && <span>{supplier.contactEmail}</span>}
-              {supplier.contactEmail && supplier.website && <span>•</span>}
               {supplier.website && (
                 <a
                   href={
@@ -88,11 +87,11 @@ export const SupplierDrawerHeader: React.FC<SupplierDrawerHeaderProps> = ({
                   }
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:text-primary hover:underline flex items-center gap-1"
+                  className="p-0.5 rounded text-muted-foreground hover:text-primary hover:bg-muted transition-colors inline-flex items-center"
                   title={supplier.website}
+                  data-testid="supplier-drawer-website-icon"
                 >
-                  <span>{supplier.website.replace(/^https?:\/\//, '')}</span>
-                  <ExternalLink className="size-2.5 shrink-0" />
+                  <ExternalLink className="size-3.5 shrink-0" />
                 </a>
               )}
             </div>

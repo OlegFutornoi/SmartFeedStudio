@@ -35,7 +35,13 @@ export function useColumnVisibility<T extends string>(
       if (stored) {
         const parsed = JSON.parse(stored);
         if (typeof parsed === 'object' && parsed !== null) {
-          return { ...defaultState, ...parsed } as Record<T, boolean>;
+          const merged: Record<string, boolean> = { ...defaultState };
+          columns.forEach((col) => {
+            if (typeof parsed[col.id] === 'boolean') {
+              merged[col.id] = parsed[col.id];
+            }
+          });
+          return merged as Record<T, boolean>;
         }
       }
     } catch (err) {

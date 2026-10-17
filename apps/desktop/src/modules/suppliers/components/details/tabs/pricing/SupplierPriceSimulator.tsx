@@ -10,6 +10,7 @@ import {
   calculateBaseSellingPrice,
   applyPriceRounding,
 } from '@smartfeed/shared';
+import { useTranslation } from '@/i18n';
 
 interface SupplierPriceSimulatorProps {
   globalMargin: number;
@@ -24,6 +25,7 @@ export const SupplierPriceSimulator: React.FC<SupplierPriceSimulatorProps> = ({
   rules,
   roundingMode = PriceRoundingMode.NONE,
 }) => {
+  const { t } = useTranslation(['suppliers', 'common']);
   const [simCost, setSimCost] = useState<number>(500);
 
   const simulation = useMemo(() => {
@@ -52,16 +54,20 @@ export const SupplierPriceSimulator: React.FC<SupplierPriceSimulatorProps> = ({
       <CardHeader className="pb-2">
         <CardTitle className="text-sm font-semibold text-foreground flex items-center gap-2">
           <SlidersHorizontal className="size-4 text-primary" />
-          Live Симулятор розрахунку ціни
+          {t('suppliers:simulatorTitle', { defaultValue: 'Live Симулятор розрахунку ціни' })}
         </CardTitle>
         <CardDescription className="text-xs">
-          Введіть вхідну собівартість та подивіться результат
+          {t('suppliers:simulatorDesc', {
+            defaultValue: 'Введіть вхідну собівартість та подивіться результат',
+          })}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div>
           <Label className="text-xs font-medium text-foreground block mb-1">
-            Вхідна ціна постачальника (₴):
+            {t('suppliers:simulatorCostPrice', {
+              defaultValue: 'Вхідна ціна постачальника (₴):',
+            })}
           </Label>
           <Input
             type="number"
@@ -75,34 +81,46 @@ export const SupplierPriceSimulator: React.FC<SupplierPriceSimulatorProps> = ({
 
         <div className="p-3 rounded-xl bg-muted/40 border border-border/80 space-y-2">
           <div className="flex items-center justify-between text-xs">
-            <span className="text-muted-foreground">Застосоване правило:</span>
+            <span className="text-muted-foreground">
+              {t('suppliers:simulatorAppliedRule', { defaultValue: 'Застосоване правило:' })}
+            </span>
             <Badge variant="outline" className="text-2xs font-mono">
-              {simulation.matchedRuleType === 'PRICE_BRACKET' ? 'Діапазон цін' : 'Базова націнка'}
+              {simulation.matchedRuleType === 'PRICE_BRACKET'
+                ? t('suppliers:simulatorPriceBracket', { defaultValue: 'Діапазон цін' })
+                : t('suppliers:simulatorBaseMarkup', { defaultValue: 'Базова націнка' })}
             </Badge>
           </div>
           {roundingMode && roundingMode !== PriceRoundingMode.NONE && (
             <div className="flex items-center justify-between text-xs">
-              <span className="text-muted-foreground">Крок округлення:</span>
+              <span className="text-muted-foreground">
+                {t('suppliers:simulatorRoundingStep', { defaultValue: 'Крок округлення:' })}
+              </span>
               <Badge variant="secondary" className="text-2xs font-mono">
                 {roundingMode}
               </Badge>
             </div>
           )}
           <div className="flex items-center justify-between text-xs">
-            <span className="text-muted-foreground">Підсумкова націнка:</span>
+            <span className="text-muted-foreground">
+              {t('suppliers:simulatorFinalMarkup', { defaultValue: 'Підсумкова націнка:' })}
+            </span>
             <span className="font-semibold text-foreground">
               +{simulation.appliedMarginPercent}%{' '}
               {simulation.appliedFixedMarkup ? `+${simulation.appliedFixedMarkup}₴` : ''}
             </span>
           </div>
           <div className="flex items-center justify-between text-xs">
-            <span className="text-muted-foreground">Маржинальний дохід:</span>
+            <span className="text-muted-foreground">
+              {t('suppliers:simulatorMarginProfit', { defaultValue: 'Маржинальний дохід:' })}
+            </span>
             <span className="font-semibold text-success">
               +{(simulation.sellingPrice - simCost).toFixed(2)} ₴
             </span>
           </div>
           <div className="pt-2 border-t border-border/70 flex items-center justify-between">
-            <span className="text-xs font-bold text-foreground">Вихідна ціна продажу:</span>
+            <span className="text-xs font-bold text-foreground">
+              {t('suppliers:simulatorSellingPrice', { defaultValue: 'Вихідна ціна продажу:' })}
+            </span>
             <span
               className="text-lg font-bold font-mono text-primary"
               data-testid="simulated-selling-price"

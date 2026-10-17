@@ -47,15 +47,15 @@ export const SuppliersTableToolbar: React.FC<SuppliersTableToolbarProps> = ({
       className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 bg-card/60 p-2.5 rounded-xl border border-border/70"
       data-testid="suppliers-table-toolbar"
     >
-      {/* Left side: Clean Search Input */}
-      <div className="flex-1 max-w-sm">
+      {/* Left side: Clean Compact Search Input (CommerceO Pattern) */}
+      <div className="w-full sm:w-64 max-w-xs shrink-0">
         <div className="relative w-full">
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground pointer-events-none" />
           <Input
             value={filters.search}
             onChange={(e) => onFilterChange({ search: e.target.value })}
             placeholder={t('suppliers:searchPlaceholder', {
-              defaultValue: 'Пошук постачальників...',
+              defaultValue: 'Пошук...',
             })}
             className="pl-8 h-8 text-xs bg-background/80"
             data-testid="search-suppliers-input"
@@ -66,13 +66,17 @@ export const SuppliersTableToolbar: React.FC<SuppliersTableToolbarProps> = ({
       {/* Right side: Actions, Page size, Customize Columns */}
       <div className="flex items-center gap-2 self-end sm:self-auto flex-wrap">
         <Select value={String(pageSize)} onValueChange={(val) => onPageSizeChange(Number(val))}>
-          <SelectTrigger className="h-8 text-xs w-[80px] bg-background/80">
+          <SelectTrigger
+            className="h-8 text-xs w-[68px] bg-background/80"
+            data-testid="suppliers-page-size-select"
+          >
             <SelectValue />
           </SelectTrigger>
           <SelectContent className="text-xs">
-            <SelectItem value="10">10 / стор</SelectItem>
-            <SelectItem value="25">25 / стор</SelectItem>
-            <SelectItem value="50">50 / стор</SelectItem>
+            <SelectItem value="10">10</SelectItem>
+            <SelectItem value="25">25</SelectItem>
+            <SelectItem value="50">50</SelectItem>
+            <SelectItem value="100">100</SelectItem>
           </SelectContent>
         </Select>
 
@@ -112,7 +116,7 @@ export const SuppliersTableToolbar: React.FC<SuppliersTableToolbarProps> = ({
           }
         >
           <Plus className="size-3.5" />
-          {t('suppliers:createSupplier', { defaultValue: 'Додати постачальника' })}
+          {t('common:add', { defaultValue: 'Додати' })}
         </Button>
       </div>
     </div>

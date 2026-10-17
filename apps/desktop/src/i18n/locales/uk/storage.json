@@ -76,5 +76,15 @@
   "addPhoto": "Додати фото",
   "cdnReady": "CDN Активний",
   "r2Active": "Cloudflare R2 Активний",
-  "refreshQuota": "Оновити квоту"
+  "refreshQuota": "Оновити квоту",
+  "activeWorkspaceDesc": "Локальна папка для зашифрованої бази даних та файлів фідів",
+  "copyPath": "Скопіювати шлях",
+  "metricsTitle": "Використання дискового простору",
+  "databaseSize": "База даних",
+  "feedsStorage": "Сховище фідів",
+  "backupsStorage": "Резервні копії",
+  "cacheStorage": "Експорти та кеш",
+  "productsUnit": "товарів",
+  "feedsUnit": "фідів",
+  "suppliersUnit": "постач."
 }

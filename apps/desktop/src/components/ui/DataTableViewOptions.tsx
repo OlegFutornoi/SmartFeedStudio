@@ -46,10 +46,10 @@ export function DataTableViewOptions<T extends string = string>({
           size="sm"
           data-testid="customize-columns-btn"
           className={`h-8 gap-1.5 text-xs bg-background/80 hover:bg-muted/80 border-border/80 px-2.5 font-normal shadow-2xs ${className}`}
-          title={isUk ? 'Налаштувати стовпці' : 'Customize columns'}
+          title={isUk ? 'Стовпці' : 'Columns'}
         >
           <SlidersHorizontal className="size-3.5 text-muted-foreground" />
-          <span>{isUk ? 'Налаштувати стовпці' : 'Customize Columns'}</span>
+          <span>{isUk ? 'Стовпці' : 'Columns'}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent

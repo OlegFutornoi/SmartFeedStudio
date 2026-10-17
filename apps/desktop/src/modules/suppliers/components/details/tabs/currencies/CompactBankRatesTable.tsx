@@ -13,6 +13,7 @@ import { CurrencyCode } from '@smartfeed/shared';
 import { fetchBankExchangeRates, BankExchangeRate } from '@/lib/api/currencies';
 import { BankLogo } from '@/modules/suppliers/components/details/tabs/currencies/BankLogo';
 import { cn } from '@/lib/utils';
+import { useTranslation } from '@/i18n';
 
 interface CompactBankRatesTableProps {
   selectedCurrency: CurrencyCode;
@@ -34,6 +35,7 @@ export const CompactBankRatesTable: React.FC<CompactBankRatesTableProps> = ({
   selectedBankId,
   onSelectBankRate,
 }) => {
+  const { t } = useTranslation(['suppliers', 'common']);
   const [bankRates, setBankRates] = useState<BankExchangeRate[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [lastUpdated, setLastUpdated] = useState<string>('');
@@ -65,7 +67,9 @@ export const CompactBankRatesTable: React.FC<CompactBankRatesTableProps> = ({
       {/* Header with Currency Pills and Sync Button */}
       <div className="flex items-center justify-between gap-2 pb-2 border-b border-border/40">
         <div className="flex items-center gap-1.5">
-          <span className="text-xs font-semibold text-foreground">Курси банків</span>
+          <span className="text-xs font-semibold text-foreground">
+            {t('suppliers:bankRatesTitle', { defaultValue: 'Курси банків' })}
+          </span>
           {lastUpdated && (
             <span className="text-[10px] text-muted-foreground font-mono tabular-nums">
               ({lastUpdated})
@@ -99,7 +103,7 @@ export const CompactBankRatesTable: React.FC<CompactBankRatesTableProps> = ({
             onClick={() => loadRates(selectedCurrency, true)}
             disabled={isLoading}
             className="size-6 p-0 text-muted-foreground hover:text-foreground"
-            title="Оновити котирування"
+            title={t('suppliers:refreshRatesTooltip', { defaultValue: 'Оновити котирування' })}
           >
             <RefreshCw className={cn('size-3', isLoading && 'animate-spin')} />
           </Button>
@@ -111,10 +115,18 @@ export const CompactBankRatesTable: React.FC<CompactBankRatesTableProps> = ({
         <Table className="w-full text-left border-collapse table-fixed">
           <TableHeader>
             <TableRow className="border-b border-border/40 bg-muted/20 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider h-7">
-              <TableHead className="w-[38%] py-1 px-2.5 font-medium">Банк</TableHead>
-              <TableHead className="w-[22%] py-1 px-1.5 text-right font-medium">Купівля</TableHead>
-              <TableHead className="w-[24%] py-1 px-1.5 text-right font-medium">Продаж</TableHead>
-              <TableHead className="w-[16%] py-1 px-2 text-right font-medium">± НБУ</TableHead>
+              <TableHead className="w-[38%] py-1 px-2.5 font-medium">
+                {t('suppliers:colBank', { defaultValue: 'Банк' })}
+              </TableHead>
+              <TableHead className="w-[22%] py-1 px-1.5 text-right font-medium">
+                {t('suppliers:colBuy', { defaultValue: 'Купівля' })}
+              </TableHead>
+              <TableHead className="w-[24%] py-1 px-1.5 text-right font-medium">
+                {t('suppliers:colSell', { defaultValue: 'Продаж' })}
+              </TableHead>
+              <TableHead className="w-[16%] py-1 px-2 text-right font-medium">
+                ± {t('suppliers:colNbu', { defaultValue: 'НБУ' })}
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody className="divide-y divide-border/30 text-xs">
@@ -180,7 +192,11 @@ export const CompactBankRatesTable: React.FC<CompactBankRatesTableProps> = ({
 
       {/* Footer hint without redundant counter */}
       <div className="text-[11px] text-muted-foreground pt-0.5">
-        <span>Клікніть на банк для застосування курсу продажу</span>
+        <span>
+          {t('suppliers:bankRatesHint', {
+            defaultValue: 'Клікніть на банк для застосування курсу продажу',
+          })}
+        </span>
       </div>
     </div>
   );

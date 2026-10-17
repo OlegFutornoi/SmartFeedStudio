@@ -62,7 +62,10 @@ export const SupplierCurrencyFormCard: React.FC<SupplierCurrencyFormCardProps> =
           })}
         </CardTitle>
         <CardDescription className="text-xs">
-          Вкажіть базову валюту прайсу постачальника, джерело курсу та захисний буфер
+          {t('suppliers:currencyConfigDesc', {
+            defaultValue:
+              'Вкажіть базову валюту прайсу постачальника, джерело курсу та захисний буфер',
+          })}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -70,7 +73,9 @@ export const SupplierCurrencyFormCard: React.FC<SupplierCurrencyFormCardProps> =
           {/* Base Currency */}
           <div>
             <Label className="text-xs font-medium text-foreground block mb-1.5">
-              Базова валюта прайсу постачальника:
+              {t('suppliers:baseCurrencyLabel', {
+                defaultValue: 'Базова валюта прайсу постачальника:',
+              })}
             </Label>
             <Select
               value={baseCurrency}
@@ -83,12 +88,24 @@ export const SupplierCurrencyFormCard: React.FC<SupplierCurrencyFormCardProps> =
                 <SelectValue />
               </SelectTrigger>
               <SelectContent className="text-xs">
-                <SelectItem value={CurrencyCode.UAH}>UAH (Гривня ₴)</SelectItem>
-                <SelectItem value={CurrencyCode.USD}>USD (Долар США $)</SelectItem>
-                <SelectItem value={CurrencyCode.EUR}>EUR (Євро €)</SelectItem>
-                <SelectItem value={CurrencyCode.PLN}>PLN (Польський злотий zł)</SelectItem>
-                <SelectItem value={CurrencyCode.GBP}>GBP (Фунт стерлінгів £)</SelectItem>
-                <SelectItem value={CurrencyCode.CNY}>CNY (Китайський юань ¥)</SelectItem>
+                <SelectItem value={CurrencyCode.UAH}>
+                  {t('suppliers:currUah', { defaultValue: 'UAH (Гривня ₴)' })}
+                </SelectItem>
+                <SelectItem value={CurrencyCode.USD}>
+                  {t('suppliers:currUsd', { defaultValue: 'USD (Долар США $)' })}
+                </SelectItem>
+                <SelectItem value={CurrencyCode.EUR}>
+                  {t('suppliers:currEur', { defaultValue: 'EUR (Євро €)' })}
+                </SelectItem>
+                <SelectItem value={CurrencyCode.PLN}>
+                  {t('suppliers:currPln', { defaultValue: 'PLN (Польський злотий zł)' })}
+                </SelectItem>
+                <SelectItem value={CurrencyCode.GBP}>
+                  {t('suppliers:currGbp', { defaultValue: 'GBP (Фунт стерлінгів £)' })}
+                </SelectItem>
+                <SelectItem value={CurrencyCode.CNY}>
+                  {t('suppliers:currCny', { defaultValue: 'CNY (Китайський юань ¥)' })}
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -96,7 +113,9 @@ export const SupplierCurrencyFormCard: React.FC<SupplierCurrencyFormCardProps> =
           {/* Rate Mode */}
           <div>
             <Label className="text-xs font-medium text-foreground block mb-1.5">
-              Режим отримання курсу до Гривні (UAH):
+              {t('suppliers:exchangeModeLabel', {
+                defaultValue: 'Режим отримання курсу до Гривні (UAH):',
+              })}
             </Label>
             <Select
               value={exchangeMode}
@@ -107,13 +126,15 @@ export const SupplierCurrencyFormCard: React.FC<SupplierCurrencyFormCardProps> =
               </SelectTrigger>
               <SelectContent className="text-xs">
                 <SelectItem value={ExchangeRateMode.AUTO_NBU}>
-                  Офіційний курс НБУ (Автоматично)
+                  {t('suppliers:modeNbu', { defaultValue: 'Офіційний курс НБУ (Автоматично)' })}
                 </SelectItem>
                 <SelectItem value={ExchangeRateMode.AUTO_PRIVAT}>
-                  ПриватБанк (Картковий курс)
+                  {t('suppliers:modePrivat', { defaultValue: 'ПриватБанк (Картковий курс)' })}
                 </SelectItem>
                 <SelectItem value={ExchangeRateMode.MANUAL}>
-                  Фіксований вручну / Банківський
+                  {t('suppliers:modeManualBank', {
+                    defaultValue: 'Фіксований вручну / Банківський',
+                  })}
                 </SelectItem>
               </SelectContent>
             </Select>
@@ -125,8 +146,12 @@ export const SupplierCurrencyFormCard: React.FC<SupplierCurrencyFormCardProps> =
           <div>
             <Label className="text-xs font-medium text-foreground block mb-1.5">
               {exchangeMode === ExchangeRateMode.MANUAL
-                ? 'Курс обміну (вручну / обраний банк):'
-                : 'Поточний курс обміну:'}
+                ? t('suppliers:exchangeRateManualLabel', {
+                    defaultValue: 'Курс обміну (вручну / обраний банк):',
+                  })
+                : t('suppliers:exchangeRateCurrentLabel', {
+                    defaultValue: 'Поточний курс обміну:',
+                  })}
             </Label>
             <div className="relative">
               <Input
@@ -147,7 +172,9 @@ export const SupplierCurrencyFormCard: React.FC<SupplierCurrencyFormCardProps> =
 
           <div>
             <Label className="text-xs font-medium text-foreground block mb-1.5">
-              Валютний буфер ризику (% Buffer):
+              {t('suppliers:currencyBufferLabel', {
+                defaultValue: 'Валютний буфер ризику (% Buffer):',
+              })}
             </Label>
             <div className="relative">
               <Input
@@ -164,7 +191,9 @@ export const SupplierCurrencyFormCard: React.FC<SupplierCurrencyFormCardProps> =
               </span>
             </div>
             <p className="text-2xs text-muted-foreground mt-1">
-              Захищає прибуток при різких коливаннях курсу між оновленнями фідів
+              {t('suppliers:currencyBufferDesc', {
+                defaultValue: 'Захищає прибуток при різких коливаннях курсу між оновленнями фідів',
+              })}
             </p>
           </div>
         </div>
@@ -172,7 +201,9 @@ export const SupplierCurrencyFormCard: React.FC<SupplierCurrencyFormCardProps> =
         {/* Rounding Mode */}
         <div>
           <Label className="text-xs font-medium text-foreground block mb-1.5">
-            Правило маркетингового округлення цін:
+            {t('suppliers:priceRoundingLabel', {
+              defaultValue: 'Правило маркетингового округлення цін:',
+            })}
           </Label>
           <Select
             value={roundingMode}
@@ -182,24 +213,38 @@ export const SupplierCurrencyFormCard: React.FC<SupplierCurrencyFormCardProps> =
               <SelectValue />
             </SelectTrigger>
             <SelectContent className="text-xs">
-              <SelectItem value={PriceRoundingMode.NONE}>Без округлення (копійки як є)</SelectItem>
+              <SelectItem value={PriceRoundingMode.NONE}>
+                {t('suppliers:roundingNone', { defaultValue: 'Без округлення (копійки як є)' })}
+              </SelectItem>
               <SelectItem value={PriceRoundingMode.NEAREST_INTEGER}>
-                До цілої гривні (напр. 450 грн)
+                {t('suppliers:roundingNearestInteger', {
+                  defaultValue: 'До цілої гривні (напр. 450 грн)',
+                })}
               </SelectItem>
               <SelectItem value={PriceRoundingMode.DECIMAL_99}>
-                Маркетингове закінчення .99 (напр. 449.99 грн)
+                {t('suppliers:roundingDecimal99', {
+                  defaultValue: 'Маркетингове закінчення .99 (напр. 449.99 грн)',
+                })}
               </SelectItem>
               <SelectItem value={PriceRoundingMode.DECIMAL_95}>
-                Маркетингове закінчення .95 (напр. 449.95 грн)
+                {t('suppliers:roundingDecimal95', {
+                  defaultValue: 'Маркетингове закінчення .95 (напр. 449.95 грн)',
+                })}
               </SelectItem>
               <SelectItem value={PriceRoundingMode.INTEGER_9}>
-                Закінчення на 9 (напр. 449, 489, 999 грн)
+                {t('suppliers:roundingInteger9', {
+                  defaultValue: 'Закінчення на 9 (напр. 449, 489, 999 грн)',
+                })}
               </SelectItem>
               <SelectItem value={PriceRoundingMode.INTEGER_7}>
-                Закінчення на 7 (напр. 447, 487, 997 грн)
+                {t('suppliers:roundingInteger7', {
+                  defaultValue: 'Закінчення на 7 (напр. 447, 487, 997 грн)',
+                })}
               </SelectItem>
               <SelectItem value={PriceRoundingMode.INTEGER_5}>
-                Закінчення на 5 (напр. 445, 485, 995 грн)
+                {t('suppliers:roundingInteger5', {
+                  defaultValue: 'Закінчення на 5 (напр. 445, 485, 995 грн)',
+                })}
               </SelectItem>
             </SelectContent>
           </Select>
@@ -214,8 +259,8 @@ export const SupplierCurrencyFormCard: React.FC<SupplierCurrencyFormCardProps> =
         >
           <CheckCircle2 className="size-3.5" />
           {isSaving
-            ? 'Збереження...'
-            : t('common:save', { defaultValue: 'Зберегти валютні налаштування' })}
+            ? t('common:saving', { defaultValue: 'Збереження...' })
+            : t('common:save', { defaultValue: 'Зберегти' })}
         </Button>
       </CardContent>
     </Card>

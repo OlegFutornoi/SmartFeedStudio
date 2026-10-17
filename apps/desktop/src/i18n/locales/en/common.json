@@ -36,5 +36,14 @@
   "navSuppliers": "Suppliers",
   "navPlans": "Subscription Plans",
   "navProfile": "User Profile",
-  "navSettings": "Platform Settings"
+  "navSettings": "Platform Settings",
+  "export": "Export",
+  "phone": "Phone",
+  "website": "Website",
+  "description": "Description",
+  "openLink": "Open link",
+  "saving": "Saving...",
+  "apply": "Apply",
+  "openOriginal": "Original",
+  "or": "or"
 }

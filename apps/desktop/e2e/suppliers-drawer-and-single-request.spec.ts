@@ -34,11 +34,11 @@ test.describe('Suppliers Slide-Over Drawer & Network Single-Request Optimization
       }
     });
 
-    const switchBtn = page.getByTestId('supplier-switch-sup_test_1');
-    await expect(switchBtn).toBeVisible();
+    const statusToggleBtn = page.getByTestId('supplier-status-toggle-sup_test_1');
+    await expect(statusToggleBtn).toBeVisible();
 
-    // Click toggle switch
-    await switchBtn.click();
+    // Click interactive status badge
+    await statusToggleBtn.click();
 
     // Wait a brief moment to ensure no background cascade requests are emitted
     await page.waitForTimeout(600);
@@ -54,25 +54,26 @@ test.describe('Suppliers Slide-Over Drawer & Network Single-Request Optimization
     await expect(statusBadge).toContainText('Неактивний');
   });
 
-  test('2. Separate columns for toggle switch and status badge with zero layout shifts', async ({
+  test('2. Single status column without switch tautology and zero layout shifts', async ({
     page,
   }) => {
     await page.goto('/suppliers');
     await expect(page.getByTestId('suppliers-page')).toBeVisible();
 
+    // Verify tautology removed: switch column is gone, only status badge is present
     const switchCell = page.getByTestId('supplier-active-toggle-sup_test_1');
-    const statusCell = page.getByTestId('supplier-status-badge-sup_test_1');
+    await expect(switchCell).not.toBeVisible();
 
-    await expect(switchCell).toBeVisible();
+    const statusCell = page.getByTestId('supplier-status-badge-sup_test_1');
     await expect(statusCell).toBeVisible();
 
     // Measure bounding boxes before toggle
     const tableHeader = page.locator('thead');
     const boxBefore = await tableHeader.boundingBox();
 
-    // Toggle switch
-    const switchBtn = page.getByTestId('supplier-switch-sup_test_1');
-    await switchBtn.click();
+    // Toggle status via badge
+    const statusToggleBtn = page.getByTestId('supplier-status-toggle-sup_test_1');
+    await statusToggleBtn.click();
 
     // Measure bounding boxes after toggle
     const boxAfter = await tableHeader.boundingBox();

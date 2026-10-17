@@ -130,7 +130,9 @@ export const SupplierPricingTab: React.FC<SupplierPricingTabProps> = ({
         <CardContent>
           <div className="flex flex-wrap items-center gap-3">
             <div className="flex items-center gap-2">
-              <span className="text-xs text-muted-foreground">Націнка:</span>
+              <span className="text-xs text-muted-foreground">
+                {t('suppliers:pricingMarkupPercent', { defaultValue: 'Націнка:' })}
+              </span>
               <Input
                 type="number"
                 min="0"
@@ -143,7 +145,9 @@ export const SupplierPricingTab: React.FC<SupplierPricingTabProps> = ({
             </div>
 
             <div className="flex items-center gap-2">
-              <span className="text-xs text-muted-foreground">+ Фіксовано:</span>
+              <span className="text-xs text-muted-foreground">
+                {t('suppliers:pricingFixedMarkup', { defaultValue: '+ Фіксовано:' })}
+              </span>
               <Input
                 type="number"
                 min="0"
@@ -163,8 +167,8 @@ export const SupplierPricingTab: React.FC<SupplierPricingTabProps> = ({
               data-testid="save-global-markup-btn"
             >
               {isSavingGlobal
-                ? 'Збереження...'
-                : t('common:save', { defaultValue: 'Зберегти націнку' })}
+                ? t('common:saving', { defaultValue: 'Збереження...' })
+                : t('common:save', { defaultValue: 'Зберегти' })}
             </Button>
           </div>
         </CardContent>
@@ -179,7 +183,9 @@ export const SupplierPricingTab: React.FC<SupplierPricingTabProps> = ({
               {t('suppliers:tieredRulesTitle', { defaultValue: 'Діапазони цін (Tiered Brackets)' })}
             </CardTitle>
             <CardDescription className="text-xs">
-              Націнки залежно від діапазону собівартості товару
+              {t('suppliers:tieredRulesDesc', {
+                defaultValue: 'Націнки залежно від діапазону собівартості товару',
+              })}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
@@ -187,7 +193,9 @@ export const SupplierPricingTab: React.FC<SupplierPricingTabProps> = ({
             <div className="p-2.5 rounded-lg bg-muted/40 border border-border/70 space-y-2">
               <div className="grid grid-cols-2 gap-2 text-xs">
                 <div>
-                  <span className="text-xs text-muted-foreground block mb-1">Мін. ціна (₴)</span>
+                  <span className="text-xs text-muted-foreground block mb-1">
+                    {t('suppliers:ruleMinPrice', { defaultValue: 'Мін. ціна (₴)' })}
+                  </span>
                   <Input
                     type="number"
                     placeholder="0"
@@ -197,7 +205,9 @@ export const SupplierPricingTab: React.FC<SupplierPricingTabProps> = ({
                   />
                 </div>
                 <div>
-                  <span className="text-xs text-muted-foreground block mb-1">Макс. ціна (₴)</span>
+                  <span className="text-xs text-muted-foreground block mb-1">
+                    {t('suppliers:ruleMaxPrice', { defaultValue: 'Макс. ціна (₴)' })}
+                  </span>
                   <Input
                     type="number"
                     placeholder="1000"
@@ -209,7 +219,9 @@ export const SupplierPricingTab: React.FC<SupplierPricingTabProps> = ({
               </div>
               <div className="grid grid-cols-2 gap-2 text-xs">
                 <div>
-                  <span className="text-xs text-muted-foreground block mb-1">Націнка (%)</span>
+                  <span className="text-xs text-muted-foreground block mb-1">
+                    {t('suppliers:ruleMarginPercent', { defaultValue: 'Націнка (%)' })}
+                  </span>
                   <Input
                     type="number"
                     value={ruleMargin}
@@ -218,7 +230,9 @@ export const SupplierPricingTab: React.FC<SupplierPricingTabProps> = ({
                   />
                 </div>
                 <div>
-                  <span className="text-xs text-muted-foreground block mb-1">Фіксовано (₴)</span>
+                  <span className="text-xs text-muted-foreground block mb-1">
+                    {t('suppliers:ruleFixedMarkup', { defaultValue: 'Фіксовано (₴)' })}
+                  </span>
                   <Input
                     type="number"
                     value={ruleFixed}
@@ -229,7 +243,7 @@ export const SupplierPricingTab: React.FC<SupplierPricingTabProps> = ({
               </div>
               <Button size="sm" onClick={handleAddRule} className="w-full h-7 text-xs gap-1 mt-1">
                 <Plus className="size-3" />
-                Додати правило діапазону
+                {t('suppliers:addRuleBtn', { defaultValue: '+ Додати правило діапазону' })}
               </Button>
             </div>
 
@@ -239,9 +253,15 @@ export const SupplierPricingTab: React.FC<SupplierPricingTabProps> = ({
                 <Table className="text-xs">
                   <TableHeader className="bg-muted/30">
                     <TableRow className="h-7 hover:bg-transparent">
-                      <TableHead className="py-1">Діапазон</TableHead>
-                      <TableHead className="py-1 text-center">Націнка</TableHead>
-                      <TableHead className="py-1 text-right pr-2">Дія</TableHead>
+                      <TableHead className="py-1">
+                        {t('suppliers:colCostRange', { defaultValue: 'Діапазон' })}
+                      </TableHead>
+                      <TableHead className="py-1 text-center">
+                        {t('suppliers:colMarkup', { defaultValue: 'Націнка' })}
+                      </TableHead>
+                      <TableHead className="py-1 text-right pr-2">
+                        {t('common:actions', { defaultValue: 'Дія' })}
+                      </TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>

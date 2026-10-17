@@ -41,7 +41,7 @@ export const SupplierLocationFields: React.FC<SupplierLocationFieldsProps> = ({
           <Input
             value={country}
             onChange={(e) => setCountry(e.target.value)}
-            placeholder="Україна"
+            placeholder={t('suppliers:countryPlaceholder', { defaultValue: 'Україна' })}
             className="h-8.5 text-xs bg-background/80"
             data-testid="supplier-country-input"
           />
@@ -53,7 +53,7 @@ export const SupplierLocationFields: React.FC<SupplierLocationFieldsProps> = ({
           <Input
             value={city}
             onChange={(e) => setCity(e.target.value)}
-            placeholder="Київ"
+            placeholder={t('suppliers:cityPlaceholder', { defaultValue: 'Київ' })}
             className="h-8.5 text-xs bg-background/80"
             data-testid="supplier-city-input"
           />
@@ -65,7 +65,9 @@ export const SupplierLocationFields: React.FC<SupplierLocationFieldsProps> = ({
           <Input
             value={address}
             onChange={(e) => setAddress(e.target.value)}
-            placeholder="вул. Васильківська, 34"
+            placeholder={t('suppliers:addressPlaceholder', {
+              defaultValue: 'вул. Васильківська, 34',
+            })}
             className="h-8.5 text-xs bg-background/80"
             data-testid="supplier-address-input"
           />

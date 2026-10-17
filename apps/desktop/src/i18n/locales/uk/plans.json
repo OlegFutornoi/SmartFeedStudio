@@ -139,6 +139,10 @@
   "paymentDeclinedDesc": "Платіж не було завершено або його відхилено банком. Доступ залишається заблокованим до успішної оплати.",
   "startWorkingBtn": "Розпочати роботу",
   "tryAgainBtn": "Спробувати знову",
-  "closeBtn": "Закрити",
-  "securePaymentNotice": "Платіжний шлюз WayForPay захищено 256-бітним SSL шифруванням. Підтримуються картки Visa, MasterCard, Apple Pay, Google Pay та Приват24."
+  "securePaymentNotice": "Платіжний шлюз WayForPay захищено 256-бітним SSL шифруванням. Підтримуються картки Visa, MasterCard, Apple Pay, Google Pay та Приват24.",
+  "quotaExceededTitle": "Ліміт вичерпано: {{resource}}",
+  "quotaExceededDesc": "Ваш поточний тариф {{plan}} дозволяє використовувати до {{max}} {{resource}}. Ви вже використали {{current}}.",
+  "quotaHowToIncrease": "Як збільшити доступну квоту?",
+  "quotaUpgradeAdvice": "Перейдіть на вищий тарифний план (наприклад, Pro або Enterprise), щоб отримати більше постачальників, необмежені фіди та розширений SKU-каталог.",
+  "viewPlansBtn": "Переглянути тарифи"
 }

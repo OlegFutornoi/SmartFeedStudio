@@ -205,10 +205,18 @@ export const SupplierFormFields: React.FC<SupplierFormFieldsProps> = ({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value={CurrencyCode.UAH}>Гривня (UAH ₴)</SelectItem>
-                <SelectItem value={CurrencyCode.USD}>Долар (USD $)</SelectItem>
-                <SelectItem value={CurrencyCode.EUR}>Євро (EUR €)</SelectItem>
-                <SelectItem value={CurrencyCode.PLN}>Злотий (PLN zł)</SelectItem>
+                <SelectItem value={CurrencyCode.UAH}>
+                  {t('suppliers:currUah', { defaultValue: 'Гривня (UAH ₴)' })}
+                </SelectItem>
+                <SelectItem value={CurrencyCode.USD}>
+                  {t('suppliers:currUsd', { defaultValue: 'Долар (USD $)' })}
+                </SelectItem>
+                <SelectItem value={CurrencyCode.EUR}>
+                  {t('suppliers:currEur', { defaultValue: 'Євро (EUR €)' })}
+                </SelectItem>
+                <SelectItem value={CurrencyCode.PLN}>
+                  {t('suppliers:currPln', { defaultValue: 'Злотий (PLN zł)' })}
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>

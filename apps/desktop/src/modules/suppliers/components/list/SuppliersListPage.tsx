@@ -68,7 +68,7 @@ export const SuppliersListPage: React.FC = () => {
   });
 
   const { isColumnVisible, toggleColumn, resetToDefaults, columnOptions } =
-    useColumnVisibility<SupplierColumnId>('suppliers', SUPPLIER_COLUMNS, language === 'uk');
+    useColumnVisibility<SupplierColumnId>('suppliers_v5', SUPPLIER_COLUMNS, language === 'uk');
 
   const {
     filters,

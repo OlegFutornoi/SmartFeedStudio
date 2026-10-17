@@ -76,5 +76,15 @@
   "addPhoto": "Add Photo",
   "cdnReady": "CDN Active",
   "r2Active": "Cloudflare R2 Active",
-  "refreshQuota": "Refresh Quota"
+  "refreshQuota": "Refresh Quota",
+  "activeWorkspaceDesc": "Local directory for encrypted database and feed files",
+  "copyPath": "Copy path",
+  "metricsTitle": "Disk Space Usage",
+  "databaseSize": "Database",
+  "feedsStorage": "Feeds Storage",
+  "backupsStorage": "Backups",
+  "cacheStorage": "Exports & Cache",
+  "productsUnit": "products",
+  "feedsUnit": "feeds",
+  "suppliersUnit": "suppliers"
 }

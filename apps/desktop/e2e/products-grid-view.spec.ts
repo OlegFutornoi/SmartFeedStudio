@@ -91,7 +91,7 @@ test.describe('Desktop App — Віртуалізована Таблиця То�
       // Revert back to Ukrainian
       await langBtn.click();
       await expect(page.getByTestId('tab-products')).toContainText('Товари каталогу');
-      await expect(page.getByTestId('customize-columns-btn')).toContainText('Налаштувати стовпці');
+      await expect(page.getByTestId('customize-columns-btn')).toContainText('Стовпці');
     }
   });
 
@@ -123,7 +123,7 @@ test.describe('Desktop App — Віртуалізована Таблиця То�
 
     const customizeBtn = page.getByTestId('customize-columns-btn');
     await expect(customizeBtn).toBeVisible();
-    await expect(customizeBtn).toContainText('Налаштувати стовпці');
+    await expect(customizeBtn).toContainText('Стовпці');
     await customizeBtn.click();
 
     const menuContent = page.getByTestId('data-table-view-options-content');

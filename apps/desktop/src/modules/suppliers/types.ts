@@ -27,10 +27,11 @@ export interface SupplierKpiMetrics {
 export type SupplierColumnId =
   | 'vendor'
   | 'contacts'
+  | 'industry'
+  | 'segment'
   | 'feeds'
   | 'products'
   | 'currencyMarkup'
-  | 'isActiveToggle'
   | 'status'
   | 'actions';
 
@@ -50,11 +51,25 @@ export const SUPPLIER_COLUMNS = [
     defaultVisible: true,
   },
   {
-    id: 'feeds' as SupplierColumnId,
-    labelUk: 'Джерела фідів',
-    labelEn: 'Feed Sources',
+    id: 'industry' as SupplierColumnId,
+    labelUk: 'Галузь',
+    labelEn: 'Industry',
     canHide: true,
     defaultVisible: true,
+  },
+  {
+    id: 'segment' as SupplierColumnId,
+    labelUk: 'Сегмент',
+    labelEn: 'Segment',
+    canHide: true,
+    defaultVisible: true,
+  },
+  {
+    id: 'feeds' as SupplierColumnId,
+    labelUk: 'Фіди',
+    labelEn: 'Feeds',
+    canHide: true,
+    defaultVisible: false,
   },
   {
     id: 'products' as SupplierColumnId,
@@ -65,15 +80,8 @@ export const SUPPLIER_COLUMNS = [
   },
   {
     id: 'currencyMarkup' as SupplierColumnId,
-    labelUk: 'Валюта / Націнка',
-    labelEn: 'Currency / Markup',
-    canHide: true,
-    defaultVisible: true,
-  },
-  {
-    id: 'isActiveToggle' as SupplierColumnId,
-    labelUk: 'Активність',
-    labelEn: 'Activity',
+    labelUk: 'Валюта',
+    labelEn: 'Currency',
     canHide: true,
     defaultVisible: true,
   },

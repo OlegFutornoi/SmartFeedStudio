@@ -108,22 +108,22 @@ export const SupplierProductsTab: React.FC<SupplierProductsTabProps> = ({ suppli
               <TableHeader className="sticky top-0 bg-card z-10 border-b border-border/80">
                 <TableRow className="h-9 hover:bg-transparent">
                   <TableHead className="w-[130px] pl-3.5 font-semibold text-foreground whitespace-nowrap">
-                    Артикул
+                    {t('suppliers:colSku', { defaultValue: 'Артикул' })}
                   </TableHead>
                   <TableHead className="min-w-[240px] font-semibold text-foreground">
-                    Назва товару
+                    {t('suppliers:colProductTitle', { defaultValue: 'Назва товару' })}
                   </TableHead>
                   <TableHead className="w-[180px] font-semibold text-foreground">
-                    Категорія
+                    {t('suppliers:colCategory', { defaultValue: 'Категорія' })}
                   </TableHead>
                   <TableHead className="w-[110px] font-semibold text-foreground text-center whitespace-nowrap">
-                    Собівартість
+                    {t('suppliers:colCostPrice', { defaultValue: 'Собівартість' })}
                   </TableHead>
                   <TableHead className="w-[110px] font-semibold text-foreground text-center whitespace-nowrap">
-                    Ціна продажу
+                    {t('suppliers:colSellingPrice', { defaultValue: 'Ціна продажу' })}
                   </TableHead>
                   <TableHead className="w-[110px] pr-3.5 text-center font-semibold text-foreground whitespace-nowrap">
-                    Наявність
+                    {t('suppliers:colAvailability', { defaultValue: 'Наявність' })}
                   </TableHead>
                 </TableRow>
               </TableHeader>
@@ -137,7 +137,8 @@ export const SupplierProductsTab: React.FC<SupplierProductsTabProps> = ({ suppli
                       {prod.sku}
                     </TableCell>
                     <TableCell className="py-1.5 font-medium text-foreground truncate max-w-[340px]">
-                      {prod.titleUk || 'Без назви'}
+                      {prod.titleUk ||
+                        t('suppliers:untitledProduct', { defaultValue: 'Без назви' })}
                     </TableCell>
                     <TableCell className="py-1.5 text-muted-foreground truncate max-w-[180px]">
                       {prod.categoryNameUk || '—'}
@@ -154,14 +155,14 @@ export const SupplierProductsTab: React.FC<SupplierProductsTabProps> = ({ suppli
                           variant="outline"
                           className="border-success/30 bg-success/15 text-success text-2xs font-medium whitespace-nowrap px-2 py-0.5"
                         >
-                          В наявності
+                          {t('suppliers:inStock', { defaultValue: 'В наявності' })}
                         </Badge>
                       ) : (
                         <Badge
                           variant="secondary"
                           className="text-2xs font-medium whitespace-nowrap px-2 py-0.5"
                         >
-                          Немає
+                          {t('suppliers:outOfStock', { defaultValue: 'Немає' })}
                         </Badge>
                       )}
                     </TableCell>

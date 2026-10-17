@@ -18,6 +18,7 @@ import { SupplierSyncPricingCard } from '@/modules/suppliers/components/drawer/t
 import { SupplierSyncAssortmentCard } from '@/modules/suppliers/components/drawer/tabs/sync/SupplierSyncAssortmentCard';
 import { SupplierSyncScheduleCard } from '@/modules/suppliers/components/drawer/tabs/sync/SupplierSyncScheduleCard';
 import { SupplierSyncHistoryTable } from '@/modules/suppliers/components/drawer/tabs/sync/SupplierSyncHistoryTable';
+import { useTranslation } from '@/i18n';
 
 interface SupplierSyncTabProps {
   supplier: SupplierDto;
@@ -28,6 +29,7 @@ export const SupplierSyncTab: React.FC<SupplierSyncTabProps> = ({
   supplier,
   onRefreshSupplier,
 }) => {
+  const { t } = useTranslation(['suppliers', 'common']);
   const { token } = useAuth();
   const [settings, setSettings] = useState<SupplierSyncSettingDto | null>(null);
   const [logs, setLogs] = useState<SupplierSyncLogDto[]>([]);
@@ -86,7 +88,9 @@ export const SupplierSyncTab: React.FC<SupplierSyncTabProps> = ({
   if (isLoading && !settings) {
     return (
       <div className="p-8 text-center text-xs text-muted-foreground animate-pulse">
-        Завантаження налаштувань синхронізації...
+        {t('suppliers:loadingSyncSettings', {
+          defaultValue: 'Завантаження налаштувань синхронізації...',
+        })}
       </div>
     );
   }

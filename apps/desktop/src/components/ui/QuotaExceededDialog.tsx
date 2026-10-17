@@ -46,36 +46,48 @@ export function QuotaExceededDialog({
         </div>
 
         <div className="space-y-1.5">
-          <h3 className="text-lg font-bold text-foreground">Ліміт вичерпано: {resourceName}</h3>
+          <h3 className="text-lg font-bold text-foreground">
+            {t('plans:quotaExceededTitle', {
+              resource: resourceName,
+              defaultValue: `Ліміт вичерпано: ${resourceName}`,
+            })}
+          </h3>
           <p className="text-xs text-muted-foreground max-w-sm mx-auto">
-            Ваш поточний тариф {planName ? `«${planName}»` : ''} дозволяє використовувати до{' '}
-            <strong className="text-foreground">{maxLimit}</strong> {resourceName.toLowerCase()}. Ви
-            вже використали <strong className="text-foreground">{currentCount}</strong>.
+            {t('plans:quotaExceededDesc', {
+              plan: planName ? `«${planName}»` : '',
+              max: maxLimit,
+              resource: resourceName.toLowerCase(),
+              current: currentCount,
+              defaultValue: `Ваш поточний тариф дозволяє використовувати до ${maxLimit} ${resourceName.toLowerCase()}. Ви вже використали ${currentCount}.`,
+            })}
           </p>
         </div>
 
         <div className="p-3.5 rounded-xl bg-secondary/30 border border-border/60 text-xs text-left space-y-2">
           <div className="flex items-center gap-2 text-primary font-medium">
             <Sparkles className="size-4 shrink-0" />
-            <span>Як збільшити доступну квоту?</span>
+            <span>
+              {t('plans:quotaHowToIncrease', { defaultValue: 'Як збільшити доступну квоту?' })}
+            </span>
           </div>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            Перейдіть на вищий тарифний план (наприклад, <strong>Pro</strong> або{' '}
-            <strong>Enterprise</strong>), щоб отримати більше постачальників, необмежені фіди та
-            розширений SKU-каталог.
+            {t('plans:quotaUpgradeAdvice', {
+              defaultValue:
+                'Перейдіть на вищий тарифний план (наприклад, Pro або Enterprise), щоб отримати більше постачальників, необмежені фіди та розширений SKU-каталог.',
+            })}
           </p>
         </div>
 
         <div className="flex items-center justify-end gap-3 pt-2">
           <Button variant="outline" size="sm" onClick={onClose} className="text-xs">
-            {t('common:cancel')}
+            {t('common:cancel', { defaultValue: 'Скасувати' })}
           </Button>
           <Button
             size="sm"
             onClick={handleUpgrade}
             className="text-xs gap-1.5 shadow-md shadow-primary/25 bg-primary text-primary-foreground hover:bg-primary/90"
           >
-            <span>Переглянути тарифи</span>
+            <span>{t('plans:viewPlansBtn', { defaultValue: 'Переглянути тарифи' })}</span>
             <ArrowRight className="size-3.5" />
           </Button>
         </div>

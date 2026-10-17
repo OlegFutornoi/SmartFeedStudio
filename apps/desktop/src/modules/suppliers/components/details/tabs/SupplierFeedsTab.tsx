@@ -199,7 +199,9 @@ export const SupplierFeedsTab: React.FC<SupplierFeedsTabProps> = ({
                           {src.fileFormat}
                         </Badge>
                         <span className="text-xs text-muted-foreground">
-                          {isFile ? 'Локальний файл' : 'URL потік'}
+                          {isFile
+                            ? t('suppliers:localFile', { defaultValue: 'Локальний файл' })
+                            : t('suppliers:urlStream', { defaultValue: 'URL потік' })}
                         </span>
                       </div>
                     </TableCell>
@@ -214,7 +216,7 @@ export const SupplierFeedsTab: React.FC<SupplierFeedsTabProps> = ({
                         <span>
                           {src.lastSyncedAt
                             ? new Date(src.lastSyncedAt).toLocaleDateString()
-                            : 'Щойно'}
+                            : t('suppliers:justNow', { defaultValue: 'Щойно' })}
                         </span>
                       </div>
                     </TableCell>
@@ -232,7 +234,7 @@ export const SupplierFeedsTab: React.FC<SupplierFeedsTabProps> = ({
                           <RefreshCw
                             className={`size-3 ${isSyncing ? 'animate-spin text-primary' : ''}`}
                           />
-                          <span>Синхронізувати</span>
+                          <span>{t('suppliers:syncNow', { defaultValue: 'Синхронізувати' })}</span>
                         </Button>
                         <Button
                           variant="ghost"
@@ -263,8 +265,10 @@ export const SupplierFeedsTab: React.FC<SupplierFeedsTabProps> = ({
           await handleDeleteSource(feedToDelete.id);
           setFeedToDelete(null);
         }}
-        title="Видалити підключений фід?"
-        description={`Ви впевнені, що бажаєте видалити джерело "${feedToDelete?.name}"? Всі імпортовані товари будуть очищені.`}
+        title={t('suppliers:deleteFeedTitle', { defaultValue: 'Видалити підключений фід?' })}
+        description={t('suppliers:deleteFeedWithProducts', {
+          defaultValue: `Ви впевнені, що бажаєте видалити джерело "${feedToDelete?.name}"? Всі імпортовані товари будуть очищені.`,
+        })}
       />
     </div>
   );

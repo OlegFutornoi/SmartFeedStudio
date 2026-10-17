@@ -65,7 +65,7 @@ export const SuppliersKpiCards: React.FC<SuppliersKpiCardsProps> = ({
           <div className="flex items-start justify-between">
             <div>
               <p className="text-xs font-medium text-muted-foreground">
-                {t('suppliers:kpiActiveFeeds', { defaultValue: 'Активні джерела фідів' })}
+                {t('suppliers:kpiActiveFeeds', { defaultValue: 'Фіди' })}
               </p>
               <h3 className="text-2xl font-bold tracking-tight text-foreground mt-1">
                 {activeFeedsCount}

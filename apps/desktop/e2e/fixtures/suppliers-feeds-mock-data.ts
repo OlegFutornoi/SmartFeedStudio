@@ -106,6 +106,9 @@ export const mockSuppliers = [
     contactEmail: 'sales@mobioptom.com',
     contactPhone: '+380509998877',
     website: 'https://mobioptom.com',
+    managerName: 'Олександр Коваленко',
+    industry: 'Мобільні аксесуари',
+    segment: 'Опт',
   },
 ];
 

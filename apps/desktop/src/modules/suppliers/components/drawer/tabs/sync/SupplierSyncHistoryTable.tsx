@@ -123,14 +123,17 @@ export const SupplierSyncHistoryTable: React.FC<SupplierSyncHistoryTableProps> =
                         )}
                       </TableCell>
                       <TableCell className="py-2.5 text-muted-foreground whitespace-nowrap">
-                        {log.durationMs ? `${(log.durationMs / 1000).toFixed(1)} с` : '—'}
+                        {log.durationMs
+                          ? `${(log.durationMs / 1000).toFixed(1)} ${t('suppliers:secondsShort', { defaultValue: 'с' })}`
+                          : '—'}
                       </TableCell>
                       <TableCell className="py-2.5 text-right font-mono tabular-nums">
                         <span className="text-foreground font-semibold">{log.updatedCount}</span>
                         <span className="text-muted-foreground"> / {log.totalProducts}</span>
                         {log.outOfStockCount > 0 && (
                           <span className="text-muted-foreground text-2xs ml-1">
-                            ({log.outOfStockCount} обнулено)
+                            ({log.outOfStockCount}{' '}
+                            {t('suppliers:outOfStockCountLabel', { defaultValue: 'обнулено' })})
                           </span>
                         )}
                       </TableCell>
