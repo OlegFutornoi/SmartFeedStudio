@@ -1,4 +1,4 @@
-use rusqlite::{Connection, Result};
+use rusqlite::{params, Connection, Result};
 use crate::models::{
     SupplierDto, CreateSupplierDto, UpdateSupplierDto,
     SupplierCategoryRuleDto, SupplierPricingRuleDto,
@@ -158,12 +158,12 @@ pub fn create_supplier(conn: &Connection, dto: CreateSupplierDto) -> Result<Supp
             ?23, ?24, ?25, ?26, ?27, ?28,
             ?29, ?30, ?31
         )",
-        (
+        params![
             &id, &user_id, &dto.name, &dto.code, &dto.contact_phone, &dto.contact_email, &dto.website, &dto.notes, &dto.logo_url,
             &dto.legal_name, &dto.tax_id, &dto.industry, &dto.segment, &dto.manager_name, &dto.manager_position, &dto.manager_phone, &dto.manager_email, &dto.manager_telegram, &dto.country, &dto.city, &dto.address, &dto.postcode,
             &base_currency, &target_currency, &exchange_rate_mode, exchange_rate, currency_buffer_percent, &price_rounding,
             dto.default_margin_percent, dto.default_fixed_markup, if is_active { 1 } else { 0 },
-        ),
+        ],
     )?;
 
     let _ = sync_counters(conn);
@@ -271,7 +271,7 @@ pub fn update_supplier(conn: &Connection, id: &str, dto: UpdateSupplierDto) -> R
             default_margin_percent = ?27, default_fixed_markup = ?28,
             is_active = ?29, updated_at = CURRENT_TIMESTAMP
          WHERE id = ?30",
-        (
+        params![
             &name, &code, &contact_phone, &contact_email, &website,
             &notes, &logo_url, &legal_name, &tax_id, &industry, &segment,
             &manager_name, &manager_position, &manager_phone, &manager_email, &manager_telegram,
@@ -280,7 +280,7 @@ pub fn update_supplier(conn: &Connection, id: &str, dto: UpdateSupplierDto) -> R
             exchange_rate, currency_buffer_percent, &price_rounding,
             default_margin_percent, default_fixed_markup,
             if is_active { 1 } else { 0 }, id,
-        ),
+        ],
     )?;
 
     get_supplier_by_id(conn, id).map(|opt| opt.unwrap())

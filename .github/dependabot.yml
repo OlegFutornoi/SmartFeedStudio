@@ -1,0 +1,86 @@
+# ==============================================================================
+# SmartFeed Studio — Dependabot Automated Dependency Updates
+# ==============================================================================
+# Purpose:
+#   Automatically creates weekly grouped pull requests for non-critical
+#   (minor & patch) dependency updates while strictly preventing breaking major
+#   version bumps (React 19, Next 15+, Tailwind 4+, Prisma 8+, Zod 4+).
+#
+# Workflows Triggered:
+#   Dependabot PRs target the 'main' branch, running strictly the lightweight
+#   CI workflow (.github/workflows/ci.yml) without triggering Docker builds or
+#   binary releases.
+# ==============================================================================
+
+version: 2
+updates:
+  # ----------------------------------------------------------------------------
+  # 1. pnpm Monorepo Dependencies (Root & Workspace Packages)
+  # ----------------------------------------------------------------------------
+  - package-ecosystem: 'npm'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+      time: '05:00'
+      timezone: 'Europe/Kyiv'
+    open-pull-requests-limit: 10
+    commit-message:
+      prefix: 'chore(deps)'
+    labels:
+      - 'dependencies'
+      - 'automated'
+    groups:
+      dev-dependencies:
+        patterns:
+          - '*'
+        dependency-type: 'development'
+        update-types:
+          - 'minor'
+          - 'patch'
+      prod-dependencies:
+        patterns:
+          - '*'
+        dependency-type: 'production'
+        update-types:
+          - 'minor'
+          - 'patch'
+    ignore:
+      # Block breaking major versions until architectural migration plans are approved
+      - dependency-name: 'react'
+        update-types: ['version-update:semver-major']
+      - dependency-name: 'react-dom'
+        update-types: ['version-update:semver-major']
+      - dependency-name: 'next'
+        update-types: ['version-update:semver-major']
+      - dependency-name: 'tailwindcss'
+        update-types: ['version-update:semver-major']
+      - dependency-name: 'prisma'
+        update-types: ['version-update:semver-major']
+      - dependency-name: '@prisma/*'
+        update-types: ['version-update:semver-major']
+      - dependency-name: 'zod'
+        update-types: ['version-update:semver-major']
+      - dependency-name: 'eslint'
+        update-types: ['version-update:semver-major']
+
+  # ----------------------------------------------------------------------------
+  # 2. GitHub Actions Workflows (.github/workflows/*)
+  # ----------------------------------------------------------------------------
+  - package-ecosystem: 'github-actions'
+    directory: '/'
+    schedule:
+      interval: 'monthly'
+      day: 'first-day'
+      time: '05:00'
+      timezone: 'Europe/Kyiv'
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: 'chore(ci)'
+    labels:
+      - 'ci'
+      - 'automated'
+    groups:
+      actions:
+        patterns:
+          - '*'

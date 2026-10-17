@@ -40,6 +40,8 @@
     "knip": "knip --max-issues 225",
     "knip:ci": "knip --max-issues 225",
     "agents:check": "python3 .agents/scripts/validate_agents.py",
+    "deps:check": "pnpm outdated || true",
+    "deps:update": "pnpm update -r",
     "version:sync": "node scripts/sync-desktop-version.mjs",
     "version:bump": "node scripts/bump-version.mjs",
     "verify:rust": "node scripts/verify-rust.mjs",
