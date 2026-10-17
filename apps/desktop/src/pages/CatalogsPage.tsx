@@ -23,6 +23,7 @@ import {
 import { SupplierDto } from '@smartfeed/shared';
 import { useDataSync, emitDataSync } from '@/lib/syncEvents';
 import { localDb } from '@/services/local-db';
+import { useAppCounters } from '@/services/counters';
 
 export function CatalogsPage() {
   const { t, language } = useTranslation(['catalogs', 'suppliers', 'common']);
@@ -31,6 +32,7 @@ export function CatalogsPage() {
   const { token } = useAuth();
   const { refreshQuotas, isFeedLimitReached, updateLocalQuota } = useQuotas();
   const { addTrackedJob, runBackgroundTask } = useBackgroundJobs();
+  const { counters } = useAppCounters();
 
   const [activeTab, setActiveTab] = useState<'products' | 'catalogs' | 'channels'>('products');
   const [suppliers, setSuppliers] = useState<SupplierDto[]>([]);
@@ -141,6 +143,11 @@ export function CatalogsPage() {
           >
             <Package className="size-4 text-primary" />
             <span>{t('catalogs:tabProducts')}</span>
+            {Math.max(totalProductsCount, counters.totalProducts) > 0 && (
+              <Badge variant="secondary" className="text-xs px-2 py-0.5 h-5 font-semibold">
+                {Math.max(totalProductsCount, counters.totalProducts)}
+              </Badge>
+            )}
           </Button>
 
           {/* Feed Sources Tab */}
@@ -157,7 +164,7 @@ export function CatalogsPage() {
             <Layers className="size-4 text-primary" />
             <span>{t('catalogs:tabCatalogs')}</span>
             <Badge variant="secondary" className="text-xs px-2 py-0.5 h-5 font-semibold">
-              {feeds.length}
+              {Math.max(feeds.length, counters.totalFeeds)}
             </Badge>
           </Button>
 

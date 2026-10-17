@@ -21,7 +21,10 @@ import type {
   UpdateProductImageOrderDto,
   DeleteProductImageResultDto,
   SupplierCategoryRuleDto,
+  CheckFeedCollisionDto,
+  FeedCollisionResultDto,
 } from '@smartfeed/shared';
+import type { LocalCountersSummary } from '@/services/local-db/types';
 import * as mock from '@/services/local-db/mock';
 
 export class MockDatabaseDriver {
@@ -159,6 +162,8 @@ export class MockDatabaseDriver {
   public getSupplierFeedSources = (supplierId: string): FeedSourceDto[] =>
     mock.getSupplierFeedSources(this.state, supplierId);
   public getAllFeedSources = (): FeedSourceDto[] => mock.getAllFeedSources(this.state);
+  public checkFeedCollision = (dto: CheckFeedCollisionDto): FeedCollisionResultDto =>
+    mock.checkFeedCollision(this.state, dto);
   public createFeedSource = (sId: string, p: mock.CreateFeedSourcePayload) =>
     mock.createFeedSource(this.state, sId, p);
   public deleteFeedSource = (sId: string, srcId: string, del = true) =>
@@ -182,6 +187,34 @@ export class MockDatabaseDriver {
     this.syncCounters();
     return this.state.counters;
   }
+  public getCountersSummary = (): LocalCountersSummary => {
+    this.syncCounters();
+    const feedsBySupplierId: Record<string, number> = {};
+    for (const [supId, sources] of this.state.feedSources.entries()) {
+      feedsBySupplierId[supId] = sources.length;
+    }
+    const productsBySupplierId: Record<string, number> = {};
+    for (const p of this.state.products) {
+      if (p.supplierId) {
+        productsBySupplierId[p.supplierId] = (productsBySupplierId[p.supplierId] || 0) + 1;
+      }
+    }
+    let totalRules = 0;
+    for (const [supId, rules] of this.state.pricingRules.entries()) {
+      if (this.state.suppliers.some((s) => s.id === supId)) {
+        totalRules += rules.length;
+      }
+    }
+
+    return {
+      totalSuppliers: this.state.suppliers.length,
+      totalFeeds: this.state.counters.feedsCount,
+      totalProducts: this.state.counters.productsCount,
+      totalRules,
+      feedsBySupplierId,
+      productsBySupplierId,
+    };
+  };
 }
 
 export const mockDatabaseDriver = new MockDatabaseDriver();

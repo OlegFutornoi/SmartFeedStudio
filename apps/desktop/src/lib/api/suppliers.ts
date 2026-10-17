@@ -2,6 +2,7 @@ import type { SupplierDto, CreateSupplierDto, UpdateSupplierDto } from '@smartfe
 import { localDb } from '@/services/local-db';
 import { isTauri } from '@/lib/runtime';
 import { ApiError, fetchWithAuth } from '@/lib/api/client';
+import { appCounterService } from '@/services/counters';
 
 let cachedSuppliers: { [key: string]: { data: SupplierDto[]; timestamp: number } } = {};
 const SUPPLIERS_TTL_MS = 30000; // 30s navigation TTL per FE-14
@@ -16,7 +17,8 @@ export async function getSuppliers(
   force = false,
 ): Promise<SupplierDto[]> {
   if (isTauri()) {
-    return localDb.suppliers.getSuppliers(search);
+    const localSuppliers = await localDb.suppliers.getSuppliers(search);
+    return appCounterService.hydrateSuppliers(localSuppliers, force);
   }
 
   const cacheKey = `${token || 'anon'}:${search || ''}`;
@@ -35,21 +37,33 @@ export async function getSuppliers(
     if (response.ok) {
       const data = await response.json();
       if (Array.isArray(data)) {
-        cachedSuppliers[cacheKey] = { data, timestamp: Date.now() };
-        return data;
+        const hydrated = await appCounterService.hydrateSuppliers(data, force);
+        cachedSuppliers[cacheKey] = { data: hydrated, timestamp: Date.now() };
+        return hydrated;
       }
     }
   } catch (err) {
     console.warn('[ApiClient] Remote call failed, using local fallback:', err);
   }
 
-  return localDb.suppliers.getSuppliers(search);
+  const fallback = await localDb.suppliers.getSuppliers(search);
+  return appCounterService.hydrateSuppliers(fallback, force);
 }
 
 export async function getSupplierById(id: string, token?: string): Promise<SupplierDto> {
+  const hydrateOne = (s: SupplierDto): SupplierDto => {
+    const feeds = appCounterService.getSupplierFeedsCount(s.id);
+    const prods = appCounterService.getSupplierProductsCount(s.id);
+    return {
+      ...s,
+      activeFeedsCount: feeds || s.activeFeedsCount || 0,
+      productsCount: prods || s.productsCount || 0,
+    };
+  };
+
   if (isTauri()) {
     const supplier = await localDb.suppliers.getSupplierById(id);
-    if (supplier) return supplier;
+    if (supplier) return hydrateOne(supplier);
     throw new ApiError('Supplier not found', 404);
   }
 
@@ -57,7 +71,7 @@ export async function getSupplierById(id: string, token?: string): Promise<Suppl
     const response = await fetchWithAuth(`/suppliers/${id}`, { method: 'GET' }, token);
     if (response.ok) {
       const data = await response.json();
-      if (data?.id) return data as SupplierDto;
+      if (data?.id) return hydrateOne(data as SupplierDto);
     }
   } catch (err) {
     console.warn('[ApiClient] Remote call failed, using local fallback:', err);
@@ -67,7 +81,7 @@ export async function getSupplierById(id: string, token?: string): Promise<Suppl
   if (!supplier) {
     throw new ApiError('Supplier not found', 404);
   }
-  return supplier;
+  return hydrateOne(supplier);
 }
 
 export async function createSupplier(

@@ -166,7 +166,7 @@ pub struct SupplierPricingRuleDto {
 }
 
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct FeedSourceDto {
     pub id: String,
@@ -176,6 +176,10 @@ pub struct FeedSourceDto {
     pub source_type: String,
     pub file_format: String,
     pub source_url: Option<String>,
+    pub canonical_url: Option<String>,
+    pub url_fingerprint: Option<String>,
+    pub content_hash: Option<String>,
+    pub parent_feed_source_id: Option<String>,
     pub s3_file_key: Option<String>,
     pub auth_header_name: Option<String>,
     pub auth_header_value: Option<String>,
@@ -200,6 +204,10 @@ pub struct CreateFeedSourceDto {
     pub source_type: String,
     pub file_format: String,
     pub source_url: Option<String>,
+    pub canonical_url: Option<String>,
+    pub url_fingerprint: Option<String>,
+    pub content_hash: Option<String>,
+    pub parent_feed_source_id: Option<String>,
     pub auth_header_name: Option<String>,
     pub auth_header_value: Option<String>,
     pub sync_interval_hours: i32,
@@ -207,6 +215,37 @@ pub struct CreateFeedSourceDto {
     pub auto_update_stocks: bool,
     pub auto_create_new_products: bool,
     pub mapping_rules: Option<String>,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct CheckFeedCollisionDto {
+    pub supplier_id: String,
+    pub source_type: String,
+    pub source_url: Option<String>,
+    pub canonical_url: Option<String>,
+    pub url_fingerprint: Option<String>,
+    pub file_name: Option<String>,
+    pub feed_name: Option<String>,
+    pub content_hash: Option<String>,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct FeedCollisionResultDto {
+    pub has_collision: bool,
+    pub collision_type: String,
+    pub canonical_url: Option<String>,
+    pub url_fingerprint: Option<String>,
+    pub existing_feed_id: Option<String>,
+    pub existing_feed_name: Option<String>,
+    pub conflicting_supplier_id: Option<String>,
+    pub conflicting_supplier_name: Option<String>,
+    pub existing_products_count: Option<u32>,
+    pub last_synced_at: Option<String>,
+    pub suggested_feed_name: String,
+    pub message_uk: String,
+    pub message_en: String,
 }
 
 #[derive(Serialize, Deserialize, Debug)]

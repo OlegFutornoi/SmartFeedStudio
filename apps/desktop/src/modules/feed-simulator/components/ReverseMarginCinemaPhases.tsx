@@ -22,10 +22,9 @@ export function ReverseMarginCinemaPhases({
       value: `${scenario.costPrice} ₴`,
       subtitle: 'Базова собівартість',
       badge: 'Прайс постачальника',
-      badgeClass: 'bg-muted text-foreground border-border',
-      activeGradient:
-        'bg-gradient-to-br from-secondary/80 via-secondary/40 to-card border-foreground/30 ring-2 ring-foreground/20 shadow-xs',
-      idleGradient: 'bg-card/90 border-border/70 hover:border-foreground/20',
+      badgeClass: 'bg-muted text-foreground border-border/80',
+      activeBorder: 'border-foreground/60 ring-1 ring-foreground/20',
+      activeIndicator: 'bg-foreground/70',
       textColor: 'text-foreground',
       accentColor: 'text-foreground',
       desc: 'Вхідна вартість одиниці товару за каталогом постачальника, яку необхідно оплатити за відвантаження.',
@@ -39,10 +38,9 @@ export function ReverseMarginCinemaPhases({
       value: `${scenario.myPrice} ₴`,
       subtitle: `Націнка +${scenario.markupPercent}% (+${scenario.desiredProfit} ₴)`,
       badge: `+${scenario.desiredProfit} ₴ прибутку`,
-      badgeClass: 'bg-primary/15 text-primary border-primary/30',
-      activeGradient:
-        'bg-gradient-to-br from-primary/20 via-primary/5 to-card border-primary/60 ring-2 ring-primary/40 shadow-xs',
-      idleGradient: 'bg-card/90 border-border/70 hover:border-primary/30',
+      badgeClass: 'bg-primary/10 text-primary border-primary/20',
+      activeBorder: 'border-primary ring-1 ring-primary/30',
+      activeIndicator: 'bg-primary',
       textColor: 'text-primary',
       accentColor: 'text-primary',
       desc: `Закупка ${scenario.costPrice} ₴ + бажаний заробіток ${scenario.desiredProfit} ₴ = ${scenario.myPrice} ₴ (скільки ви плануєте отримати на руки).`,
@@ -56,10 +54,9 @@ export function ReverseMarginCinemaPhases({
       value: `+${scenario.naiveActualProfit} ₴`,
       subtitle: `Втрата: -${scenario.profitLostToFee} ₴ (-${scenario.profitLostPercent}%)`,
       badge: `-${scenario.naiveMarketplaceFee} ₴ комісія`,
-      badgeClass: 'bg-destructive/15 text-destructive border-destructive/30 animate-pulse',
-      activeGradient:
-        'bg-gradient-to-br from-destructive/20 via-destructive/5 to-card border-destructive/60 ring-2 ring-destructive/40 shadow-xs',
-      idleGradient: 'bg-card/90 border-border/70 hover:border-destructive/30',
+      badgeClass: 'bg-destructive/10 text-destructive border-destructive/20',
+      activeBorder: 'border-destructive ring-1 ring-destructive/30',
+      activeIndicator: 'bg-destructive',
       textColor: 'text-destructive',
       accentColor: 'text-destructive',
       desc: `При наївній ціні ${scenario.naivePrice} ₴ комісія ${scenario.marketplacePercent}% утримується від повної суми продажу, з'їдаючи більшу частину прибутку!`,
@@ -73,10 +70,9 @@ export function ReverseMarginCinemaPhases({
       value: `${scenario.smartRetailPrice} ₴`,
       subtitle: `Чистий прибуток рівно +${scenario.guaranteedProfit} ₴`,
       badge: '100% Захищено',
-      badgeClass: 'bg-success/20 text-success border-success/40 font-semibold',
-      activeGradient:
-        'bg-gradient-to-br from-success/25 via-primary/10 to-card border-success/60 ring-2 ring-success/40 shadow-xs',
-      idleGradient: 'bg-card/90 border-border/70 hover:border-success/30',
+      badgeClass: 'bg-success/15 text-success border-success/30 font-semibold',
+      activeBorder: 'border-success ring-1 ring-success/30',
+      activeIndicator: 'bg-success',
       textColor: 'text-success',
       accentColor: 'text-success',
       desc: `Формула зворотного %: вітринна ціна покриває комісію ${scenario.smartMarketplaceFee} ₴, зберігаючи вам копійка в копійку +${scenario.guaranteedProfit} ₴!`,
@@ -89,23 +85,20 @@ export function ReverseMarginCinemaPhases({
       {phases.map((item) => {
         const Icon = item.icon;
         const isCurrentActive = phaseIndex === item.idx;
-        const isRevealed = phaseIndex >= item.idx;
 
         return (
           <div
             key={item.idx}
             onClick={() => onSelectPhase?.(item.idx)}
-            className={`p-3.5 sm:p-4 rounded-2xl border transition-all duration-300 cursor-pointer relative overflow-hidden flex flex-col justify-between ${
+            className={`p-3.5 sm:p-4 rounded-xl border bg-card transition-all duration-200 cursor-pointer relative overflow-hidden flex flex-col justify-between shadow-xs ${
               isCurrentActive
-                ? `${item.activeGradient} scale-[1.02] shadow-md z-10`
-                : isRevealed
-                  ? `${item.idleGradient} opacity-95`
-                  : 'bg-card/60 border-border/40 opacity-50'
+                ? `${item.activeBorder} bg-card`
+                : 'border-border/80 hover:border-border'
             }`}
           >
             {/* Top Indicator bar */}
             {isCurrentActive && (
-              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-current to-transparent opacity-80" />
+              <div className={`absolute top-0 left-0 right-0 h-1 ${item.activeIndicator}`} />
             )}
 
             <div className="space-y-2">

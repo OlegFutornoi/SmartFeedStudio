@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { FeedFormat, FeedSourceType, ImportJobStatus } from '../enums/index.js';
+import { FeedFormat, FeedSourceType, ImportJobStatus, FeedCollisionType } from '../enums/index.js';
 
 export const CategorySummaryDtoSchema = z.object({
   id: z.string(),
@@ -18,6 +18,10 @@ export const FeedSourceDtoSchema = z.object({
   sourceType: z.nativeEnum(FeedSourceType),
   fileFormat: z.nativeEnum(FeedFormat),
   sourceUrl: z.string().nullable().optional(),
+  canonicalUrl: z.string().nullable().optional(),
+  urlFingerprint: z.string().nullable().optional(),
+  contentHash: z.string().nullable().optional(),
+  parentFeedSourceId: z.string().nullable().optional(),
   s3FileKey: z.string().nullable().optional(),
   authHeaderName: z.string().nullable().optional(),
   authHeaderValue: z.string().nullable().optional(),
@@ -41,6 +45,10 @@ export const CreateFeedSourceDtoSchema = z.object({
   sourceType: z.nativeEnum(FeedSourceType).default(FeedSourceType.URL),
   fileFormat: z.nativeEnum(FeedFormat).default(FeedFormat.XML_ROZETKA),
   sourceUrl: z.string().optional(),
+  canonicalUrl: z.string().optional(),
+  urlFingerprint: z.string().optional(),
+  contentHash: z.string().optional(),
+  parentFeedSourceId: z.string().optional(),
   authHeaderName: z.string().optional(),
   authHeaderValue: z.string().optional(),
   syncIntervalHours: z.number().int().min(0).default(0),
@@ -119,3 +127,35 @@ export const FetchFeedResultDtoSchema = z.object({
 });
 
 export type FetchFeedResultDto = z.infer<typeof FetchFeedResultDtoSchema>;
+
+export const CheckFeedCollisionDtoSchema = z.object({
+  supplierId: z.string().min(1, 'Supplier is required'),
+  sourceType: z.nativeEnum(FeedSourceType).default(FeedSourceType.URL),
+  sourceUrl: z.string().optional(),
+  canonicalUrl: z.string().optional(),
+  urlFingerprint: z.string().optional(),
+  fileName: z.string().optional(),
+  feedName: z.string().optional(),
+  fileContent: z.string().optional(),
+  contentHash: z.string().optional(),
+});
+
+export type CheckFeedCollisionDto = z.infer<typeof CheckFeedCollisionDtoSchema>;
+
+export const FeedCollisionResultDtoSchema = z.object({
+  hasCollision: z.boolean(),
+  collisionType: z.nativeEnum(FeedCollisionType),
+  canonicalUrl: z.string().nullable().optional(),
+  urlFingerprint: z.string().nullable().optional(),
+  existingFeedId: z.string().nullable().optional(),
+  existingFeedName: z.string().nullable().optional(),
+  conflictingSupplierId: z.string().nullable().optional(),
+  conflictingSupplierName: z.string().nullable().optional(),
+  existingProductsCount: z.number().int().nonnegative().optional(),
+  lastSyncedAt: z.string().nullable().optional(),
+  suggestedFeedName: z.string(),
+  messageUk: z.string(),
+  messageEn: z.string(),
+});
+
+export type FeedCollisionResultDto = z.infer<typeof FeedCollisionResultDtoSchema>;

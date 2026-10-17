@@ -60,6 +60,12 @@ export function useImportFeedWizard({
     analysisError,
     setAnalysis,
     setAnalysisError,
+    feedName,
+    setFeedName,
+    collisionResult,
+    setCollisionResult,
+    isCheckingCollision,
+    checkCollision,
     handleAnalyzeUrl,
     handleAnalyzeFile,
     handleAnalyzeOnly,
@@ -122,10 +128,12 @@ export function useImportFeedWizard({
     setStep('SOURCE');
     setSourceType('URL');
     setFeedUrl('');
+    setFeedName('');
     setFileName(null);
     setFileContent(null);
     setAnalysis(null);
     setAnalysisError(null);
+    setCollisionResult(null);
     setSelectedCategoryIds([]);
     setIsImporting(false);
     setImportResult(null);
@@ -141,6 +149,9 @@ export function useImportFeedWizard({
 
   const handleSetFeedUrl = (url: string) => {
     setFeedUrl(url);
+    if (!url.trim() && !fileName) {
+      setFeedName('');
+    }
     if (analysisError) setAnalysisError(null);
   };
 
@@ -155,6 +166,11 @@ export function useImportFeedWizard({
     if (name) {
       setSourceType('FILE');
       setFeedUrl('');
+      setFeedName(name);
+    } else {
+      if (!feedUrl.trim()) {
+        setFeedName('');
+      }
     }
     setAnalysisError(null);
     setAnalysis(null);
@@ -165,6 +181,7 @@ export function useImportFeedWizard({
     isFeedLimitReached,
     selectedSupplierId,
     analysis,
+    collisionResult,
     setAnalysisError,
     setStep,
   });
@@ -199,6 +216,7 @@ export function useImportFeedWizard({
         sourceUrl: sourceType === 'URL' ? feedUrl.trim() : undefined,
         fileContent: fileContent || analysis?.rawContent || undefined,
         fileName: fileName || undefined,
+        feedName: feedName.trim() || undefined,
         selectedCategoryIds: selectedCategoryIds.length > 0 ? selectedCategoryIds : undefined,
         autoUpdatePrices,
         autoUpdateStocks,
@@ -236,6 +254,12 @@ export function useImportFeedWizard({
     setSourceType: handleSetSourceType,
     feedUrl,
     setFeedUrl: handleSetFeedUrl,
+    feedName,
+    setFeedName,
+    collisionResult,
+    setCollisionResult,
+    isCheckingCollision,
+    checkCollision,
     fileName,
     fileContent,
     selectedSupplierId,

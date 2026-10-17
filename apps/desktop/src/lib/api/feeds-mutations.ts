@@ -114,6 +114,7 @@ export async function importFeedAsync(
     sourceUrl?: string;
     fileContent?: string;
     fileName?: string;
+    feedName?: string;
     catalogId?: string;
     selectedCategoryIds?: string[];
     autoUpdatePrices?: boolean;
@@ -197,6 +198,7 @@ export async function importFeedAsync(
       selectedCategoryIds: dto.selectedCategoryIds,
       sourceUrl: dto.sourceUrl,
       fileName: dto.fileName,
+      feedName: dto.feedName,
       sourceType: dto.sourceType === 'URL' ? FeedSourceType.URL : FeedSourceType.FILE,
     });
     feedSourceId = importRes.feedSourceId;

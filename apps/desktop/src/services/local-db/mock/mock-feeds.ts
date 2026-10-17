@@ -1,9 +1,11 @@
 import type { FeedSourceDto } from '@smartfeed/shared';
-import { FeedFormat, FeedSourceType } from '@smartfeed/shared';
+import { FeedFormat, FeedSourceType, areFeedUrlsEquivalent } from '@smartfeed/shared';
 import { formatFeedTitle } from '@/lib/formatters';
 import type { MockDbState } from '@/services/local-db/mock/mock-state';
 import { syncCounters } from '@/services/local-db/mock/mock-state';
 import { getSupplierById } from '@/services/local-db/mock/mock-suppliers';
+
+export { checkFeedCollision } from '@/services/local-db/mock/mock-feed-collision';
 
 export interface CreateFeedSourcePayload {
   id?: string;
@@ -11,6 +13,10 @@ export interface CreateFeedSourcePayload {
   sourceType?: FeedSourceType;
   format?: FeedFormat;
   url?: string;
+  canonicalUrl?: string;
+  urlFingerprint?: string;
+  contentHash?: string;
+  parentFeedSourceId?: string;
   syncIntervalHours?: number;
   autoUpdatePrices?: boolean;
   autoUpdateStocks?: boolean;
@@ -48,11 +54,12 @@ export function createFeedSource(
   const supplierSources = state.feedSources.get(supplierId) || [];
   const cleanName = formatFeedTitle(payload.name, payload.url) || 'Оновлений прайс-лист';
 
-  // FEED-DEDUP-01: Check if feed already exists for this supplier (by id, url or file name)
+  // FEED-DEDUP-01: Check if feed already exists for this supplier (by id, fingerprint, url or file name)
   const existingFeedIndex = supplierSources.findIndex(
     (f) =>
       (payload.id && f.id === payload.id) ||
-      (payload.url && f.sourceUrl === payload.url) ||
+      (payload.urlFingerprint && f.urlFingerprint && f.urlFingerprint === payload.urlFingerprint) ||
+      (payload.url && f.sourceUrl && areFeedUrlsEquivalent(payload.url, f.sourceUrl)) ||
       (payload.name && f.name === cleanName),
   );
 
@@ -65,6 +72,11 @@ export function createFeedSource(
       sourceType: payload.sourceType || supplierSources[existingFeedIndex].sourceType,
       fileFormat: payload.format || supplierSources[existingFeedIndex].fileFormat,
       sourceUrl: payload.url || supplierSources[existingFeedIndex].sourceUrl,
+      canonicalUrl: payload.canonicalUrl || supplierSources[existingFeedIndex].canonicalUrl,
+      urlFingerprint: payload.urlFingerprint || supplierSources[existingFeedIndex].urlFingerprint,
+      contentHash: payload.contentHash || supplierSources[existingFeedIndex].contentHash,
+      parentFeedSourceId:
+        payload.parentFeedSourceId || supplierSources[existingFeedIndex].parentFeedSourceId,
       syncIntervalHours:
         payload.syncIntervalHours || supplierSources[existingFeedIndex].syncIntervalHours,
       autoUpdatePrices:
@@ -87,6 +99,10 @@ export function createFeedSource(
       sourceType: payload.sourceType || FeedSourceType.URL,
       fileFormat: payload.format || FeedFormat.XML_ROZETKA,
       sourceUrl: payload.url,
+      canonicalUrl: payload.canonicalUrl,
+      urlFingerprint: payload.urlFingerprint,
+      contentHash: payload.contentHash,
+      parentFeedSourceId: payload.parentFeedSourceId,
       syncIntervalHours: payload.syncIntervalHours || 24,
       autoUpdatePrices: payload.autoUpdatePrices ?? true,
       autoUpdateStocks: payload.autoUpdateStocks ?? true,

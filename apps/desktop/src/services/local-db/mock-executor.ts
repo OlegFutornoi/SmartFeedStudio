@@ -10,6 +10,9 @@ export function executeMockCommand<K extends keyof LocalDbCommandMap>(
     case 'db_get_counters': {
       return mockDatabaseDriver.getCounters() as LocalDbCommandMap[K]['result'];
     }
+    case 'db_get_counters_summary': {
+      return mockDatabaseDriver.getCountersSummary() as LocalDbCommandMap[K]['result'];
+    }
 
     // Feed Sources
     case 'db_get_supplier_feed_sources': {
@@ -20,6 +23,10 @@ export function executeMockCommand<K extends keyof LocalDbCommandMap>(
     }
     case 'db_get_all_feed_sources': {
       return mockDatabaseDriver.getAllFeedSources() as LocalDbCommandMap[K]['result'];
+    }
+    case 'db_check_feed_collision': {
+      const a = args as LocalDbCommandMap['db_check_feed_collision']['args'];
+      return mockDatabaseDriver.checkFeedCollision(a.dto) as LocalDbCommandMap[K]['result'];
     }
     case 'db_create_feed_source': {
       const a = args as LocalDbCommandMap['db_create_feed_source']['args'];

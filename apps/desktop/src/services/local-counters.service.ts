@@ -1,4 +1,4 @@
-import { invokeLocalDb } from '@/services/local-db/client';
+import { localDb } from '@/services/local-db';
 
 export interface LocalCounts {
   suppliers: number;
@@ -13,15 +13,15 @@ class LocalCountersService {
    */
   async getLocalCounts(_token?: string): Promise<LocalCounts> {
     try {
-      const counters = await invokeLocalDb('db_get_counters', {});
+      const summary = await localDb.counters.getCountersSummary();
 
       return {
-        suppliers: counters.suppliersCount || 0,
-        products: counters.productsCount || 0,
-        feeds: counters.feedsCount || 0,
+        suppliers: summary.totalSuppliers || 0,
+        products: summary.totalProducts || 0,
+        feeds: summary.totalFeeds || 0,
       };
     } catch (err) {
-      console.error('LocalCountersService error:', err);
+      console.warn('LocalCountersService error:', err);
       return { suppliers: 0, products: 0, feeds: 0 };
     }
   }

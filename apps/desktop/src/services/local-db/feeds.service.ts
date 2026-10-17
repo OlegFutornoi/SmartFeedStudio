@@ -1,5 +1,15 @@
-import type { FeedSourceDto, CategorySummaryDto } from '@smartfeed/shared';
-import { FeedFormat, FeedSourceType } from '@smartfeed/shared';
+import type {
+  FeedSourceDto,
+  CategorySummaryDto,
+  CheckFeedCollisionDto,
+  FeedCollisionResultDto,
+} from '@smartfeed/shared';
+import {
+  FeedFormat,
+  FeedSourceType,
+  normalizeFeedUrl,
+  computeFeedContentHash,
+} from '@smartfeed/shared';
 import { formatFeedTitle } from '@/lib/formatters';
 import type { RawParsedProduct } from '@/services/feed-engine/stream-parser';
 import { feedEngine } from '@/services/feed-engine';
@@ -47,15 +57,19 @@ export class LocalFeedsService {
       feedSourceId?: string;
       sourceUrl?: string;
       fileName?: string;
+      feedName?: string;
       sourceType?: FeedSourceType;
     },
   ): Promise<{ totalProcessed: number; createdCount: number; feedSourceId: string }> {
     const rawProducts = feedEngine.parseProducts(content, options);
 
     // 1. INVARIANT: "Нема фіда — нема товарів". Register the parent FeedSource record first.
+    const normalized = options.sourceUrl ? normalizeFeedUrl(options.sourceUrl) : null;
+    const contentHash = content ? computeFeedContentHash(content) : undefined;
     const payload = {
       id: options.feedSourceId,
       name:
+        options.feedName ||
         options.fileName ||
         (options.sourceUrl
           ? formatFeedTitle(options.sourceUrl)
@@ -64,6 +78,9 @@ export class LocalFeedsService {
         options.sourceType || (options.sourceUrl ? FeedSourceType.URL : FeedSourceType.FILE),
       format: FeedFormat.XML_ROZETKA,
       url: options.sourceUrl,
+      canonicalUrl: normalized?.canonicalUrl,
+      urlFingerprint: normalized?.urlFingerprint,
+      contentHash,
       syncIntervalHours: 24,
       autoUpdatePrices: true,
       autoUpdateStocks: true,
@@ -116,6 +133,25 @@ export class LocalFeedsService {
 
   async getAllFeedSources(): Promise<FeedSourceDto[]> {
     return invokeLocalDb('db_get_all_feed_sources', {});
+  }
+
+  async checkFeedCollision(dto: CheckFeedCollisionDto): Promise<FeedCollisionResultDto> {
+    let enrichedDto = { ...dto };
+    if (dto.sourceUrl && (!dto.canonicalUrl || !dto.urlFingerprint)) {
+      const normalized = normalizeFeedUrl(dto.sourceUrl);
+      enrichedDto = {
+        ...enrichedDto,
+        canonicalUrl: normalized.canonicalUrl,
+        urlFingerprint: normalized.urlFingerprint,
+      };
+    }
+    if (dto.fileContent && !dto.contentHash) {
+      enrichedDto = {
+        ...enrichedDto,
+        contentHash: computeFeedContentHash(dto.fileContent),
+      };
+    }
+    return invokeLocalDb('db_check_feed_collision', { dto: enrichedDto });
   }
 
   async deleteSupplierFeedSource(

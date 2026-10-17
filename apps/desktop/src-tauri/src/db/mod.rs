@@ -34,11 +34,18 @@ pub fn get_or_create_encryption_key() -> std::result::Result<String, String> {
 
 pub fn open_encrypted_connection(db_path: &Path) -> Result<Connection> {
     let conn = Connection::open(db_path)?;
-    if let Ok(key) = get_or_create_encryption_key() {
-        let pragma_sql = format!("PRAGMA key = '{}';", key);
-        let _ = conn.execute_batch(&pragma_sql);
+    match get_or_create_encryption_key() {
+        Ok(key) => {
+            let pragma_sql = format!("PRAGMA key = '{}';", key);
+            if let Err(e) = conn.execute_batch(&pragma_sql) {
+                eprintln!("[Rust SQLite] Notice: PRAGMA key execution: {}", e);
+            }
+        }
+        Err(e) => {
+            eprintln!("[Rust SQLite] Keyring retrieval warning: {}", e);
+        }
     }
-    let _ = conn.execute_batch("PRAGMA foreign_keys = ON;");
+    conn.execute_batch("PRAGMA foreign_keys = ON;")?;
     init_schema(&conn)?;
     Ok(conn)
 }
@@ -121,6 +128,10 @@ pub fn init_schema(conn: &Connection) -> Result<()> {
             source_type TEXT NOT NULL,
             file_format TEXT NOT NULL,
             source_url TEXT,
+            canonical_url TEXT,
+            url_fingerprint TEXT,
+            content_hash TEXT,
+            parent_feed_source_id TEXT,
             s3_file_key TEXT,
             auth_header_name TEXT,
             auth_header_value TEXT,
@@ -258,6 +269,14 @@ pub fn init_schema(conn: &Connection) -> Result<()> {
     ");
     // Run migration for existing databases to guarantee category_name_uk exists
     let _ = conn.execute_batch("ALTER TABLE local_products ADD COLUMN category_name_uk TEXT;");
+    let _ = conn.execute_batch("
+        ALTER TABLE local_feed_sources ADD COLUMN canonical_url TEXT;
+        ALTER TABLE local_feed_sources ADD COLUMN url_fingerprint TEXT;
+        ALTER TABLE local_feed_sources ADD COLUMN content_hash TEXT;
+        ALTER TABLE local_feed_sources ADD COLUMN parent_feed_source_id TEXT;
+        CREATE INDEX IF NOT EXISTS idx_feeds_url_fingerprint ON local_feed_sources(url_fingerprint);
+        CREATE INDEX IF NOT EXISTS idx_feeds_supplier_fingerprint ON local_feed_sources(supplier_id, url_fingerprint);
+    ");
     // Link any orphaned products to the existing supplier if only 1 supplier exists
     let _ = conn.execute_batch("
         UPDATE local_products 
@@ -332,3 +351,71 @@ pub fn get_counters(conn: &Connection) -> Result<LocalCounters> {
         })
     })
 }
+
+#[derive(serde::Serialize, serde::Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LocalCountersSummary {
+    pub total_suppliers: u32,
+    pub total_feeds: u32,
+    pub total_products: u32,
+    pub total_rules: u32,
+    pub feeds_by_supplier_id: std::collections::HashMap<String, u32>,
+    pub products_by_supplier_id: std::collections::HashMap<String, u32>,
+}
+
+pub fn get_counters_summary(conn: &Connection) -> Result<LocalCountersSummary> {
+    let _ = sync_counters(conn);
+
+    let total_suppliers: u32 = conn
+        .query_row("SELECT COUNT(*) FROM local_suppliers", [], |row| row.get(0))
+        .unwrap_or(0);
+    let total_feeds: u32 = conn
+        .query_row("SELECT COUNT(*) FROM local_feed_sources", [], |row| row.get(0))
+        .unwrap_or(0);
+    let total_products: u32 = conn
+        .query_row("SELECT COUNT(*) FROM local_products", [], |row| row.get(0))
+        .unwrap_or(0);
+    let total_rules: u32 = conn
+        .query_row(
+            "SELECT COUNT(*) FROM local_supplier_pricing_rules WHERE supplier_id IN (SELECT id FROM local_suppliers)",
+            [],
+            |row| row.get(0),
+        )
+        .unwrap_or(0);
+
+    let mut feeds_by_supplier_id = std::collections::HashMap::new();
+    if let Ok(mut feed_stmt) = conn.prepare(
+        "SELECT supplier_id, COUNT(*) FROM local_feed_sources WHERE supplier_id IS NOT NULL AND supplier_id != '' GROUP BY supplier_id"
+    ) {
+        if let Ok(feed_rows) = feed_stmt.query_map([], |row| {
+            Ok((row.get::<_, String>(0)?, row.get::<_, u32>(1)?))
+        }) {
+            for row in feed_rows.flatten() {
+                feeds_by_supplier_id.insert(row.0, row.1);
+            }
+        }
+    }
+
+    let mut products_by_supplier_id = std::collections::HashMap::new();
+    if let Ok(mut prod_stmt) = conn.prepare(
+        "SELECT supplier_id, COUNT(*) FROM local_products WHERE supplier_id IS NOT NULL AND supplier_id != '' GROUP BY supplier_id"
+    ) {
+        if let Ok(prod_rows) = prod_stmt.query_map([], |row| {
+            Ok((row.get::<_, String>(0)?, row.get::<_, u32>(1)?))
+        }) {
+            for row in prod_rows.flatten() {
+                products_by_supplier_id.insert(row.0, row.1);
+            }
+        }
+    }
+
+    Ok(LocalCountersSummary {
+        total_suppliers,
+        total_feeds,
+        total_products,
+        total_rules,
+        feeds_by_supplier_id,
+        products_by_supplier_id,
+    })
+}
+

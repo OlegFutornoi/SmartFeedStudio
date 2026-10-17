@@ -109,6 +109,12 @@ export async function cleanDatabase(
       await prisma.paymentTransaction.deleteMany({
         where: { userId: { in: allUserIds } },
       });
+      await prisma.supplierSyncSetting.deleteMany({
+        where: { supplier: { userId: { in: allUserIds } } },
+      });
+      await prisma.supplierSyncLog.deleteMany({
+        where: { supplier: { userId: { in: allUserIds } } },
+      });
       await prisma.supplierCategoryRule.deleteMany({
         where: { supplier: { userId: { in: allUserIds } } },
       });

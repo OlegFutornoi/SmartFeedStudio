@@ -199,6 +199,30 @@ export async function setupFeedIngestionMocks(page: Page) {
     });
   });
 
+  await page.route('**/api/feeds/sources', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify([]),
+    });
+  });
+
+  await page.route('**/api/feeds/check-collision', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        hasCollision: false,
+        collisionType: 'NONE',
+        canonicalUrl: 'https://livolo.kiev.ua/products_feed.xml',
+        urlFingerprint: 'f3b890a8275685718a7c293782b3d6447cbe22b513364f3d13264c8d504285b7',
+        suggestedFeedName: 'livolo.kiev.ua (products_feed.xml)',
+        messageUk: 'Фід унікальний. Колізій не виявлено.',
+        messageEn: 'Feed is unique. No collisions detected.',
+      }),
+    });
+  });
+
   await page.route('**/api/feeds/import-async', async (route) => {
     await route.fulfill({
       status: 200,

@@ -140,13 +140,13 @@ services:
       MAIL_USER: ${MAIL_USER:-}
       MAIL_PASS: ${MAIL_PASS:-}
       MAIL_FROM: ${MAIL_FROM:-SmartFeed Studio <no-reply@smartfeed.studio>}
-      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET:-smartfeed-prod-access-token-secret-must-be-changed-in-production-min-32-chars}
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET:?JWT_ACCESS_SECRET must be set in production}
       JWT_ACCESS_EXPIRATION: ${JWT_ACCESS_EXPIRATION:-15m}
-      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-smartfeed-prod-refresh-token-secret-must-be-changed-in-production-min-32-chars}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:?JWT_REFRESH_SECRET must be set in production}
       JWT_REFRESH_EXPIRATION: ${JWT_REFRESH_EXPIRATION:-7d}
-      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:3000,http://admin-portal:3000,tauri://localhost,http://localhost:1420}
-      APP_URL: ${APP_URL:-http://localhost:3000}
-      PRISMA_DB_PUSH: 'true'
+      CORS_ORIGIN: ${CORS_ORIGIN:-https://smartfeed-admin-prod.up.railway.app,http://localhost:3000,http://admin-portal:3000,tauri://localhost}
+      APP_URL: ${APP_URL:-https://smartfeed-admin-prod.up.railway.app}
+      PRISMA_MIGRATE_DEPLOY: 'true'
     healthcheck:
       test: ['CMD-SHELL', 'wget -qO- http://localhost:4000/api/health || exit 0']
       interval: 10s

@@ -1,19 +1,27 @@
 import React, { useState, useRef } from 'react';
-import { Globe, FileText, UploadCloud, Loader2, Sparkles, AlertCircle, X } from 'lucide-react';
+import { Globe, FileText, Loader2, Sparkles, AlertCircle } from 'lucide-react';
+import type { FeedCollisionResultDto } from '@smartfeed/shared';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useTranslation } from '@/i18n';
+import { formatFeedTitle } from '@/lib/formatters';
 import { FeedAnalysisResult } from '@/lib/api';
 import { FeedAnalysisCard } from '@/components/feeds/FeedAnalysisCard';
 import { FeedAnalysisInteractiveLoader } from '@/components/feeds/FeedAnalysisInteractiveLoader';
 import { WizardAiAssistantShowcase } from '@/components/feeds/WizardAiAssistantShowcase';
+import { FeedCollisionNotice } from '@/components/feeds/FeedCollisionNotice';
+import { WizardStepSourceFileDropzone } from '@/components/feeds/WizardStepSourceFileDropzone';
 
 interface WizardStepSourceProps {
   sourceType: 'URL' | 'FILE';
   setSourceType: (type: 'URL' | 'FILE') => void;
   feedUrl: string;
   setFeedUrl: (url: string) => void;
+  feedName?: string;
+  setFeedName?: (name: string) => void;
+  collisionResult?: FeedCollisionResultDto | null;
+  isCheckingCollision?: boolean;
   fileContent: string | null;
   fileName: string | null;
   onFileSelect: (name: string, content: string) => void;
@@ -29,6 +37,10 @@ export function WizardStepSource({
   setSourceType,
   feedUrl,
   setFeedUrl,
+  feedName,
+  setFeedName,
+  collisionResult,
+  isCheckingCollision,
   fileName,
   onFileSelect,
   isAnalyzing,
@@ -64,6 +76,7 @@ export function WizardStepSource({
       setSourceType('FILE');
       setFeedUrl('');
       onFileSelect(file.name, content);
+      if (setFeedName) setFeedName(file.name);
     };
     reader.readAsText(file);
   };
@@ -113,6 +126,9 @@ export function WizardStepSource({
                 setSourceType('URL');
                 onFileSelect('', '');
                 setFeedUrl(testLivoloUrl);
+                if (setFeedName) {
+                  setFeedName('livolo.kiev.ua (products_feed.xml)');
+                }
               }}
               className="h-auto p-0 text-xs text-primary hover:underline flex items-center gap-1"
             >
@@ -125,10 +141,18 @@ export function WizardStepSource({
               placeholder="https://supplier.com/products_feed.xml"
               value={feedUrl}
               onChange={(e) => {
-                setFeedUrl(e.target.value);
+                const val = e.target.value;
+                setFeedUrl(val);
                 setSourceType('URL');
                 if (fileName) {
                   onFileSelect('', '');
+                }
+                if (setFeedName) {
+                  if (!val.trim()) {
+                    setFeedName('');
+                  } else {
+                    setFeedName(formatFeedTitle(val));
+                  }
                 }
               }}
               className="h-9 text-xs font-mono bg-background/60 flex-1"
@@ -140,7 +164,12 @@ export function WizardStepSource({
                 setSourceType('URL');
                 onAnalyzeUrl();
               }}
-              disabled={!feedUrl.trim() || isAnalyzing}
+              disabled={
+                !feedUrl.trim() ||
+                isAnalyzing ||
+                isCheckingCollision ||
+                Boolean(collisionResult?.hasCollision)
+              }
               className="h-9 text-xs px-3.5 shrink-0"
               data-testid="analyze-url-btn"
             >
@@ -167,98 +196,61 @@ export function WizardStepSource({
         </div>
 
         {/* 2. File Upload Dropzone Section */}
-        <div>
-          <input
-            ref={fileInputRef}
-            id="feed-file-upload"
-            data-testid="feed-file-upload"
-            type="file"
-            accept=".xml,.yml,.csv,.tsv,.xlsx,.xls,.txt"
-            className="hidden"
-            onChange={handleFileChange}
-            disabled={isAnalyzing}
-          />
+        <WizardStepSourceFileDropzone
+          fileName={fileName}
+          analysis={analysis}
+          isAnalyzing={isAnalyzing}
+          isCheckingCollision={isCheckingCollision}
+          collisionResult={collisionResult}
+          fileInputRef={fileInputRef}
+          onFileChange={handleFileChange}
+          onClearFile={() => {
+            setFileValidationError(null);
+            onFileSelect('', '');
+            if (setFeedName) setFeedName('');
+            if (fileInputRef.current) fileInputRef.current.value = '';
+          }}
+          onAnalyzeFile={
+            onAnalyzeFile
+              ? () => {
+                  setSourceType('FILE');
+                  onAnalyzeFile();
+                }
+              : undefined
+          }
+          onPickFile={handlePickFile}
+          onDrop={handleDrop}
+          dragOver={dragOver}
+          setDragOver={setDragOver}
+          t={t}
+        />
 
-          {fileName ? (
-            <div className="flex items-center justify-between p-2.5 rounded-xl border border-primary/30 bg-primary/5">
-              <div className="flex items-center gap-2.5 min-w-0">
-                <div className="size-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
-                  <FileText className="size-4" />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-xs font-medium text-foreground truncate">{fileName}</p>
-                  <p className="text-3xs text-muted-foreground">
-                    {analysis
-                      ? t('suppliers:feedAnalyzedSuccess', { defaultValue: 'Фід проаналізовано' })
-                      : t('suppliers:readyToAnalyze', { defaultValue: 'Готовий до аналізу' })}
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center gap-1.5 shrink-0">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => {
-                    setFileValidationError(null);
-                    onFileSelect('', '');
-                    if (fileInputRef.current) fileInputRef.current.value = '';
-                  }}
-                  className="h-7 px-2 text-3xs text-muted-foreground hover:text-destructive"
-                  disabled={isAnalyzing}
-                >
-                  <X className="size-3.5" />
-                </Button>
-                {onAnalyzeFile && !analysis && (
-                  <Button
-                    type="button"
-                    size="sm"
-                    onClick={() => {
-                      setSourceType('FILE');
-                      onAnalyzeFile();
-                    }}
-                    disabled={isAnalyzing}
-                    className="h-7 text-xs px-3"
-                    data-testid="analyze-file-btn"
-                  >
-                    {isAnalyzing ? (
-                      <>
-                        <Loader2 className="size-3.5 animate-spin mr-1.5" />
-                        {t('suppliers:analyzing', { defaultValue: 'Аналіз...' })}
-                      </>
-                    ) : (
-                      t('suppliers:analyzeFeed', { defaultValue: 'Аналізувати' })
-                    )}
-                  </Button>
-                )}
-              </div>
-            </div>
-          ) : (
-            <div
-              data-testid="dropzone-feed-upload"
-              onDragOver={(e) => {
-                e.preventDefault();
-                setDragOver(true);
-              }}
-              onDragLeave={() => setDragOver(false)}
-              onDrop={handleDrop}
-              onClick={!isAnalyzing ? handlePickFile : undefined}
-              className={`border border-dashed rounded-xl p-3 text-center transition-colors cursor-pointer flex items-center justify-center gap-2.5 ${
-                dragOver
-                  ? 'border-primary bg-primary/5'
-                  : 'border-border/70 hover:border-primary/40 bg-secondary/15 hover:bg-secondary/25'
-              }`}
-            >
-              <UploadCloud className="size-4 text-muted-foreground" />
-              <span className="text-xs text-muted-foreground font-medium">
-                {t('suppliers:dragDropOrBrowse', {
-                  defaultValue: 'Перетягніть XML, YML або CSV файл сюди, або натисніть для вибору',
-                })}
-              </span>
-            </div>
-          )}
-        </div>
+        {/* 3. Feed Name Input */}
+        {feedName !== undefined && setFeedName && (
+          <div className="pt-2 border-t border-border/50 space-y-1.5">
+            <Label className="text-xs text-foreground font-medium flex items-center gap-1.5">
+              <FileText className="size-3.5 text-primary" />
+              {t('suppliers:feedNameLabel', { defaultValue: 'Назва фіду' })}
+            </Label>
+            <Input
+              placeholder={t('suppliers:feedNamePlaceholder', {
+                defaultValue: 'напр. Livolo Основний прайс',
+              })}
+              value={feedName}
+              onChange={(e) => setFeedName(e.target.value)}
+              className="h-9 text-xs bg-background/60"
+              disabled={isAnalyzing}
+              data-testid="wizard-feed-name-input"
+            />
+          </div>
+        )}
       </div>
+
+      {/* Collision Notice / Uniqueness Badge */}
+      <FeedCollisionNotice
+        collisionResult={collisionResult || null}
+        isChecking={isCheckingCollision}
+      />
 
       {/* Interactive Loading & Skeleton State */}
       {isAnalyzing && <FeedAnalysisInteractiveLoader isAnalyzing={isAnalyzing} />}

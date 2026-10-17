@@ -260,6 +260,28 @@ fn db_get_counters() -> Result<db::LocalCounters, String> {
     db::get_counters(&conn).map_err(|e| e.to_string())
 }
 
+#[tauri::command]
+fn db_get_counters_summary() -> Result<db::LocalCountersSummary, String> {
+    let workspace = workspace::get_default_workspace_dir();
+    let db_path = workspace
+        .join("database")
+        .join("catalog.db");
+    
+    if !db_path.exists() {
+        return Ok(db::LocalCountersSummary {
+            total_suppliers: 0,
+            total_feeds: 0,
+            total_products: 0,
+            total_rules: 0,
+            feeds_by_supplier_id: std::collections::HashMap::new(),
+            products_by_supplier_id: std::collections::HashMap::new(),
+        });
+    }
+
+    let conn = db::open_encrypted_connection(&db_path).map_err(|e| e.to_string())?;
+    db::get_counters_summary(&conn).map_err(|e| e.to_string())
+}
+
 fn get_workspace_dir_resolved() -> std::path::PathBuf {
     if let Ok(entry) = Entry::new(SERVICE_NAME, WORKSPACE_KEY_USER) {
         if let Ok(path_str) = entry.get_password() {
@@ -313,6 +335,18 @@ fn db_delete_supplier(id: String) -> Result<(), String> {
 fn db_get_supplier_feed_sources(supplier_id: String) -> Result<Vec<models::FeedSourceDto>, String> {
     let conn = get_db_conn()?;
     db::get_supplier_feed_sources(&conn, &supplier_id).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+fn db_get_all_feed_sources() -> Result<Vec<models::FeedSourceDto>, String> {
+    let conn = get_db_conn()?;
+    db::get_all_feed_sources(&conn).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+fn db_check_feed_collision(dto: models::CheckFeedCollisionDto) -> Result<models::FeedCollisionResultDto, String> {
+    let conn = get_db_conn()?;
+    db::check_feed_collision(&conn, dto).map_err(|e| e.to_string())
 }
 
 #[tauri::command]
@@ -452,12 +486,15 @@ pub fn run() {
             pick_workspace_folder,
             clear_storage_cache,
             db_get_counters,
+            db_get_counters_summary,
             db_get_suppliers,
             db_get_supplier_by_id,
             db_create_supplier,
             db_update_supplier,
             db_delete_supplier,
             db_get_supplier_feed_sources,
+            db_get_all_feed_sources,
+            db_check_feed_collision,
             db_create_feed_source,
             db_delete_feed_source,
             db_get_products,

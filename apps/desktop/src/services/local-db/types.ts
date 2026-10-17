@@ -23,7 +23,18 @@ import type {
   UpdateProductImageOrderDto,
   DeleteProductImageResultDto,
   SupplierCategoryRuleDto,
+  CheckFeedCollisionDto,
+  FeedCollisionResultDto,
 } from '@smartfeed/shared';
+
+export interface LocalCountersSummary {
+  totalSuppliers: number;
+  totalFeeds: number;
+  totalProducts: number;
+  totalRules: number;
+  feedsBySupplierId: Record<string, number>;
+  productsBySupplierId: Record<string, number>;
+}
 
 export interface LocalDbCommandMap {
   // Counters
@@ -31,10 +42,18 @@ export interface LocalDbCommandMap {
     args: Record<string, never>;
     result: { id: string; suppliersCount: number; feedsCount: number; productsCount: number };
   };
+  db_get_counters_summary: {
+    args: Record<string, never>;
+    result: LocalCountersSummary;
+  };
 
   // Feed Sources
   db_get_supplier_feed_sources: { args: { supplierId: string }; result: FeedSourceDto[] };
   db_get_all_feed_sources: { args: Record<string, never>; result: FeedSourceDto[] };
+  db_check_feed_collision: {
+    args: { dto: CheckFeedCollisionDto };
+    result: FeedCollisionResultDto;
+  };
   db_create_feed_source: {
     args: {
       supplierId: string;
@@ -44,6 +63,10 @@ export interface LocalDbCommandMap {
         sourceType?: FeedSourceType;
         format?: FeedFormat;
         url?: string;
+        canonicalUrl?: string;
+        urlFingerprint?: string;
+        contentHash?: string;
+        parentFeedSourceId?: string;
         syncIntervalHours?: number;
         autoUpdatePrices?: boolean;
         autoUpdateStocks?: boolean;

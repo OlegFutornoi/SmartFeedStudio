@@ -51,7 +51,7 @@ export function useSuppliersCrud({
       try {
         isFetchingRef.current = true;
         if (!silent) setIsLoading(true);
-        const data = await getSuppliers(token || undefined);
+        const data = await getSuppliers(token || undefined, undefined, force);
         lastFetchedTokenRef.current = fetchKey;
         setSuppliers(data || []);
         setLocalQuotaUsed('suppliers', data ? data.length : 0);

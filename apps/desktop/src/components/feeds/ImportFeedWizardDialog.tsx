@@ -33,6 +33,10 @@ export function ImportFeedWizardDialog({
     setSourceType,
     feedUrl,
     setFeedUrl,
+    feedName,
+    setFeedName,
+    collisionResult,
+    isCheckingCollision,
     fileName,
     fileContent,
     selectedSupplierId,
@@ -122,6 +126,10 @@ export function ImportFeedWizardDialog({
                 setSourceType={setSourceType}
                 feedUrl={feedUrl}
                 setFeedUrl={setFeedUrl}
+                feedName={feedName}
+                setFeedName={setFeedName}
+                collisionResult={collisionResult}
+                isCheckingCollision={isCheckingCollision}
                 fileContent={fileContent}
                 fileName={fileName}
                 onFileSelect={handleFileSelect}
@@ -178,6 +186,7 @@ export function ImportFeedWizardDialog({
             totalSelectedSkus={totalSelectedSkus}
             remainingQuota={remainingQuota}
             analysis={analysis}
+            collisionResult={collisionResult}
             onClose={handleClose}
             onBack={() => {
               if (step === 'SUPPLIER') setStep('SOURCE');

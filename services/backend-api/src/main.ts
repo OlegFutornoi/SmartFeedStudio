@@ -70,7 +70,8 @@ async function bootstrap() {
         defaultAllowedOrigins.has(origin) ||
         origin.startsWith('tauri://') ||
         origin.endsWith('.localhost') ||
-        origin.endsWith('.up.railway.app') ||
+        origin === 'https://smartfeed-admin-prod.up.railway.app' ||
+        origin === 'http://smartfeed-admin-prod.up.railway.app' ||
         origin.endsWith('.smartfeed.studio')
       ) {
         return callback(null, true);
@@ -105,4 +106,7 @@ async function bootstrap() {
   logger.log(`📚 Swagger documentation available at: http://localhost:${port}/api/docs`);
 }
 
-bootstrap();
+bootstrap().catch((err) => {
+  new Logger('Bootstrap').error('Fatal bootstrap error:', err);
+  process.exit(1);
+});

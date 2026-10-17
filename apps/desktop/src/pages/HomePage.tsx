@@ -27,12 +27,14 @@ import { Badge } from '@/components/ui/badge';
 import type { SupplierDto } from '@smartfeed/shared';
 import { getSuppliers } from '@/lib/api';
 import { FeedSyncActivityChart } from '@/components/dashboard/FeedSyncActivityChart';
+import { useAppCounters } from '@/services/counters';
 
 export function HomePage() {
   const { token } = useAuth();
   const { quotas } = useQuotas();
   const { t, language } = useTranslation(['home', 'common']);
   const navigate = useNavigate();
+  const { counters } = useAppCounters();
 
   const [latestSuppliers, setLatestSuppliers] = useState<SupplierDto[]>([]);
   const [totalSuppliersDB, setTotalSuppliersDB] = useState<number>(0);
@@ -49,7 +51,7 @@ export function HomePage() {
       lastFetchedTokenRef.current = token;
 
       try {
-        const suppliers = await getSuppliers(token || undefined);
+        const suppliers = await getSuppliers(token || undefined, undefined, force);
         setTotalSuppliersDB(suppliers.length);
         // Get first 3 as "latest"
         setLatestSuppliers(suppliers.slice(0, 3));
@@ -69,9 +71,13 @@ export function HomePage() {
 
   useDataSync(['suppliers', 'all'], () => loadSuppliers(true));
 
-  const suppliersCount = quotas?.suppliers?.used ?? 0;
-  const productsCount = quotas?.products?.used ?? 0;
-  const feedsCount = quotas?.feeds?.used ?? 0;
+  const suppliersCount = Math.max(
+    quotas?.suppliers?.used ?? 0,
+    totalSuppliersDB,
+    counters.totalSuppliers,
+  );
+  const productsCount = Math.max(quotas?.products?.used ?? 0, counters.totalProducts);
+  const feedsCount = Math.max(quotas?.feeds?.used ?? 0, counters.totalFeeds);
 
   const skuLimit = quotas?.products?.max ?? 1000;
   const skuPercent = quotas?.products?.percentUsed ?? 0;

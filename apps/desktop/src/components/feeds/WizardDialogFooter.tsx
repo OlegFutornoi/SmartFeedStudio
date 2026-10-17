@@ -1,6 +1,7 @@
 import React from 'react';
 import { ArrowLeft, ArrowRight, Check, Loader2, Radio } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { FeedCollisionResultDto, FeedCollisionType } from '@smartfeed/shared';
 import { useTranslation } from '@/i18n';
 import { WizardStep } from '@/components/feeds/WizardDialogHeader';
 import { FeedAnalysisResult } from '@/lib/api';
@@ -19,6 +20,7 @@ interface WizardDialogFooterProps {
   totalSelectedSkus: number;
   remainingQuota: number;
   analysis: FeedAnalysisResult | null;
+  collisionResult?: FeedCollisionResultDto | null;
   onClose: () => void;
   onBack: () => void;
   onNextFromSource: () => void;
@@ -40,6 +42,7 @@ export const WizardDialogFooter: React.FC<WizardDialogFooterProps> = ({
   totalSelectedSkus,
   remainingQuota,
   analysis,
+  collisionResult,
   onClose,
   onBack,
   onNextFromSource,
@@ -99,21 +102,29 @@ export const WizardDialogFooter: React.FC<WizardDialogFooterProps> = ({
             (sourceType === 'URL' && !feedUrl.trim()) ||
             (sourceType === 'FILE' && !fileContent) ||
             isAnalyzing ||
-            isFeedLimitReached
+            isFeedLimitReached ||
+            (collisionResult?.hasCollision &&
+              collisionResult.collisionType === FeedCollisionType.SAME_SUPPLIER_DUPLICATE)
           }
           className="text-xs flex items-center gap-1.5"
           title={
-            isFeedLimitReached
-              ? t('suppliers:feedLimitReachedTooltip', {
+            collisionResult?.hasCollision &&
+            collisionResult.collisionType === FeedCollisionType.SAME_SUPPLIER_DUPLICATE
+              ? t('suppliers:feedDuplicateBlockedTooltip', {
                   defaultValue:
-                    'Ліміт джерел фідів вичерпано. Підвищіть тариф або видаліть зайві фіди.',
+                    'Створення дубліката заблоковано: фід уже підключений до постачальника.',
                 })
-              : !analysis || analysis.totalDetected === 0
-                ? t('suppliers:mustAnalyzeFirst', {
+              : isFeedLimitReached
+                ? t('suppliers:feedLimitReachedTooltip', {
                     defaultValue:
-                      'Спочатку натисніть кнопку «Аналізувати» для перевірки фіду перед продовженням.',
+                      'Ліміт джерел фідів вичерпано. Підвищіть тариф або видаліть зайві фіди.',
                   })
-                : undefined
+                : !analysis || analysis.totalDetected === 0
+                  ? t('suppliers:mustAnalyzeFirst', {
+                      defaultValue:
+                        'Спочатку натисніть кнопку «Аналізувати» для перевірки фіду перед продовженням.',
+                    })
+                  : undefined
           }
         >
           {isAnalyzing ? (

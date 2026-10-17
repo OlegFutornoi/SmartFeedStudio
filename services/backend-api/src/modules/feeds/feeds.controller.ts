@@ -16,12 +16,14 @@ import {
   type FeedSourceDto,
   type ImportJobDto,
   type SupplierSyncResultDto,
+  type FeedCollisionResultDto,
   ImportJobStatus,
 } from '@smartfeed/shared';
 import { JwtAuthGuard } from '@/modules/auth/guards/jwt-auth.guard';
 import { CurrentUser } from '@/modules/auth/decorators/current-user.decorator';
-import { FetchFeedUrlDto, ImportFeedAsyncDto } from '@/modules/feeds/dto';
+import { FetchFeedUrlDto, ImportFeedAsyncDto, CheckFeedCollisionDto } from '@/modules/feeds/dto';
 import { FetchFeedUrlQuery } from '@/modules/feeds/queries/fetch-feed-url.query';
+import { CheckFeedCollisionQuery } from '@/modules/feeds/queries/check-feed-collision.query';
 import { SyncSupplierFeedCommand } from '@/modules/suppliers/commands/suppliers.commands';
 import { GetSupplierByIdQuery } from '@/modules/suppliers/queries/suppliers.queries';
 
@@ -46,6 +48,22 @@ export class FeedsController {
   @ApiResponse({ status: 504, description: 'Supplier server timed out' })
   async fetchFeedUrl(@Body() dto: FetchFeedUrlDto): Promise<FetchFeedResultDto> {
     return this.queryBus.execute(new FetchFeedUrlQuery(dto.url));
+  }
+
+  @Post('check-collision')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Check feed URL or content for duplicates and multi-supplier collisions',
+  })
+  @ApiResponse({ status: 200, description: 'Feed collision check result' })
+  @ApiResponse({ status: 404, description: 'Supplier not found' })
+  async checkCollision(
+    @Body() dto: CheckFeedCollisionDto,
+    @CurrentUser() user: { id: string },
+  ): Promise<FeedCollisionResultDto> {
+    return this.queryBus.execute(new CheckFeedCollisionQuery(dto, user.id));
   }
 
   @Get('sources')

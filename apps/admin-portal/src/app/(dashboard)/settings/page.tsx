@@ -55,7 +55,7 @@ export default function SettingsPage() {
       {/* 2. Platform Modules: Payments, AI & Legal */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 items-stretch">
         {/* Payment Gateways Card */}
-        <Card className="border-border/80 bg-card/60 backdrop-blur-xs shadow-xs flex flex-col justify-between">
+        <Card className="border-border bg-card shadow-xs flex flex-col justify-between">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -65,7 +65,7 @@ export default function SettingsPage() {
                 </CardTitle>
               </div>
               <Badge variant="outline" className="text-2xs gap-1 font-mono">
-                <ShieldCheck className="size-2.5 text-emerald-500" />
+                <ShieldCheck className="size-2.5 text-success" />
                 <span>WayForPay</span>
               </Badge>
             </div>
@@ -90,7 +90,7 @@ export default function SettingsPage() {
         </Card>
 
         {/* AI Providers Card */}
-        <Card className="border-border/80 bg-card/60 backdrop-blur-xs shadow-xs flex flex-col justify-between">
+        <Card className="border-border bg-card shadow-xs flex flex-col justify-between">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -100,7 +100,7 @@ export default function SettingsPage() {
                 </CardTitle>
               </div>
               <Badge variant="outline" className="text-2xs gap-1 font-mono">
-                <Sparkles className="size-2.5 text-amber-500" />
+                <Sparkles className="size-2.5 text-warning" />
                 <span>3 {isUk ? 'провайдери' : 'providers'}</span>
               </Badge>
             </div>
@@ -125,7 +125,7 @@ export default function SettingsPage() {
         </Card>
 
         {/* Legal Documents Card */}
-        <Card className="border-border/80 bg-card/60 backdrop-blur-xs shadow-xs flex flex-col justify-between">
+        <Card className="border-border bg-card shadow-xs flex flex-col justify-between">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -135,7 +135,7 @@ export default function SettingsPage() {
                 </CardTitle>
               </div>
               <Badge variant="outline" className="text-2xs gap-1 font-mono">
-                <FileCheck className="size-2.5 text-blue-500" />
+                <FileCheck className="size-2.5 text-primary" />
                 <span>{isUk ? 'Публічні угоди' : 'Public Policies'}</span>
               </Badge>
             </div>
@@ -160,7 +160,7 @@ export default function SettingsPage() {
         </Card>
 
         {/* Currency Rates & Banks Card */}
-        <Card className="border-border/80 bg-card/60 backdrop-blur-xs shadow-xs flex flex-col justify-between">
+        <Card className="border-border bg-card shadow-xs flex flex-col justify-between">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">

@@ -215,7 +215,9 @@ test.describe('Desktop App — Постачальники та ліміти', ()
     await expect(page.getByTestId('import-feed-header-btn')).not.toBeVisible();
 
     // 2. Empty state card is visible with proper title and a single CTA button
-    await expect(page.getByText('Список постачальників порожній')).toBeVisible();
+    await expect(
+      page.getByText(/Немає постачальників|Список постачальників порожній/),
+    ).toBeVisible();
     const emptyCreateBtn = page.getByTestId('empty-create-supplier-btn');
     await expect(emptyCreateBtn).toBeVisible();
     await expect(emptyCreateBtn).toHaveText('Додати постачальника');

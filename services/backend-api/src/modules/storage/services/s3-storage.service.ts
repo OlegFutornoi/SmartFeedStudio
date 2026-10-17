@@ -20,9 +20,18 @@ export class S3StorageService {
   constructor(private readonly configService: ConfigService) {
     this.endpoint = this.configService.get<string>('S3_ENDPOINT') || 'http://localhost:9000';
     const region = this.configService.get<string>('S3_REGION') || 'auto';
-    const accessKeyId = this.configService.get<string>('S3_ACCESS_KEY_ID') || 'minioadmin';
+    const isProd = this.configService.get<string>('NODE_ENV') === 'production';
+    const accessKeyId =
+      this.configService.get<string>('S3_ACCESS_KEY_ID') || (isProd ? '' : 'minioadmin');
     const secretAccessKey =
-      this.configService.get<string>('S3_SECRET_ACCESS_KEY') || 'minioadminpassword';
+      this.configService.get<string>('S3_SECRET_ACCESS_KEY') ||
+      (isProd ? '' : 'minioadminpassword');
+
+    if (isProd && (!accessKeyId || !secretAccessKey)) {
+      throw new Error(
+        '[S3StorageService] S3_ACCESS_KEY_ID and S3_SECRET_ACCESS_KEY must be defined in production',
+      );
+    }
     this.bucketName = this.configService.get<string>('S3_BUCKET_NAME') || 'smartfeed-storage';
     this.publicDomain = this.configService.get<string>('S3_PUBLIC_DOMAIN');
 

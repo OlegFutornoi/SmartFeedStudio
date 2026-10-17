@@ -1,9 +1,12 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { FeedCollisionResultDto, FeedCollisionType, FeedSourceType } from '@smartfeed/shared';
 import { analyzeFeedUrl, analyzeFeedContent, type FeedAnalysisResult } from '@/lib/api';
 import { getFeedAnalysisErrorMessage } from '@/components/feeds/feedErrorMessages';
+import { formatFeedTitle } from '@/lib/formatters';
+import { localDb } from '@/services/local-db';
 
 interface UseFeedAnalysisOptions {
-  t: (key: string, options?: { defaultValue?: string }) => string;
+  t: (key: string, params?: Record<string, string | number>) => string;
   sourceType: 'URL' | 'FILE';
   feedUrl: string;
   setFeedUrl: (url: string) => void;
@@ -28,6 +31,83 @@ export function useFeedAnalysis({
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysis, setAnalysis] = useState<FeedAnalysisResult | null>(null);
   const [analysisError, setAnalysisError] = useState<string | null>(null);
+  const [feedName, setFeedName] = useState<string>('');
+  const [collisionResult, setCollisionResult] = useState<FeedCollisionResultDto | null>(null);
+  const [isCheckingCollision, setIsCheckingCollision] = useState(false);
+
+  const checkCollision = async (
+    targetSupplierId?: string,
+    targetUrl?: string,
+    targetFileName?: string,
+    targetName?: string,
+    targetFileContent?: string,
+    targetSourceType?: 'URL' | 'FILE',
+  ): Promise<FeedCollisionResultDto | null> => {
+    const activeType = targetSourceType ?? sourceType;
+    const supId = targetSupplierId || selectedSupplierId || '';
+    const url = targetUrl ?? feedUrl;
+    const fName = targetFileName ?? fileName;
+    const effectiveUrl = activeType === 'URL' ? url.trim() : '';
+
+    if (activeType === 'URL' && !effectiveUrl) {
+      setCollisionResult(null);
+      return null;
+    }
+    if (activeType === 'FILE' && !fName) {
+      setCollisionResult(null);
+      return null;
+    }
+
+    const name =
+      targetName ?? feedName ?? (effectiveUrl ? formatFeedTitle(effectiveUrl) : fName || '');
+    const content = targetFileContent ?? fileContent;
+
+    setIsCheckingCollision(true);
+    try {
+      const colResult = await localDb.feeds.checkFeedCollision({
+        supplierId: supId,
+        sourceType: activeType === 'FILE' ? FeedSourceType.FILE : FeedSourceType.URL,
+        sourceUrl: effectiveUrl || undefined,
+        fileName: activeType === 'FILE' ? fName || undefined : undefined,
+        feedName: name || undefined,
+        fileContent: content || undefined,
+      });
+      setCollisionResult(colResult);
+      return colResult;
+    } catch (colErr) {
+      console.warn('[useFeedAnalysis] checkCollision error:', colErr);
+      return null;
+    } finally {
+      setIsCheckingCollision(false);
+    }
+  };
+
+  // Real-time reactive collision checking as soon as feedUrl, fileName, or feedName changes
+  useEffect(() => {
+    const trimmedUrl = feedUrl.trim();
+    if (!trimmedUrl && !fileName) {
+      setCollisionResult(null);
+      return;
+    }
+
+    if (sourceType === 'URL' && trimmedUrl && trimmedUrl.length < 8 && !trimmedUrl.includes('.')) {
+      setCollisionResult(null);
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      checkCollision(
+        selectedSupplierId,
+        sourceType === 'URL' ? trimmedUrl : undefined,
+        sourceType === 'FILE' ? fileName || undefined : undefined,
+        feedName || undefined,
+        sourceType === 'FILE' ? fileContent || undefined : undefined,
+        sourceType,
+      );
+    }, 250);
+
+    return () => clearTimeout(timer);
+  }, [feedUrl, fileName, selectedSupplierId, feedName, sourceType, fileContent]);
 
   const performAnalysis = async (
     customContent?: string,
@@ -37,38 +117,75 @@ export function useFeedAnalysis({
     setIsAnalyzing(true);
     setAnalysisError(null);
     setAnalysis(null);
-    try {
-      const activeType = forcedType ?? (fileName ? 'FILE' : sourceType);
-      let result: FeedAnalysisResult;
-      let targetUrl = (customUrl ?? feedUrl).trim();
-      const targetContent = customContent ?? fileContent;
 
+    const activeType = forcedType ?? sourceType;
+    let targetUrl = (customUrl ?? feedUrl).trim();
+    const targetContent = customContent ?? fileContent;
+
+    if (activeType === 'URL') {
+      if (!targetUrl) {
+        setAnalysisError(t('suppliers:enterFeedUrl', { defaultValue: 'Введіть посилання на фід' }));
+        setIsAnalyzing(false);
+        return false;
+      }
+      if (!targetUrl.startsWith('http://') && !targetUrl.startsWith('https://')) {
+        targetUrl = `https://${targetUrl}`;
+        setFeedUrl(targetUrl);
+      }
+    } else {
+      if (!targetContent) {
+        setAnalysisError(
+          t('suppliers:chooseFileForImport', { defaultValue: 'Оберіть файл для імпорту' }),
+        );
+        setIsAnalyzing(false);
+        return false;
+      }
+    }
+
+    const generatedName =
+      activeType === 'FILE' ? fileName || 'Каталог товарів' : formatFeedTitle(targetUrl);
+
+    const effectiveName = feedName || generatedName;
+    if (!feedName) {
+      setFeedName(generatedName);
+    }
+
+    // 1. INVARIANT: ПЕРЕВІРКА НА ДУБЛЬ ПЕРШОЮ СПРАВОЮ!
+    // Якщо фід є дублікатом — зупиняємось негайно, НЕ опрацьовуємо його і НЕ парсимо товари!
+    const colResult = await checkCollision(
+      selectedSupplierId,
+      activeType === 'URL' ? targetUrl : undefined,
+      activeType === 'FILE' ? fileName || undefined : undefined,
+      effectiveName,
+      activeType === 'FILE' ? targetContent || undefined : undefined,
+      activeType,
+    );
+
+    // Лише якщо це ТОЧНИЙ ДУБЛІКАТ для цього ж постачальника — зупиняємось негайно і не витрачаємо ресурси на парсинг
+    if (colResult?.collisionType === FeedCollisionType.SAME_SUPPLIER_DUPLICATE) {
+      setIsAnalyzing(false);
+      setAnalysis(null);
+      setAnalysisError(
+        t('suppliers:feedSameSupplierDuplicateMsg', {
+          name: colResult.existingFeedName || 'Існуючий фід',
+          count: colResult.existingProductsCount || 0,
+          defaultValue: `Цей фід уже підключений під назвою «${colResult.existingFeedName}» (${colResult.existingProductsCount} товарів). Створення дубліката заблоковано.`,
+        }),
+      );
+      return false;
+    }
+
+    // 2. Лише якщо фід унікальний або колізію врегульовано — переходимо до завантаження та парсингу
+    try {
+      let result: FeedAnalysisResult;
       if (activeType === 'URL') {
-        if (!targetUrl) {
-          setAnalysisError(
-            t('suppliers:enterFeedUrl', { defaultValue: 'Введіть посилання на фід' }),
-          );
-          setIsAnalyzing(false);
-          return false;
-        }
-        if (!targetUrl.startsWith('http://') && !targetUrl.startsWith('https://')) {
-          targetUrl = `https://${targetUrl}`;
-          setFeedUrl(targetUrl);
-        }
         result = await analyzeFeedUrl(
           targetUrl,
           selectedSupplierId || undefined,
           token || undefined,
         );
       } else {
-        if (!targetContent) {
-          setAnalysisError(
-            t('suppliers:chooseFileForImport', { defaultValue: 'Оберіть файл для імпорту' }),
-          );
-          setIsAnalyzing(false);
-          return false;
-        }
-        result = await analyzeFeedContent(targetContent, selectedSupplierId || undefined);
+        result = await analyzeFeedContent(targetContent!, selectedSupplierId || undefined);
       }
 
       if (result.totalDetected === 0) {
@@ -85,6 +202,7 @@ export function useFeedAnalysis({
       if (result.categories && result.categories.length > 0) {
         onCategoriesDetected?.(result.categories.map((c) => c.id));
       }
+
       return true;
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
@@ -108,6 +226,12 @@ export function useFeedAnalysis({
     setAnalysis,
     analysisError,
     setAnalysisError,
+    feedName,
+    setFeedName,
+    collisionResult,
+    setCollisionResult,
+    isCheckingCollision,
+    checkCollision,
     performAnalysis,
     handleAnalyzeUrl,
     handleAnalyzeFile,

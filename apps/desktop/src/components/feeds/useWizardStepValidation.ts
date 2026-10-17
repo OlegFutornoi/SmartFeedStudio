@@ -1,11 +1,13 @@
+import { FeedCollisionResultDto, FeedCollisionType } from '@smartfeed/shared';
 import type { FeedAnalysisResult } from '@/lib/api';
 import type { WizardStep } from '@/components/feeds/WizardDialogHeader';
 
 interface UseWizardStepValidationProps {
-  t: (key: string, options?: { defaultValue?: string }) => string;
+  t: (key: string, options?: { defaultValue?: string; name?: string; count?: number }) => string;
   isFeedLimitReached: boolean;
   selectedSupplierId: string;
   analysis: FeedAnalysisResult | null;
+  collisionResult?: FeedCollisionResultDto | null;
   setAnalysisError: (err: string | null) => void;
   setStep: (step: WizardStep) => void;
 }
@@ -15,6 +17,7 @@ export function useWizardStepValidation({
   isFeedLimitReached,
   selectedSupplierId,
   analysis,
+  collisionResult,
   setAnalysisError,
   setStep,
 }: UseWizardStepValidationProps) {
@@ -33,6 +36,19 @@ export function useWizardStepValidation({
         t('suppliers:mustAnalyzeFirst', {
           defaultValue:
             'Спочатку натисніть кнопку «Аналізувати» для перевірки фіду перед продовженням.',
+        }),
+      );
+      return;
+    }
+    if (
+      collisionResult?.hasCollision &&
+      collisionResult.collisionType === FeedCollisionType.SAME_SUPPLIER_DUPLICATE
+    ) {
+      setAnalysisError(
+        t('suppliers:feedSameSupplierDuplicateMsg', {
+          name: collisionResult.existingFeedName || 'Існуючий фід',
+          count: collisionResult.existingProductsCount || 0,
+          defaultValue: `Цей фід уже підключений під назвою «${collisionResult.existingFeedName}» (${collisionResult.existingProductsCount} товарів). Створення дубліката заблоковано.`,
         }),
       );
       return;

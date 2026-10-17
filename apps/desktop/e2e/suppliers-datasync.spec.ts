@@ -145,9 +145,9 @@ test.describe('Desktop App — Реактивна синхронізація л�
     await page.goto('/suppliers');
 
     // Initially: supplier MMM shows 100 products and 1 feed
-    const supplierCard = page.locator('.grid').filter({ hasText: 'MMM' });
-    await expect(page.getByRole('heading', { name: 'MMM' })).toBeVisible();
-    await expect(supplierCard.getByText('100')).toBeVisible();
+    const supplierRow = page.locator('tr').filter({ hasText: 'MMM' });
+    await expect(page.getByTestId('supplier-name-sup_sync_1')).toBeVisible();
+    await expect(supplierRow.getByText('100')).toBeVisible();
 
     // Open feeds modal
     await page.getByTestId('view-supplier-feeds-btn-sup_sync_1').click();
@@ -161,15 +161,15 @@ test.describe('Desktop App — Реактивна синхронізація л�
     // Close modal
     await page.locator('.max-w-3xl').getByRole('button', { name: 'Закрити' }).click();
 
-    // ASSERT: Without page reload, supplier card counters updated reactively to 0!
-    await expect(supplierCard.getByText('0', { exact: true }).first()).toBeVisible();
+    // ASSERT: Without page reload, supplier row counters updated reactively to 0!
+    await expect(supplierRow.getByText('0', { exact: true }).first()).toBeVisible();
 
     // Top quota cards are also reactively at 0
     await expect(
-      page.getByTestId('products-quota-card').getByText('0', { exact: true }),
-    ).toBeVisible();
+      page.getByTestId('products-quota-card').getByRole('heading', { level: 3 }),
+    ).toHaveText('0');
     await expect(
-      page.getByTestId('feeds-quota-card').getByText('0', { exact: true }),
-    ).toBeVisible();
+      page.getByTestId('feeds-quota-card').getByRole('heading', { level: 3 }),
+    ).toHaveText('0');
   });
 });

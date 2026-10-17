@@ -39,57 +39,62 @@ export class BatchIngester {
     }
 
     const pricingRules = await localDb.pricing.getPricingRules(supplier.id);
-
     const defaultMargin = supplier.defaultMarginPercent || 0;
     const defaultFixed = supplier.defaultFixedMarkup || 0;
 
-    const productsToUpsert: ProductDto[] = rawProducts.map((raw, idx) => {
-      const costPrice = raw.costPrice > 0 ? raw.costPrice : raw.price;
-      const { finalPrice } = this.calculatePrice(
-        costPrice,
-        raw.categoryId,
-        pricingRules,
-        defaultMargin,
-        defaultFixed,
-      );
+    const BATCH_SIZE = 500;
+    let totalProcessed = 0;
 
-      return {
-        id: `prod_${supplier.id}_${raw.sku}_${Date.now()}_${idx}`,
-        catalogId: 'cat_local_default',
-        supplierId: supplier.id,
-        supplierName: supplier.name,
-        supplierCode: supplier.code,
-        feedSourceId,
-        sku: raw.sku,
-        titleUk: raw.titleUk,
-        costPrice,
-        price: finalPrice,
-        currency: raw.currency || 'UAH',
-        stockQuantity: raw.stockQuantity,
-        inStock: raw.inStock,
-        categoryId: raw.categoryId || undefined,
-        categoryNameUk: raw.categoryName,
-        images: (raw.images || []).map((url, i) => ({
-          originalUrl: url,
-          order: i,
-          isMain: i === 0,
-        })),
-        attributes: [],
-        status: ProductStatus.ACTIVE,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
-    });
+    for (let offset = 0; offset < rawProducts.length; offset += BATCH_SIZE) {
+      const chunk = rawProducts.slice(offset, offset + BATCH_SIZE);
+      const productsToUpsert: ProductDto[] = chunk.map((raw, idx) => {
+        const costPrice = raw.costPrice > 0 ? raw.costPrice : raw.price;
+        const { finalPrice } = this.calculatePrice(
+          costPrice,
+          raw.categoryId,
+          pricingRules,
+          defaultMargin,
+          defaultFixed,
+        );
 
-    // Batch upsert to local database
-    await localDb.products.bulkUpsert(productsToUpsert);
+        return {
+          id: `prod_${supplier.id}_${raw.sku}_${Date.now()}_${offset + idx}`,
+          catalogId: 'cat_local_default',
+          supplierId: supplier.id,
+          supplierName: supplier.name,
+          supplierCode: supplier.code,
+          feedSourceId,
+          sku: raw.sku,
+          titleUk: raw.titleUk,
+          costPrice,
+          price: finalPrice,
+          currency: raw.currency || 'UAH',
+          stockQuantity: raw.stockQuantity,
+          inStock: raw.inStock,
+          categoryId: raw.categoryId || undefined,
+          categoryNameUk: raw.categoryName,
+          images: (raw.images || []).map((url, i) => ({
+            originalUrl: url,
+            order: i,
+            isMain: i === 0,
+          })),
+          attributes: [],
+          status: ProductStatus.ACTIVE,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
+      });
+
+      await localDb.products.bulkUpsert(productsToUpsert);
+      totalProcessed += productsToUpsert.length;
+    }
 
     // Reactive sync event emission
     emitDataSync(['products', 'feeds', 'suppliers', 'quotas']);
 
     return {
-      totalProcessed: productsToUpsert.length,
-      createdCount: productsToUpsert.length,
+      totalProcessed,
+      createdCount: totalProcessed,
       updatedCount: 0,
       failedCount: 0,
     };

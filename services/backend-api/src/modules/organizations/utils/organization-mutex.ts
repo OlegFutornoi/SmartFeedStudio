@@ -6,7 +6,7 @@ class OrganizationMutex {
   private readonly locks = new Map<string, Promise<void>>();
 
   async runExclusive<T>(organizationId: string, fn: () => Promise<T>): Promise<T> {
-    const currentLock = this.locks.get(organizationId) || Promise.resolve();
+    const currentLock = this.locks.get(organizationId) ?? Promise.resolve();
     let release: () => void;
     const nextLock = new Promise<void>((resolve) => {
       release = resolve;

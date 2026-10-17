@@ -24,6 +24,22 @@ export function prepareTauriArgs(command: string, args: unknown): Record<string,
         dto: raw.payload || raw.dto || raw,
       };
 
+    case 'db_check_feed_collision': {
+      const dto = (raw.dto || raw) as Record<string, unknown>;
+      return {
+        dto: {
+          supplierId: dto.supplierId,
+          sourceType: dto.sourceType,
+          sourceUrl: dto.sourceUrl,
+          canonicalUrl: dto.canonicalUrl,
+          urlFingerprint: dto.urlFingerprint,
+          fileName: dto.fileName,
+          feedName: dto.feedName,
+          contentHash: dto.contentHash,
+        },
+      };
+    }
+
     case 'db_create_feed_source': {
       const p = (raw.payload || {}) as Record<string, unknown>;
       const dto = {
@@ -33,6 +49,10 @@ export function prepareTauriArgs(command: string, args: unknown): Record<string,
         sourceType: p.sourceType,
         fileFormat: p.format || p.fileFormat,
         sourceUrl: p.url || p.sourceUrl,
+        canonicalUrl: p.canonicalUrl,
+        urlFingerprint: p.urlFingerprint,
+        contentHash: p.contentHash,
+        parentFeedSourceId: p.parentFeedSourceId,
         authHeaderName: p.authHeaderName,
         authHeaderValue: p.authHeaderValue,
         syncIntervalHours: p.syncIntervalHours || 24,
@@ -71,6 +91,7 @@ export function prepareTauriArgs(command: string, args: unknown): Record<string,
 
 export const REGISTERED_TAURI_COMMANDS = new Set([
   'db_get_counters',
+  'db_get_counters_summary',
   'db_get_suppliers',
   'db_get_supplier_by_id',
   'db_create_supplier',

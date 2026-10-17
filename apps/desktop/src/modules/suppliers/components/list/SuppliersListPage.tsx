@@ -18,6 +18,7 @@ import type { SupplierColumnId } from '@/modules/suppliers/types';
 import { useSuppliersListPageState } from '@/modules/suppliers/hooks/useSuppliersListPageState';
 import { useSuppliersFilterPagination } from '@/modules/suppliers/hooks/useSuppliersFilterPagination';
 import { useSuppliersCrud } from '@/modules/suppliers/hooks/useSuppliersCrud';
+import { useAppCounters } from '@/services/counters';
 
 export const SuppliersListPage: React.FC = () => {
   const { language } = useTranslation(['suppliers', 'common']);
@@ -25,6 +26,7 @@ export const SuppliersListPage: React.FC = () => {
   const { isExpired } = useLicense();
   const { quotas, updateLocalQuota, refreshQuotas, setLocalQuotaUsed, isSupplierLimitReached } =
     useQuotas();
+  const { counters } = useAppCounters();
 
   const {
     selectedSupplierForDrawer,
@@ -68,7 +70,7 @@ export const SuppliersListPage: React.FC = () => {
   });
 
   const { isColumnVisible, toggleColumn, resetToDefaults, columnOptions } =
-    useColumnVisibility<SupplierColumnId>('suppliers_v5', SUPPLIER_COLUMNS, language === 'uk');
+    useColumnVisibility<SupplierColumnId>('suppliers_v6', SUPPLIER_COLUMNS, language === 'uk');
 
   const {
     filters,
@@ -84,18 +86,26 @@ export const SuppliersListPage: React.FC = () => {
 
   if (isExpired) return <ExpiredPlanBlocker />;
 
-  const activeFeedsTotal = suppliers.reduce((acc, s) => acc + (s.activeFeedsCount || 0), 0);
-  const productsTotal = suppliers.reduce((acc, s) => acc + (s.productsCount || 0), 0);
+  const activeFeedsTotal = Math.max(
+    counters.totalFeeds,
+    suppliers.reduce((acc, s) => acc + (s.activeFeedsCount || 0), 0),
+  );
+  const productsTotal = Math.max(
+    counters.totalProducts,
+    suppliers.reduce((acc, s) => acc + (s.productsCount || 0), 0),
+  );
+  const totalSuppliersCount = Math.max(suppliers.length, counters.totalSuppliers);
+  const activeRulesTotal = counters.totalRules ?? 0;
 
   return (
     <div className="space-y-4 max-w-7xl mx-auto" data-testid="suppliers-page">
       <QuotaExcessBanner quotas={quotas} onOpenReconciliation={() => {}} />
 
       <SuppliersKpiCards
-        suppliersCount={suppliers.length}
+        suppliersCount={totalSuppliersCount}
         activeFeedsCount={activeFeedsTotal}
         totalProductsCount={productsTotal}
-        activeRulesCount={suppliers.length * 2}
+        activeRulesCount={activeRulesTotal}
         quotas={quotas}
       />
 

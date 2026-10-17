@@ -161,7 +161,16 @@ export class LocalProductsService {
   }
 
   async bulkUpsert(products: ProductDto[]): Promise<{ count: number }> {
-    return invokeLocalDb('db_bulk_upsert_products', { products });
+    if (!products.length) return { count: 0 };
+    const CHUNK_SIZE = 500;
+    let totalInserted = 0;
+    for (let i = 0; i < products.length; i += CHUNK_SIZE) {
+      const chunk = products.slice(i, i + CHUNK_SIZE);
+      const res = (await invokeLocalDb('db_bulk_upsert_products', { products: chunk })) as
+        { count?: number } | undefined;
+      totalInserted += res?.count ?? chunk.length;
+    }
+    return { count: totalInserted };
   }
 }
 
