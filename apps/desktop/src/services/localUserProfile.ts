@@ -31,13 +31,35 @@ export async function saveLocalAvatar(userId: string, avatarUrl: string | null):
 
 /**
  * Helper to compress and resize an image file into a clean data URI (<256px)
+ * SEC-07: Validates magic bytes (JPEG/PNG/WebP) and rejects SVG/HTML
  */
 export async function optimizeAvatarImage(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    if (!file.type.startsWith('image/')) {
-      return reject(new Error('Selected file is not an image'));
-    }
+  const ext = file.name.split('.').pop()?.toLowerCase();
+  const ALLOWED_EXT = ['jpg', 'jpeg', 'png', 'webp'];
+  if (ext && !ALLOWED_EXT.includes(ext)) {
+    throw new Error('Selected file is not an allowed image format (JPEG, PNG, WebP only)');
+  }
 
+  // Magic Bytes Check
+  const headerBuffer = await file.slice(0, 16).arrayBuffer();
+  const bytes = new Uint8Array(headerBuffer);
+  const isJpeg = bytes.length >= 3 && bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff;
+  const isPng =
+    bytes.length >= 4 &&
+    bytes[0] === 0x89 &&
+    bytes[1] === 0x50 &&
+    bytes[2] === 0x4e &&
+    bytes[3] === 0x47;
+  const isWebp =
+    bytes.length >= 12 &&
+    String.fromCharCode(...bytes.slice(0, 4)) === 'RIFF' &&
+    String.fromCharCode(...bytes.slice(8, 12)) === 'WEBP';
+
+  if (!isJpeg && !isPng && !isWebp) {
+    throw new Error('INVALID_IMAGE_SIGNATURE: File is not a valid JPEG, PNG, or WebP image');
+  }
+
+  return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onerror = () => reject(new Error('Failed to read image file'));
     reader.onload = () => {
@@ -69,15 +91,11 @@ export async function optimizeAvatarImage(file: File): Promise<string> {
         }
 
         ctx.drawImage(img, 0, 0, width, height);
-        // Export as WebP if supported, fallback to JPEG
         try {
           const dataUrl = canvas.toDataURL('image/webp', 0.85);
           resolve(dataUrl);
         } catch (err) {
-          console.warn(
-            '[localUserProfile] WebP canvas export not supported, falling back to JPEG:',
-            err,
-          );
+          console.warn('[localUserProfile] WebP canvas export failed, using JPEG:', err);
           resolve(canvas.toDataURL('image/jpeg', 0.85));
         }
       };

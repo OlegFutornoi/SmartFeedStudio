@@ -87,9 +87,6 @@ test.describe('Desktop App — Майстер імпорту фідів (Feed In
     // Verify initial selection is Livolo
     const selectTrigger = page.getByTestId('wizard-supplier-select');
     await expect(selectTrigger).toContainText('Livolo Офіційний');
-    const markupBadge = page.getByTestId('wizard-selected-supplier-markup');
-    await expect(markupBadge).toContainText('+25%');
-    await expect(markupBadge).toContainText('+100 ₴');
 
     // Open supplier select dropdown
     await selectTrigger.click();
@@ -102,11 +99,6 @@ test.describe('Desktop App — Майстер імпорту фідів (Feed In
     // Assert that the select trigger updated to Mobioptom
     await expect(selectTrigger).toContainText('Mobioptom');
 
-    // Assert that the selected supplier card updated to Mobioptom's markup (0%)
-    await expect(markupBadge).toContainText('0% (Базова ціна)');
-    const card = page.getByTestId('wizard-selected-supplier-card');
-    await expect(card).toContainText('MOBI');
-
     // Click next to Step 3 (Preview)
     await page.getByRole('button', { name: 'Переглянути товари' }).click();
     await expect(page.getByText('Оберіть категорії для імпорту:')).toBeVisible();
@@ -117,15 +109,12 @@ test.describe('Desktop App — Майстер імпорту фідів (Feed In
 
     // Critical assertion: Supplier selection MUST NOT have reverted to Livolo!
     await expect(selectTrigger).toContainText('Mobioptom');
-    await expect(markupBadge).toContainText('0% (Базова ціна)');
 
-    // Assert checkboxes
-    const priceCheckbox = page.getByTestId('wizard-auto-update-prices-checkbox');
-    const stockCheckbox = page.getByTestId('wizard-auto-update-stocks-checkbox');
-    await expect(priceCheckbox).toBeChecked();
-    await expect(stockCheckbox).toBeChecked();
-    await expect(priceCheckbox).toHaveClass(/accent-primary/);
-    await expect(stockCheckbox).toHaveClass(/accent-primary/);
+    // Assert live pricing simulator and sync policy card are present, dead checkboxes are gone
+    await expect(page.getByTestId('wizard-pricing-simulator')).toBeVisible();
+    await expect(page.getByTestId('wizard-supplier-sync-policy-card')).toBeVisible();
+    await expect(page.getByTestId('wizard-auto-update-prices-checkbox')).toHaveCount(0);
+    await expect(page.getByTestId('wizard-auto-update-stocks-checkbox')).toHaveCount(0);
 
     // Close wizard
     await page.getByTestId('wizard-close-btn').click();

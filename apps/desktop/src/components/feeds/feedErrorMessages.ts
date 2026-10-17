@@ -8,6 +8,27 @@ type TFn = (key: string, params?: Record<string, string | number>) => string;
 export function getFeedAnalysisErrorMessage(rawMessage: string, t: TFn): string {
   const msg = rawMessage;
 
+  if (msg.includes('INVALID_FEED_FILE_TYPE')) {
+    return t('suppliers:errorInvalidFeedFileType', {
+      defaultValue:
+        'Непідтримуваний тип файлу. Дозволені лише формати фідів: .xml, .yml, .csv, .tsv, .xlsx, .xls.',
+    });
+  }
+
+  if (msg.includes('INVALID_FEED_FORMAT')) {
+    return t('suppliers:errorInvalidFeedFormat', {
+      defaultValue:
+        'Файл або посилання не містить валідної структури XML або CSV каталогу товарів.',
+    });
+  }
+
+  if (msg.includes('EMPTY_FEED_CATALOG')) {
+    return t('suppliers:errorEmptyFeedCatalog', {
+      defaultValue:
+        'У фіді не знайдено товарів (0 SKU). Перевірте вміст файлу або структуру каталогу.',
+    });
+  }
+
   if (msg === 'FEED_TIMEOUT' || msg.includes('timeout') || msg.includes('504')) {
     return t('suppliers:errorFeedTimeout', {
       defaultValue:

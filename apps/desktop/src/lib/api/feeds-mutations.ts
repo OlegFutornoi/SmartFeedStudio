@@ -2,6 +2,7 @@ import { FeedSourceType } from '@smartfeed/shared';
 import { localDb } from '@/services/local-db';
 import { isTauri } from '@/lib/runtime';
 import { fetchWithAuth } from '@/lib/api/client';
+import { getSupplierById } from '@/lib/api/suppliers';
 
 /** Minimal type alias — full declaration lives in feeds.ts */
 export interface ImportJobDto {
@@ -119,7 +120,14 @@ export async function importFeedAsync(
     autoUpdateStocks?: boolean;
   },
   token?: string,
-): Promise<{ success: boolean; jobId: string; feedSourceId: string; status: string }> {
+): Promise<{
+  success: boolean;
+  jobId: string;
+  feedSourceId: string;
+  status: string;
+  createdCount?: number;
+  totalProcessed?: number;
+}> {
   const isAutomatedTest =
     typeof window !== 'undefined' &&
     Boolean((window.navigator as unknown as { webdriver?: boolean })?.webdriver);
@@ -144,7 +152,42 @@ export async function importFeedAsync(
   }
 
   let feedSourceId = `feed_${dto.supplierId}_${Date.now().toString(36)}`;
+  let createdCount: number | undefined;
+  let totalProcessed: number | undefined;
   try {
+    // SYNC-PARITY-01: Ensure remote supplier exists in localDb so foreign keys and metadata match
+    if (dto.supplierId) {
+      const localSup = await localDb.suppliers.getSupplierById(dto.supplierId);
+      if (!localSup && !isTauri()) {
+        try {
+          const remoteSup = await getSupplierById(dto.supplierId, token);
+          if (remoteSup) {
+            await localDb.suppliers.createSupplier({
+              id: remoteSup.id,
+              name: remoteSup.name,
+              code: remoteSup.code,
+              contactPhone: remoteSup.contactPhone ?? undefined,
+              contactEmail: remoteSup.contactEmail ?? undefined,
+              website: remoteSup.website ?? undefined,
+              notes: remoteSup.notes ?? undefined,
+              logoUrl: remoteSup.logoUrl ?? undefined,
+              baseCurrency: remoteSup.baseCurrency,
+              targetCurrency: remoteSup.targetCurrency,
+              exchangeRateMode: remoteSup.exchangeRateMode,
+              exchangeRate: remoteSup.exchangeRate,
+              currencyBufferPercent: remoteSup.currencyBufferPercent,
+              priceRounding: remoteSup.priceRounding,
+              defaultMarginPercent: remoteSup.defaultMarginPercent,
+              defaultFixedMarkup: remoteSup.defaultFixedMarkup,
+              isActive: remoteSup.isActive,
+            });
+          }
+        } catch (syncErr) {
+          console.warn('[importFeedAsync] Failed to sync remote supplier into localDb:', syncErr);
+        }
+      }
+    }
+
     let content = dto.fileContent || '';
     if (!content && dto.sourceType === 'URL' && dto.sourceUrl) {
       content = await fetchFeedContent(dto.sourceUrl, token);
@@ -157,6 +200,8 @@ export async function importFeedAsync(
       sourceType: dto.sourceType === 'URL' ? FeedSourceType.URL : FeedSourceType.FILE,
     });
     feedSourceId = importRes.feedSourceId;
+    createdCount = importRes.createdCount;
+    totalProcessed = importRes.totalProcessed;
   } catch (err) {
     console.warn('[ApiClient] Remote call failed, using local fallback:', err);
   }
@@ -166,6 +211,8 @@ export async function importFeedAsync(
     jobId: `job_${Date.now()}`,
     feedSourceId,
     status: 'COMPLETED',
+    createdCount,
+    totalProcessed,
   };
 }
 

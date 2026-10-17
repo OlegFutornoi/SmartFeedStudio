@@ -35,34 +35,73 @@ export function createFeedSource(
   supplierId: string,
   payload: CreateFeedSourcePayload,
 ): { totalProcessed: number; createdCount: number; feedSourceId: string } {
-  const feedSourceId = payload.id || `feed_${Math.random().toString(36).substring(2, 11)}`;
-  const supplierSources = state.feedSources.get(supplierId) || [];
-
-  const sourceRecord: FeedSourceDto = {
-    id: feedSourceId,
-    supplierId,
-    name: formatFeedTitle(payload.name, payload.url) || 'Оновлений прайс-лист',
-    sourceType: payload.sourceType || FeedSourceType.URL,
-    fileFormat: payload.format || FeedFormat.XML_ROZETKA,
-    sourceUrl: payload.url,
-    syncIntervalHours: payload.syncIntervalHours || 24,
-    autoUpdatePrices: payload.autoUpdatePrices ?? true,
-    autoUpdateStocks: payload.autoUpdateStocks ?? true,
-    autoCreateNewProducts: payload.autoCreateNewProducts ?? true,
-    productsCount: payload.productsCount || 0,
-    lastSyncedAt: new Date().toISOString(),
-    lastSyncStatus: 'SUCCESS',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  };
-
-  supplierSources.unshift(sourceRecord);
-  state.feedSources.set(supplierId, supplierSources);
-
-  const supplier = getSupplierById(state, supplierId);
-  if (supplier) {
-    supplier.activeFeedsCount = supplierSources.length;
+  if (!supplierId || !supplierId.trim()) {
+    throw new Error('CANNOT_CREATE_FEED_WITHOUT_EXISTING_SUPPLIER: supplierId is required');
   }
+  const supplier = getSupplierById(state, supplierId);
+  if (!supplier) {
+    throw new Error(
+      `CANNOT_CREATE_FEED_WITHOUT_EXISTING_SUPPLIER: supplier with id "${supplierId}" does not exist`,
+    );
+  }
+
+  const supplierSources = state.feedSources.get(supplierId) || [];
+  const cleanName = formatFeedTitle(payload.name, payload.url) || 'Оновлений прайс-лист';
+
+  // FEED-DEDUP-01: Check if feed already exists for this supplier (by id, url or file name)
+  const existingFeedIndex = supplierSources.findIndex(
+    (f) =>
+      (payload.id && f.id === payload.id) ||
+      (payload.url && f.sourceUrl === payload.url) ||
+      (payload.name && f.name === cleanName),
+  );
+
+  let feedSourceId: string;
+  if (existingFeedIndex >= 0) {
+    feedSourceId = supplierSources[existingFeedIndex].id;
+    supplierSources[existingFeedIndex] = {
+      ...supplierSources[existingFeedIndex],
+      name: cleanName,
+      sourceType: payload.sourceType || supplierSources[existingFeedIndex].sourceType,
+      fileFormat: payload.format || supplierSources[existingFeedIndex].fileFormat,
+      sourceUrl: payload.url || supplierSources[existingFeedIndex].sourceUrl,
+      syncIntervalHours:
+        payload.syncIntervalHours || supplierSources[existingFeedIndex].syncIntervalHours,
+      autoUpdatePrices:
+        payload.autoUpdatePrices ?? supplierSources[existingFeedIndex].autoUpdatePrices,
+      autoUpdateStocks:
+        payload.autoUpdateStocks ?? supplierSources[existingFeedIndex].autoUpdateStocks,
+      autoCreateNewProducts:
+        payload.autoCreateNewProducts ?? supplierSources[existingFeedIndex].autoCreateNewProducts,
+      productsCount: payload.productsCount ?? supplierSources[existingFeedIndex].productsCount,
+      lastSyncedAt: new Date().toISOString(),
+      lastSyncStatus: 'SUCCESS',
+      updatedAt: new Date().toISOString(),
+    };
+  } else {
+    feedSourceId = payload.id || `feed_${Math.random().toString(36).substring(2, 11)}`;
+    const sourceRecord: FeedSourceDto = {
+      id: feedSourceId,
+      supplierId,
+      name: cleanName,
+      sourceType: payload.sourceType || FeedSourceType.URL,
+      fileFormat: payload.format || FeedFormat.XML_ROZETKA,
+      sourceUrl: payload.url,
+      syncIntervalHours: payload.syncIntervalHours || 24,
+      autoUpdatePrices: payload.autoUpdatePrices ?? true,
+      autoUpdateStocks: payload.autoUpdateStocks ?? true,
+      autoCreateNewProducts: payload.autoCreateNewProducts ?? true,
+      productsCount: payload.productsCount || 0,
+      lastSyncedAt: new Date().toISOString(),
+      lastSyncStatus: 'SUCCESS',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    supplierSources.unshift(sourceRecord);
+  }
+
+  state.feedSources.set(supplierId, supplierSources);
+  supplier.activeFeedsCount = supplierSources.length;
 
   return {
     totalProcessed: payload.productsCount || 0,

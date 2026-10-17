@@ -87,3 +87,9 @@ description: Core universal engineering invariants applied across all tasks and 
 - Creating a plan in `plans/active/` gives no authority to modify code or database until explicit user approval ("починай", "виконуй", "реалізуй").
 - Once implemented and 100% verified by tests, move the plan to `plans/completed/<name>.md` and update `plans/README.md`.
 - Reason: Deterministic plan lifecycle prevents scope creep, unapproved changes, and undocumented releases.
+
+## PLAN-02: Mandatory Ukrainian Language for Plans & Audits
+
+- All plans, specifications, roadmaps, and code review audit reports in `plans/` (`plans/active/`, `plans/backlog/`, `plans/completed/`) must be written strictly in Ukrainian (`uk`).
+- Technical identifiers (file paths, method names, CLI commands, invariant IDs) remain in Latin/code blocks, but all headings, narrative descriptions, criteria, risk analyses, and DoD checklists must be in Ukrainian.
+- Reason: The project owner requires all technical plans and audit summaries to be immediately readable and verifiable in Ukrainian.

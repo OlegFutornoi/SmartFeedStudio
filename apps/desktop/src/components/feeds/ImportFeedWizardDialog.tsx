@@ -37,10 +37,6 @@ export function ImportFeedWizardDialog({
     fileContent,
     selectedSupplierId,
     setSelectedSupplierId,
-    autoUpdatePrices,
-    setAutoUpdatePrices,
-    autoUpdateStocks,
-    setAutoUpdateStocks,
     isAnalyzing,
     analysis,
     analysisError,
@@ -60,7 +56,8 @@ export function ImportFeedWizardDialog({
     handleSaveSupplier,
     handleClose,
     handleFileSelect,
-    handleAnalyzeOnly,
+    handleAnalyzeUrl,
+    handleAnalyzeFile,
     handleNextFromSource,
     handleNextFromSupplier,
     handleStartImport,
@@ -77,6 +74,7 @@ export function ImportFeedWizardDialog({
       <Sheet open={isOpen} onOpenChange={(open) => !open && handleClose()}>
         <SheetContent
           side="right"
+          hideCloseButton={true}
           className="p-0 flex flex-col h-full bg-background border-l border-border/80 shadow-2xl z-[60] overflow-hidden w-full sm:max-w-2xl md:max-w-3xl lg:max-w-4xl xl:max-w-5xl transition-all duration-300 ease-in-out"
           data-testid="import-feed-wizard-sheet"
         >
@@ -97,7 +95,7 @@ export function ImportFeedWizardDialog({
           <WizardDialogHeader step={step} onClose={handleClose} />
 
           {/* Content Body */}
-          <div className="p-6 overflow-y-auto flex-1 bg-card">
+          <div className="p-4 sm:p-5 pt-3 sm:pt-4 overflow-y-auto flex-1 bg-card">
             {isFeedLimitReached && (
               <div className="mb-4 p-3.5 rounded-xl border border-border bg-muted/60 text-foreground text-xs flex items-center gap-2.5">
                 <AlertCircle className="size-4 shrink-0 text-foreground" />
@@ -128,8 +126,8 @@ export function ImportFeedWizardDialog({
                 fileName={fileName}
                 onFileSelect={handleFileSelect}
                 isAnalyzing={isAnalyzing}
-                onAnalyzeUrl={handleAnalyzeOnly}
-                onAnalyzeFile={handleAnalyzeOnly}
+                onAnalyzeUrl={handleAnalyzeUrl}
+                onAnalyzeFile={handleAnalyzeFile}
                 analysis={analysis}
                 error={analysisError}
               />
@@ -140,10 +138,7 @@ export function ImportFeedWizardDialog({
                 suppliers={localSuppliers}
                 selectedSupplierId={selectedSupplierId}
                 setSelectedSupplierId={setSelectedSupplierId}
-                autoUpdatePrices={autoUpdatePrices}
-                setAutoUpdatePrices={setAutoUpdatePrices}
-                autoUpdateStocks={autoUpdateStocks}
-                setAutoUpdateStocks={setAutoUpdateStocks}
+                analysis={analysis}
                 onOpenCreateSupplier={() => setIsCreateSupplierOpen(true)}
                 error={analysisError}
               />

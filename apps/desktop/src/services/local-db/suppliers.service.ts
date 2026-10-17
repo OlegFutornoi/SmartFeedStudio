@@ -15,7 +15,7 @@ export class LocalSuppliersService {
     return invokeLocalDb('db_get_supplier_by_id', { id });
   }
 
-  async createSupplier(payload: CreateSupplierDto): Promise<SupplierDto> {
+  async createSupplier(payload: CreateSupplierDto & { id?: string }): Promise<SupplierDto> {
     return invokeLocalDb('db_create_supplier', { payload });
   }
 

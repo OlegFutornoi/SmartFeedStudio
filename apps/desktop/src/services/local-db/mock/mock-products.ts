@@ -46,6 +46,17 @@ export function getProducts(
   }
 
   if (params.supplierId) {
+    const feeds = state.feedSources.get(params.supplierId) || [];
+    // INVARIANT: "Нема фіда — нема товарів"
+    if (feeds.length === 0) {
+      return {
+        items: [],
+        total: 0,
+        page: Math.max(1, params.page || 1),
+        limit: Math.max(1, params.limit || 50),
+        totalPages: 0,
+      };
+    }
     filtered = filtered.filter((p) => p.supplierId === params.supplierId);
   }
 
@@ -141,6 +152,33 @@ export function bulkDeleteProducts(
 }
 
 export function bulkUpsertProducts(state: MockDbState, products: ProductDto[]): { count: number } {
+  // DB-REF-01: Strict referential integrity enforcement
+  for (const prod of products) {
+    if (!prod.supplierId || !prod.supplierId.trim()) {
+      throw new Error(
+        `PRODUCT_REFERENTIAL_INTEGRITY_VIOLATION: Product ${prod.sku} has no supplierId`,
+      );
+    }
+    const supplierExists = state.suppliers.some((s) => s.id === prod.supplierId);
+    if (!supplierExists) {
+      throw new Error(
+        `PRODUCT_REFERENTIAL_INTEGRITY_VIOLATION: Supplier with id "${prod.supplierId}" for product ${prod.sku} does not exist`,
+      );
+    }
+    if (!prod.feedSourceId || !prod.feedSourceId.trim()) {
+      throw new Error(
+        `PRODUCT_REFERENTIAL_INTEGRITY_VIOLATION: Product ${prod.sku} has no feedSourceId`,
+      );
+    }
+    const supplierFeeds = state.feedSources.get(prod.supplierId) || [];
+    const feedExists = supplierFeeds.some((f) => f.id === prod.feedSourceId);
+    if (!feedExists) {
+      throw new Error(
+        `PRODUCT_REFERENTIAL_INTEGRITY_VIOLATION: Feed source with id "${prod.feedSourceId}" does not exist for supplier "${prod.supplierId}"`,
+      );
+    }
+  }
+
   const existingMap = new Map<string, number>();
   state.products.forEach((p, idx) => {
     existingMap.set(`${p.supplierId}_${p.sku}`, idx);

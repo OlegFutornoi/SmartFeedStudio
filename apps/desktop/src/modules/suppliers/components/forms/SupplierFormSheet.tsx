@@ -36,6 +36,7 @@ export const SupplierFormSheet: React.FC<SupplierFormSheetProps> = ({
       <SheetContent
         side="right"
         hideOverlay={true}
+        hideCloseButton={true}
         onPointerDownOutside={onClose}
         className={cn(
           'p-0 flex flex-col h-full bg-background border-l border-border/80 shadow-2xl z-50 overflow-hidden outline-none focus:outline-none focus-visible:outline-none ring-0 focus:ring-0 transition-all duration-300 ease-in-out',

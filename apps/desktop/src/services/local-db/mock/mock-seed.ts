@@ -123,6 +123,26 @@ export function seedDefaultMockData(state: MockDbState): void {
     },
   ]);
 
+  state.feedSources.set(techSupplierId, [
+    {
+      id: 'feed_tech_01',
+      supplierId: techSupplierId,
+      name: 'TechMart Global Catalog (Rozetka XML)',
+      sourceType: FeedSourceType.URL,
+      fileFormat: FeedFormat.XML_ROZETKA,
+      sourceUrl: 'https://techmart-global.com/feeds/products.xml',
+      syncIntervalHours: 24,
+      autoUpdatePrices: true,
+      autoUpdateStocks: true,
+      autoCreateNewProducts: true,
+      productsCount: 180,
+      lastSyncedAt: new Date().toISOString(),
+      lastSyncStatus: 'SUCCESS',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+  ]);
+
   state.pricingRules.set(defaultSupplierId, [
     {
       id: 'rule_demo_01',

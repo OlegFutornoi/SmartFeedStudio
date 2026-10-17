@@ -28,8 +28,10 @@ export const ProfileAvatarCard = () => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (!file.type.startsWith('image/')) {
-      setErrorMsg('Будь ласка, оберіть файл зображення');
+    const ext = file.name.split('.').pop()?.toLowerCase();
+    const ALLOWED = ['jpg', 'jpeg', 'png', 'webp'];
+    if (!ext || !ALLOWED.includes(ext) || file.type === 'image/svg+xml') {
+      setErrorMsg('Дозволені лише формати зображень: JPEG, PNG, WebP (SVG заборонено)');
       return;
     }
 
@@ -40,7 +42,7 @@ export const ProfileAvatarCard = () => {
       await updateAvatar(dataUrl);
     } catch (err: unknown) {
       console.warn('[ProfileAvatarCard] Avatar upload error:', err);
-      setErrorMsg('Не вдалося оновити аватар');
+      setErrorMsg(err instanceof Error ? err.message : 'Не вдалося оновити аватар');
     } finally {
       setIsUploading(false);
       if (fileInputRef.current) {

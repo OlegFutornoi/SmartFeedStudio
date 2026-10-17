@@ -51,6 +51,32 @@ export function createInitialState(): MockDbState {
 }
 
 export function syncCounters(state: MockDbState): void {
+  // DB-REF-02 & FEED-DEDUP-01: Prune feeds belonging to non-existent suppliers and deduplicate
+  for (const [supplierId, sources] of Array.from(state.feedSources.entries())) {
+    if (!supplierId || !state.suppliers.some((s) => s.id === supplierId)) {
+      state.feedSources.delete(supplierId);
+      continue;
+    }
+    const seen = new Set<string>();
+    const uniqueSources = sources.filter((f) => {
+      const key = `${f.sourceUrl || ''}::${f.name}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+    state.feedSources.set(supplierId, uniqueSources);
+  }
+
+  // DB-REF-01: "Нема постачальника / нема фіда — нема товарів"
+  // Prune any orphan products without valid supplier or active feed
+  state.products = state.products.filter((p) => {
+    if (!p.supplierId || !p.feedSourceId) return false;
+    const supExists = state.suppliers.some((s) => s.id === p.supplierId);
+    if (!supExists) return false;
+    const feeds = state.feedSources.get(p.supplierId) || [];
+    return feeds.some((f) => f.id === p.feedSourceId);
+  });
+
   let feedsCount = 0;
   for (const sources of state.feedSources.values()) {
     feedsCount += sources.length;

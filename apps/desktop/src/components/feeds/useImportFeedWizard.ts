@@ -4,19 +4,12 @@ import { useTranslation } from '@/i18n';
 import { useQuotas } from '@/hooks/useQuotas';
 import { useBackgroundJobs } from '@/contexts/BackgroundJobsContext';
 import { useAuth } from '@/contexts/AuthContext';
-import {
-  analyzeFeedUrl,
-  analyzeFeedContent,
-  importFeedAsync,
-  createSupplier,
-  type FeedAnalysisResult,
-  type ImportFeedResultDto,
-} from '@/lib/api';
+import { importFeedAsync, createSupplier, type ImportFeedResultDto } from '@/lib/api';
 import type { WizardStep } from '@/components/feeds/WizardDialogHeader';
 import { emitDataSync } from '@/lib/syncEvents';
-import { getFeedAnalysisErrorMessage } from '@/components/feeds/feedErrorMessages';
 import { useWizardStepMapping } from '@/components/feeds/useWizardStepMapping';
 import { useWizardStepValidation } from '@/components/feeds/useWizardStepValidation';
+import { useFeedAnalysis } from '@/components/feeds/useFeedAnalysis';
 
 interface UseImportFeedWizardOptions {
   isOpen: boolean;
@@ -56,16 +49,31 @@ export function useImportFeedWizard({
   );
   const [autoUpdatePrices, setAutoUpdatePrices] = useState(true);
   const [autoUpdateStocks, setAutoUpdateStocks] = useState(true);
-
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [analysis, setAnalysis] = useState<FeedAnalysisResult | null>(null);
-  const [analysisError, setAnalysisError] = useState<string | null>(null);
-
   const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([]);
-
   const [isImporting, setIsImporting] = useState(false);
   const [importResult, setImportResult] = useState<ImportFeedResultDto | null>(null);
   const [importError, setImportError] = useState<string | null>(null);
+
+  const {
+    isAnalyzing,
+    analysis,
+    analysisError,
+    setAnalysis,
+    setAnalysisError,
+    handleAnalyzeUrl,
+    handleAnalyzeFile,
+    handleAnalyzeOnly,
+  } = useFeedAnalysis({
+    t,
+    sourceType,
+    feedUrl,
+    setFeedUrl,
+    fileName,
+    fileContent,
+    selectedSupplierId,
+    token,
+    onCategoriesDetected: setSelectedCategoryIds,
+  });
 
   const { totalSelectedSkus, isQuotaExceeded, isUnlimited, remainingQuota } = useWizardStepMapping({
     analysis,
@@ -84,12 +92,11 @@ export function useImportFeedWizard({
     prevInitialSupplierIdRef.current = initialSupplierId;
 
     if (justOpened || initialChanged) {
-      if (initialSupplierId) {
-        setSelectedSupplierId(initialSupplierId);
-      } else if (localSuppliers.length > 0) {
-        setSelectedSupplierId((prev) => {
-          return localSuppliers.some((s) => s.id === prev) ? prev : localSuppliers[0].id;
-        });
+      if (initialSupplierId) setSelectedSupplierId(initialSupplierId);
+      else if (localSuppliers.length > 0) {
+        setSelectedSupplierId((prev) =>
+          localSuppliers.some((s) => s.id === prev) ? prev : localSuppliers[0].id,
+        );
       }
     } else if (localSuppliers.length > 0 && !selectedSupplierId) {
       setSelectedSupplierId(localSuppliers[0].id);
@@ -117,7 +124,6 @@ export function useImportFeedWizard({
     setFeedUrl('');
     setFileName(null);
     setFileContent(null);
-    setIsAnalyzing(false);
     setAnalysis(null);
     setAnalysisError(null);
     setSelectedCategoryIds([]);
@@ -128,73 +134,30 @@ export function useImportFeedWizard({
   };
 
   const handleClose = () => {
-    if (importResult) {
-      onSuccess?.();
-    }
+    if (importResult) onSuccess?.();
     handleReset();
     onClose();
   };
 
-  const performAnalysis = async (customContent?: string, customUrl?: string): Promise<boolean> => {
-    setIsAnalyzing(true);
-    setAnalysisError(null);
-    setAnalysis(null);
-    try {
-      let result: FeedAnalysisResult;
-      let targetUrl = (customUrl ?? feedUrl).trim();
-      const targetContent = customContent ?? fileContent;
+  const handleSetFeedUrl = (url: string) => {
+    setFeedUrl(url);
+    if (analysisError) setAnalysisError(null);
+  };
 
-      if (sourceType === 'URL') {
-        if (!targetUrl) {
-          setAnalysisError(
-            t('suppliers:enterFeedUrl', { defaultValue: 'Введіть посилання на фід' }),
-          );
-          setIsAnalyzing(false);
-          return false;
-        }
-        if (!targetUrl.startsWith('http://') && !targetUrl.startsWith('https://')) {
-          targetUrl = `https://${targetUrl}`;
-          setFeedUrl(targetUrl);
-        }
-        result = await analyzeFeedUrl(
-          targetUrl,
-          selectedSupplierId || undefined,
-          token || undefined,
-        );
-      } else {
-        if (!targetContent) {
-          setAnalysisError(
-            t('suppliers:chooseFileForImport', { defaultValue: 'Оберіть файл для імпорту' }),
-          );
-          setIsAnalyzing(false);
-          return false;
-        }
-        result = await analyzeFeedContent(targetContent, selectedSupplierId || undefined);
-      }
-      setAnalysis(result);
-      if (result.categories && result.categories.length > 0) {
-        setSelectedCategoryIds(result.categories.map((c) => c.id));
-      }
-      return true;
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : String(err);
-      setAnalysisError(getFeedAnalysisErrorMessage(msg, t));
-      return false;
-    } finally {
-      setIsAnalyzing(false);
+  const handleSetSourceType = (type: 'URL' | 'FILE') => {
+    setSourceType(type);
+    if (analysisError) setAnalysisError(null);
+  };
+
+  const handleFileSelect = (name: string, content: string) => {
+    setFileName(name || null);
+    setFileContent(content || null);
+    if (name) {
+      setSourceType('FILE');
+      setFeedUrl('');
     }
-  };
-
-  const handleFileSelect = async (name: string, content: string) => {
-    setFileName(name);
-    setFileContent(content);
     setAnalysisError(null);
     setAnalysis(null);
-    await performAnalysis(content);
-  };
-
-  const handleAnalyzeOnly = async (): Promise<boolean> => {
-    return performAnalysis();
   };
 
   const { handleNextFromSource, handleNextFromSupplier } = useWizardStepValidation({
@@ -202,7 +165,6 @@ export function useImportFeedWizard({
     isFeedLimitReached,
     selectedSupplierId,
     analysis,
-    performAnalysis: handleAnalyzeOnly,
     setAnalysisError,
     setStep,
   });
@@ -213,6 +175,14 @@ export function useImportFeedWizard({
         t('suppliers:feedLimitReachedError', {
           defaultValue:
             'Ліміт джерел фідів вичерпано. Оновіть тарифний план або видаліть непотрібний фід.',
+        }),
+      );
+      return;
+    }
+    if (!selectedSupplierId || !selectedSupplierId.trim()) {
+      setImportError(
+        t('suppliers:selectSupplierError', {
+          defaultValue: 'Оберіть постачальника для привʼязки фіду',
         }),
       );
       return;
@@ -235,21 +205,24 @@ export function useImportFeedWizard({
       });
 
       addTrackedJob(asyncRes.jobId);
+      const actualCount =
+        asyncRes.createdCount ??
+        (totalSelectedSkus > 0 ? totalSelectedSkus : analysis?.totalDetected || 0);
 
       setImportResult({
         feedSourceId: asyncRes.feedSourceId,
-        totalItems: analysis?.totalDetected || 0,
-        createdItems: analysis?.totalDetected || 0,
+        totalItems: actualCount,
+        createdItems: actualCount,
         updatedItems: 0,
-        categoriesCreated: selectedCategoryIds.length,
+        categoriesCreated: selectedCategoryIds.length || 1,
         format: analysis?.format || 'XML',
       });
-
       refreshQuotas();
       emitDataSync(['suppliers', 'feeds', 'products', 'quotas']);
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Помилка під час запуску імпорту товарів';
-      setImportError(msg);
+      setImportError(
+        err instanceof Error ? err.message : 'Помилка під час запуску імпорту товарів',
+      );
     } finally {
       setIsImporting(false);
     }
@@ -260,9 +233,9 @@ export function useImportFeedWizard({
     step,
     setStep,
     sourceType,
-    setSourceType,
+    setSourceType: handleSetSourceType,
     feedUrl,
-    setFeedUrl,
+    setFeedUrl: handleSetFeedUrl,
     fileName,
     fileContent,
     selectedSupplierId,
@@ -290,6 +263,8 @@ export function useImportFeedWizard({
     handleSaveSupplier,
     handleClose,
     handleFileSelect,
+    handleAnalyzeUrl,
+    handleAnalyzeFile,
     handleAnalyzeOnly,
     handleNextFromSource,
     handleNextFromSupplier,

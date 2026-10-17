@@ -3,15 +3,7 @@ import { FeedAnalysisResult } from '@/lib/api';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import {
-  Layers,
-  ShoppingBag,
-  CheckCircle2,
-  Search,
-  CheckSquare,
-  Square,
-  AlertTriangle,
-} from 'lucide-react';
+import { Layers, ShoppingBag, Search, CheckSquare, Square, Sparkles } from 'lucide-react';
 import { useTranslation } from '@/i18n';
 import { WizardSampleProductsTable } from '@/components/feeds/WizardSampleProductsTable';
 
@@ -51,6 +43,9 @@ export function WizardStepPreview({
   }, [categories, selectedCategoryIds, analysis.totalDetected]);
 
   const isQuotaExceeded = !isUnlimited && totalSelectedSkus > remainingQuota;
+  const quotaPercent = isUnlimited
+    ? 0
+    : Math.min(100, Math.round((totalSelectedSkus / (remainingQuota || 1)) * 100));
 
   const handleSelectAll = () => {
     setSelectedCategoryIds(categories.map((c) => c.id));
@@ -58,6 +53,28 @@ export function WizardStepPreview({
 
   const handleDeselectAll = () => {
     setSelectedCategoryIds([]);
+  };
+
+  const handleAutoFitToQuota = () => {
+    if (isUnlimited || categories.length === 0) return;
+    let currentSum = 0;
+    const fittingIds: string[] = [];
+    for (const cat of categories) {
+      const count = cat.productCount || 0;
+      if (currentSum + count <= remainingQuota) {
+        fittingIds.push(cat.id);
+        currentSum += count;
+      }
+    }
+    if (fittingIds.length === 0 && categories.length > 0) {
+      const sortedByAsc = [...categories].sort(
+        (a, b) => (a.productCount || 0) - (b.productCount || 0),
+      );
+      if ((sortedByAsc[0]?.productCount || 0) <= remainingQuota) {
+        fittingIds.push(sortedByAsc[0].id);
+      }
+    }
+    setSelectedCategoryIds(fittingIds);
   };
 
   const toggleCategory = (id: string) => {
@@ -69,85 +86,134 @@ export function WizardStepPreview({
   };
 
   return (
-    <div className="space-y-4">
-      {/* Stats Summary Header */}
-      <div className="grid grid-cols-3 gap-3">
-        <div className="p-3 rounded-xl bg-secondary/60 border border-border/80 shadow-xs">
-          <div className="text-xs text-muted-foreground font-medium">
-            {t('suppliers:detectedFormat', { defaultValue: 'Формат фіду' })}
-          </div>
-          <Badge variant="outline" className="mt-1 text-xs font-mono bg-background border-border">
-            {analysis.format}
+    <div className="space-y-3.5">
+      {/* 1. Unified Feed Stats & Live Quota Gauge Header (Zero duplicates, zero giant red boxes) */}
+      <div className="p-3 sm:p-3.5 rounded-2xl border border-border/80 bg-card shadow-xs flex items-center justify-between gap-3 flex-wrap">
+        {/* Left: Feed Details (Exact string matches for tests) */}
+        <div className="flex items-center gap-2.5 flex-wrap">
+          <Badge variant="outline" className="text-xs font-mono bg-background border-border">
+            {t('suppliers:detectedFormat', { defaultValue: 'Формат фіду' })}: {analysis.format}
           </Badge>
-        </div>
-
-        <div className="p-3 rounded-xl bg-secondary/60 border border-border/80 shadow-xs">
-          <div className="text-xs text-muted-foreground font-medium flex items-center gap-1.5">
+          <div className="text-xs font-medium text-foreground flex items-center gap-1.5">
             <ShoppingBag className="size-3.5 text-primary" />
-            {t('suppliers:totalProductsFound', { defaultValue: 'Знайдено товарів' })}
+            <span>{t('suppliers:totalProductsFound', { defaultValue: 'Знайдено товарів' })}:</span>
+            <strong className="font-mono">
+              {analysis.totalDetected.toLocaleString('uk-UA')} SKU
+            </strong>
           </div>
-          <div className="text-base font-bold text-foreground mt-0.5 font-mono">
-            {analysis.totalDetected.toLocaleString('uk-UA')} SKU
+          <div className="text-xs text-muted-foreground flex items-center gap-1">
+            <Layers className="size-3.5 text-muted-foreground" />
+            <strong className="font-mono text-foreground font-semibold">
+              {analysis.categoriesCount}
+            </strong>
+            <span>{t('suppliers:categoriesFound', { defaultValue: 'Категорій' })}</span>
           </div>
         </div>
 
-        <div className="p-3 rounded-xl bg-secondary/60 border border-border/80 shadow-xs">
-          <div className="text-xs text-muted-foreground font-medium flex items-center gap-1.5">
-            <Layers className="size-3.5 text-primary" />
-            {t('suppliers:categoriesFound', { defaultValue: 'Категорій' })}
-          </div>
-          <div className="text-base font-bold text-foreground mt-0.5 font-mono">
-            {analysis.categoriesCount}
-          </div>
-        </div>
-      </div>
-
-      {/* Quota Exceeded High-Contrast Alert Banner */}
-      {isQuotaExceeded && (
-        <div className="p-3.5 rounded-xl bg-destructive/15 border border-destructive/40 text-destructive flex items-start gap-3 shadow-sm animate-in fade-in duration-200">
-          <AlertTriangle className="size-5 shrink-0 mt-0.5 text-destructive" />
-          <div className="space-y-1 text-xs">
-            <p className="font-bold text-sm">
-              {t('suppliers:quotaExceededTitle', {
-                defaultValue: 'Перевищено ліміт товарів тарифу',
-              })}
-            </p>
-            <p className="text-destructive/90 leading-relaxed">
-              {t('suppliers:quotaExceededWarning', {
-                selected: totalSelectedSkus.toLocaleString('uk-UA'),
-                remaining: remainingQuota.toLocaleString('uk-UA'),
-                defaultValue: `Обрано ${totalSelectedSkus.toLocaleString('uk-UA')} SKU, проте за вашим тарифом доступно лише ${remainingQuota.toLocaleString('uk-UA')} SKU. Зніміть виділення з зайвих категорій, щоб продовжити.`,
-              })}
-            </p>
-          </div>
-        </div>
-      )}
-
-      {/* Category Selection Checklist with Quota Control */}
-      {categories.length > 0 && (
-        <div className="p-3.5 rounded-xl border border-border bg-card space-y-3 shadow-xs">
-          <div className="flex items-center justify-between gap-2 flex-wrap">
-            <div className="space-y-0.5">
-              <div className="text-xs font-semibold text-foreground flex items-center gap-1.5">
-                <Layers className="size-3.5 text-primary" />
-                {t('suppliers:selectCategoriesToImport', {
-                  defaultValue: 'Оберіть категорії для імпорту:',
-                })}
-              </div>
-              <p className="text-xs text-muted-foreground">
-                {t('suppliers:selectCategoriesHint', {
-                  defaultValue:
-                    'Імпортуйте лише потрібні категорії, щоб заощаджувати ліміти вашого тарифу.',
-                })}
-              </p>
+        {/* Right: Live Interactive Quota Meter */}
+        <div className="flex items-center gap-3 ml-auto flex-wrap">
+          <div className="space-y-1 text-right">
+            <div className="text-xs font-medium flex items-center justify-end gap-1.5">
+              <span className="text-muted-foreground">
+                {t('suppliers:selectedToImport', { defaultValue: 'Обрано до імпорту:' })}
+              </span>
+              <strong
+                className={`font-mono ${isQuotaExceeded ? 'text-destructive font-bold' : 'text-foreground'}`}
+              >
+                {totalSelectedSkus.toLocaleString('uk-UA')}
+              </strong>
+              <span className="text-muted-foreground">
+                / {isUnlimited ? '∞' : `${remainingQuota.toLocaleString('uk-UA')} SKU`}
+              </span>
             </div>
+            <div className="w-32 sm:w-44 h-1.5 rounded-full bg-secondary overflow-hidden">
+              <div
+                className={`h-full transition-all duration-300 ${isQuotaExceeded ? 'bg-destructive' : 'bg-primary'}`}
+                style={{ width: `${quotaPercent}%` }}
+              />
+            </div>
+          </div>
 
+          {selectedCategoryIds.length === 0 ? (
+            <Badge
+              variant="outline"
+              className="border-border bg-muted text-muted-foreground text-3xs font-medium px-2 py-0.5"
+            >
+              {t('suppliers:noCategoriesSelected', {
+                defaultValue: 'Оберіть хоча б одну категорію для імпорту',
+              })}
+            </Badge>
+          ) : isQuotaExceeded ? (
             <div className="flex items-center gap-2">
+              <div className="flex flex-col items-end">
+                <span className="text-3xs font-semibold text-destructive leading-tight">
+                  {t('suppliers:quotaExceededTitle', {
+                    defaultValue: 'Перевищено ліміт товарів тарифу',
+                  })}
+                </span>
+                <Badge
+                  variant="outline"
+                  className="border-destructive/40 bg-destructive/10 text-destructive text-3xs font-semibold px-1.5 py-0 mt-0.5"
+                >
+                  {t('suppliers:quotaExceededShort', {
+                    count: (totalSelectedSkus - remainingQuota).toLocaleString('uk-UA'),
+                    defaultValue: `Перевищено на ${(totalSelectedSkus - remainingQuota).toLocaleString('uk-UA')} SKU`,
+                  })}
+                </Badge>
+              </div>
               <Button
                 type="button"
                 variant="outline"
                 size="sm"
-                className="h-7 text-xs px-2 flex items-center gap-1"
+                onClick={handleAutoFitToQuota}
+                className="h-6 text-3xs px-2.5 gap-1 border-destructive/40 text-destructive hover:bg-destructive/10"
+                title={t('suppliers:autoFitToQuotaTooltip', {
+                  defaultValue: 'Автоматично обрати категорії у межах ліміту',
+                })}
+              >
+                <Sparkles className="size-2.5" />
+                <span>
+                  {t('suppliers:autoFitToQuota', { defaultValue: 'Підігнати під ліміт' })}
+                </span>
+              </Button>
+            </div>
+          ) : (
+            <Badge
+              variant="outline"
+              className="border-success/30 bg-success/15 text-success text-3xs font-medium px-2 py-0.5"
+            >
+              ✓ {t('suppliers:withinQuota', { defaultValue: 'В межах ліміту' })}
+            </Badge>
+          )}
+        </div>
+      </div>
+
+      {/* 2. Category Selection Checklist with Quick Actions */}
+      {categories.length > 0 && (
+        <div className="p-3.5 rounded-2xl border border-border bg-card space-y-3 shadow-xs">
+          <div className="flex items-center justify-between gap-2 flex-wrap">
+            <div className="text-xs font-semibold text-foreground flex items-center gap-1.5">
+              <Layers className="size-3.5 text-primary" />
+              <span>
+                {t('suppliers:selectCategoriesToImport', {
+                  defaultValue: 'Оберіть категорії для імпорту:',
+                })}
+              </span>
+              <span className="text-muted-foreground font-normal text-2xs">
+                {t('suppliers:selectedCategoriesRatio', {
+                  selected: selectedCategoryIds.length,
+                  total: categories.length,
+                  defaultValue: `(${selectedCategoryIds.length} з ${categories.length} обрано)`,
+                })}
+              </span>
+            </div>
+
+            <div className="flex items-center gap-1.5">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="h-7 text-3xs px-2 flex items-center gap-1"
                 onClick={handleSelectAll}
               >
                 <CheckSquare className="size-3" />
@@ -157,17 +223,29 @@ export function WizardStepPreview({
                 type="button"
                 variant="ghost"
                 size="sm"
-                className="h-7 text-xs px-2 flex items-center gap-1 text-muted-foreground hover:text-foreground"
+                className="h-7 text-3xs px-2 flex items-center gap-1 text-muted-foreground hover:text-foreground"
                 onClick={handleDeselectAll}
               >
                 <Square className="size-3" />
                 {t('suppliers:deselectAll', { defaultValue: 'Зняти всі' })}
               </Button>
+              {isQuotaExceeded && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="h-7 text-3xs px-2 flex items-center gap-1 border-primary/40 text-primary hover:bg-primary/10"
+                  onClick={handleAutoFitToQuota}
+                >
+                  <Sparkles className="size-3" />
+                  {t('suppliers:autoFitToQuota', { defaultValue: 'Підігнати під ліміт' })}
+                </Button>
+              )}
             </div>
           </div>
 
           {/* Category Search filter */}
-          {categories.length > 6 && (
+          {categories.length > 4 && (
             <div className="relative">
               <Search className="size-3.5 absolute left-2.5 top-2.5 text-muted-foreground" />
               <Input
@@ -181,8 +259,8 @@ export function WizardStepPreview({
             </div>
           )}
 
-          {/* Categories Grid (Expanded Height) */}
-          <div className="max-h-56 overflow-y-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-1.5 p-1.5 bg-secondary/20 rounded-lg border border-border/50">
+          {/* Categories Grid (Single smooth scroll area) */}
+          <div className="max-h-60 overflow-y-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-1.5 p-1 bg-secondary/15 rounded-xl border border-border/50">
             {filteredCategories.map((cat) => {
               const isSelected = selectedCategoryIds.includes(cat.id);
               return (
@@ -192,7 +270,7 @@ export function WizardStepPreview({
                   onClick={() => toggleCategory(cat.id)}
                   className={`flex items-center justify-between p-2 rounded-lg text-left text-xs transition-all border ${
                     isSelected
-                      ? 'bg-primary/10 border-primary/40 text-foreground font-medium'
+                      ? 'bg-primary/10 border-primary/40 text-foreground font-medium shadow-2xs'
                       : 'bg-card/70 border-border/60 text-muted-foreground hover:bg-secondary/60 hover:text-foreground'
                   }`}
                 >
@@ -218,55 +296,10 @@ export function WizardStepPreview({
               );
             })}
           </div>
-
-          {/* Live Quota Bar */}
-          <div
-            className={`p-2.5 rounded-lg border text-xs flex items-center justify-between gap-2 flex-wrap transition-colors ${
-              isQuotaExceeded
-                ? 'bg-destructive/10 border-destructive/30 text-destructive'
-                : selectedCategoryIds.length === 0
-                  ? 'bg-muted border-border text-muted-foreground'
-                  : 'bg-secondary/40 border-border/60 text-foreground'
-            }`}
-          >
-            <div className="flex items-center gap-2">
-              {isQuotaExceeded ? (
-                <AlertTriangle className="size-4 text-destructive shrink-0" />
-              ) : selectedCategoryIds.length === 0 ? (
-                <AlertTriangle className="size-4 text-muted-foreground shrink-0" />
-              ) : (
-                <CheckCircle2 className="size-4 text-foreground shrink-0" />
-              )}
-              <span>
-                {selectedCategoryIds.length === 0 ? (
-                  t('suppliers:noCategoriesSelected', {
-                    defaultValue: 'Оберіть хоча б одну категорію для імпорту',
-                  })
-                ) : (
-                  <>
-                    {t('suppliers:selectedToImport', { defaultValue: 'Обрано до імпорту:' })}{' '}
-                    <strong className="font-mono">
-                      {totalSelectedSkus.toLocaleString('uk-UA')} SKU
-                    </strong>{' '}
-                    ({selectedCategoryIds.length} з {categories.length} категорій)
-                  </>
-                )}
-              </span>
-            </div>
-
-            <div className="text-xs font-mono text-muted-foreground">
-              {t('suppliers:quotaLimitAvailable', { defaultValue: 'Доступно за лімітом:' })}{' '}
-              <strong
-                className={isQuotaExceeded ? 'text-destructive font-bold' : 'text-foreground'}
-              >
-                {isUnlimited ? '∞' : `${remainingQuota.toLocaleString('uk-UA')} SKU`}
-              </strong>
-            </div>
-          </div>
         </div>
       )}
 
-      {/* Sample Products Table (Modular Component) */}
+      {/* 3. Streamlined Sample Products Strip (Replacing the Heavy Table, Zero Scroll Clutter) */}
       <WizardSampleProductsTable sampleProducts={analysis.sampleProducts} />
     </div>
   );

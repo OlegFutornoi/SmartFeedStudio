@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useCallback } from 'react';
-import { ArrowRight, CheckCircle2, Loader2, AlertCircle } from 'lucide-react';
+import { ArrowRight, CheckCircle2, Loader2, AlertCircle, ShoppingBag } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { useTranslation } from '@/i18n';
 import type { FeedAnalysisResult } from '@/lib/api';
@@ -31,9 +31,7 @@ export const WizardSampleProductsTable: React.FC<WizardSampleProductsTableProps>
     sku: '',
   });
 
-  // Track status per SKU: 'loading' | 'ready' | 'error' | 'none'
   const [skuStatusMap, setSkuStatusMap] = useState<Record<string, PreviewImageStatus>>({});
-
   const previewItems = useMemo(() => (sampleProducts || []).slice(0, 5), [sampleProducts]);
 
   const totalWithImages = useMemo(() => {
@@ -74,11 +72,12 @@ export const WizardSampleProductsTable: React.FC<WizardSampleProductsTableProps>
   };
 
   return (
-    <div className="space-y-2.5">
+    <div className="rounded-xl border border-border/80 bg-card p-3 shadow-xs space-y-2.5">
       {/* Header Bar with Live Photo Status Indicator */}
-      <div className="text-xs text-muted-foreground font-medium flex items-center justify-between flex-wrap gap-2">
+      <div className="flex items-center justify-between flex-wrap gap-2 text-xs">
         <div className="flex items-center gap-2">
-          <span>
+          <ShoppingBag className="size-3.5 text-primary" />
+          <span className="font-semibold text-foreground">
             {t('suppliers:sampleProductsTitle', {
               defaultValue: 'Попередній перегляд товарів (перші 5):',
             })}
@@ -89,19 +88,15 @@ export const WizardSampleProductsTable: React.FC<WizardSampleProductsTableProps>
             {isLoadingPhotos ? (
               <Badge
                 variant="outline"
-                className="text-xs gap-1.5 font-normal py-0.5 px-2 text-primary border-primary/30 bg-primary/5 animate-pulse"
-                title={t('suppliers:previewPhotosHint', {
-                  defaultValue:
-                    'Для швидкого перегляду завантажуються перші фото, решта каталогу синхронізується у фоні',
-                })}
+                className="text-3xs gap-1 font-normal py-0 px-1.5 text-primary border-primary/30 bg-primary/5 animate-pulse"
                 data-testid="preview-photos-loading-badge"
               >
-                <Loader2 className="size-3 animate-spin" />
+                <Loader2 className="size-2.5 animate-spin" />
                 <span>
                   {t('suppliers:previewPhotosLoading', {
                     loaded: settledCount,
                     total: totalWithImages,
-                    defaultValue: `Завантаження фото (${settledCount}/${totalWithImages})...`,
+                    defaultValue: `Фото (${settledCount}/${totalWithImages})...`,
                   })}
                 </span>
               </Badge>
@@ -109,142 +104,97 @@ export const WizardSampleProductsTable: React.FC<WizardSampleProductsTableProps>
               readyCount > 0 ? (
                 <Badge
                   variant="outline"
-                  className="text-xs gap-1.5 font-normal py-0.5 px-2 text-foreground border-border bg-secondary"
+                  className="text-3xs gap-1 font-normal py-0 px-1.5 text-foreground border-border bg-secondary"
                   data-testid="preview-photos-ready-badge"
                 >
-                  <CheckCircle2 className="size-3 text-foreground" />
+                  <CheckCircle2 className="size-2.5 text-foreground" />
                   <span>
-                    {readyCount === totalWithImages
-                      ? t('suppliers:previewPhotosReady', {
-                          defaultValue: 'Фото превʼю готові • решта у фоні',
-                        })
-                      : t('suppliers:previewPhotosPartial', {
-                          ready: readyCount,
-                          total: totalWithImages,
-                          defaultValue: `Завантажено ${readyCount} з ${totalWithImages} фото • решта у фоні`,
-                        })}
+                    {t('suppliers:previewPhotosReady', {
+                      defaultValue: 'Фото перевірені',
+                    })}
                   </span>
                 </Badge>
               ) : (
                 <Badge
                   variant="outline"
-                  className="text-xs gap-1.5 font-normal py-0.5 px-2 text-muted-foreground border-border bg-muted"
+                  className="text-3xs gap-1 font-normal py-0 px-1.5 text-muted-foreground border-border bg-muted"
                   data-testid="preview-photos-failed-badge"
                 >
-                  <AlertCircle className="size-3 text-muted-foreground" />
+                  <AlertCircle className="size-2.5 text-muted-foreground" />
                   <span>
                     {t('suppliers:previewPhotosFailed', {
-                      defaultValue: 'Фото недоступні за посиланням',
+                      defaultValue: 'Фото недоступні',
                     })}
                   </span>
                 </Badge>
               )
-            ) : (
-              totalWithImages === 0 && (
-                <Badge
-                  variant="outline"
-                  className="text-xs gap-1 font-normal py-0.5 px-2 text-muted-foreground border-border bg-muted/20"
-                  data-testid="preview-photos-none-badge"
-                >
-                  <span>
-                    {t('suppliers:previewPhotosNone', { defaultValue: 'Фото відсутні у фіді' })}
-                  </span>
-                </Badge>
-              )
-            )}
+            ) : null}
           </div>
         </div>
 
-        <span className="text-xs text-foreground font-medium flex items-center gap-1">
-          <CheckCircle2 className="size-3.5" />
+        <span className="text-3xs text-muted-foreground font-medium flex items-center gap-1 font-mono">
+          <CheckCircle2 className="size-3 text-success" />
           {t('suppliers:markupCalculatedLive', { defaultValue: 'Націнка врахована' })}
         </span>
       </div>
 
-      {/* Sample Products Table (100% Solid sticky thead) */}
-      <div className="rounded-xl border border-border overflow-hidden bg-card shadow-xs">
-        <div className="max-h-72 overflow-y-auto">
-          <table className="w-full text-left text-xs border-collapse">
-            <thead className="bg-muted sticky top-0 z-20 [box-shadow:0_1px_0_hsl(var(--border))]">
-              <tr className="text-foreground text-xs font-semibold">
-                <th className="h-9 px-3 py-2 w-14 bg-muted">
-                  {t('suppliers:colPhoto', { defaultValue: 'Фото' })}
-                </th>
-                <th className="h-9 px-3 py-2 w-28 bg-muted font-mono">
-                  {t('suppliers:colSku', { defaultValue: 'Артикул / SKU' })}
-                </th>
-                <th className="h-9 px-3 py-2 bg-muted">
-                  {t('suppliers:colTitle', { defaultValue: 'Назва товару' })}
-                </th>
-                <th className="h-9 px-3 py-2 text-right w-44 bg-muted">
-                  {t('suppliers:colPrice', { defaultValue: 'Закупка → Продаж' })}
-                </th>
-                <th className="h-9 px-3 py-2 text-center w-28 bg-muted">
-                  {t('suppliers:colStock', { defaultValue: 'Наявність' })}
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border/40 bg-card">
-              {previewItems.length === 0 ? (
-                <tr>
-                  <td colSpan={5} className="px-3 py-8 text-center text-muted-foreground text-xs">
-                    {t('suppliers:noSampleProducts', {
-                      defaultValue:
-                        'Товари для попереднього перегляду очікують завершення аналізу фіду',
-                    })}
-                  </td>
-                </tr>
-              ) : (
-                previewItems.map((prod) => (
-                  <tr
-                    key={prod.sku}
-                    className="hover:bg-secondary/40 transition-colors border-b border-border/40 text-xs"
-                  >
-                    <td className="px-3 py-2">
-                      <PreviewProductImage
-                        sku={prod.sku}
-                        originalUrl={prod.images?.[0]?.originalUrl}
-                        productTitle={prod.titleUk}
-                        onStatusChange={handleImageStatusChange}
-                        onOpenModal={handleOpenModal}
-                      />
-                    </td>
-                    <td className="px-3 py-2 font-mono text-xs font-semibold text-foreground truncate">
-                      {prod.sku}
-                    </td>
-                    <td className="px-3 py-2 text-foreground font-medium">
-                      <div className="truncate max-w-sm" title={prod.titleUk}>
-                        {prod.titleUk}
-                      </div>
-                    </td>
-                    <td className="px-3 py-2 text-right whitespace-nowrap font-mono text-xs">
-                      <span className="text-muted-foreground line-through text-xs mr-1">
-                        {prod.costPrice.toLocaleString('uk-UA')} ₴
-                      </span>
-                      <ArrowRight className="size-3 inline text-primary mx-1" />
-                      <span className="font-bold text-foreground">
-                        {prod.price.toLocaleString('uk-UA')} ₴
-                      </span>
-                    </td>
-                    <td className="px-3 py-2 text-center">
-                      <Badge
-                        variant={prod.inStock ? 'secondary' : 'outline'}
-                        className={`text-2xs px-2 py-0.5 font-medium ${
-                          prod.inStock
-                            ? 'text-foreground bg-secondary border-border'
-                            : 'text-muted-foreground bg-secondary/50'
-                        }`}
-                      >
-                        {prod.inStock ? 'В наявності' : 'Немає'}
-                      </Badge>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+      {/* Modern Compact Product Cards Grid (Zero Nested Scrollbars) */}
+      {previewItems.length === 0 ? (
+        <div className="py-4 text-center text-muted-foreground text-xs">
+          {t('suppliers:noSampleProducts', {
+            defaultValue: 'Товари для попереднього перегляду очікують завершення аналізу фіду',
+          })}
         </div>
-      </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2">
+          {previewItems.map((prod) => (
+            <div
+              key={prod.sku}
+              className="p-2 rounded-lg border border-border/60 bg-secondary/20 hover:bg-secondary/40 transition-colors flex items-center gap-2 min-w-0"
+            >
+              <div className="shrink-0 size-9 rounded-md overflow-hidden bg-background border border-border/60 flex items-center justify-center p-0.5">
+                <PreviewProductImage
+                  sku={prod.sku}
+                  originalUrl={prod.images?.[0]?.originalUrl}
+                  productTitle={prod.titleUk}
+                  onStatusChange={handleImageStatusChange}
+                  onOpenModal={handleOpenModal}
+                />
+              </div>
+
+              <div className="min-w-0 flex-1 space-y-0.5">
+                <div className="flex items-center justify-between gap-1">
+                  <span className="font-mono text-3xs font-semibold text-foreground truncate">
+                    {prod.sku}
+                  </span>
+                  <Badge
+                    variant="outline"
+                    className="text-3xs px-1 py-0 border-border bg-background/80 shrink-0"
+                  >
+                    {prod.inStock
+                      ? t('suppliers:inStock', { defaultValue: 'В наявності' })
+                      : t('suppliers:outOfStock', { defaultValue: 'Немає' })}
+                  </Badge>
+                </div>
+
+                <p className="text-3xs text-muted-foreground truncate" title={prod.titleUk}>
+                  {prod.titleUk}
+                </p>
+
+                <div className="text-3xs font-mono flex items-center gap-1">
+                  <span className="text-muted-foreground line-through">
+                    {prod.costPrice.toLocaleString('uk-UA')} ₴
+                  </span>
+                  <ArrowRight className="size-2 text-primary" />
+                  <span className="font-bold text-foreground">
+                    {prod.price.toLocaleString('uk-UA')} ₴
+                  </span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* Enlarged Photo Modal */}
       <PreviewImageModal

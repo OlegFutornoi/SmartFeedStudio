@@ -47,11 +47,17 @@ export class FeedStreamParser {
   public analyze(content: string, _supplierId?: string): FeedAnalysisResult {
     const { format, delimiter, isXml } = detectFeedFormat(content);
 
-    if (isXml) {
-      return xmlFeedParser.analyze(content, format);
-    } else {
-      return csvFeedParser.analyze(content, format, delimiter || ';');
+    const result = isXml
+      ? xmlFeedParser.analyze(content, format)
+      : csvFeedParser.analyze(content, format, delimiter || ';');
+
+    if (result.totalDetected === 0) {
+      throw new Error(
+        'EMPTY_FEED_CATALOG: У фіді не знайдено товарів (0 SKU). Перевірте вміст файлу або структуру каталогу',
+      );
     }
+
+    return result;
   }
 
   /**

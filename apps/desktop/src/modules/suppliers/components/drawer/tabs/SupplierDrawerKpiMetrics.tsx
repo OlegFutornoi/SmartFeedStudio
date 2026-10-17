@@ -18,7 +18,7 @@ export const SupplierDrawerKpiMetrics: React.FC<SupplierDrawerKpiMetricsProps> =
   return (
     <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
       <div
-        onClick={() => onNavigateToTab?.('products')}
+        onClick={() => onNavigateToTab?.('feeds')}
         className="p-3 rounded-xl border border-border/70 bg-card shadow-xs flex flex-col justify-between cursor-pointer hover:border-primary/50 transition-colors"
         data-testid="overview-kpi-products"
       >

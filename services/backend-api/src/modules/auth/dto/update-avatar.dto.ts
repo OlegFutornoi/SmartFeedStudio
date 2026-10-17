@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, MaxLength, ValidateIf } from 'class-validator';
+import { IsValidAvatar } from '@/modules/auth/validators/is-valid-avatar.decorator';
 
 export class UpdateAvatarDto {
   @ApiProperty({
@@ -11,5 +12,6 @@ export class UpdateAvatarDto {
   @ValidateIf((o) => o.avatarUrl !== null && o.avatarUrl !== undefined && o.avatarUrl !== '')
   @IsString()
   @MaxLength(3000000, { message: 'Avatar payload cannot exceed ~3MB' })
+  @IsValidAvatar()
   avatarUrl?: string | null;
 }

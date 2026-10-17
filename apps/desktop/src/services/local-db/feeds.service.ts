@@ -51,13 +51,10 @@ export class LocalFeedsService {
     },
   ): Promise<{ totalProcessed: number; createdCount: number; feedSourceId: string }> {
     const rawProducts = feedEngine.parseProducts(content, options);
-    const feedSourceId =
-      options.feedSourceId || `feed_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
-    const result = await feedEngine.ingest(options.supplierId, rawProducts, feedSourceId);
 
-    // Save or update feed source record using universal DB invoke
+    // 1. INVARIANT: "Нема фіда — нема товарів". Register the parent FeedSource record first.
     const payload = {
-      id: feedSourceId,
+      id: options.feedSourceId,
       name:
         options.fileName ||
         (options.sourceUrl
@@ -71,19 +68,46 @@ export class LocalFeedsService {
       autoUpdatePrices: true,
       autoUpdateStocks: true,
       autoCreateNewProducts: true,
-      productsCount: result.createdCount,
+      productsCount: rawProducts.length,
     };
 
-    const dbResult = await invokeLocalDb('db_create_feed_source', {
-      supplierId: options.supplierId,
-      payload,
-    });
+    let dbResult: { totalProcessed: number; createdCount: number; feedSourceId: string };
+    try {
+      dbResult = await invokeLocalDb('db_create_feed_source', {
+        supplierId: options.supplierId,
+        payload,
+      });
+    } catch (createErr) {
+      console.error(
+        '[LocalFeedsService] Failed to create feed source before product ingest:',
+        createErr,
+      );
+      throw createErr;
+    }
 
-    return {
-      totalProcessed: dbResult.totalProcessed,
-      createdCount: dbResult.createdCount,
-      feedSourceId: dbResult.feedSourceId,
-    };
+    const actualFeedSourceId = dbResult.feedSourceId;
+
+    // 2. Ingest products linked strictly to the created/deduplicated feedSourceId.
+    try {
+      const result = await feedEngine.ingest(options.supplierId, rawProducts, actualFeedSourceId);
+      return {
+        totalProcessed: result.totalProcessed,
+        createdCount: result.createdCount,
+        feedSourceId: actualFeedSourceId,
+      };
+    } catch (ingestErr) {
+      // Rollback: if product ingestion fails, delete the created feed source and all its products
+      console.error(
+        '[LocalFeedsService] Ingestion failed, rolling back feed source and partial products:',
+        ingestErr,
+      );
+      await invokeLocalDb('db_delete_feed_source', {
+        supplierId: options.supplierId,
+        id: actualFeedSourceId,
+        deleteProducts: true,
+      }).catch((rollbackErr) => console.warn('[LocalFeedsService] Rollback error:', rollbackErr));
+      throw ingestErr;
+    }
   }
 
   async getSupplierFeedSources(supplierId: string): Promise<FeedSourceDto[]> {

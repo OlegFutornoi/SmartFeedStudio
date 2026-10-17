@@ -19,16 +19,29 @@ export class BatchIngester {
     rawProducts: RawParsedProduct[],
     feedSourceId?: string,
   ): Promise<BatchIngestResult> {
+    if (!feedSourceId || !feedSourceId.trim()) {
+      throw new Error('CANNOT_INGEST_WITHOUT_FEED_SOURCE: feedSourceId is required');
+    }
+    if (!supplierId || !supplierId.trim()) {
+      throw new Error('CANNOT_INGEST_WITHOUT_SUPPLIER: supplierId is required');
+    }
+
     let supplier = await localDb.suppliers.getSupplierById(supplierId);
     if (!supplier) {
       const allSups = await localDb.suppliers.getSuppliers();
       supplier =
         allSups.find((s) => s.id === supplierId) || (allSups.length === 1 ? allSups[0] : null);
     }
-    const pricingRules = await localDb.pricing.getPricingRules(supplierId);
+    if (!supplier) {
+      throw new Error(
+        `CANNOT_INGEST_WITHOUT_EXISTING_SUPPLIER: supplier "${supplierId}" not found in local database`,
+      );
+    }
 
-    const defaultMargin = supplier?.defaultMarginPercent || 0;
-    const defaultFixed = supplier?.defaultFixedMarkup || 0;
+    const pricingRules = await localDb.pricing.getPricingRules(supplier.id);
+
+    const defaultMargin = supplier.defaultMarginPercent || 0;
+    const defaultFixed = supplier.defaultFixedMarkup || 0;
 
     const productsToUpsert: ProductDto[] = rawProducts.map((raw, idx) => {
       const costPrice = raw.costPrice > 0 ? raw.costPrice : raw.price;
@@ -41,12 +54,12 @@ export class BatchIngester {
       );
 
       return {
-        id: `prod_${supplierId}_${raw.sku}_${Date.now()}_${idx}`,
+        id: `prod_${supplier.id}_${raw.sku}_${Date.now()}_${idx}`,
         catalogId: 'cat_local_default',
-        supplierId: supplier?.id || supplierId,
-        supplierName: supplier?.name || supplier?.code || '',
-        supplierCode: supplier?.code,
-        feedSourceId: feedSourceId || null,
+        supplierId: supplier.id,
+        supplierName: supplier.name,
+        supplierCode: supplier.code,
+        feedSourceId,
         sku: raw.sku,
         titleUk: raw.titleUk,
         costPrice,

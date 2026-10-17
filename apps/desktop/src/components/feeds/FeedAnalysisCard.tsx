@@ -9,6 +9,7 @@ import {
   Tag,
   ChevronRight,
   PackageCheck,
+  Zap,
 } from 'lucide-react';
 import { useTranslation } from '@/i18n';
 
@@ -150,6 +151,29 @@ export function FeedAnalysisCard({ analysis }: FeedAnalysisCardProps) {
               })}
             </p>
           )}
+        </div>
+      )}
+
+      {/* Large Catalog Shield / BullMQ Background Notice */}
+      {analysis.totalDetected > 10000 && (
+        <div className="px-4 pb-3 pt-1">
+          <div className="rounded-lg bg-secondary/50 border border-border/80 p-2.5 flex items-start gap-2.5 text-2xs text-foreground">
+            <Zap className="size-3.5 text-primary shrink-0 mt-0.5" />
+            <div>
+              <span className="font-semibold text-primary">
+                {t('suppliers:largeFeedDetectedTitle', {
+                  count: analysis.totalDetected.toLocaleString('uk-UA'),
+                  defaultValue: `Виявлено великий каталог: ${analysis.totalDetected.toLocaleString('uk-UA')} SKU`,
+                })}
+              </span>
+              <p className="text-muted-foreground mt-0.5">
+                {t('suppliers:largeFeedDetectedDesc', {
+                  defaultValue:
+                    'Імпорт виконуватиметься у фоновій черзі BullMQ без навантаження на систему. Ви зможете продовжувати роботу під час обробки.',
+                })}
+              </p>
+            </div>
+          </div>
         </div>
       )}
     </div>

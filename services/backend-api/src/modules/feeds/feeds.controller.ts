@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
@@ -22,6 +23,7 @@ import { CurrentUser } from '@/modules/auth/decorators/current-user.decorator';
 import { FetchFeedUrlDto, ImportFeedAsyncDto } from '@/modules/feeds/dto';
 import { FetchFeedUrlQuery } from '@/modules/feeds/queries/fetch-feed-url.query';
 import { SyncSupplierFeedCommand } from '@/modules/suppliers/commands/suppliers.commands';
+import { GetSupplierByIdQuery } from '@/modules/suppliers/queries/suppliers.queries';
 
 @ApiTags('Feeds')
 @Controller('feeds')
@@ -118,13 +120,32 @@ export class FeedsController {
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Trigger asynchronous feed import' })
   @ApiResponse({ status: 200, description: 'Import job queued successfully' })
+  @ApiResponse({ status: 404, description: 'Supplier not found' })
   async importAsync(
     @Body() dto: ImportFeedAsyncDto,
+    @CurrentUser() user: { id: string },
   ): Promise<{ success: boolean; jobId: string; feedSourceId: string; status: string }> {
+    await this.queryBus.execute(new GetSupplierByIdQuery(dto.supplierId, user.id));
+
+    if (dto.fileContent) {
+      const trimmed = dto.fileContent.trim();
+      const isXml =
+        trimmed.startsWith('<') &&
+        (trimmed.includes('<?xml') ||
+          trimmed.includes('<yml_catalog') ||
+          trimmed.includes('<rss') ||
+          trimmed.includes('<shop') ||
+          trimmed.includes('<offers'));
+      const isCsv = trimmed.includes(';') || trimmed.includes(',') || trimmed.includes('\t');
+      if (!isXml && !isCsv) {
+        throw new BadRequestException(
+          'INVALID_FEED_CONTENT: Uploaded content is neither valid XML nor CSV feed',
+        );
+      }
+    }
+
     const jobId = `job_${Date.now()}`;
-    const feedSourceId = dto.supplierId
-      ? `feed_${dto.supplierId}_${Date.now().toString(36)}`
-      : `feed_${Date.now()}`;
+    const feedSourceId = `feed_${dto.supplierId}_${Date.now().toString(36)}`;
     return {
       success: true,
       jobId,

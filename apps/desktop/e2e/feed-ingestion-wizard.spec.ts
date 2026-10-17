@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { setupFeedIngestionMocks } from '@e2e/fixtures/feed-ingestion-mock-data';
+import { setupFeedIngestionMocks, mockAnalysis } from '@e2e/fixtures/feed-ingestion-mock-data';
 
 test.describe('Desktop App — Feed Ingestion Wizard Steps (E2E)', () => {
   test.beforeEach(async ({ page }) => {
@@ -15,8 +15,9 @@ test.describe('Desktop App — Feed Ingestion Wizard Steps (E2E)', () => {
 
     await expect(page.locator('h2:has-text("Майстер Імпорту Фідів")')).toBeVisible();
     await expect(page.locator('text=Крок 1 з 4: Джерело даних')).toBeVisible();
-    await expect(page.locator('button:has-text("Посилання на фід (URL)")')).toBeVisible();
-    await expect(page.locator('button:has-text("Завантажити файл")')).toBeVisible();
+    // Unified Smart Input & SmartFeed AI Copilot Showcase
+    await expect(page.getByTestId('dropzone-feed-upload')).toBeVisible();
+    await expect(page.getByTestId('wizard-ai-copilot-showcase')).toBeVisible();
   });
 
   test('should analyze XML feed URL and proceed to Step 2 & Step 3 with photo preview feedback', async ({
@@ -40,7 +41,9 @@ test.describe('Desktop App — Feed Ingestion Wizard Steps (E2E)', () => {
     await expect(page.locator('text=Крок 2 з 4: Постачальник та правила націнки')).toBeVisible({
       timeout: 5000,
     });
-    await expect(page.locator('text=Правила націнки цього постачальника')).toBeVisible();
+    await expect(page.getByTestId('wizard-supplier-select')).toBeVisible();
+    await expect(page.getByTestId('wizard-pricing-simulator')).toBeVisible();
+    await expect(page.getByTestId('wizard-supplier-sync-policy-card')).toBeVisible();
 
     await page.getByRole('button', { name: 'Переглянути товари' }).click();
 
@@ -69,10 +72,6 @@ test.describe('Desktop App — Feed Ingestion Wizard Steps (E2E)', () => {
     await expect(importBtn).toBeVisible({ timeout: 5000 });
     await importBtn.click();
 
-    const fileTabBtn = page.locator('button:has-text("Завантажити файл")');
-    await expect(fileTabBtn).toBeVisible();
-    await fileTabBtn.click();
-
     const nextBtn = page.locator('button:has-text("Далі до постачальника")');
     await expect(nextBtn).toBeDisabled();
 
@@ -99,11 +98,169 @@ test.describe('Desktop App — Feed Ingestion Wizard Steps (E2E)', () => {
     });
 
     await expect(page.locator('text=mobile_phones_catalog.xml')).toBeVisible();
+    // Invariant UI-FEED-01: Next button remains disabled until explicit analysis
+    await expect(nextBtn).toBeDisabled();
+
+    // Click Analyze button
+    const analyzeFileBtn = page.getByTestId('analyze-file-btn');
+    await expect(analyzeFileBtn).toBeVisible();
+    await analyzeFileBtn.click();
+
+    await expect(page.locator('text=Введіть посилання на фід')).not.toBeVisible();
     await expect(nextBtn).toBeEnabled({ timeout: 5000 });
 
     await nextBtn.click();
     await expect(page.locator('text=Крок 2 з 4: Постачальник та правила націнки')).toBeVisible({
       timeout: 5000,
     });
+  });
+
+  test('should reject invalid file extensions like .md or .exe with clear error and keep Next disabled', async ({
+    page,
+  }) => {
+    await page.goto('/suppliers');
+    await page.getByTestId('supplier-card-import-btn-sup_01').click();
+
+    const nextBtn = page.locator('button:has-text("Далі до постачальника")');
+    await expect(nextBtn).toBeDisabled();
+
+    await page.setInputFiles('input#feed-file-upload', {
+      name: 'attack_vector.md',
+      mimeType: 'text/markdown',
+      buffer: Buffer.from('# Hacked Feed\n\n<script>alert(1)</script>'),
+    });
+
+    await expect(
+      page.getByText(/Непідтримуваний тип файлу.*Дозволені лише формати фідів/),
+    ).toBeVisible();
+    await expect(nextBtn).toBeDisabled();
+  });
+
+  test('should reject 0-SKU empty XML feed with error and keep Next disabled', async ({ page }) => {
+    await page.route('**/api/feeds/analyze', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          format: 'XML_ROZETKA',
+          totalDetected: 0,
+          categoriesCount: 0,
+          categories: [],
+          sampleCategories: [],
+          sampleProducts: [],
+        }),
+      });
+    });
+
+    await page.goto('/suppliers');
+    await page.getByTestId('supplier-card-import-btn-sup_01').click();
+
+    const nextBtn = page.locator('button:has-text("Далі до постачальника")');
+    await expect(nextBtn).toBeDisabled();
+
+    const emptyXml = `<?xml version="1.0" encoding="UTF-8"?>
+<yml_catalog date="2026-09-12 12:00">
+  <shop>
+    <categories></categories>
+    <offers></offers>
+  </shop>
+</yml_catalog>`;
+
+    await page.setInputFiles('input#feed-file-upload', {
+      name: 'empty_catalog.xml',
+      mimeType: 'application/xml',
+      buffer: Buffer.from(emptyXml),
+    });
+
+    const analyzeFileBtn = page.getByTestId('analyze-file-btn');
+    await expect(analyzeFileBtn).toBeVisible();
+    await analyzeFileBtn.click();
+
+    await expect(page.getByText(/У фіді не знайдено товарів \(0 SKU\)/)).toBeVisible();
+    await expect(nextBtn).toBeDisabled();
+  });
+
+  test('should have exactly one close button in the wizard header (zero duplicates)', async ({
+    page,
+  }) => {
+    await page.goto('/suppliers');
+    await expect(page.getByTestId('suppliers-page')).toBeVisible({ timeout: 5000 });
+    const importBtn = page.getByTestId('supplier-card-import-btn-sup_01');
+    await importBtn.click();
+
+    const sheet = page.getByTestId('import-feed-wizard-sheet');
+    await expect(sheet).toBeVisible();
+    // Authoritative close button with data-testid="wizard-close-btn"
+    await expect(sheet.getByTestId('wizard-close-btn')).toBeVisible();
+    // Verify that sheet has exactly 1 button containing close SVG icon (no duplicate absolute close button)
+    await expect(sheet.locator('button:has(svg.lucide-x)')).toHaveCount(1);
+  });
+
+  test('should display interactive AI analysis loader with live phases and skeleton during analysis', async ({
+    page,
+  }) => {
+    // Delay the mock response so we can assert the loader state
+    await page.route('**/api/feeds/analyze-url', async (route) => {
+      await new Promise((res) => setTimeout(res, 600));
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(mockAnalysis),
+      });
+    });
+
+    await page.goto('/suppliers');
+    await page.getByTestId('supplier-card-import-btn-sup_01').click();
+    await page.locator('button:has-text("Тестовий фід Livolo")').click();
+
+    const analyzeBtn = page.locator('button:has-text("Аналізувати")');
+    await analyzeBtn.click();
+
+    // Verify interactive loader and assistant badge are visible during analysis
+    await expect(page.getByTestId('feed-analysis-interactive-loader')).toBeVisible();
+    await expect(page.getByText('SmartFeed AI Скенер')).toBeVisible();
+
+    // After analysis resolves, loader disappears and result card shows up
+    await expect(page.getByText('Фід успішно проаналізовано')).toBeVisible({ timeout: 5000 });
+    await expect(page.getByTestId('feed-analysis-interactive-loader')).not.toBeVisible();
+  });
+
+  test('should display autonomous Reverse Margin Cinema on Step 2 with 4 storytelling phases and white photo studio card', async ({
+    page,
+  }) => {
+    await page.goto('/suppliers');
+    await page.getByTestId('supplier-card-import-btn-sup_01').click();
+    await page.locator('button:has-text("Тестовий фід Livolo")').click();
+
+    await page.locator('button:has-text("Аналізувати")').click();
+    await expect(page.getByText('Фід успішно проаналізовано')).toBeVisible({ timeout: 5000 });
+    await page.getByRole('button', { name: 'Далі до постачальника' }).click();
+
+    // Verify cinema showcase container
+    const cinema = page.getByTestId('reverse-margin-cinema-showcase');
+    await expect(cinema).toBeVisible({ timeout: 5000 });
+
+    // Verify Cinema Header and Auto-play controls
+    const cinemaHeading = cinema.getByRole('heading', { level: 4 });
+    await expect(cinemaHeading).toBeVisible();
+    await expect(cinemaHeading).toContainText('симулятор');
+    const playPauseBtn = cinema.getByTestId('cinema-play-pause-btn');
+    await expect(playPauseBtn).toBeVisible();
+
+    // Verify active product studio presentation
+    await expect(cinema.getByTestId('cinema-product-image')).toBeVisible();
+    await expect(cinema.getByText('Rozetka • 15% комісія')).toBeVisible();
+
+    // Verify 4 storytelling phases
+    await expect(cinema.getByText(/1\. Закупка/)).toBeVisible();
+    await expect(cinema.getByText(/2\. Моя націнка/)).toBeVisible();
+    await expect(cinema.getByText(/3\. Пастка комісії/)).toBeVisible();
+    await expect(cinema.getByText(/4\. SmartFeed Ціна/)).toBeVisible();
+
+    // Verify guaranteed protection summary
+    await expect(cinema.getByText(/SmartFeed захищає продавця/)).toBeVisible();
+
+    // Verify that the old redundant "+ Створити постачальника" button was removed per user request
+    await expect(page.getByTestId('wizard-create-supplier-btn')).not.toBeVisible();
   });
 });

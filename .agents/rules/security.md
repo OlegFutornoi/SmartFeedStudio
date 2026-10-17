@@ -43,3 +43,17 @@ description: Application security, OWASP Top 10, secret masking, SSRF defense, a
 - All Tauri commands in `src-tauri` must validate input arguments, prevent path traversal (`..`), and restrict OS keychain access strictly to authorized service namespaces.
 - Never expose arbitrary shell command execution through Tauri IPC invoke handlers.
 - Reason: Unvalidated desktop IPC commands allow malicious web views to execute local arbitrary code on the user workstation.
+
+## SEC-07: Strict File Type & Magic Bytes Ingestion
+
+- Feed files must strictly possess one of the allowed extensions: `.xml`, `.yml`, `.csv`, `.tsv`, `.xlsx`, `.xls`, `.txt` on both frontend dropzone and backend DTOs.
+- Avatar and logo uploads must strictly possess `.jpg`, `.jpeg`, `.png`, or `.webp` extensions and verify binary magic bytes (JPEG: `FF D8 FF`, PNG: `89 50 4E 47`, WebP: `RIFF...WEBP`).
+- SVG formats are strictly prohibited for user/supplier avatars due to Stored XSS vectors (`<script>`, `<svg onload>`).
+- Reason: Unvalidated file uploads allow arbitrary script execution, web shells, and stored cross-site scripting attacks.
+
+## SEC-08: Zero 0-SKU Feed Progression & Format Integrity
+
+- Feeds containing 0 detected items (`totalDetected === 0`) or missing required catalog structures are invalid and must not be marked as successfully analyzed.
+- Progression to subsequent wizard steps is strictly gated until explicit analysis is executed and yields `totalDetected > 0`.
+- Format detectors must never fall back to valid XML/CSV types for arbitrary or unrecognized content.
+- Reason: Permitting empty or corrupted feed progression results in broken catalog state and orphaned downstream records.

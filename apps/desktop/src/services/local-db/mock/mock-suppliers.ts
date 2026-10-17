@@ -29,8 +29,10 @@ import { ensureSupplierCategories } from '@/services/local-db/mock/mock-supplier
 
 export function getSuppliers(state: MockDbState, search?: string): SupplierDto[] {
   let result = state.suppliers.map((s) => {
-    const productsCount = state.products.filter((p) => p.supplierId === s.id).length;
     const activeFeedsCount = (state.feedSources.get(s.id) || []).length;
+    // INVARIANT: "Нема фіда — нема товарів"
+    const productsCount =
+      activeFeedsCount === 0 ? 0 : state.products.filter((p) => p.supplierId === s.id).length;
     const cats = ensureSupplierCategories(state, s.id);
     const categoriesCount = cats.length;
     const activeCategoriesCount = cats.filter((c) => c.isActive).length;
@@ -56,8 +58,10 @@ export function getSuppliers(state: MockDbState, search?: string): SupplierDto[]
 export function getSupplierById(state: MockDbState, id: string): SupplierDto | null {
   const s = state.suppliers.find((sup) => sup.id === id);
   if (!s) return null;
-  const productsCount = state.products.filter((p) => p.supplierId === s.id).length;
   const activeFeedsCount = (state.feedSources.get(s.id) || []).length;
+  // INVARIANT: "Нема фіда — нема товарів"
+  const productsCount =
+    activeFeedsCount === 0 ? 0 : state.products.filter((p) => p.supplierId === s.id).length;
   const cats = ensureSupplierCategories(state, s.id);
   const categoriesCount = cats.length;
   const activeCategoriesCount = cats.filter((c) => c.isActive).length;
@@ -71,9 +75,12 @@ export function getSupplierById(state: MockDbState, id: string): SupplierDto | n
   };
 }
 
-export function createSupplier(state: MockDbState, payload: CreateSupplierDto): SupplierDto {
+export function createSupplier(
+  state: MockDbState,
+  payload: CreateSupplierDto & { id?: string },
+): SupplierDto {
   const newSupplier: SupplierDto = {
-    id: `sup_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+    id: payload.id || `sup_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
     userId: 'usr_admin',
     name: payload.name,
     code: payload.code,

@@ -14,12 +14,24 @@ export function detectFeedFormat(content: string): FormatDetectionResult {
   const sample = trimmed.slice(0, 4096).toLowerCase();
 
   // XML / YML Check
-  if (
-    trimmed.startsWith('<') ||
-    sample.includes('<?xml') ||
+  const hasXmlPreamble =
+    trimmed.startsWith('<?xml') ||
+    trimmed.startsWith('<yml_catalog') ||
+    trimmed.startsWith('<rss') ||
+    trimmed.startsWith('<feed');
+  const hasFeedTags =
     sample.includes('<yml_catalog') ||
-    sample.includes('<rss')
-  ) {
+    sample.includes('<rss') ||
+    sample.includes('<shop') ||
+    sample.includes('<offers') ||
+    sample.includes('<offer') ||
+    sample.includes('<items') ||
+    sample.includes('<item') ||
+    sample.includes('<products') ||
+    sample.includes('<entry') ||
+    sample.includes('xmlns:g');
+
+  if ((trimmed.startsWith('<') && hasFeedTags) || hasXmlPreamble) {
     if (
       sample.includes('<yml_catalog') ||
       sample.includes('prom.ua') ||
@@ -40,7 +52,7 @@ export function detectFeedFormat(content: string): FormatDetectionResult {
     return { format: FeedFormat.XML_GENERIC, isXml: true };
   }
 
-  // CSV Delimiter Detection
+  // CSV / TSV Delimiter Detection
   const firstLines = trimmed.split(/\r?\n/).slice(0, 5).filter(Boolean);
   if (firstLines.length > 0) {
     const delimiters = [';', ',', '\t', '|'];
@@ -56,10 +68,12 @@ export function detectFeedFormat(content: string): FormatDetectionResult {
       }
     }
 
-    if (maxCount >= 2) {
+    if (maxCount >= 1 && firstLines[0].split(bestDelimiter).length >= 2) {
       return { format: FeedFormat.CSV, delimiter: bestDelimiter, isXml: false };
     }
   }
 
-  return { format: FeedFormat.XML_ROZETKA, isXml: true };
+  throw new Error(
+    'INVALID_FEED_FORMAT: Файл або посилання не містить валідної структури XML або CSV каталогу товарів',
+  );
 }

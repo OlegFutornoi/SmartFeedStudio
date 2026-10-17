@@ -8,6 +8,8 @@ import { PRODUCT_COLUMNS } from '@/components/products/productColumns';
 import { localDb } from '@/services/local-db';
 import { useDataSync } from '@/lib/syncEvents';
 import { useTranslation } from '@/i18n';
+import { useAuth } from '@/contexts/AuthContext';
+import { getSuppliers } from '@/lib/api';
 import type { ProductDto, SupplierDto } from '@smartfeed/shared';
 import type { ProductColumnId } from '@/components/products/ProductTableRow';
 import { useColumnVisibility } from '@/hooks/useColumnVisibility';
@@ -23,6 +25,7 @@ export const ProductsView: React.FC<ProductsViewProps> = ({
 }) => {
   const { language } = useTranslation(['catalogs', 'common']);
   const isUk = language === 'uk';
+  const { token } = useAuth();
 
   const { visibleColumns, toggleColumn, resetToDefaults, columnOptions } =
     useColumnVisibility<ProductColumnId>('desktop_products_columns', PRODUCT_COLUMNS, isUk);
@@ -55,7 +58,7 @@ export const ProductsView: React.FC<ProductsViewProps> = ({
   // Load suppliers and categories for filters
   const loadFilterOptions = useCallback(async () => {
     try {
-      const sups = await localDb.suppliers.getSuppliers();
+      const sups = await getSuppliers(token || undefined);
       setSuppliers(Array.isArray(sups) ? sups : []);
       const catSummaries = await localDb.products.getCategoriesSummary();
       const uniqueCats = Array.isArray(catSummaries)
@@ -65,7 +68,7 @@ export const ProductsView: React.FC<ProductsViewProps> = ({
     } catch (e) {
       console.warn('[ProductsView:loadFilterOptions] Failed to load filter options:', e);
     }
-  }, []);
+  }, [token]);
 
   // Fetch products
   const fetchProducts = useCallback(async () => {

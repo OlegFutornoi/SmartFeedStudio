@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Home, Rss, RefreshCw, FolderTree, TrendingUp, DollarSign, Package } from 'lucide-react';
+import { Home, Rss, RefreshCw, FolderTree, TrendingUp, DollarSign } from 'lucide-react';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { useTranslation } from '@/i18n';
@@ -13,7 +13,6 @@ import { SupplierFeedsTab } from '@/modules/suppliers/components/details/tabs/Su
 import { SupplierCategoriesTab } from '@/modules/suppliers/components/details/tabs/SupplierCategoriesTab';
 import { SupplierPricingTab } from '@/modules/suppliers/components/details/tabs/SupplierPricingTab';
 import { SupplierCurrenciesTab } from '@/modules/suppliers/components/details/tabs/SupplierCurrenciesTab';
-import { SupplierProductsTab } from '@/modules/suppliers/components/details/tabs/SupplierProductsTab';
 
 interface SupplierDrawerSheetProps {
   isOpen: boolean;
@@ -58,6 +57,7 @@ export const SupplierDrawerSheet: React.FC<SupplierDrawerSheetProps> = ({
       <SheetContent
         side="right"
         hideOverlay={true}
+        hideCloseButton={true}
         onPointerDownOutside={onClose}
         className={cn(
           'p-0 flex flex-col h-full bg-background border-l border-border/80 shadow-2xl z-50 overflow-hidden outline-none focus:outline-none focus-visible:outline-none ring-0 focus:ring-0 transition-all duration-300 ease-in-out',
@@ -68,7 +68,13 @@ export const SupplierDrawerSheet: React.FC<SupplierDrawerSheetProps> = ({
         data-testid="supplier-drawer-sheet"
       >
         {/* Header */}
-        <SupplierDrawerHeader supplier={supplier} onToggleStatus={onToggleStatus} />
+        <SupplierDrawerHeader
+          supplier={supplier}
+          onToggleStatus={onToggleStatus}
+          isExpanded={isExpanded}
+          onToggleExpand={() => setIsExpanded((prev) => !prev)}
+          onClose={onClose}
+        />
 
         {/* Tabs and Tab Content */}
         <Tabs
@@ -132,15 +138,6 @@ export const SupplierDrawerSheet: React.FC<SupplierDrawerSheetProps> = ({
                 <DollarSign className="size-3.5" />
                 {t('suppliers:tabCurrencies', { defaultValue: 'Багатовалютність' })}
               </TabsTrigger>
-
-              <TabsTrigger
-                value="products"
-                className="h-7 px-3 text-xs gap-1.5 rounded-lg border-0 transition-colors text-muted-foreground hover:text-foreground hover:bg-muted/60 data-[state=active]:bg-primary/10 data-[state=active]:text-primary font-medium"
-                data-testid="supplier-drawer-tab-products"
-              >
-                <Package className="size-3.5" />
-                {t('suppliers:tabProducts', { defaultValue: 'Товари' })}
-              </TabsTrigger>
             </TabsList>
           </div>
 
@@ -176,10 +173,6 @@ export const SupplierDrawerSheet: React.FC<SupplierDrawerSheetProps> = ({
             <TabsContent value="currencies" className="m-0 p-5 focus-visible:outline-none">
               <SupplierCurrenciesTab supplier={supplier} onRefreshSupplier={onRefreshSupplier} />
             </TabsContent>
-
-            <TabsContent value="products" className="m-0 p-5 focus-visible:outline-none">
-              <SupplierProductsTab supplier={supplier} />
-            </TabsContent>
           </div>
         </Tabs>
 
@@ -189,8 +182,6 @@ export const SupplierDrawerSheet: React.FC<SupplierDrawerSheetProps> = ({
           onEdit={onEdit}
           onDelete={onDelete}
           onClose={onClose}
-          isExpanded={isExpanded}
-          onToggleExpand={() => setIsExpanded((prev) => !prev)}
         />
       </SheetContent>
     </Sheet>

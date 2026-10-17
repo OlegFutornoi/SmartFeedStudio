@@ -134,10 +134,10 @@ test.describe('Suppliers Slide-Over Drawer & Network Single-Request Optimization
     await currenciesTab.click();
     await expect(page.getByTestId('supplier-currencies-tab')).toBeVisible();
 
-    // Tab 6: Products
-    const productsTab = page.getByTestId('supplier-drawer-tab-products');
-    await productsTab.click();
-    await expect(page.getByTestId('supplier-products-tab')).toBeVisible();
+    // Tab 6: Sync
+    const syncTab = page.getByTestId('supplier-drawer-tab-sync');
+    await syncTab.click();
+    await expect(page.getByTestId('supplier-sync-tab')).toBeVisible();
 
     // Close drawer via close button
     const closeBtn = page.getByTestId('supplier-drawer-close-btn');
@@ -157,8 +157,18 @@ test.describe('Suppliers Slide-Over Drawer & Network Single-Request Optimization
     const drawer = page.getByTestId('supplier-drawer-sheet');
     await expect(drawer).toBeVisible();
 
-    // Click full screen expansion button
-    const fullBtn = page.getByTestId('supplier-drawer-fullscreen-btn');
+    // Invariant assertions: No date text, active switch is in header, no fullscreen in footer
+    const header = page.getByTestId('supplier-drawer-header');
+    await expect(header).toBeVisible();
+    await expect(header.getByTestId('supplier-drawer-active-toggle')).toBeVisible();
+    await expect(header.locator('text=Додано')).toHaveCount(0);
+
+    const footer = page.getByTestId('supplier-drawer-footer');
+    await expect(footer.getByTestId('supplier-drawer-fullscreen-btn')).toHaveCount(0);
+
+    // Full screen expansion button is in header
+    const fullBtn = header.getByTestId('supplier-drawer-fullscreen-btn');
+    await expect(fullBtn).toBeVisible();
     await fullBtn.click();
 
     // Drawer has expanded width class

@@ -1,8 +1,9 @@
 // @golden - Reference pattern for 100% solid non-translucent sticky drawer header (UI-01, UI-05)
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
-import { ExternalLink } from 'lucide-react';
+import { ExternalLink, Maximize2, Minimize2, X } from 'lucide-react';
 import { useTranslation } from '@/i18n';
 import type { SupplierDto } from '@smartfeed/shared';
 import { SupplierAvatar } from '@/modules/suppliers/components/common/SupplierAvatar';
@@ -10,28 +11,26 @@ import { SupplierAvatar } from '@/modules/suppliers/components/common/SupplierAv
 interface SupplierDrawerHeaderProps {
   supplier: SupplierDto;
   onToggleStatus: () => void;
+  isExpanded?: boolean;
+  onToggleExpand?: () => void;
+  onClose?: () => void;
 }
 
 export const SupplierDrawerHeader: React.FC<SupplierDrawerHeaderProps> = ({
   supplier,
   onToggleStatus,
+  isExpanded = false,
+  onToggleExpand,
+  onClose,
 }) => {
   const { t } = useTranslation(['suppliers', 'common']);
 
-  const formattedDate = supplier.createdAt
-    ? new Date(supplier.createdAt).toLocaleDateString('uk-UA', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-      })
-    : '';
-
   return (
     <div
-      className="p-4 px-5 border-b border-border/80 bg-card pr-10"
+      className="p-4 px-5 border-b border-border/80 bg-card"
       data-testid="supplier-drawer-header"
     >
-      {/* Top Vendor Info & Status */}
+      {/* Top Vendor Info & Actions */}
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-3 min-w-0">
           <SupplierAvatar
@@ -41,7 +40,7 @@ export const SupplierDrawerHeader: React.FC<SupplierDrawerHeaderProps> = ({
             dataTestId="supplier-drawer-avatar"
           />
           <div className="min-w-0">
-            <div className="flex items-center gap-2 flex-wrap">
+            <div className="flex items-center gap-2.5 flex-wrap">
               <h2
                 className="text-base font-bold tracking-tight text-foreground truncate"
                 data-testid="supplier-drawer-name"
@@ -57,6 +56,25 @@ export const SupplierDrawerHeader: React.FC<SupplierDrawerHeaderProps> = ({
                   {supplier.code}
                 </Badge>
               )}
+              {/* Status Switch (moved to the left next to supplier info) */}
+              <div className="flex items-center gap-1.5 ml-1">
+                <span
+                  className={`text-xs font-medium ${
+                    supplier.isActive ? 'text-success' : 'text-muted-foreground'
+                  }`}
+                >
+                  {supplier.isActive
+                    ? t('suppliers:statusActive', { defaultValue: 'Активний' })
+                    : t('suppliers:statusInactive', { defaultValue: 'Неактивний' })}
+                </span>
+                <Switch
+                  checked={supplier.isActive}
+                  onCheckedChange={onToggleStatus}
+                  className="cursor-pointer scale-90"
+                  data-testid="supplier-drawer-active-toggle"
+                  aria-label={t('suppliers:columnStatus', { defaultValue: 'Статус' })}
+                />
+              </div>
             </div>
             <div className="flex items-center gap-2 text-xs text-muted-foreground mt-0.5 flex-wrap">
               {supplier.contactEmail && <span>{supplier.contactEmail}</span>}
@@ -77,33 +95,49 @@ export const SupplierDrawerHeader: React.FC<SupplierDrawerHeaderProps> = ({
                   <ExternalLink className="size-2.5 shrink-0" />
                 </a>
               )}
-              {(supplier.contactEmail || supplier.website) && formattedDate && <span>•</span>}
-              {formattedDate && (
-                <span>
-                  {t('common:created', { defaultValue: 'Додано' }).replace(/:$/, '')}:{' '}
-                  {formattedDate}
-                </span>
-              )}
             </div>
           </div>
         </div>
 
-        {/* Status Switch */}
-        <div className="flex items-center gap-2 shrink-0">
-          <span
-            className={`text-xs font-medium ${supplier.isActive ? 'text-success' : 'text-muted-foreground'}`}
-          >
-            {supplier.isActive
-              ? t('suppliers:statusActive', { defaultValue: 'Активний' })
-              : t('suppliers:statusInactive', { defaultValue: 'Неактивний' })}
-          </span>
-          <Switch
-            checked={supplier.isActive}
-            onCheckedChange={onToggleStatus}
-            className="cursor-pointer scale-90"
-            data-testid="supplier-drawer-active-toggle"
-            aria-label={t('suppliers:columnStatus', { defaultValue: 'Статус' })}
-          />
+        {/* Top-Right Action Icons: Expand/Collapse & Close */}
+        <div className="flex items-center gap-1 shrink-0">
+          {onToggleExpand && (
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="size-8 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors"
+              onClick={onToggleExpand}
+              data-testid="supplier-drawer-fullscreen-btn"
+              title={
+                isExpanded
+                  ? t('suppliers:collapseDrawer', { defaultValue: 'Згорнути' })
+                  : t('suppliers:openFullWorkspace', { defaultValue: 'На весь екран' })
+              }
+            >
+              {isExpanded ? <Minimize2 className="size-4" /> : <Maximize2 className="size-4" />}
+              <span className="sr-only">
+                {isExpanded
+                  ? t('suppliers:collapseDrawer', { defaultValue: 'Згорнути' })
+                  : t('suppliers:openFullWorkspace', { defaultValue: 'На весь екран' })}
+              </span>
+            </Button>
+          )}
+
+          {onClose && (
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="size-8 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors"
+              onClick={onClose}
+              data-testid="supplier-drawer-header-close-btn"
+              title={t('common:close', { defaultValue: 'Закрити' })}
+            >
+              <X className="size-4" />
+              <span className="sr-only">{t('common:close', { defaultValue: 'Закрити' })}</span>
+            </Button>
+          )}
         </div>
       </div>
     </div>

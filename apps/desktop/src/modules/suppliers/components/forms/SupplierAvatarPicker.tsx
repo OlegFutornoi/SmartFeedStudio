@@ -44,9 +44,14 @@ export const SupplierAvatarPicker: React.FC<SupplierAvatarPickerProps> = ({
   const domain = cleanDomain(website);
 
   const processFile = async (file: File) => {
-    if (!file.type.startsWith('image/')) {
+    const fileName = file.name.toLowerCase();
+    const isSvg = file.type.includes('svg') || fileName.endsWith('.svg');
+    const isValidExt = /\.(jpe?g|png|webp)$/i.test(fileName);
+    if (isSvg || !isValidExt) {
       setErrorMsg(
-        t('suppliers:avatarImageError', { defaultValue: 'Будь ласка, оберіть файл зображення' }),
+        t('suppliers:avatarInvalidType', {
+          defaultValue: 'Дозволено лише зображення JPG, PNG або WebP (SVG заборонено)',
+        }),
       );
       return;
     }
@@ -59,7 +64,9 @@ export const SupplierAvatarPicker: React.FC<SupplierAvatarPickerProps> = ({
     } catch (err) {
       console.warn('[SupplierAvatarPicker] Error processing avatar:', err);
       setErrorMsg(
-        t('suppliers:avatarOptimizeError', { defaultValue: 'Не вдалося обробити логотип' }),
+        t('suppliers:avatarOptimizeError', {
+          defaultValue: 'Не вдалося обробити логотип або файл пошкоджено',
+        }),
       );
     } finally {
       setIsProcessing(false);
@@ -98,11 +105,16 @@ export const SupplierAvatarPicker: React.FC<SupplierAvatarPickerProps> = ({
   };
 
   const handleApplyCustomUrl = () => {
-    if (customUrl.trim()) {
-      onChange(customUrl.trim());
-      setShowUrlInput(false);
-      setCustomUrl('');
+    const trimmed = customUrl.trim();
+    if (!trimmed) return;
+    if (!/^https?:\/\//i.test(trimmed) || /javascript:/i.test(trimmed)) {
+      setErrorMsg('Дозволено лише безпечні веб-посилання (https://)');
+      return;
     }
+    setErrorMsg(null);
+    onChange(trimmed);
+    setShowUrlInput(false);
+    setCustomUrl('');
   };
 
   const handleRemove = () => {
@@ -163,7 +175,7 @@ export const SupplierAvatarPicker: React.FC<SupplierAvatarPickerProps> = ({
             <input
               ref={fileInputRef}
               type="file"
-              accept="image/*"
+              accept="image/jpeg,image/png,image/webp"
               className="hidden"
               onChange={handleFileChange}
               disabled={disabled || isProcessing}

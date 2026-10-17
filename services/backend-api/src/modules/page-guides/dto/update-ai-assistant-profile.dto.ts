@@ -1,6 +1,7 @@
 import { IsOptional, IsString } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { UpdateAiAssistantProfileDto } from '@smartfeed/shared';
+import { IsValidAvatar } from '@/modules/auth/validators/is-valid-avatar.decorator';
 
 export class UpdateAiAssistantProfileRequestDto implements UpdateAiAssistantProfileDto {
   @ApiPropertyOptional({
@@ -17,6 +18,7 @@ export class UpdateAiAssistantProfileRequestDto implements UpdateAiAssistantProf
   })
   @IsOptional()
   @IsString()
+  @IsValidAvatar()
   avatarUrl?: string;
 
   @ApiPropertyOptional({

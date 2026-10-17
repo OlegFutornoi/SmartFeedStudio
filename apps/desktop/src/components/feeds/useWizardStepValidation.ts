@@ -6,7 +6,6 @@ interface UseWizardStepValidationProps {
   isFeedLimitReached: boolean;
   selectedSupplierId: string;
   analysis: FeedAnalysisResult | null;
-  performAnalysis: () => Promise<boolean>;
   setAnalysisError: (err: string | null) => void;
   setStep: (step: WizardStep) => void;
 }
@@ -16,7 +15,6 @@ export function useWizardStepValidation({
   isFeedLimitReached,
   selectedSupplierId,
   analysis,
-  performAnalysis,
   setAnalysisError,
   setStep,
 }: UseWizardStepValidationProps) {
@@ -30,9 +28,14 @@ export function useWizardStepValidation({
       );
       return;
     }
-    if (!analysis) {
-      const ok = await performAnalysis();
-      if (!ok) return;
+    if (!analysis || analysis.totalDetected === 0) {
+      setAnalysisError(
+        t('suppliers:mustAnalyzeFirst', {
+          defaultValue:
+            'Спочатку натисніть кнопку «Аналізувати» для перевірки фіду перед продовженням.',
+        }),
+      );
+      return;
     }
     setStep('SUPPLIER');
   };
@@ -47,9 +50,14 @@ export function useWizardStepValidation({
       return;
     }
     setAnalysisError(null);
-    if (!analysis) {
-      const ok = await performAnalysis();
-      if (!ok) return;
+    if (!analysis || analysis.totalDetected === 0) {
+      setAnalysisError(
+        t('suppliers:mustAnalyzeFirst', {
+          defaultValue:
+            'Спочатку натисніть кнопку «Аналізувати» для перевірки фіду перед продовженням.',
+        }),
+      );
+      return;
     }
     setStep('PREVIEW');
   };

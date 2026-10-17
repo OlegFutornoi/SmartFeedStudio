@@ -1,5 +1,5 @@
 import React from 'react';
-import { Edit2, Trash2, X, Maximize2, Minimize2 } from 'lucide-react';
+import { Edit2, Trash2, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from '@/i18n';
 import type { SupplierDto } from '@smartfeed/shared';
@@ -9,8 +9,6 @@ interface SupplierDrawerFooterProps {
   onEdit: (supplier: SupplierDto) => void;
   onDelete: (id: string) => void;
   onClose: () => void;
-  isExpanded?: boolean;
-  onToggleExpand?: () => void;
 }
 
 export const SupplierDrawerFooter: React.FC<SupplierDrawerFooterProps> = ({
@@ -18,8 +16,6 @@ export const SupplierDrawerFooter: React.FC<SupplierDrawerFooterProps> = ({
   onEdit,
   onDelete,
   onClose,
-  isExpanded = false,
-  onToggleExpand,
 }) => {
   const { t } = useTranslation(['suppliers', 'common']);
 
@@ -55,29 +51,6 @@ export const SupplierDrawerFooter: React.FC<SupplierDrawerFooterProps> = ({
       </div>
 
       <div className="flex items-center gap-2">
-        {onToggleExpand && (
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            className="h-8 text-xs gap-1.5"
-            onClick={onToggleExpand}
-            data-testid="supplier-drawer-fullscreen-btn"
-          >
-            {isExpanded ? (
-              <>
-                <Minimize2 className="size-3.5" />
-                {t('suppliers:collapseDrawer', { defaultValue: 'Згорнути' })}
-              </>
-            ) : (
-              <>
-                <Maximize2 className="size-3.5" />
-                {t('suppliers:openFullWorkspace', { defaultValue: 'На весь екран' })}
-              </>
-            )}
-          </Button>
-        )}
-
         <Button
           type="button"
           variant="default"

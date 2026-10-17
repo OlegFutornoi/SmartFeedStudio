@@ -1,6 +1,5 @@
 import { SupplierDto } from '@smartfeed/shared';
 import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   Select,
@@ -9,17 +8,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Truck, Plus, Percent, RefreshCw, Layers, AlertCircle } from 'lucide-react';
+import { Truck, Plus, ShieldCheck, AlertCircle } from 'lucide-react';
 import { useTranslation } from '@/i18n';
+import type { FeedAnalysisResult } from '@/lib/api';
+import { WizardPricingSimulator } from '@/components/feeds/WizardPricingSimulator';
 
 interface WizardStepSupplierProps {
   suppliers: SupplierDto[];
   selectedSupplierId: string;
   setSelectedSupplierId: (id: string) => void;
-  autoUpdatePrices: boolean;
-  setAutoUpdatePrices: (val: boolean) => void;
-  autoUpdateStocks: boolean;
-  setAutoUpdateStocks: (val: boolean) => void;
+  analysis?: FeedAnalysisResult | null;
+  autoUpdatePrices?: boolean;
+  setAutoUpdatePrices?: (val: boolean) => void;
+  autoUpdateStocks?: boolean;
+  setAutoUpdateStocks?: (val: boolean) => void;
   onOpenCreateSupplier?: () => void;
   error?: string | null;
 }
@@ -28,22 +30,15 @@ export function WizardStepSupplier({
   suppliers,
   selectedSupplierId,
   setSelectedSupplierId,
-  autoUpdatePrices,
-  setAutoUpdatePrices,
-  autoUpdateStocks,
-  setAutoUpdateStocks,
+  analysis,
   onOpenCreateSupplier,
   error,
 }: WizardStepSupplierProps) {
   const { t } = useTranslation(['suppliers', 'common']);
   const selectedSupplier = suppliers.find((s) => s.id === selectedSupplierId);
-  const hasMarkup =
-    selectedSupplier &&
-    ((selectedSupplier.defaultMarginPercent || 0) > 0 ||
-      (selectedSupplier.defaultFixedMarkup || 0) > 0);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3 pt-0">
       {error && (
         <div
           data-testid="wizard-supplier-error"
@@ -55,31 +50,10 @@ export function WizardStepSupplier({
       )}
 
       {/* Supplier Select / Empty State */}
-      <div className="space-y-2">
-        <div className="flex items-center justify-between">
-          <Label className="text-xs text-foreground font-medium">
-            {t('suppliers:selectSupplierLabel', { defaultValue: 'Оберіть постачальника' })}
-          </Label>
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-muted-foreground">
-              {t('suppliers:suppliersCount', {
-                count: suppliers.length,
-                defaultValue: `Доступно: ${suppliers.length}`,
-              })}
-            </span>
-            {suppliers.length > 0 && onOpenCreateSupplier && (
-              <button
-                type="button"
-                onClick={onOpenCreateSupplier}
-                className="text-xs font-medium text-primary hover:underline flex items-center gap-0.5"
-                data-testid="wizard-quick-add-supplier-link"
-              >
-                <Plus className="size-3" />
-                <span>{t('suppliers:addSupplier', { defaultValue: 'Додати' })}</span>
-              </button>
-            )}
-          </div>
-        </div>
+      <div className="space-y-1.5">
+        <Label className="text-xs text-foreground font-medium">
+          {t('suppliers:selectSupplierLabel', { defaultValue: 'Оберіть постачальника' })}
+        </Label>
 
         {suppliers.length === 0 ? (
           <div
@@ -154,98 +128,27 @@ export function WizardStepSupplier({
         )}
       </div>
 
-      {/* Selected Supplier Markup Card */}
-      {selectedSupplier && (
-        <div
-          data-testid="wizard-selected-supplier-card"
-          className="p-3 rounded-lg bg-secondary/30 border border-border/50 space-y-2 text-xs"
-        >
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className="font-semibold text-foreground">{selectedSupplier.name}</span>
-              <Badge variant="outline" className="text-2xs font-mono">
-                {selectedSupplier.code}
-              </Badge>
-            </div>
-            <Badge
-              variant="outline"
-              data-testid="wizard-selected-supplier-markup"
-              className="text-xs text-foreground bg-secondary border-border"
-            >
-              <Percent className="size-3 mr-1 text-primary" />
-              {hasMarkup ? (
-                <>
-                  {selectedSupplier.defaultMarginPercent > 0 &&
-                    `+${selectedSupplier.defaultMarginPercent}% `}
-                  {selectedSupplier.defaultFixedMarkup > 0 &&
-                    `+${selectedSupplier.defaultFixedMarkup} ₴`}
-                </>
-              ) : (
-                '0% (Базова ціна)'
-              )}
-            </Badge>
+      {/* Interactive Live Profit & Margin Simulator */}
+      <WizardPricingSimulator supplier={selectedSupplier} analysis={analysis} />
+
+      {/* Supplier Sync Policy Notice */}
+      <div
+        data-testid="wizard-supplier-sync-policy-card"
+        className="p-3.5 rounded-xl bg-secondary/30 border border-border/60 flex items-start gap-3 text-xs"
+      >
+        <ShieldCheck className="size-4 text-primary shrink-0 mt-0.5" />
+        <div className="space-y-0.5">
+          <div className="font-semibold text-foreground">
+            {t('suppliers:supplierSyncPolicyTitle', {
+              defaultValue: 'Політика синхронізації постачальника',
+            })}
           </div>
-          <p className="text-xs text-muted-foreground">
-            {t('suppliers:markupAutoAppliedHint', {
+          <p className="text-2xs text-muted-foreground leading-relaxed">
+            {t('suppliers:supplierSyncPolicyDesc', {
               defaultValue:
-                'Правила націнки цього постачальника будуть автоматично застосовані до закупівельних цін усіх товарів з фіду.',
+                'Ціни та залишки синхронізуватимуться автоматично за правилами постачальника із захистом відредагованих товарів.',
             })}
           </p>
-        </div>
-      )}
-
-      {/* Sync Options */}
-      <div className="space-y-2 pt-2 border-t border-border/40">
-        <Label className="text-xs text-foreground font-medium">
-          {t('suppliers:syncOptionsTitle', {
-            defaultValue: 'Параметри імпорту та синхронізації',
-          })}
-        </Label>
-
-        <div className="space-y-2">
-          <label className="flex items-center gap-2.5 p-2 rounded-md hover:bg-secondary/30 transition-colors cursor-pointer">
-            <input
-              type="checkbox"
-              data-testid="wizard-auto-update-prices-checkbox"
-              checked={autoUpdatePrices}
-              onChange={(e) => setAutoUpdatePrices(e.target.checked)}
-              className="size-4 rounded border-border accent-primary focus:ring-primary cursor-pointer"
-            />
-            <div className="text-xs">
-              <div className="font-medium text-foreground flex items-center gap-1.5">
-                <RefreshCw className="size-3 text-primary" />
-                {t('suppliers:autoUpdatePrices', { defaultValue: 'Автоматично оновлювати ціни' })}
-              </div>
-              <div className="text-xs text-muted-foreground">
-                {t('suppliers:autoUpdatePricesHint', {
-                  defaultValue: 'Перераховувати ціни існуючих товарів при наступних синхронізаціях',
-                })}
-              </div>
-            </div>
-          </label>
-
-          <label className="flex items-center gap-2.5 p-2 rounded-md hover:bg-secondary/30 transition-colors cursor-pointer">
-            <input
-              type="checkbox"
-              data-testid="wizard-auto-update-stocks-checkbox"
-              checked={autoUpdateStocks}
-              onChange={(e) => setAutoUpdateStocks(e.target.checked)}
-              className="size-4 rounded border-border accent-primary focus:ring-primary cursor-pointer"
-            />
-            <div className="text-xs">
-              <div className="font-medium text-foreground flex items-center gap-1.5">
-                <Layers className="size-3 text-primary" />
-                {t('suppliers:autoUpdateStocks', {
-                  defaultValue: 'Синхронізувати залишки та наявність',
-                })}
-              </div>
-              <div className="text-xs text-muted-foreground">
-                {t('suppliers:autoUpdateStocksHint', {
-                  defaultValue: 'Оновлювати статус наявності та кількість на складі',
-                })}
-              </div>
-            </div>
-          </label>
         </div>
       </div>
     </div>

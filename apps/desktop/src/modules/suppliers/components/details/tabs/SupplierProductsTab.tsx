@@ -107,20 +107,22 @@ export const SupplierProductsTab: React.FC<SupplierProductsTabProps> = ({ suppli
               {/* 100% Solid Sticky Header */}
               <TableHeader className="sticky top-0 bg-card z-10 border-b border-border/80">
                 <TableRow className="h-9 hover:bg-transparent">
-                  <TableHead className="w-[80px] pl-3.5 font-semibold text-foreground">
+                  <TableHead className="w-[130px] pl-3.5 font-semibold text-foreground whitespace-nowrap">
                     Артикул
                   </TableHead>
-                  <TableHead className="font-semibold text-foreground">Назва товару</TableHead>
-                  <TableHead className="w-[140px] font-semibold text-foreground">
+                  <TableHead className="min-w-[240px] font-semibold text-foreground">
+                    Назва товару
+                  </TableHead>
+                  <TableHead className="w-[180px] font-semibold text-foreground">
                     Категорія
                   </TableHead>
-                  <TableHead className="w-[110px] font-semibold text-foreground text-center">
+                  <TableHead className="w-[110px] font-semibold text-foreground text-center whitespace-nowrap">
                     Собівартість
                   </TableHead>
-                  <TableHead className="w-[110px] font-semibold text-foreground text-center">
+                  <TableHead className="w-[110px] font-semibold text-foreground text-center whitespace-nowrap">
                     Ціна продажу
                   </TableHead>
-                  <TableHead className="w-[100px] pr-3.5 text-center font-semibold text-foreground">
+                  <TableHead className="w-[110px] pr-3.5 text-center font-semibold text-foreground whitespace-nowrap">
                     Наявність
                   </TableHead>
                 </TableRow>
@@ -131,31 +133,34 @@ export const SupplierProductsTab: React.FC<SupplierProductsTabProps> = ({ suppli
                     key={prod.id}
                     className="h-11 border-b border-border/60 hover:bg-muted/40"
                   >
-                    <TableCell className="pl-3.5 py-1.5 font-mono text-xs font-medium text-muted-foreground">
+                    <TableCell className="pl-3.5 py-1.5 font-mono text-xs font-medium text-muted-foreground whitespace-nowrap">
                       {prod.sku}
                     </TableCell>
-                    <TableCell className="py-1.5 font-medium text-foreground truncate max-w-[260px]">
+                    <TableCell className="py-1.5 font-medium text-foreground truncate max-w-[340px]">
                       {prod.titleUk || 'Без назви'}
                     </TableCell>
-                    <TableCell className="py-1.5 text-muted-foreground truncate max-w-[140px]">
+                    <TableCell className="py-1.5 text-muted-foreground truncate max-w-[180px]">
                       {prod.categoryNameUk || '—'}
                     </TableCell>
-                    <TableCell className="py-1.5 text-center font-mono">
+                    <TableCell className="py-1.5 text-center font-mono whitespace-nowrap">
                       {prod.costPrice ? `${prod.costPrice} ${currencySym}` : '—'}
                     </TableCell>
-                    <TableCell className="py-1.5 text-center font-mono font-bold text-primary">
+                    <TableCell className="py-1.5 text-center font-mono font-bold text-primary whitespace-nowrap">
                       {prod.price ? `${prod.price} ₴` : '—'}
                     </TableCell>
-                    <TableCell className="pr-3.5 py-1.5 text-center">
+                    <TableCell className="pr-3.5 py-1.5 text-center whitespace-nowrap">
                       {prod.inStock ? (
                         <Badge
                           variant="outline"
-                          className="border-success/30 bg-success/15 text-success text-2xs font-medium"
+                          className="border-success/30 bg-success/15 text-success text-2xs font-medium whitespace-nowrap px-2 py-0.5"
                         >
                           В наявності
                         </Badge>
                       ) : (
-                        <Badge variant="secondary" className="text-2xs font-medium">
+                        <Badge
+                          variant="secondary"
+                          className="text-2xs font-medium whitespace-nowrap px-2 py-0.5"
+                        >
                           Немає
                         </Badge>
                       )}

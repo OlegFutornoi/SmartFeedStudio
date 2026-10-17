@@ -49,7 +49,20 @@ describe('Feeds & Background Jobs API (E2E)', () => {
       role: Role.USER,
     });
     userToken = uRes.body.tokens.accessToken;
+
+    const testSup = await prisma.supplier.create({
+      data: {
+        userId: uRes.body.user.id,
+        name: 'Feed Test Supplier',
+        code: `FTS_${timestamp}`,
+        baseCurrency: 'UAH',
+        targetCurrency: 'UAH',
+      },
+    });
+    validSupplierId = testSup.id;
   });
+
+  let validSupplierId: string;
 
   afterAll(async () => {
     await cleanDatabase(prisma, {
@@ -83,12 +96,12 @@ describe('Feeds & Background Jobs API (E2E)', () => {
     expect(res.body).toHaveProperty('status');
   });
 
-  it('4. POST /api/feeds/import-async — queues job and returns 200 OK with job info', async () => {
+  it('4. POST /api/feeds/import-async — queues job and returns 200 OK with valid supplierId', async () => {
     const res = await request(app.getHttpServer())
       .post('/api/feeds/import-async')
       .set('Authorization', `Bearer ${userToken}`)
       .send({
-        supplierId: 'supplier_123',
+        supplierId: validSupplierId,
         sourceType: 'URL',
         sourceUrl: 'https://example.com/feed.xml',
       });
@@ -97,6 +110,47 @@ describe('Feeds & Background Jobs API (E2E)', () => {
     expect(res.body).toHaveProperty('success', true);
     expect(res.body).toHaveProperty('jobId');
     expect(res.body).toHaveProperty('feedSourceId');
+  });
+
+  it('4b. POST /api/feeds/import-async — rejects nonexistent supplier with 404 (DB-REF-01)', async () => {
+    const res = await request(app.getHttpServer())
+      .post('/api/feeds/import-async')
+      .set('Authorization', `Bearer ${userToken}`)
+      .send({
+        supplierId: 'nonexistent_supplier_cuid_123',
+        sourceType: 'URL',
+        sourceUrl: 'https://example.com/feed.xml',
+      });
+
+    expect(res.status).toBe(404);
+  });
+
+  it('4c. POST /api/feeds/import-async — rejects invalid feed file extension (.md, .exe) with 400 (SEC-07)', async () => {
+    const res = await request(app.getHttpServer())
+      .post('/api/feeds/import-async')
+      .set('Authorization', `Bearer ${userToken}`)
+      .send({
+        supplierId: validSupplierId,
+        sourceType: 'FILE',
+        fileName: 'xml_link.md',
+        fileContent: '# Markdown content instead of feed',
+      });
+
+    expect(res.status).toBe(400);
+  });
+
+  it('4d. POST /api/feeds/import-async — rejects invalid feed content with 400 (SEC-08)', async () => {
+    const res = await request(app.getHttpServer())
+      .post('/api/feeds/import-async')
+      .set('Authorization', `Bearer ${userToken}`)
+      .send({
+        supplierId: validSupplierId,
+        sourceType: 'FILE',
+        fileName: 'feed.xml',
+        fileContent: 'This is not valid XML or CSV format at all',
+      });
+
+    expect(res.status).toBe(400);
   });
 
   it('5. POST /api/feeds/import-async — rejects unauthenticated request with 401', async () => {

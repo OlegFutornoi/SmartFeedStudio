@@ -1,5 +1,13 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsArray, IsBoolean, IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import {
+  IsArray,
+  IsBoolean,
+  IsEnum,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  Matches,
+} from 'class-validator';
 
 export enum FeedImportSourceType {
   URL = 'URL',
@@ -30,6 +38,9 @@ export class ImportFeedAsyncDto {
   @ApiPropertyOptional({ description: 'Original uploaded file name' })
   @IsOptional()
   @IsString({ message: 'fileName must be a string' })
+  @Matches(/\.(xml|yml|csv|tsv|xlsx|xls|txt)$/i, {
+    message: 'Invalid feed file extension. Allowed extensions: .xml, .yml, .csv, .tsv, .xlsx, .xls',
+  })
   fileName?: string;
 
   @ApiPropertyOptional({ description: 'Target catalog ID' })
