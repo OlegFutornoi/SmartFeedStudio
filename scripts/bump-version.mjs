@@ -10,38 +10,57 @@ const __dirname = path.dirname(__filename);
 const rootDir = path.resolve(__dirname, '..');
 
 function getCurrentVersion() {
-  try {
-    const gitTag = execSync('git tag -l --sort=-v:refname', { cwd: rootDir, encoding: 'utf8' })
-      .trim()
-      .split('\n')[0];
-    if (gitTag && /^v?\d+\.\d+\.\d+/.test(gitTag)) {
-      return gitTag.replace(/^v/, '').trim();
-    }
-  } catch {
-    // ignore git error
+  // 1. Primary source of truth: root package.json
+  const rootPkgJsonPath = path.join(rootDir, 'package.json');
+  if (fs.existsSync(rootPkgJsonPath)) {
+    try {
+      const pkg = JSON.parse(fs.readFileSync(rootPkgJsonPath, 'utf8'));
+      if (pkg.version) return pkg.version;
+    } catch {}
   }
 
-  // Fallback to tauri.conf.json
+  // 2. Fallback to tauri.conf.json
   const tauriConfPath = path.join(rootDir, 'apps/desktop/src-tauri/tauri.conf.json');
   if (fs.existsSync(tauriConfPath)) {
-    const conf = JSON.parse(fs.readFileSync(tauriConfPath, 'utf8'));
-    if (conf.version) return conf.version;
+    try {
+      const conf = JSON.parse(fs.readFileSync(tauriConfPath, 'utf8'));
+      if (conf.version) return conf.version;
+    } catch {}
   }
 
   return '1.0.0';
 }
 
+function tagExists(tag) {
+  try {
+    const out = execSync(`git tag -l "${tag}"`, { cwd: rootDir, encoding: 'utf8' }).trim();
+    return out.length > 0;
+  } catch {
+    return false;
+  }
+}
+
 function calculateNextVersion(currentVersion, bumpType = 'patch') {
+  const normalized = (bumpType || 'patch').toLowerCase().trim();
+
+  // Explicit target version provided (e.g., "1.0.0")
+  if (/^v?\d+\.\d+\.\d+/.test(normalized)) {
+    return normalized.replace(/^v/, '');
+  }
+
+  if (normalized === 'reset') {
+    return '1.0.0';
+  }
+
+  // If repo is at 1.0.0 and v1.0.0 tag hasn't been released yet, release 1.0.0
+  if (currentVersion === '1.0.0' && !tagExists('v1.0.0')) {
+    return '1.0.0';
+  }
+
   const parts = currentVersion.split('.').map(Number);
   let major = parts[0] || 0;
   let minor = parts[1] || 0;
   let patch = parts[2] || 0;
-
-  const normalized = (bumpType || 'patch').toLowerCase().trim();
-
-  if (/^v?\d+\.\d+\.\d+/.test(normalized)) {
-    return normalized.replace(/^v/, '');
-  }
 
   switch (normalized) {
     case 'major':

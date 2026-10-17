@@ -32,6 +32,9 @@ jobs:
       - name: Install Monorepo Dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Build Shared Package
+        run: pnpm build:shared
+
       - name: Verify Monorepo Build Integrity
         run: pnpm verify:build
 

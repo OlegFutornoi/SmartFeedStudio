@@ -1,13 +1,6 @@
 name: Continuous Integration
 
 on:
-  push:
-    branches: [main]
-    paths-ignore:
-      - '**.md'
-      - 'apps/docs/**'
-      - '.agents/**'
-      - 'plans/**'
   pull_request:
     branches: [main]
     paths-ignore:
@@ -15,6 +8,7 @@ on:
       - 'apps/docs/**'
       - '.agents/**'
       - 'plans/**'
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -44,6 +38,9 @@ jobs:
 
       - name: Generate Prisma Client
         run: pnpm prisma:generate
+
+      - name: Build Shared Package
+        run: pnpm build:shared
 
       - name: Run Fast Verification (ESLint, i18n, Invariants Ratchet, Agents, TypeScript)
         run: pnpm verify:fast

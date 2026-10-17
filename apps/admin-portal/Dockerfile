@@ -17,6 +17,7 @@ COPY packages/shared/package.json ./packages/shared/
 COPY services/backend-api/package.json ./services/backend-api/
 COPY apps/admin-portal/package.json ./apps/admin-portal/
 COPY apps/desktop/package.json ./apps/desktop/
+COPY apps/docs/package.json ./apps/docs/
 
 # Install dependencies
 RUN pnpm install --frozen-lockfile

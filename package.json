@@ -1,6 +1,6 @@
 {
   "name": "smartfeed-studio-monorepo",
-  "version": "1.19.4",
+  "version": "1.0.0",
   "private": true,
   "description": "SmartFeed Studio Monorepo - Tauri v2, Next.js Admin Portal, NestJS CQRS API, and Shared Packages",
   "packageManager": "pnpm@9.15.4",
@@ -43,7 +43,7 @@
     "version:sync": "node scripts/sync-desktop-version.mjs",
     "version:bump": "node scripts/bump-version.mjs",
     "verify:rust": "node scripts/verify-rust.mjs",
-    "verify:fast": "pnpm lint && pnpm i18n:check && pnpm invariants:check && pnpm depcruise && pnpm agents:check && pnpm --filter @smartfeed/backend-api exec tsc --noEmit && pnpm --filter @smartfeed/desktop exec tsc --noEmit && pnpm --filter @smartfeed/admin-portal exec tsc --noEmit && pnpm --filter @smartfeed/shared exec tsc --noEmit",
+    "verify:fast": "pnpm build:shared && pnpm lint && pnpm i18n:check && pnpm invariants:check && pnpm depcruise && pnpm agents:check && pnpm --filter @smartfeed/backend-api exec tsc --noEmit && pnpm --filter @smartfeed/desktop exec tsc --noEmit && pnpm --filter @smartfeed/admin-portal exec tsc --noEmit && pnpm --filter @smartfeed/shared exec tsc --noEmit",
     "verify:build": "pnpm verify:fast && pnpm build:shared && pnpm prisma:generate && pnpm build:backend && pnpm build:desktop && pnpm verify:rust",
     "verify:docker": "docker build -t smartfeed-backend-test -f services/backend-api/Dockerfile .",
     "verify:all": "pnpm verify:build && pnpm test && pnpm verify:docker",

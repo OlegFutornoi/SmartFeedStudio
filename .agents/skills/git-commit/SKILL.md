@@ -60,5 +60,9 @@ rules:
   - Release SmartFeed Studio vX.Y.Z"
   ```
 - **Create annotated tag**: `git tag -a vX.Y.Z -m "Release vX.Y.Z"`.
-- **Push branch and tags**: `git push origin <branch> --tags`.
-- **Result**: Pushing `v*` tag triggers GitHub Actions release workflows for desktop installers (`release.yml`) and Docker images (`docker.yml`).
+- **Push branch and ONLY the specific release tag**:
+  ```bash
+  git push origin <branch> refs/tags/vX.Y.Z
+  ```
+- **Invariants**: NEVER pass `--tags` globally (which would push historical tags and trigger cascades of outdated workflows). Push ONLY the single new `refs/tags/vX.Y.Z`.
+- **Result**: Pushing the single `vX.Y.Z` tag triggers GitHub Actions release workflows for desktop installers (`release.yml`) and Docker images (`docker.yml`).
