@@ -94,29 +94,36 @@ _(Також у довідник додаються базові категор�
 
 ---
 
-## 3. Проектування бази даних та спільних контрактів (`DB-01..DB-12`, `ARCH-03`)
+## 3. Проектування мульти-маркетплейсної бази даних та контрактів (`DB-01..DB-12`, `ARCH-03`)
+
+Архітектура спроектована так, щоб підтримувати **будь-яку кількість маркетплейсів** (`ROZETKA`, `PROM`, `EPICENTR`, `ALLO`, `KASTA`, `MAUDAU`, `GOOGLE` або кастомні площадки):
+
+1. У таблицю `marketplace_categories` можна завантажувати та додавати категорії **різних маркетплейсів** (завдяки композитному ключу `@@unique([marketplaceCode, externalId])`).
+2. Одна категорія постачальника може мати прив'язку та власну комісію **одночасно для кількох маркетплейсів** (наприклад, окремий `rz_id` + комісія 12% для Rozetka, окремий `portal_id` + комісія 10% для Prom.ua, окремий код + комісія 14% для Епіцентру).
 
 ### 3.1. Нова таблиця `MarketplaceCategory` (`marketplace_categories`) у Prisma (`services/backend-api/prisma/schema.prisma`)
 
 ```prisma
 model MarketplaceCategory {
   id                       String                 @id @default(cuid())
-  marketplaceCode          String                 @default("ROZETKA") @map("marketplace_code") // ROZETKA, PROM, EPICENTR, ALLO
-  externalId               String                 @map("external_id") // Напр. "4674585" (rz_id) або "140209" (portal_id)
+  marketplaceCode          String                 @default("ROZETKA") @map("marketplace_code") // ROZETKA, PROM, EPICENTR, ALLO, KASTA, GOOGLE...
+  externalId               String                 @map("external_id") // Напр. "4674585" (rz_id), "140209" (portal_id), "2841" (epicentr)
   xmlAttributeName         String                 @default("rz_id") @map("xml_attribute_name") // "rz_id", "portal_id", "category_code"
   nameUk                   String                 @map("name_uk") // "Зарядні станції"
   nameEn                   String?                @map("name_en") // "Power Stations"
   fullPathUk               String?                @map("full_path_uk") // "Смартфони, ТВ і електроніка / Повербанки та зарядні станції / Зарядні станції"
   parentExternalId         String?                @map("parent_external_id")
-  url                      String?                @map("url") // "https://rozetka.com.ua/ua/zaryadnie-stantsii-4674585/c4674585/"
+  url                      String?                @map("url") // URL категорії на відповідному маркетплейсі
   defaultCommissionPercent Decimal                @default(0) @db.Decimal(5, 2) @map("default_commission_percent")
   defaultFixedFee          Decimal                @default(0) @db.Decimal(10, 2) @map("default_fixed_fee")
+  extraConfig              Json?                  @map("extra_config") // Додаткові параметри маркетплейсу (цінові пороги комісії, обов'язкові param тощо)
   isLeaf                   Boolean                @default(true) @map("is_leaf")
   isActive                 Boolean                @default(true) @map("is_active")
   createdAt                DateTime               @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt                DateTime               @updatedAt @map("updated_at") @db.Timestamptz(6)
 
   supplierCategoryRules    SupplierCategoryRule[]
+  marketplaceMappings      SupplierCategoryMarketplaceMap[]
 
   @@unique([marketplaceCode, externalId])
   @@index([marketplaceCode, isActive])
@@ -126,52 +133,57 @@ model MarketplaceCategory {
 }
 ```
 
-### 3.2. Розширення моделі `SupplierCategoryRule` (`supplier_category_rules`)
+### 3.2. Підтримка мапінгу категорії постачальника на декілька маркетплейсів (`SupplierCategoryMarketplaceMap` + `SupplierCategoryRule`)
 
-Додаємо поля прив'язки до категорії маркетплейсу та комісії маркетплейсу:
+Щоб одна категорія постачальника могла одночасно зберігати відповідність для **Rozetka**, **Prom.ua**, **Епіцентр** та **Алло**, додається зв'язуюча таблиця `supplier_category_marketplace_maps` (із композитним унікальним ключем `@@unique([supplierCategoryRuleId, marketplaceCode])`), а в `SupplierCategoryRule` зберігаються активні денормалізовані поля для швидкого читання:
 
 ```prisma
-model SupplierCategoryRule {
-  id                    String               @id @default(cuid())
-  supplierId            String               @map("supplier_id")
-  supplier              Supplier             @relation(fields: [supplierId], references: [id], onDelete: Cascade)
-  feedCategoryId        String               @map("feed_category_id")
-  name                  String
-  parentId              String?              @map("parent_id")
-  isActive              Boolean              @default(true) @map("is_active")
-  marginPercent         Decimal?             @db.Decimal(5, 2) @map("margin_percent")
-  fixedMarkup           Decimal?             @db.Decimal(10, 2) @map("fixed_markup")
-  commissionPercent     Decimal?             @db.Decimal(5, 2) @map("commission_percent")
-  marketplaceCategoryId String?              @map("marketplace_category_id")
-  marketplaceCategory   MarketplaceCategory? @relation(fields: [marketplaceCategoryId], references: [id], onDelete: SetNull)
-  marketplaceCode       String?              @default("ROZETKA") @map("marketplace_code")
-  externalCategoryId    String?              @map("external_category_id")
-  externalCategoryName  String?              @map("external_category_name")
-  productCount          Int                  @default(0) @map("product_count")
-  createdAt             DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt             DateTime             @updatedAt @map("updated_at") @db.Timestamptz(6)
+model SupplierCategoryMarketplaceMap {
+  id                     String               @id @default(cuid())
+  supplierCategoryRuleId String               @map("supplier_category_rule_id")
+  supplierCategoryRule   SupplierCategoryRule @relation(fields: [supplierCategoryRuleId], references: [id], onDelete: Cascade)
+  marketplaceCode        String               @map("marketplace_code") // "ROZETKA", "PROM", "EPICENTR", "ALLO"
+  marketplaceCategoryId  String?              @map("marketplace_category_id")
+  marketplaceCategory    MarketplaceCategory? @relation(fields: [marketplaceCategoryId], references: [id], onDelete: SetNull)
+  externalCategoryId     String               @map("external_category_id") // "4674585", "140209"...
+  externalCategoryName   String               @map("external_category_name") // "Зарядні станції"
+  commissionPercent      Decimal              @default(0) @db.Decimal(5, 2) @map("commission_percent")
+  fixedFee               Decimal              @default(0) @db.Decimal(10, 2) @map("fixed_fee")
+  createdAt              DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt              DateTime             @updatedAt @map("updated_at") @db.Timestamptz(6)
 
-  @@unique([supplierId, feedCategoryId])
-  @@index([supplierId])
-  @@index([supplierId, isActive])
+  @@unique([supplierCategoryRuleId, marketplaceCode])
+  @@index([supplierCategoryRuleId])
+  @@index([marketplaceCode])
   @@index([marketplaceCategoryId])
-  @@map("supplier_category_rules")
+  @@map("supplier_category_marketplace_maps")
 }
 ```
 
 ### 3.3. Контракти у `@smartfeed/shared` (`packages/shared/src/dtos/supplier-category.dto.ts`)
 
-1. **`MarketplaceCategoryDtoSchema`**:
-   - `id`, `marketplaceCode` (`'ROZETKA' | 'PROM' | 'EPICENTR' | 'ALLO'`), `externalId`, `xmlAttributeName`, `nameUk`, `nameEn`, `fullPathUk`, `url`, `defaultCommissionPercent`, `defaultFixedFee`, `isLeaf`, `isActive`.
-2. **Утиліта парсингу URL Rozetka (`parseMarketplaceCategoryUrl(input: string)`)**:
+1. **`MarketplaceCode` реєстр маркетплейсів**:
+   - Вбудовані профілі:
+     - `ROZETKA` (атрибут `rz_id`, парсер URL `/\/c(\d+)/`)
+     - `PROM` (атрибут `portal_id`, парсер URL Prom.ua)
+     - `EPICENTR` (атрибут `category_code`)
+     - `ALLO` (атрибут `allo_id`)
+     - `KASTA` (атрибут `kasta_id`)
+     - - підтримка будь-якого нового коду маркетплейсу у майбутньому без зміни схеми БД (`marketplaceCode: string`).
+2. **`MarketplaceCategoryDtoSchema`**:
+   - `id`, `marketplaceCode`, `externalId`, `xmlAttributeName`, `nameUk`, `nameEn`, `fullPathUk`, `url`, `defaultCommissionPercent`, `defaultFixedFee`, `extraConfig`, `isLeaf`, `isActive`.
+3. **`SupplierCategoryMarketplaceMappingDtoSchema`**:
+   - `marketplaceCode`, `marketplaceCategoryId`, `externalCategoryId`, `externalCategoryName`, `commissionPercent`, `fixedFee`.
+   - Кожен `SupplierCategoryRuleDto` містить словник/масив `marketplaceMappings` по всіх маркетплейсах, тож при перемиканні маркетплейсу в тулбарі (`Rozetka` ⇄ `Prom.ua` ⇄ `Епіцентр` ⇄ `Алло`) налаштовані прив'язки та комісії не перезаписують одна одну, а зберігаються паралельно для кожного маркетплейсу.
+4. **Утиліта парсингу URL Rozetka (`parseMarketplaceCategoryUrl(input: string)`)**:
    - Якщо користувач вставляє посилання виду `https://rozetka.com.ua/ua/zaryadnie-stantsii-4674585/c4674585/`, утиліта автоматично витягує `{ marketplaceCode: 'ROZETKA', externalId: '4674585' }`.
-3. **Розширення `SupplierCategoryRuleDtoSchema` та `UpdateSupplierCategoryRuleDtoSchema`**:
+5. **Розширення `SupplierCategoryRuleDtoSchema` та `UpdateSupplierCategoryRuleDtoSchema`**:
    - `commissionPercent: z.number().min(0).max(99).nullable().optional()`
    - `marketplaceCategoryId: z.string().nullable().optional()`
    - `marketplaceCode: z.string().nullable().optional()`
    - `externalCategoryId: z.string().nullable().optional()`
    - `externalCategoryName: z.string().nullable().optional()`
-4. **Утиліта розумного авто-мапінгу (`suggestMarketplaceCategory(supplierCategoryName, catalog)`)**:
+6. **Утиліта розумного авто-мапінгу (`suggestMarketplaceCategory(supplierCategoryName, catalog)`)**:
    - Автоматично зіставляє російськомовні та україномовні назви категорій постачальника з еталонними категоріями маркетплейсу за словником токенів і синонімів (наприклад: _«выключатели ELIOS / сенсорный выключатель»_ ➔ `4662497 Розумні вимикачі`, _«рамка стеклянная»_ ➔ `4631383 Рамки для розеток та вимикачів`, _«розетки»_ ➔ `4629473 Розетки`, _«зарядні станції / ecoflow / bluetti»_ ➔ `4674585 Зарядні станції`, _«павербанк / умб»_ ➔ `4626998 УМБ та повербанки`).
 
 ---
