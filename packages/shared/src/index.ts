@@ -24,5 +24,7 @@ export * from './utils/pricing-calculator';
 export * from './utils/media-naming';
 export * from './utils/sha256';
 export * from './utils/feed-url-normalizer';
+export * from './utils/marketplace-category-matcher';
+export * from './constants/marketplace-categories-seed';
 export * from './contracts/cqrs';
 export * from './constants';

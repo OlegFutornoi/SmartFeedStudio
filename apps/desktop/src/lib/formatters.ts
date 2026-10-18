@@ -36,35 +36,125 @@ export function formatHostname(url?: string | null): string {
 }
 
 /**
+ * Common generic feed file stems that add zero distinguishing information to human users.
+ * E.g., "products_feed.xml", "catalog.xml", "price.csv" should resolve to just the host domain.
+ */
+const GENERIC_FEED_STEMS = new Set([
+  'products_feed',
+  'product_feed',
+  'products',
+  'product',
+  'feed',
+  'feeds',
+  'catalog',
+  'catalogs',
+  'price',
+  'prices',
+  'pricelist',
+  'price_list',
+  'export',
+  'export_feed',
+  'export_products',
+  'export_all',
+  'all',
+  'allcategories',
+  'all_categories',
+  'data',
+  'goods',
+  'items',
+  'xml',
+  'csv',
+  'yml',
+  'yaml',
+  'rss',
+  'prom',
+  'prom_ua',
+  'rozetka',
+  'yandex',
+  'google',
+  'google_merchant',
+  'index',
+  'main',
+  'shop',
+  'store',
+  'output',
+  'catalog_products',
+]);
+
+const FEED_EXTENSIONS_REGEX = /\.(xml|csv|json|yml|yaml|tsv|xlsx|xls|txt)$/i;
+
+function isGenericStem(stem: string): boolean {
+  const normalized = stem.toLowerCase().trim();
+  if (GENERIC_FEED_STEMS.has(normalized)) return true;
+  const base = normalized.replace(/[-_0-9]+$/, '');
+  return GENERIC_FEED_STEMS.has(base);
+}
+
+function cleanFeedParentheses(str: string): string {
+  const match = str.match(/^([^()]+?)\s*\(([^()]+)\)$/);
+  if (!match) return str;
+  const hostPart = match[1].trim();
+  const inner = match[2].trim();
+  const innerWithoutExt = inner.replace(FEED_EXTENSIONS_REGEX, '');
+  if (isGenericStem(innerWithoutExt)) {
+    return hostPart;
+  }
+  return `${hostPart} (${innerWithoutExt})`;
+}
+
+/**
  * Formats a feed name for UI display.
- * If the name itself is an HTTP URL (or no name is provided), it extracts
- * a human-friendly label like "livolo.in.ua (rozetka.xml)" or "livolo.in.ua".
+ * Generates a clean, short, human-friendly title:
+ * - Omits generic boilerplate filenames like `products_feed.xml`, `catalog.xml` -> returns clean domain (e.g. "livolo.kiev.ua").
+ * - Strips file extensions like `.xml`, `.csv` from specific sub-feeds (e.g. "supplier.ua (lighting)").
+ * - Cleans legacy formatted strings like "livolo.kiev.ua (products_feed.xml)" -> "livolo.kiev.ua".
  */
 export function formatFeedTitle(name?: string | null, sourceUrl?: string | null): string {
-  const candidate = name || sourceUrl;
+  let candidate = (name || sourceUrl || '').trim();
   if (!candidate) return '';
 
-  if (candidate.startsWith('http://') || candidate.startsWith('https://')) {
-    try {
-      const parsed = new URL(candidate);
-      const host = parsed.hostname.replace(/^www\./, '');
-      const parts = parsed.pathname.split('/').filter(Boolean);
-      const fileName = parts[parts.length - 1];
+  candidate = cleanFeedParentheses(candidate);
 
-      if (
-        fileName &&
-        (fileName.endsWith('.xml') ||
-          fileName.endsWith('.csv') ||
-          fileName.endsWith('.json') ||
-          fileName.endsWith('.yml'))
-      ) {
-        return `${host} (${fileName})`;
+  const isUrl =
+    candidate.startsWith('http://') ||
+    candidate.startsWith('https://') ||
+    (!candidate.includes(' ') &&
+      (candidate.includes('.xml') ||
+        candidate.includes('.csv') ||
+        candidate.includes('.yml') ||
+        candidate.includes('.json')) &&
+      candidate.includes('/'));
+
+  if (isUrl) {
+    try {
+      const urlToParse =
+        candidate.startsWith('http://') || candidate.startsWith('https://')
+          ? candidate
+          : `https://${candidate}`;
+      const parsed = new URL(urlToParse);
+      const host = parsed.hostname.replace(/^www\./, '').toLowerCase();
+      const parts = parsed.pathname.split('/').filter(Boolean);
+      const lastPart = parts[parts.length - 1] || '';
+      const stem = lastPart.replace(FEED_EXTENSIONS_REGEX, '').trim();
+
+      if (!stem || isGenericStem(stem)) {
+        return host || formatDisplayUrl(candidate);
       }
-      return host || formatDisplayUrl(candidate);
+
+      const cleanStem = stem.length > 20 ? `${stem.slice(0, 18)}...` : stem;
+      return `${host} (${cleanStem})`;
     } catch (err) {
       console.warn('[formatters:formatFeedTitle] Failed to parse URL:', err);
       return candidate.length > 35 ? `${candidate.slice(0, 32)}...` : candidate;
     }
+  }
+
+  if (FEED_EXTENSIONS_REGEX.test(candidate)) {
+    const stem = candidate.replace(FEED_EXTENSIONS_REGEX, '').trim();
+    if (isGenericStem(stem)) {
+      return 'Каталог товарів';
+    }
+    return stem;
   }
 
   return candidate;

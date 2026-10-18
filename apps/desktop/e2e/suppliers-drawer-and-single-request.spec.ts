@@ -196,35 +196,172 @@ test.describe('Suppliers Slide-Over Drawer & Network Single-Request Optimization
     await page.getByTestId('wizard-close-btn').click();
   });
 
-  test('6. Categories tab displays feed source attribution column and search filtering', async ({
+  test('6. Categories tab displays feed attribution, clean category name, right overlay drawer, export CSV, inline edit, and CSV import', async ({
     page,
   }) => {
     await page.goto('/suppliers');
     await expect(page.getByTestId('suppliers-page')).toBeVisible();
 
-    // Open drawer
     await page.getByTestId('supplier-name-sup_test_1').click();
-    const drawer = page.getByTestId('supplier-drawer-sheet');
-    await expect(drawer).toBeVisible();
+    await expect(page.getByTestId('supplier-drawer-sheet')).toBeVisible();
 
-    // Switch to Categories tab
-    const categoriesTab = page.getByTestId('supplier-drawer-tab-categories');
-    await categoriesTab.click();
+    await page.getByTestId('supplier-drawer-tab-categories').click();
     await expect(page.getByTestId('supplier-categories-tab')).toBeVisible();
 
-    // Check Feed Source column is visible
-    await expect(page.getByText('Джерело фіду')).toBeVisible();
+    // Check Feed Name, Marketplace Category, and Commission columns are visible
+    await expect(page.getByText('Назва фіду')).toBeVisible();
+    await expect(page.getByText('Категорія маркетплейсу')).toBeVisible();
+    await expect(page.getByText('Комісія МП (%)')).toBeVisible();
 
-    // Check Feed attribution badge is rendered with feed name
     const feedBadge = page.getByTestId('category-feed-scat_test_1');
-    await expect(feedBadge).toBeVisible();
     await expect(feedBadge).toContainText('Livolo Main XML');
+
+    // Auto-map categories to Rozetka: row displays ONLY category name (no technical rz_id badge)
+    await page.getByTestId('auto-map-categories-btn').click();
+    const mapBtn = page.getByTestId('category-marketplace-btn-scat_test_1');
+    await expect(mapBtn).toContainText('Розумні вимикачі');
+    await expect(page.getByTestId('category-commission-input-scat_test_1')).toHaveValue('12');
+
+    // Open Marketplace Category Drawer (right slide-over, matching supplier drawer width, zero dark backdrop)
+    await mapBtn.click();
+    const categoryDrawer = page.getByTestId('marketplace-category-drawer');
+    await expect(categoryDrawer).toBeVisible();
+    await expect(categoryDrawer).toHaveClass(/max-w-5xl|max-w-6xl/);
+
+    // Verify Export CSV button is present
+    const exportBtn = page.getByTestId('drawer-export-csv-btn');
+    await expect(exportBtn).toBeVisible();
+
+    // Test import drawer toggle and sample CSV button
+    const importBtn = page.getByTestId('drawer-toggle-import-btn');
+    await expect(importBtn).toBeVisible();
+    await importBtn.click();
+    await expect(page.getByTestId('marketplace-category-import-form')).toBeVisible();
+    await expect(page.getByTestId('download-sample-csv-btn')).toBeVisible();
+
+    // Switch back to search and paste Rozetka URL for Зарядні станції (c4674585)
+    await page.getByTestId('drawer-toggle-import-btn').click();
+    await page
+      .getByTestId('picker-search-input')
+      .fill('https://rozetka.com.ua/ua/zaryadnie-stantsii-4674585/c4674585/');
+    await expect(page.getByTestId('picker-url-detected-badge')).toContainText('4674585');
+
+    // Test inline editing of existing category before selecting
+    await page.getByTestId('edit-item-4674585').click();
+    await expect(page.getByTestId('marketplace-category-edit-form')).toBeVisible();
+    await page.getByTestId('edit-category-commission-input').fill('8');
+    await page.getByTestId('edit-category-submit-btn').click();
+    await expect(page.getByTestId('marketplace-category-edit-form')).toHaveCount(0);
+
+    // Select the updated category into supplier category row
+    await page.getByTestId('picker-item-4674585').click();
+
+    // Drawer closes; row displays only clean category name without rz_id badge
+    await expect(categoryDrawer).toHaveCount(0);
+    await expect(mapBtn).toContainText('Зарядні станції');
+    await expect(page.getByTestId('category-commission-input-scat_test_1')).toHaveValue('8');
 
     // Check search filter works
     const searchInput = page.getByTestId('search-category-input');
-    await expect(searchInput).toBeVisible();
     await searchInput.fill('Сенсорні');
     await expect(page.getByText('Сенсорні вимикачі')).toBeVisible();
     await expect(page.getByText('Розумні розетки')).not.toBeVisible();
+  });
+
+  test('7. Feed selector in categories tab displays all connected feeds and filters correctly', async ({
+    page,
+  }) => {
+    page.on('console', (msg) => console.log('BROWSER_LOG:', msg.text()));
+    page.on('response', (resp) => {
+      console.log('ALL_RESP:', resp.status(), resp.url());
+    });
+    await page.goto('/suppliers');
+    await expect(page.getByTestId('suppliers-page')).toBeVisible();
+
+    await page.getByTestId('supplier-name-sup_test_1').click();
+    await expect(page.getByTestId('supplier-drawer-sheet')).toBeVisible();
+
+    await page.getByTestId('supplier-drawer-tab-categories').click();
+    await expect(page.getByTestId('supplier-categories-tab')).toBeVisible();
+
+    // Verify feed selector is present
+    const feedSelector = page.getByTestId('category-feed-filter');
+    await expect(feedSelector).toBeVisible();
+
+    // Open dropdown to verify both connected feeds are listed
+    await feedSelector.click();
+    await expect(page.getByRole('option', { name: 'Livolo Main XML' })).toBeVisible();
+    await expect(page.getByRole('option', { name: 'Livolo Secondary CSV' })).toBeVisible();
+
+    // Select second feed which has no categories yet
+    await page.getByRole('option', { name: 'Livolo Secondary CSV' }).click();
+
+    // Empty state hint for feed should be visible
+    await expect(page.getByText('Для обраного фіду ще немає імпортованих категорій')).toBeVisible();
+
+    // Switch back to "Всі фіди"
+    await feedSelector.click();
+    await page.getByRole('option', { name: /Всі фіди|All feeds/i }).click();
+    await expect(page.getByText('Сенсорні вимикачі')).toBeVisible();
+  });
+
+  test('8. Category markup unit switch (% vs ₴) and human-friendly Ukrainian terminology («Привʼязано»)', async ({
+    page,
+  }) => {
+    await page.goto('/suppliers');
+    await expect(page.getByTestId('suppliers-page')).toBeVisible();
+
+    await page.getByTestId('supplier-name-sup_test_1').click();
+    await expect(page.getByTestId('supplier-drawer-sheet')).toBeVisible();
+
+    await page.getByTestId('supplier-drawer-tab-categories').click();
+    await expect(page.getByTestId('supplier-categories-tab')).toBeVisible();
+
+    // Verify terminology: "Привʼязано" stat and column header "Націнка"
+    const mappedStat = page.getByTestId('mapped-categories-stat');
+    await expect(mappedStat).toContainText('Привʼязано');
+
+    // Verify filter dropdown option "Привʼязані"
+    const mappingFilter = page.getByTestId('category-mapping-filter');
+    await mappingFilter.click();
+    await expect(page.getByRole('option', { name: 'Привʼязані' })).toBeVisible();
+    await page.getByRole('option', { name: 'Усі категорії' }).click();
+
+    // Verify table header says "Націнка"
+    await expect(page.locator('thead').getByText('Націнка', { exact: true })).toBeVisible();
+
+    // Markup unit buttons for first category
+    const percentBtn = page.getByTestId('category-markup-type-percent-scat_test_1');
+    const fixedBtn = page.getByTestId('category-markup-type-fixed-scat_test_1');
+    const marginInput = page.getByTestId('category-margin-input-scat_test_1');
+
+    await expect(percentBtn).toBeVisible();
+    await expect(fixedBtn).toBeVisible();
+    await expect(marginInput).toBeVisible();
+
+    // Default is % active
+    await expect(percentBtn).toHaveClass(/bg-primary/);
+
+    // Enter value 100 in percent
+    await marginInput.fill('100');
+    await expect(marginInput).toHaveValue('100');
+
+    // Click ₴ to switch to FIXED currency markup
+    await fixedBtn.click();
+    await expect(fixedBtn).toHaveClass(/bg-primary/);
+    await expect(percentBtn).not.toHaveClass(/bg-primary/);
+
+    // Value 100 is preserved upon switching to ₴
+    await expect(marginInput).toHaveValue('100');
+
+    // Edit to 150 ₴
+    await marginInput.fill('150');
+    await expect(marginInput).toHaveValue('150');
+
+    // Switch back to %
+    await percentBtn.click();
+    await expect(percentBtn).toHaveClass(/bg-primary/);
+    await expect(fixedBtn).not.toHaveClass(/bg-primary/);
+    await expect(marginInput).toHaveValue('150');
   });
 });

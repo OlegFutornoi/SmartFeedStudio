@@ -75,7 +75,7 @@ test.describe('Desktop App — Feed Deduplication & Collision Prevention (E2E)',
           supId = sup.id;
         }
         mockDb.createFeedSource(supId, {
-          name: 'livolo.kiev.ua (products_feed.xml)',
+          name: 'livolo.kiev.ua',
           url: 'https://livolo.kiev.ua/products_feed.xml',
           productsCount: 5002,
         });

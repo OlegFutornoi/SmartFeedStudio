@@ -1,9 +1,56 @@
-import { IsOptional, IsNumber, IsBoolean, IsString, Min } from 'class-validator';
+import { IsOptional, IsNumber, IsBoolean, IsString, IsIn, Min, Max } from 'class-validator';
+
+export class CreateMarketplaceCategoryDto {
+  @IsOptional()
+  @IsString()
+  marketplaceCode?: string;
+
+  @IsString()
+  externalId: string;
+
+  @IsOptional()
+  @IsString()
+  xmlAttributeName?: string;
+
+  @IsString()
+  nameUk: string;
+
+  @IsOptional()
+  @IsString()
+  nameEn?: string | null;
+
+  @IsOptional()
+  @IsString()
+  fullPathUk?: string | null;
+
+  @IsOptional()
+  @IsString()
+  url?: string | null;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  @Max(99)
+  defaultCommissionPercent?: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  defaultFixedFee?: number;
+}
 
 export class UpdateSupplierCategoryDto {
   @IsOptional()
+  @IsString()
+  name?: string;
+
+  @IsOptional()
   @IsBoolean()
   isActive?: boolean;
+
+  @IsOptional()
+  @IsIn(['PERCENT', 'FIXED'])
+  markupType?: 'PERCENT' | 'FIXED';
 
   @IsOptional()
   @IsNumber()
@@ -12,6 +59,44 @@ export class UpdateSupplierCategoryDto {
   @IsOptional()
   @IsNumber()
   fixedMarkup?: number | null;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  @Max(99)
+  commissionPercent?: number | null;
+
+  @IsOptional()
+  @IsString()
+  marketplaceCategoryId?: string | null;
+
+  @IsOptional()
+  @IsString()
+  marketplaceCode?: string | null;
+
+  @IsOptional()
+  @IsString()
+  externalCategoryId?: string | null;
+
+  @IsOptional()
+  @IsString()
+  externalCategoryName?: string | null;
+
+  @IsOptional()
+  @IsString()
+  feedCategoryId?: string;
+
+  @IsOptional()
+  @IsString()
+  feedSourceId?: string | null;
+
+  @IsOptional()
+  @IsString()
+  feedName?: string | null;
+
+  @IsOptional()
+  @IsNumber()
+  productCount?: number;
 }
 
 export class CreateSupplierPricingRuleDto {

@@ -201,6 +201,25 @@ export function deleteFeedSource(
     }
   }
 
+  // 3. Cascade cleanup associated categories
+  const remainingFeeds = state.feedSources.get(supplierId) || [];
+  if (remainingFeeds.length === 0) {
+    state.supplierCategories.delete(supplierId);
+  } else {
+    const remainingFeedIds = new Set(remainingFeeds.map((f) => f.id));
+    const currentCats = state.supplierCategories.get(supplierId) || [];
+    const filteredCats = currentCats.filter((c) => {
+      if (c.feedSourceId === sourceId) return false;
+      if (c.feedSourceId && !remainingFeedIds.has(c.feedSourceId)) return false;
+      return true;
+    });
+    if (filteredCats.length === 0) {
+      state.supplierCategories.delete(supplierId);
+    } else {
+      state.supplierCategories.set(supplierId, filteredCats);
+    }
+  }
+
   return {
     success: true,
     deletedProductsCount,

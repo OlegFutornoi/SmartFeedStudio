@@ -116,7 +116,7 @@ export class SuppliersController {
   }
 
   @Patch(':id/categories/:categoryId')
-  @ApiOperation({ summary: 'Update markup or status of category' })
+  @ApiOperation({ summary: 'Update markup, marketplace mapping or status of category' })
   async updateCategory(
     @Param('id') supplierId: string,
     @Param('categoryId') categoryId: string,

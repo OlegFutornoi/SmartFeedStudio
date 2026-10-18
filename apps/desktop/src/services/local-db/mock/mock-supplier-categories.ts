@@ -1,5 +1,7 @@
-import type { SupplierCategoryRuleDto } from '@smartfeed/shared';
+import { type SupplierCategoryRuleDto, SEED_MARKETPLACE_CATEGORIES } from '@smartfeed/shared';
+
 import type { MockDbState } from '@/services/local-db/mock/mock-state';
+import { buildDefaultCategoryMappings } from '@/services/local-db/mock/mock-category-mapping-builder';
 
 export function ensureSupplierCategories(
   state: MockDbState,
@@ -10,10 +12,8 @@ export function ensureSupplierCategories(
   );
   const targetSupplierId = supplier ? supplier.id : supplierId;
   const targetSupplierName = supplier?.name?.toLowerCase();
-
   const list = state.supplierCategories.get(targetSupplierId);
 
-  // Find all products belonging to this supplier (either by supplierId or supplierName)
   const supplierProducts = state.products.filter(
     (p) =>
       p.supplierId === targetSupplierId ||
@@ -21,56 +21,67 @@ export function ensureSupplierCategories(
       (targetSupplierName && p.supplierName?.toLowerCase() === targetSupplierName),
   );
 
-  // If products were found with mismatched supplierId, normalize them
   if (supplier && supplierProducts.length > 0) {
     for (const p of supplierProducts) {
-      if (p.supplierId !== targetSupplierId) {
-        p.supplierId = targetSupplierId;
-      }
-      if (!p.supplierName) {
-        p.supplierName = supplier.name;
-      }
+      if (p.supplierId !== targetSupplierId) p.supplierId = targetSupplierId;
+      if (!p.supplierName) p.supplierName = supplier.name;
     }
   }
 
-  // If supplier has no products and dummy fallback was previously stored, clean it up
+  const feedSources =
+    state.feedSources.get(targetSupplierId) || state.feedSources.get(supplierId) || [];
+
+  // DB-REF-03: "Нема постачальника / нема фіда — нема категорій"
+  if (feedSources.length === 0) {
+    state.supplierCategories.delete(targetSupplierId);
+    return [];
+  }
+
   if (
     supplierProducts.length === 0 &&
-    list &&
-    list.some(
-      (c) =>
-        c.feedCategoryId === 'cat_electronics' ||
-        c.feedCategoryId === 'cat_accessories' ||
-        c.feedCategoryId === 'cat_smartphones',
+    list?.some((c) =>
+      ['cat_electronics', 'cat_accessories', 'cat_smartphones'].includes(c.feedCategoryId),
     )
   ) {
     state.supplierCategories.delete(targetSupplierId);
     return [];
   }
 
-  // If supplier has no products at all, return empty
   if (supplierProducts.length === 0) {
-    return list || [];
+    if (!list) return [];
+    const activeFeedIds = new Set(feedSources.map((f) => f.id));
+    const validCats = list.filter((c) => !c.feedSourceId || activeFeedIds.has(c.feedSourceId));
+    if (validCats.length === 0) {
+      state.supplierCategories.delete(targetSupplierId);
+      return [];
+    }
+    const sanitized = validCats.map((c) => {
+      const isSynthetic = !c.name || c.name.startsWith('scat_');
+      const cleanFeedCatId = c.feedCategoryId?.startsWith('scat_')
+        ? c.feedCategoryId.split('_')[2] || c.feedCategoryId
+        : c.feedCategoryId;
+      const cleanName = isSynthetic
+        ? c.externalCategoryName ||
+          (cleanFeedCatId && !cleanFeedCatId.startsWith('scat_')
+            ? `Категорія #${cleanFeedCatId}`
+            : 'Загальна категорія')
+        : c.name;
+      return { ...c, name: cleanName, feedCategoryId: cleanFeedCatId || c.feedCategoryId };
+    });
+    state.supplierCategories.set(targetSupplierId, sanitized);
+    return sanitized;
   }
 
-  // Look up feed names from feedSources
-  const feedSources = state.feedSources.get(targetSupplierId) || [];
-  const allFeeds = Array.from(state.feedSources.values()).flat();
   const feedMap = new Map<string, string>();
-  for (const f of allFeeds) feedMap.set(f.id, f.name);
+  for (const f of Array.from(state.feedSources.values()).flat()) feedMap.set(f.id, f.name);
   for (const f of feedSources) feedMap.set(f.id, f.name);
 
-  // Map existing rules to preserve user-configured isActive, marginPercent, fixedMarkup
   const existingRulesMap = new Map<string, SupplierCategoryRuleDto>();
-  if (list) {
-    for (const r of list) {
-      const key = `${r.feedCategoryId}::${r.feedSourceId || ''}`;
-      existingRulesMap.set(key, r);
-      existingRulesMap.set(r.feedCategoryId, r);
-    }
+  for (const r of list || []) {
+    existingRulesMap.set(`${r.feedCategoryId}::${r.feedSourceId || ''}`, r);
+    existingRulesMap.set(r.feedCategoryId, r);
   }
 
-  // Group categories by feedCategoryId AND feedSourceId
   const catMap = new Map<
     string,
     {
@@ -87,8 +98,10 @@ export function ensureSupplierCategories(
     const catName = p.categoryNameUk || 'Загальна категорія';
     const feedSourceId = p.feedSourceId || feedSources[0]?.id || null;
     const feedName =
-      (feedSourceId ? feedMap.get(feedSourceId) : null) || feedSources[0]?.name || 'Основний фід';
-
+      (feedSourceId ? feedMap.get(feedSourceId) : null) ||
+      (p.feedSourceId
+        ? `Фід #${p.feedSourceId.slice(0, 8)}`
+        : feedSources[0]?.name || 'Основний фід');
     const groupKey = `${catId}::${feedSourceId || ''}`;
     const existing = catMap.get(groupKey) || {
       catId,
@@ -101,10 +114,21 @@ export function ensureSupplierCategories(
     catMap.set(groupKey, existing);
   }
 
+  const catalog =
+    state.marketplaceCategories && state.marketplaceCategories.length > 0
+      ? state.marketplaceCategories
+      : SEED_MARKETPLACE_CATEGORIES;
+
   const now = new Date().toISOString();
   const updatedList: SupplierCategoryRuleDto[] = Array.from(catMap.entries()).map(
     ([groupKey, info]) => {
       const prevRule = existingRulesMap.get(groupKey) || existingRulesMap.get(info.catId);
+      const { mappings, activeMp, activeMap } = buildDefaultCategoryMappings(
+        info.name,
+        prevRule,
+        catalog,
+      );
+
       return {
         id:
           prevRule?.id ||
@@ -114,8 +138,19 @@ export function ensureSupplierCategories(
         name: info.name,
         parentId: prevRule?.parentId || null,
         isActive: prevRule?.isActive ?? true,
+        markupType:
+          prevRule?.markupType ||
+          (prevRule?.fixedMarkup != null && prevRule?.marginPercent == null ? 'FIXED' : 'PERCENT'),
         marginPercent: prevRule?.marginPercent ?? null,
         fixedMarkup: prevRule?.fixedMarkup ?? null,
+        commissionPercent: prevRule?.commissionPercent ?? activeMap?.commissionPercent ?? null,
+        marketplaceCategoryId:
+          prevRule?.marketplaceCategoryId ?? activeMap?.marketplaceCategoryId ?? null,
+        marketplaceCode: activeMp,
+        externalCategoryId: prevRule?.externalCategoryId ?? activeMap?.externalCategoryId ?? null,
+        externalCategoryName:
+          prevRule?.externalCategoryName ?? activeMap?.externalCategoryName ?? null,
+        marketplaceMappings: mappings,
         productCount: info.count,
         feedSourceId: info.feedSourceId || null,
         feedName: info.feedName || null,
@@ -142,92 +177,8 @@ export function getSupplierCategories(
   return list;
 }
 
-export function toggleSupplierCategory(
-  state: MockDbState,
-  supplierId: string,
-  categoryId: string,
-  isActive: boolean,
-): SupplierCategoryRuleDto {
-  const list = ensureSupplierCategories(state, supplierId);
-  const target = list.find((c) => c.id === categoryId || c.feedCategoryId === categoryId);
-  if (!target) {
-    throw new Error(`Категорія ${categoryId} не знайдена у постачальника`);
-  }
-  target.isActive = isActive;
-  target.updatedAt = new Date().toISOString();
-
-  // Cascade to products: tag availability according to category active status and feedSourceId
-  state.products = state.products.map((p) => {
-    const isSupplierMatch =
-      p.supplierId === supplierId ||
-      (state.suppliers.find((s) => s.id === supplierId)?.name &&
-        p.supplierName === state.suppliers.find((s) => s.id === supplierId)?.name);
-    const isCategoryMatch = p.categoryId === target.feedCategoryId || p.categoryId === target.id;
-    const isFeedMatch =
-      !target.feedSourceId || !p.feedSourceId || p.feedSourceId === target.feedSourceId;
-
-    if (isSupplierMatch && isCategoryMatch && isFeedMatch) {
-      return { ...p, inStock: isActive, isAvailable: isActive };
-    }
-    return p;
-  });
-
-  return target;
-}
-
-export function batchToggleSupplierCategories(
-  state: MockDbState,
-  supplierId: string,
-  categoryIds: string[],
-  isActive: boolean,
-): { updatedCount: number } {
-  const list = ensureSupplierCategories(state, supplierId);
-  let updatedCount = 0;
-  const idSet = new Set(categoryIds);
-
-  for (const cat of list) {
-    if (idSet.has(cat.id) || idSet.has(cat.feedCategoryId)) {
-      cat.isActive = isActive;
-      cat.updatedAt = new Date().toISOString();
-      updatedCount += 1;
-    }
-  }
-
-  // Cascade to products
-  state.products = state.products.map((p) => {
-    if (
-      (p.supplierId === supplierId ||
-        (p.supplierName &&
-          state.suppliers.find((s) => s.id === supplierId)?.name === p.supplierName)) &&
-      (idSet.has(p.categoryId || '') || idSet.has(p.id))
-    ) {
-      return { ...p, inStock: isActive, isAvailable: isActive };
-    }
-    return p;
-  });
-
-  return { updatedCount };
-}
-
-export function updateSupplierCategoryRule(
-  state: MockDbState,
-  supplierId: string,
-  categoryId: string,
-  marginPercent?: number | null,
-  fixedMarkup?: number | null,
-): SupplierCategoryRuleDto {
-  const list = ensureSupplierCategories(state, supplierId);
-  const target = list.find((c) => c.id === categoryId || c.feedCategoryId === categoryId);
-  if (!target) {
-    throw new Error(`Категорія ${categoryId} не знайдена у постачальника`);
-  }
-
-  if (marginPercent !== undefined) {
-    target.marginPercent = marginPercent !== null ? Number(marginPercent) : null;
-  }
-  if (fixedMarkup !== undefined) {
-    target.fixedMarkup = fixedMarkup !== null ? Number(fixedMarkup) : null;
-  }
-  target.updatedAt = new Date().toISOString();
-  return target;
-}
+export {
+  toggleSupplierCategory,
+  batchToggleSupplierCategories,
+  updateSupplierCategoryRule,
+} from '@/services/local-db/mock/mock-supplier-category-updates';

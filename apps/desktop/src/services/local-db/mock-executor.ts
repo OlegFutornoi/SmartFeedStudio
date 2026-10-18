@@ -95,8 +95,60 @@ export function executeMockCommand<K extends keyof LocalDbCommandMap>(
       return mockDatabaseDriver.updateSupplierCategoryRule(
         a.supplierId,
         a.categoryId,
-        a.marginPercent,
+        a.payload ?? a.marginPercent,
         a.fixedMarkup,
+      ) as LocalDbCommandMap[K]['result'];
+    }
+    case 'db_get_marketplace_categories': {
+      const a = args as LocalDbCommandMap['db_get_marketplace_categories']['args'];
+      return mockDatabaseDriver.getMarketplaceCategories(
+        a?.marketplaceCode,
+        a?.search,
+      ) as LocalDbCommandMap[K]['result'];
+    }
+    case 'db_create_marketplace_category': {
+      const a = args as LocalDbCommandMap['db_create_marketplace_category']['args'];
+      return mockDatabaseDriver.createMarketplaceCategory(
+        a.payload,
+      ) as LocalDbCommandMap[K]['result'];
+    }
+    case 'db_update_marketplace_category': {
+      const a = args as LocalDbCommandMap['db_update_marketplace_category']['args'];
+      return mockDatabaseDriver.updateMarketplaceCategory(
+        a.id,
+        a.payload,
+      ) as LocalDbCommandMap[K]['result'];
+    }
+    case 'db_import_marketplace_categories': {
+      const a = args as LocalDbCommandMap['db_import_marketplace_categories']['args'];
+      return mockDatabaseDriver.importMarketplaceCategories(
+        a.items,
+      ) as LocalDbCommandMap[K]['result'];
+    }
+    case 'db_auto_map_supplier_categories': {
+      const a = args as LocalDbCommandMap['db_auto_map_supplier_categories']['args'];
+      return mockDatabaseDriver.autoMapSupplierCategories(
+        a.supplierId,
+        a.marketplaceCode,
+      ) as LocalDbCommandMap[K]['result'];
+    }
+    case 'db_get_supplier_category_marketplace_maps': {
+      const a = args as LocalDbCommandMap['db_get_supplier_category_marketplace_maps']['args'];
+      return mockDatabaseDriver.getSupplierCategoryMarketplaceMaps(
+        a?.supplierCategoryRuleId,
+      ) as LocalDbCommandMap[K]['result'];
+    }
+    case 'db_upsert_supplier_category_marketplace_map': {
+      const a = args as LocalDbCommandMap['db_upsert_supplier_category_marketplace_map']['args'];
+      return mockDatabaseDriver.upsertSupplierCategoryMarketplaceMap(
+        a.payload,
+      ) as LocalDbCommandMap[K]['result'];
+    }
+    case 'db_delete_supplier_category_marketplace_map': {
+      const a = args as LocalDbCommandMap['db_delete_supplier_category_marketplace_map']['args'];
+      return mockDatabaseDriver.deleteSupplierCategoryMarketplaceMap(
+        a.supplierCategoryRuleId,
+        a.marketplaceCode,
       ) as LocalDbCommandMap[K]['result'];
     }
 

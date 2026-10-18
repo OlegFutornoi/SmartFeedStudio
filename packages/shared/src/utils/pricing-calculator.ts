@@ -12,6 +12,7 @@ export interface PricingRuleItem {
   categoryId?: string | null;
   minPrice?: number | null;
   maxPrice?: number | null;
+  markupType?: 'PERCENT' | 'FIXED';
   marginPercent?: number | null;
   fixedMarkup?: number | null;
   priority?: number;
@@ -55,14 +56,33 @@ export function calculateBaseSellingPrice(
       (r) => r.categoryId === categoryId && r.minPrice == null && r.maxPrice == null,
     );
     if (categoryRule) {
+      const isFixed =
+        categoryRule.markupType === 'FIXED' ||
+        (categoryRule.markupType == null &&
+          categoryRule.fixedMarkup != null &&
+          Number(categoryRule.fixedMarkup) > 0 &&
+          (categoryRule.marginPercent == null || Number(categoryRule.marginPercent) === 0));
+
+      if (isFixed) {
+        const fixed = Number(categoryRule.fixedMarkup) || 0;
+        const price = cost + fixed;
+        return {
+          costPrice: cost,
+          sellingPrice: Math.round(price * 100) / 100,
+          appliedMarginPercent: 0,
+          appliedFixedMarkup: fixed,
+          matchedRuleType: 'CATEGORY',
+          matchedRuleId: categoryRule.id,
+        };
+      }
+
       const margin = Number(categoryRule.marginPercent) || 0;
-      const fixed = Number(categoryRule.fixedMarkup) || 0;
-      const price = cost * (1 + margin / 100) + fixed;
+      const price = cost * (1 + margin / 100);
       return {
         costPrice: cost,
         sellingPrice: Math.round(price * 100) / 100,
         appliedMarginPercent: margin,
-        appliedFixedMarkup: fixed,
+        appliedFixedMarkup: 0,
         matchedRuleType: 'CATEGORY',
         matchedRuleId: categoryRule.id,
       };

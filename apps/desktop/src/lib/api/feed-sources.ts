@@ -51,52 +51,70 @@ export async function getSupplierFeedSources(
   supplierId: string,
   token?: string,
 ): Promise<FeedSourceItemDto[]> {
+  if (isTauri()) {
+    try {
+      const sources = await localDb.feeds.getSupplierFeedSources(supplierId);
+      return (sources || []).map(mapLocalFeedSource);
+    } catch (err) {
+      console.warn('[feed-sources] localDb lookup failed:', err);
+      return [];
+    }
+  }
+
+  try {
+    const response = await fetchWithAuth(
+      `/feeds/suppliers/${supplierId}/sources`,
+      { method: 'GET' },
+      token,
+    );
+    if (response.ok) {
+      const data = await response.json();
+      if (Array.isArray(data) && data.length > 0) return data as FeedSourceItemDto[];
+    }
+  } catch (err) {
+    console.warn('[ApiClient] Remote call failed, using local fallback:', err);
+  }
+
   try {
     const sources = await localDb.feeds.getSupplierFeedSources(supplierId);
     if (sources && sources.length > 0) {
       return sources.map(mapLocalFeedSource);
     }
   } catch (err) {
-    console.warn('[feed-sources] localDb lookup failed, checking remote:', err);
-  }
-
-  if (!isTauri() && token) {
-    try {
-      const response = await fetchWithAuth(
-        `/feeds/suppliers/${supplierId}/sources`,
-        { method: 'GET' },
-        token,
-      );
-      if (response.ok) {
-        return (await response.json()) as FeedSourceItemDto[];
-      }
-    } catch (err) {
-      console.warn('[ApiClient] Remote call failed, using local fallback:', err);
-    }
+    console.warn('[feed-sources] localDb fallback failed:', err);
   }
 
   return [];
 }
 
 export async function getAllFeedSources(token?: string): Promise<FeedSourceItemDto[]> {
+  if (isTauri()) {
+    try {
+      const sources = await localDb.feeds.getAllFeedSources();
+      return (sources || []).map(mapLocalFeedSource);
+    } catch (err) {
+      console.warn('[feed-sources] localDb getAllFeedSources failed:', err);
+      return [];
+    }
+  }
+
+  try {
+    const response = await fetchWithAuth('/feeds/sources', { method: 'GET' }, token);
+    if (response.ok) {
+      const data = await response.json();
+      if (Array.isArray(data) && data.length > 0) return data as FeedSourceItemDto[];
+    }
+  } catch (err) {
+    console.warn('[ApiClient] Remote call failed, using local fallback:', err);
+  }
+
   try {
     const sources = await localDb.feeds.getAllFeedSources();
     if (sources && sources.length > 0) {
       return sources.map(mapLocalFeedSource);
     }
   } catch (err) {
-    console.warn('[feed-sources] localDb getAllFeedSources failed:', err);
-  }
-
-  if (!isTauri() && token) {
-    try {
-      const response = await fetchWithAuth('/feeds/sources', { method: 'GET' }, token);
-      if (response.ok) {
-        return (await response.json()) as FeedSourceItemDto[];
-      }
-    } catch (err) {
-      console.warn('[ApiClient] Remote call failed, using local fallback:', err);
-    }
+    console.warn('[feed-sources] localDb fallback failed:', err);
   }
 
   return [];

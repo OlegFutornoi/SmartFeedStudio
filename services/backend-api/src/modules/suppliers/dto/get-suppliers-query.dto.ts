@@ -19,3 +19,15 @@ export class GetSupplierCategoriesQueryDto {
   @IsString()
   search?: string;
 }
+
+export class GetMarketplaceCategoriesQueryDto {
+  @ApiPropertyOptional({ description: 'Filter by marketplace code (e.g. ROZETKA, PROM, EPICENTR)' })
+  @IsOptional()
+  @IsString()
+  marketplaceCode?: string;
+
+  @ApiPropertyOptional({ description: 'Search query by category name or external ID' })
+  @IsOptional()
+  @IsString()
+  search?: string;
+}

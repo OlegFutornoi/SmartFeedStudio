@@ -12,6 +12,19 @@ export const mockFeedSources = [
     lastSyncStatus: 'SUCCESS',
     productsCount: 250,
   },
+  {
+    id: 'src_feed_2',
+    supplierId: 'sup_test_1',
+    name: 'Livolo Secondary CSV',
+    sourceType: 'FILE',
+    fileFormat: 'CSV_GENERIC',
+    sourceUrl: 'https://livolo.kiev.ua/promo_feed.csv',
+    autoUpdatePrices: false,
+    autoUpdateStocks: true,
+    lastSyncedAt: new Date().toISOString(),
+    lastSyncStatus: 'SUCCESS',
+    productsCount: 0,
+  },
 ];
 
 export const mockAnalysis = {

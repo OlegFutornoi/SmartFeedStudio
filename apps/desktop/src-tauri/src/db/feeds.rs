@@ -254,6 +254,14 @@ pub fn delete_feed_source(conn: &Connection, id: &str, delete_products: bool) ->
                 );
                 let extra_deleted = conn.execute("DELETE FROM local_products WHERE supplier_id = ?1", [sup_id])?;
                 deleted += extra_deleted;
+                let _ = conn.execute(
+                    "DELETE FROM local_supplier_categories WHERE supplier_id = ?1",
+                    [sup_id],
+                );
+                let _ = conn.execute(
+                    "DELETE FROM local_supplier_category_marketplace_maps WHERE supplier_category_rule_id NOT IN (SELECT id FROM local_supplier_categories)",
+                    [],
+                );
             } else {
                 // Delete orphaned products of this supplier that don't belong to any remaining feed
                 let _ = conn.execute(

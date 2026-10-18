@@ -191,6 +191,48 @@ pub fn init_schema(conn: &Connection) -> Result<()> {
 
         CREATE INDEX IF NOT EXISTS idx_sync_settings_supplier ON local_supplier_sync_settings(supplier_id);
         CREATE INDEX IF NOT EXISTS idx_sync_logs_supplier ON local_supplier_sync_logs(supplier_id);
+
+        CREATE TABLE IF NOT EXISTS local_marketplace_categories (
+            id TEXT PRIMARY KEY,
+            user_id TEXT NOT NULL,
+            marketplace_code TEXT NOT NULL DEFAULT 'ROZETKA',
+            external_id TEXT NOT NULL,
+            xml_attribute_name TEXT NOT NULL DEFAULT 'rz_id',
+            name_uk TEXT NOT NULL,
+            name_en TEXT,
+            full_path_uk TEXT,
+            parent_external_id TEXT,
+            url TEXT,
+            default_commission_percent REAL DEFAULT 0,
+            default_fixed_fee REAL DEFAULT 0,
+            extra_config TEXT,
+            is_leaf INTEGER DEFAULT 1,
+            is_active INTEGER DEFAULT 1,
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+            updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE(user_id, marketplace_code, external_id)
+        );
+
+        CREATE TABLE IF NOT EXISTS local_supplier_category_marketplace_maps (
+            id TEXT PRIMARY KEY,
+            user_id TEXT NOT NULL,
+            supplier_category_rule_id TEXT NOT NULL,
+            marketplace_code TEXT NOT NULL DEFAULT 'ROZETKA',
+            marketplace_category_id TEXT,
+            external_category_id TEXT NOT NULL,
+            external_category_name TEXT NOT NULL,
+            commission_percent REAL DEFAULT 0,
+            fixed_fee REAL DEFAULT 0,
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+            updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE(user_id, supplier_category_rule_id, marketplace_code),
+            FOREIGN KEY(supplier_category_rule_id) REFERENCES local_supplier_categories(id) ON DELETE CASCADE
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_mcat_user_code ON local_marketplace_categories(user_id, marketplace_code);
+        CREATE INDEX IF NOT EXISTS idx_mcat_user_ext ON local_marketplace_categories(user_id, external_id);
+        CREATE INDEX IF NOT EXISTS idx_scmm_user_rule ON local_supplier_category_marketplace_maps(user_id, supplier_category_rule_id);
+        CREATE INDEX IF NOT EXISTS idx_scmm_user_mcat ON local_supplier_category_marketplace_maps(user_id, marketplace_category_id);
         "#,
     )?;
 

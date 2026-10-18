@@ -1,5 +1,6 @@
 import type { MockDbState } from '@/services/local-db/mock/mock-state';
 import { syncCounters } from '@/services/local-db/mock/mock-state';
+import { ensureMarketplaceCategories } from '@/services/local-db/mock/mock-marketplace-categories';
 
 export const LEGACY_STORAGE_KEY = 'smartfeed_mock_db';
 export const STORAGE_PREFIX = 'smartfeed_mock_db_';
@@ -40,6 +41,8 @@ export function saveMockDbToStorage(state: MockDbState, userId?: string | null):
       suppliers: state.suppliers,
       pricingRules: Array.from(state.pricingRules.entries()),
       supplierCategories: Array.from(state.supplierCategories.entries()),
+      marketplaceCategories: state.marketplaceCategories,
+      supplierCategoryMarketplaceMaps: Array.from(state.supplierCategoryMarketplaceMaps.entries()),
       syncSettings: Array.from(state.syncSettings.entries()),
       syncLogs: Array.from(state.syncLogs.entries()),
       exportChannels: state.exportChannels,
@@ -62,6 +65,11 @@ export function restoreMockDbFromStorage(state: MockDbState, dataStr: string): v
     if (data.suppliers) state.suppliers = data.suppliers;
     if (data.pricingRules) state.pricingRules = new Map(data.pricingRules);
     if (data.supplierCategories) state.supplierCategories = new Map(data.supplierCategories);
+    if (data.marketplaceCategories) state.marketplaceCategories = data.marketplaceCategories;
+    ensureMarketplaceCategories(state);
+    if (data.supplierCategoryMarketplaceMaps) {
+      state.supplierCategoryMarketplaceMaps = new Map(data.supplierCategoryMarketplaceMaps);
+    }
     if (data.syncSettings) state.syncSettings = new Map(data.syncSettings);
     if (data.syncLogs) state.syncLogs = new Map(data.syncLogs);
     if (data.exportChannels) state.exportChannels = data.exportChannels;
@@ -89,6 +97,10 @@ export const MUTATING_METHODS = [
   'toggleSupplierCategory',
   'batchToggleSupplierCategories',
   'updateSupplierCategoryRule',
+  'createMarketplaceCategory',
+  'updateMarketplaceCategory',
+  'importMarketplaceCategories',
+  'autoMapSupplierCategories',
   'createExportChannel',
   'updateExportChannel',
   'deleteExportChannel',

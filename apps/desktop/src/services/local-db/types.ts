@@ -23,6 +23,11 @@ import type {
   UpdateProductImageOrderDto,
   DeleteProductImageResultDto,
   SupplierCategoryRuleDto,
+  UpdateSupplierCategoryRuleDto,
+  MarketplaceCategoryDto,
+  CreateMarketplaceCategoryDto,
+  UpdateMarketplaceCategoryDto,
+  LocalSupplierCategoryMarketplaceMapDto,
   CheckFeedCollisionDto,
   FeedCollisionResultDto,
 } from '@smartfeed/shared';
@@ -88,7 +93,7 @@ export interface LocalDbCommandMap {
   db_update_supplier: { args: { id: string; payload: UpdateSupplierDto }; result: SupplierDto };
   db_delete_supplier: { args: { id: string }; result: boolean };
 
-  // Supplier Categories
+  // Supplier Categories & Marketplace Reference Directory
   db_get_supplier_categories: {
     args: { supplierId: string; search?: string };
     result: SupplierCategoryRuleDto[];
@@ -107,8 +112,48 @@ export interface LocalDbCommandMap {
       categoryId: string;
       marginPercent?: number | null;
       fixedMarkup?: number | null;
+      payload?: UpdateSupplierCategoryRuleDto;
     };
     result: SupplierCategoryRuleDto;
+  };
+  db_get_marketplace_categories: {
+    args: { marketplaceCode?: string; search?: string };
+    result: MarketplaceCategoryDto[];
+  };
+  db_create_marketplace_category: {
+    args: { payload: CreateMarketplaceCategoryDto };
+    result: MarketplaceCategoryDto;
+  };
+  db_update_marketplace_category: {
+    args: { id: string; payload: UpdateMarketplaceCategoryDto };
+    result: MarketplaceCategoryDto;
+  };
+  db_import_marketplace_categories: {
+    args: { items: CreateMarketplaceCategoryDto[] };
+    result: { importedCount: number };
+  };
+  db_auto_map_supplier_categories: {
+    args: { supplierId: string; marketplaceCode?: string };
+    result: { mappedCount: number; categories: SupplierCategoryRuleDto[] };
+  };
+  db_get_supplier_category_marketplace_maps: {
+    args: { supplierCategoryRuleId?: string };
+    result: LocalSupplierCategoryMarketplaceMapDto[];
+  };
+  db_upsert_supplier_category_marketplace_map: {
+    args: {
+      payload: Partial<LocalSupplierCategoryMarketplaceMapDto> & {
+        supplierCategoryRuleId: string;
+        marketplaceCode: string;
+        externalCategoryId: string;
+        externalCategoryName: string;
+      };
+    };
+    result: LocalSupplierCategoryMarketplaceMapDto;
+  };
+  db_delete_supplier_category_marketplace_map: {
+    args: { supplierCategoryRuleId: string; marketplaceCode: string };
+    result: void;
   };
 
   // Pricing Rules

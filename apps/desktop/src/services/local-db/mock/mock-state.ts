@@ -1,13 +1,16 @@
-import type {
-  SupplierDto,
-  SupplierPricingRuleDto,
-  ExportChannelDto,
-  ExportChannelPricingRuleDto,
-  ProductDto,
-  FeedSourceDto,
-  SupplierCategoryRuleDto,
-  SupplierSyncSettingDto,
-  SupplierSyncLogDto,
+import {
+  type SupplierDto,
+  type SupplierPricingRuleDto,
+  type ExportChannelDto,
+  type ExportChannelPricingRuleDto,
+  type ProductDto,
+  type FeedSourceDto,
+  type SupplierCategoryRuleDto,
+  type MarketplaceCategoryDto,
+  type LocalSupplierCategoryMarketplaceMapDto,
+  type SupplierSyncSettingDto,
+  type SupplierSyncLogDto,
+  SEED_MARKETPLACE_CATEGORIES,
 } from '@smartfeed/shared';
 
 export interface MockDbCounters {
@@ -21,6 +24,8 @@ export interface MockDbState {
   suppliers: SupplierDto[];
   pricingRules: Map<string, SupplierPricingRuleDto[]>;
   supplierCategories: Map<string, SupplierCategoryRuleDto[]>;
+  marketplaceCategories: MarketplaceCategoryDto[];
+  supplierCategoryMarketplaceMaps: Map<string, LocalSupplierCategoryMarketplaceMapDto[]>;
   syncSettings: Map<string, SupplierSyncSettingDto>;
   syncLogs: Map<string, SupplierSyncLogDto[]>;
   exportChannels: ExportChannelDto[];
@@ -35,6 +40,8 @@ export function createInitialState(): MockDbState {
     suppliers: [],
     pricingRules: new Map(),
     supplierCategories: new Map(),
+    marketplaceCategories: [...SEED_MARKETPLACE_CATEGORIES],
+    supplierCategoryMarketplaceMaps: new Map(),
     syncSettings: new Map(),
     syncLogs: new Map(),
     exportChannels: [],
@@ -76,6 +83,27 @@ export function syncCounters(state: MockDbState): void {
     const feeds = state.feedSources.get(p.supplierId) || [];
     return feeds.some((f) => f.id === p.feedSourceId);
   });
+
+  // DB-REF-03: "Нема постачальника / нема фіда — нема категорій"
+  // Prune any orphan categories without valid supplier or active feed
+  for (const [supplierId, cats] of Array.from(state.supplierCategories.entries())) {
+    if (!supplierId || !state.suppliers.some((s) => s.id === supplierId)) {
+      state.supplierCategories.delete(supplierId);
+      continue;
+    }
+    const feeds = state.feedSources.get(supplierId) || [];
+    if (feeds.length === 0) {
+      state.supplierCategories.delete(supplierId);
+      continue;
+    }
+    const activeFeedIds = new Set(feeds.map((f) => f.id));
+    const validCats = cats.filter((c) => !c.feedSourceId || activeFeedIds.has(c.feedSourceId));
+    if (validCats.length === 0) {
+      state.supplierCategories.delete(supplierId);
+    } else {
+      state.supplierCategories.set(supplierId, validCats);
+    }
+  }
 
   let feedsCount = 0;
   for (const sources of state.feedSources.values()) {

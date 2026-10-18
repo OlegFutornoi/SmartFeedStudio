@@ -122,7 +122,7 @@ export function WizardStepSource({
                 setSourceType('URL');
                 onFileSelect('', '');
                 setFeedUrl(TEST_LIVOLO_URL);
-                setFeedName?.('livolo.kiev.ua (products_feed.xml)');
+                setFeedName?.(formatFeedTitle(TEST_LIVOLO_URL));
               }}
               className="h-6 px-2 text-2xs text-muted-foreground hover:text-foreground hover:bg-muted flex items-center gap-1 rounded-md"
             >

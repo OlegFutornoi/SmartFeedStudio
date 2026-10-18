@@ -22,8 +22,10 @@ import { PageGuidesModule } from '@/modules/page-guides/page-guides.module';
 import { SuppliersModule } from '@/modules/suppliers/suppliers.module';
 import { CurrenciesModule } from '@/modules/currencies/currencies.module';
 import { AiModule } from '@/modules/ai/ai.module';
+import { HealthController } from '@/common/controllers/health.controller';
 
 @Module({
+  controllers: [HealthController],
   imports: [
     // Error Monitoring (no-op when SENTRY_DSN is not configured)
     SentryModule.forRoot(),

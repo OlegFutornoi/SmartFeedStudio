@@ -216,7 +216,7 @@ export async function setupFeedIngestionMocks(page: Page) {
         collisionType: 'NONE',
         canonicalUrl: 'https://livolo.kiev.ua/products_feed.xml',
         urlFingerprint: 'f3b890a8275685718a7c293782b3d6447cbe22b513364f3d13264c8d504285b7',
-        suggestedFeedName: 'livolo.kiev.ua (products_feed.xml)',
+        suggestedFeedName: 'livolo.kiev.ua',
         messageUk: 'Фід унікальний. Колізій не виявлено.',
         messageEn: 'Feed is unique. No collisions detected.',
       }),

@@ -193,6 +193,62 @@ describe('Suppliers & Multi-Currency Management (E2E)', () => {
     expect(listRes.body.length).toBe(0);
   });
 
+  it('8. Local-first decoupling — /api/suppliers/marketplace-categories is decoupled from backend (strictly client-side)', async () => {
+    await request(app.getHttpServer())
+      .get('/api/suppliers/marketplace-categories?marketplaceCode=ROZETKA')
+      .set('Authorization', `Bearer ${userToken}`)
+      .expect(404);
+  });
+
+  it('9. PATCH & GET /api/suppliers/:id/categories/:categoryId — maps category with mutually exclusive markup (% vs ₴)', async () => {
+    const mapRzRes = await request(app.getHttpServer())
+      .patch(`/api/suppliers/${createdSupplierId}/categories/cat_switches_elios`)
+      .set('Authorization', `Bearer ${userToken}`)
+      .send({
+        name: 'Черные выключатели ELIOS в стеклянной 2.5D рамке',
+        marginPercent: 35,
+        commissionPercent: 12,
+        marketplaceCode: 'ROZETKA',
+        externalCategoryId: '4662497',
+        externalCategoryName: 'Розумні вимикачі',
+      })
+      .expect(200);
+
+    expect(mapRzRes.body.markupType).toBe('PERCENT');
+    expect(mapRzRes.body.marginPercent).toBe(35);
+    expect(mapRzRes.body.fixedMarkup).toBeNull();
+    expect(mapRzRes.body.commissionPercent).toBe(12);
+    expect(mapRzRes.body.externalCategoryId).toBe('4662497');
+    expect(mapRzRes.body.externalCategoryName).toBe('Розумні вимикачі');
+    expect(mapRzRes.body.marketplaceMappings?.ROZETKA?.externalCategoryId).toBe('4662497');
+
+    const fixedRes = await request(app.getHttpServer())
+      .patch(`/api/suppliers/${createdSupplierId}/categories/cat_switches_elios`)
+      .set('Authorization', `Bearer ${userToken}`)
+      .send({
+        markupType: 'FIXED',
+        fixedMarkup: 150,
+      })
+      .expect(200);
+
+    expect(fixedRes.body.markupType).toBe('FIXED');
+    expect(fixedRes.body.fixedMarkup).toBe(150);
+    expect(fixedRes.body.marginPercent).toBeNull();
+
+    const getRes = await request(app.getHttpServer())
+      .get(`/api/suppliers/${createdSupplierId}/categories`)
+      .set('Authorization', `Bearer ${userToken}`)
+      .expect(200);
+
+    const cat = getRes.body.find(
+      (c: { feedCategoryId: string }) => c.feedCategoryId === 'cat_switches_elios',
+    );
+    expect(cat).toBeDefined();
+    expect(cat.markupType).toBe('FIXED');
+    expect(cat.fixedMarkup).toBe(150);
+    expect(cat.marginPercent).toBeNull();
+  });
+
   it('10. DELETE /api/suppliers/:id — cascades and deletes supplier cleanly', async () => {
     await request(app.getHttpServer())
       .delete(`/api/suppliers/${createdSupplierId}`)

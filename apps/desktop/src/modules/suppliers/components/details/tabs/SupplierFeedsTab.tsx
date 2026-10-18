@@ -63,7 +63,7 @@ export const SupplierFeedsTab: React.FC<SupplierFeedsTabProps> = ({
 
   const handleDeleteSource = async (sourceId: string) => {
     try {
-      await deleteSupplierFeedSource(supplier.id, sourceId, token || undefined, false);
+      await deleteSupplierFeedSource(supplier.id, sourceId, token || undefined, true);
       setSources((prev) => prev.filter((s) => s.id !== sourceId));
       onRefreshSupplier();
     } catch (err) {

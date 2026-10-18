@@ -132,7 +132,7 @@ export async function setupSuppliersFeedsRoutes(page: Page) {
     await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify([]) });
   });
 
-  await page.route('**/api/feeds/suppliers/sup_test_1/sources', async (route) => {
+  await page.route(/\/api\/feeds\/suppliers\/([^/?#]+)\/sources(\?|$)/, async (route) => {
     await route.fulfill({
       status: 200,
       contentType: 'application/json',
@@ -224,5 +224,18 @@ export async function setupSuppliersFeedsRoutes(page: Page) {
       contentType: 'application/json',
       body: JSON.stringify({ updatedCount: 2 }),
     });
+  });
+
+  await page.route(/\/api\/suppliers\/([^/?#]+)\/categories\/([^/?#]+)$/, async (route) => {
+    if (route.request().method() === 'PATCH') {
+      const payload = route.request().postDataJSON() || {};
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ id: 'scat_test_1', ...payload }),
+      });
+      return;
+    }
+    await route.fallback();
   });
 }

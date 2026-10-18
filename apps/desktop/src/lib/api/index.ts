@@ -5,6 +5,7 @@ export * from '@/lib/api/auth';
 export * from '@/lib/api/licenses';
 export * from '@/lib/api/organizations';
 export * from '@/lib/api/suppliers';
+export * from '@/lib/api/supplier-categories';
 export * from '@/lib/api/feeds';
 export * from '@/lib/api/feed-sources';
 export * from '@/lib/api/supplier-sync';
@@ -44,4 +45,9 @@ export type {
   CreateExportChannelPricingRuleDto,
   PriceSimulationRequestDto,
   PriceSimulationResultDto,
+  SupplierCategoryRuleDto,
+  UpdateSupplierCategoryRuleDto,
+  MarketplaceCategoryDto,
+  CreateMarketplaceCategoryDto,
+  UpdateMarketplaceCategoryDto,
 } from '@smartfeed/shared';

@@ -21,6 +21,11 @@ import type {
   UpdateProductImageOrderDto,
   DeleteProductImageResultDto,
   SupplierCategoryRuleDto,
+  UpdateSupplierCategoryRuleDto,
+  MarketplaceCategoryDto,
+  CreateMarketplaceCategoryDto,
+  UpdateMarketplaceCategoryDto,
+  LocalSupplierCategoryMarketplaceMapDto,
   CheckFeedCollisionDto,
   FeedCollisionResultDto,
 } from '@smartfeed/shared';
@@ -82,7 +87,7 @@ export class MockDatabaseDriver {
     mock.updateSupplier(this.state, id, p);
   public deleteSupplier = (id: string): boolean => mock.deleteSupplier(this.state, id);
 
-  // Supplier Categories
+  // Supplier Categories & Marketplace Reference Directory
   public getSupplierCategories = (supplierId: string, search?: string): SupplierCategoryRuleDto[] =>
     mock.getSupplierCategories(this.state, supplierId, search);
   public toggleSupplierCategory = (
@@ -95,10 +100,35 @@ export class MockDatabaseDriver {
   public updateSupplierCategoryRule = (
     sId: string,
     cId: string,
-    margin?: number | null,
+    marginOrPayload?: number | null | UpdateSupplierCategoryRuleDto,
     markup?: number | null,
   ): SupplierCategoryRuleDto =>
-    mock.updateSupplierCategoryRule(this.state, sId, cId, margin, markup);
+    mock.updateSupplierCategoryRule(this.state, sId, cId, marginOrPayload, markup);
+  public getMarketplaceCategories = (
+    marketplaceCode?: string,
+    search?: string,
+  ): MarketplaceCategoryDto[] => mock.getMarketplaceCategories(this.state, marketplaceCode, search);
+  public createMarketplaceCategory = (p: CreateMarketplaceCategoryDto): MarketplaceCategoryDto =>
+    mock.createMarketplaceCategory(this.state, p);
+  public updateMarketplaceCategory = (
+    id: string,
+    p: UpdateMarketplaceCategoryDto,
+  ): MarketplaceCategoryDto => mock.updateMarketplaceCategory(this.state, id, p);
+  public importMarketplaceCategories = (
+    items: CreateMarketplaceCategoryDto[],
+  ): { importedCount: number } => mock.importMarketplaceCategories(this.state, items);
+  public autoMapSupplierCategories = (sId: string, marketplaceCode?: string) =>
+    mock.autoMapSupplierCategories(this.state, sId, marketplaceCode);
+  public getSupplierCategoryMarketplaceMaps = (
+    sId?: string,
+  ): LocalSupplierCategoryMarketplaceMapDto[] =>
+    mock.getSupplierCategoryMarketplaceMaps(this.state, sId);
+  public upsertSupplierCategoryMarketplaceMap = (
+    p: Parameters<typeof mock.upsertSupplierCategoryMarketplaceMap>[1],
+  ): LocalSupplierCategoryMarketplaceMapDto =>
+    mock.upsertSupplierCategoryMarketplaceMap(this.state, p);
+  public deleteSupplierCategoryMarketplaceMap = (sId: string, marketplaceCode: string): void =>
+    mock.deleteSupplierCategoryMarketplaceMap(this.state, sId, marketplaceCode);
 
   // Pricing Rules
   public getPricingRules = (sId: string): SupplierPricingRuleDto[] =>

@@ -1,23 +1,47 @@
 {
-  "taskId": "task-2026-10-18-marketplace-category-mapping",
-  "activePlan": "plans/active/marketplace_category_mapping_and_ui_plan.md",
-  "title": "Довідник категорій маркетплейсів (rz_id / portal_id), мапінг категорій постачальника, комісії та редизайн вкладки «Категорії»",
-  "currentStage": "Stage 2 - Planning & Architecture (Awaiting Approval)",
-  "currentTask": "Досліджено вимоги маркетплейсів (Rozetka rz_id, Prom.ua portal_id, комісії), зібрано перелік реальних категорій Rozetka та спроектовано план реалізації",
-  "currentStep": "Очікування підтвердження плану користувачем перед початком кодування (PLAN-01)",
-  "status": "READY_FOR_REVIEW",
-  "assignedAgent": "@agents_planner",
+  "taskId": "task-2026-10-18-local-first-marketplace-categories-decoupling",
+  "activePlan": "plans/completed/local_first_user_isolated_marketplace_categories_plan.md",
+  "title": "Перенесення 2 таблиць маркетплейсів у суто локальну базу даних користувача (Local-First Decoupling)",
+  "currentStage": "Stage 8 - Documentation, State Persistence & Plan Completion",
+  "currentTask": "Каскадне видалення категорій та товарів при видаленні фідів постачальника (DB-REF-01, DB-REF-03)",
+  "currentStep": "Виправлено та верифіковано (100% PASS)",
+  "status": "COMPLETED",
+  "assignedAgent": "@agents_backend",
   "completedTasks": [
-    "Досліджено через Perplexity Agent API та веб-пошук специфікації XML-мапінгу категорій Rozetka (rz_id), Prom.ua (portal_id), Епіцентр та правила нарахування комісій за категоріями",
-    "Зібрано стартовий довідник із 26 реальних кінцевих категорій Rozetka з верифікованими rz_id (зокрема 4674585 Зарядні станції, 4662497 Розумні вимикачі, 4629471 Вимикачі, 4629473 Розетки, 4631383 Рамки, 80003 Смартфони, 4626998 УМБ)",
-    "Спроектовано схему таблиці marketplace_categories та розширення supplier_category_rules + редизайн вкладки Категорії у plans/active/marketplace_category_mapping_and_ui_plan.md"
+    "Виправлено передачу deleteProducts = true у SupplierFeedsTab.tsx при підтвердженні видалення фіда",
+    "Реалізовано каскадне видалення категорій у mock-feeds.ts (якщо фідів 0 — видаляються всі категорії постачальника; якщо залишаються інші фіди — видаляються тільки категорії видаленого фіда)",
+    "Додано інваріант DB-REF-03 у mock-supplier-categories.ts: якщо у постачальника 0 фідів — автоматично повертається порожній список []",
+    "Додано очищення категорій видалених фідів у syncCounters (mock-state.ts) для автоматичного виправлення застарілих даних у localStorage",
+    "Додано каскадне видалення категорій у Rust/SQLite (src-tauri/src/db/feeds.rs)",
+    "Успішно верифіковано Rust компіляцію, TypeScript typecheck, i18n parity та інваріанти проекту"
   ],
-  "nextActions": [
-    "Після команди користувача («починай» / «реалізуй») виконати Slice 1–4: контракти @smartfeed/shared, Prisma + NestJS CQRS, локальна БД з авто-мапінгом та новий 6-колонковий UI вкладки «Категорії»"
+  "nextActions": [],
+  "modifiedFiles": [
+    "apps/desktop/src/modules/suppliers/components/details/tabs/SupplierFeedsTab.tsx",
+    "apps/desktop/src/services/local-db/mock/mock-feeds.ts",
+    "apps/desktop/src/services/local-db/mock/mock-supplier-categories.ts",
+    "apps/desktop/src/services/local-db/mock/mock-state.ts",
+    "apps/desktop/src-tauri/src/db/feeds.rs",
+    "services/backend-api/prisma/schema.prisma",
+    "services/backend-api/src/modules/suppliers/suppliers.controller.ts",
+    "services/backend-api/src/modules/suppliers/commands/handlers/update-supplier-category.handler.ts",
+    "services/backend-api/src/modules/suppliers/queries/get-supplier-categories.handler.ts",
+    "services/backend-api/test/suppliers.e2e-spec.ts",
+    "packages/shared/src/dtos/supplier-category.dto.ts",
+    "apps/desktop/src-tauri/src/db/schema.rs",
+    "apps/desktop/src/services/local-db/types.ts",
+    "apps/desktop/src/services/local-db/suppliers.service.ts",
+    "apps/desktop/src/services/local-db/mock-driver.ts",
+    "apps/desktop/src/services/local-db/mock-executor.ts",
+    "apps/desktop/src/services/local-db/mock/mock-state.ts",
+    "apps/desktop/src/services/local-db/mock/mock-storage.ts",
+    "apps/desktop/src/services/local-db/mock/mock-marketplace-categories.ts",
+    "apps/desktop/src/lib/api/supplier-categories.ts",
+    "plans/completed/local_first_user_isolated_marketplace_categories_plan.md",
+    "plans/README.md"
   ],
-  "modifiedFiles": ["plans/active/marketplace_category_mapping_and_ui_plan.md", "plans/README.md"],
   "contextSummary": {
-    "branch": "feat/feed-wizard-modern-redesign",
-    "goal": "Create marketplace_categories table seeded with real Rozetka rz_id categories, enable mapping supplier categories to marketplace category name + ID + commission %, and redesign SupplierCategoriesTab UI."
+    "branch": "feat/marketplace-category-mapping",
+    "goal": "Both marketplace_categories and supplier_category_marketplace_maps transferred to local user database with strict user_id scoping, completely removed from PostgreSQL admin database."
   }
 }

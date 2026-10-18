@@ -480,18 +480,23 @@ model Supplier {
 }
 
 model SupplierCategoryRule {
-  id             String    @id @default(cuid())
-  supplierId     String    @map("supplier_id")
-  supplier       Supplier  @relation(fields: [supplierId], references: [id], onDelete: Cascade)
-  feedCategoryId String    @map("feed_category_id")
-  name           String
-  parentId       String?   @map("parent_id")
-  isActive       Boolean   @default(true) @map("is_active")
-  marginPercent  Decimal?  @db.Decimal(5, 2) @map("margin_percent")
-  fixedMarkup    Decimal?  @db.Decimal(10, 2) @map("fixed_markup")
-  productCount   Int       @default(0) @map("product_count")
-  createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt      DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  id                   String    @id @default(cuid())
+  supplierId           String    @map("supplier_id")
+  supplier             Supplier  @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+  feedCategoryId       String    @map("feed_category_id")
+  name                 String
+  parentId             String?   @map("parent_id")
+  isActive             Boolean   @default(true) @map("is_active")
+  markupType           String    @default("PERCENT") @map("markup_type")
+  marginPercent        Decimal?  @db.Decimal(5, 2) @map("margin_percent")
+  fixedMarkup          Decimal?  @db.Decimal(10, 2) @map("fixed_markup")
+  commissionPercent    Decimal?  @db.Decimal(5, 2) @map("commission_percent")
+  marketplaceCode      String?   @default("ROZETKA") @map("marketplace_code")
+  externalCategoryId   String?   @map("external_category_id")
+  externalCategoryName String?   @map("external_category_name")
+  productCount         Int       @default(0) @map("product_count")
+  createdAt            DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt            DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
 
   @@unique([supplierId, feedCategoryId])
   @@index([supplierId])
