@@ -113,8 +113,8 @@ export class UpdateSupplierCategoryHandler implements ICommandHandler<UpdateSupp
           update: data,
         });
 
-    const mpCode = (dto.marketplaceCode || updated.marketplaceCode || 'ROZETKA').toUpperCase();
     const mappingsRecord: Record<string, unknown> = {};
+
     if (updated.marketplaceCode && updated.externalCategoryId) {
       mappingsRecord[updated.marketplaceCode] = {
         marketplaceCode: updated.marketplaceCode,

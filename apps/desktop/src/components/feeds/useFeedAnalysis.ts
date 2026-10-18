@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { FeedCollisionResultDto, FeedCollisionType, FeedSourceType } from '@smartfeed/shared';
 import { analyzeFeedUrl, analyzeFeedContent, type FeedAnalysisResult } from '@/lib/api';
 import { getFeedAnalysisErrorMessage } from '@/components/feeds/feedErrorMessages';
-import { formatFeedTitle } from '@/lib/formatters';
+import { generateSupplierFeedTitle } from '@/lib/formatters';
 import { localDb } from '@/services/local-db';
 
 interface UseFeedAnalysisOptions {
@@ -13,6 +13,8 @@ interface UseFeedAnalysisOptions {
   fileName: string | null;
   fileContent: string | null;
   selectedSupplierId?: string;
+  supplierName?: string;
+  existingFeedNames?: string[];
   token?: string | null;
   onCategoriesDetected?: (categoryIds: string[]) => void;
 }
@@ -25,6 +27,8 @@ export function useFeedAnalysis({
   fileName,
   fileContent,
   selectedSupplierId,
+  supplierName,
+  existingFeedNames,
   token,
   onCategoriesDetected,
 }: UseFeedAnalysisOptions) {
@@ -59,8 +63,8 @@ export function useFeedAnalysis({
         return null;
       }
 
-      const name =
-        targetName ?? feedName ?? (effectiveUrl ? formatFeedTitle(effectiveUrl) : fName || '');
+      const fallbackName = generateSupplierFeedTitle(supplierName, existingFeedNames);
+      const name = targetName ?? (feedName || fallbackName);
       const content = targetFileContent ?? fileContent;
 
       setIsCheckingCollision(true);
@@ -145,8 +149,7 @@ export function useFeedAnalysis({
       }
     }
 
-    const generatedName =
-      activeType === 'FILE' ? fileName || 'Каталог товарів' : formatFeedTitle(targetUrl);
+    const generatedName = generateSupplierFeedTitle(supplierName, existingFeedNames);
 
     const effectiveName = feedName || generatedName;
     if (!feedName) {

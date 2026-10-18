@@ -15,8 +15,17 @@ export async function getSupplierCategories(
   token?: string,
   search?: string,
 ): Promise<SupplierCategoryRuleDto[]> {
+  // 1. Verify active feed sources for this supplier (DB-REF-03: "Нема фіда — нема категорій")
+  const feeds = await localDb.feeds.getSupplierFeedSources(supplierId);
+  if (!feeds || feeds.length === 0) {
+    return [];
+  }
+
+  const activeFeedIds = new Set(feeds.map((f) => f.id));
+
   if (isTauri()) {
-    return localDb.suppliers.getSupplierCategories(supplierId, search);
+    const local = await localDb.suppliers.getSupplierCategories(supplierId, search);
+    return (local || []).filter((c) => !c.feedSourceId || activeFeedIds.has(c.feedSourceId));
   }
 
   let remoteRules: SupplierCategoryRuleDto[] = [];
@@ -36,10 +45,13 @@ export async function getSupplierCategories(
   }
 
   const localCategories = await localDb.suppliers.getSupplierCategories(supplierId, search);
+  const validLocal = (localCategories || []).filter(
+    (c) => !c.feedSourceId || activeFeedIds.has(c.feedSourceId),
+  );
 
-  // If we have local categories, merge them with remote rules so we preserve real feed category names and product counts!
-  if (localCategories && localCategories.length > 0) {
-    if (remoteRules.length === 0) return localCategories;
+  // If we have local categories for active feeds, merge them with remote rules so we preserve real feed category names and product counts!
+  if (validLocal.length > 0) {
+    if (remoteRules.length === 0) return validLocal;
 
     const remoteMap = new Map<string, SupplierCategoryRuleDto>();
     for (const r of remoteRules) {
@@ -47,7 +59,7 @@ export async function getSupplierCategories(
       if (r.feedCategoryId) remoteMap.set(r.feedCategoryId, r);
     }
 
-    return localCategories.map((local) => {
+    return validLocal.map((local) => {
       const match =
         remoteMap.get(local.id) ||
         remoteMap.get(local.feedCategoryId) ||
@@ -79,19 +91,7 @@ export async function getSupplierCategories(
     });
   }
 
-  // If localCategories is empty, sanitize remoteRules before returning
-  return remoteRules.map((r) => {
-    const cleanFeedCatId = r.feedCategoryId.startsWith('scat_')
-      ? r.feedCategoryId.split('_')[2] || r.feedCategoryId
-      : r.feedCategoryId;
-    const cleanName = r.name.startsWith('scat_')
-      ? r.externalCategoryName ||
-        (cleanFeedCatId && !cleanFeedCatId.startsWith('scat_')
-          ? `Категорія #${cleanFeedCatId}`
-          : 'Загальна категорія')
-      : r.name;
-    return { ...r, name: cleanName, feedCategoryId: cleanFeedCatId };
-  });
+  return [];
 }
 
 export async function toggleSupplierCategory(

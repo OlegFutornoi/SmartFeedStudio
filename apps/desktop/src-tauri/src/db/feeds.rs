@@ -277,6 +277,14 @@ pub fn delete_feed_source(conn: &Connection, id: &str, delete_products: bool) ->
                     params![sup_id, id],
                 )?;
                 deleted += extra_deleted;
+                let _ = conn.execute(
+                    "DELETE FROM local_supplier_categories WHERE supplier_id = ?1 AND feed_source_id = ?2",
+                    params![sup_id, id],
+                );
+                let _ = conn.execute(
+                    "DELETE FROM local_supplier_category_marketplace_maps WHERE supplier_category_rule_id NOT IN (SELECT id FROM local_supplier_categories)",
+                    [],
+                );
             }
         }
     }

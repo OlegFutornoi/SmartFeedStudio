@@ -58,7 +58,13 @@ export function useSupplierCategoriesState(
         getSupplierFeedSources(supplierId, token || undefined),
       ]);
       setMarketplaceCatalog(mpData && mpData.length > 0 ? mpData : SEED_MARKETPLACE_CATEGORIES);
-      setCategories(catData || []);
+      const activeFeedIds = new Set((feedsData || []).map((f) => f.id));
+      const validCategories =
+        !feedsData || feedsData.length === 0
+          ? []
+          : (catData || []).filter((c) => !c.feedSourceId || activeFeedIds.has(c.feedSourceId));
+
+      setCategories(validCategories);
       setFeedSources(feedsData || []);
     } catch (err) {
       console.warn('[useSupplierCategoriesState:loadData] Error:', err);

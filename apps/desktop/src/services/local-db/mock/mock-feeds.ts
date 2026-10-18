@@ -1,6 +1,6 @@
 import type { FeedSourceDto } from '@smartfeed/shared';
 import { FeedFormat, FeedSourceType, areFeedUrlsEquivalent } from '@smartfeed/shared';
-import { formatFeedTitle } from '@/lib/formatters';
+import { generateSupplierFeedTitle } from '@/lib/formatters';
 import type { MockDbState } from '@/services/local-db/mock/mock-state';
 import { syncCounters } from '@/services/local-db/mock/mock-state';
 import { getSupplierById } from '@/services/local-db/mock/mock-suppliers';
@@ -25,7 +25,19 @@ export interface CreateFeedSourcePayload {
 }
 
 export function getSupplierFeedSources(state: MockDbState, supplierId: string): FeedSourceDto[] {
-  return state.feedSources.get(supplierId) || [];
+  const byId = state.feedSources.get(supplierId);
+  if (byId && byId.length > 0) return byId;
+
+  const supplier = getSupplierById(state, supplierId);
+  if (supplier && supplier.id !== supplierId) {
+    const bySupId = state.feedSources.get(supplier.id);
+    if (bySupId && bySupId.length > 0) return bySupId;
+  }
+  if (supplier?.name) {
+    const byName = state.feedSources.get(supplier.name);
+    if (byName && byName.length > 0) return byName;
+  }
+  return [];
 }
 
 export function getAllFeedSources(state: MockDbState): FeedSourceDto[] {
@@ -52,7 +64,9 @@ export function createFeedSource(
   }
 
   const supplierSources = state.feedSources.get(supplierId) || [];
-  const cleanName = formatFeedTitle(payload.name, payload.url) || 'Оновлений прайс-лист';
+  const cleanName =
+    (payload.name && payload.name.trim()) ||
+    generateSupplierFeedTitle(supplier.name, supplierSources);
 
   // FEED-DEDUP-01: Check if feed already exists for this supplier (by id, fingerprint, url or file name)
   const existingFeedIndex = supplierSources.findIndex(
@@ -203,11 +217,19 @@ export function deleteFeedSource(
 
   // 3. Cascade cleanup associated categories
   const remainingFeeds = state.feedSources.get(supplierId) || [];
+  const sup = getSupplierById(state, supplierId);
   if (remainingFeeds.length === 0) {
     state.supplierCategories.delete(supplierId);
+    if (sup) {
+      state.supplierCategories.delete(sup.id);
+      if (sup.name) state.supplierCategories.delete(sup.name);
+    }
   } else {
     const remainingFeedIds = new Set(remainingFeeds.map((f) => f.id));
-    const currentCats = state.supplierCategories.get(supplierId) || [];
+    const currentCats =
+      state.supplierCategories.get(supplierId) ||
+      (sup ? state.supplierCategories.get(sup.id) : undefined) ||
+      [];
     const filteredCats = currentCats.filter((c) => {
       if (c.feedSourceId === sourceId) return false;
       if (c.feedSourceId && !remainingFeedIds.has(c.feedSourceId)) return false;
@@ -215,8 +237,15 @@ export function deleteFeedSource(
     });
     if (filteredCats.length === 0) {
       state.supplierCategories.delete(supplierId);
+      if (sup) {
+        state.supplierCategories.delete(sup.id);
+        if (sup.name) state.supplierCategories.delete(sup.name);
+      }
     } else {
       state.supplierCategories.set(supplierId, filteredCats);
+      if (sup && sup.id !== supplierId) {
+        state.supplierCategories.set(sup.id, filteredCats);
+      }
     }
   }
 

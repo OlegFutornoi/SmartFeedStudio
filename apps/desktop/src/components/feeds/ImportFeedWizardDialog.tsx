@@ -55,6 +55,8 @@ export function ImportFeedWizardDialog({
     isQuotaExceeded,
     isFeedLimitReached,
     localSuppliers,
+    selectedSupplier,
+    existingFeedNames,
     isCreateSupplierOpen,
     setIsCreateSupplierOpen,
     handleSaveSupplier,
@@ -128,6 +130,8 @@ export function ImportFeedWizardDialog({
                 setFeedUrl={setFeedUrl}
                 feedName={feedName}
                 setFeedName={setFeedName}
+                supplierName={selectedSupplier?.name}
+                existingFeedNames={existingFeedNames}
                 collisionResult={collisionResult}
                 isCheckingCollision={isCheckingCollision}
                 fileContent={fileContent}

@@ -33,6 +33,26 @@ interface SheetContentProps extends React.ComponentPropsWithoutRef<typeof Dialog
   overlayClassName?: string;
 }
 
+// Global tracker for active dropdown interactions (captured before any unmounts)
+let lastDropdownInteractionTime = 0;
+
+if (typeof window !== 'undefined') {
+  window.addEventListener(
+    'pointerdown',
+    () => {
+      const isAnyDropdownOpen = Boolean(
+        document.querySelector(
+          '[role="listbox"], [role="menu"], [data-radix-select-viewport], [data-radix-popper-content-wrapper], [data-radix-popover-content]',
+        ),
+      );
+      if (isAnyDropdownOpen) {
+        lastDropdownInteractionTime = Date.now();
+      }
+    },
+    { capture: true },
+  );
+}
+
 const SheetContent = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Content>,
   SheetContentProps
@@ -45,10 +65,80 @@ const SheetContent = React.forwardRef<
       overlayClassName,
       className,
       children,
+      onPointerDownOutside,
+      onInteractOutside,
       ...props
     },
     ref,
   ) => {
+    const contentRef = React.useRef<HTMLDivElement | null>(null);
+
+    const isShieldedEvent = (event: unknown): boolean => {
+      // 1. If any dropdown/select was open when this interaction started (< 800ms ago)
+      if (Date.now() - lastDropdownInteractionTime < 800) {
+        return true;
+      }
+
+      const customEvent = event as
+        { detail?: { originalEvent?: PointerEvent | MouseEvent } } | undefined;
+      const origEvent = customEvent?.detail?.originalEvent;
+
+      // 2. Geometric check: if click coordinates fall inside this sheet window
+      if (
+        origEvent &&
+        typeof origEvent.clientX === 'number' &&
+        typeof origEvent.clientY === 'number' &&
+        contentRef.current
+      ) {
+        const rect = contentRef.current.getBoundingClientRect();
+        if (
+          origEvent.clientX >= rect.left &&
+          origEvent.clientX <= rect.right &&
+          origEvent.clientY >= rect.top &&
+          origEvent.clientY <= rect.bottom
+        ) {
+          return true;
+        }
+      }
+
+      // 3. Target / portal check
+      const eventTarget = (event as { target?: EventTarget } | undefined)?.target;
+      const origTarget = (origEvent?.target || eventTarget) as HTMLElement | null;
+
+      if (
+        origTarget?.closest?.(
+          '[data-radix-popper-content-wrapper], [role="listbox"], [role="menu"], [role="dialog"], [data-radix-select-viewport], [data-radix-popover-content]',
+        ) ||
+        (contentRef.current && origTarget && contentRef.current.contains(origTarget))
+      ) {
+        return true;
+      }
+
+      // 4. Live DOM check for any active listbox/menu
+      const hasOpenDropdown = Boolean(
+        document.querySelector(
+          '[role="listbox"]:not([data-state="closed"]), [role="menu"]:not([data-state="closed"]), [data-radix-popover-content]:not([data-state="closed"])',
+        ),
+      );
+      return hasOpenDropdown;
+    };
+
+    const handlePointerDownOutside: typeof onPointerDownOutside = (event) => {
+      if (isShieldedEvent(event)) {
+        event.preventDefault();
+        return;
+      }
+      onPointerDownOutside?.(event);
+    };
+
+    const handleInteractOutside: typeof onInteractOutside = (event) => {
+      if (isShieldedEvent(event)) {
+        event.preventDefault();
+        return;
+      }
+      onInteractOutside?.(event);
+    };
+
     const sideClasses = {
       top: 'inset-x-0 top-0 border-b data-[state=closed]:slide-out-to-top data-[state=open]:slide-in-from-top',
       bottom:
@@ -75,12 +165,21 @@ const SheetContent = React.forwardRef<
       <SheetPortal>
         {!hideOverlay && <SheetOverlay className={overlayClassName} />}
         <DialogPrimitive.Content
-          ref={ref}
+          ref={(node) => {
+            contentRef.current = node;
+            if (typeof ref === 'function') {
+              ref(node);
+            } else if (ref) {
+              (ref as React.MutableRefObject<HTMLDivElement | null>).current = node;
+            }
+          }}
           className={cn(
             'fixed z-50 gap-4 bg-background p-0 shadow-2xl transition ease-in-out duration-300 data-[state=open]:animate-in data-[state=closed]:animate-out flex flex-col outline-none focus:outline-none focus-visible:outline-none ring-0 focus:ring-0 focus-visible:ring-0',
             sideClasses[side],
             className,
           )}
+          onPointerDownOutside={handlePointerDownOutside}
+          onInteractOutside={handleInteractOutside}
           {...props}
         >
           {children}
