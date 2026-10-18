@@ -92,16 +92,16 @@ export function FeedAnalysisInteractiveLoader({ isAnalyzing }: FeedAnalysisInter
 
   return (
     <div
-      className="space-y-4 animate-in fade-in-50 duration-300"
+      className="space-y-3.5 animate-in fade-in-50 duration-300"
       data-testid="feed-analysis-interactive-loader"
     >
       {/* Smart Assistant Card */}
-      <div className="rounded-xl border border-primary/20 bg-card p-4 shadow-xs space-y-4">
+      <div className="rounded-lg border border-border/60 bg-card p-4 space-y-3.5">
         {/* Header with AI Badge & Timer */}
-        <div className="flex items-center justify-between border-b border-border/60 pb-3">
-          <div className="flex items-center gap-2">
-            <div className="size-7 rounded-lg bg-primary/10 text-primary flex items-center justify-center animate-pulse">
-              <Sparkles className="size-4" />
+        <div className="flex items-center justify-between border-b border-border/50 pb-3">
+          <div className="flex items-center gap-2.5">
+            <div className="size-7 rounded-md bg-muted border border-border/60 text-primary flex items-center justify-center animate-pulse">
+              <Sparkles className="size-3.5" />
             </div>
             <div>
               <h4 className="text-xs font-semibold text-foreground flex items-center gap-1.5">
@@ -111,13 +111,13 @@ export function FeedAnalysisInteractiveLoader({ isAnalyzing }: FeedAnalysisInter
               </h4>
               <p className="text-2xs text-muted-foreground">
                 {t('suppliers:analyzingFeedProgressTitle', {
-                  defaultValue: 'Завантаження та аналіз структури фіду...',
+                  defaultValue: 'Завантаження та аналіз структури фіду…',
                 })}
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-secondary/80 text-foreground text-xs font-mono tabular-nums border border-border/60">
+          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-muted/50 text-foreground text-xs font-mono tabular-nums border border-border/60">
             <Clock className="size-3 text-muted-foreground" />
             <span>
               {t('suppliers:analyzingTimeElapsed', {
@@ -142,7 +142,7 @@ export function FeedAnalysisInteractiveLoader({ isAnalyzing }: FeedAnalysisInter
               }`}
             >
               {phase.isCompleted ? (
-                <CheckCircle2 className="size-3.5 text-primary shrink-0" />
+                <CheckCircle2 className="size-3.5 text-success shrink-0" />
               ) : phase.isActive ? (
                 <Loader2 className="size-3.5 animate-spin text-primary shrink-0" />
               ) : (
@@ -154,8 +154,8 @@ export function FeedAnalysisInteractiveLoader({ isAnalyzing }: FeedAnalysisInter
         </div>
 
         {/* Dynamic Rotating Tips Bar */}
-        <div className="rounded-lg bg-secondary/40 border border-border/50 p-2.5 flex items-start gap-2.5 text-2xs text-muted-foreground">
-          <Lightbulb className="size-3.5 text-primary shrink-0 mt-0.5" />
+        <div className="rounded-md bg-muted/30 border border-border/50 p-2.5 flex items-start gap-2.5 text-2xs text-muted-foreground">
+          <Lightbulb className="size-3.5 text-muted-foreground shrink-0 mt-0.5" />
           <div className="flex-1 transition-opacity duration-300">
             <span>{t(TIPS_KEYS[tipIndex])}</span>
           </div>
@@ -163,8 +163,8 @@ export function FeedAnalysisInteractiveLoader({ isAnalyzing }: FeedAnalysisInter
 
         {/* Long Running Alert for Huge Feeds (> 12s) */}
         {elapsedSeconds >= 12 && (
-          <div className="rounded-lg bg-muted/60 border border-border p-2.5 flex items-start gap-2 text-2xs text-foreground animate-in fade-in-50">
-            <AlertTriangle className="size-3.5 text-primary shrink-0 mt-0.5" />
+          <div className="rounded-md bg-muted/50 border border-border/60 p-2.5 flex items-start gap-2 text-2xs text-foreground animate-in fade-in-50">
+            <AlertTriangle className="size-3.5 text-muted-foreground shrink-0 mt-0.5" />
             <p>
               {t('suppliers:largeFeedTimeoutHint', {
                 defaultValue:
@@ -176,23 +176,23 @@ export function FeedAnalysisInteractiveLoader({ isAnalyzing }: FeedAnalysisInter
       </div>
 
       {/* Shimmering Skeleton of Upcoming Analysis Card (Eliminating empty void) */}
-      <div className="rounded-xl border border-border/60 bg-card p-4 space-y-4 opacity-70">
+      <div className="rounded-lg border border-border/60 bg-card p-4 space-y-4">
         <div className="flex items-center justify-between">
           <div className="h-4 w-44 rounded-md bg-muted animate-pulse" />
-          <div className="h-5 w-20 rounded-full bg-muted animate-pulse" />
+          <div className="h-5 w-20 rounded-md bg-muted animate-pulse" />
         </div>
 
         {/* 3 Metric Cards Skeleton */}
         <div className="grid grid-cols-3 gap-3">
-          <div className="p-3 rounded-lg border border-border/40 bg-secondary/20 space-y-2">
+          <div className="p-3 rounded-md border border-border/40 bg-muted/20 space-y-2">
             <div className="h-3 w-16 rounded bg-muted animate-pulse" />
             <div className="h-6 w-24 rounded bg-muted animate-pulse" />
           </div>
-          <div className="p-3 rounded-lg border border-border/40 bg-secondary/20 space-y-2">
+          <div className="p-3 rounded-md border border-border/40 bg-muted/20 space-y-2">
             <div className="h-3 w-16 rounded bg-muted animate-pulse" />
             <div className="h-6 w-14 rounded bg-muted animate-pulse" />
           </div>
-          <div className="p-3 rounded-lg border border-border/40 bg-secondary/20 space-y-2">
+          <div className="p-3 rounded-md border border-border/40 bg-muted/20 space-y-2">
             <div className="h-3 w-16 rounded bg-muted animate-pulse" />
             <div className="h-6 w-14 rounded bg-muted animate-pulse" />
           </div>
@@ -202,10 +202,10 @@ export function FeedAnalysisInteractiveLoader({ isAnalyzing }: FeedAnalysisInter
         <div className="space-y-2 pt-2 border-t border-border/40">
           <div className="h-3 w-28 rounded bg-muted animate-pulse" />
           <div className="grid grid-cols-2 gap-2">
-            <div className="h-8 rounded-lg bg-secondary/30 border border-border/30 animate-pulse" />
-            <div className="h-8 rounded-lg bg-secondary/30 border border-border/30 animate-pulse" />
-            <div className="h-8 rounded-lg bg-secondary/30 border border-border/30 animate-pulse" />
-            <div className="h-8 rounded-lg bg-secondary/30 border border-border/30 animate-pulse" />
+            <div className="h-8 rounded-md bg-muted/30 border border-border/30 animate-pulse" />
+            <div className="h-8 rounded-md bg-muted/30 border border-border/30 animate-pulse" />
+            <div className="h-8 rounded-md bg-muted/30 border border-border/30 animate-pulse" />
+            <div className="h-8 rounded-md bg-muted/30 border border-border/30 animate-pulse" />
           </div>
         </div>
       </div>

@@ -43,7 +43,7 @@ export const SupplierTableRow: React.FC<SupplierTableRowProps> = ({
   return (
     <TableRow
       key={s.id}
-      className="h-12 hover:bg-muted/40 transition-colors border-b border-border/60"
+      className="group h-12 hover:bg-muted/40 transition-colors border-b border-border/60"
       data-testid={`supplier-row-${s.id}`}
     >
       {/* Vendor Name & Code */}
@@ -128,42 +128,24 @@ export const SupplierTableRow: React.FC<SupplierTableRowProps> = ({
       {/* Industry Column */}
       {visible('industry') && (
         <TableCell className="py-2 text-xs" data-testid={`supplier-industry-${s.id}`}>
-          {s.industry ? (
-            <span
-              className="text-foreground truncate max-w-[160px] block"
-              title={s.industry || undefined}
-            >
-              {s.industry}
-            </span>
-          ) : (
-            <span
-              className="text-muted-foreground/50 italic truncate max-w-[160px] block"
-              title={t('suppliers:noIndustry', { defaultValue: 'Галузь не вказана' })}
-            >
-              {t('suppliers:noIndustry', { defaultValue: 'Галузь не вказана' })}
-            </span>
-          )}
+          <span
+            className={`truncate max-w-[160px] block ${s.industry ? 'text-foreground' : 'text-muted-foreground/50 italic'}`}
+            title={s.industry || t('suppliers:noIndustry', { defaultValue: 'Галузь не вказана' })}
+          >
+            {s.industry || t('suppliers:noIndustry', { defaultValue: 'Галузь не вказана' })}
+          </span>
         </TableCell>
       )}
 
       {/* Segment Column */}
       {visible('segment') && (
         <TableCell className="py-2 text-xs" data-testid={`supplier-segment-${s.id}`}>
-          {s.segment ? (
-            <span
-              className="text-foreground truncate max-w-[120px] block"
-              title={s.segment || undefined}
-            >
-              {s.segment}
-            </span>
-          ) : (
-            <span
-              className="text-muted-foreground/50 italic truncate max-w-[120px] block"
-              title={t('suppliers:noSegment', { defaultValue: 'Сегмент не вказано' })}
-            >
-              {t('suppliers:noSegment', { defaultValue: 'Сегмент не вказано' })}
-            </span>
-          )}
+          <span
+            className={`truncate max-w-[120px] block ${s.segment ? 'text-foreground' : 'text-muted-foreground/50 italic'}`}
+            title={s.segment || t('suppliers:noSegment', { defaultValue: 'Сегмент не вказано' })}
+          >
+            {s.segment || t('suppliers:noSegment', { defaultValue: 'Сегмент не вказано' })}
+          </span>
         </TableCell>
       )}
 
@@ -216,23 +198,23 @@ export const SupplierTableRow: React.FC<SupplierTableRowProps> = ({
               title={s.isActive ? t('suppliers:statusActive') : t('suppliers:statusInactive')}
               data-testid={`supplier-status-toggle-${s.id}`}
             >
-              {s.isActive ? (
+              <span
+                className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs w-[105px] justify-center border ${
+                  s.isActive
+                    ? 'font-semibold bg-success/15 text-success border-success/30 shadow-2xs'
+                    : 'font-medium bg-muted text-muted-foreground border-border'
+                }`}
+                data-testid="status-badge"
+              >
                 <span
-                  className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-success/15 text-success border border-success/30 shadow-2xs w-[105px] justify-center"
-                  data-testid="status-badge"
-                >
-                  <span className="size-1.5 rounded-full bg-success animate-pulse shrink-0" />
-                  {t('suppliers:statusActive', { defaultValue: 'Активний' })}
-                </span>
-              ) : (
-                <span
-                  className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-muted text-muted-foreground border border-border w-[105px] justify-center"
-                  data-testid="status-badge"
-                >
-                  <span className="size-1.5 rounded-full bg-muted-foreground/40 shrink-0" />
-                  {t('suppliers:statusInactive', { defaultValue: 'Неактивний' })}
-                </span>
-              )}
+                  className={`size-1.5 rounded-full shrink-0 ${
+                    s.isActive ? 'bg-success animate-pulse' : 'bg-muted-foreground/40'
+                  }`}
+                />
+                {s.isActive
+                  ? t('suppliers:statusActive', { defaultValue: 'Активний' })
+                  : t('suppliers:statusInactive', { defaultValue: 'Неактивний' })}
+              </span>
             </Button>
           </div>
         </TableCell>
@@ -241,6 +223,17 @@ export const SupplierTableRow: React.FC<SupplierTableRowProps> = ({
       {/* Row Actions Menu */}
       <TableCell className="pr-3.5 py-2 text-right">
         <div className="flex items-center justify-end gap-1">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => onAddFeed(s)}
+            className="size-7 text-muted-foreground hover:text-foreground opacity-70 group-hover:opacity-100 focus-visible:opacity-100 transition-opacity"
+            title={t('suppliers:actionAddFeed', { defaultValue: 'Підключити фід' })}
+            aria-label={t('suppliers:actionAddFeed', { defaultValue: 'Підключити фід' })}
+            data-testid={`supplier-card-import-btn-${s.id}`}
+          >
+            <PlusCircle className="size-3.5" />
+          </Button>
           <DropdownMenu modal={false}>
             <DropdownMenuTrigger asChild>
               <Button

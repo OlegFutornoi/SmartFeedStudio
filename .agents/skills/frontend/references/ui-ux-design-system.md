@@ -9,27 +9,26 @@ Detailed guidelines for semantic design tokens, shadcn UI components, solid stic
 All colors must be derived from HSL CSS variables configured in `index.css` / `globals.css`:
 
 ```tsx
-// ✅ CORRECT: Pure semantic tokens
-<div className="bg-card text-card-foreground border border-border rounded-xl p-6 shadow-sm">
-  <h2 className="text-foreground font-semibold text-lg">Catalog Feeds</h2>
-  <p className="text-muted-foreground text-sm">Manage your synchronized feeds</p>
+// ✅ CORRECT: Pure semantic tokens & desktop rounded-lg geometry (UI-02, UI-12)
+<div className="bg-card text-card-foreground border border-border/60 rounded-lg p-4">
+  <h2 className="text-foreground font-semibold text-sm text-balance">Catalog Feeds</h2>
+  <p className="text-muted-foreground text-xs">Manage your synchronized feeds</p>
   <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
-    <Plus className="w-4 h-4 mr-2" /> Add Feed
+    <Plus className="size-4 mr-1.5" /> Add Feed
   </Button>
 </div>
 
-// ❌ FORBIDDEN: Hardcoded palette colors
-<div className="bg-purple-600 text-white border-pink-400"> // STRICTLY FORBIDDEN
+// ❌ FORBIDDEN: Hardcoded palette colors & oversized rounded-xl/2xl
+<div className="bg-purple-600 text-white border-pink-400 rounded-2xl"> // STRICTLY FORBIDDEN
 ```
 
 ### Prohibited Palette Tokens:
 
-- Never use `purple-*`, `violet-*`, `fuchsia-*`, `pink-*`, `indigo-*`, `cyan-*` as ad-hoc styles.
-- State colors must be semantic:
+- Never use `emerald-*`, `green-*`, `amber-*`, `yellow-*`, `blue-*`, `purple-*`, `violet-*`, `fuchsia-*`, `pink-*`, `indigo-*`, `cyan-*` as ad-hoc styles.
+- State colors must be strictly semantic:
   - Error: `text-destructive`, `bg-destructive/10`, `border-destructive/20`
-  - Success: `text-emerald-500`, `bg-emerald-500/10`
-  - Warning: `text-amber-500`, `bg-amber-500/10`
-  - Neutral: `text-muted-foreground`, `bg-muted`
+  - Success (`UI-03`): `text-success`, `bg-success/15`, `border-success/30`
+  - Neutral: `text-muted-foreground`, `bg-muted`, `bg-muted/20`
 
 ---
 
@@ -179,3 +178,63 @@ feeds/
   )}
 </div>
 ```
+
+---
+
+## 6. ⚡ Modern High-Density Desktop Patterns (`UI-11` – `UI-15`)
+
+### A. Unified Hairline Matrix Instead of Box-in-Box Cards (`UI-11`, `UI-15`)
+
+```tsx
+// ✅ Single outer rounded-lg card with hairline internal dividers (zero nested borders, zero gradients)
+<div className="rounded-lg border border-border/60 bg-card overflow-hidden">
+  <div className="px-4 py-2.5 border-b border-border/60 bg-muted/20 flex items-center justify-between">
+    <h4 className="text-xs font-semibold text-foreground">{t('suppliers:title')}</h4>
+    <Badge variant="outline" className="border-success/30 bg-success/15 text-success text-3xs">
+      {t('suppliers:ready')}
+    </Badge>
+  </div>
+  <div className="grid grid-cols-1 sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-border/50">
+    {items.map((item, idx) => (
+      <div key={item.id} className={`p-3.5 ${idx >= 2 ? 'sm:border-t sm:border-border/50' : ''}`}>
+        {/* Clean slot content with neutral text-muted-foreground icons */}
+      </div>
+    ))}
+  </div>
+</div>
+```
+
+### B. Restrained Multi-Select Matrix — Zero Accent Flood (`UI-13`, `UI-14`)
+
+```tsx
+// ✅ Selected items use neutral high-contrast elevation; bg-primary is reserved strictly for the main footer CTA
+<Button
+  type="button"
+  variant="outline"
+  onClick={() => toggleCategory(cat.id)}
+  className={`h-auto justify-between px-2.5 py-2 rounded-md text-left text-xs font-normal transition-colors ${
+    isSelected
+      ? 'bg-card border-foreground/30 text-foreground font-medium hover:bg-muted/30 shadow-2xs'
+      : 'bg-muted/15 border-border/50 text-muted-foreground hover:bg-muted/30 hover:text-foreground opacity-75'
+  }`}
+>
+  <div className="flex items-center gap-2 min-w-0 flex-1">
+    <div
+      className={`size-4 rounded-sm flex items-center justify-center shrink-0 ${
+        isSelected ? 'bg-foreground text-background' : 'border border-border bg-background'
+      }`}
+    >
+      {isSelected && <Check className="size-2.5 stroke-[3]" />}
+    </div>
+    <span className="truncate">{cat.name}</span>
+  </div>
+  <span className="font-mono tabular-nums text-3xs ml-1.5 px-1.5 py-0.5 rounded-sm bg-muted/70 text-foreground shrink-0">
+    {cat.productCount} SKU
+  </span>
+</Button>
+```
+
+### C. 2-Column Control Pairing & Inline Toolbar Search (`UI-15`)
+
+- Pair compact selector cards and policy notices side-by-side (`grid grid-cols-1 md:grid-cols-12 gap-3`) so policy cards are never pushed off-screen at the bottom of a wizard step.
+- Place collection search inputs (`h-7 w-48 sm:w-56`) directly inside the card header toolbar (`px-3.5 py-2 border-b border-border/60 bg-muted/20`) alongside bulk actions (`Select All` / `Deselect All`) instead of wasting a full vertical row.

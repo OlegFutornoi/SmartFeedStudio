@@ -4,6 +4,8 @@ import { Button } from '@/components/ui/button';
 import { FeedCollisionResultDto, FeedCollisionType } from '@smartfeed/shared';
 import { FeedAnalysisResult } from '@/lib/api';
 
+const SUPPORTED_BADGES = ['XML', 'YML', 'CSV', 'XLSX'] as const;
+
 interface WizardStepSourceFileDropzoneProps {
   fileName: string | null;
   analysis?: FeedAnalysisResult | null;
@@ -51,10 +53,10 @@ export const WizardStepSourceFileDropzone: React.FC<WizardStepSourceFileDropzone
       />
 
       {fileName ? (
-        <div className="flex items-center justify-between p-2.5 rounded-xl border border-primary/30 bg-primary/5">
+        <div className="flex items-center justify-between p-2.5 rounded-lg border border-border/60 bg-muted/25">
           <div className="flex items-center gap-2.5 min-w-0">
-            <div className="size-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
-              <FileText className="size-4" />
+            <div className="size-8 rounded-md bg-card border border-border/60 text-foreground flex items-center justify-center shrink-0">
+              <FileText className="size-4 text-muted-foreground" />
             </div>
             <div className="min-w-0">
               <p className="text-xs font-medium text-foreground truncate">{fileName}</p>
@@ -71,6 +73,9 @@ export const WizardStepSourceFileDropzone: React.FC<WizardStepSourceFileDropzone
               variant="ghost"
               size="sm"
               onClick={onClearFile}
+              aria-label={t('suppliers:clearSelectedFileAria', {
+                defaultValue: 'Очистити обраний файл',
+              })}
               className="h-7 px-2 text-3xs text-muted-foreground hover:text-destructive"
               disabled={isAnalyzing}
             >
@@ -92,7 +97,7 @@ export const WizardStepSourceFileDropzone: React.FC<WizardStepSourceFileDropzone
                 {isAnalyzing ? (
                   <>
                     <Loader2 className="size-3.5 animate-spin mr-1.5" />
-                    {t('suppliers:analyzing', { defaultValue: 'Аналіз...' })}
+                    {t('suppliers:analyzing', { defaultValue: 'Аналіз…' })}
                   </>
                 ) : (
                   t('suppliers:analyzeFeed', { defaultValue: 'Аналізувати' })
@@ -103,6 +108,8 @@ export const WizardStepSourceFileDropzone: React.FC<WizardStepSourceFileDropzone
         </div>
       ) : (
         <div
+          role="button"
+          tabIndex={isAnalyzing ? -1 : 0}
           data-testid="dropzone-feed-upload"
           onDragOver={(e) => {
             e.preventDefault();
@@ -111,18 +118,37 @@ export const WizardStepSourceFileDropzone: React.FC<WizardStepSourceFileDropzone
           onDragLeave={() => setDragOver(false)}
           onDrop={onDrop}
           onClick={!isAnalyzing ? onPickFile : undefined}
-          className={`border border-dashed rounded-xl p-3 text-center transition-colors cursor-pointer flex items-center justify-center gap-2.5 ${
+          onKeyDown={(e) => {
+            if (!isAnalyzing && (e.key === 'Enter' || e.key === ' ')) {
+              e.preventDefault();
+              onPickFile();
+            }
+          }}
+          className={`border border-dashed rounded-lg px-3.5 py-2.5 transition-colors cursor-pointer flex items-center justify-between gap-3 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none ${
             dragOver
               ? 'border-primary bg-primary/5'
-              : 'border-border/70 hover:border-primary/40 bg-secondary/15 hover:bg-secondary/25'
+              : 'border-border/70 hover:border-border bg-muted/20 hover:bg-muted/40'
           }`}
         >
-          <UploadCloud className="size-4 text-muted-foreground" />
-          <span className="text-xs text-muted-foreground font-medium">
-            {t('suppliers:dragDropOrBrowse', {
-              defaultValue: 'Перетягніть XML, YML або CSV файл сюди, або натисніть для вибору',
-            })}
-          </span>
+          <div className="flex items-center gap-2.5 min-w-0">
+            <UploadCloud className="size-4 text-muted-foreground shrink-0" />
+            <span className="text-xs text-muted-foreground font-medium truncate">
+              {t('suppliers:dragDropOrBrowse', {
+                defaultValue: 'Перетягніть XML, YML або CSV файл сюди, або натисніть для вибору',
+              })}
+            </span>
+          </div>
+
+          <div className="hidden sm:flex items-center gap-1 shrink-0">
+            {SUPPORTED_BADGES.map((fmt) => (
+              <span
+                key={fmt}
+                className="px-1.5 py-0.5 rounded bg-background border border-border/60 text-3xs font-mono text-muted-foreground"
+              >
+                .{fmt.toLowerCase()}
+              </span>
+            ))}
+          </div>
         </div>
       )}
     </div>

@@ -195,4 +195,36 @@ test.describe('Suppliers Slide-Over Drawer & Network Single-Request Optimization
     await expect(page.getByTestId('wizard-close-btn')).toBeVisible();
     await page.getByTestId('wizard-close-btn').click();
   });
+
+  test('6. Categories tab displays feed source attribution column and search filtering', async ({
+    page,
+  }) => {
+    await page.goto('/suppliers');
+    await expect(page.getByTestId('suppliers-page')).toBeVisible();
+
+    // Open drawer
+    await page.getByTestId('supplier-name-sup_test_1').click();
+    const drawer = page.getByTestId('supplier-drawer-sheet');
+    await expect(drawer).toBeVisible();
+
+    // Switch to Categories tab
+    const categoriesTab = page.getByTestId('supplier-drawer-tab-categories');
+    await categoriesTab.click();
+    await expect(page.getByTestId('supplier-categories-tab')).toBeVisible();
+
+    // Check Feed Source column is visible
+    await expect(page.getByText('Джерело фіду')).toBeVisible();
+
+    // Check Feed attribution badge is rendered with feed name
+    const feedBadge = page.getByTestId('category-feed-scat_test_1');
+    await expect(feedBadge).toBeVisible();
+    await expect(feedBadge).toContainText('Livolo Main XML');
+
+    // Check search filter works
+    const searchInput = page.getByTestId('search-category-input');
+    await expect(searchInput).toBeVisible();
+    await searchInput.fill('Сенсорні');
+    await expect(page.getByText('Сенсорні вимикачі')).toBeVisible();
+    await expect(page.getByText('Розумні розетки')).not.toBeVisible();
+  });
 });

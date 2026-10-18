@@ -89,6 +89,13 @@ export class BatchIngester {
       totalProcessed += productsToUpsert.length;
     }
 
+    // Ensure supplier categories are refreshed and populated immediately from ingested products
+    try {
+      await localDb.suppliers.getSupplierCategories(supplier.id);
+    } catch (catErr) {
+      console.warn('[BatchIngester] Failed to refresh supplier categories:', catErr);
+    }
+
     // Reactive sync event emission
     emitDataSync(['products', 'feeds', 'suppliers', 'quotas']);
 

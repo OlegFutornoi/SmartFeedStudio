@@ -1,8 +1,9 @@
 import { useState, useEffect, useMemo } from 'react';
+import type { SupplierDto } from '@smartfeed/shared';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
-  Sparkles,
+  Calculator,
   Play,
   Pause,
   ChevronLeft,
@@ -18,9 +19,13 @@ import { ReverseMarginFormulaBar } from '@/modules/feed-simulator/components/Rev
 
 interface ReverseMarginCinemaShowcaseProps {
   products: SimulatorProduct[];
+  supplier?: SupplierDto;
 }
 
-export function ReverseMarginCinemaShowcase({ products }: ReverseMarginCinemaShowcaseProps) {
+export function ReverseMarginCinemaShowcase({
+  products,
+  supplier,
+}: ReverseMarginCinemaShowcaseProps) {
   const { t } = useTranslation(['suppliers', 'common']);
   const [productIndex, setProductIndex] = useState(0);
   const [phaseIndex, setPhaseIndex] = useState(3); // default full reveal, auto-play steps 0..3
@@ -34,8 +39,8 @@ export function ReverseMarginCinemaShowcase({ products }: ReverseMarginCinemaSho
   const activeProduct = safeProducts[productIndex % safeProducts.length];
   const scenario = useMemo(() => {
     if (!activeProduct) return null;
-    return buildCinemaScenario(activeProduct);
-  }, [activeProduct]);
+    return buildCinemaScenario(activeProduct, supplier);
+  }, [activeProduct, supplier]);
 
   // Reset image error on product switch
   useEffect(() => {
@@ -75,21 +80,21 @@ export function ReverseMarginCinemaShowcase({ products }: ReverseMarginCinemaSho
   return (
     <div
       data-testid="reverse-margin-cinema-showcase"
-      className="rounded-2xl border border-primary/25 bg-gradient-to-b from-card via-card/95 to-primary/5 p-4 sm:p-5 shadow-xs space-y-4"
+      className="rounded-lg border border-border/60 bg-card overflow-hidden"
     >
       {/* Cinema Header Toolbar */}
-      <div className="flex items-center justify-between gap-3 border-b border-border/60 pb-3 flex-wrap">
-        <div className="flex items-center gap-2">
-          <div className="size-7 rounded-lg bg-primary/10 text-primary flex items-center justify-center animate-pulse">
-            <Sparkles className="size-4" />
+      <div className="px-3.5 py-2.5 border-b border-border/60 bg-muted/20 flex items-center justify-between gap-3 flex-wrap">
+        <div className="flex items-center gap-2.5 min-w-0">
+          <div className="size-7 rounded-md bg-muted border border-border/60 text-muted-foreground flex items-center justify-center shrink-0">
+            <Calculator className="size-3.5" />
           </div>
-          <div>
-            <h4 className="text-xs sm:text-sm font-semibold text-foreground flex items-center gap-1.5">
+          <div className="min-w-0">
+            <h4 className="text-xs font-semibold text-foreground truncate">
               {t('suppliers:cinemaTitle', {
                 defaultValue: 'Автономне моделювання: Як не прогоріти на маркетплейсі',
               })}
             </h4>
-            <p className="text-2xs text-muted-foreground">
+            <p className="text-2xs text-muted-foreground truncate">
               {t('suppliers:cinemaSubtitle', {
                 defaultValue:
                   'Автоматичний розрахунок зворотного відсотка рятує ваш чистий заробіток',
@@ -98,35 +103,43 @@ export function ReverseMarginCinemaShowcase({ products }: ReverseMarginCinemaSho
           </div>
         </div>
 
-        {/* Controls: Prev, Play/Pause, Next */}
-        <div className="flex items-center gap-1.5 ml-auto">
+        {/* Controls: Counter, Prev, Play/Pause, Next */}
+        <div className="flex items-center gap-1.5 ml-auto shrink-0">
+          <span className="text-2xs font-mono tabular-nums text-muted-foreground px-1.5">
+            {t('suppliers:cinemaProductCounter', {
+              current: (productIndex % safeProducts.length) + 1,
+              total: safeProducts.length,
+              defaultValue: 'Товар {{current}} з {{total}}',
+            })}
+          </span>
+
           <Button
             type="button"
             variant="ghost"
             size="icon"
             className="size-7 text-muted-foreground hover:text-foreground"
             onClick={handlePrevProduct}
-            aria-label="Previous product"
+            aria-label={t('suppliers:cinemaPrevProductAria', { defaultValue: 'Попередній товар' })}
           >
-            <ChevronLeft className="size-4" />
+            <ChevronLeft className="size-3.5" />
           </Button>
 
           <Button
             type="button"
-            variant={isPlaying ? 'default' : 'outline'}
+            variant="outline"
             size="sm"
-            className="h-7 px-2.5 text-2xs font-medium gap-1"
+            className="h-7 px-2.5 text-2xs font-medium gap-1 bg-background border-border"
             onClick={() => setIsPlaying(!isPlaying)}
             data-testid="cinema-play-pause-btn"
           >
             {isPlaying ? (
               <>
-                <Pause className="size-3" />
+                <Pause className="size-3 text-muted-foreground" />
                 <span>{t('suppliers:cinemaPause', { defaultValue: 'Пауза' })}</span>
               </>
             ) : (
               <>
-                <Play className="size-3" />
+                <Play className="size-3 text-muted-foreground" />
                 <span>{t('suppliers:cinemaPlay', { defaultValue: 'Автоплей' })}</span>
               </>
             )}
@@ -138,89 +151,93 @@ export function ReverseMarginCinemaShowcase({ products }: ReverseMarginCinemaSho
             size="icon"
             className="size-7 text-muted-foreground hover:text-foreground"
             onClick={handleNextProduct}
-            aria-label="Next product"
+            aria-label={t('suppliers:cinemaNextProductAria', { defaultValue: 'Наступний товар' })}
           >
-            <ChevronRight className="size-4" />
+            <ChevronRight className="size-3.5" />
           </Button>
         </div>
       </div>
 
-      {/* Active Product Headline on White Studio Card */}
-      <div className="flex items-center gap-3 p-3 rounded-xl bg-secondary/30 border border-border/60">
-        <div className="relative size-12 rounded-lg bg-white border border-border/60 overflow-hidden shrink-0 flex items-center justify-center p-1 shadow-2xs">
-          {!imageError && scenario.product.imageUrl ? (
-            <img
-              key={scenario.product.imageUrl}
-              src={scenario.product.imageUrl}
-              alt={scenario.product.title}
-              onError={() => setImageError(true)}
-              className="size-full object-contain"
-              data-testid="cinema-product-image"
-            />
-          ) : (
-            <ImageOff className="size-5 text-muted-foreground/60" />
-          )}
+      <div className="p-3.5 space-y-3">
+        {/* Active Product Headline */}
+        <div className="flex items-center gap-3 p-2.5 rounded-md bg-muted/20 border border-border/60">
+          <div className="relative size-10 rounded-md bg-white border border-border/60 overflow-hidden shrink-0 flex items-center justify-center p-1">
+            {!imageError && scenario.product.imageUrl ? (
+              <img
+                key={scenario.product.imageUrl}
+                src={scenario.product.imageUrl}
+                alt={scenario.product.title}
+                onError={() => setImageError(true)}
+                className="size-full object-contain"
+                data-testid="cinema-product-image"
+              />
+            ) : (
+              <ImageOff className="size-4 text-muted-foreground/60" />
+            )}
+          </div>
+
+          <div className="min-w-0 flex-1 space-y-0.5">
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <Badge
+                variant="outline"
+                className="text-3xs bg-background border-border text-foreground px-1.5 py-0 h-4"
+              >
+                {scenario.product.categoryName}
+              </Badge>
+              <Badge
+                variant="outline"
+                className="text-3xs bg-muted/50 border-border text-muted-foreground font-mono tabular-nums px-1.5 py-0 h-4"
+              >
+                {t('suppliers:cinemaCommissionBadge', {
+                  marketplace: scenario.marketplaceName,
+                  percent: scenario.marketplacePercent,
+                  defaultValue: '{{marketplace}} • {{percent}}% комісія',
+                })}
+              </Badge>
+              <span className="font-mono tabular-nums text-3xs text-muted-foreground ml-auto">
+                {scenario.product.sku}
+              </span>
+            </div>
+            <h5
+              className="text-xs font-semibold text-foreground truncate"
+              title={scenario.product.title}
+            >
+              {scenario.product.title}
+            </h5>
+          </div>
         </div>
 
-        <div className="min-w-0 flex-1 space-y-1">
-          <div className="flex items-center gap-2 flex-wrap">
-            <Badge variant="outline" className="text-3xs bg-background/80 border-border">
-              {scenario.product.categoryName}
-            </Badge>
-            <Badge
-              variant="outline"
-              className="text-3xs border-primary/30 text-primary bg-primary/10"
-            >
-              {t('suppliers:cinemaCommissionBadge', {
-                marketplace: scenario.marketplaceName,
-                percent: scenario.marketplacePercent,
-                defaultValue: '{{marketplace}} • {{percent}}% комісія',
+        {/* 4 Storytelling Visual Phases Grid */}
+        <ReverseMarginCinemaPhases
+          scenario={scenario}
+          phaseIndex={phaseIndex}
+          onSelectPhase={(idx) => {
+            setPhaseIndex(idx);
+            setIsPlaying(false);
+          }}
+        />
+
+        {/* Live Formula & Comparative Impact Bar */}
+        <ReverseMarginFormulaBar scenario={scenario} />
+
+        {/* Bottom Protection Summary Strip */}
+        <div className="px-3 py-2 rounded-md bg-success/10 border border-success/20 flex items-center justify-between gap-2 text-xs">
+          <div className="flex items-center gap-2 min-w-0">
+            <ShieldCheck className="size-3.5 text-success shrink-0" />
+            <span className="text-2xs text-foreground font-medium truncate">
+              {t('suppliers:cinemaProtectionSummary', {
+                name: scenario.marketplaceName,
+                defaultValue:
+                  'SmartFeed захищає продавця: ви отримуєте рівно запланований дохід без втрат на комісіях {{name}}.',
               })}
-            </Badge>
-            <span className="font-mono text-3xs text-muted-foreground ml-auto">
-              {scenario.product.sku}
             </span>
           </div>
-          <h5
-            className="text-xs font-semibold text-foreground truncate"
-            title={scenario.product.title}
+          <Badge
+            variant="outline"
+            className="text-3xs font-mono border-success/30 bg-success/10 text-success px-1.5 py-0 h-4 shrink-0"
           >
-            {scenario.product.title}
-          </h5>
-        </div>
-      </div>
-
-      {/* 4 Storytelling Visual Phases Grid with Active Focus and Scheme Colors */}
-      <ReverseMarginCinemaPhases
-        scenario={scenario}
-        phaseIndex={phaseIndex}
-        onSelectPhase={(idx) => {
-          setPhaseIndex(idx);
-          setIsPlaying(false);
-        }}
-      />
-
-      {/* Live Formula & Comparative Impact Bar */}
-      <ReverseMarginFormulaBar scenario={scenario} />
-
-      {/* Bottom Summary Banner with Shield & Counter */}
-      <div className="p-3 rounded-xl bg-success/10 border border-success/20 flex items-center justify-between gap-3 text-xs flex-wrap">
-        <div className="flex items-center gap-2">
-          <ShieldCheck className="size-4 text-success shrink-0" />
-          <span className="text-2xs sm:text-xs text-foreground font-medium">
-            {t('suppliers:cinemaProtectionSummary', {
-              name: scenario.marketplaceName,
-              defaultValue:
-                'SmartFeed захищає продавця: ви отримуєте рівно запланований дохід без втрат на комісіях {{name}}.',
-            })}
-          </span>
-        </div>
-        <div className="text-3xs font-mono text-muted-foreground ml-auto">
-          {t('suppliers:cinemaProductCounter', {
-            current: (productIndex % safeProducts.length) + 1,
-            total: safeProducts.length,
-            defaultValue: 'Товар {{current}} з {{total}}',
-          })}
+            {t('suppliers:cinemaProtectedBadge', { defaultValue: 'Захищено' })}
+          </Badge>
         </div>
       </div>
     </div>

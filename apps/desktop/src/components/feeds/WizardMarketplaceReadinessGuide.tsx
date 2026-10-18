@@ -95,7 +95,7 @@ export function WizardMarketplaceReadinessGuide() {
   );
 
   return (
-    <div className="rounded-2xl border border-border bg-card p-4 space-y-3.5 shadow-xs">
+    <div className="rounded-lg border border-border/60 bg-card p-4 space-y-3.5">
       {/* Header and Marketplace Selector */}
       <div className="flex items-center justify-between gap-3 flex-wrap">
         <div className="space-y-0.5">
@@ -119,7 +119,7 @@ export function WizardMarketplaceReadinessGuide() {
         </div>
 
         {/* Marketplace Selection Tabs using shadcn Button */}
-        <div className="flex items-center gap-1 p-0.5 bg-secondary/50 rounded-lg border border-border/60">
+        <div className="flex items-center gap-1 p-0.5 bg-muted/40 rounded-md border border-border/60">
           {MARKETPLACE_TABS.map((tab) => (
             <Button
               key={tab.id}
@@ -141,17 +141,17 @@ export function WizardMarketplaceReadinessGuide() {
 
       {/* 4 Cards: Requirements for Selected Marketplace */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
-        <div className="p-3 rounded-xl border border-border/70 bg-secondary/15 space-y-1.5">
+        <div className="p-3 rounded-md border border-border/60 bg-muted/15 space-y-1.5">
           <div className="flex items-center gap-1.5 text-xs font-medium text-foreground">
-            <Camera className="size-3.5 text-primary" />
+            <Camera className="size-3.5 text-muted-foreground" />
             <span>{t('suppliers:reqPhotoTitle', { defaultValue: 'Вимоги до фотографій' })}</span>
           </div>
           <p className="text-3xs text-muted-foreground leading-relaxed">{content.photoDesc}</p>
         </div>
 
-        <div className="p-3 rounded-xl border border-border/70 bg-secondary/15 space-y-1.5">
+        <div className="p-3 rounded-md border border-border/60 bg-muted/15 space-y-1.5">
           <div className="flex items-center gap-1.5 text-xs font-medium text-foreground">
-            <Tag className="size-3.5 text-primary" />
+            <Tag className="size-3.5 text-muted-foreground" />
             <span>
               {t('suppliers:reqAttrTitle', { defaultValue: "Обов'язкові характеристики" })}
             </span>
@@ -159,17 +159,17 @@ export function WizardMarketplaceReadinessGuide() {
           <p className="text-3xs text-muted-foreground leading-relaxed">{content.attrDesc}</p>
         </div>
 
-        <div className="p-3 rounded-xl border border-border/70 bg-secondary/15 space-y-1.5">
+        <div className="p-3 rounded-md border border-border/60 bg-muted/15 space-y-1.5">
           <div className="flex items-center gap-1.5 text-xs font-medium text-foreground">
-            <FileText className="size-3.5 text-primary" />
+            <FileText className="size-3.5 text-muted-foreground" />
             <span>{t('suppliers:reqTitleTitle', { defaultValue: 'Назви та описи' })}</span>
           </div>
           <p className="text-3xs text-muted-foreground leading-relaxed">{content.titleDesc}</p>
         </div>
 
-        <div className="p-3 rounded-xl border border-primary/25 bg-primary/5 space-y-1.5">
+        <div className="p-3 rounded-md border border-border/60 bg-muted/25 space-y-1.5">
           <div className="flex items-center gap-1.5 text-xs font-medium text-foreground">
-            <Bot className="size-3.5 text-primary" />
+            <Bot className="size-3.5 text-muted-foreground" />
             <span>{t('suppliers:reqAiTipTitle', { defaultValue: 'SmartFeed AI-помічник' })}</span>
           </div>
           <p className="text-3xs text-muted-foreground leading-relaxed">
@@ -182,10 +182,10 @@ export function WizardMarketplaceReadinessGuide() {
       </div>
 
       {/* Interactive Readiness Checklist & Progress */}
-      <div className="p-3 rounded-xl border border-border/80 bg-secondary/10 space-y-2.5">
+      <div className="p-3 rounded-md border border-border/60 bg-muted/10 space-y-2.5">
         <div className="flex items-center justify-between gap-2 flex-wrap">
           <div className="flex items-center gap-1.5 text-xs font-semibold text-foreground">
-            <CheckCircle2 className="size-3.5 text-primary" />
+            <CheckCircle2 className="size-3.5 text-muted-foreground" />
             <span>
               {t('suppliers:readinessChecklistTitle', {
                 defaultValue: 'Чеклист готовності каталогу',
@@ -194,12 +194,12 @@ export function WizardMarketplaceReadinessGuide() {
             {isAutoSelecting && (
               <Badge
                 variant="outline"
-                className="text-3xs font-normal gap-1 text-primary border-primary/30 bg-primary/5 animate-pulse ml-1"
+                className="text-3xs font-normal gap-1 text-foreground border-border bg-muted/50 animate-pulse ml-1"
               >
                 <Loader2 className="size-2.5 animate-spin" />
                 <span>
                   {t('suppliers:autoVerifyingHint', {
-                    defaultValue: 'Автоматична верифікація вимог маркетплейса...',
+                    defaultValue: 'Автоматична верифікація вимог маркетплейса…',
                   })}
                 </span>
               </Badge>
@@ -217,7 +217,7 @@ export function WizardMarketplaceReadinessGuide() {
               <RotateCcw className="size-2.5" />
               <span>{t('suppliers:replayChecklist', { defaultValue: 'Повторити перевірку' })}</span>
             </Button>
-            <span className="text-2xs text-muted-foreground font-mono">
+            <span className="text-2xs text-muted-foreground font-mono tabular-nums">
               {t('suppliers:readinessProgress', {
                 completed: completedCount,
                 total: 4,

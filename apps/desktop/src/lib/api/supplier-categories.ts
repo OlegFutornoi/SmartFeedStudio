@@ -16,7 +16,7 @@ export async function getSupplierCategories(supplierId: string, token?: string, 
     );
     if (response.ok) {
       const data = await response.json();
-      if (Array.isArray(data)) return data;
+      if (Array.isArray(data) && data.length > 0) return data;
     }
   } catch (err) {
     console.warn('[ApiClient] Remote getSupplierCategories failed, using local fallback:', err);

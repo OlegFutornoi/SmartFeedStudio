@@ -53,7 +53,7 @@ export const WizardDialogFooter: React.FC<WizardDialogFooterProps> = ({
 
   if (step === 'PROGRESS') {
     return (
-      <div className="p-4 border-t border-border bg-card flex items-center justify-between gap-2 shrink-0">
+      <div className="px-5 py-3.5 border-t border-border/60 bg-card flex items-center justify-between gap-2 shrink-0">
         <div className="w-full flex items-center justify-between gap-2">
           <div className="text-xs text-muted-foreground flex items-center gap-1.5">
             <Radio className="size-3.5 text-foreground animate-pulse" />
@@ -79,9 +79,14 @@ export const WizardDialogFooter: React.FC<WizardDialogFooterProps> = ({
   }
 
   return (
-    <div className="p-4 border-t border-border bg-card flex items-center justify-between gap-2 shrink-0">
+    <div className="px-5 py-3.5 border-t border-border/60 bg-card flex items-center justify-between gap-2 shrink-0">
       {step === 'SOURCE' ? (
-        <Button variant="ghost" size="sm" onClick={onClose} className="text-xs">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={onClose}
+          className="text-xs text-muted-foreground hover:text-foreground"
+        >
           {t('common:cancel', { defaultValue: 'Скасувати' })}
         </Button>
       ) : (
@@ -134,7 +139,7 @@ export const WizardDialogFooter: React.FC<WizardDialogFooterProps> = ({
           {isAnalyzing ? (
             <>
               <Loader2 className="size-3.5 animate-spin mr-1" />
-              {t('suppliers:analyzing', { defaultValue: 'Аналіз...' })}
+              {t('suppliers:analyzing', { defaultValue: 'Аналіз…' })}
             </>
           ) : (
             <>

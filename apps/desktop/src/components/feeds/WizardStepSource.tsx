@@ -98,7 +98,7 @@ export function WizardStepSource({
   const displayedError = error || fileValidationError;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3.5">
       {displayedError && (
         <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-xs text-destructive flex items-center gap-2">
           <AlertCircle className="size-4 shrink-0" />
@@ -106,16 +106,16 @@ export function WizardStepSource({
         </div>
       )}
 
-      <div className="p-3.5 rounded-2xl border border-border/70 bg-card shadow-2xs space-y-3">
+      <div className="p-4 rounded-lg border border-border/60 bg-card space-y-3.5">
         {/* 1. URL Section */}
         <div className="space-y-1.5">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-2">
             <Label className="text-xs text-foreground font-medium flex items-center gap-1.5">
-              <Globe className="size-3.5 text-primary" />
+              <Globe className="size-3.5 text-muted-foreground" />
               {t('suppliers:feedUrlLabel', { defaultValue: 'URL-адреса XML / CSV фіду' })}
             </Label>
             <Button
-              variant="link"
+              variant="ghost"
               size="sm"
               type="button"
               onClick={() => {
@@ -124,9 +124,9 @@ export function WizardStepSource({
                 setFeedUrl(TEST_LIVOLO_URL);
                 setFeedName?.('livolo.kiev.ua (products_feed.xml)');
               }}
-              className="h-auto p-0 text-xs text-primary hover:underline flex items-center gap-1"
+              className="h-6 px-2 text-2xs text-muted-foreground hover:text-foreground hover:bg-muted flex items-center gap-1 rounded-md"
             >
-              <Sparkles className="size-3" />
+              <Sparkles className="size-3 text-primary" />
               {t('suppliers:pasteLivoloUrl', { defaultValue: 'Тестовий фід Livolo' })}
             </Button>
           </div>
@@ -134,6 +134,8 @@ export function WizardStepSource({
             <Input
               placeholder="https://supplier.com/products_feed.xml"
               value={feedUrl}
+              spellCheck={false}
+              autoComplete="off"
               onChange={(e) => {
                 const val = e.target.value;
                 setFeedUrl(val);
@@ -141,7 +143,7 @@ export function WizardStepSource({
                 if (fileName) onFileSelect('', '');
                 setFeedName?.(val.trim() ? formatFeedTitle(val) : '');
               }}
-              className="h-9 text-xs font-mono bg-background/60 flex-1"
+              className="h-9 text-xs font-mono bg-background flex-1"
               disabled={isAnalyzing}
             />
             <Button
@@ -156,13 +158,13 @@ export function WizardStepSource({
                 isCheckingCollision ||
                 Boolean(collisionResult?.hasCollision)
               }
-              className="h-9 text-xs px-3.5 shrink-0"
+              className="h-9 text-xs px-4 shrink-0"
               data-testid="analyze-url-btn"
             >
               {isAnalyzing && sourceType === 'URL' ? (
                 <>
                   <Loader2 className="size-3.5 animate-spin mr-1.5" />
-                  {t('suppliers:analyzing', { defaultValue: 'Аналіз...' })}
+                  {t('suppliers:analyzing', { defaultValue: 'Аналіз…' })}
                 </>
               ) : (
                 t('suppliers:analyzeFeed', { defaultValue: 'Аналізувати' })
@@ -171,12 +173,12 @@ export function WizardStepSource({
           </div>
         </div>
 
-        {/* Subtle Divider */}
+        {/* Hairline Divider */}
         <div className="relative flex items-center justify-center">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-border/60" />
+            <div className="w-full border-t border-border/50" />
           </div>
-          <span className="relative bg-card px-2 text-3xs font-medium uppercase tracking-wider text-muted-foreground">
+          <span className="relative bg-card px-2.5 text-2xs font-medium text-muted-foreground">
             {t('common:or', { defaultValue: 'або' })}
           </span>
         </div>
@@ -213,9 +215,9 @@ export function WizardStepSource({
 
         {/* 3. Feed Name Input */}
         {feedName !== undefined && setFeedName && (
-          <div className="pt-2 border-t border-border/50 space-y-1.5">
+          <div className="pt-3 border-t border-border/50 space-y-1.5">
             <Label className="text-xs text-foreground font-medium flex items-center gap-1.5">
-              <FileText className="size-3.5 text-primary" />
+              <FileText className="size-3.5 text-muted-foreground" />
               {t('suppliers:feedNameLabel', { defaultValue: 'Назва фіду' })}
             </Label>
             <Input
@@ -223,8 +225,9 @@ export function WizardStepSource({
                 defaultValue: 'напр. Livolo Основний прайс',
               })}
               value={feedName}
+              autoComplete="off"
               onChange={(e) => setFeedName(e.target.value)}
-              className="h-9 text-xs bg-background/60"
+              className="h-9 text-xs bg-background"
               disabled={isAnalyzing}
               data-testid="wizard-feed-name-input"
             />

@@ -6,18 +6,20 @@ description: Automated testing, Playwright, Jest E2E, data cleanup, and test iso
 
 # Testing and Quality Invariants
 
-## TEST-01: Mandatory `cleanDatabase` Teardown (Zero Leftovers)
+## TEST-01: Mandatory `cleanDatabase` Teardown (Zero Leftovers & Zero Manual Data Deletion)
 
 - Every automated backend test suite creating database rows must invoke the centralized `cleanDatabase` helper in `beforeAll` AND `afterAll`.
+- Tests and database audits must strictly delete ONLY the specific test records created by that test (identified by explicit test `userIds` or timestamped test prefixes like `e2e.test+<timestamp>@smartfeed.local`).
+- Never delete manually created developer/QA user accounts (e.g. `qatest@gmail.com`, `shoplinkerxml@gmail.com`, or any user not created by the test itself) during test teardown, database audits, or cleanup tasks.
 - Teardown strictly follows the foreign-key safe deletion order:
   1. `Snapshot` and `ProductImage`
   2. `OrganizationInvitation`
   3. `OrganizationMember`
   4. `License`
   5. `Organization`
-  6. `User` (by test ID, test email, or test prefix)
+  6. `User` (strictly scoped by test-created ID, test email, or test prefix)
   7. `TariffPlan` and `NavigationItem` (test-created entities)
-- Reason: Leftover test records corrupt subsequent test runs, pollute production databases, and skew quota aggregates.
+- Reason: Leftover test records corrupt subsequent test runs, while deleting manually created developer accounts destroys active manual testing state.
 
 ## TEST-02: Frontend Test Isolation
 

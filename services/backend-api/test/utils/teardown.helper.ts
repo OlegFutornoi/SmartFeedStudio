@@ -84,17 +84,23 @@ export async function cleanDatabase(
       }
     });
 
-    const whereUserClause = {
-      OR: [
-        ...(userIds.length > 0 ? [{ id: { in: userIds } }] : []),
-        ...(emailConditions.length > 0 ? emailConditions : []),
-      ],
-    };
+    const orUserConditions = [
+      ...(userIds.length > 0 ? [{ id: { in: userIds } }] : []),
+      ...(emailConditions.length > 0 ? emailConditions : []),
+    ];
 
-    const matchedUsers = await prisma.user.findMany({
-      where: whereUserClause,
-      select: { id: true },
-    });
+    const matchedUsers =
+      orUserConditions.length > 0
+        ? await prisma.user.findMany({
+            where: {
+              OR: orUserConditions,
+              NOT: {
+                email: { in: ['qatest@gmail.com', 'shoplinkerxml@gmail.com'] },
+              },
+            },
+            select: { id: true },
+          })
+        : [];
 
     const allUserIds = Array.from(new Set([...userIds, ...matchedUsers.map((u) => u.id)]));
 
@@ -136,25 +142,27 @@ export async function cleanDatabase(
     });
 
     // 3. Cleanup Organization Invitations
-    await prisma.organizationInvitation.deleteMany({
-      where: {
-        OR: [
-          ...(allUserIds.length > 0 ? [{ invitedById: { in: allUserIds } }] : []),
-          ...(organizationIds.length > 0 ? [{ organizationId: { in: organizationIds } }] : []),
-          ...(emailConditions.length > 0 ? emailConditions : []),
-        ],
-      },
-    });
+    const invitationOr = [
+      ...(allUserIds.length > 0 ? [{ invitedById: { in: allUserIds } }] : []),
+      ...(organizationIds.length > 0 ? [{ organizationId: { in: organizationIds } }] : []),
+      ...(emailConditions.length > 0 ? emailConditions : []),
+    ];
+    if (invitationOr.length > 0) {
+      await prisma.organizationInvitation.deleteMany({
+        where: { OR: invitationOr },
+      });
+    }
 
     // 4. Cleanup Organization Members
-    await prisma.organizationMember.deleteMany({
-      where: {
-        OR: [
-          ...(allUserIds.length > 0 ? [{ userId: { in: allUserIds } }] : []),
-          ...(organizationIds.length > 0 ? [{ organizationId: { in: organizationIds } }] : []),
-        ],
-      },
-    });
+    const memberOr = [
+      ...(allUserIds.length > 0 ? [{ userId: { in: allUserIds } }] : []),
+      ...(organizationIds.length > 0 ? [{ organizationId: { in: organizationIds } }] : []),
+    ];
+    if (memberOr.length > 0) {
+      await prisma.organizationMember.deleteMany({
+        where: { OR: memberOr },
+      });
+    }
 
     // 5. Cleanup Licenses (linked to users, organizations, or matching test keys)
     await prisma.license.deleteMany({

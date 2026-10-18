@@ -263,4 +263,53 @@ test.describe('Desktop App — Feed Ingestion Wizard Steps (E2E)', () => {
     // Verify that the old redundant "+ Створити постачальника" button was removed per user request
     await expect(page.getByTestId('wizard-create-supplier-btn')).not.toBeVisible();
   });
+
+  test('should enforce modern desktop UI invariants (UI-08 form hygiene, UI-10 accessible dropzone, UI-12 zero rounded-2xl, UI-13 zero gradient slop)', async ({
+    page,
+  }) => {
+    await page.goto('/suppliers');
+    await expect(page.getByTestId('suppliers-page')).toBeVisible({ timeout: 5000 });
+    await page.getByTestId('supplier-card-import-btn-sup_01').click();
+
+    const sheet = page.getByTestId('import-feed-wizard-sheet');
+    await expect(sheet).toBeVisible();
+
+    // UI-08: URL input must have spellCheck=false and autoComplete=off
+    const urlInput = sheet.getByPlaceholder('https://supplier.com/products_feed.xml');
+    await expect(urlInput).toHaveAttribute('spellcheck', 'false');
+    await expect(urlInput).toHaveAttribute('autocomplete', 'off');
+
+    // UI-08: Feed name input must have autoComplete=off
+    const feedNameInput = sheet.getByTestId('wizard-feed-name-input');
+    await expect(feedNameInput).toHaveAttribute('autocomplete', 'off');
+
+    // UI-10: Dropzone must be keyboard-accessible with role="button" and tabIndex=0
+    const dropzone = sheet.getByTestId('dropzone-feed-upload');
+    await expect(dropzone).toHaveAttribute('role', 'button');
+    await expect(dropzone).toHaveAttribute('tabindex', '0');
+
+    // UI-12 & UI-13: Zero oversized mobile rounded-2xl or gradient backgrounds inside the wizard sheet on Step 1
+    await expect(sheet.locator('.rounded-2xl')).toHaveCount(0);
+    const copilotShowcase = sheet.getByTestId('wizard-ai-copilot-showcase');
+    await expect(copilotShowcase).not.toHaveClass(/bg-gradient-to/);
+
+    // Navigate to Step 2 and verify UI-10, UI-12, UI-13 invariants on ReverseMarginCinemaShowcase
+    await page.locator('button:has-text("Тестовий фід Livolo")').click();
+    await page.locator('button:has-text("Аналізувати")').click();
+    await expect(page.getByText('Фід успішно проаналізовано')).toBeVisible({ timeout: 5000 });
+    await page.getByRole('button', { name: 'Далі до постачальника' }).click();
+
+    await expect(sheet.getByTestId('wizard-supplier-select')).toBeVisible();
+    await expect(sheet.getByTestId('wizard-supplier-sync-policy-card')).toBeVisible();
+    await expect(sheet.locator('.rounded-2xl')).toHaveCount(0);
+    await expect(sheet.locator('.rounded-xl')).toHaveCount(0);
+    const cinema = sheet.getByTestId('reverse-margin-cinema-showcase');
+    await expect(cinema).not.toHaveClass(/bg-gradient-to/);
+
+    // Navigate to Step 3 and verify UI-12, UI-13 invariants on WizardStepPreview & WizardSampleProductsTable
+    await page.getByRole('button', { name: 'Переглянути товари' }).click();
+    await expect(page.locator('text=Крок 3 з 4: Попередній перегляд')).toBeVisible();
+    await expect(sheet.locator('.rounded-2xl')).toHaveCount(0);
+    await expect(sheet.locator('.rounded-xl')).toHaveCount(0);
+  });
 });

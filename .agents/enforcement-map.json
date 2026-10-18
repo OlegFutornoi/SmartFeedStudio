@@ -467,6 +467,18 @@
     "enforcer": "review-only",
     "mode": "manual"
   },
+  "UI-14": {
+    "title": "Restrained Multi-Select & Matrix States (Zero Accent Flood)",
+    "domain": "ui",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "UI-15": {
+    "title": "Viewport Budget, 2-Column Control Pairing & Inline Toolbar Filters",
+    "domain": "ui",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
   "I18N-01": {
     "title": "100% Bilingual Parity (UK ⇄ EN)",
     "domain": "i18n",

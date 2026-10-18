@@ -10,6 +10,8 @@ export const SupplierCategoryRuleDtoSchema = z.object({
   marginPercent: z.number().min(0).nullable().optional(),
   fixedMarkup: z.number().min(0).nullable().optional(),
   productCount: z.number().int().nonnegative().default(0),
+  feedSourceId: z.string().nullable().optional(),
+  feedName: z.string().nullable().optional(),
   createdAt: z.union([z.date(), z.string()]).optional(),
   updatedAt: z.union([z.date(), z.string()]),
 });

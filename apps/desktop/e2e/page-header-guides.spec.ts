@@ -111,6 +111,11 @@ test.describe('Desktop App — Universal Page Guides & AI Assistant Header (E2E)
 
     const guideTrigger = page.locator('[data-testid="page-header-guide-trigger"]');
     await expect(guideTrigger).toBeVisible();
+    await expect(guideTrigger).toHaveAttribute('aria-label', 'Довідка від AI');
+
+    // Hover to verify tooltip text
+    await guideTrigger.hover();
+    await expect(page.getByRole('tooltip')).toHaveText('Довідка від AI');
 
     // Click [i] trigger to open modal
     await guideTrigger.click();
@@ -165,6 +170,8 @@ test.describe('Desktop App — Universal Page Guides & AI Assistant Header (E2E)
     // Switch to English
     const langToggle = page.locator('[data-testid="language-toggle"]');
     await langToggle.click();
+
+    await expect(guideTrigger).toHaveAttribute('aria-label', 'AI Guide');
 
     // Reopen guide in English
     await guideTrigger.click();

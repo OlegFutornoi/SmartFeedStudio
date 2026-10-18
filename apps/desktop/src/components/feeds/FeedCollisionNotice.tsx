@@ -16,8 +16,8 @@ export const FeedCollisionNotice: React.FC<FeedCollisionNoticeProps> = ({
 
   if (isChecking) {
     return (
-      <div className="p-2 rounded-xl bg-muted/40 border border-border/50 text-2xs text-muted-foreground animate-pulse">
-        {t('suppliers:checkingCollisions', { defaultValue: 'Перевірка унікальності фіду...' })}
+      <div className="p-2.5 rounded-lg bg-muted/30 border border-border/50 text-2xs text-muted-foreground animate-pulse">
+        {t('suppliers:checkingCollisions', { defaultValue: 'Перевірка унікальності фіду…' })}
       </div>
     );
   }
@@ -28,9 +28,9 @@ export const FeedCollisionNotice: React.FC<FeedCollisionNoticeProps> = ({
     return (
       <div
         data-testid="feed-unique-badge"
-        className="p-2.5 rounded-xl bg-primary/10 border border-primary/25 text-primary text-xs flex items-center gap-2 animate-in fade-in duration-200"
+        className="p-2.5 rounded-lg bg-success/10 border border-success/30 text-success text-xs flex items-center gap-2 animate-in fade-in duration-200"
       >
-        <CheckCircle2 className="size-4 shrink-0 text-primary" />
+        <CheckCircle2 className="size-4 shrink-0 text-success" />
         <span className="font-medium text-2xs">
           {t('suppliers:feedNameUniqueValidated', {
             defaultValue: 'Фід унікальний. Колізій не виявлено',
@@ -44,9 +44,9 @@ export const FeedCollisionNotice: React.FC<FeedCollisionNoticeProps> = ({
     return (
       <div
         data-testid="feed-duplicate-warning"
-        className="p-3.5 rounded-xl bg-destructive/15 border-2 border-destructive/40 text-xs flex flex-col gap-1.5 animate-in fade-in duration-200 shadow-sm"
+        className="p-3 rounded-lg bg-destructive/10 border border-destructive/30 text-xs flex flex-col gap-1 animate-in fade-in duration-200"
       >
-        <div className="flex items-center gap-2 font-bold text-destructive text-xs">
+        <div className="flex items-center gap-2 font-semibold text-destructive text-xs">
           <AlertTriangle className="size-4 shrink-0 text-destructive" />
           <span>
             {t('suppliers:feedSameSupplierDuplicateTitle', {
@@ -54,7 +54,7 @@ export const FeedCollisionNotice: React.FC<FeedCollisionNoticeProps> = ({
             })}
           </span>
         </div>
-        <p className="text-destructive/90 text-2xs leading-relaxed font-medium">
+        <p className="text-destructive text-2xs leading-relaxed">
           {t('suppliers:feedSameSupplierDuplicateMsg', {
             name: collisionResult.existingFeedName || 'Існуючий фід',
             count: collisionResult.existingProductsCount || 0,
@@ -69,17 +69,17 @@ export const FeedCollisionNotice: React.FC<FeedCollisionNoticeProps> = ({
     return (
       <div
         data-testid="feed-collision-warning"
-        className="p-3.5 rounded-xl bg-muted/60 border border-border text-xs flex flex-col gap-1.5 animate-in fade-in duration-200 shadow-sm"
+        className="p-3 rounded-lg bg-card border border-border/60 text-xs flex flex-col gap-1 animate-in fade-in duration-200"
       >
-        <div className="flex items-center gap-2 font-bold text-foreground text-xs">
-          <AlertTriangle className="size-4 shrink-0 text-primary" />
+        <div className="flex items-center gap-2 font-semibold text-foreground text-xs">
+          <AlertTriangle className="size-4 shrink-0 text-muted-foreground" />
           <span>
             {t('suppliers:feedCrossSupplierConflictTitle', {
               defaultValue: 'Фід використовується іншим постачальником',
             })}
           </span>
         </div>
-        <p className="text-muted-foreground text-2xs leading-relaxed font-medium">
+        <p className="text-muted-foreground text-2xs leading-relaxed">
           {t('suppliers:feedCrossSupplierConflictMsg', {
             supplier: collisionResult.conflictingSupplierName || 'Інший постачальник',
             defaultValue: `Цей фід уже зареєстрований за постачальником «${collisionResult.conflictingSupplierName}». Вкажіть власну назву фіду в полі нижче для розділення потоків.`,

@@ -15,7 +15,7 @@ rules: [core, ui, i18n]
 5. Verify invariant `UI-04`: zero duplicate CTA buttons between header toolbar and empty state cards.
 6. Verify invariant `UI-05`: base UI primitives must be installed via shadcn CLI.
 7. Verify invariants `UI-08`, `UI-09`, `UI-10`: unblocked paste across inputs, `spellCheck={false}` on technical/URL/SKU fields, true ellipsis `…`, balanced headlines (`text-wrap: balance`), semantic `<button>`/`<Link>`, and visible focus rings (`:focus-visible:ring-*`).
-8. Verify invariants `UI-11`, `UI-12`, `UI-13`: surface depth hierarchy over heavy borders; desktop high-density geometry (radius 4-8px, row height `h-9`/`h-10`, hover-revealed row actions); singular boldness doctrine (one focal point per screen, zero AI-slop uppercase eyebrow tags, zero gradient text, zero repetitive 3-card marketing grids).
+8. Verify invariants `UI-11`, `UI-12`, `UI-13`, `UI-14`, `UI-15`: surface depth hierarchy over heavy borders; desktop high-density geometry (`rounded-sm`/`rounded-md`/`rounded-lg`, zero `rounded-xl`/`rounded-2xl` on desktop); singular boldness doctrine (one `bg-primary` focal point per screen, zero AI-slop uppercase eyebrow tags, zero gradient backgrounds); restrained neutral multi-select matrices (`UI-14`); 2-column control pairing, inline header search bars, and hairline-divided 2×2 matrices (`UI-15`).
 9. If researching component variants, call context7 or shadcn MCP tool.
 10. Do not write markup or styles until steps 1-9 are complete.
 
@@ -34,8 +34,9 @@ rules: [core, ui, i18n]
 6. Step 6 - Accessibility and Focus States: ensure all interactive buttons have visible focus rings (`focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none`). Icon-only buttons must have localized `aria-label`. Heading anchors must include `scroll-margin-top` (`UI-10`).
 7. Step 7 - Form Hygiene & Micro-Typography: ensure inputs never block paste (`UI-08`), set `spellCheck={false}` on technical/URL/SKU inputs, set `autocomplete="off"` on non-auth fields, use true ellipsis `…` in loading states, and balance headings with `text-wrap: balance` (`UI-09`). Use semantic `<button>` for actions and `<Link>` for navigation (`UI-10`).
 8. Step 8 - Surface Depth & Hairline Borders (`UI-11`): establish visual hierarchy through tonal elevation (`bg-background` canvas, `bg-card` / `bg-muted/30` panel, `bg-popover` menus) and hairline borders (`border-border/40` to `border-border/60`). Never wrap nested child groups inside shadcn `Card` or `Dialog` in redundant boxed borders.
-9. Step 9 - Desktop Density & Hover Actions (`UI-12`): maintain desktop radius scale (`rounded-md` for controls, `rounded-lg` for cards; no `rounded-2xl` on desktop). In shadcn `Table` rows, maintain `h-9`/`h-10` heights and reveal secondary row actions on hover (`opacity-70 group-hover:opacity-100` or `invisible group-hover:visible focus-within:visible`).
-10. Step 10 - Singular Boldness & Anti-Slop Discipline (`UI-13`): enforce single primary focal point/CTA per view. Eliminate uppercase letter-spaced eyebrow tags, multi-color gradient headlines, and decorative emoji chips. Apply Chanel restraint.
+9. Step 9 - Desktop Density & Hover Actions (`UI-12`): maintain desktop radius scale (`rounded-sm` for micro-badges, `rounded-md` for controls/inner items, `rounded-lg` for outer cards; no `rounded-xl`/`rounded-2xl` on desktop). In shadcn `Table` rows, maintain `h-9`/`h-10` heights and reveal secondary row actions on hover (`opacity-70 group-hover:opacity-100` or `invisible group-hover:visible focus-within:visible`).
+10. Step 10 - Singular Boldness & Anti-Slop Discipline (`UI-13`): enforce a single `bg-primary` focal point/CTA per view; secondary controls (e.g. play/pause, auto-fit, presets) must use `variant="outline"` or `variant="ghost"`. Eliminate uppercase letter-spaced eyebrow tags, gradient card backgrounds (`bg-gradient-to-*`), and decorative emoji chips.
+11. Step 11 - Restrained Multi-Select Matrices & Viewport Compactness (`UI-14`, `UI-15`): in multi-select category/checkbox grids, style selected items with neutral high-contrast elevation (`bg-card border-foreground/30 text-foreground` + `bg-foreground text-background` indicator) rather than flooding the grid with green `bg-primary/10`. Pair compact controls side-by-side (`grid-cols-1 md:grid-cols-12 gap-3`), embed search inputs (`h-7 w-48 sm:w-56`) directly inside card header toolbars (`bg-muted/20 border-b border-border/60`), and render feature showcases as flat hairline-divided matrices (`divide-border/50`).
 
 ## Outputs
 
@@ -53,9 +54,11 @@ rules: [core, ui, i18n]
 - True ellipsis glyph `…` used instead of triple dots `...` in all loading/ellipsis copy (`UI-09`).
 - Zero `outline-none` without replacement; all interactive controls provide visible `:focus-visible` focus ring (`UI-10`).
 - Zero nested redundant borders inside Cards or Dialogs (`UI-11`).
-- Zero oversized mobile radii (`rounded-2xl`, `rounded-3xl`) on desktop components (`UI-12`).
-- Zero AI-slop uppercase letter-spaced eyebrows or gradient text headlines (`UI-13`).
-- 0 duplicate action buttons visible simultaneously.
+- Zero oversized mobile radii (`rounded-xl`, `rounded-2xl`, `rounded-3xl`) on desktop components (`UI-12`).
+- Zero AI-slop uppercase letter-spaced eyebrows or gradient card backgrounds (`UI-13`).
+- Zero brand-green `bg-primary/10` flood across multi-select category matrices (`UI-14`).
+- Compact 2-column control pairing and inline header search bars prevent vertical viewport clipping (`UI-15`).
+- 0 duplicate action buttons visible simultaneously (`UI-04`).
 - Component file is under 250 lines.
 
 ## Never
@@ -71,8 +74,10 @@ rules: [core, ui, i18n]
 - Never use `<div onClick>` or `<span onClick>` for actions without semantic `<button>` or keyboard handlers (violates `UI-10`).
 - Never use `outline-none` without visible focus replacement (violates `UI-10`).
 - Never wrap inner groups inside shadcn `Card` or `Dialog` in redundant `border border-border` boxes (violates `UI-11`).
-- Never use `rounded-2xl` or `rounded-3xl` for desktop controls or cards (violates `UI-12`).
-- Never use uppercase letter-spaced eyebrow tags or multi-color gradient text on headlines (violates `UI-13`).
+- Never use `rounded-xl`, `rounded-2xl`, or `rounded-3xl` for desktop controls or cards (violates `UI-12`).
+- Never use uppercase letter-spaced eyebrow tags or gradient card backgrounds `bg-gradient-to-*` (violates `UI-13`).
+- Never flood multi-select category grids with `bg-primary/10 border-primary/40`; use neutral high-contrast selection states (violates `UI-14`).
+- Never stack compact selector/policy cards vertically or place search bars on a separate row when they fit in a 2-column header or inline toolbar (violates `UI-15`).
 - Never omit `aria-label` on icon-only action buttons.
 
 ## References

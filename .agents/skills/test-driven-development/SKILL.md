@@ -24,6 +24,6 @@ rules:
 ## Mandatory testing standards
 
 1. Real business invariants: Tests must assert concrete domain data. Never write superficial smoke-only tests. In Playwright, verify actual entity names and assert `expect(name).not.toBe('Постачальник')`. Verify avatar rendering and semantic status colors (`emerald` for approved/active).
-2. Complete data cleanup (zero leftovers): Backend E2E tests must call `cleanDatabase(prisma)` in both `beforeAll` and `afterAll` blocks. Frontend tests must reset `localStorage`, cookies, and route handlers.
+2. Complete data cleanup (zero leftovers, zero manual data deletion): Backend E2E tests must call `cleanDatabase(prisma)` in both `beforeAll` and `afterAll` blocks, strictly scoped to the test's own created user IDs or timestamped email prefixes. Never delete manually created developer/QA accounts (e.g. `qatest@gmail.com`) during tests or database audits. Frontend tests must reset `localStorage`, cookies, and route handlers only within the isolated Playwright test context.
 3. Targeted feature execution: Run only the specific test file covering the active feature (e.g. `pnpm exec playwright test e2e/<feature>.spec.ts` or `pnpm test:e2e -- test/<feature>.e2e-spec.ts`). Full suite runs during feature development are prohibited.
 4. Bilingual assertions: Verify dynamic language switching (`UA` to `EN`) across interactive UI elements and confirm absence of untranslated raw keys.

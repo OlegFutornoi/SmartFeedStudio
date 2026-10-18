@@ -99,10 +99,10 @@ export function ImportFeedWizardDialog({
           <WizardDialogHeader step={step} onClose={handleClose} />
 
           {/* Content Body */}
-          <div className="p-4 sm:p-5 pt-3 sm:pt-4 overflow-y-auto flex-1 bg-card">
+          <div className="p-4 sm:p-5 overflow-y-auto flex-1 bg-background">
             {isFeedLimitReached && (
-              <div className="mb-4 p-3.5 rounded-xl border border-border bg-muted/60 text-foreground text-xs flex items-center gap-2.5">
-                <AlertCircle className="size-4 shrink-0 text-foreground" />
+              <div className="mb-4 p-3 rounded-lg border border-border/60 bg-card text-foreground text-xs flex items-center gap-2.5">
+                <AlertCircle className="size-4 shrink-0 text-muted-foreground" />
                 <div className="flex-1">
                   <span className="font-semibold">
                     {t('suppliers:feedLimitReachedTitle', {
@@ -110,7 +110,7 @@ export function ImportFeedWizardDialog({
                     })}
                     :{' '}
                   </span>
-                  <span>
+                  <span className="text-muted-foreground">
                     {t('suppliers:feedLimitReachedDesc', {
                       defaultValue:
                         'Ваш поточний тариф дозволяє підключити обмежену кількість фідів. Щоб імпортувати новий фід, оновіть тариф або видаліть існуюче джерело.',

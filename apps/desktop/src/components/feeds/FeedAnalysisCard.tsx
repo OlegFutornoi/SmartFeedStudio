@@ -59,11 +59,11 @@ export function FeedAnalysisCard({ analysis }: FeedAnalysisCardProps) {
   const formatLabel = FORMAT_LABELS[formatKey] || analysis.format;
 
   return (
-    <div className="mt-4 rounded-xl border border-border bg-card overflow-hidden animate-in fade-in slide-in-from-top-2 duration-300">
+    <div className="mt-3.5 rounded-lg border border-border/60 bg-card overflow-hidden animate-in fade-in slide-in-from-top-2 duration-300">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-2.5 border-b border-border bg-muted/40">
+      <div className="flex items-center justify-between px-4 py-2.5 border-b border-border/50 bg-muted/20">
         <div className="flex items-center gap-2 text-xs font-semibold text-foreground">
-          <CheckCircle2 className="size-3.5" />
+          <CheckCircle2 className="size-3.5 text-success" />
           {t('suppliers:analysisSuccess', { defaultValue: 'Фід успішно проаналізовано' })}
         </div>
         <Badge className={`text-2xs font-mono border px-2 py-0.5 ${formatColor}`}>
@@ -72,37 +72,37 @@ export function FeedAnalysisCard({ analysis }: FeedAnalysisCardProps) {
       </div>
 
       {/* Stats Row */}
-      <div className="grid grid-cols-3 gap-px bg-border/30">
+      <div className="grid grid-cols-3 gap-px bg-border/40 border-b border-border/50">
         {/* Total SKU */}
-        <div className="flex flex-col items-center justify-center gap-0.5 py-3 px-2 bg-card/80">
-          <div className="flex items-center gap-1.5 text-2xs text-muted-foreground font-medium uppercase tracking-wide">
-            <ShoppingBag className="size-3 text-primary" />
+        <div className="flex flex-col items-center justify-center gap-0.5 py-3 px-2 bg-card">
+          <div className="flex items-center gap-1.5 text-2xs text-muted-foreground font-medium">
+            <ShoppingBag className="size-3 text-muted-foreground" />
             {t('suppliers:totalProductsFound', { defaultValue: 'Знайдено товарів' })}
           </div>
-          <div className="text-lg font-bold font-mono text-foreground leading-tight">
+          <div className="text-lg font-bold font-mono tabular-nums text-foreground leading-tight">
             {analysis.totalDetected.toLocaleString('uk-UA')}
             <span className="text-xs font-normal text-muted-foreground ml-1">SKU</span>
           </div>
         </div>
 
         {/* Categories */}
-        <div className="flex flex-col items-center justify-center gap-0.5 py-3 px-2 bg-card/80">
-          <div className="flex items-center gap-1.5 text-2xs text-muted-foreground font-medium uppercase tracking-wide">
-            <Layers className="size-3 text-primary" />
+        <div className="flex flex-col items-center justify-center gap-0.5 py-3 px-2 bg-card">
+          <div className="flex items-center gap-1.5 text-2xs text-muted-foreground font-medium">
+            <Layers className="size-3 text-muted-foreground" />
             {t('suppliers:categoriesFound', { defaultValue: 'Категорій' })}
           </div>
-          <div className="text-lg font-bold font-mono text-foreground leading-tight">
+          <div className="text-lg font-bold font-mono tabular-nums text-foreground leading-tight">
             {analysis.categoriesCount || analysis.categories?.length || 0}
           </div>
         </div>
 
         {/* In Stock % */}
-        <div className="flex flex-col items-center justify-center gap-0.5 py-3 px-2 bg-card/80">
-          <div className="flex items-center gap-1.5 text-2xs text-muted-foreground font-medium uppercase tracking-wide">
-            <PackageCheck className="size-3 text-primary" />
+        <div className="flex flex-col items-center justify-center gap-0.5 py-3 px-2 bg-card">
+          <div className="flex items-center gap-1.5 text-2xs text-muted-foreground font-medium">
+            <PackageCheck className="size-3 text-muted-foreground" />
             {t('suppliers:inStockPercent', { defaultValue: 'В наявності' })}
           </div>
-          <div className="text-lg font-bold font-mono text-foreground leading-tight">
+          <div className="text-lg font-bold font-mono tabular-nums text-foreground leading-tight">
             {inStockPercent !== null ? (
               <span>
                 {inStockPercent}
@@ -117,26 +117,26 @@ export function FeedAnalysisCard({ analysis }: FeedAnalysisCardProps) {
 
       {/* Top Categories */}
       {topCategories.length > 0 && (
-        <div className="px-4 py-3 space-y-1.5">
-          <div className="text-2xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
-            <Tag className="size-3" />
+        <div className="px-4 py-3 space-y-2">
+          <div className="text-xs font-medium text-muted-foreground flex items-center gap-1.5">
+            <Tag className="size-3 text-muted-foreground" />
             {t('suppliers:topCategoriesTitle', { defaultValue: 'Топ категорії' })}
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-1">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
             {topCategories.map((cat) => (
               <div
                 key={cat.id}
-                className="flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg bg-secondary/40 border border-border/50 hover:bg-secondary/70 transition-colors"
+                className="flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-md bg-muted/20 border border-border/50 hover:bg-muted/40 transition-colors"
               >
                 <div className="flex items-center gap-1.5 min-w-0">
-                  <ChevronRight className="size-3 text-primary shrink-0" />
+                  <ChevronRight className="size-3 text-muted-foreground shrink-0" />
                   <span className="text-xs text-foreground truncate font-medium" title={cat.name}>
                     {cat.name}
                   </span>
                 </div>
                 <div className="flex items-center gap-1 shrink-0">
                   <TrendingUp className="size-2.5 text-muted-foreground" />
-                  <span className="text-2xs font-mono text-muted-foreground">
+                  <span className="text-2xs font-mono tabular-nums text-muted-foreground">
                     {(cat.productCount || 0).toLocaleString('uk-UA')} SKU
                   </span>
                 </div>
@@ -147,7 +147,7 @@ export function FeedAnalysisCard({ analysis }: FeedAnalysisCardProps) {
             <p className="text-2xs text-muted-foreground text-center pt-0.5">
               {t('suppliers:andMoreCategories', {
                 count: analysis.categories.length - 6,
-                defaultValue: `...та ще ${analysis.categories.length - 6} категорій`,
+                defaultValue: `…та ще ${analysis.categories.length - 6} категорій`,
               })}
             </p>
           )}
@@ -157,10 +157,10 @@ export function FeedAnalysisCard({ analysis }: FeedAnalysisCardProps) {
       {/* Large Catalog Shield / BullMQ Background Notice */}
       {analysis.totalDetected > 10000 && (
         <div className="px-4 pb-3 pt-1">
-          <div className="rounded-lg bg-secondary/50 border border-border/80 p-2.5 flex items-start gap-2.5 text-2xs text-foreground">
+          <div className="rounded-md bg-muted/30 border border-border/60 p-2.5 flex items-start gap-2.5 text-2xs text-foreground">
             <Zap className="size-3.5 text-primary shrink-0 mt-0.5" />
             <div>
-              <span className="font-semibold text-primary">
+              <span className="font-semibold text-foreground">
                 {t('suppliers:largeFeedDetectedTitle', {
                   count: analysis.totalDetected.toLocaleString('uk-UA'),
                   defaultValue: `Виявлено великий каталог: ${analysis.totalDetected.toLocaleString('uk-UA')} SKU`,

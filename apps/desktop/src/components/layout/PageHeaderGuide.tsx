@@ -41,7 +41,7 @@ export const PageHeaderGuide: React.FC<PageHeaderGuideProps> = ({ route }) => {
                 className={`size-7 p-0 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors shrink-0 ${
                   isOpen ? 'bg-muted text-foreground' : ''
                 }`}
-                aria-label={isUk ? 'Довідка від AI Асистента' : 'AI Assistant Guide'}
+                aria-label={t('common:aiGuide')}
               >
                 <Info className="size-3.5" />
               </Button>
@@ -49,7 +49,7 @@ export const PageHeaderGuide: React.FC<PageHeaderGuideProps> = ({ route }) => {
           </TooltipTrigger>
           {!isOpen && (
             <TooltipContent side="bottom" className="text-xs">
-              {isUk ? 'Що це за розділ? Довідка від AI' : 'About this section • AI Guide'}
+              {t('common:aiGuide')}
             </TooltipContent>
           )}
         </Tooltip>

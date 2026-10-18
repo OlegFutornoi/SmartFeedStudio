@@ -9,12 +9,12 @@ export interface ReverseMarginSimulatorProps {
   supplier?: SupplierDto;
 }
 
-export function ReverseMarginSimulator({ analysis }: ReverseMarginSimulatorProps) {
+export function ReverseMarginSimulator({ analysis, supplier }: ReverseMarginSimulatorProps) {
   const products = useMemo(() => extractCategoryProductsFromAnalysis(analysis), [analysis]);
 
   return (
     <div data-testid="wizard-pricing-simulator">
-      <ReverseMarginCinemaShowcase products={products} />
+      <ReverseMarginCinemaShowcase products={products} supplier={supplier} />
     </div>
   );
 }

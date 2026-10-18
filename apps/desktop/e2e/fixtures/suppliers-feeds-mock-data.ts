@@ -1,116 +1,13 @@
 import type { Page } from '@playwright/test';
 import { setupSupplierSyncRoutes } from '@e2e/fixtures/supplier-sync-routes';
 
-export const mockUser = {
-  id: 'usr_test_123',
-  email: 'supplier.test@smartfeed.local',
-  fullName: 'Supplier Test User',
-  role: 'USER',
-  organization: { id: 'org-test-1', name: 'Test Org LLC', role: 'OWNER' },
-};
-
-export const mockLicenseState = {
-  id: 'lic-1',
-  userId: mockUser.id,
-  planType: 'PRO',
-  isActive: true,
-  expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-  isExpired: false,
-  daysRemaining: 30,
-};
-
-export const mockQuotas = {
-  planCode: 'PRO',
-  planNameUk: 'PRO Тариф',
-  planNameEn: 'PRO Plan',
-  isExpired: false,
-  suppliers: {
-    used: 1,
-    max: 10,
-    isUnlimited: false,
-    percentUsed: 10,
-    isExceeded: false,
-    remaining: 9,
-  },
-  products: {
-    used: 250,
-    max: 5000,
-    isUnlimited: false,
-    percentUsed: 5,
-    isExceeded: false,
-    remaining: 4750,
-  },
-  feeds: { used: 1, max: 20, isUnlimited: false, percentUsed: 5, isExceeded: false, remaining: 19 },
-  aiCredits: {
-    used: 10,
-    max: 500,
-    isUnlimited: false,
-    percentUsed: 2,
-    isExceeded: false,
-    remaining: 490,
-  },
-  teamSeats: {
-    used: 1,
-    max: 5,
-    isUnlimited: false,
-    percentUsed: 20,
-    isExceeded: false,
-    remaining: 4,
-  },
-  storage: {
-    usedMb: 120,
-    maxMb: 10000,
-    percentUsed: 1.2,
-    isUnlimited: false,
-    isExceeded: false,
-    remainingMb: 9880,
-  },
-};
-
-export const mockSuppliers = [
-  {
-    id: 'sup_test_1',
-    name: 'Livolo Офіційний',
-    code: 'LIVOLO-UA',
-    defaultMarginPercent: 25,
-    defaultFixedMarkup: 100,
-    isActive: true,
-    productsCount: 250,
-    activeFeedsCount: 1,
-    contactEmail: 'sales@livolo.ua',
-    contactPhone: '+380501112233',
-    website: 'https://livolo.ua',
-    legalName: 'ТОВ «Ліволо Україна»',
-    taxId: '38942104',
-    industry: 'Розумний дім та електрофурнітура',
-    segment: 'Ексклюзивний імпортер',
-    managerName: 'Артем Васильєв',
-    managerPosition: 'Директор з оптових продажів',
-    managerPhone: '+380501112233',
-    managerEmail: 'a.vasyliev@livolo.ua',
-    managerTelegram: '@livolo_b2b',
-    country: 'Україна',
-    city: 'Київ',
-    address: 'вул. Глибочицька, 17',
-    postcode: '04050',
-  },
-  {
-    id: 'sup_test_2',
-    name: 'Mobioptom',
-    code: 'MOBI',
-    defaultMarginPercent: 0,
-    defaultFixedMarkup: 0,
-    isActive: true,
-    productsCount: 150,
-    activeFeedsCount: 0,
-    contactEmail: 'sales@mobioptom.com',
-    contactPhone: '+380509998877',
-    website: 'https://mobioptom.com',
-    managerName: 'Олександр Коваленко',
-    industry: 'Мобільні аксесуари',
-    segment: 'Опт',
-  },
-];
+export * from '@e2e/fixtures/suppliers-mock-entities';
+import {
+  mockUser,
+  mockLicenseState,
+  mockQuotas,
+  mockSuppliers,
+} from '@e2e/fixtures/suppliers-mock-entities';
 
 export {
   mockFeedSources,
@@ -118,18 +15,6 @@ export {
   constrainedFeedAnalysis,
 } from '@e2e/fixtures/feeds-mock-data';
 import { mockFeedSources, mockAnalysis } from '@e2e/fixtures/feeds-mock-data';
-
-export const constrainedQuotas = {
-  ...mockQuotas,
-  products: {
-    used: 60,
-    max: 100,
-    isUnlimited: false,
-    percentUsed: 60,
-    isExceeded: false,
-    remaining: 40,
-  },
-};
 
 export async function setupSuppliersFeedsRoutes(page: Page) {
   await page.addInitScript((user) => {
@@ -279,4 +164,65 @@ export async function setupSuppliersFeedsRoutes(page: Page) {
       });
     },
   );
+
+  await page.route(/\/api\/suppliers\/([^/?#]+)\/categories(\?|$)/, async (route) => {
+    const url = route.request().url();
+    if (url.includes('/sup_test_2/')) {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify([]),
+      });
+      return;
+    }
+
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify([
+        {
+          id: 'scat_test_1',
+          supplierId: 'sup_test_1',
+          feedCategoryId: 'cat_1',
+          name: 'Сенсорні вимикачі',
+          feedSourceId: 'feed_test_1',
+          feedName: 'Livolo Main XML',
+          productCount: 150,
+          isActive: true,
+          marginPercent: 20,
+          fixedMarkup: 50,
+          updatedAt: new Date().toISOString(),
+        },
+        {
+          id: 'scat_test_2',
+          supplierId: 'sup_test_1',
+          feedCategoryId: 'cat_2',
+          name: 'Розумні розетки',
+          feedSourceId: 'feed_test_1',
+          feedName: 'Livolo Main XML',
+          productCount: 100,
+          isActive: true,
+          marginPercent: null,
+          fixedMarkup: null,
+          updatedAt: new Date().toISOString(),
+        },
+      ]),
+    });
+  });
+
+  await page.route(/\/api\/suppliers\/([^/?#]+)\/categories\/([^/?#]+)\/toggle/, async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ success: true }),
+    });
+  });
+
+  await page.route(/\/api\/suppliers\/([^/?#]+)\/categories\/batch-toggle/, async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ updatedCount: 2 }),
+    });
+  });
 }

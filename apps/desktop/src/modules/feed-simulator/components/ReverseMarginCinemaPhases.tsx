@@ -1,5 +1,6 @@
 import { Badge } from '@/components/ui/badge';
-import { ShieldCheck, AlertTriangle, Package, TrendingUp, Sparkles } from 'lucide-react';
+import { ShieldCheck, AlertTriangle, Package, TrendingUp } from 'lucide-react';
+import { useTranslation } from '@/i18n';
 import type { CinemaScenario } from '@/modules/feed-simulator/services/reverse-margin-cinema.service';
 
 interface ReverseMarginCinemaPhasesProps {
@@ -13,75 +14,109 @@ export function ReverseMarginCinemaPhases({
   phaseIndex,
   onSelectPhase,
 }: ReverseMarginCinemaPhasesProps) {
+  const { t } = useTranslation(['suppliers']);
+
   const phases = [
     {
       idx: 0,
-      title: '1. Закупка постачальника',
-      shortTitle: 'Закупка',
+      title: t('suppliers:cinemaPhase1Title', { defaultValue: '1. Закупка постачальника' }),
       icon: Package,
       value: `${scenario.costPrice} ₴`,
-      subtitle: 'Базова собівартість',
-      badge: 'Прайс постачальника',
-      badgeClass: 'bg-muted text-foreground border-border/80',
-      activeBorder: 'border-foreground/60 ring-1 ring-foreground/20',
+      subtitle: t('suppliers:cinemaPhase1Subtitle', { defaultValue: 'Базова ціна у XML-фіді' }),
+      badge: t('suppliers:cinemaPhase1Badge', { defaultValue: 'Вхідна ціна' }),
+      badgeClass: 'bg-muted/60 text-muted-foreground border-border/60',
+      activeBorder: 'border-foreground/50 bg-muted/20',
       activeIndicator: 'bg-foreground/70',
-      textColor: 'text-foreground',
+      iconColor: 'text-muted-foreground',
       accentColor: 'text-foreground',
-      desc: 'Вхідна вартість одиниці товару за каталогом постачальника, яку необхідно оплатити за відвантаження.',
-      mathTag: `Собівартість: ${scenario.costPrice} ₴`,
+      desc: t('suppliers:cinemaPhase1Desc', {
+        defaultValue: 'Оптова ціна товару у прайсі постачальника',
+      }),
+      mathTag: `${scenario.costPrice} ₴`,
     },
     {
       idx: 1,
-      title: '2. Моя націнка та Моя ціна',
-      shortTitle: 'Моя ціна',
+      title: t('suppliers:cinemaPhase2Title', { defaultValue: '2. Моя націнка та Моя ціна' }),
       icon: TrendingUp,
       value: `${scenario.myPrice} ₴`,
-      subtitle: `Націнка +${scenario.markupPercent}% (+${scenario.desiredProfit} ₴)`,
-      badge: `+${scenario.desiredProfit} ₴ прибутку`,
-      badgeClass: 'bg-primary/10 text-primary border-primary/20',
-      activeBorder: 'border-primary ring-1 ring-primary/30',
-      activeIndicator: 'bg-primary',
-      textColor: 'text-primary',
-      accentColor: 'text-primary',
-      desc: `Закупка ${scenario.costPrice} ₴ + бажаний заробіток ${scenario.desiredProfit} ₴ = ${scenario.myPrice} ₴ (скільки ви плануєте отримати на руки).`,
+      subtitle: t('suppliers:cinemaPhase2Subtitle', {
+        percent: scenario.markupPercent,
+        profit: scenario.desiredProfit,
+        defaultValue: 'Собівартість + {{percent}}% (мої +{{profit}} ₴)',
+      }),
+      badge: t('suppliers:cinemaPhase2Badge', {
+        profit: scenario.desiredProfit,
+        defaultValue: 'Очікуваний дохід +{{profit}} ₴',
+      }),
+      badgeClass: 'bg-muted/60 text-foreground border-border/60',
+      activeBorder: 'border-foreground/50 bg-muted/20',
+      activeIndicator: 'bg-foreground',
+      iconColor: 'text-muted-foreground',
+      accentColor: 'text-foreground',
+      desc: t('suppliers:cinemaPhase2Desc', {
+        defaultValue: 'Ціна, яку продавці помилково виставляють напряму на маркетплейс',
+      }),
       mathTag: `${scenario.costPrice} ₴ + ${scenario.desiredProfit} ₴ = ${scenario.myPrice} ₴`,
     },
     {
       idx: 2,
-      title: '3. Пастка комісії маркетплейсу',
-      shortTitle: 'Пастка комісії',
+      title: t('suppliers:cinemaPhase3Title', { defaultValue: '3. Пастка комісії маркетплейсу' }),
       icon: AlertTriangle,
       value: `+${scenario.naiveActualProfit} ₴`,
-      subtitle: `Втрата: -${scenario.profitLostToFee} ₴ (-${scenario.profitLostPercent}%)`,
-      badge: `-${scenario.naiveMarketplaceFee} ₴ комісія`,
-      badgeClass: 'bg-destructive/10 text-destructive border-destructive/20',
-      activeBorder: 'border-destructive ring-1 ring-destructive/30',
+      subtitle: t('suppliers:cinemaPhase3Subtitle', {
+        marketplace: scenario.marketplaceName,
+        percent: scenario.marketplacePercent,
+        fee: scenario.naiveMarketplaceFee,
+        defaultValue: '{{marketplace}} забирає {{percent}}% (-{{fee}} ₴)',
+      }),
+      badge: t('suppliers:cinemaPhase3Badge', {
+        loss: scenario.profitLostToFee,
+        defaultValue: 'Втрата -{{loss}} ₴ маржі',
+      }),
+      badgeClass: 'bg-destructive/10 text-destructive border-destructive/25',
+      activeBorder: 'border-destructive/60 bg-destructive/5',
       activeIndicator: 'bg-destructive',
-      textColor: 'text-destructive',
+      iconColor: 'text-destructive',
       accentColor: 'text-destructive',
-      desc: `При наївній ціні ${scenario.naivePrice} ₴ комісія ${scenario.marketplacePercent}% утримується від повної суми продажу, з'їдаючи більшу частину прибутку!`,
+      desc: t('suppliers:cinemaPhase3Desc', {
+        desired: scenario.desiredProfit,
+        actual: scenario.naiveActualProfit,
+        defaultValue:
+          "Замість +{{desired}} ₴ заробляєте лише {{actual}} ₴! Комісія з'їла ваш прибуток",
+      }),
       mathTag: `${scenario.naivePrice} ₴ - ${scenario.naiveMarketplaceFee} ₴ - ${scenario.costPrice} ₴ = +${scenario.naiveActualProfit} ₴`,
     },
     {
       idx: 3,
-      title: '4. SmartFeed Ціна із захистом',
-      shortTitle: 'SmartFeed Ціна',
+      title: t('suppliers:cinemaPhase4Title', { defaultValue: '4. SmartFeed Ціна із захистом' }),
       icon: ShieldCheck,
       value: `${scenario.smartRetailPrice} ₴`,
-      subtitle: `Чистий прибуток рівно +${scenario.guaranteedProfit} ₴`,
-      badge: '100% Захищено',
+      subtitle: t('suppliers:cinemaPhase4Subtitle', {
+        price: scenario.myPrice,
+        percent: scenario.marketplacePercent,
+        defaultValue: 'Формула: {{price}} ÷ (1 - 0.{{percent}})',
+      }),
+      badge: t('suppliers:cinemaPhase4Badge', {
+        profit: scenario.guaranteedProfit,
+        defaultValue: 'Чистими рівно +{{profit}} ₴',
+      }),
       badgeClass: 'bg-success/15 text-success border-success/30 font-semibold',
-      activeBorder: 'border-success ring-1 ring-success/30',
+      activeBorder: 'border-success/60 bg-success/5',
       activeIndicator: 'bg-success',
-      textColor: 'text-success',
+      iconColor: 'text-success',
       accentColor: 'text-success',
-      desc: `Формула зворотного %: вітринна ціна покриває комісію ${scenario.smartMarketplaceFee} ₴, зберігаючи вам копійка в копійку +${scenario.guaranteedProfit} ₴!`,
+      desc: t('suppliers:cinemaPhase4Desc', {
+        fee: scenario.smartMarketplaceFee,
+        profit: scenario.guaranteedProfit,
+        defaultValue:
+          'Комісія {{fee}} ₴ повністю закладена в ціну. Ваш прибуток +{{profit}} ₴ захищено!',
+      }),
       mathTag: `(${scenario.myPrice} ₴) ÷ (1 - ${scenario.marketplacePercent}%) = ${scenario.smartRetailPrice} ₴`,
     },
   ];
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
       {phases.map((item) => {
         const Icon = item.icon;
         const isCurrentActive = phaseIndex === item.idx;
@@ -89,53 +124,55 @@ export function ReverseMarginCinemaPhases({
         return (
           <div
             key={item.idx}
+            role="button"
+            tabIndex={0}
             onClick={() => onSelectPhase?.(item.idx)}
-            className={`p-3.5 sm:p-4 rounded-xl border bg-card transition-all duration-200 cursor-pointer relative overflow-hidden flex flex-col justify-between shadow-xs ${
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                onSelectPhase?.(item.idx);
+              }
+            }}
+            className={`p-3 rounded-md border text-left transition-colors duration-150 cursor-pointer relative overflow-hidden flex flex-col justify-between focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
               isCurrentActive
-                ? `${item.activeBorder} bg-card`
-                : 'border-border/80 hover:border-border'
+                ? item.activeBorder
+                : 'border-border/60 bg-background/50 hover:bg-muted/20 hover:border-border'
             }`}
           >
-            {/* Top Indicator bar */}
             {isCurrentActive && (
-              <div className={`absolute top-0 left-0 right-0 h-1 ${item.activeIndicator}`} />
+              <div className={`absolute top-0 left-0 right-0 h-0.5 ${item.activeIndicator}`} />
             )}
 
-            <div className="space-y-2">
-              {/* Header: Title and Badge */}
+            <div className="space-y-1.5 w-full">
               <div className="flex items-center justify-between gap-1.5 flex-wrap">
-                <span
-                  className={`flex items-center gap-1.5 text-xs font-semibold ${item.textColor}`}
-                >
-                  <Icon className="size-3.5 shrink-0" />
-                  <span>{item.title}</span>
+                <span className="flex items-center gap-1.5 text-2xs font-semibold text-foreground">
+                  <Icon className={`size-3.5 shrink-0 ${item.iconColor}`} />
+                  <span className="truncate">{item.title}</span>
                 </span>
+              </div>
+
+              <div className="flex items-baseline justify-between gap-2 pt-0.5">
+                <div
+                  className={`text-lg font-bold font-mono tabular-nums tracking-tight ${item.accentColor}`}
+                >
+                  {item.value}
+                </div>
                 <Badge
                   variant="outline"
-                  className={`text-3xs px-1.5 py-0 font-mono ${item.badgeClass}`}
+                  className={`text-3xs px-1.5 py-0 h-4 font-mono tabular-nums shrink-0 ${item.badgeClass}`}
                 >
                   {item.badge}
                 </Badge>
               </div>
 
-              {/* Main Prominent Price/Amount Value */}
-              <div>
-                <div
-                  className={`text-xl sm:text-2xl font-bold font-mono tracking-tight ${item.accentColor}`}
-                >
-                  {item.value}
-                </div>
-                <div className="text-2xs font-medium text-muted-foreground mt-0.5">
-                  {item.subtitle}
-                </div>
+              <div className="text-3xs font-medium text-muted-foreground truncate">
+                {item.subtitle}
               </div>
             </div>
 
-            {/* Bottom: Explanation & Math Formula Tag */}
-            <div className="mt-3 pt-2.5 border-t border-border/50 space-y-1.5">
-              <div className="p-1 px-2 rounded-lg bg-background/80 border border-border/60 text-3xs font-mono text-muted-foreground flex items-center gap-1 truncate">
-                <Sparkles className="size-2.5 text-primary shrink-0" />
-                <span className="truncate">{item.mathTag}</span>
+            <div className="mt-2.5 pt-2 border-t border-border/50 space-y-1 w-full">
+              <div className="px-2 py-0.5 rounded-sm bg-muted/40 border border-border/50 text-3xs font-mono tabular-nums text-muted-foreground truncate">
+                {item.mathTag}
               </div>
               <p className="text-3xs text-muted-foreground leading-snug line-clamp-2">
                 {item.desc}

@@ -84,15 +84,30 @@ description: UI design system, semantic tokens, shadcn primitives, micro-typogra
 
 ## UI-12: Desktop High-Density Geometry & Hover-Revealed Row Actions
 
-- Desktop UI controls must use compact geometry: input/button radius 4px (`rounded-md` / `rounded-sm`), card/dialog radius 6-8px (`rounded-lg`). Oversized mobile radii (`rounded-2xl`, `rounded-3xl`) on desktop components are strictly prohibited.
+- Desktop UI controls must use compact geometry: micro-badges/checkboxes 2-4px (`rounded-sm`), input/button/inner-item radius 4-6px (`rounded-md`), outer card/dialog radius 6-8px (`rounded-lg`). Oversized mobile radii (`rounded-xl`, `rounded-2xl`, `rounded-3xl`) on desktop components are strictly prohibited.
 - Table rows must maintain compact `h-9` or `h-10` heights, using `tabular-nums` for numeric cells, codes, and IDs.
 - Secondary and tertiary actions in shadcn `Table` rows or list items must be subtle or revealed on hover (`opacity-70 group-hover:opacity-100` or `invisible group-hover:visible` with `focus-within:visible`), keeping tables scannable and free of icon walls.
 - Reason: Enterprise power users prioritize data density and scannability over oversized touch targets and visual clutter.
 
 ## UI-13: Anti-AI-Slop & Singular Boldness Doctrine
 
-- Each screen or dialog must possess exactly ONE primary visual focal point (one primary CTA button or hero metric); all secondary elements must be visually subordinate (`variant="outline"` or `variant="ghost"`).
-- Strict ban on AI-slop tropes: zero uppercase letter-spaced eyebrow badges (`tracking-widest uppercase` tags above titles), zero multi-color gradient text (`bg-gradient-to-r text-transparent`), zero decorative emojis in cards, and zero repetitive 3-column marketing card grids for functional data tables.
+- Each screen, wizard step, or dialog must possess exactly ONE primary visual focal point (one primary `bg-primary` CTA button or hero metric); all secondary interactive controls (e.g., autoplay toggles, presets, filter buttons) must remain visually subordinate (`variant="outline"` or `variant="ghost"`).
+- Strict ban on AI-slop tropes: zero uppercase letter-spaced eyebrow badges (`tracking-widest uppercase` / `tracking-wide uppercase` tags above titles), zero gradient card backgrounds (`bg-gradient-to-*`), zero neon accent borders (`border-primary/25`), zero decorative emojis in cards, and zero repetitive marketing card grids.
 - Chanel restraint doctrine: remove decorative containers, gratuitous badges, and colored pills before finalizing a view; express hierarchy through clean typography, whitespace, and subtle interactive states.
-- Enhance official shadcn primitives (`Card`, `Badge`, `Button`, `Dialog`, `Table`) with precise spacing and micro-interactions rather than decorative visual gimmicks.
 - Reason: Generic SaaS marketing templates degrade enterprise desktop tooling into noisy, amateurish interfaces.
+
+## UI-14: Restrained Multi-Select & Matrix States (Zero Accent Flood)
+
+- In multi-select category matrices, checkbox grids, filter chips, or multi-phase steppers where multiple items can be active simultaneously, never style selected items with primary brand fills or borders (`bg-primary`, `bg-primary/10`, `border-primary/40`).
+- Selected items in multi-select matrices must use neutral high-contrast elevation (`bg-card border-foreground/30 text-foreground font-medium shadow-2xs` with a neutral check indicator `bg-foreground text-background`), while unselected items recede (`bg-muted/15 border-border/50 text-muted-foreground opacity-75`).
+- Progress bars inside secondary telemetry headers must use neutral `bg-foreground/75` when within normal limits (switching to `bg-destructive` only on quota overflow), reserving `bg-primary` exclusively for the primary screen CTA.
+- Reason: Coloring 10+ selected cards simultaneously in brand green floods the viewport, destroys scannability, and competes with the primary footer CTA (`UI-13`).
+
+## UI-15: Viewport Budget, 2-Column Control Pairing & Inline Toolbar Filters
+
+- Multi-step wizards, drawers, and dialogs must fit within standard desktop viewports (`1280×800` / `1440×900`) without clipping bottom sections or requiring excessive vertical scrolling.
+- Pair related compact controls (e.g., entity selector + sync policy notice, or telemetry summary + quota bar) side-by-side in a 12-column grid (`grid-cols-1 md:grid-cols-12 gap-3`) rather than stacking full-width cards vertically.
+- Embed collection search inputs (`h-7 w-48 sm:w-56`) and bulk actions (`Select All` / `Deselect All`) directly inside the card's header toolbar (`px-3.5 py-2 border-b border-border/60 bg-muted/20`) rather than allocating a separate vertical row.
+- Convert multi-card feature showcases into unified flat 2×2 or 4-column hairline-divided matrices (`divide-y sm:divide-y-0 sm:divide-x divide-border/50`) without nested boxes.
+- Product preview cards must display readable 2-line titles (`line-clamp-2 leading-tight`) and visually distinguish in-stock (`border-success/30 bg-success/10 text-success`) vs out-of-stock (`border-border bg-muted/50 text-muted-foreground`) badges.
+- Reason: Vertical card stacking and standalone search rows waste vertical viewport height and push critical controls off-screen.

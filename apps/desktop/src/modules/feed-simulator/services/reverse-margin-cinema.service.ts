@@ -1,3 +1,4 @@
+import type { SupplierDto } from '@smartfeed/shared';
 import type { SimulatorProduct } from '@/modules/feed-simulator/types';
 
 export interface CinemaScenario {
@@ -19,14 +20,21 @@ export interface CinemaScenario {
   formulaDisplay: string;
 }
 
-export function buildCinemaScenario(product: SimulatorProduct): CinemaScenario {
+export function buildCinemaScenario(
+  product: SimulatorProduct,
+  supplier?: SupplierDto,
+): CinemaScenario {
   const cost = Math.max(10, Math.round(product.costPrice));
   const feePercent = product.marketplaceCommissionPercent || 15;
   const mName = product.marketplaceName || 'Rozetka';
 
-  // Planned seller markup: 30% of cost or minimum 80 UAH
-  const markupPercent = 30;
-  const desiredProfit = Math.max(80, Math.round(cost * (markupPercent / 100)));
+  const supplierMargin = Number(supplier?.defaultMarginPercent ?? 0);
+  const supplierFixed = Number(supplier?.defaultFixedMarkup ?? 0);
+  const markupPercent = supplierMargin > 0 ? supplierMargin : 30;
+  const desiredProfit = Math.max(
+    80,
+    Math.round(cost * (markupPercent / 100) + (supplierFixed > 0 ? supplierFixed : 0)),
+  );
   const myPrice = cost + desiredProfit;
 
   // 1. Naive calculation (how sellers mistakenly calculate without reverse margin)

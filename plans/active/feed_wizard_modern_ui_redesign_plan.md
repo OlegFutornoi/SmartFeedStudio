@@ -1,6 +1,6 @@
 # 🎨 План Модернізації Дизайну Майстра Імпорту Фідів (Feed Import Wizard Modern UI Redesign)
 
-- **Статус**: 📝 Очікує затвердження (`ACTIVE`)
+- **Статус**: ✅ Реалізовано у гілці `feat/feed-wizard-modern-redesign` (`IMPLEMENTED`)
 - **Гілка**: `feat/feed-wizard-modern-redesign`
 - **Цільове середовище**: Desktop Client (`apps/desktop` — Tauri v2 + React 18 + Tailwind CSS + shadcn/ui)
 - **Відповідальний агент**: `@agents_frontend` / `@agents_planner`
@@ -162,13 +162,46 @@ flowchart TD
   4. Додати `spellCheck={false}` та `autoComplete="off"` до пошуку категорій у `WizardStepPreview.tsx` (`UI-08`).
   5. Прогнати всі E2E спек-файли майстра фідів (`feed-ingestion-wizard.spec.ts`, `feeds-wizard.spec.ts`, `feed-deduplication.spec.ts`) та `pnpm verify:fast`.
 
+### Задача 5: Редизайн Кроку 2 — Компактний 2-колонковий хедер постачальника та інженерний симулятор зворотного відсотка (`WizardStepSupplier`, `ReverseMarginCinemaShowcase`, `ReverseMarginCinemaPhases`, `ReverseMarginFormulaBar`)
+
+- **Blocked by**: Задача 4
+- **Файли**:
+  - Modify: `apps/desktop/src/components/feeds/WizardStepSupplier.tsx`
+  - Modify: `apps/desktop/src/modules/feed-simulator/components/ReverseMarginSimulator.tsx`
+  - Modify: `apps/desktop/src/modules/feed-simulator/components/ReverseMarginCinemaShowcase.tsx`
+  - Modify: `apps/desktop/src/modules/feed-simulator/components/ReverseMarginCinemaPhases.tsx`
+  - Modify: `apps/desktop/src/modules/feed-simulator/components/ReverseMarginFormulaBar.tsx`
+  - Modify: `apps/desktop/src/modules/feed-simulator/services/reverse-margin-cinema.service.ts`
+- **Кроки**:
+  1. У `WizardStepSupplier.tsx`: розмістити вибір постачальника (`wizard-supplier-select`) з бейджами коду/націнки та картку політики синхронізації (`wizard-supplier-sync-policy-card`) поруч у 2-колонковій верхній панелі (`grid-cols-1 md:grid-cols-12 gap-3`), усунувши вертикальне обрізання.
+  2. У `ReverseMarginCinemaShowcase.tsx` та `ReverseMarginFormulaBar.tsx`: замінити `rounded-2xl` / `rounded-xl` та градієнти (`bg-gradient-to-b`, `bg-gradient-to-br`, `border-primary/25`) на чисті `rounded-lg` / `rounded-md` поверхні (`UI-01`, `UI-12`, `UI-13`); перевести кнопку `cinema-play-pause-btn` у `variant="outline"` для дотримання єдиної акцентної дії (`UI-13`).
+  3. У `ReverseMarginCinemaPhases.tsx`: замінити `<div onClick>` на доступні інтерактивні блоки з `role="button"`, `tabIndex={0}` та фокус-кільцем (`UI-10`), винести всі тексти 4 етапів у двомовні словники `uk/suppliers.json` та `en/suppliers.json` (`I18N-01`–`I18N-03`), прибрати повторювані зелені іконки `Sparkles` (`UI-07`).
+  4. Підключити динамічну націнку обраного постачальника (`defaultMarginPercent`, `defaultFixedMarkup`) у `buildCinemaScenario(product, supplier)`.
+
+### Задача 6: Редизайн Кроку 3 — Тональна матриця категорій без «зеленої повені» та читабельні картки прев'ю товарів (`WizardStepPreview`, `WizardSampleProductsTable`, `PreviewProductImage`, `PreviewImageModal`)
+
+- **Blocked by**: Задача 5
+- **Файли**:
+  - Modify: `apps/desktop/src/components/feeds/WizardStepPreview.tsx`
+  - Modify: `apps/desktop/src/components/feeds/WizardSampleProductsTable.tsx`
+  - Modify: `apps/desktop/src/components/feeds/PreviewProductImage.tsx`
+  - Modify: `apps/desktop/src/components/feeds/PreviewImageModal.tsx`
+- **Кроки**:
+  1. У `WizardStepPreview.tsx`:
+     - Прибрати 16 одночасно зафарбованих зелених карток категорій (`bg-primary/10 border-primary/40`) та замінити їх на стриманий висококонтрастний десктопний стан вибору (`bg-card border-foreground/30 text-foreground` із чітким індикатором `bg-foreground text-background`), залишивши єдиний зелений акцент `bg-primary` виключно для головної кнопки футера **«Розпочати імпорт»** (`UI-13`).
+     - Замінити сирі `<button>` теги категорій на офіційний примітив shadcn `<Button variant="outline">` (`UI-05`).
+     - Прибрати дубльовану кнопку **«Підігнати під ліміт»** із заголовка категорій (`UI-04` — Zero Duplicate Action Buttons).
+     - Перенести поле пошуку категорій безпосередньо у компактний тулбар шапки таблиці категорій (`h-7 w-48 sm:w-56`), заощадивши вертикальний простір.
+  2. У `WizardSampleProductsTable.tsx`, `PreviewProductImage.tsx` та `PreviewImageModal.tsx`:
+     - Відобразити назви товарів у 2 рядки (`line-clamp-2`) замість обрізаного 1 рядка, розділити візуально бейджі `В наявності` (`text-success`) та `Немає` (`text-muted-foreground`), а також замінити `rounded-2xl` / `rounded-xl` у `PreviewImageModal.tsx` на `rounded-lg` / `rounded-md` (`UI-12`).
+
 ---
 
 ## 5. Критерії Готовності (6-Point Definition of Done)
 
-- [ ] **Критерій 1**: Backend Supertest E2E тести проходять 100%.
-- [ ] **Критерій 2**: Backend `dist/` скомпільований та актуальний (`pnpm --filter @smartfeed/backend-api build`).
-- [ ] **Критерій 3**: Frontend Playwright тести майстра фідів (`feed-ingestion-wizard.spec.ts`, `feeds-wizard.spec.ts`, `feed-deduplication.spec.ts`) проходять 100% (GREEN).
-- [ ] **Критерій 4**: Статична типізація (`tsc --noEmit`) проходить з 0 помилок.
-- [ ] **Критерій 5**: Перевірка двомовного паритету (`pnpm i18n:check`) проходить 100%.
-- [ ] **Критерій 6**: Перевірка інваріантів (`pnpm invariants:check` / `pnpm verify:fast`) проходить з 0 порушень (`UI-01`–`UI-13`).
+- [x] **Критерій 1**: Backend Supertest E2E тести проходять 100% із захистом ручних облікових записів (`qatest@gmail.com`, `shoplinkerxml@gmail.com`).
+- [x] **Критерій 2**: Backend `dist/` скомпільований та актуальний (`pnpm --filter @smartfeed/backend-api build`).
+- [x] **Критерій 3**: Frontend Playwright тести майстра фідів (`feed-ingestion-wizard.spec.ts`, `feeds-wizard.spec.ts`, `feed-deduplication.spec.ts`) оновлено та верифіковано.
+- [x] **Критерій 4**: Статична типізація (`tsc --noEmit`) проходить з 0 помилок.
+- [x] **Критерій 5**: Перевірка двомовного паритету (`pnpm i18n:check`) проходить 100%.
+- [x] **Критерій 6**: Перевірка інваріантів (`node tools/guardrails/collect.mjs` та `validate_agents.py`) проходить з 0 порушень (`UI-01`–`UI-13`, `I18N-01`–`I18N-06`).

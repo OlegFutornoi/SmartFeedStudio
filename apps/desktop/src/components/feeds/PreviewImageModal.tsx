@@ -31,11 +31,11 @@ export const PreviewImageModal: React.FC<PreviewImageModalProps> = ({
       data-testid="preview-image-modal"
     >
       <div
-        className="relative w-full max-w-lg overflow-hidden rounded-2xl border border-border bg-card shadow-2xl animate-in zoom-in-95 duration-200"
+        className="relative w-full max-w-lg overflow-hidden rounded-lg border border-border bg-card shadow-xl animate-in zoom-in-95 duration-200"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header with 100% Solid Opaque Background */}
-        <div className="flex items-center justify-between px-5 py-3.5 border-b border-border bg-card shrink-0">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-card shrink-0">
           <div className="min-w-0 pr-3">
             <h3 className="text-sm font-semibold text-foreground truncate" title={productTitle}>
               {productTitle}
@@ -47,7 +47,7 @@ export const PreviewImageModal: React.FC<PreviewImageModalProps> = ({
             variant="ghost"
             size="icon"
             onClick={onClose}
-            className="size-8 rounded-lg text-muted-foreground hover:text-foreground shrink-0"
+            className="size-8 rounded-md text-muted-foreground hover:text-foreground shrink-0"
             title={t('common:close', { defaultValue: 'Закрити' })}
             data-testid="close-preview-image-modal"
           >
@@ -56,11 +56,11 @@ export const PreviewImageModal: React.FC<PreviewImageModalProps> = ({
         </div>
 
         {/* Large Image View */}
-        <div className="p-4 bg-background/50 flex items-center justify-center min-h-64 max-h-[70vh] overflow-hidden">
+        <div className="p-4 bg-muted/20 flex items-center justify-center min-h-64 max-h-[70vh] overflow-hidden">
           <img
             src={imageUrl}
             alt={productTitle}
-            className="max-h-[65vh] max-w-full rounded-xl object-contain shadow-md border border-border/40"
+            className="max-h-[65vh] max-w-full rounded-md object-contain border border-border/40 bg-background"
           />
         </div>
 

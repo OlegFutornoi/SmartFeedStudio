@@ -109,7 +109,7 @@ export const PreviewProductImage: React.FC<PreviewProductImageProps> = ({
   if (!originalUrl) {
     return (
       <div
-        className="size-9 rounded-lg bg-secondary/60 flex items-center justify-center text-muted-foreground/50 border border-border/40"
+        className="size-full rounded-sm bg-muted/40 flex items-center justify-center text-muted-foreground/50"
         title={t('suppliers:photoNoImage', { defaultValue: 'Немає фото у фіді' })}
         data-testid={`preview-img-empty-${sku}`}
       >
@@ -120,14 +120,14 @@ export const PreviewProductImage: React.FC<PreviewProductImageProps> = ({
 
   return (
     <div
-      className="relative size-9 rounded-lg overflow-hidden border border-border bg-muted/40 shrink-0 group select-none"
+      className="relative size-full rounded-sm overflow-hidden bg-background shrink-0 group select-none"
       data-testid={`preview-img-container-${sku}`}
     >
       {/* Loading Skeleton */}
       {isLoading && (
         <div
-          className="absolute inset-0 bg-muted/70 backdrop-blur-xs flex items-center justify-center text-primary z-10 animate-pulse"
-          title={t('suppliers:imageLoading', { defaultValue: 'Завантаження фото...' })}
+          className="absolute inset-0 bg-muted/70 flex items-center justify-center text-muted-foreground z-10 animate-pulse"
+          title={t('suppliers:imageLoading', { defaultValue: 'Завантаження фото…' })}
         >
           <Loader2 className="size-3.5 animate-spin" />
         </div>

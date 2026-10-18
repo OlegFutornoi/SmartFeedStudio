@@ -69,37 +69,32 @@ export function WizardAiAssistantShowcase() {
   return (
     <div
       data-testid="wizard-ai-copilot-showcase"
-      className="rounded-2xl border border-primary/20 bg-gradient-to-b from-card/80 via-card/50 to-background p-4 sm:p-5 shadow-xs space-y-4"
+      className="rounded-lg border border-border/60 bg-card overflow-hidden"
     >
-      {/* AI Agent Header Bar */}
-      <div className="flex items-center justify-between gap-3 border-b border-border/60 pb-3 flex-wrap">
-        <div className="flex items-center gap-3">
-          {/* 3D Agent Avatar with Pulsing Radar Ring */}
-          <div className="relative size-11 sm:size-12 shrink-0">
-            <div className="size-full overflow-hidden rounded-xl border border-primary/30 bg-background shadow-xs ring-2 ring-primary/20">
+      {/* AI Agent Compact Header Strip */}
+      <div className="flex items-center justify-between gap-3 px-4 py-3 border-b border-border/50 bg-muted/20 flex-wrap">
+        <div className="flex items-center gap-2.5 min-w-0">
+          <div className="relative size-8 shrink-0">
+            <div className="size-full overflow-hidden rounded-md border border-border/60 bg-background">
               <img
                 src={avatarUrl}
                 alt={name || 'SmartFeed AI Copilot'}
                 className="size-full object-cover"
               />
             </div>
-            {/* Live Online Ping Indicator */}
-            <span className="absolute -bottom-0.5 -right-0.5 flex size-3 items-center justify-center">
-              <span className="absolute inline-flex size-full animate-ping rounded-full bg-success opacity-75" />
-              <span className="relative inline-flex size-2.5 rounded-full bg-success ring-2 ring-background shadow-xs" />
-            </span>
+            <span className="absolute -bottom-0.5 -right-0.5 size-2.5 rounded-full bg-success ring-2 ring-card" />
           </div>
 
-          <div className="space-y-0.5 min-w-0">
+          <div className="min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <h4 className="text-xs sm:text-sm font-semibold text-foreground">
+              <h4 className="text-xs font-semibold text-foreground">
                 {name || 'SmartFeed AI Copilot'}
               </h4>
               <Badge
                 variant="outline"
-                className="gap-1 border-primary/30 bg-primary/10 px-2 py-0 text-3xs font-semibold text-primary"
+                className="gap-1 border-border/60 bg-background px-1.5 py-0 text-3xs font-mono text-muted-foreground"
               >
-                <Sparkles className="size-2.5" />
+                <Sparkles className="size-2.5 text-primary" />
                 <span>AI 2.0</span>
               </Badge>
             </div>
@@ -114,35 +109,35 @@ export function WizardAiAssistantShowcase() {
 
         <Badge
           variant="outline"
-          className="border-success/30 bg-success/10 text-success text-2xs font-medium px-2 py-0.5 ml-auto sm:ml-0"
+          className="border-success/30 bg-success/15 text-success text-2xs font-medium px-2 py-0.5 ml-auto sm:ml-0"
         >
           <Bot className="size-3 mr-1" />
           {t('suppliers:aiAutopilotActive', { defaultValue: 'Автопілот аналізу готовий' })}
         </Badge>
       </div>
 
-      {/* 4 Capability Cards Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+      {/* 2x2 Architectural Capability Matrix (Hairline Dividers, Zero Nested Border Clutter) */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-px bg-border/40">
         {aiFeatures.map((feat) => {
           const Icon = feat.icon;
           return (
             <div
               key={feat.id}
-              className="p-3 rounded-xl border border-border/60 bg-secondary/20 hover:bg-secondary/40 transition-colors space-y-1.5 flex flex-col justify-between"
+              className="p-3.5 bg-card hover:bg-muted/15 transition-colors space-y-1.5 flex flex-col justify-between"
             >
               <div className="space-y-1">
-                <div className="flex items-center justify-between gap-1.5">
-                  <div className="flex items-center gap-1.5">
-                    <div className="size-6 rounded-md bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <div className="size-6 rounded-md bg-muted/60 border border-border/50 text-muted-foreground flex items-center justify-center shrink-0">
                       <Icon className="size-3.5" />
                     </div>
-                    <span className="text-xs font-semibold text-foreground leading-tight">
+                    <span className="text-xs font-medium text-foreground leading-tight truncate">
                       {feat.title}
                     </span>
                   </div>
                   <Badge
                     variant="outline"
-                    className="text-3xs px-1.5 py-0 font-mono text-muted-foreground bg-background/50"
+                    className="text-3xs px-1.5 py-0 font-mono text-muted-foreground bg-muted/30 border-border/50 shrink-0"
                   >
                     {feat.tag}
                   </Badge>
@@ -154,22 +149,22 @@ export function WizardAiAssistantShowcase() {
         })}
       </div>
 
-      {/* Free Quotas Banner & Upsell Pitch */}
-      <div className="p-3 rounded-xl bg-primary/5 border border-primary/15 flex items-center justify-between gap-3 text-xs flex-wrap">
-        <div className="flex items-center gap-2">
-          <Sparkles className="size-4 text-primary shrink-0" />
-          <span className="text-2xs sm:text-xs text-foreground">
+      {/* Single-Line Quota Notice Footer */}
+      <div className="px-4 py-2.5 bg-muted/20 border-t border-border/50 flex items-center justify-between gap-3 text-xs flex-wrap">
+        <div className="flex items-center gap-2 min-w-0">
+          <Sparkles className="size-3.5 text-primary shrink-0" />
+          <span className="text-2xs text-muted-foreground">
             {t('suppliers:aiFreeQuotaNotice', {
               defaultValue:
                 'У ваш план включено 50 AI-збагачень товарів. Автопілот візьме на себе всю монотонну рутину.',
             })}
           </span>
         </div>
-        <div className="text-3xs font-medium text-primary flex items-center gap-1 shrink-0 ml-auto">
+        <div className="text-3xs font-medium text-foreground flex items-center gap-1 shrink-0 ml-auto">
           <span>
             {t('suppliers:aiAutoEnrichOnImport', { defaultValue: 'Доступно під час імпорту' })}
           </span>
-          <ArrowRight className="size-3" />
+          <ArrowRight className="size-3 text-muted-foreground" />
         </div>
       </div>
     </div>
