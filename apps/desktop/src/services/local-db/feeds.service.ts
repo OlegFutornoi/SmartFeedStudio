@@ -88,7 +88,12 @@ export class LocalFeedsService {
       productsCount: rawProducts.length,
     };
 
-    let dbResult: { totalProcessed: number; createdCount: number; feedSourceId: string };
+    let dbResult: {
+      totalProcessed?: number;
+      createdCount?: number;
+      feedSourceId?: string;
+      id?: string;
+    };
     try {
       dbResult = await invokeLocalDb('db_create_feed_source', {
         supplierId: options.supplierId,
@@ -102,7 +107,7 @@ export class LocalFeedsService {
       throw createErr;
     }
 
-    const actualFeedSourceId = dbResult.feedSourceId;
+    const actualFeedSourceId = dbResult.feedSourceId || dbResult.id || '';
 
     // 2. Ingest products linked strictly to the created/deduplicated feedSourceId.
     try {

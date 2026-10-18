@@ -391,45 +391,81 @@
   },
   "UI-01": {
     "title": "100% Solid Sticky Headers",
-    "domain": "frontend",
+    "domain": "ui",
     "enforcer": "eslint:invariants/header",
     "mode": "ratchet"
   },
   "UI-02": {
     "title": "Zero Off-Scheme Palette Colors & Rainbow Elements",
-    "domain": "frontend",
+    "domain": "ui",
     "enforcer": "eslint:invariants/palette",
     "mode": "ratchet"
   },
   "UI-03": {
     "title": "Semantic Success Status Badge",
-    "domain": "frontend",
+    "domain": "ui",
     "enforcer": "eslint:invariants/palette",
     "mode": "ratchet"
   },
   "UI-04": {
     "title": "Zero Duplicate Action / CTA Buttons",
-    "domain": "frontend",
+    "domain": "ui",
     "enforcer": "review-only",
     "mode": "manual"
   },
   "UI-05": {
     "title": "Strict Official shadcn Component Architecture (Zero Custom Re-invention)",
-    "domain": "frontend",
+    "domain": "ui",
     "enforcer": "eslint:invariants/shadcn",
     "mode": "ratchet"
   },
   "UI-06": {
     "title": "Compact Typography, Tabular Numbers & Clean Metrics",
-    "domain": "frontend",
+    "domain": "ui",
     "enforcer": "eslint:invariants/tableCell",
     "mode": "ratchet"
   },
   "UI-07": {
     "title": "Strict Icon & Control Semantic Styling (Zero Rainbow Icons)",
-    "domain": "frontend",
+    "domain": "ui",
     "enforcer": "eslint:invariants/palette",
     "mode": "ratchet"
+  },
+  "UI-08": {
+    "title": "Form Input Hygiene & Unblocked Paste",
+    "domain": "ui",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "UI-09": {
+    "title": "Micro-Typography, True Ellipses & Widow Prevention",
+    "domain": "ui",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "UI-10": {
+    "title": "Accessible Interactive Primitives & Focus Visibility",
+    "domain": "ui",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "UI-11": {
+    "title": "Surface Depth Hierarchy & Anti-Border Clutter",
+    "domain": "ui",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "UI-12": {
+    "title": "Desktop High-Density Geometry & Hover-Revealed Row Actions",
+    "domain": "ui",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "UI-13": {
+    "title": "Anti-AI-Slop & Singular Boldness Doctrine",
+    "domain": "ui",
+    "enforcer": "review-only",
+    "mode": "manual"
   },
   "I18N-01": {
     "title": "100% Bilingual Parity (UK ⇄ EN)",

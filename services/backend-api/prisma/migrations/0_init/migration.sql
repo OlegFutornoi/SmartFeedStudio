@@ -510,9 +510,6 @@ CREATE INDEX "organization_invitations_invited_by_id_idx" ON "organization_invit
 CREATE INDEX "organization_invitations_email_idx" ON "organization_invitations"("email");
 
 -- CreateIndex
-CREATE INDEX "organization_invitations_token_idx" ON "organization_invitations"("token");
-
--- CreateIndex
 CREATE INDEX "organization_invitations_status_idx" ON "organization_invitations"("status");
 
 -- CreateIndex
@@ -567,9 +564,6 @@ CREATE INDEX "navigation_items_target_app_is_visible_order_idx" ON "navigation_i
 CREATE UNIQUE INDEX "page_guides_route_key" ON "page_guides"("route");
 
 -- CreateIndex
-CREATE INDEX "page_guides_route_idx" ON "page_guides"("route");
-
--- CreateIndex
 CREATE INDEX "page_guides_target_app_order_idx" ON "page_guides"("target_app", "order");
 
 -- CreateIndex
@@ -586,9 +580,6 @@ CREATE INDEX "payment_transactions_provider_idx" ON "payment_transactions"("prov
 
 -- CreateIndex
 CREATE INDEX "payment_transactions_created_at_idx" ON "payment_transactions"("created_at");
-
--- CreateIndex
-CREATE INDEX "payment_transactions_order_reference_idx" ON "payment_transactions"("order_reference");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "payment_settings_provider_key" ON "payment_settings"("provider");

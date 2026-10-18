@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { FeedCollisionResultDto, FeedCollisionType, FeedSourceType } from '@smartfeed/shared';
 import { analyzeFeedUrl, analyzeFeedContent, type FeedAnalysisResult } from '@/lib/api';
 import { getFeedAnalysisErrorMessage } from '@/components/feeds/feedErrorMessages';
@@ -35,52 +35,55 @@ export function useFeedAnalysis({
   const [collisionResult, setCollisionResult] = useState<FeedCollisionResultDto | null>(null);
   const [isCheckingCollision, setIsCheckingCollision] = useState(false);
 
-  const checkCollision = async (
-    targetSupplierId?: string,
-    targetUrl?: string,
-    targetFileName?: string,
-    targetName?: string,
-    targetFileContent?: string,
-    targetSourceType?: 'URL' | 'FILE',
-  ): Promise<FeedCollisionResultDto | null> => {
-    const activeType = targetSourceType ?? sourceType;
-    const supId = targetSupplierId || selectedSupplierId || '';
-    const url = targetUrl ?? feedUrl;
-    const fName = targetFileName ?? fileName;
-    const effectiveUrl = activeType === 'URL' ? url.trim() : '';
+  const checkCollision = useCallback(
+    async (
+      targetSupplierId?: string,
+      targetUrl?: string,
+      targetFileName?: string,
+      targetName?: string,
+      targetFileContent?: string,
+      targetSourceType?: 'URL' | 'FILE',
+    ): Promise<FeedCollisionResultDto | null> => {
+      const activeType = targetSourceType ?? sourceType;
+      const supId = targetSupplierId || selectedSupplierId || '';
+      const url = targetUrl ?? feedUrl;
+      const fName = targetFileName ?? fileName;
+      const effectiveUrl = activeType === 'URL' ? url.trim() : '';
 
-    if (activeType === 'URL' && !effectiveUrl) {
-      setCollisionResult(null);
-      return null;
-    }
-    if (activeType === 'FILE' && !fName) {
-      setCollisionResult(null);
-      return null;
-    }
+      if (activeType === 'URL' && !effectiveUrl) {
+        setCollisionResult(null);
+        return null;
+      }
+      if (activeType === 'FILE' && !fName) {
+        setCollisionResult(null);
+        return null;
+      }
 
-    const name =
-      targetName ?? feedName ?? (effectiveUrl ? formatFeedTitle(effectiveUrl) : fName || '');
-    const content = targetFileContent ?? fileContent;
+      const name =
+        targetName ?? feedName ?? (effectiveUrl ? formatFeedTitle(effectiveUrl) : fName || '');
+      const content = targetFileContent ?? fileContent;
 
-    setIsCheckingCollision(true);
-    try {
-      const colResult = await localDb.feeds.checkFeedCollision({
-        supplierId: supId,
-        sourceType: activeType === 'FILE' ? FeedSourceType.FILE : FeedSourceType.URL,
-        sourceUrl: effectiveUrl || undefined,
-        fileName: activeType === 'FILE' ? fName || undefined : undefined,
-        feedName: name || undefined,
-        fileContent: content || undefined,
-      });
-      setCollisionResult(colResult);
-      return colResult;
-    } catch (colErr) {
-      console.warn('[useFeedAnalysis] checkCollision error:', colErr);
-      return null;
-    } finally {
-      setIsCheckingCollision(false);
-    }
-  };
+      setIsCheckingCollision(true);
+      try {
+        const colResult = await localDb.feeds.checkFeedCollision({
+          supplierId: supId,
+          sourceType: activeType === 'FILE' ? FeedSourceType.FILE : FeedSourceType.URL,
+          sourceUrl: effectiveUrl || undefined,
+          fileName: activeType === 'FILE' ? fName || undefined : undefined,
+          feedName: name || undefined,
+          fileContent: content || undefined,
+        });
+        setCollisionResult(colResult);
+        return colResult;
+      } catch (colErr) {
+        console.warn('[useFeedAnalysis] checkCollision error:', colErr);
+        return null;
+      } finally {
+        setIsCheckingCollision(false);
+      }
+    },
+    [sourceType, selectedSupplierId, feedUrl, fileName, feedName, fileContent],
+  );
 
   // Real-time reactive collision checking as soon as feedUrl, fileName, or feedName changes
   useEffect(() => {
@@ -96,7 +99,7 @@ export function useFeedAnalysis({
     }
 
     const timer = setTimeout(() => {
-      checkCollision(
+      void checkCollision(
         selectedSupplierId,
         sourceType === 'URL' ? trimmedUrl : undefined,
         sourceType === 'FILE' ? fileName || undefined : undefined,
@@ -107,7 +110,7 @@ export function useFeedAnalysis({
     }, 250);
 
     return () => clearTimeout(timer);
-  }, [feedUrl, fileName, selectedSupplierId, feedName, sourceType, fileContent]);
+  }, [feedUrl, fileName, selectedSupplierId, feedName, sourceType, fileContent, checkCollision]);
 
   const performAnalysis = async (
     customContent?: string,

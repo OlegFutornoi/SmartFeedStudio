@@ -31,6 +31,9 @@ Load this file when doing a UI review/audit pass, or when you need the full chec
 - `accessible-authentication` - Allow password managers and paste; provide a non-cognitive authentication path (WCAG 2.2 Minimum, AA). The Enhanced AAA criterion is not represented in the dataset
 - `auto-rotation-controls` - Carousels and moving content need pause/stop controls and must stop on focus or reduced motion (WAI)
 - `contextual-live-badge-updates` - Announce a changed count/status as a complete contextual phrase without moving focus; use one appropriate live/status region and atomic updates only when needed
+- `semantic-interactive-elements` - Use `<button>` for actions and `<Link>`/`<a>` for navigation; never use `<div onClick>` or `<span onClick>` without keyboard semantics (UI-10)
+- `focus-visible-discipline` - Never use `outline-none` without visible replacement; prefer `:focus-visible` over `:focus` to prevent click rings (UI-10)
+- `scroll-margin-top` - Apply `scroll-margin-top` to heading anchors so sticky headers do not obscure target content on navigation (UI-10)
 
 ### 2. Touch & Interaction (CRITICAL)
 
@@ -88,7 +91,12 @@ Load this file when doing a UI review/audit pass, or when you need the full chec
 - `icon-style-consistent` - Use one icon set/visual language (stroke width, corner radius) across the product
 - `system-controls` - Prefer native/system controls over fully custom ones; only customize when branding requires it (Apple HIG)
 - `blur-purpose` - Use blur to indicate background dismissal (modals, sheets), not as decoration (Apple HIG)
-- `primary-action` - Each screen should have only one primary CTA; secondary actions visually subordinate (Apple HIG)
+- `primary-action` - Each screen should have only one primary CTA; secondary actions visually subordinate (Apple HIG, UI-13)
+- `surface-depth-hierarchy` - Establish visual hierarchy through subtle tonal elevation (`bg-background` canvas, `bg-card` surface, `bg-popover` menus); avoid outlining every container with heavy borders (UI-11)
+- `desktop-density-radii` - Desktop UI controls use compact radii (`rounded-md` 4px for buttons/inputs, `rounded-lg` 6-8px for cards); never use `rounded-2xl` on desktop (UI-12)
+- `hover-revealed-row-actions` - In data tables, keep secondary/tertiary row actions subtle or revealed on row hover (`opacity-70 group-hover:opacity-100` or `invisible group-hover:visible focus-within:visible`) with `h-9`/`h-10` compact row heights (UI-12)
+- `singular-boldness-doctrine` - Each view or modal has exactly one primary CTA / focal point; secondary actions are outline/ghost (UI-13)
+- `anti-ai-slop-restraint` - Ban uppercase letter-spaced eyebrow tags, multi-color gradient headlines, and decorative emoji chips; apply Chanel restraint before shipping (UI-13)
 
 ### 5. Layout & Responsive (HIGH)
 
@@ -130,6 +138,9 @@ Load this file when doing a UI review/audit pass, or when you need the full chec
 - `whitespace-balance` - Use whitespace intentionally to group related items and separate sections; avoid visual clutter (Apple HIG)
 - `heading-line-balance` - Use balanced wrapping on short headings as a progressive, user-agent-controlled heuristic; keep natural wrapping readable and never force final words together with blanket nonbreaking spaces
 - `long-token-wrapping` - Let URLs, IDs, and user content reflow with `overflow-wrap: anywhere` and a shrinkable flex/grid text child; do not apply `word-break: break-all` to normal prose
+- `true-ellipsis-glyph` - Use the real ellipsis character `…` (`&hellip;`), never three periods `...`, across all UI strings, placeholders, and loading states (UI-09)
+- `typographic-quotes-and-spaces` - Use curly quotes `“` `”` for prose and non-breaking spaces `&nbsp;` before units and shortcut badges (`10&nbsp;MB`, `100&nbsp;SKU`, `⌘&nbsp;K`) (UI-09)
+- `text-wrap-balance` - Apply `text-wrap: balance` or `text-pretty` to card titles, dialog headers, and section headlines to eliminate widows (UI-09)
 
 ### 7. Animation (MEDIUM)
 
@@ -192,6 +203,10 @@ Load this file when doing a UI review/audit pass, or when you need the full chec
 - `aria-live-errors` - Form errors use aria-live region or role="alert" to notify screen readers (WCAG)
 - `contrast-feedback` - Error and success state colors must meet 4.5:1 contrast ratio (WCAG, MD)
 - `timeout-feedback` - Request timeout must show clear feedback with retry option (MD)
+- `unblocked-paste` - Never block paste (`onPaste` + `preventDefault()`); always allow pasting URLs, API tokens, regex patterns, and credentials (UI-08)
+- `form-spellcheck-control` - Set `spellCheck={false}` on code, URL, email, SKU, supplier key, and username inputs to avoid red squiggles (UI-08)
+- `autocomplete-off-discipline` - Declare `autocomplete="off"` on non-auth fields so credential managers do not occlude mapping/filter dropdowns (UI-08)
+- `unified-hit-targets` - Checkboxes and radio controls must share a single hit target with their labels, eliminating dead click zones (UI-08)
 
 ### 9. Navigation Patterns (HIGH)
 

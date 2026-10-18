@@ -145,7 +145,6 @@ model OrganizationInvitation {
   @@index([organizationId])
   @@index([invitedById])
   @@index([email])
-  @@index([token])
   @@index([status])
   @@index([expiresAt])
   @@map("organization_invitations")
@@ -297,7 +296,6 @@ model PageGuide {
   createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt     DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
 
-  @@index([route])
   @@index([targetApp, order])
   @@map("page_guides")
 }
@@ -342,7 +340,6 @@ model PaymentTransaction {
   @@index([status])
   @@index([provider])
   @@index([createdAt])
-  @@index([orderReference])
   @@map("payment_transactions")
 }
 

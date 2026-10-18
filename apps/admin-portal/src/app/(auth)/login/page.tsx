@@ -128,6 +128,7 @@ export default function AdminLoginPage() {
                   <Input
                     id="email"
                     type="email"
+                    autoComplete="username"
                     placeholder={t('auth', 'email_placeholder')}
                     className="pl-9 bg-background/60 border-border/80 focus:bg-background focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all text-sm h-11"
                     value={email}
@@ -150,6 +151,7 @@ export default function AdminLoginPage() {
                   <Input
                     id="password"
                     type="password"
+                    autoComplete="current-password"
                     placeholder={t('auth', 'password_placeholder')}
                     className="pl-9 bg-background/60 border-border/80 focus:bg-background focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all text-sm h-11"
                     value={password}

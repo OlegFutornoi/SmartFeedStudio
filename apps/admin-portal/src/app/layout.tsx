@@ -13,6 +13,9 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: 'SmartFeed Studio - Admin Portal',
   description: 'Control center for user management, licensing, and cloud synchronization.',
+  icons: {
+    icon: '/favicon.ico',
+  },
 };
 
 const THEME_SCRIPT = `

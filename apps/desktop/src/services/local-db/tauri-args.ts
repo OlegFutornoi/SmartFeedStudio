@@ -98,6 +98,8 @@ export const REGISTERED_TAURI_COMMANDS = new Set([
   'db_update_supplier',
   'db_delete_supplier',
   'db_get_supplier_feed_sources',
+  'db_get_all_feed_sources',
+  'db_check_feed_collision',
   'db_create_feed_source',
   'db_delete_feed_source',
   'db_get_products',

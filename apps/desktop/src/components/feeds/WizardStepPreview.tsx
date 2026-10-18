@@ -47,13 +47,8 @@ export function WizardStepPreview({
     ? 0
     : Math.min(100, Math.round((totalSelectedSkus / (remainingQuota || 1)) * 100));
 
-  const handleSelectAll = () => {
-    setSelectedCategoryIds(categories.map((c) => c.id));
-  };
-
-  const handleDeselectAll = () => {
-    setSelectedCategoryIds([]);
-  };
+  const handleSelectAll = () => setSelectedCategoryIds(categories.map((c) => c.id));
+  const handleDeselectAll = () => setSelectedCategoryIds([]);
 
   const handleAutoFitToQuota = () => {
     if (isUnlimited || categories.length === 0) return;
@@ -78,18 +73,16 @@ export function WizardStepPreview({
   };
 
   const toggleCategory = (id: string) => {
-    if (selectedCategoryIds.includes(id)) {
-      setSelectedCategoryIds(selectedCategoryIds.filter((catId) => catId !== id));
-    } else {
-      setSelectedCategoryIds([...selectedCategoryIds, id]);
-    }
+    setSelectedCategoryIds(
+      selectedCategoryIds.includes(id)
+        ? selectedCategoryIds.filter((catId) => catId !== id)
+        : [...selectedCategoryIds, id],
+    );
   };
 
   return (
     <div className="space-y-3.5">
-      {/* 1. Unified Feed Stats & Live Quota Gauge Header (Zero duplicates, zero giant red boxes) */}
       <div className="p-3 sm:p-3.5 rounded-2xl border border-border/80 bg-card shadow-xs flex items-center justify-between gap-3 flex-wrap">
-        {/* Left: Feed Details (Exact string matches for tests) */}
         <div className="flex items-center gap-2.5 flex-wrap">
           <Badge variant="outline" className="text-xs font-mono bg-background border-border">
             {t('suppliers:detectedFormat', { defaultValue: 'Формат фіду' })}: {analysis.format}
@@ -110,7 +103,6 @@ export function WizardStepPreview({
           </div>
         </div>
 
-        {/* Right: Live Interactive Quota Meter */}
         <div className="flex items-center gap-3 ml-auto flex-wrap">
           <div className="space-y-1 text-right">
             <div className="text-xs font-medium flex items-center justify-end gap-1.5">
@@ -188,7 +180,6 @@ export function WizardStepPreview({
         </div>
       </div>
 
-      {/* 2. Category Selection Checklist with Quick Actions */}
       {categories.length > 0 && (
         <div className="p-3.5 rounded-2xl border border-border bg-card space-y-3 shadow-xs">
           <div className="flex items-center justify-between gap-2 flex-wrap">
@@ -244,7 +235,6 @@ export function WizardStepPreview({
             </div>
           </div>
 
-          {/* Category Search filter */}
           {categories.length > 4 && (
             <div className="relative">
               <Search className="size-3.5 absolute left-2.5 top-2.5 text-muted-foreground" />
@@ -259,7 +249,6 @@ export function WizardStepPreview({
             </div>
           )}
 
-          {/* Categories Grid (Single smooth scroll area) */}
           <div className="max-h-60 overflow-y-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-1.5 p-1 bg-secondary/15 rounded-xl border border-border/50">
             {filteredCategories.map((cat) => {
               const isSelected = selectedCategoryIds.includes(cat.id);
@@ -288,7 +277,6 @@ export function WizardStepPreview({
                       {cat.name}
                     </span>
                   </div>
-
                   <span className="font-mono text-2xs text-muted-foreground ml-1.5 shrink-0">
                     {cat.productCount} SKU
                   </span>
@@ -299,7 +287,6 @@ export function WizardStepPreview({
         </div>
       )}
 
-      {/* 3. Streamlined Sample Products Strip (Replacing the Heavy Table, Zero Scroll Clutter) */}
       <WizardSampleProductsTable sampleProducts={analysis.sampleProducts} />
     </div>
   );

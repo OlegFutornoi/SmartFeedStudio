@@ -106,16 +106,16 @@ describe('Feed Collision & Deduplication Service (E2E)', () => {
     expect(res.status).toBe(200);
     expect(res.body.hasCollision).toBe(false);
     expect(res.body.collisionType).toBe(FeedCollisionType.NONE);
-    // Canonical URL stripped UTMs, lowercased host, and collapsed trailing slash
-    expect(res.body.canonicalUrl).toBe('http://livolo.kiev.ua/products_feed.xml');
+    // Canonical URL stripped UTMs, normalized protocol to https, lowercased host, and collapsed trailing slash
+    expect(res.body.canonicalUrl).toBe('https://livolo.kiev.ua/products_feed.xml');
     expect(res.body.urlFingerprint).toBeDefined();
     expect(res.body.urlFingerprint.length).toBe(64);
     expect(res.body.suggestedFeedName).toBe('livolo.kiev.ua (products_feed.xml)');
   });
 
-  it('4. POST /api/feeds/check-collision — checks file content and computes contentHash', async () => {
+  it('4. POST /api/feeds/check-collision — checks Cyrillic file content and computes 64-char contentHash', async () => {
     const xmlContent =
-      '<?xml version="1.0" encoding="UTF-8"?><yml_catalog><shop><offers><offer id="1"><name>Test</name></offer></offers></shop></yml_catalog>';
+      '<?xml version="1.0" encoding="UTF-8"?><yml_catalog><shop><offers><offer id="1"><name>Вимикач Livolo білий</name></offer></offers></shop></yml_catalog>';
     const res = await request(app.getHttpServer())
       .post('/api/feeds/check-collision')
       .set('Authorization', `Bearer ${userToken}`)
@@ -129,5 +129,43 @@ describe('Feed Collision & Deduplication Service (E2E)', () => {
     expect(res.status).toBe(200);
     expect(res.body.hasCollision).toBe(false);
     expect(res.body.collisionType).toBe(FeedCollisionType.NONE);
+  });
+
+  it('5. POST /api/feeds/check-collision — detects SAME_SUPPLIER_DUPLICATE when feed fingerprint already synced for same supplier', async () => {
+    const firstCheck = await request(app.getHttpServer())
+      .post('/api/feeds/check-collision')
+      .set('Authorization', `Bearer ${userToken}`)
+      .send({
+        supplierId: validSupplierId,
+        sourceType: 'URL',
+        sourceUrl: 'https://livolo.kiev.ua/dup_feed.xml',
+      });
+
+    const fingerprint = firstCheck.body.urlFingerprint;
+
+    await prisma.supplierSyncLog.create({
+      data: {
+        supplierId: validSupplierId,
+        feedSourceId: fingerprint,
+        status: 'SUCCESS',
+        totalProducts: 42,
+        createdCount: 42,
+      },
+    });
+
+    const dupRes = await request(app.getHttpServer())
+      .post('/api/feeds/check-collision')
+      .set('Authorization', `Bearer ${userToken}`)
+      .send({
+        supplierId: validSupplierId,
+        sourceType: 'URL',
+        sourceUrl: 'http://www.livolo.kiev.ua/dup_feed.xml/?utm_source=google',
+        feedName: 'Livolo Main Feed',
+      });
+
+    expect(dupRes.status).toBe(200);
+    expect(dupRes.body.hasCollision).toBe(true);
+    expect(dupRes.body.collisionType).toBe(FeedCollisionType.SAME_SUPPLIER_DUPLICATE);
+    expect(dupRes.body.existingProductsCount).toBe(42);
   });
 });

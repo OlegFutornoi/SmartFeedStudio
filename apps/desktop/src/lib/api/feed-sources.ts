@@ -1,3 +1,4 @@
+import type { FeedSourceDto } from '@smartfeed/shared';
 import { localDb } from '@/services/local-db';
 import { isTauri } from '@/lib/runtime';
 import { emitDataSync } from '@/lib/syncEvents';
@@ -24,6 +25,28 @@ export interface FeedSourceItemDto {
   updatedAt: string;
 }
 
+function mapLocalFeedSource(s: FeedSourceDto): FeedSourceItemDto {
+  return {
+    id: s.id,
+    supplierId: s.supplierId,
+    name: s.name,
+    sourceType: s.sourceType,
+    fileFormat: s.fileFormat || 'XML',
+    sourceUrl: s.sourceUrl || undefined,
+    autoUpdatePrices: s.autoUpdatePrices ?? true,
+    autoUpdateStocks: s.autoUpdateStocks ?? true,
+    lastSyncedAt: s.lastSyncedAt
+      ? typeof s.lastSyncedAt === 'string'
+        ? s.lastSyncedAt
+        : s.lastSyncedAt.toISOString()
+      : null,
+    lastSyncStatus: s.lastSyncStatus || 'SUCCESS',
+    productsCount: s.productsCount ?? 0,
+    createdAt: typeof s.createdAt === 'string' ? s.createdAt : s.createdAt.toISOString(),
+    updatedAt: typeof s.updatedAt === 'string' ? s.updatedAt : s.updatedAt.toISOString(),
+  };
+}
+
 export async function getSupplierFeedSources(
   supplierId: string,
   token?: string,
@@ -31,25 +54,7 @@ export async function getSupplierFeedSources(
   try {
     const sources = await localDb.feeds.getSupplierFeedSources(supplierId);
     if (sources && sources.length > 0) {
-      return sources.map((s) => ({
-        id: s.id,
-        supplierId: s.supplierId,
-        name: s.name,
-        sourceType: s.sourceType,
-        fileFormat: s.fileFormat || 'XML',
-        sourceUrl: s.sourceUrl || undefined,
-        autoUpdatePrices: s.autoUpdatePrices ?? true,
-        autoUpdateStocks: s.autoUpdateStocks ?? true,
-        lastSyncedAt: s.lastSyncedAt
-          ? typeof s.lastSyncedAt === 'string'
-            ? s.lastSyncedAt
-            : s.lastSyncedAt.toISOString()
-          : null,
-        lastSyncStatus: s.lastSyncStatus || 'SUCCESS',
-        productsCount: s.productsCount ?? 0,
-        createdAt: typeof s.createdAt === 'string' ? s.createdAt : s.createdAt.toISOString(),
-        updatedAt: typeof s.updatedAt === 'string' ? s.updatedAt : s.updatedAt.toISOString(),
-      }));
+      return sources.map(mapLocalFeedSource);
     }
   } catch (err) {
     console.warn('[feed-sources] localDb lookup failed, checking remote:', err);
@@ -77,25 +82,7 @@ export async function getAllFeedSources(token?: string): Promise<FeedSourceItemD
   try {
     const sources = await localDb.feeds.getAllFeedSources();
     if (sources && sources.length > 0) {
-      return sources.map((s) => ({
-        id: s.id,
-        supplierId: s.supplierId,
-        name: s.name,
-        sourceType: s.sourceType,
-        fileFormat: s.fileFormat || 'XML',
-        sourceUrl: s.sourceUrl || undefined,
-        autoUpdatePrices: s.autoUpdatePrices ?? true,
-        autoUpdateStocks: s.autoUpdateStocks ?? true,
-        lastSyncedAt: s.lastSyncedAt
-          ? typeof s.lastSyncedAt === 'string'
-            ? s.lastSyncedAt
-            : s.lastSyncedAt.toISOString()
-          : null,
-        lastSyncStatus: s.lastSyncStatus || 'SUCCESS',
-        productsCount: s.productsCount ?? 0,
-        createdAt: typeof s.createdAt === 'string' ? s.createdAt : s.createdAt.toISOString(),
-        updatedAt: typeof s.updatedAt === 'string' ? s.updatedAt : s.updatedAt.toISOString(),
-      }));
+      return sources.map(mapLocalFeedSource);
     }
   } catch (err) {
     console.warn('[feed-sources] localDb getAllFeedSources failed:', err);
@@ -120,24 +107,14 @@ export async function syncSupplierFeedSource(
   sourceId: string,
   token?: string,
 ): Promise<{ success: boolean; jobId: string; updatedCount?: number }> {
-  // 1. Try local feed synchronization
   try {
     const sources = await localDb.feeds.getSupplierFeedSources(supplierId);
     const feed = sources.find((s) => s.id === sourceId);
 
     if (feed && feed.sourceUrl) {
-      // 2. Fetch fresh XML/CSV content via our CORS-free pipeline
       const content = await fetchFeedContent(feed.sourceUrl, token);
-
-      // 3. Re-parse products
-      const rawProducts = feedEngine.parseProducts(content, {
-        supplierId,
-      });
-
-      // 4. Batch ingest to update prices (with markup rules) & stock quantities in SQLite
+      const rawProducts = feedEngine.parseProducts(content, { supplierId });
       const ingestResult = await feedEngine.ingest(supplierId, rawProducts, feed.id);
-
-      // 5. Emit reactive data sync so all UI tables, cards, and counts refresh instantly
       emitDataSync(['products', 'feeds', 'suppliers', 'quotas', 'all']);
 
       return {
@@ -151,7 +128,6 @@ export async function syncSupplierFeedSource(
     throw localErr;
   }
 
-  // Fallback for remote cloud backend
   if (!isTauri()) {
     try {
       const response = await fetchWithAuth(
@@ -195,7 +171,6 @@ export async function deleteSupplierFeedSource(
     }
   }
 
-  // If deleteProducts is enabled and access token is present, cascade delete feed photos from Cloudflare R2
   if (deleteProducts && token) {
     try {
       const allProds = await localDb.products.getProducts({ limit: 10000 });
@@ -220,7 +195,6 @@ export async function deleteSupplierFeedSource(
     }
   }
 
-  // Always execute cascading deletion in local database (SQLCipher in Tauri / Mock in Web)
   const localResult = await localDb.feeds.deleteSupplierFeedSource(
     supplierId,
     sourceId,

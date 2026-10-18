@@ -13,13 +13,14 @@ Enterprise platform for parsing, editing, and syncing XML/CSV product feeds with
 
 ## 2. Rules Architecture (`.agents/rules/`)
 
-All invariants are indexed by unique IDs and partitioned into 9 domain files:
+All invariants are indexed by unique IDs and partitioned into 10 domain files:
 
 - [core.md](file:///.agents/rules/core.md) — Universal invariants: path aliases, zero silent failures, no any, file budgets, safe OS exec, context7 research, brevity, MCP auto-approval, targeted testing.
 - [agents.md](file:///.agents/rules/agents.md) — Autonomous agent router and mandatory 8-stage lifecycle.
 - [backend.md](file:///.agents/rules/backend.md) — Native vs cloud segregation, CQRS modularity, DTO validation, mutation guards, mutex protection.
 - [database.md](file:///.agents/rules/database.md) — PostgreSQL 16 & Prisma: 100% FK indexes, timestamptz(6), snake_case, CUIDs, cascade deletes, zero N+1, cursor pagination.
-- [frontend.md](file:///.agents/rules/frontend.md) — React 18, Next.js 14, Tauri: request dedup (useRef), solid sticky headers, semantic tokens, row extraction, shadcn CLI.
+- [frontend.md](file:///.agents/rules/frontend.md) — React 18, Next.js 14, Tauri: request dedup (useRef), session storage, mock/real parity, row/dialog modularity, in-flight deduplication.
+- [ui.md](file:///.agents/rules/ui.md) — UI design system: semantic tokens, 100% solid sticky headers, official shadcn primitives, micro-typography, form hygiene, accessible interactive primitives.
 - [i18n.md](file:///.agents/rules/i18n.md) — Bilingual parity (UK/EN), translated attributes, backend error mapping, zero raw keys.
 - [testing.md](file:///.agents/rules/testing.md) — cleanDatabase teardown, test isolation, real business data assertions, TDD RED->GREEN.
 - [security.md](file:///.agents/rules/security.md) — 4-layer defense, zero secret serialization leaks, secret masking, BOLA tenant isolation, SSRF IP pinning.

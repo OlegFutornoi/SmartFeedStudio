@@ -84,6 +84,7 @@
   "btnUseSuggestedName": "Застосувати унікальну назву",
   "suggestedFeedNameLabel": "Запропонована назва:",
   "checkingCollisions": "Перевірка унікальності фіду...",
+  "backgroundImportBullMq": "Імпорт виконується у фоновому режимі (BullMQ)",
   "dragDropFile": "Перетягніть файл сюди або натисніть для вибору",
   "selectSupplierLabel": "Оберіть постачальника",
   "chooseSupplierPlaceholder": "Оберіть постачальника зі списку...",

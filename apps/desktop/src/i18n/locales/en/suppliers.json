@@ -84,6 +84,7 @@
   "btnUseSuggestedName": "Apply unique name",
   "suggestedFeedNameLabel": "Suggested name:",
   "checkingCollisions": "Checking feed uniqueness...",
+  "backgroundImportBullMq": "Import is running in the background (BullMQ)",
   "dragDropFile": "Drag and drop file here or click to browse",
   "selectSupplierLabel": "Select Supplier",
   "chooseSupplierPlaceholder": "Select supplier from list...",

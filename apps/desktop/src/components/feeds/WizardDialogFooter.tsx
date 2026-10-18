@@ -57,7 +57,11 @@ export const WizardDialogFooter: React.FC<WizardDialogFooterProps> = ({
         <div className="w-full flex items-center justify-between gap-2">
           <div className="text-xs text-muted-foreground flex items-center gap-1.5">
             <Radio className="size-3.5 text-foreground animate-pulse" />
-            <span>Імпорт виконується у фоновому режимі (BullMQ)</span>
+            <span>
+              {t('suppliers:backgroundImportBullMq', {
+                defaultValue: 'Імпорт виконується у фоновому режимі (BullMQ)',
+              })}
+            </span>
           </div>
 
           <Button

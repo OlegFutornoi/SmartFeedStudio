@@ -23,6 +23,7 @@ VALID_RULES = {
     "backend",
     "database",
     "frontend",
+    "ui",
     "i18n",
     "testing",
     "security",

@@ -14,7 +14,7 @@ Central intelligence orchestrator connecting 7 specialized autonomous engineerin
 - Frontend Agent: `@agents_frontend` / `@agents-frontend`
   - Domain: UI, UX, React 18, Next.js 14, Tauri v2 desktop UI, Tailwind CSS, shadcn/ui, Playwright E2E.
   - Specification: `.agents/agents/frontend.md`
-  - Rules: `core.md`, `frontend.md`, `i18n.md`, `testing.md`
+  - Rules: `core.md`, `frontend.md`, `ui.md`, `i18n.md`, `testing.md`
 
 - Backend Agent: `@agents_backend` / `@agents-backend`
   - Domain: NestJS 11 CQRS, Prisma ORM, PostgreSQL 16, Redis, BullMQ, `@smartfeed/shared` contracts.
@@ -24,7 +24,7 @@ Central intelligence orchestrator connecting 7 specialized autonomous engineerin
 - Code Review Agent: `@agents_review` / `@agents-review`
   - Domain: 5-axis code review, architecture compliance, security audit, zero N+1, 100% i18n, adversarial stress testing.
   - Specification: `.agents/agents/review.md`
-  - Rules: `core.md`, `backend.md`, `database.md`, `frontend.md`, `security.md`, `testing.md`
+  - Rules: `core.md`, `backend.md`, `database.md`, `frontend.md`, `ui.md`, `security.md`, `testing.md`
 
 - QA & Performance Agent: `@agents_qa` / `@agents-qa`
   - Domain: QA, 100k+ SKU load benchmarks, chaos concurrency testing, memory backpressure, mock/real parity, cleanDatabase teardown.

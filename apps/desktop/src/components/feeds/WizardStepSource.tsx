@@ -13,6 +13,10 @@ import { WizardAiAssistantShowcase } from '@/components/feeds/WizardAiAssistantS
 import { FeedCollisionNotice } from '@/components/feeds/FeedCollisionNotice';
 import { WizardStepSourceFileDropzone } from '@/components/feeds/WizardStepSourceFileDropzone';
 
+const ALLOWED_EXTENSIONS = ['xml', 'yml', 'csv', 'tsv', 'xlsx', 'xls', 'txt'];
+const TEST_LIVOLO_URL =
+  'https://livolo.kiev.ua/products_feed.xml?hash_tag=313e3f0e4bd4878fa657c5c5d544b64d&sales_notes=&product_ids=&label_ids=&exclude_fields=&html_description=1&yandex_cpa=&process_presence_sure=&languages=uk%2Cru&extra_fields=&group_ids=';
+
 interface WizardStepSourceProps {
   sourceType: 'URL' | 'FILE';
   setSourceType: (type: 'URL' | 'FILE') => void;
@@ -54,8 +58,6 @@ export function WizardStepSource({
   const [fileValidationError, setFileValidationError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const ALLOWED_EXTENSIONS = ['xml', 'yml', 'csv', 'tsv', 'xlsx', 'xls', 'txt'];
-
   const validateAndProcessFile = (file: File) => {
     const ext = file.name.split('.').pop()?.toLowerCase();
     if (!ext || !ALLOWED_EXTENSIONS.includes(ext)) {
@@ -76,12 +78,10 @@ export function WizardStepSource({
       setSourceType('FILE');
       setFeedUrl('');
       onFileSelect(file.name, content);
-      if (setFeedName) setFeedName(file.name);
+      setFeedName?.(file.name);
     };
     reader.readAsText(file);
   };
-
-  const handlePickFile = () => fileInputRef.current?.click();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -95,9 +95,6 @@ export function WizardStepSource({
     if (file) validateAndProcessFile(file);
   };
 
-  const testLivoloUrl =
-    'https://livolo.kiev.ua/products_feed.xml?hash_tag=313e3f0e4bd4878fa657c5c5d544b64d&sales_notes=&product_ids=&label_ids=&exclude_fields=&html_description=1&yandex_cpa=&process_presence_sure=&languages=uk%2Cru&extra_fields=&group_ids=';
-
   const displayedError = error || fileValidationError;
 
   return (
@@ -109,7 +106,6 @@ export function WizardStepSource({
         </div>
       )}
 
-      {/* Smart Dual Source Input: URL or File */}
       <div className="p-3.5 rounded-2xl border border-border/70 bg-card shadow-2xs space-y-3">
         {/* 1. URL Section */}
         <div className="space-y-1.5">
@@ -125,10 +121,8 @@ export function WizardStepSource({
               onClick={() => {
                 setSourceType('URL');
                 onFileSelect('', '');
-                setFeedUrl(testLivoloUrl);
-                if (setFeedName) {
-                  setFeedName('livolo.kiev.ua (products_feed.xml)');
-                }
+                setFeedUrl(TEST_LIVOLO_URL);
+                setFeedName?.('livolo.kiev.ua (products_feed.xml)');
               }}
               className="h-auto p-0 text-xs text-primary hover:underline flex items-center gap-1"
             >
@@ -144,16 +138,8 @@ export function WizardStepSource({
                 const val = e.target.value;
                 setFeedUrl(val);
                 setSourceType('URL');
-                if (fileName) {
-                  onFileSelect('', '');
-                }
-                if (setFeedName) {
-                  if (!val.trim()) {
-                    setFeedName('');
-                  } else {
-                    setFeedName(formatFeedTitle(val));
-                  }
-                }
+                if (fileName) onFileSelect('', '');
+                setFeedName?.(val.trim() ? formatFeedTitle(val) : '');
               }}
               className="h-9 text-xs font-mono bg-background/60 flex-1"
               disabled={isAnalyzing}
@@ -207,7 +193,7 @@ export function WizardStepSource({
           onClearFile={() => {
             setFileValidationError(null);
             onFileSelect('', '');
-            if (setFeedName) setFeedName('');
+            setFeedName?.('');
             if (fileInputRef.current) fileInputRef.current.value = '';
           }}
           onAnalyzeFile={
@@ -218,7 +204,7 @@ export function WizardStepSource({
                 }
               : undefined
           }
-          onPickFile={handlePickFile}
+          onPickFile={() => fileInputRef.current?.click()}
           onDrop={handleDrop}
           dragOver={dragOver}
           setDragOver={setDragOver}
@@ -246,19 +232,13 @@ export function WizardStepSource({
         )}
       </div>
 
-      {/* Collision Notice / Uniqueness Badge */}
       <FeedCollisionNotice
         collisionResult={collisionResult || null}
         isChecking={isCheckingCollision}
       />
 
-      {/* Interactive Loading & Skeleton State */}
       {isAnalyzing && <FeedAnalysisInteractiveLoader isAnalyzing={isAnalyzing} />}
-
-      {/* Inline Analysis Result Card */}
       {analysis && !isAnalyzing && !error && <FeedAnalysisCard analysis={analysis} />}
-
-      {/* Empty Space filler: Premium AI Assistant Showcase */}
       {!analysis && !isAnalyzing && <WizardAiAssistantShowcase />}
     </div>
   );

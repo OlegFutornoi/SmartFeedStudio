@@ -1,14 +1,14 @@
 ---
 name: review
 description: Enterprise full-cycle code review and quality assurance audit orchestrator for SmartFeed Studio. Use when inspecting code quality, auditing architecture boundaries, detecting security flaws, verifying PostgreSQL indexing, checking component modularity, or reviewing pull requests. Do not use for writing production feature code; use frontend or backend instead.
-rules: [core, backend, database, frontend, security, testing]
+rules: [core, backend, database, frontend, ui, security, testing]
 ---
 
 # Code Review & Quality Audit Master Orchestrator
 
 ## Step 0 - Load rules (mandatory, before any analysis or code)
 
-1. Read `.agents/rules/core.md`, `.agents/rules/backend.md`, `.agents/rules/database.md`, `.agents/rules/frontend.md`, `.agents/rules/security.md`, `.agents/rules/testing.md`.
+1. Read `.agents/rules/core.md`, `.agents/rules/backend.md`, `.agents/rules/database.md`, `.agents/rules/frontend.md`, `.agents/rules/ui.md`, `.agents/rules/security.md`, `.agents/rules/testing.md`.
 2. Extract all invariant IDs relevant to the files under review.
 3. If reviewing code using external libraries, verify API signatures via context7: `resolve-library-id {libraryName, query}` then `query-docs {libraryId, query}`.
 4. Do not perform audit or generate findings until steps 1-3 are complete.
@@ -49,6 +49,7 @@ rules: [core, backend, database, frontend, security, testing]
 - Never pass code with unindexed foreign keys in Prisma schemas (violates `DB-01`).
 - Never pass mutations lacking JwtAuthGuard protection (violates `BE-02`).
 - Never pass translucent sticky headers lacking solid backgrounds (violates `UI-01`).
+- Never pass Tauri IPC commands missing from `REGISTERED_TAURI_COMMANDS`, mismatched Rust/Mock return DTO keys, or ASCII-only hash functions that fail on UTF-8 Cyrillic input (violates `FE-08`).
 - Never dump full review reports into chat (violates `CORE-07`).
 
 ## References

@@ -1,45 +1,25 @@
 {
-  "taskId": "task-2026-10-17-feed-deduplication-and-supplier-collision-service",
-  "activePlan": "plans/completed/feed_deduplication_and_supplier_collision_service_plan.md",
-  "title": "Feed Deduplication, URL Normalization & Multi-Supplier Collision Resolution Service",
-  "currentStage": "Stage 6 - Verified & Complete",
-  "currentTask": "Verification completed across all monorepo packages",
-  "currentStep": "All 6 Definition of Done gates verified green",
-  "status": "COMPLETED",
-  "assignedAgent": "@agents_backend",
+  "taskId": "task-2026-10-18-feed-wizard-modern-ui-redesign",
+  "activePlan": "plans/active/feed_wizard_modern_ui_redesign_plan.md",
+  "title": "Модернізація дизайну Майстра Імпорту Фідів (Feed Import Wizard Modern UI Redesign)",
+  "currentStage": "Stage 2 - Planned & Awaiting Approval",
+  "currentTask": "Створено гілку feat/feed-wizard-modern-redesign та план редизайну з дотриманням інваріантів UI-01..UI-13",
+  "currentStep": "Очікування підтвердження користувача для старту реалізації (PLAN-01)",
+  "status": "IN_PROGRESS",
+  "assignedAgent": "@agents_frontend",
   "completedTasks": [
-    "RFC 3986 URL Normalization with baseFeedUrl extraction and functional parameter preservation in @smartfeed/shared",
-    "File contentHash calculation (SHA-256) for both client and backend feeds",
-    "Rust SQLite check_feed_collision & create_feed_source with multi-criteria matching (fingerprint, canonical, base URL, content_hash, file_name)",
-    "Modularized mock database collision engine in mock-feed-collision.ts complying with file budget (<250 lines)",
-    "Backend NestJS 11 CQRS CheckFeedCollisionQuery, Handler, and Controller (POST /api/feeds/check-collision) with Supertest E2E 4/4 pass",
-    "Fresh backend build (pnpm --filter @smartfeed/backend-api build)",
-    "Frontend useFeedAnalysis: immediate deduplication check BEFORE parsing/fetching XML/CSV (aborts with 0 SKU processed on duplicate)",
-    "Frontend WizardStepSource, FeedCollisionNotice, and WizardDialogFooter blocking Next button on duplicate",
-    "100% bilingual i18n parity check passed (uk/en)",
-    "Playwright E2E automation in feed-deduplication.spec.ts: 4/4 tests passed",
-    "Static typechecking (tsc --noEmit) 0 errors and guardrails ratchet passed"
+    "Створено та переключено окрему гілку feat/feed-wizard-modern-redesign",
+    "Проведено повний аудит компонентів майстра імпорту фідів (WizardStepSource, WizardAiAssistantShowcase, WizardDialogHeader, FeedAnalysisCard, WizardStepPreview, WizardStepProgress) за інваріантами UI-01..UI-13 та I18N-01..I18N-03",
+    "Сформовано архітектурний план модернізації у plans/active/feed_wizard_modern_ui_redesign_plan.md"
   ],
-  "inProgressTasks": [],
+  "inProgressTasks": ["Реалізація Задач 1–4 плану після підтвердження («починай»)"],
   "modifiedFiles": [
-    "packages/shared/src/utils/feed-url-normalizer.ts",
-    "packages/shared/src/dtos/feed.dto.ts",
-    "packages/shared/src/enums/index.ts",
-    "apps/desktop/src/components/feeds/useFeedAnalysis.ts",
-    "apps/desktop/src/components/feeds/WizardStepSource.tsx",
-    "apps/desktop/src/components/feeds/WizardDialogFooter.tsx",
-    "apps/desktop/src/components/feeds/FeedCollisionNotice.tsx",
-    "apps/desktop/src/services/local-db/feeds.service.ts",
-    "apps/desktop/src/services/local-db/mock/mock-feeds.ts",
-    "apps/desktop/src/services/local-db/mock/mock-feed-collision.ts",
-    "apps/desktop/src-tauri/src/db/feeds.rs",
-    "services/backend-api/src/modules/feeds/queries/handlers/check-feed-collision.handler.ts",
-    "services/backend-api/src/modules/feeds/feeds.controller.ts",
-    "apps/desktop/e2e/feed-deduplication.spec.ts",
-    "plans/active/feed_deduplication_and_supplier_collision_service_plan.md"
+    "plans/active/feed_wizard_modern_ui_redesign_plan.md",
+    "plans/README.md",
+    ".agents/state/active_task.json"
   ],
   "contextSummary": {
-    "branch": "feat/ui-compact-clean-redesign",
-    "goal": "Enterprise service for feed URL canonicalization (RFC 3986), SHA-256 fingerprinting, same-supplier duplicate blocking, cross-supplier collision resolution (shared vs isolated), and unique feed name disambiguation."
+    "branch": "feat/feed-wizard-modern-redesign",
+    "goal": "Modernize Feed Import Wizard UI to high-density desktop aesthetic (UI-01..UI-13) with 0 nested border clutter, 0 rounded-2xl, neutral field icons, keyboard-accessible dropzone, and 100% E2E test compatibility."
   }
 }

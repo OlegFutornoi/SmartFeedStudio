@@ -22,6 +22,7 @@ export * from './dtos/supplier-sync.dto';
 export * from './utils/currency-calculator';
 export * from './utils/pricing-calculator';
 export * from './utils/media-naming';
+export * from './utils/sha256';
 export * from './utils/feed-url-normalizer';
 export * from './contracts/cqrs';
 export * from './constants';

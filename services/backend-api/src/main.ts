@@ -62,8 +62,8 @@ async function bootstrap() {
 
   app.enableCors({
     origin: (origin, callback) => {
-      // Allow requests with no origin (mobile/desktop native HTTP) or null (WebKit opaque origins)
-      if (!origin || origin === 'null') {
+      // Allow requests with no origin (native HTTP) or null strictly in non-production environments
+      if (!origin || (origin === 'null' && process.env.NODE_ENV !== 'production')) {
         return callback(null, true);
       }
       if (
@@ -72,6 +72,7 @@ async function bootstrap() {
         origin.endsWith('.localhost') ||
         origin === 'https://smartfeed-admin-prod.up.railway.app' ||
         origin === 'http://smartfeed-admin-prod.up.railway.app' ||
+        origin === 'https://smartfeedstudio-prod.up.railway.app' ||
         origin.endsWith('.smartfeed.studio')
       ) {
         return callback(null, true);

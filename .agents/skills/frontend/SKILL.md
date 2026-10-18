@@ -1,16 +1,16 @@
 ---
 name: frontend
 description: Enterprise full-cycle frontend engineering lifecycle orchestrator for SmartFeed Studio (React 18, Next.js 14, Tauri v2 desktop UI, Tailwind CSS, shadcn/ui, Playwright). Use when building, refactoring, styling, reviewing, or testing pages, components, dialogs, hooks, and local mock drivers in apps/desktop or apps/admin-portal. Do not use for server-side CQRS handlers or cloud database migrations; use backend instead.
-rules: [core, frontend, i18n, testing]
+rules: [core, frontend, ui, i18n, testing]
 ---
 
 # Frontend Engineering Master Orchestrator
 
 ## Step 0 - Load rules (mandatory, before any analysis or code)
 
-1. Read `.agents/rules/core.md`, `.agents/rules/frontend.md`, `.agents/rules/i18n.md`, `.agents/rules/testing.md`.
+1. Read `.agents/rules/core.md`, `.agents/rules/frontend.md`, `.agents/rules/ui.md`, `.agents/rules/i18n.md`, `.agents/rules/testing.md`.
 2. Follow `AGENT-05` reference hierarchy: use golden templates (`.agents/templates/table-numeric-cell.tsx.md`, `success-badge.tsx.md`, `solid-sheet-header.tsx.md`) or `// @golden` files; never copy unverified legacy code.
-3. Note all invariant IDs relevant to the task (e.g. `CORE-01`, `CORE-04`, `FE-01` through `FE-07`, `UI-01` through `UI-07`, `I18N-01` through `I18N-06`, `TEST-02` through `TEST-05`).
+3. Note all invariant IDs relevant to the task (e.g. `CORE-01`, `CORE-04`, `FE-01` through `FE-14`, `UI-01` through `UI-13`, `I18N-01` through `I18N-06`, `TEST-02` through `TEST-05`).
 4. If using any external library or shadcn component, call context7: `resolve-library-id {libraryName, query}` then `query-docs {libraryId, query}`.
 5. Do not write or modify UI code until steps 1-4 are complete.
 
@@ -24,7 +24,7 @@ rules: [core, frontend, i18n, testing]
 
 1. Stage 1 - Discovery and UX Scope Analysis: identify the target runtime (Desktop Tauri SQLite vs Web Admin Portal), verify user permissions, map the 5 mandatory UI states (loading skeleton, empty state card, data table, localized error, success feedback), and verify bilingual dictionary keys.
 2. Stage 2 - Planning and Modularity Budgeting: create implementation plan in `plans/active/<feature>.md`. Enforce component modularity budget (<250 lines per file). Explicitly budget row component extraction (`*TableRow.tsx`), modal extraction (`*DialogsContainer.tsx`), and modal state extraction (`use*PageState.ts`). Await user approval before coding.
-3. Stage 3 - UI/UX Architecture and Official shadcn Primitives: strictly compose all UI views using official shadcn primitives (`@/components/ui/*`: Button, Input, Switch, Card, Dialog, Select, Badge, Tooltip, etc., `UI-05`). Never hand-roll custom ad-hoc interactive or container elements with raw HTML. Enforce semantic tokens only (`bg-background`, `bg-card`, `text-foreground`, `border-border`, `bg-primary`, `bg-destructive`, `bg-muted`, `bg-success`). Enforce 100% solid sticky headers (`thead.sticky.top-0 bg-card` or `bg-background`, `UI-01`). Zero rainbow/circus decorative icons (`UI-07`). Hide header CTA if empty state CTA is visible (`UI-04`). Install required shadcn primitives via `npx shadcn@latest add <component> -y`.
+3. Stage 3 - UI/UX Architecture and Official shadcn Primitives: strictly compose all UI views using official shadcn primitives (`@/components/ui/*`: Button, Input, Switch, Card, Dialog, Select, Badge, Tooltip, etc., `UI-05`). Never hand-roll custom ad-hoc interactive or container elements with raw HTML. Enforce semantic tokens only (`bg-background`, `bg-card`, `text-foreground`, `border-border`, `bg-primary`, `bg-destructive`, `bg-muted`, `bg-success`). Enforce 100% solid sticky headers (`thead.sticky.top-0 bg-card` or `bg-background`, `UI-01`). Zero rainbow/circus decorative icons (`UI-07`). Hide header CTA if empty state CTA is visible (`UI-04`). Enforce form input hygiene (unblocked paste, `spellCheck={false}` on technical/URL/SKU fields, `autocomplete="off"` on non-auth inputs, `UI-08`), micro-typography (`…` true ellipsis, `text-wrap: balance` on headings, `UI-09`), accessible interactive primitives (`<button>` for actions, `<Link>` for navigation, visible `:focus-visible:ring-*`, `scroll-margin-top`, `UI-10`), surface depth hierarchy over heavy borders (`UI-11`), desktop high-density geometry and hover-revealed row actions (`UI-12`), and singular boldness doctrine (`UI-13`). Install required shadcn primitives via `npx shadcn@latest add <component> -y`.
 4. Stage 4 - Automated Testing (Playwright TDD RED): write Page Object Model E2E test in `apps/desktop/tests/` or `apps/admin-portal/tests/`. Assert real business data (`expect(val).not.toBe('Постачальник')`), single-request network execution (`requestCount === 1`), and dynamic bilingual switching (`UA` ⇄ `EN`). Run test to verify expected functional failure (RED).
 5. Stage 5 - Implementation and UI Polish (GREEN): implement components to turn test GREEN. Use `useRef` guards for API calls (`isFetchingRef`, `lastFetchedTokenRef`). Use clean callback deps (never include locale/theme). Localize 100% of strings, tooltips (`title={t('...')}`), and map backend errors via `getErrorMessage(err, t)`.
 6. Stage 6 - Code Review and Quality Verification: execute pre-commit verification checklist. Check file lengths (<250 lines), zero dead imports, zero `any` types, zero hardcoded colors. Run `pnpm --filter <app> exec tsc --noEmit` and `pnpm format`.
@@ -46,7 +46,7 @@ rules: [core, frontend, i18n, testing]
 - Bilingual parity check passes: `pnpm i18n:check`.
 - Automated domain invariants check passes with 0 violations: `pnpm invariants:check`.
 - Formatting applied: `pnpm format`.
-- Invariant IDs `FE-01` through `FE-07` and `UI-01` through `UI-07` satisfied.
+- Invariant IDs `FE-01` through `FE-14` and `UI-01` through `UI-13` satisfied.
 
 ## Never
 
@@ -54,6 +54,13 @@ rules: [core, frontend, i18n, testing]
 - Never use decorative rainbow icons (`blue-*`, `amber-*`, `yellow-*`) for form or card icons (violates `UI-07`).
 - Never use hardcoded palette colors (`emerald-*`, `green-*`, `blue-*`, etc.); use semantic tokens `text-success`, `bg-success/15 border-success/30` (violates `UI-02`, `UI-03`).
 - Never append redundant noun suffixes inside table cells whose headers already name the entity (e.g. `5 фідів`); render clean numeric values or badges only (violates `UI-06`).
+- Never block paste operations on inputs or textareas (violates `UI-08`).
+- Never use triple periods `...` in UI strings or loading states; use true ellipsis `…` (violates `UI-09`).
+- Never use `<div onClick>` or `<span onClick>` for actions without semantic `<button>` or keyboard handlers (violates `UI-10`).
+- Never use `outline-none` without visible focus replacement (violates `UI-10`).
+- Never wrap inner groups inside shadcn `Card` or `Dialog` in redundant `border border-border` boxes (violates `UI-11`).
+- Never use `rounded-2xl` or `rounded-3xl` for desktop components (violates `UI-12`).
+- Never use uppercase letter-spaced eyebrow tags or multi-color gradient text on headlines (violates `UI-13`).
 - Never use relative imports `../` or `./` across packages (violates `CORE-01`).
 - Never write empty catch blocks `catch {}` (violates `CORE-02`).
 - Never use `as any` to bypass component prop typing (violates `CORE-03`).

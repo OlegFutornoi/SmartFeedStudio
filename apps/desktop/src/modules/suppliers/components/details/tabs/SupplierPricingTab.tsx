@@ -39,7 +39,6 @@ export const SupplierPricingTab: React.FC<SupplierPricingTabProps> = ({
   const [globalFixed, setGlobalFixed] = useState<number>(supplier.defaultFixedMarkup || 0);
   const [isSavingGlobal, setIsSavingGlobal] = useState(false);
 
-  // New Rule form state
   const [minPrice, setMinPrice] = useState<string>('');
   const [maxPrice, setMaxPrice] = useState<string>('');
   const [ruleMargin, setRuleMargin] = useState<string>('20');
@@ -55,7 +54,7 @@ export const SupplierPricingTab: React.FC<SupplierPricingTabProps> = ({
   }, [supplier.id, token]);
 
   useEffect(() => {
-    loadRules();
+    void loadRules();
   }, [loadRules]);
 
   const handleSaveGlobalMarkup = async () => {
@@ -112,7 +111,6 @@ export const SupplierPricingTab: React.FC<SupplierPricingTabProps> = ({
 
   return (
     <div className="space-y-4" data-testid="supplier-pricing-tab">
-      {/* 1. Global Markup Card */}
       <Card className="border-border/80 bg-card shadow-xs">
         <CardHeader className="pb-3">
           <CardTitle className="text-sm font-semibold text-foreground">
@@ -174,9 +172,7 @@ export const SupplierPricingTab: React.FC<SupplierPricingTabProps> = ({
         </CardContent>
       </Card>
 
-      {/* 2. Interactive Simulator & Add Rule */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {/* Tiered Price Brackets Rules */}
         <Card className="border-border/80 bg-card shadow-xs">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-semibold text-foreground">
@@ -189,7 +185,6 @@ export const SupplierPricingTab: React.FC<SupplierPricingTabProps> = ({
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
-            {/* Add Rule Form */}
             <div className="p-2.5 rounded-lg bg-muted/40 border border-border/70 space-y-2">
               <div className="grid grid-cols-2 gap-2 text-xs">
                 <div>
@@ -247,7 +242,6 @@ export const SupplierPricingTab: React.FC<SupplierPricingTabProps> = ({
               </Button>
             </div>
 
-            {/* Rules list */}
             {rules.length > 0 && (
               <div className="border border-border/80 rounded-lg overflow-hidden">
                 <Table className="text-xs">
@@ -271,7 +265,7 @@ export const SupplierPricingTab: React.FC<SupplierPricingTabProps> = ({
                           {r.minPrice != null ? `${r.minPrice}₴` : '0₴'} —{' '}
                           {r.maxPrice != null ? `${r.maxPrice}₴` : '∞'}
                         </TableCell>
-                        <TableCell className="py-1 text-center font-semibold text-emerald-600 dark:text-emerald-400">
+                        <TableCell className="py-1 text-center font-semibold text-success">
                           +{r.marginPercent}% {r.fixedMarkup ? `+${r.fixedMarkup}₴` : ''}
                         </TableCell>
                         <TableCell className="py-1 text-right pr-2">
@@ -293,7 +287,6 @@ export const SupplierPricingTab: React.FC<SupplierPricingTabProps> = ({
           </CardContent>
         </Card>
 
-        {/* Live Simulator Widget */}
         <SupplierPriceSimulator
           globalMargin={globalMargin}
           globalFixed={globalFixed}

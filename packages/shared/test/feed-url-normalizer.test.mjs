@@ -40,13 +40,22 @@ describe('feed-url-normalizer', () => {
     assert.strictEqual(resA.urlFingerprint, resB.urlFingerprint);
   });
 
-  it('computes content hashes deterministically', () => {
+  it('computes content hashes deterministically including UTF-8 Cyrillic XML catalogs', () => {
     const xml = '<yml_catalog><shop><offers><offer id="1"><price>100</price></offer></offers></shop></yml_catalog>';
     const hash1 = computeFeedContentHash(xml);
     const hash2 = computeFeedContentHash(xml);
 
     assert.strictEqual(hash1, hash2);
-    assert.ok(hash1.length === 64);
+    assert.strictEqual(hash1.length, 64);
+
+    const cyrillicXml =
+      '<?xml version="1.0" encoding="UTF-8"?><yml_catalog><shop><name>Магазин Електроніки Київ</name><offers><offer id="101"><name>Вимикач сенсорний Livolo білий</name><price>850</price></offer></offers></shop></yml_catalog>';
+    const cyrillicHash1 = computeFeedContentHash(cyrillicXml);
+    const cyrillicHash2 = computeFeedContentHash(cyrillicXml);
+
+    assert.strictEqual(cyrillicHash1, cyrillicHash2);
+    assert.strictEqual(cyrillicHash1.length, 64, 'Cyrillic XML must produce a 64-char SHA-256 hex digest');
+    assert.notStrictEqual(cyrillicHash1, hash1);
   });
 
   it('disambiguates feed names with existing names and supplier prefix', () => {
