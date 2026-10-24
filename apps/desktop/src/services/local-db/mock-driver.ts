@@ -220,15 +220,41 @@ export class MockDatabaseDriver {
   public getCountersSummary = (): LocalCountersSummary => {
     this.syncCounters();
     const feedsBySupplierId: Record<string, number> = {};
+    const productsBySupplierId: Record<string, number> = {};
+    const categoriesBySupplierId: Record<string, number> = {};
+    const activeCategoriesBySupplierId: Record<string, number> = {};
+
+    for (const s of this.state.suppliers) {
+      feedsBySupplierId[s.id] = 0;
+      productsBySupplierId[s.id] = 0;
+      categoriesBySupplierId[s.id] = 0;
+      activeCategoriesBySupplierId[s.id] = 0;
+    }
+
     for (const [supId, sources] of this.state.feedSources.entries()) {
       feedsBySupplierId[supId] = sources.length;
     }
-    const productsBySupplierId: Record<string, number> = {};
     for (const p of this.state.products) {
       if (p.supplierId) {
         productsBySupplierId[p.supplierId] = (productsBySupplierId[p.supplierId] || 0) + 1;
       }
     }
+
+    let totalCategories = 0;
+    for (const s of this.state.suppliers) {
+      const feedsCount = feedsBySupplierId[s.id] || 0;
+      const prodsCount = productsBySupplierId[s.id] || 0;
+      if (feedsCount === 0 || prodsCount === 0) {
+        categoriesBySupplierId[s.id] = 0;
+        activeCategoriesBySupplierId[s.id] = 0;
+      } else {
+        const cats = mock.ensureSupplierCategories(this.state, s.id);
+        categoriesBySupplierId[s.id] = cats.length;
+        activeCategoriesBySupplierId[s.id] = cats.filter((c) => c.isActive).length;
+        totalCategories += cats.length;
+      }
+    }
+
     let totalRules = 0;
     for (const [supId, rules] of this.state.pricingRules.entries()) {
       if (this.state.suppliers.some((s) => s.id === supId)) {
@@ -241,8 +267,11 @@ export class MockDatabaseDriver {
       totalFeeds: this.state.counters.feedsCount,
       totalProducts: this.state.counters.productsCount,
       totalRules,
+      totalCategories,
       feedsBySupplierId,
       productsBySupplierId,
+      categoriesBySupplierId,
+      activeCategoriesBySupplierId,
     };
   };
 }

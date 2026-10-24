@@ -5,6 +5,8 @@ import type {
   BulkDeleteResultDto,
 } from '@smartfeed/shared';
 import type { MockDbState } from '@/services/local-db/mock/mock-state';
+import { syncCounters } from '@/services/local-db/mock/mock-state';
+import { ensureSupplierCategories } from '@/services/local-db/mock/mock-supplier-categories';
 
 export interface GetProductsParams {
   page?: number;
@@ -144,6 +146,26 @@ export function bulkDeleteProducts(
   }
 
   const deletedCount = initialCount - state.products.length;
+
+  // Reconcile supplier categories and counters after product deletion
+  for (const sup of state.suppliers) {
+    const remainingSupProducts = state.products.filter((p) => p.supplierId === sup.id);
+    if (remainingSupProducts.length === 0) {
+      state.supplierCategories.delete(sup.id);
+      if (sup.name) state.supplierCategories.delete(sup.name);
+      sup.productsCount = 0;
+      sup.categoriesCount = 0;
+      sup.activeCategoriesCount = 0;
+    } else {
+      ensureSupplierCategories(state, sup.id);
+      const cats = state.supplierCategories.get(sup.id) || [];
+      sup.productsCount = remainingSupProducts.length;
+      sup.categoriesCount = cats.length;
+      sup.activeCategoriesCount = cats.filter((c) => c.isActive).length;
+    }
+  }
+  syncCounters(state);
+
   return {
     deletedCount,
     remainingCount: state.products.length,
@@ -209,6 +231,7 @@ export function bulkUpsertProducts(state: MockDbState, products: ProductDto[]): 
       s.productsCount = countsBySupplier.get(s.id)!;
     }
   }
+  syncCounters(state);
 
   return { count: products.length };
 }

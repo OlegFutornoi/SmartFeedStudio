@@ -1,6 +1,6 @@
 ---
 trigger: glob
-globs: ['apps/desktop/src/**', 'apps/admin-portal/**']
+globs: '{apps/desktop/src/**,apps/admin-portal/**}'
 description: UI design system, semantic tokens, shadcn primitives, micro-typography, accessible controls, and layout invariants for SmartFeed Studio.
 ---
 

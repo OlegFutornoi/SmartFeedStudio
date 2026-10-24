@@ -1,11 +1,14 @@
 import React from 'react';
-import { Check, Sparkles, X } from 'lucide-react';
+import { Check, Maximize2, Minimize2, Sparkles, X } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { useTranslation } from '@/i18n';
 
 export type WizardStep = 'SOURCE' | 'SUPPLIER' | 'PREVIEW' | 'PROGRESS';
 
 interface WizardDialogHeaderProps {
   step: WizardStep;
+  isExpanded?: boolean;
+  onToggleExpand?: () => void;
   onClose: () => void;
 }
 
@@ -20,7 +23,12 @@ const STEPS: Array<{
   { id: 'PROGRESS', shortKey: 'suppliers:wizardStep4Short', defaultShort: 'Імпорт' },
 ];
 
-export const WizardDialogHeader: React.FC<WizardDialogHeaderProps> = ({ step, onClose }) => {
+export const WizardDialogHeader: React.FC<WizardDialogHeaderProps> = ({
+  step,
+  isExpanded = true,
+  onToggleExpand,
+  onClose,
+}) => {
   const { t } = useTranslation(['suppliers', 'common']);
 
   const getStepSubtitle = () => {
@@ -96,15 +104,40 @@ export const WizardDialogHeader: React.FC<WizardDialogHeaderProps> = ({ step, on
           })}
         </div>
 
-        <button
+        {onToggleExpand && (
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={onToggleExpand}
+            data-testid="wizard-fullscreen-btn"
+            aria-label={
+              isExpanded
+                ? t('suppliers:collapseFullscreen', { defaultValue: 'Згорнути вікно' })
+                : t('suppliers:expandFullscreen', { defaultValue: 'На весь екран' })
+            }
+            title={
+              isExpanded
+                ? t('suppliers:collapseFullscreen', { defaultValue: 'Згорнути вікно' })
+                : t('suppliers:expandFullscreen', { defaultValue: 'На весь екран' })
+            }
+            className="size-8 text-muted-foreground hover:text-foreground transition-colors rounded-md hover:bg-muted cursor-pointer"
+          >
+            {isExpanded ? <Minimize2 className="size-4" /> : <Maximize2 className="size-4" />}
+          </Button>
+        )}
+
+        <Button
           type="button"
+          variant="ghost"
+          size="icon"
           onClick={onClose}
           data-testid="wizard-close-btn"
           aria-label={t('common:close', { defaultValue: 'Закрити' })}
-          className="text-muted-foreground hover:text-foreground transition-colors p-1.5 rounded-md hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+          className="size-8 text-muted-foreground hover:text-foreground transition-colors rounded-md hover:bg-muted cursor-pointer"
         >
           <X className="size-4" />
-        </button>
+        </Button>
       </div>
     </div>
   );

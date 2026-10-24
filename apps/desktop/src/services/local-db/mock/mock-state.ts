@@ -109,6 +109,21 @@ export function syncCounters(state: MockDbState): void {
   for (const sources of state.feedSources.values()) {
     feedsCount += sources.length;
   }
+
+  for (const s of state.suppliers) {
+    const supFeeds = state.feedSources.get(s.id) || [];
+    const supProducts =
+      supFeeds.length === 0 ? [] : state.products.filter((p) => p.supplierId === s.id);
+    const supCats =
+      supFeeds.length === 0 || supProducts.length === 0
+        ? []
+        : state.supplierCategories.get(s.id) || [];
+    s.activeFeedsCount = supFeeds.length;
+    s.productsCount = supProducts.length;
+    s.categoriesCount = supCats.length;
+    s.activeCategoriesCount = supCats.filter((c) => c.isActive).length;
+  }
+
   state.counters.suppliersCount = state.suppliers.length;
   state.counters.productsCount = state.products.length;
   state.counters.feedsCount = feedsCount;

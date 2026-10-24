@@ -1,6 +1,6 @@
 ---
 trigger: glob
-globs: ['services/backend-api/**', 'packages/shared/**']
+globs: '{services/backend-api/**,packages/shared/**}'
 description: Backend API and CQRS engineering invariants for NestJS, Prisma, BullMQ, and shared contracts.
 ---
 

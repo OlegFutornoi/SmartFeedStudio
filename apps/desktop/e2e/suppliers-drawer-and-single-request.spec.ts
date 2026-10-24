@@ -153,9 +153,28 @@ test.describe('Suppliers Slide-Over Drawer & Network Single-Request Optimization
     await page.goto('/suppliers');
     await expect(page.getByTestId('suppliers-page')).toBeVisible();
 
-    // Open drawer
-    await page.getByTestId('supplier-name-sup_test_1').click();
+    const sidebar = page.getByTestId('desktop-sidebar');
+    await expect(sidebar).toHaveClass(/w-64/);
+
+    // Open drawer for Mobioptom first to verify zeroed categoriesCount when activeFeedsCount is 0
+    await page.getByTestId('supplier-name-sup_test_2').click();
     const drawer = page.getByTestId('supplier-drawer-sheet');
+    await expect(drawer).toBeVisible();
+    await expect(sidebar).toHaveClass(/w-\[72px\]/);
+    await expect(drawer).toHaveClass(/max-w-none/);
+
+    // Verify KPI metrics for Mobioptom show 0 products, 0 feeds, and 0 categories despite stale backend counts
+    const overviewTab = page.getByTestId('supplier-drawer-overview-tab');
+    await expect(overviewTab).toBeVisible();
+    await expect(overviewTab.getByTestId('overview-kpi-categories')).toContainText('0');
+    await expect(overviewTab.getByTestId('overview-kpi-products')).toContainText('0');
+    await expect(overviewTab.getByTestId('overview-kpi-feeds')).toContainText('0');
+
+    await page.getByTestId('supplier-drawer-close-btn').click();
+    await expect(drawer).not.toBeVisible();
+
+    // Open drawer for Livolo
+    await page.getByTestId('supplier-name-sup_test_1').click();
     await expect(drawer).toBeVisible();
 
     // Invariant assertions: No date text, active switch is in header, no fullscreen in footer
@@ -167,18 +186,21 @@ test.describe('Suppliers Slide-Over Drawer & Network Single-Request Optimization
     const footer = page.getByTestId('supplier-drawer-footer');
     await expect(footer.getByTestId('supplier-drawer-fullscreen-btn')).toHaveCount(0);
 
-    // Full screen expansion button is in header
+    // Drawer opens expanded by default with sidebar collapsed
+    await expect(sidebar).toHaveClass(/w-\[72px\]/);
+    await expect(drawer).toHaveClass(/max-w-none/);
+
+    // Full screen expansion button in header toggles between compact drawer and expanded workspace width
     const fullBtn = header.getByTestId('supplier-drawer-fullscreen-btn');
     await expect(fullBtn).toBeVisible();
     await fullBtn.click();
 
-    // Drawer has expanded width class
-    await expect(drawer).toHaveClass(/max-w-none/);
-
-    // Toggle back to normal drawer
-    await fullBtn.click();
     await expect(drawer).not.toHaveClass(/max-w-none/);
     await expect(drawer).toHaveClass(/max-w-5xl|max-w-6xl/);
+
+    // Toggle back to expanded full workspace width
+    await fullBtn.click();
+    await expect(drawer).toHaveClass(/max-w-none/);
   });
 
   test('5. Add feed from table row dropdown opens Import Feed Wizard', async ({ page }) => {
@@ -222,11 +244,11 @@ test.describe('Suppliers Slide-Over Drawer & Network Single-Request Optimization
     await expect(mapBtn).toContainText('Розумні вимикачі');
     await expect(page.getByTestId('category-commission-input-scat_test_1')).toHaveValue('12');
 
-    // Open Marketplace Category Drawer (right slide-over, matching supplier drawer width, zero dark backdrop)
+    // Open Marketplace Category Drawer (right slide-over, expanded to workspace width, zero dark backdrop)
     await mapBtn.click();
     const categoryDrawer = page.getByTestId('marketplace-category-drawer');
     await expect(categoryDrawer).toBeVisible();
-    await expect(categoryDrawer).toHaveClass(/max-w-5xl|max-w-6xl/);
+    await expect(categoryDrawer).toHaveClass(/max-w-none/);
 
     // Verify Export CSV button is present
     const exportBtn = page.getByTestId('drawer-export-csv-btn');

@@ -9,6 +9,8 @@ import {
   parseMarketplaceCategoryUrl,
 } from '@smartfeed/shared';
 import { useTranslation } from '@/i18n';
+import { cn } from '@/lib/utils';
+import { useOptionalSidebar } from '@/contexts/SidebarContext';
 import { MarketplaceCategoryCustomForm } from '@/modules/suppliers/components/details/tabs/MarketplaceCategoryCustomForm';
 import { MarketplaceCategoryEditForm } from '@/modules/suppliers/components/details/tabs/MarketplaceCategoryEditForm';
 import { MarketplaceCategoryImportForm } from '@/modules/suppliers/components/details/tabs/MarketplaceCategoryImportForm';
@@ -46,9 +48,12 @@ export const MarketplaceCategoryDrawer: React.FC<MarketplaceCategoryDrawerProps>
   onImportCategories,
 }) => {
   const { t } = useTranslation(['suppliers']);
+  const sidebar = useOptionalSidebar();
+  const isSidebarCollapsed = sidebar?.isCollapsed ?? true;
   const [search, setSearch] = useState('');
   const [activeMode, setActiveMode] = useState<'LIST' | 'ADD' | 'IMPORT' | 'EDIT'>('LIST');
   const [editingCategory, setEditingCategory] = useState<MarketplaceCategoryDto | null>(null);
+  const [isExpanded, setIsExpanded] = useState(true);
 
   const mpMeta = useMemo(
     () =>
@@ -61,8 +66,10 @@ export const MarketplaceCategoryDrawer: React.FC<MarketplaceCategoryDrawerProps>
       setSearch('');
       setActiveMode('LIST');
       setEditingCategory(null);
+      setIsExpanded(true);
+      sidebar?.collapseSidebar();
     }
-  }, [open, supplierCategory]);
+  }, [open, supplierCategory, sidebar]);
 
   const parsedSearchUrl = useMemo(
     () => parseMarketplaceCategoryUrl(search, marketplaceCode),
@@ -122,16 +129,36 @@ export const MarketplaceCategoryDrawer: React.FC<MarketplaceCategoryDrawerProps>
     URL.revokeObjectURL(url);
   };
 
+  const expandedWidthClass = isSidebarCollapsed
+    ? 'w-full md:w-[calc(100vw-72px)] max-w-none'
+    : 'w-full md:w-[calc(100vw-16rem)] max-w-none';
+
   return (
     <Sheet open={open} onOpenChange={onOpenChange} modal={false}>
       <SheetContent
         side="right"
         hideOverlay={true}
         hideCloseButton={false}
-        className="p-0 flex flex-col h-full bg-background border-l border-border/80 shadow-2xl z-[60] overflow-hidden outline-none ring-0 w-full sm:max-w-2xl md:max-w-3xl lg:max-w-4xl xl:max-w-5xl 2xl:max-w-6xl transition-all duration-300 ease-in-out"
+        className={cn(
+          'p-0 flex flex-col h-full bg-background border-l border-border/80 shadow-2xl z-[60] overflow-hidden outline-none ring-0 transition-all duration-300 ease-in-out',
+          isExpanded
+            ? expandedWidthClass
+            : 'w-full sm:max-w-2xl md:max-w-3xl lg:max-w-4xl xl:max-w-5xl 2xl:max-w-6xl',
+        )}
         data-testid="marketplace-category-drawer"
       >
-        <MarketplaceCategoryDrawerHeader mpMeta={mpMeta} supplierCategory={supplierCategory} />
+        <MarketplaceCategoryDrawerHeader
+          mpMeta={mpMeta}
+          supplierCategory={supplierCategory}
+          isExpanded={isExpanded}
+          onToggleExpand={() =>
+            setIsExpanded((prev) => {
+              const next = !prev;
+              if (next) sidebar?.collapseSidebar();
+              return next;
+            })
+          }
+        />
 
         <MarketplaceCategoryDrawerActionBar
           search={search}

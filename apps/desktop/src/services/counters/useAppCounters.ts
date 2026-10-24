@@ -9,6 +9,8 @@ export interface UseAppCountersResult {
   refresh: (force?: boolean) => Promise<AppCountersState>;
   getSupplierFeedsCount: (supplierId: string) => number;
   getSupplierProductsCount: (supplierId: string) => number;
+  getSupplierCategoriesCount: (supplierId: string) => number;
+  getSupplierActiveCategoriesCount: (supplierId: string) => number;
 }
 
 export function useAppCounters(): UseAppCountersResult {
@@ -24,7 +26,7 @@ export function useAppCounters(): UseAppCountersResult {
     }
   }, [counters.lastUpdated]);
 
-  useDataSync(['suppliers', 'feeds', 'products', 'quotas', 'all'], () => {
+  useDataSync(['suppliers', 'feeds', 'products', 'categories', 'quotas', 'all'], () => {
     appCounterService.fetchSummary(true);
   });
 
@@ -42,11 +44,23 @@ export function useAppCounters(): UseAppCountersResult {
     [],
   );
 
+  const getSupplierCategoriesCount = useCallback(
+    (supplierId: string) => appCounterService.getSupplierCategoriesCount(supplierId),
+    [],
+  );
+
+  const getSupplierActiveCategoriesCount = useCallback(
+    (supplierId: string) => appCounterService.getSupplierActiveCategoriesCount(supplierId),
+    [],
+  );
+
   return {
     counters,
     isLoading: counters.isLoading,
     refresh,
     getSupplierFeedsCount,
     getSupplierProductsCount,
+    getSupplierCategoriesCount,
+    getSupplierActiveCategoriesCount,
   };
 }

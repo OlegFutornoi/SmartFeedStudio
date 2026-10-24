@@ -273,8 +273,11 @@ fn db_get_counters_summary() -> Result<db::LocalCountersSummary, String> {
             total_feeds: 0,
             total_products: 0,
             total_rules: 0,
+            total_categories: 0,
             feeds_by_supplier_id: std::collections::HashMap::new(),
             products_by_supplier_id: std::collections::HashMap::new(),
+            categories_by_supplier_id: std::collections::HashMap::new(),
+            active_categories_by_supplier_id: std::collections::HashMap::new(),
         });
     }
 

@@ -1,6 +1,6 @@
 ---
 trigger: glob
-globs: ['**/*.spec.ts', '**/*.e2e-spec.ts', '**/e2e/**', '**/test/**']
+globs: '{**/*.spec.ts,**/*.e2e-spec.ts,**/e2e/**,**/test/**}'
 description: Automated testing, Playwright, Jest E2E, data cleanup, and test isolation invariants.
 ---
 

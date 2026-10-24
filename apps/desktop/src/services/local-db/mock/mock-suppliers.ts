@@ -18,7 +18,8 @@ export function getSuppliers(state: MockDbState, search?: string): SupplierDto[]
     const activeFeedsCount = (state.feedSources.get(s.id) || []).length;
     const productsCount =
       activeFeedsCount === 0 ? 0 : state.products.filter((p) => p.supplierId === s.id).length;
-    const cats = ensureSupplierCategories(state, s.id);
+    const cats =
+      activeFeedsCount === 0 || productsCount === 0 ? [] : ensureSupplierCategories(state, s.id);
     return {
       ...s,
       productsCount,
@@ -43,7 +44,8 @@ export function getSupplierById(state: MockDbState, id: string): SupplierDto | n
   const activeFeedsCount = (state.feedSources.get(s.id) || []).length;
   const productsCount =
     activeFeedsCount === 0 ? 0 : state.products.filter((p) => p.supplierId === s.id).length;
-  const cats = ensureSupplierCategories(state, s.id);
+  const cats =
+    activeFeedsCount === 0 || productsCount === 0 ? [] : ensureSupplierCategories(state, s.id);
 
   return {
     ...s,

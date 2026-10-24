@@ -9,6 +9,9 @@ import type {
 import { localDb } from '@/services/local-db';
 import { isTauri } from '@/lib/runtime';
 import { fetchWithAuth } from '@/lib/api/client';
+import { getSupplierFeedSources } from '@/lib/api/feed-sources';
+import { invalidateSuppliersCache } from '@/lib/api/suppliers';
+import { appCounterService } from '@/services/counters';
 
 export async function getSupplierCategories(
   supplierId: string,
@@ -16,16 +19,22 @@ export async function getSupplierCategories(
   search?: string,
 ): Promise<SupplierCategoryRuleDto[]> {
   // 1. Verify active feed sources for this supplier (DB-REF-03: "Нема фіда — нема категорій")
-  const feeds = await localDb.feeds.getSupplierFeedSources(supplierId);
+  const feeds = await getSupplierFeedSources(supplierId, token);
   if (!feeds || feeds.length === 0) {
     return [];
   }
 
   const activeFeedIds = new Set(feeds.map((f) => f.id));
+  const activeFeedNames = new Set(feeds.map((f) => f.name));
+  const isFeedActive = (c: SupplierCategoryRuleDto) =>
+    Boolean(
+      (c.feedSourceId && activeFeedIds.has(c.feedSourceId)) ||
+      (c.feedName && activeFeedNames.has(c.feedName)),
+    );
 
   if (isTauri()) {
     const local = await localDb.suppliers.getSupplierCategories(supplierId, search);
-    return (local || []).filter((c) => !c.feedSourceId || activeFeedIds.has(c.feedSourceId));
+    return (local || []).filter((c) => !c.feedSourceId || isFeedActive(c));
   }
 
   let remoteRules: SupplierCategoryRuleDto[] = [];
@@ -45,9 +54,7 @@ export async function getSupplierCategories(
   }
 
   const localCategories = await localDb.suppliers.getSupplierCategories(supplierId, search);
-  const validLocal = (localCategories || []).filter(
-    (c) => !c.feedSourceId || activeFeedIds.has(c.feedSourceId),
-  );
+  const validLocal = (localCategories || []).filter((c) => !c.feedSourceId || isFeedActive(c));
 
   // If we have local categories for active feeds, merge them with remote rules so we preserve real feed category names and product counts!
   if (validLocal.length > 0) {
@@ -91,7 +98,14 @@ export async function getSupplierCategories(
     });
   }
 
-  return [];
+  const validRemote = remoteRules.filter((c) =>
+    Boolean(isFeedActive(c) && (c.productCount ?? 0) > 0),
+  );
+  if (search) {
+    const q = search.toLowerCase();
+    return validRemote.filter((c) => c.name.toLowerCase().includes(q));
+  }
+  return validRemote;
 }
 
 export async function toggleSupplierCategory(
@@ -100,6 +114,8 @@ export async function toggleSupplierCategory(
   isActive: boolean,
   token?: string,
 ): Promise<SupplierCategoryRuleDto> {
+  invalidateSuppliersCache();
+  appCounterService.invalidate();
   if (isTauri()) {
     return localDb.suppliers.toggleSupplierCategory(supplierId, categoryId, isActive);
   }
@@ -115,7 +131,13 @@ export async function toggleSupplierCategory(
       token,
     );
     if (response.ok) {
-      return await response.json();
+      const updated = await response.json();
+      try {
+        await localDb.suppliers.toggleSupplierCategory(supplierId, categoryId, isActive);
+      } catch (localErr) {
+        console.warn('[ApiClient] Local sync on toggleSupplierCategory skipped:', localErr);
+      }
+      return updated;
     }
   } catch (err) {
     console.warn('[ApiClient] Remote toggleSupplierCategory failed, using local fallback:', err);
@@ -130,6 +152,8 @@ export async function batchToggleSupplierCategories(
   isActive: boolean,
   token?: string,
 ): Promise<{ updatedCount: number }> {
+  invalidateSuppliersCache();
+  appCounterService.invalidate();
   if (isTauri()) {
     return localDb.suppliers.batchToggleSupplierCategories(supplierId, categoryIds, isActive);
   }
@@ -145,7 +169,13 @@ export async function batchToggleSupplierCategories(
       token,
     );
     if (response.ok) {
-      return await response.json();
+      const updated = await response.json();
+      try {
+        await localDb.suppliers.batchToggleSupplierCategories(supplierId, categoryIds, isActive);
+      } catch (localErr) {
+        console.warn('[ApiClient] Local sync on batchToggleSupplierCategories skipped:', localErr);
+      }
+      return updated;
     }
   } catch (err) {
     console.warn(

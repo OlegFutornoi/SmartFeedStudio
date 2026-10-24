@@ -4,6 +4,8 @@ interface SidebarContextType {
   isCollapsed: boolean;
   setIsCollapsed: React.Dispatch<React.SetStateAction<boolean>>;
   toggleSidebar: () => void;
+  collapseSidebar: () => void;
+  expandSidebar: () => void;
   isMobileOpen: boolean;
   setIsMobileOpen: React.Dispatch<React.SetStateAction<boolean>>;
   toggleMobileSidebar: () => void;
@@ -31,6 +33,22 @@ export function SidebarProvider({ children }: { children: React.ReactNode }) {
     });
   }, []);
 
+  const collapseSidebar = useCallback(() => {
+    setIsCollapsed((prev) => {
+      if (prev) return prev;
+      localStorage.setItem('smartfeed_desktop_sidebar_collapsed', 'true');
+      return true;
+    });
+  }, []);
+
+  const expandSidebar = useCallback(() => {
+    setIsCollapsed((prev) => {
+      if (!prev) return prev;
+      localStorage.setItem('smartfeed_desktop_sidebar_collapsed', 'false');
+      return false;
+    });
+  }, []);
+
   const toggleMobileSidebar = useCallback(() => {
     setIsMobileOpen((prev) => !prev);
   }, []);
@@ -44,12 +62,22 @@ export function SidebarProvider({ children }: { children: React.ReactNode }) {
       isCollapsed,
       setIsCollapsed,
       toggleSidebar,
+      collapseSidebar,
+      expandSidebar,
       isMobileOpen,
       setIsMobileOpen,
       toggleMobileSidebar,
       closeMobileSidebar,
     }),
-    [isCollapsed, toggleSidebar, isMobileOpen, toggleMobileSidebar, closeMobileSidebar],
+    [
+      isCollapsed,
+      toggleSidebar,
+      collapseSidebar,
+      expandSidebar,
+      isMobileOpen,
+      toggleMobileSidebar,
+      closeMobileSidebar,
+    ],
   );
 
   return <SidebarContext.Provider value={value}>{children}</SidebarContext.Provider>;
@@ -61,4 +89,8 @@ export function useSidebar() {
     throw new Error('useSidebar must be used within a SidebarProvider');
   }
   return context;
+}
+
+export function useOptionalSidebar() {
+  return useContext(SidebarContext);
 }

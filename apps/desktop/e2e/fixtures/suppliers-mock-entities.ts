@@ -100,6 +100,8 @@ export const mockSuppliers = [
     isActive: true,
     productsCount: 150,
     activeFeedsCount: 0,
+    categoriesCount: 5,
+    activeCategoriesCount: 5,
     contactEmail: 'sales@mobioptom.com',
     contactPhone: '+380509998877',
     website: 'https://mobioptom.com',

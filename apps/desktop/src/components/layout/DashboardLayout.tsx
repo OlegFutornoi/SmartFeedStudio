@@ -37,7 +37,7 @@ export function DashboardLayout({ children }: { children?: React.ReactNode }) {
           <Sidebar />
           <div className="flex-1 flex flex-col min-w-0 md:m-2 md:ml-0 md:rounded-xl md:border md:border-border/80 md:shadow-xs bg-background overflow-hidden">
             <Header />
-            <main className="flex-1 p-6 md:p-8 overflow-y-auto">
+            <main className="flex-1 p-4 sm:p-6 lg:p-7 overflow-y-auto">
               {isLicenseBlocked && !isUserSuspended ? (
                 <ExpiredPlanBlocker />
               ) : (

@@ -14,6 +14,7 @@ import { SupplierFormFields } from '@/modules/suppliers/components/forms/Supplie
 import { useSupplierFormState } from '@/modules/suppliers/components/forms/useSupplierFormState';
 import { useTranslation } from '@/i18n';
 import { cn } from '@/lib/utils';
+import { useOptionalSidebar } from '@/contexts/SidebarContext';
 
 export interface SupplierFormSheetProps {
   isOpen: boolean;
@@ -29,7 +30,13 @@ export const SupplierFormSheet: React.FC<SupplierFormSheetProps> = ({
   onSave,
 }) => {
   const { t } = useTranslation(['suppliers', 'common']);
+  const sidebar = useOptionalSidebar();
+  const isSidebarCollapsed = sidebar?.isCollapsed ?? true;
   const formState = useSupplierFormState({ supplierToEdit, isOpen, onSave, onClose });
+
+  const expandedWidthClass = isSidebarCollapsed
+    ? 'w-full md:w-[calc(100vw-72px)] max-w-none'
+    : 'w-full md:w-[calc(100vw-16rem)] max-w-none';
 
   return (
     <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()} modal={false}>
@@ -41,7 +48,7 @@ export const SupplierFormSheet: React.FC<SupplierFormSheetProps> = ({
         className={cn(
           'p-0 flex flex-col h-full bg-background border-l border-border/80 shadow-2xl z-50 overflow-hidden outline-none focus:outline-none focus-visible:outline-none ring-0 focus:ring-0 transition-all duration-300 ease-in-out',
           formState.isExpanded
-            ? 'w-full max-w-none'
+            ? expandedWidthClass
             : 'w-full sm:max-w-2xl md:max-w-3xl lg:max-w-4xl xl:max-w-5xl 2xl:max-w-6xl',
         )}
         data-testid="supplier-form-sheet"

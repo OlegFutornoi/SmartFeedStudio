@@ -1,6 +1,6 @@
 ---
 trigger: glob
-globs: ['**/schema.prisma', '**/migrations/**', '**/*.repository.ts', '**/*handler.ts']
+globs: '{**/schema.prisma,**/migrations/**,**/*.repository.ts,**/*handler.ts}'
 description: PostgreSQL 16 and Prisma ORM database engineering invariants for SmartFeed Studio.
 ---
 

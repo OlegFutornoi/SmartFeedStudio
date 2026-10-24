@@ -57,10 +57,24 @@ pub fn get_suppliers(conn: &Connection) -> Result<Vec<SupplierDto>> {
             is_active: row.get::<_, i32>(31)? == 1,
             created_at: row.get(32)?,
             updated_at: row.get(33)?,
-            products_count: Some(row.get::<_, u32>(34).unwrap_or(0)),
+            products_count: {
+                let f = row.get::<_, u32>(35).unwrap_or(0);
+                let p = row.get::<_, u32>(34).unwrap_or(0);
+                Some(if f == 0 { 0 } else { p })
+            },
             active_feeds_count: Some(row.get::<_, u32>(35).unwrap_or(0)),
-            categories_count: Some(row.get::<_, u32>(36).unwrap_or(0)),
-            active_categories_count: Some(row.get::<_, u32>(37).unwrap_or(0)),
+            categories_count: {
+                let f = row.get::<_, u32>(35).unwrap_or(0);
+                let p = row.get::<_, u32>(34).unwrap_or(0);
+                let c = row.get::<_, u32>(36).unwrap_or(0);
+                Some(if f == 0 || p == 0 { 0 } else { c })
+            },
+            active_categories_count: {
+                let f = row.get::<_, u32>(35).unwrap_or(0);
+                let p = row.get::<_, u32>(34).unwrap_or(0);
+                let ac = row.get::<_, u32>(37).unwrap_or(0);
+                Some(if f == 0 || p == 0 { 0 } else { ac })
+            },
         })
     })?;
 
@@ -125,10 +139,24 @@ pub fn get_supplier_by_id(conn: &Connection, id: &str) -> Result<Option<Supplier
             is_active: row.get::<_, i32>(31)? == 1,
             created_at: row.get(32)?,
             updated_at: row.get(33)?,
-            products_count: Some(row.get::<_, u32>(34).unwrap_or(0)),
+            products_count: {
+                let f = row.get::<_, u32>(35).unwrap_or(0);
+                let p = row.get::<_, u32>(34).unwrap_or(0);
+                Some(if f == 0 { 0 } else { p })
+            },
             active_feeds_count: Some(row.get::<_, u32>(35).unwrap_or(0)),
-            categories_count: Some(row.get::<_, u32>(36).unwrap_or(0)),
-            active_categories_count: Some(row.get::<_, u32>(37).unwrap_or(0)),
+            categories_count: {
+                let f = row.get::<_, u32>(35).unwrap_or(0);
+                let p = row.get::<_, u32>(34).unwrap_or(0);
+                let c = row.get::<_, u32>(36).unwrap_or(0);
+                Some(if f == 0 || p == 0 { 0 } else { c })
+            },
+            active_categories_count: {
+                let f = row.get::<_, u32>(35).unwrap_or(0);
+                let p = row.get::<_, u32>(34).unwrap_or(0);
+                let ac = row.get::<_, u32>(37).unwrap_or(0);
+                Some(if f == 0 || p == 0 { 0 } else { ac })
+            },
         }))
     } else {
         Ok(None)

@@ -37,8 +37,11 @@ export interface LocalCountersSummary {
   totalFeeds: number;
   totalProducts: number;
   totalRules: number;
+  totalCategories?: number;
   feedsBySupplierId: Record<string, number>;
   productsBySupplierId: Record<string, number>;
+  categoriesBySupplierId?: Record<string, number>;
+  activeCategoriesBySupplierId?: Record<string, number>;
 }
 
 export interface LocalDbCommandMap {

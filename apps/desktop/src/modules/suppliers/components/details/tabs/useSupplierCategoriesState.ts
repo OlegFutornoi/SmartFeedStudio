@@ -59,10 +59,16 @@ export function useSupplierCategoriesState(
       ]);
       setMarketplaceCatalog(mpData && mpData.length > 0 ? mpData : SEED_MARKETPLACE_CATEGORIES);
       const activeFeedIds = new Set((feedsData || []).map((f) => f.id));
+      const activeFeedNames = new Set((feedsData || []).map((f) => f.name));
       const validCategories =
         !feedsData || feedsData.length === 0
           ? []
-          : (catData || []).filter((c) => !c.feedSourceId || activeFeedIds.has(c.feedSourceId));
+          : (catData || []).filter(
+              (c) =>
+                !c.feedSourceId ||
+                activeFeedIds.has(c.feedSourceId) ||
+                Boolean(c.feedName && activeFeedNames.has(c.feedName)),
+            );
 
       setCategories(validCategories);
       setFeedSources(feedsData || []);

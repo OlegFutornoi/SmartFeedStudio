@@ -3,12 +3,19 @@ import { localDb } from '@/services/local-db';
 import { isTauri } from '@/lib/runtime';
 import { ApiError, fetchWithAuth } from '@/lib/api/client';
 import { appCounterService } from '@/services/counters';
+import { SMARTFEED_DATA_SYNC_EVENT } from '@/lib/syncEvents';
 
 let cachedSuppliers: { [key: string]: { data: SupplierDto[]; timestamp: number } } = {};
 const SUPPLIERS_TTL_MS = 30000; // 30s navigation TTL per FE-14
 
 export function invalidateSuppliersCache(): void {
   cachedSuppliers = {};
+}
+
+if (typeof window !== 'undefined') {
+  window.addEventListener(SMARTFEED_DATA_SYNC_EVENT, () => {
+    invalidateSuppliersCache();
+  });
 }
 
 export async function getSuppliers(
@@ -51,14 +58,9 @@ export async function getSuppliers(
 }
 
 export async function getSupplierById(id: string, token?: string): Promise<SupplierDto> {
-  const hydrateOne = (s: SupplierDto): SupplierDto => {
-    const feeds = appCounterService.getSupplierFeedsCount(s.id);
-    const prods = appCounterService.getSupplierProductsCount(s.id);
-    return {
-      ...s,
-      activeFeedsCount: feeds || s.activeFeedsCount || 0,
-      productsCount: prods || s.productsCount || 0,
-    };
+  const hydrateOne = async (s: SupplierDto): Promise<SupplierDto> => {
+    const [hydrated] = await appCounterService.hydrateSuppliers([s]);
+    return hydrated || s;
   };
 
   if (isTauri()) {

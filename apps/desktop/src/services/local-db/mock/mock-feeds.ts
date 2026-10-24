@@ -132,6 +132,7 @@ export function createFeedSource(
 
   state.feedSources.set(supplierId, supplierSources);
   supplier.activeFeedsCount = supplierSources.length;
+  syncCounters(state);
 
   return {
     totalProcessed: payload.productsCount || 0,
@@ -247,6 +248,13 @@ export function deleteFeedSource(
         state.supplierCategories.set(sup.id, filteredCats);
       }
     }
+  }
+
+  syncCounters(state);
+  if (supplier) {
+    const activeCats = state.supplierCategories.get(supplierId) || [];
+    supplier.categoriesCount = activeCats.length;
+    supplier.activeCategoriesCount = activeCats.filter((c) => c.isActive).length;
   }
 
   return {

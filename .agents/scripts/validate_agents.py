@@ -104,6 +104,14 @@ def validate_rules():
         text = rule_path.read_text(encoding="utf-8")
         lines = text.splitlines()
         char_count = len(text)
+        fm = parse_frontmatter(text)
+
+        if fm.get("trigger") == "glob":
+            globs_val = fm.get("globs")
+            if not globs_val or not isinstance(globs_val, str):
+                errors.append(
+                    f"Rule {rule_name}.md with trigger: glob must define 'globs' as a string (not a YAML list)"
+                )
 
         if char_count > 12000:
             errors.append(f"Rule {rule_name}.md exceeds 12,000 characters limit ({char_count} chars)")

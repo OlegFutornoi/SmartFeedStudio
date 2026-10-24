@@ -4,6 +4,7 @@ import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { useTranslation } from '@/i18n';
 import { cn } from '@/lib/utils';
+import { useOptionalSidebar } from '@/contexts/SidebarContext';
 import type { SupplierDto } from '@smartfeed/shared';
 import { SupplierDrawerHeader } from '@/modules/suppliers/components/drawer/SupplierDrawerHeader';
 import { SupplierDrawerFooter } from '@/modules/suppliers/components/drawer/SupplierDrawerFooter';
@@ -38,19 +39,26 @@ export const SupplierDrawerSheet: React.FC<SupplierDrawerSheetProps> = ({
   onConnectFeed,
 }) => {
   const { t } = useTranslation(['suppliers', 'common']);
+  const sidebar = useOptionalSidebar();
+  const isSidebarCollapsed = sidebar?.isCollapsed ?? true;
   const [activeTab, setActiveTab] = useState<string>(initialTab);
-  const [isExpanded, setIsExpanded] = useState<boolean>(false);
+  const [isExpanded, setIsExpanded] = useState<boolean>(true);
 
   useEffect(() => {
     if (initialTab) {
       setActiveTab(initialTab);
     }
-    if (!isOpen) {
-      setIsExpanded(false);
+    if (isOpen) {
+      setIsExpanded(true);
+      sidebar?.collapseSidebar();
     }
-  }, [isOpen, initialTab]);
+  }, [isOpen, initialTab, sidebar]);
 
   if (!supplier) return null;
+
+  const expandedWidthClass = isSidebarCollapsed
+    ? 'w-full md:w-[calc(100vw-72px)] max-w-none'
+    : 'w-full md:w-[calc(100vw-16rem)] max-w-none';
 
   return (
     <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()} modal={false}>
@@ -62,7 +70,7 @@ export const SupplierDrawerSheet: React.FC<SupplierDrawerSheetProps> = ({
         className={cn(
           'p-0 flex flex-col h-full bg-background border-l border-border/80 shadow-2xl z-50 overflow-hidden outline-none focus:outline-none focus-visible:outline-none ring-0 focus:ring-0 transition-all duration-300 ease-in-out',
           isExpanded
-            ? 'w-full max-w-none'
+            ? expandedWidthClass
             : 'w-full sm:max-w-2xl md:max-w-3xl lg:max-w-4xl xl:max-w-5xl 2xl:max-w-6xl',
         )}
         data-testid="supplier-drawer-sheet"
@@ -72,7 +80,13 @@ export const SupplierDrawerSheet: React.FC<SupplierDrawerSheetProps> = ({
           supplier={supplier}
           onToggleStatus={onToggleStatus}
           isExpanded={isExpanded}
-          onToggleExpand={() => setIsExpanded((prev) => !prev)}
+          onToggleExpand={() =>
+            setIsExpanded((prev) => {
+              const next = !prev;
+              if (next) sidebar?.collapseSidebar();
+              return next;
+            })
+          }
           onClose={onClose}
         />
 

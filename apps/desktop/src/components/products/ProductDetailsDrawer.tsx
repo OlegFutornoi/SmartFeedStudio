@@ -1,8 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { X, Truck, FolderTree, Barcode, DollarSign, Layers } from 'lucide-react';
+import {
+  X,
+  Truck,
+  FolderTree,
+  Barcode,
+  DollarSign,
+  Layers,
+  Maximize2,
+  Minimize2,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useTranslation } from '@/i18n';
+import { cn } from '@/lib/utils';
+import { useOptionalSidebar } from '@/contexts/SidebarContext';
 import type {
   ProductDto,
   LocalProductImageDto,
@@ -27,20 +38,31 @@ export const ProductDetailsDrawer: React.FC<ProductDetailsDrawerProps> = ({
   onProductUpdate,
 }) => {
   const { t } = useTranslation(['catalogs', 'common']);
+  const sidebar = useOptionalSidebar();
+  const isSidebarCollapsed = sidebar?.isCollapsed ?? true;
   const [activeImageIdx, setActiveImageIdx] = useState(0);
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
   const [localImages, setLocalImages] = useState<LocalProductImageDto[]>([]);
+  const [isExpanded, setIsExpanded] = useState(true);
 
   useEffect(() => {
+    if (product) {
+      setIsExpanded(true);
+      sidebar?.collapseSidebar();
+    }
     if (product?.images) {
       setLocalImages(product.images as LocalProductImageDto[]);
       setActiveImageIdx(0);
     } else {
       setLocalImages([]);
     }
-  }, [product]);
+  }, [product, sidebar]);
 
   if (!product) return null;
+
+  const expandedWidthClass = isSidebarCollapsed
+    ? 'w-full md:w-[calc(100vw-72px)] max-w-none'
+    : 'w-full md:w-[calc(100vw-16rem)] max-w-none';
 
   const cost = product.costPrice || 0;
   const retail = product.price || 0;
@@ -84,23 +106,46 @@ export const ProductDetailsDrawer: React.FC<ProductDetailsDrawerProps> = ({
       data-testid="product-details-drawer"
       className="fixed inset-0 z-50 overflow-hidden bg-black/50 backdrop-blur-xs flex justify-end animate-in fade-in duration-200"
     >
-      <div className="w-full max-w-lg bg-card border-l border-border h-full shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
+      <div
+        className={cn(
+          'bg-card border-l border-border h-full shadow-2xl flex flex-col animate-in slide-in-from-right duration-300 transition-all',
+          isExpanded ? expandedWidthClass : 'w-full max-w-lg',
+        )}
+      >
         {/* Header with solid bg */}
         <div className="p-4 border-b border-border bg-card flex items-center justify-between shrink-0">
           <div>
             <span className="text-xs font-mono text-muted-foreground uppercase">{product.sku}</span>
             <h3 className="text-base font-bold text-foreground line-clamp-1">{product.titleUk}</h3>
           </div>
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            data-testid="close-drawer-btn"
-            onClick={onClose}
-            className="h-8 w-8 p-0"
-          >
-            <X className="h-4 w-4" />
-          </Button>
+          <div className="flex items-center gap-1">
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              data-testid="toggle-expand-drawer-btn"
+              onClick={() =>
+                setIsExpanded((prev) => {
+                  const next = !prev;
+                  if (next) sidebar?.collapseSidebar();
+                  return next;
+                })
+              }
+              className="h-8 w-8 p-0"
+            >
+              {isExpanded ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              data-testid="close-drawer-btn"
+              onClick={onClose}
+              className="h-8 w-8 p-0"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
 
         {/* Scrollable Content */}

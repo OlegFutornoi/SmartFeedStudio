@@ -1,7 +1,7 @@
 ---
 trigger: glob
+globs: '{apps/desktop/src/**,apps/admin-portal/**}'
 description: Frontend architecture, React 18, Next.js 14, Tauri v2, design system, and UI invariants for SmartFeed Studio.
-globs: ['apps/desktop/src/**', 'apps/admin-portal/**']
 ---
 
 # Frontend Engineering Invariants

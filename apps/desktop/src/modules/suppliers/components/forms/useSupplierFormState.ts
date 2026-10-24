@@ -51,7 +51,7 @@ export function useSupplierFormState({
   const [address, setAddress] = useState('');
   const [postcode, setPostcode] = useState('');
 
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -110,7 +110,7 @@ export function useSupplierFormState({
       setPostcode('');
     }
     setError(null);
-    if (!isOpen) setIsExpanded(false);
+    if (isOpen) setIsExpanded(true);
   }, [supplierToEdit, isOpen]);
 
   const handleNameChange = (val: string) => {

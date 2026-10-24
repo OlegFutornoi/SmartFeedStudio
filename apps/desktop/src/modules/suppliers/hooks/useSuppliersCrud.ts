@@ -40,47 +40,53 @@ export function useSuppliersCrud({
 
   const lastFetchedTokenRef = useRef<string | null>(null);
   const isFetchingRef = useRef<boolean>(false);
+  const pendingForceRefreshRef = useRef<boolean>(false);
 
   const fetchSuppliers = useCallback(
     async (force = false, silent = false) => {
       if (!isTauri() && (!token || !isAuthenticated)) return;
       const fetchKey = token || 'tauri-local';
       if (!force && lastFetchedTokenRef.current === fetchKey) return;
-      if (isFetchingRef.current) return;
+      if (isFetchingRef.current) {
+        if (force) {
+          pendingForceRefreshRef.current = true;
+        }
+        return;
+      }
 
       try {
         isFetchingRef.current = true;
+        pendingForceRefreshRef.current = false;
         if (!silent) setIsLoading(true);
         const data = await getSuppliers(token || undefined, undefined, force);
         lastFetchedTokenRef.current = fetchKey;
         setSuppliers(data || []);
         setLocalQuotaUsed('suppliers', data ? data.length : 0);
 
-        if (selectedSupplierForDrawer) {
-          const updated = data?.find((s) => s.id === selectedSupplierForDrawer.id);
-          if (updated) setSelectedSupplierForDrawer(updated);
-        }
+        setSelectedSupplierForDrawer((prev) => {
+          if (!prev) return null;
+          const updated = data?.find((s) => s.id === prev.id);
+          return updated || prev;
+        });
       } catch (err) {
         console.warn('[SuppliersListPage:fetchSuppliers] Error:', err);
       } finally {
         if (!silent) setIsLoading(false);
         isFetchingRef.current = false;
+        if (pendingForceRefreshRef.current) {
+          pendingForceRefreshRef.current = false;
+          void fetchSuppliers(true, true);
+        }
       }
     },
-    [
-      token,
-      isAuthenticated,
-      setLocalQuotaUsed,
-      selectedSupplierForDrawer,
-      setSelectedSupplierForDrawer,
-    ],
+    [token, isAuthenticated, setLocalQuotaUsed, setSelectedSupplierForDrawer],
   );
 
   useEffect(() => {
     fetchSuppliers();
   }, [fetchSuppliers]);
 
-  useDataSync(['suppliers', 'feeds', 'products', 'quotas', 'all'], () => {
+  useDataSync(['suppliers', 'feeds', 'products', 'categories', 'quotas', 'all'], () => {
     fetchSuppliers(true, true);
   });
 
