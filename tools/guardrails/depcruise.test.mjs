@@ -10,7 +10,7 @@ const rootDir = path.resolve(__dirname, '../..');
 
 test('depcruise: queries importing from commands violates queries-not-import-commands rule', async () => {
   // Load config
-  const configModule = await import(path.join(rootDir, '.dependency-cruiser.cjs'));
+  const configModule = await import(path.join(__dirname, 'dependency-cruiser.cjs'));
   const config = configModule.default || configModule;
 
   const fixtureDir = path.join(__dirname, '__fixtures__/depcruise/bad-cqrs');
@@ -31,7 +31,7 @@ test('depcruise: queries importing from commands violates queries-not-import-com
 });
 
 test('depcruise: clean CQRS files produce zero violations', async () => {
-  const configModule = await import(path.join(rootDir, '.dependency-cruiser.cjs'));
+  const configModule = await import(path.join(__dirname, 'dependency-cruiser.cjs'));
   const config = configModule.default || configModule;
 
   const fixtureDir = path.join(__dirname, '__fixtures__/depcruise/good-cqrs');
