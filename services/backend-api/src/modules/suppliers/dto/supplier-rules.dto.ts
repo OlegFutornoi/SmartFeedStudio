@@ -1,4 +1,15 @@
-import { IsOptional, IsNumber, IsBoolean, IsString, IsIn, Min, Max } from 'class-validator';
+import {
+  IsOptional,
+  IsNumber,
+  IsBoolean,
+  IsString,
+  IsIn,
+  Min,
+  Max,
+  IsArray,
+  ValidateNested,
+} from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class CustomRoundingRuleItemDto {
   @IsString()
@@ -118,6 +129,58 @@ export class UpdateSupplierCategoryDto {
   @IsOptional()
   @IsNumber()
   productCount?: number;
+
+  @IsOptional()
+  marketplaceMappings?: Record<string, unknown>;
+}
+
+export class ToggleSupplierCategoryDto {
+  @IsBoolean()
+  isActive: boolean;
+}
+
+export class BatchToggleSupplierCategoriesDto {
+  @IsArray()
+  @IsString({ each: true })
+  categoryIds: string[];
+
+  @IsBoolean()
+  isActive: boolean;
+}
+
+export class BulkUpsertSupplierCategoryItemDto {
+  @IsString()
+  feedCategoryId: string;
+
+  @IsString()
+  name: string;
+
+  @IsOptional()
+  @IsString()
+  parentId?: string | null;
+
+  @IsOptional()
+  @IsString()
+  feedSourceId?: string | null;
+
+  @IsOptional()
+  @IsString()
+  feedName?: string | null;
+
+  @IsOptional()
+  @IsNumber()
+  productCount?: number;
+
+  @IsOptional()
+  @IsBoolean()
+  isActive?: boolean;
+}
+
+export class BulkUpsertSupplierCategoriesDto {
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => BulkUpsertSupplierCategoryItemDto)
+  categories: BulkUpsertSupplierCategoryItemDto[];
 }
 
 export class CreateSupplierPricingRuleDto {
@@ -190,4 +253,15 @@ export class UpdateSupplierPricingRuleDto {
   @IsOptional()
   @IsBoolean()
   isActive?: boolean;
+}
+
+export class BulkCreateSupplierPricingRulesDto {
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CreateSupplierPricingRuleDto)
+  rules: CreateSupplierPricingRuleDto[];
+
+  @IsOptional()
+  @IsBoolean()
+  replaceExisting?: boolean;
 }

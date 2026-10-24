@@ -166,3 +166,27 @@ export async function syncSupplierFeed(
     message: `Синхронізовано ${updatedCount} товарів із ${totalProducts}`,
   };
 }
+
+export async function clearSupplierSyncLogs(
+  supplierId: string,
+  token?: string,
+): Promise<{ success: boolean }> {
+  if (!isTauri() && token) {
+    try {
+      const res = await fetchWithAuth(
+        `/suppliers/${supplierId}/sync-logs`,
+        { method: 'DELETE' },
+        token,
+      );
+      if (res.ok) {
+        emitDataSync(['suppliers', 'all']);
+        return { success: true };
+      }
+    } catch (err) {
+      console.warn('[supplier-sync] Remote clear logs failed:', err);
+    }
+  }
+
+  emitDataSync(['suppliers', 'all']);
+  return { success: true };
+}

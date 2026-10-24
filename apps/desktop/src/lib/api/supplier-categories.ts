@@ -1,17 +1,12 @@
-import type {
-  CreateMarketplaceCategoryDto,
-  UpdateMarketplaceCategoryDto,
-  MarketplaceCategoryDto,
-  LocalSupplierCategoryMarketplaceMapDto,
-  SupplierCategoryRuleDto,
-  UpdateSupplierCategoryRuleDto,
-} from '@smartfeed/shared';
+import type { SupplierCategoryRuleDto, UpdateSupplierCategoryRuleDto } from '@smartfeed/shared';
 import { localDb } from '@/services/local-db';
 import { isTauri } from '@/lib/runtime';
 import { fetchWithAuth } from '@/lib/api/client';
 import { getSupplierFeedSources } from '@/lib/api/feed-sources';
 import { invalidateSuppliersCache } from '@/lib/api/suppliers';
 import { appCounterService } from '@/services/counters';
+
+export * from '@/lib/api/marketplace-categories';
 
 export async function getSupplierCategories(
   supplierId: string,
@@ -226,67 +221,68 @@ export async function updateSupplierCategoryRule(
   return localDb.suppliers.updateSupplierCategoryRule(supplierId, categoryId, payload);
 }
 
-export async function getMarketplaceCategories(
-  marketplaceCode?: string,
-  search?: string,
-  _token?: string,
-): Promise<MarketplaceCategoryDto[]> {
-  return localDb.suppliers.getMarketplaceCategories(marketplaceCode, search);
-}
-
-export async function createMarketplaceCategory(
-  payload: CreateMarketplaceCategoryDto,
-  _token?: string,
-): Promise<MarketplaceCategoryDto> {
-  return localDb.suppliers.createMarketplaceCategory(payload);
-}
-
-export async function updateMarketplaceCategory(
-  id: string,
-  payload: UpdateMarketplaceCategoryDto,
-  _token?: string,
-): Promise<MarketplaceCategoryDto> {
-  return localDb.suppliers.updateMarketplaceCategory(id, payload);
-}
-
-export async function importMarketplaceCategories(
-  items: CreateMarketplaceCategoryDto[],
-  _token?: string,
-): Promise<{ importedCount: number }> {
-  return localDb.suppliers.importMarketplaceCategories(items);
-}
-
-export async function autoMapSupplierCategories(
+export async function bulkUpsertSupplierCategories(
   supplierId: string,
-  marketplaceCode = 'ROZETKA',
-  _token?: string,
-): Promise<{ mappedCount: number; categories: SupplierCategoryRuleDto[] }> {
-  return localDb.suppliers.autoMapSupplierCategories(supplierId, marketplaceCode);
+  categories: Array<{
+    feedCategoryId: string;
+    name: string;
+    parentId?: string | null;
+    feedSourceId?: string | null;
+    feedName?: string | null;
+    productCount?: number;
+    isActive?: boolean;
+  }>,
+  token?: string,
+): Promise<SupplierCategoryRuleDto[]> {
+  invalidateSuppliersCache();
+  appCounterService.invalidate();
+
+  if (!isTauri()) {
+    try {
+      const response = await fetchWithAuth(
+        `/suppliers/${supplierId}/categories/bulk-upsert`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ categories }),
+        },
+        token,
+      );
+      if (response.ok) {
+        return (await response.json()) as SupplierCategoryRuleDto[];
+      }
+    } catch (err) {
+      console.warn('[ApiClient] Remote bulkUpsertSupplierCategories failed:', err);
+    }
+  }
+
+  return [];
 }
 
-export async function getSupplierCategoryMarketplaceMaps(
-  supplierCategoryRuleId?: string,
-): Promise<LocalSupplierCategoryMarketplaceMapDto[]> {
-  return localDb.suppliers.getSupplierCategoryMarketplaceMaps(supplierCategoryRuleId);
-}
+export async function deleteSupplierCategory(
+  supplierId: string,
+  categoryId: string,
+  token?: string,
+): Promise<{ success: boolean; id: string }> {
+  invalidateSuppliersCache();
+  appCounterService.invalidate();
 
-export async function upsertSupplierCategoryMarketplaceMap(
-  payload: Partial<LocalSupplierCategoryMarketplaceMapDto> & {
-    supplierCategoryRuleId: string;
-    marketplaceCode: string;
-    externalCategoryId: string;
-    externalCategoryName: string;
-  },
-): Promise<LocalSupplierCategoryMarketplaceMapDto> {
-  return localDb.suppliers.upsertSupplierCategoryMarketplaceMap(payload);
-}
+  if (!isTauri()) {
+    try {
+      const response = await fetchWithAuth(
+        `/suppliers/${supplierId}/categories/${categoryId}`,
+        {
+          method: 'DELETE',
+        },
+        token,
+      );
+      if (response.ok) {
+        return (await response.json()) as { success: boolean; id: string };
+      }
+    } catch (err) {
+      console.warn('[ApiClient] Remote deleteSupplierCategory failed:', err);
+    }
+  }
 
-export async function deleteSupplierCategoryMarketplaceMap(
-  supplierCategoryRuleId: string,
-  marketplaceCode: string,
-): Promise<void> {
-  return localDb.suppliers.deleteSupplierCategoryMarketplaceMap(
-    supplierCategoryRuleId,
-    marketplaceCode,
-  );
+  return { success: true, id: categoryId };
 }

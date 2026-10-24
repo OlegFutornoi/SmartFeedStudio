@@ -70,6 +70,27 @@ export class UpdateSupplierCategoryHandler implements ICommandHandler<UpdateSupp
     if (dto.externalCategoryName !== undefined)
       data.externalCategoryName = dto.externalCategoryName;
 
+    let currentMappings: Record<string, unknown> = {};
+    if (existing?.marketplaceMappings && typeof existing.marketplaceMappings === 'object') {
+      currentMappings = { ...(existing.marketplaceMappings as Record<string, unknown>) };
+    }
+    if (dto.marketplaceMappings && typeof dto.marketplaceMappings === 'object') {
+      currentMappings = { ...currentMappings, ...dto.marketplaceMappings };
+    }
+    if (dto.marketplaceCode && dto.externalCategoryId) {
+      currentMappings[dto.marketplaceCode] = {
+        marketplaceCode: dto.marketplaceCode,
+        marketplaceCategoryId: null,
+        externalCategoryId: dto.externalCategoryId,
+        externalCategoryName: dto.externalCategoryName || '',
+        commissionPercent: dto.commissionPercent ? Number(dto.commissionPercent) : 0,
+        fixedFee: 0,
+      };
+    }
+    data.marketplaceMappings = currentMappings as unknown as Prisma.InputJsonValue;
+    if (dto.feedSourceId !== undefined) data.feedSourceId = dto.feedSourceId;
+    if (dto.feedName !== undefined) data.feedName = dto.feedName;
+
     const isFixedCreate =
       dto.markupType === 'FIXED' ||
       (dto.fixedMarkup !== undefined &&
@@ -108,23 +129,20 @@ export class UpdateSupplierCategoryHandler implements ICommandHandler<UpdateSupp
             marketplaceCode: dto.marketplaceCode || 'ROZETKA',
             externalCategoryId: dto.externalCategoryId ?? null,
             externalCategoryName: dto.externalCategoryName ?? null,
+            marketplaceMappings: currentMappings as unknown as Prisma.InputJsonValue,
+            feedSourceId: dto.feedSourceId ?? null,
+            feedName: dto.feedName ?? null,
             productCount: dto.productCount ?? 0,
           },
           update: data,
         });
 
-    const mappingsRecord: Record<string, unknown> = {};
-
-    if (updated.marketplaceCode && updated.externalCategoryId) {
-      mappingsRecord[updated.marketplaceCode] = {
-        marketplaceCode: updated.marketplaceCode,
-        marketplaceCategoryId: null,
-        externalCategoryId: updated.externalCategoryId,
-        externalCategoryName: updated.externalCategoryName || '',
-        commissionPercent: updated.commissionPercent ? Number(updated.commissionPercent) : 0,
-        fixedFee: 0,
-      };
-    }
+    const returnedMappings =
+      updated.marketplaceMappings &&
+      typeof updated.marketplaceMappings === 'object' &&
+      Object.keys(updated.marketplaceMappings).length > 0
+        ? (updated.marketplaceMappings as Record<string, unknown>)
+        : currentMappings;
 
     return {
       id: updated.id,
@@ -142,7 +160,9 @@ export class UpdateSupplierCategoryHandler implements ICommandHandler<UpdateSupp
       marketplaceCode: updated.marketplaceCode,
       externalCategoryId: updated.externalCategoryId,
       externalCategoryName: updated.externalCategoryName,
-      marketplaceMappings: mappingsRecord,
+      marketplaceMappings: returnedMappings,
+      feedSourceId: updated.feedSourceId,
+      feedName: updated.feedName,
       productCount: updated.productCount,
       createdAt: updated.createdAt.toISOString(),
       updatedAt: updated.updatedAt.toISOString(),

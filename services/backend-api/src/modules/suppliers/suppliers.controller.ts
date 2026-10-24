@@ -21,6 +21,10 @@ import {
   UpdateSupplierCategoryDto,
   CreateSupplierPricingRuleDto,
   UpdateSupplierPricingRuleDto,
+  ToggleSupplierCategoryDto,
+  BatchToggleSupplierCategoriesDto,
+  BulkUpsertSupplierCategoriesDto,
+  BulkCreateSupplierPricingRulesDto,
 } from '@/modules/suppliers/dto/supplier.dto';
 import {
   GetSuppliersQueryDto,
@@ -39,11 +43,17 @@ import {
   UpdateSupplierCommand,
   DeleteSupplierCommand,
   UpdateSupplierCategoryCommand,
+  ToggleSupplierCategoryCommand,
+  BatchToggleSupplierCategoriesCommand,
+  BulkUpsertSupplierCategoriesCommand,
+  DeleteSupplierCategoryCommand,
   CreateSupplierPricingRuleCommand,
   UpdateSupplierPricingRuleCommand,
   DeleteSupplierPricingRuleCommand,
+  BulkCreateSupplierPricingRulesCommand,
   UpdateSupplierSyncSettingsCommand,
   SyncSupplierFeedCommand,
+  ClearSupplierSyncLogsCommand,
 } from '@/modules/suppliers/commands/suppliers.commands';
 import {
   UpdateSupplierSyncSettingDto,
@@ -115,6 +125,44 @@ export class SuppliersController {
     return this.queryBus.execute(new GetSupplierCategoriesQuery(supplierId, user.id, query.search));
   }
 
+  @Post(':id/categories/bulk-upsert')
+  @ApiOperation({ summary: 'Bulk upsert category rules from feed' })
+  async bulkUpsertCategories(
+    @Param('id') supplierId: string,
+    @CurrentUser() user: { id: string },
+    @Body() dto: BulkUpsertSupplierCategoriesDto,
+  ) {
+    return this.commandBus.execute(
+      new BulkUpsertSupplierCategoriesCommand(supplierId, user.id, dto.categories),
+    );
+  }
+
+  @Patch(':id/categories/:categoryId/toggle')
+  @ApiOperation({ summary: 'Toggle category active status' })
+  async toggleCategory(
+    @Param('id') supplierId: string,
+    @Param('categoryId') categoryId: string,
+    @CurrentUser() user: { id: string },
+    @Body() dto: ToggleSupplierCategoryDto,
+  ) {
+    return this.commandBus.execute(
+      new ToggleSupplierCategoryCommand(supplierId, categoryId, user.id, dto.isActive),
+    );
+  }
+
+  @Post(':id/categories/batch-toggle')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Batch toggle categories active status' })
+  async batchToggleCategories(
+    @Param('id') supplierId: string,
+    @CurrentUser() user: { id: string },
+    @Body() dto: BatchToggleSupplierCategoriesDto,
+  ) {
+    return this.commandBus.execute(
+      new BatchToggleSupplierCategoriesCommand(supplierId, user.id, dto.categoryIds, dto.isActive),
+    );
+  }
+
   @Patch(':id/categories/:categoryId')
   @ApiOperation({ summary: 'Update markup, marketplace mapping or status of category' })
   async updateCategory(
@@ -125,6 +173,19 @@ export class SuppliersController {
   ) {
     return this.commandBus.execute(
       new UpdateSupplierCategoryCommand(supplierId, categoryId, user.id, dto),
+    );
+  }
+
+  @Delete(':id/categories/:categoryId')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Delete category rule' })
+  async deleteCategory(
+    @Param('id') supplierId: string,
+    @Param('categoryId') categoryId: string,
+    @CurrentUser() user: { id: string },
+  ) {
+    return this.commandBus.execute(
+      new DeleteSupplierCategoryCommand(supplierId, categoryId, user.id),
     );
   }
 
@@ -143,6 +204,18 @@ export class SuppliersController {
     @Body() dto: CreateSupplierPricingRuleDto,
   ) {
     return this.commandBus.execute(new CreateSupplierPricingRuleCommand(supplierId, user.id, dto));
+  }
+
+  @Post(':id/pricing-rules/bulk')
+  @ApiOperation({ summary: 'Bulk create pricing tier rules' })
+  async bulkCreatePricingRules(
+    @Param('id') supplierId: string,
+    @CurrentUser() user: { id: string },
+    @Body() dto: BulkCreateSupplierPricingRulesDto,
+  ) {
+    return this.commandBus.execute(
+      new BulkCreateSupplierPricingRulesCommand(supplierId, user.id, dto),
+    );
   }
 
   @Patch(':id/pricing-rules/:ruleId')
@@ -198,6 +271,13 @@ export class SuppliersController {
     return this.queryBus.execute(
       new GetSupplierSyncLogsQuery(supplierId, user.id, query.limit || 50),
     );
+  }
+
+  @Delete(':id/sync-logs')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Clear supplier feed sync logs' })
+  async clearSyncLogs(@Param('id') supplierId: string, @CurrentUser() user: { id: string }) {
+    return this.commandBus.execute(new ClearSupplierSyncLogsCommand(supplierId, user.id));
   }
 
   @Post(':id/sync')

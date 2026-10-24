@@ -93,6 +93,7 @@ export function createSupplier(
     defaultMarginPercent: Number(payload.defaultMarginPercent || 0),
     defaultFixedMarkup: Number(payload.defaultFixedMarkup || 0),
     isActive: payload.isActive ?? true,
+    selectedBankId: payload.selectedBankId || undefined,
     activeFeedsCount: 0,
     productsCount: 0,
     categoriesCount: 0,
@@ -140,6 +141,10 @@ export function updateSupplier(
       payload.defaultFixedMarkup !== undefined
         ? Number(payload.defaultFixedMarkup)
         : current.defaultFixedMarkup,
+    selectedBankId:
+      payload.selectedBankId !== undefined
+        ? payload.selectedBankId || undefined
+        : current.selectedBankId,
     updatedAt: new Date().toISOString(),
   };
   state.suppliers[index] = updated;

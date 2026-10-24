@@ -82,6 +82,26 @@ export class TriggerSupplierSyncDto {
   @IsOptional()
   @IsBoolean()
   forceFull?: boolean;
+
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  totalProducts?: number;
+
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  createdCount?: number;
+
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  updatedCount?: number;
+
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  outOfStockCount?: number;
 }
 
 export class GetSupplierSyncLogsQueryDto {

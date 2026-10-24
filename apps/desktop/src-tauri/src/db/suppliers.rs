@@ -18,7 +18,8 @@ pub fn get_suppliers(conn: &Connection) -> Result<Vec<SupplierDto>> {
             (SELECT COUNT(*) FROM local_feed_sources f WHERE f.supplier_id = s.id) AS active_feeds_count,
             (SELECT COUNT(*) FROM local_supplier_categories c WHERE c.supplier_id = s.id) AS categories_count,
             (SELECT COUNT(*) FROM local_supplier_categories c WHERE c.supplier_id = s.id AND c.is_active = 1) AS active_categories_count,
-            COALESCE(s.custom_rounding_rules, '[]')
+            COALESCE(s.custom_rounding_rules, '[]'),
+            s.selected_bank_id
         FROM local_suppliers s
         ORDER BY s.created_at DESC"
     )?;
@@ -57,6 +58,7 @@ pub fn get_suppliers(conn: &Connection) -> Result<Vec<SupplierDto>> {
             currency_buffer_percent: row.get(27)?,
             price_rounding: row.get(28)?,
             custom_rounding_rules,
+            selected_bank_id: row.get(39).ok(),
             default_margin_percent: row.get(29)?,
             default_fixed_markup: row.get(30)?,
             is_active: row.get::<_, i32>(31)? == 1,
@@ -103,7 +105,8 @@ pub fn get_supplier_by_id(conn: &Connection, id: &str) -> Result<Option<Supplier
             (SELECT COUNT(*) FROM local_feed_sources f WHERE f.supplier_id = s.id) AS active_feeds_count,
             (SELECT COUNT(*) FROM local_supplier_categories c WHERE c.supplier_id = s.id) AS categories_count,
             (SELECT COUNT(*) FROM local_supplier_categories c WHERE c.supplier_id = s.id AND c.is_active = 1) AS active_categories_count,
-            COALESCE(s.custom_rounding_rules, '[]')
+            COALESCE(s.custom_rounding_rules, '[]'),
+            s.selected_bank_id
         FROM local_suppliers s
         WHERE s.id = ?1"
     )?;
@@ -143,6 +146,7 @@ pub fn get_supplier_by_id(conn: &Connection, id: &str) -> Result<Option<Supplier
             currency_buffer_percent: row.get(27)?,
             price_rounding: row.get(28)?,
             custom_rounding_rules,
+            selected_bank_id: row.get(39).ok(),
             default_margin_percent: row.get(29)?,
             default_fixed_markup: row.get(30)?,
             is_active: row.get::<_, i32>(31)? == 1,
@@ -190,18 +194,19 @@ pub fn create_supplier(conn: &Connection, dto: CreateSupplierDto) -> Result<Supp
             id, user_id, name, code, contact_phone, contact_email, website, notes, logo_url,
             legal_name, tax_id, industry, segment, manager_name, manager_position, manager_phone, manager_email, manager_telegram, country, city, address, postcode,
             base_currency, target_currency, exchange_rate_mode, exchange_rate, currency_buffer_percent, price_rounding,
-            default_margin_percent, default_fixed_markup, is_active, custom_rounding_rules
+            default_margin_percent, default_fixed_markup, is_active, custom_rounding_rules, selected_bank_id
         ) VALUES (
             ?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9,
             ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17, ?18, ?19, ?20, ?21, ?22,
             ?23, ?24, ?25, ?26, ?27, ?28,
-            ?29, ?30, ?31, ?32
+            ?29, ?30, ?31, ?32, ?33
         )",
         params![
             &id, &user_id, &dto.name, &dto.code, &dto.contact_phone, &dto.contact_email, &dto.website, &dto.notes, &dto.logo_url,
             &dto.legal_name, &dto.tax_id, &dto.industry, &dto.segment, &dto.manager_name, &dto.manager_position, &dto.manager_phone, &dto.manager_email, &dto.manager_telegram, &dto.country, &dto.city, &dto.address, &dto.postcode,
             &base_currency, &target_currency, &exchange_rate_mode, exchange_rate, currency_buffer_percent, &price_rounding,
             dto.default_margin_percent, dto.default_fixed_markup, if is_active { 1 } else { 0 }, &custom_rounding_rules_json,
+            &dto.selected_bank_id,
         ],
     )?;
 
@@ -238,6 +243,7 @@ pub fn create_supplier(conn: &Connection, dto: CreateSupplierDto) -> Result<Supp
         currency_buffer_percent,
         price_rounding,
         custom_rounding_rules,
+        selected_bank_id: dto.selected_bank_id,
         default_margin_percent: dto.default_margin_percent,
         default_fixed_markup: dto.default_fixed_markup,
         is_active,
@@ -298,6 +304,7 @@ pub fn update_supplier(conn: &Connection, id: &str, dto: UpdateSupplierDto) -> R
     let price_rounding = dto.price_rounding.unwrap_or(current_supplier.price_rounding);
     let custom_rounding_rules = dto.custom_rounding_rules.unwrap_or(current_supplier.custom_rounding_rules);
     let custom_rounding_rules_json = serde_json::to_string(&custom_rounding_rules).unwrap_or_else(|_| "[]".to_string());
+    let selected_bank_id = dto.selected_bank_id.or(current_supplier.selected_bank_id);
     let default_margin_percent = dto.default_margin_percent.unwrap_or(current_supplier.default_margin_percent);
     let default_fixed_markup = dto.default_fixed_markup.unwrap_or(current_supplier.default_fixed_markup);
     let is_active = dto.is_active.unwrap_or(current_supplier.is_active);
@@ -311,8 +318,8 @@ pub fn update_supplier(conn: &Connection, id: &str, dto: UpdateSupplierDto) -> R
             base_currency = ?21, target_currency = ?22, exchange_rate_mode = ?23,
             exchange_rate = ?24, currency_buffer_percent = ?25, price_rounding = ?26,
             default_margin_percent = ?27, default_fixed_markup = ?28,
-            is_active = ?29, custom_rounding_rules = ?30, updated_at = CURRENT_TIMESTAMP
-         WHERE id = ?31",
+            is_active = ?29, custom_rounding_rules = ?30, selected_bank_id = ?31, updated_at = CURRENT_TIMESTAMP
+         WHERE id = ?32",
         params![
             &name, &code, &contact_phone, &contact_email, &website,
             &notes, &logo_url, &legal_name, &tax_id, &industry, &segment,
@@ -321,7 +328,7 @@ pub fn update_supplier(conn: &Connection, id: &str, dto: UpdateSupplierDto) -> R
             &base_currency, &target_currency, &exchange_rate_mode,
             exchange_rate, currency_buffer_percent, &price_rounding,
             default_margin_percent, default_fixed_markup,
-            if is_active { 1 } else { 0 }, &custom_rounding_rules_json, id,
+            if is_active { 1 } else { 0 }, &custom_rounding_rules_json, &selected_bank_id, id,
         ],
     )?;
 
@@ -330,13 +337,15 @@ pub fn update_supplier(conn: &Connection, id: &str, dto: UpdateSupplierDto) -> R
 
 pub fn get_supplier_categories(conn: &Connection, supplier_id: &str) -> Result<Vec<SupplierCategoryRuleDto>> {
     let mut stmt = conn.prepare(
-        "SELECT id, supplier_id, feed_category_id, name, parent_id, is_active, margin_percent, fixed_markup, product_count, created_at, updated_at
+        "SELECT id, supplier_id, feed_category_id, name, parent_id, is_active, margin_percent, fixed_markup, product_count, feed_source_id, feed_name, marketplace_mappings, created_at, updated_at
          FROM local_supplier_categories
          WHERE supplier_id = ?1
          ORDER BY name ASC"
     )?;
 
     let iter = stmt.query_map([supplier_id], |row| {
+        let mp_str: Option<String> = row.get(11).ok();
+        let marketplace_mappings = mp_str.and_then(|s| serde_json::from_str(&s).ok());
         Ok(SupplierCategoryRuleDto {
             id: row.get(0)?,
             supplier_id: row.get(1)?,
@@ -347,8 +356,11 @@ pub fn get_supplier_categories(conn: &Connection, supplier_id: &str) -> Result<V
             margin_percent: row.get(6)?,
             fixed_markup: row.get(7)?,
             product_count: row.get::<_, u32>(8).unwrap_or(0),
-            created_at: row.get(9)?,
-            updated_at: row.get(10)?,
+            feed_source_id: row.get(9)?,
+            feed_name: row.get(10)?,
+            marketplace_mappings,
+            created_at: row.get(12)?,
+            updated_at: row.get(13)?,
         })
     })?;
 

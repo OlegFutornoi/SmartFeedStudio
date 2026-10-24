@@ -51,11 +51,33 @@ export class SyncSupplierFeedHandler implements ICommandHandler<
       },
     });
 
-    const totalProducts = 0;
-    const updatedCount = 0;
-    const createdCount = 0;
-    const outOfStockCount = 0;
+    let totalProducts = dto.totalProducts ?? 0;
+    let updatedCount = dto.updatedCount ?? 0;
+    const createdCount = dto.createdCount ?? 0;
+    const outOfStockCount = dto.outOfStockCount ?? 0;
     const errorsCount = 0;
+
+    if (totalProducts === 0) {
+      if (dto.feedSourceId) {
+        const source = await this.prisma.supplierFeedSource.findUnique({
+          where: { id: dto.feedSourceId },
+        });
+        if (source && source.productsCount > 0) {
+          totalProducts = source.productsCount;
+          updatedCount = source.productsCount;
+        }
+      } else {
+        const sources = await this.prisma.supplierFeedSource.findMany({
+          where: { supplierId },
+          select: { productsCount: true },
+        });
+        const sum = sources.reduce((acc, s) => acc + (s.productsCount || 0), 0);
+        if (sum > 0) {
+          totalProducts = sum;
+          updatedCount = sum;
+        }
+      }
+    }
 
     try {
       const durationMs = Date.now() - startTime;
@@ -83,6 +105,20 @@ export class SyncSupplierFeedHandler implements ICommandHandler<
           lastSyncStatus: SyncStatus.SUCCESS,
         },
       });
+
+      if (dto.feedSourceId) {
+        await this.prisma.supplierFeedSource
+          .update({
+            where: { id: dto.feedSourceId },
+            data: {
+              lastSyncedAt: new Date(),
+              lastSyncStatus: SyncStatus.SUCCESS,
+            },
+          })
+          .catch((err) => {
+            this.logger.warn(`Failed to update feed source sync state: ${err.message}`);
+          });
+      }
 
       return {
         success: true,

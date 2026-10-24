@@ -8,33 +8,13 @@ import {
   GetSupplierCategoriesHandler,
   GetSupplierPricingRulesHandler,
 } from '@/modules/suppliers/queries/suppliers.handlers';
-import {
-  CreateSupplierHandler,
-  UpdateSupplierHandler,
-  DeleteSupplierHandler,
-  UpdateSupplierCategoryHandler,
-  CreateSupplierPricingRuleHandler,
-  UpdateSupplierPricingRuleHandler,
-  DeleteSupplierPricingRuleHandler,
-  UpdateSupplierSyncSettingsHandler,
-  SyncSupplierFeedHandler,
-} from '@/modules/suppliers/commands/suppliers.handlers';
+import { SupplierCommandHandlers } from '@/modules/suppliers/commands/suppliers.handlers';
 import {
   GetSupplierSyncSettingsHandler,
   GetSupplierSyncLogsHandler,
 } from '@/modules/suppliers/queries/supplier-sync.handlers';
 
-export const CommandHandlers = [
-  CreateSupplierHandler,
-  UpdateSupplierHandler,
-  DeleteSupplierHandler,
-  UpdateSupplierCategoryHandler,
-  CreateSupplierPricingRuleHandler,
-  UpdateSupplierPricingRuleHandler,
-  DeleteSupplierPricingRuleHandler,
-  UpdateSupplierSyncSettingsHandler,
-  SyncSupplierFeedHandler,
-];
+export const CommandHandlers = SupplierCommandHandlers;
 
 export const QueryHandlers = [
   GetSuppliersHandler,

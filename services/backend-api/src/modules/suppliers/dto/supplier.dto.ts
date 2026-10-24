@@ -142,6 +142,10 @@ export class CreateSupplierDto {
   @IsOptional()
   @IsBoolean()
   isActive?: boolean;
+
+  @IsOptional()
+  @IsString()
+  selectedBankId?: string | null;
 }
 
 export class UpdateSupplierDto {
@@ -273,11 +277,19 @@ export class UpdateSupplierDto {
   @IsOptional()
   @IsBoolean()
   isActive?: boolean;
+
+  @IsOptional()
+  @IsString()
+  selectedBankId?: string | null;
 }
 
 export {
   CustomRoundingRuleItemDto,
   UpdateSupplierCategoryDto,
+  ToggleSupplierCategoryDto,
+  BatchToggleSupplierCategoriesDto,
+  BulkUpsertSupplierCategoriesDto,
   CreateSupplierPricingRuleDto,
   UpdateSupplierPricingRuleDto,
+  BulkCreateSupplierPricingRulesDto,
 } from '@/modules/suppliers/dto/supplier-rules.dto';

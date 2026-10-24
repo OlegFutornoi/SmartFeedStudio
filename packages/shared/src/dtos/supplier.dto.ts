@@ -59,6 +59,7 @@ export const SupplierDtoSchema = z.object({
   currencyBufferPercent: z.number().min(0).max(100).default(0),
   priceRounding: PriceRoundingValueSchema.default(PriceRoundingMode.NONE),
   customRoundingRules: z.array(CustomRoundingRuleDtoSchema).default([]).optional(),
+  selectedBankId: z.string().nullable().optional(),
 
   // Default markups
   defaultMarginPercent: z.number().nonnegative().default(0),
@@ -113,6 +114,7 @@ export const CreateSupplierDtoSchema = z.object({
   currencyBufferPercent: z.number().min(0).max(100).default(0).optional(),
   priceRounding: PriceRoundingValueSchema.default(PriceRoundingMode.NONE).optional(),
   customRoundingRules: z.array(CustomRoundingRuleDtoSchema).optional(),
+  selectedBankId: z.string().nullable().optional(),
 
   defaultMarginPercent: z
     .number()

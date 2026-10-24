@@ -17,10 +17,14 @@ export class GetSupplierByIdHandler implements IQueryHandler<GetSupplierByIdQuer
         _count: {
           select: {
             categoryRules: true,
+            feedSources: true,
           },
         },
         categoryRules: {
           select: { isActive: true },
+        },
+        feedSources: {
+          select: { id: true, productsCount: true },
         },
       },
     });
@@ -30,6 +34,8 @@ export class GetSupplierByIdHandler implements IQueryHandler<GetSupplierByIdQuer
     }
 
     const activeCats = s.categoryRules.filter((c) => c.isActive).length;
+    const feedsCount = s.feedSources.length;
+    const productsTotal = s.feedSources.reduce((acc, f) => acc + (f.productsCount || 0), 0);
 
     return {
       id: s.id,
@@ -65,8 +71,9 @@ export class GetSupplierByIdHandler implements IQueryHandler<GetSupplierByIdQuer
       defaultMarginPercent: Number(s.defaultMarginPercent),
       defaultFixedMarkup: Number(s.defaultFixedMarkup),
       isActive: s.isActive,
-      productsCount: 0,
-      activeFeedsCount: 0,
+      selectedBankId: s.selectedBankId ?? null,
+      productsCount: productsTotal,
+      activeFeedsCount: feedsCount,
       categoriesCount: s._count.categoryRules,
       activeCategoriesCount: activeCats,
       createdAt: s.createdAt.toISOString(),

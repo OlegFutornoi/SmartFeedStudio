@@ -62,6 +62,7 @@ export class UpdateSupplierHandler implements ICommandHandler<UpdateSupplierComm
       data.defaultMarginPercent = dto.defaultMarginPercent;
     if (dto.defaultFixedMarkup !== undefined) data.defaultFixedMarkup = dto.defaultFixedMarkup;
     if (dto.isActive !== undefined) data.isActive = dto.isActive;
+    if (dto.selectedBankId !== undefined) data.selectedBankId = dto.selectedBankId;
 
     const updated = await this.prisma.supplier.update({
       where: { id },
@@ -104,6 +105,7 @@ export class UpdateSupplierHandler implements ICommandHandler<UpdateSupplierComm
       defaultMarginPercent: Number(updated.defaultMarginPercent),
       defaultFixedMarkup: Number(updated.defaultFixedMarkup),
       isActive: updated.isActive,
+      selectedBankId: updated.selectedBankId ?? null,
       createdAt: updated.createdAt.toISOString(),
       updatedAt: updated.updatedAt.toISOString(),
     };

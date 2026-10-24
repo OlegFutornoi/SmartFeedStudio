@@ -130,9 +130,16 @@ export const UpdateSupplierCategoryRuleDtoSchema = z.object({
   feedSourceId: z.string().nullable().optional(),
   feedName: z.string().nullable().optional(),
   productCount: z.number().int().nonnegative().optional(),
+  marketplaceMappings: z.record(z.string(), SupplierCategoryMarketplaceMappingDtoSchema).optional(),
 });
 
 export type UpdateSupplierCategoryRuleDto = z.infer<typeof UpdateSupplierCategoryRuleDtoSchema>;
+
+export const ToggleSupplierCategoryDtoSchema = z.object({
+  isActive: z.boolean(),
+});
+
+export type ToggleSupplierCategoryDto = z.infer<typeof ToggleSupplierCategoryDtoSchema>;
 
 export const BatchToggleCategoryStatusDtoSchema = z.object({
   categoryIds: z.array(z.string()),
@@ -140,3 +147,27 @@ export const BatchToggleCategoryStatusDtoSchema = z.object({
 });
 
 export type BatchToggleCategoryStatusDto = z.infer<typeof BatchToggleCategoryStatusDtoSchema>;
+export const BatchToggleSupplierCategoriesDtoSchema = BatchToggleCategoryStatusDtoSchema;
+export type BatchToggleSupplierCategoriesDto = BatchToggleCategoryStatusDto;
+
+export const BulkUpsertSupplierCategoryItemSchema = z.object({
+  feedCategoryId: z.string().min(1),
+  name: z.string().min(1),
+  parentId: z.string().nullable().optional(),
+  feedSourceId: z.string().nullable().optional(),
+  feedName: z.string().nullable().optional(),
+  productCount: z.number().int().nonnegative().optional().default(0),
+  isActive: z.boolean().optional().default(true),
+  markupType: CategoryMarkupTypeSchema.optional(),
+  marginPercent: z.number().min(0).nullable().optional(),
+  fixedMarkup: z.number().min(0).nullable().optional(),
+  marketplaceMappings: z.record(z.string(), SupplierCategoryMarketplaceMappingDtoSchema).optional(),
+});
+
+export type BulkUpsertSupplierCategoryItem = z.infer<typeof BulkUpsertSupplierCategoryItemSchema>;
+
+export const BulkUpsertSupplierCategoriesDtoSchema = z.object({
+  categories: z.array(BulkUpsertSupplierCategoryItemSchema),
+});
+
+export type BulkUpsertSupplierCategoriesDto = z.infer<typeof BulkUpsertSupplierCategoriesDtoSchema>;

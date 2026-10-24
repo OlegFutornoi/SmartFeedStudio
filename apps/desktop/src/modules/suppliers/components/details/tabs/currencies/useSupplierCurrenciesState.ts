@@ -17,32 +17,12 @@ interface UseSupplierCurrenciesStateParams {
   onRefreshSupplier: () => void;
 }
 
-export const CURRENCY_OPTIONS: Array<[CurrencyCode, string, string]> = [
-  [CurrencyCode.UAH, 'suppliers:currUah', 'UAH (Гривня ₴)'],
-  [CurrencyCode.USD, 'suppliers:currUsd', 'USD (Долар США $)'],
-  [CurrencyCode.EUR, 'suppliers:currEur', 'EUR (Євро €)'],
-  [CurrencyCode.PLN, 'suppliers:currPln', 'PLN (Польський злотий zł)'],
-  [CurrencyCode.GBP, 'suppliers:currGbp', 'GBP (Фунт стерлінгів £)'],
-  [CurrencyCode.CNY, 'suppliers:currCny', 'CNY (Китайський юань ¥)'],
-];
-
-export const MODE_OPTIONS: Array<[ExchangeRateMode, string, string]> = [
-  [ExchangeRateMode.AUTO_NBU, 'suppliers:modeNbu', 'Офіційний курс НБУ (Автоматично)'],
-  [ExchangeRateMode.AUTO_PRIVAT, 'suppliers:modePrivat', 'ПриватБанк (Картковий курс)'],
-  [ExchangeRateMode.MANUAL, 'suppliers:modeManualBank', 'Фіксований вручну / Банківський'],
-];
-
-export const ROUNDING_OPTIONS: Array<[PriceRoundingMode, string, string]> = [
-  [PriceRoundingMode.NONE, 'suppliers:roundingNone', 'Без округлення (копійки як є)'],
-  [PriceRoundingMode.NEAREST_INTEGER, 'suppliers:roundingNearestInteger', 'До цілої гривні'],
-  [PriceRoundingMode.DECIMAL_99, 'suppliers:roundingDecimal99', 'Закінчення .99 (напр. 449.99 ₴)'],
-  [PriceRoundingMode.DECIMAL_95, 'suppliers:roundingDecimal95', 'Закінчення .95 (напр. 449.95 ₴)'],
-  [PriceRoundingMode.INTEGER_9, 'suppliers:roundingInteger9', 'Закінчення на 9 (напр. 449 ₴)'],
-  [PriceRoundingMode.INTEGER_7, 'suppliers:roundingInteger7', 'Закінчення на 7 (напр. 447 ₴)'],
-  [PriceRoundingMode.INTEGER_5, 'suppliers:roundingInteger5', 'Закінчення на 5 (напр. 445 ₴)'],
-];
-
-export const BUFFER_PRESETS = [0, 1, 2, 3, 5];
+export {
+  CURRENCY_OPTIONS,
+  MODE_OPTIONS,
+  ROUNDING_OPTIONS,
+  BUFFER_PRESETS,
+} from '@/modules/suppliers/components/details/tabs/currencies/currencies.constants';
 
 export function useSupplierCurrenciesState({
   supplier,
@@ -70,6 +50,7 @@ export function useSupplierCurrenciesState({
     Array.isArray(supplier.customRoundingRules) ? supplier.customRoundingRules : [],
   );
   const [selectedBankId, setSelectedBankId] = useState<string | undefined>(() => {
+    if (supplier.selectedBankId) return supplier.selectedBankId;
     if (initialMode === ExchangeRateMode.AUTO_NBU) return 'nbu';
     if (initialMode === ExchangeRateMode.AUTO_PRIVAT) return 'privat';
     return undefined;
@@ -186,14 +167,24 @@ export function useSupplierCurrenciesState({
     const savedRate = Number(supplier.exchangeRate || 1.0);
     const savedBuffer = Number(supplier.currencyBufferPercent || 0);
     const savedRounding = supplier.priceRounding || PriceRoundingMode.NONE;
+    const savedBankId = supplier.selectedBankId ?? undefined;
     return (
       baseCurrency !== savedCurr ||
       exchangeMode !== savedMode ||
+      selectedBankId !== savedBankId ||
       Math.abs(activeRate - savedRate) > 0.001 ||
       Math.abs(bufferPercent - savedBuffer) > 0.001 ||
       roundingMode !== savedRounding
     );
-  }, [activeRate, baseCurrency, bufferPercent, exchangeMode, roundingMode, supplier]);
+  }, [
+    activeRate,
+    baseCurrency,
+    bufferPercent,
+    exchangeMode,
+    roundingMode,
+    selectedBankId,
+    supplier,
+  ]);
 
   const handleResetChanges = useCallback(() => {
     setBaseCurrency(initialCurrency);
@@ -201,6 +192,7 @@ export function useSupplierCurrenciesState({
     setManualRate(initialRate);
     setBufferPercent(Number(supplier.currencyBufferPercent || 0));
     setRoundingMode(supplier.priceRounding || PriceRoundingMode.NONE);
+    setSelectedBankId(supplier.selectedBankId ?? undefined);
     setCustomRoundingRules(
       Array.isArray(supplier.customRoundingRules) ? supplier.customRoundingRules : [],
     );
@@ -258,6 +250,7 @@ export function useSupplierCurrenciesState({
           currencyBufferPercent: baseCurrency === CurrencyCode.UAH ? 0 : bufferPercent,
           priceRounding: roundingMode,
           customRoundingRules,
+          selectedBankId: selectedBankId ?? null,
         },
         token || undefined,
       );
@@ -275,6 +268,7 @@ export function useSupplierCurrenciesState({
     exchangeMode,
     onRefreshSupplier,
     roundingMode,
+    selectedBankId,
     supplier.id,
     token,
   ]);

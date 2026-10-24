@@ -10,6 +10,7 @@ import {
 import {
   getSupplierPricingRules,
   createSupplierPricingRule,
+  bulkCreateSupplierPricingRules,
   updateSupplierPricingRule,
   deleteSupplierPricingRule,
   getSupplierCategories,
@@ -255,15 +256,13 @@ export function useSupplierPricingState(
   const handleApplyDefaultTiers = async () => {
     setIsSubmittingRule(true);
     try {
-      const createdList: SupplierPricingRuleDto[] = [];
-      for (const tier of DEFAULT_RETAIL_TIERS) {
-        const created = await createSupplierPricingRule(
-          supplier.id,
-          { ...tier, isActive: true },
-          token || undefined,
-        );
-        createdList.push(created);
-      }
+      const tiersToCreate = DEFAULT_RETAIL_TIERS.map((tier) => ({ ...tier, isActive: true }));
+      const createdList = await bulkCreateSupplierPricingRules(
+        supplier.id,
+        tiersToCreate,
+        false,
+        token || undefined,
+      );
       setRules((prev) => sortPricingRules([...prev, ...createdList]));
       onRefreshSupplier();
     } catch (err) {

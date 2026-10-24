@@ -24,16 +24,23 @@ export class GetSuppliersHandler implements IQueryHandler<GetSuppliersQuery> {
         _count: {
           select: {
             categoryRules: true,
+            feedSources: true,
           },
         },
         categoryRules: {
           select: { isActive: true },
+        },
+        feedSources: {
+          select: { id: true, productsCount: true },
         },
       },
     });
 
     return suppliers.map((s) => {
       const activeCats = s.categoryRules.filter((c) => c.isActive).length;
+      const feedsCount = s.feedSources.length;
+      const productsTotal = s.feedSources.reduce((acc, f) => acc + (f.productsCount || 0), 0);
+
       return {
         id: s.id,
         organizationId: s.organizationId,
@@ -68,8 +75,9 @@ export class GetSuppliersHandler implements IQueryHandler<GetSuppliersQuery> {
         defaultMarginPercent: Number(s.defaultMarginPercent),
         defaultFixedMarkup: Number(s.defaultFixedMarkup),
         isActive: s.isActive,
-        productsCount: 0,
-        activeFeedsCount: 0,
+        selectedBankId: s.selectedBankId ?? null,
+        productsCount: productsTotal,
+        activeFeedsCount: feedsCount,
         categoriesCount: s._count.categoryRules,
         activeCategoriesCount: activeCats,
         createdAt: s.createdAt.toISOString(),

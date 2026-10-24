@@ -348,6 +348,7 @@ CREATE TABLE "suppliers" (
     "currency_buffer_percent" DECIMAL(5,2) NOT NULL DEFAULT 0,
     "price_rounding" TEXT NOT NULL DEFAULT 'NONE',
     "custom_rounding_rules" JSONB NOT NULL DEFAULT '[]',
+    "selected_bank_id" TEXT,
     "default_margin_percent" DECIMAL(5,2) NOT NULL DEFAULT 0,
     "default_fixed_markup" DECIMAL(10,2) NOT NULL DEFAULT 0,
     "is_active" BOOLEAN NOT NULL DEFAULT true,
@@ -355,6 +356,35 @@ CREATE TABLE "suppliers" (
     "updated_at" TIMESTAMPTZ(6) NOT NULL,
 
     CONSTRAINT "suppliers_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "supplier_feed_sources" (
+    "id" TEXT NOT NULL,
+    "supplier_id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "source_type" TEXT NOT NULL DEFAULT 'URL',
+    "file_format" TEXT NOT NULL DEFAULT 'XML_ROZETKA',
+    "source_url" TEXT,
+    "canonical_url" TEXT,
+    "url_fingerprint" TEXT,
+    "content_hash" TEXT,
+    "parent_feed_source_id" TEXT,
+    "s3_file_key" TEXT,
+    "auth_header_name" TEXT,
+    "auth_header_value" TEXT,
+    "sync_interval_hours" INTEGER NOT NULL DEFAULT 0,
+    "auto_update_prices" BOOLEAN NOT NULL DEFAULT true,
+    "auto_update_stocks" BOOLEAN NOT NULL DEFAULT true,
+    "auto_create_new_products" BOOLEAN NOT NULL DEFAULT true,
+    "mapping_rules" JSONB,
+    "products_count" INTEGER NOT NULL DEFAULT 0,
+    "last_synced_at" TIMESTAMPTZ(6),
+    "last_sync_status" TEXT,
+    "created_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMPTZ(6) NOT NULL,
+
+    CONSTRAINT "supplier_feed_sources_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -367,6 +397,13 @@ CREATE TABLE "supplier_category_rules" (
     "is_active" BOOLEAN NOT NULL DEFAULT true,
     "margin_percent" DECIMAL(5,2),
     "fixed_markup" DECIMAL(10,2),
+    "commission_percent" DECIMAL(5,2),
+    "marketplace_code" TEXT DEFAULT 'ROZETKA',
+    "external_category_id" TEXT,
+    "external_category_name" TEXT,
+    "marketplace_mappings" JSONB NOT NULL DEFAULT '{}',
+    "feed_source_id" TEXT,
+    "feed_name" TEXT,
     "product_count" INTEGER NOT NULL DEFAULT 0,
     "created_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMPTZ(6) NOT NULL,
@@ -643,7 +680,19 @@ CREATE INDEX "supplier_category_rules_supplier_id_idx" ON "supplier_category_rul
 CREATE INDEX "supplier_category_rules_supplier_id_is_active_idx" ON "supplier_category_rules"("supplier_id", "is_active");
 
 -- CreateIndex
+CREATE INDEX "supplier_category_rules_supplier_id_feed_source_id_idx" ON "supplier_category_rules"("supplier_id", "feed_source_id");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "supplier_category_rules_supplier_id_feed_category_id_key" ON "supplier_category_rules"("supplier_id", "feed_category_id");
+
+-- CreateIndex
+CREATE INDEX "supplier_feed_sources_supplier_id_idx" ON "supplier_feed_sources"("supplier_id");
+
+-- CreateIndex
+CREATE INDEX "supplier_feed_sources_url_fingerprint_idx" ON "supplier_feed_sources"("url_fingerprint");
+
+-- CreateIndex
+CREATE INDEX "supplier_feed_sources_supplier_id_url_fingerprint_idx" ON "supplier_feed_sources"("supplier_id", "url_fingerprint");
 
 -- CreateIndex
 CREATE INDEX "supplier_pricing_rules_supplier_id_idx" ON "supplier_pricing_rules"("supplier_id");
@@ -722,4 +771,7 @@ ALTER TABLE "supplier_sync_settings" ADD CONSTRAINT "supplier_sync_settings_supp
 
 -- AddForeignKey
 ALTER TABLE "supplier_sync_logs" ADD CONSTRAINT "supplier_sync_logs_supplier_id_fkey" FOREIGN KEY ("supplier_id") REFERENCES "suppliers"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "supplier_feed_sources" ADD CONSTRAINT "supplier_feed_sources_supplier_id_fkey" FOREIGN KEY ("supplier_id") REFERENCES "suppliers"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 

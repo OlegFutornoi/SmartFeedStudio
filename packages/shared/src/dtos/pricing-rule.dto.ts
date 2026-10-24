@@ -40,6 +40,15 @@ export const UpdateSupplierPricingRuleDtoSchema = CreateSupplierPricingRuleDtoSc
 
 export type UpdateSupplierPricingRuleDto = z.infer<typeof UpdateSupplierPricingRuleDtoSchema>;
 
+export const BulkCreateSupplierPricingRulesDtoSchema = z.object({
+  rules: z.array(CreateSupplierPricingRuleDtoSchema),
+  replaceExisting: z.boolean().optional().default(false),
+});
+
+export type BulkCreateSupplierPricingRulesDto = z.infer<
+  typeof BulkCreateSupplierPricingRulesDtoSchema
+>;
+
 // ---------------------------------------------------------------------------
 // Export Channel DTOs
 // ---------------------------------------------------------------------------

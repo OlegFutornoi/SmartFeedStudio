@@ -60,6 +60,24 @@ export const CreateFeedSourceDtoSchema = z.object({
 
 export type CreateFeedSourceDto = z.infer<typeof CreateFeedSourceDtoSchema>;
 
+export const UpdateFeedSourceDtoSchema = z.object({
+  name: z.string().min(1).optional(),
+  sourceUrl: z.string().optional(),
+  canonicalUrl: z.string().optional(),
+  urlFingerprint: z.string().optional(),
+  contentHash: z.string().optional(),
+  syncIntervalHours: z.number().int().min(0).optional(),
+  autoUpdatePrices: z.boolean().optional(),
+  autoUpdateStocks: z.boolean().optional(),
+  autoCreateNewProducts: z.boolean().optional(),
+  mappingRules: z.record(z.any()).optional(),
+  productsCount: z.number().int().nonnegative().optional(),
+  lastSyncedAt: z.union([z.date(), z.string()]).nullable().optional(),
+  lastSyncStatus: z.string().nullable().optional(),
+});
+
+export type UpdateFeedSourceDto = z.infer<typeof UpdateFeedSourceDtoSchema>;
+
 export const ImportJobDtoSchema = z.object({
   id: z.string(),
   feedSourceId: z.string(),

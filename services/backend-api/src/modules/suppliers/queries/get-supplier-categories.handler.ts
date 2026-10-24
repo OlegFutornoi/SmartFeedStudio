@@ -29,19 +29,15 @@ export class GetSupplierCategoriesHandler implements IQueryHandler<GetSupplierCa
     });
 
     return list.map((c) => {
-      const mappingsRecord: Record<
-        string,
-        {
-          marketplaceCode: string;
-          marketplaceCategoryId: string | null;
-          externalCategoryId: string;
-          externalCategoryName: string;
-          commissionPercent: number;
-          fixedFee: number;
-        }
-      > = {};
+      let mappingsRecord: Record<string, unknown> = {};
 
-      if (c.marketplaceCode && c.externalCategoryId) {
+      if (
+        c.marketplaceMappings &&
+        typeof c.marketplaceMappings === 'object' &&
+        Object.keys(c.marketplaceMappings).length > 0
+      ) {
+        mappingsRecord = c.marketplaceMappings as Record<string, unknown>;
+      } else if (c.marketplaceCode && c.externalCategoryId) {
         mappingsRecord[c.marketplaceCode] = {
           marketplaceCode: c.marketplaceCode,
           marketplaceCategoryId: null,
@@ -80,6 +76,8 @@ export class GetSupplierCategoriesHandler implements IQueryHandler<GetSupplierCa
         externalCategoryId: c.externalCategoryId,
         externalCategoryName: c.externalCategoryName,
         marketplaceMappings: mappingsRecord,
+        feedSourceId: c.feedSourceId,
+        feedName: c.feedName,
         productCount: c.productCount,
         createdAt: c.createdAt.toISOString(),
         updatedAt: c.updatedAt.toISOString(),

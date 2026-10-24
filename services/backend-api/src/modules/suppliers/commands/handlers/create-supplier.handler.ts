@@ -52,6 +52,7 @@ export class CreateSupplierHandler implements ICommandHandler<CreateSupplierComm
           defaultMarginPercent: dto.defaultMarginPercent ?? 0,
           defaultFixedMarkup: dto.defaultFixedMarkup ?? 0,
           isActive: dto.isActive ?? true,
+          selectedBankId: dto.selectedBankId ?? null,
         },
       });
     });
@@ -92,6 +93,7 @@ export class CreateSupplierHandler implements ICommandHandler<CreateSupplierComm
       defaultMarginPercent: Number(created.defaultMarginPercent),
       defaultFixedMarkup: Number(created.defaultFixedMarkup),
       isActive: created.isActive,
+      selectedBankId: created.selectedBankId ?? null,
       productsCount: 0,
       activeFeedsCount: 0,
       categoriesCount: 0,

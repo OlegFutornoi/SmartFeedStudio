@@ -98,6 +98,10 @@ export type SupplierSyncLogDto = z.infer<typeof SupplierSyncLogDtoSchema>;
 export const TriggerSupplierSyncDtoSchema = z.object({
   feedSourceId: z.string().optional(),
   forceFull: z.boolean().optional().default(false),
+  totalProducts: z.number().int().nonnegative().optional(),
+  createdCount: z.number().int().nonnegative().optional(),
+  updatedCount: z.number().int().nonnegative().optional(),
+  outOfStockCount: z.number().int().nonnegative().optional(),
 });
 
 export type TriggerSupplierSyncDto = z.infer<typeof TriggerSupplierSyncDtoSchema>;

@@ -34,6 +34,7 @@ pub fn init_schema(conn: &Connection) -> Result<()> {
             currency_buffer_percent REAL DEFAULT 0,
             price_rounding TEXT DEFAULT 'NONE',
             custom_rounding_rules TEXT DEFAULT '[]',
+            selected_bank_id TEXT,
             default_margin_percent REAL DEFAULT 0,
             default_fixed_markup REAL DEFAULT 0,
             is_active INTEGER DEFAULT 1,
@@ -51,6 +52,9 @@ pub fn init_schema(conn: &Connection) -> Result<()> {
             margin_percent REAL,
             fixed_markup REAL,
             product_count INTEGER DEFAULT 0,
+            feed_source_id TEXT,
+            feed_name TEXT,
+            marketplace_mappings TEXT DEFAULT '{}',
             created_at TEXT DEFAULT CURRENT_TIMESTAMP,
             updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY(supplier_id) REFERENCES local_suppliers(id) ON DELETE CASCADE
@@ -259,6 +263,11 @@ pub fn init_schema(conn: &Connection) -> Result<()> {
         ALTER TABLE local_suppliers ADD COLUMN city TEXT;
         ALTER TABLE local_suppliers ADD COLUMN address TEXT;
         ALTER TABLE local_suppliers ADD COLUMN postcode TEXT;
+        ALTER TABLE local_suppliers ADD COLUMN selected_bank_id TEXT;
+        ALTER TABLE local_supplier_categories ADD COLUMN feed_source_id TEXT;
+        ALTER TABLE local_supplier_categories ADD COLUMN feed_name TEXT;
+        ALTER TABLE local_supplier_categories ADD COLUMN marketplace_mappings TEXT DEFAULT '{}';
+        CREATE INDEX IF NOT EXISTS idx_cat_supplier_feed ON local_supplier_categories(supplier_id, feed_source_id);
         ALTER TABLE local_products ADD COLUMN category_name_uk TEXT;
         ALTER TABLE local_feed_sources ADD COLUMN canonical_url TEXT;
         ALTER TABLE local_feed_sources ADD COLUMN url_fingerprint TEXT;

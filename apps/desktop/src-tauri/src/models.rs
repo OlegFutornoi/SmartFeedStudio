@@ -40,6 +40,7 @@ pub struct SupplierDto {
     pub price_rounding: String,
     #[serde(default)]
     pub custom_rounding_rules: Vec<serde_json::Value>,
+    pub selected_bank_id: Option<String>,
     pub default_margin_percent: f64,
     pub default_fixed_markup: f64,
     pub is_active: bool,
@@ -94,6 +95,7 @@ pub struct CreateSupplierDto {
     pub currency_buffer_percent: Option<f64>,
     pub price_rounding: Option<String>,
     pub custom_rounding_rules: Option<Vec<serde_json::Value>>,
+    pub selected_bank_id: Option<String>,
     #[serde(default)]
     pub default_margin_percent: f64,
     #[serde(default)]
@@ -131,6 +133,7 @@ pub struct UpdateSupplierDto {
     pub currency_buffer_percent: Option<f64>,
     pub price_rounding: Option<String>,
     pub custom_rounding_rules: Option<Vec<serde_json::Value>>,
+    pub selected_bank_id: Option<String>,
     pub default_margin_percent: Option<f64>,
     pub default_fixed_markup: Option<f64>,
     pub is_active: Option<bool>,
@@ -148,6 +151,9 @@ pub struct SupplierCategoryRuleDto {
     pub margin_percent: Option<f64>,
     pub fixed_markup: Option<f64>,
     pub product_count: u32,
+    pub feed_source_id: Option<String>,
+    pub feed_name: Option<String>,
+    pub marketplace_mappings: Option<serde_json::Value>,
     pub created_at: Option<String>,
     pub updated_at: String,
 }

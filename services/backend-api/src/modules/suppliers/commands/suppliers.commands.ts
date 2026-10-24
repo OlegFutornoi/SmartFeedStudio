@@ -78,3 +78,52 @@ export class SyncSupplierFeedCommand {
     public readonly dto: import('../dto/supplier-sync.dto').TriggerSupplierSyncDto,
   ) {}
 }
+
+export class ToggleSupplierCategoryCommand {
+  constructor(
+    public readonly supplierId: string,
+    public readonly categoryId: string,
+    public readonly userId: string,
+    public readonly isActive: boolean,
+  ) {}
+}
+
+export class BatchToggleSupplierCategoriesCommand {
+  constructor(
+    public readonly supplierId: string,
+    public readonly userId: string,
+    public readonly categoryIds: string[],
+    public readonly isActive: boolean,
+  ) {}
+}
+
+export class BulkUpsertSupplierCategoriesCommand {
+  constructor(
+    public readonly supplierId: string,
+    public readonly userId: string,
+    public readonly categories: import('../dto/supplier-rules.dto').BulkUpsertSupplierCategoryItemDto[],
+  ) {}
+}
+
+export class DeleteSupplierCategoryCommand {
+  constructor(
+    public readonly supplierId: string,
+    public readonly categoryId: string,
+    public readonly userId: string,
+  ) {}
+}
+
+export class BulkCreateSupplierPricingRulesCommand {
+  constructor(
+    public readonly supplierId: string,
+    public readonly userId: string,
+    public readonly dto: import('../dto/supplier-rules.dto').BulkCreateSupplierPricingRulesDto,
+  ) {}
+}
+
+export class ClearSupplierSyncLogsCommand {
+  constructor(
+    public readonly supplierId: string,
+    public readonly userId: string,
+  ) {}
+}
