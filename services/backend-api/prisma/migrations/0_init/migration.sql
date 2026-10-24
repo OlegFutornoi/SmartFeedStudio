@@ -347,6 +347,7 @@ CREATE TABLE "suppliers" (
     "exchange_rate" DECIMAL(10,4) NOT NULL DEFAULT 1.0,
     "currency_buffer_percent" DECIMAL(5,2) NOT NULL DEFAULT 0,
     "price_rounding" TEXT NOT NULL DEFAULT 'NONE',
+    "custom_rounding_rules" JSONB NOT NULL DEFAULT '[]',
     "default_margin_percent" DECIMAL(5,2) NOT NULL DEFAULT 0,
     "default_fixed_markup" DECIMAL(10,2) NOT NULL DEFAULT 0,
     "is_active" BOOLEAN NOT NULL DEFAULT true,

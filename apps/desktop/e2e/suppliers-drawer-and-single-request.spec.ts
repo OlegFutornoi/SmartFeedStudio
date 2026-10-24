@@ -386,4 +386,52 @@ test.describe('Suppliers Slide-Over Drawer & Network Single-Request Optimization
     await expect(fixedBtn).not.toHaveClass(/bg-primary/);
     await expect(marginInput).toHaveValue('150');
   });
+
+  test('9. Modernized Pricing & Rules tab: inline rule creation, auto-continuation, toggle, edit, and live simulator sync', async ({
+    page,
+  }) => {
+    await page.goto('/suppliers');
+    await expect(page.getByTestId('suppliers-page')).toBeVisible();
+
+    await page.getByTestId('supplier-name-sup_test_2').click();
+    await expect(page.getByTestId('supplier-drawer-sheet')).toBeVisible();
+
+    await page.getByTestId('supplier-drawer-tab-pricing').click();
+    const pricingTab = page.getByTestId('supplier-pricing-tab');
+    await expect(pricingTab).toBeVisible();
+
+    // Create a tiered bracket rule: 0 - 1000 UAH -> +25% + 15 UAH
+    await page.getByTestId('rule-min-price-input').fill('0');
+    await page.getByTestId('rule-max-price-input').fill('1000');
+    await page.getByTestId('rule-margin-input').fill('25');
+    await page.getByTestId('rule-fixed-input').fill('15');
+    await page.getByTestId('submit-pricing-rule-btn').click();
+
+    // Smart bracket continuation: minPrice automatically pre-fills with 1000
+    await expect(page.getByTestId('rule-min-price-input')).toHaveValue('1000');
+
+    // Verify rule row is rendered and matched in simulator (default simulator cost is 500)
+    const ruleRows = page.locator('[data-testid^="pricing-rule-row-"]');
+    await expect(ruleRows).toHaveCount(1);
+    await expect(ruleRows.first()).toHaveAttribute('data-matched', 'true');
+
+    // Simulator shows 500 * 1.25 + 15 = 640.00 ₴
+    await expect(page.getByTestId('simulated-selling-price')).toContainText('640.00');
+
+    // Toggle rule inactive -> simulator falls back to base markup (0% -> 500.00 ₴)
+    const toggleSwitch = page.locator('[data-testid^="pricing-rule-toggle-"]').first();
+    await toggleSwitch.click();
+    await expect(page.getByTestId('simulated-selling-price')).toContainText('500.00');
+
+    // Toggle rule back active -> simulator returns to 640.00 ₴
+    await toggleSwitch.click();
+    await expect(page.getByTestId('simulated-selling-price')).toContainText('640.00');
+
+    // Edit rule inline -> change margin from 25% to 30% (500 * 1.30 + 15 = 665.00 ₴)
+    const editBtn = page.locator('[data-testid^="pricing-rule-edit-"]').first();
+    await editBtn.click();
+    await page.getByTestId('rule-margin-input').fill('30');
+    await page.getByTestId('submit-pricing-rule-btn').click();
+    await expect(page.getByTestId('simulated-selling-price')).toContainText('665.00');
+  });
 });

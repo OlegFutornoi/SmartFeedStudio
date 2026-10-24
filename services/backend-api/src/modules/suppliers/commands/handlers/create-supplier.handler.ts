@@ -48,6 +48,7 @@ export class CreateSupplierHandler implements ICommandHandler<CreateSupplierComm
           exchangeRate: dto.exchangeRate ?? 1.0,
           currencyBufferPercent: dto.currencyBufferPercent ?? 0,
           priceRounding: dto.priceRounding || 'NONE',
+          customRoundingRules: JSON.parse(JSON.stringify(dto.customRoundingRules ?? [])),
           defaultMarginPercent: dto.defaultMarginPercent ?? 0,
           defaultFixedMarkup: dto.defaultFixedMarkup ?? 0,
           isActive: dto.isActive ?? true,
@@ -85,6 +86,9 @@ export class CreateSupplierHandler implements ICommandHandler<CreateSupplierComm
       exchangeRate: Number(created.exchangeRate),
       currencyBufferPercent: Number(created.currencyBufferPercent),
       priceRounding: created.priceRounding,
+      customRoundingRules: Array.isArray(created.customRoundingRules)
+        ? created.customRoundingRules
+        : [],
       defaultMarginPercent: Number(created.defaultMarginPercent),
       defaultFixedMarkup: Number(created.defaultFixedMarkup),
       isActive: created.isActive,

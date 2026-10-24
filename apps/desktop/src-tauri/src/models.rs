@@ -38,6 +38,8 @@ pub struct SupplierDto {
     pub currency_buffer_percent: f64,
     #[serde(default = "default_rounding")]
     pub price_rounding: String,
+    #[serde(default)]
+    pub custom_rounding_rules: Vec<serde_json::Value>,
     pub default_margin_percent: f64,
     pub default_fixed_markup: f64,
     pub is_active: bool,
@@ -91,6 +93,7 @@ pub struct CreateSupplierDto {
     pub exchange_rate: Option<f64>,
     pub currency_buffer_percent: Option<f64>,
     pub price_rounding: Option<String>,
+    pub custom_rounding_rules: Option<Vec<serde_json::Value>>,
     #[serde(default)]
     pub default_margin_percent: f64,
     #[serde(default)]
@@ -127,6 +130,7 @@ pub struct UpdateSupplierDto {
     pub exchange_rate: Option<f64>,
     pub currency_buffer_percent: Option<f64>,
     pub price_rounding: Option<String>,
+    pub custom_rounding_rules: Option<Vec<serde_json::Value>>,
     pub default_margin_percent: Option<f64>,
     pub default_fixed_markup: Option<f64>,
     pub is_active: Option<bool>,
@@ -163,6 +167,32 @@ pub struct SupplierPricingRuleDto {
     pub is_active: bool,
     pub created_at: String,
     pub updated_at: String,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct CreateSupplierPricingRuleDto {
+    pub category_id: Option<String>,
+    pub category_name_uk: Option<String>,
+    pub min_price: Option<f64>,
+    pub max_price: Option<f64>,
+    pub margin_percent: Option<f64>,
+    pub fixed_markup: Option<f64>,
+    pub priority: Option<i32>,
+    pub is_active: Option<bool>,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct UpdateSupplierPricingRuleDto {
+    pub category_id: Option<String>,
+    pub category_name_uk: Option<String>,
+    pub min_price: Option<f64>,
+    pub max_price: Option<f64>,
+    pub margin_percent: Option<f64>,
+    pub fixed_markup: Option<f64>,
+    pub priority: Option<i32>,
+    pub is_active: Option<bool>,
 }
 
 

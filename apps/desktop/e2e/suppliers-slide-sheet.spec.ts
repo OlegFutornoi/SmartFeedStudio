@@ -124,4 +124,56 @@ test.describe('Desktop App — Преміальна UX-панель постач
     await expect(page.getByTestId('converted-currency-price')).toBeVisible();
     await expect(page.getByTestId('save-currency-btn')).toBeVisible();
   });
+
+  test('модернізована вкладка «Багатовалютність»: автопідстановка курсу при зміні UAH ➔ USD (без 1 ₴/$), пресети буфера, синхронізація з банками та симулятор у вікні', async ({
+    page,
+  }) => {
+    await page.goto('/suppliers');
+    await expect(page.getByTestId('suppliers-page')).toBeVisible();
+
+    await page.getByTestId('supplier-name-sup_test_2').click();
+    await expect(page.getByTestId('supplier-drawer-sheet')).toBeVisible();
+
+    await page.getByTestId('supplier-drawer-tab-currencies').click();
+    const currenciesTab = page.getByTestId('supplier-currencies-tab');
+    await expect(currenciesTab).toBeVisible();
+
+    // Formula hierarchy bar is visible
+    await expect(page.getByTestId('currency-formula-banner')).toBeVisible();
+
+    // Switch from UAH to USD via quick currency chip -> rate must auto-populate (> 30 UAH/$), never stay 1
+    await page.getByTestId('currency-chip-USD').click();
+    const rateVal = Number(await page.getByTestId('exchange-rate-input').inputValue());
+    expect(rateVal).toBeGreaterThan(30);
+
+    // Click +2% risk buffer quick preset chip
+    await page.getByTestId('currency-buffer-chip-2').click();
+    await expect(page.getByTestId('currency-buffer-input')).toHaveValue('2');
+    await expect(page.getByTestId('effective-rate-badge')).toBeVisible();
+
+    // Click Monobank row in Bank Rates table -> updates rate & highlights row
+    const monoRow = page.getByTestId('bank-row-mono');
+    await monoRow.click();
+    await expect(monoRow).toHaveClass(/bg-primary\/10/);
+
+    // Simulator is visible in viewport without clipping and quick test chip $100 works
+    await expect(page.getByTestId('converted-currency-price')).toBeInViewport();
+    await page.getByTestId('currency-sim-chip-100').click();
+    await expect(page.getByTestId('currency-sim-cost-input')).toHaveValue('100');
+
+    // Open rounding dropdown, add custom .49 rule, verify simulator ending & delete custom rule
+    await page.getByTestId('price-rounding-select').click();
+    await expect(page.getByTestId('price-rounding-popover')).toBeVisible();
+    await page.getByTestId('custom-rounding-value-input').fill('49');
+    await page.getByTestId('add-custom-rounding-btn').click();
+    await expect(page.getByTestId('rounding-option-CUSTOM_DEC_49')).toBeVisible();
+    await expect(page.getByTestId('converted-currency-price')).toContainText('.49 ₴');
+
+    // Delete custom rule from dropdown
+    await page.getByTestId('delete-rounding-rule-CUSTOM_DEC_49').click();
+    await expect(page.getByTestId('rounding-option-CUSTOM_DEC_49')).toHaveCount(0);
+
+    // Save currency settings
+    await page.getByTestId('save-currency-btn').click();
+  });
 });

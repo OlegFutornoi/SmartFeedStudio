@@ -17,10 +17,12 @@ export class CurrenciesService {
   private readonly logger = new Logger(CurrenciesService.name);
   private static readonly CACHE_TTL_SECONDS = 300; // 5 minutes
   private static readonly FALLBACK_RATES: Record<string, number> = {
+    UAH: 1.0,
     USD: 41.5,
     EUR: 45.2,
     PLN: 10.6,
     GBP: 53.8,
+    CNY: 5.85,
   };
 
   constructor(
@@ -172,7 +174,13 @@ export class CurrenciesService {
   }
 
   private async invalidateRatesCache(): Promise<void> {
-    const currencies = [CurrencyCode.USD, CurrencyCode.EUR, CurrencyCode.PLN, CurrencyCode.GBP];
+    const currencies = [
+      CurrencyCode.USD,
+      CurrencyCode.EUR,
+      CurrencyCode.PLN,
+      CurrencyCode.GBP,
+      CurrencyCode.CNY,
+    ];
     await Promise.all(currencies.map((c) => this.cache.del(`currencies:live:${c}`)));
   }
 }

@@ -19,6 +19,7 @@ export class CreateSupplierPricingRuleHandler implements ICommandHandler<CreateS
       data: {
         supplierId,
         categoryId: dto.categoryId,
+        categoryNameUk: dto.categoryNameUk ?? null,
         minPrice: dto.minPrice ?? 0,
         maxPrice: dto.maxPrice ?? null,
         marginPercent: dto.marginPercent ?? 0,
@@ -32,6 +33,7 @@ export class CreateSupplierPricingRuleHandler implements ICommandHandler<CreateS
       id: created.id,
       supplierId: created.supplierId,
       categoryId: created.categoryId,
+      categoryNameUk: created.categoryNameUk,
       minPrice: created.minPrice !== null ? Number(created.minPrice) : null,
       maxPrice: created.maxPrice !== null ? Number(created.maxPrice) : null,
       marginPercent: Number(created.marginPercent),

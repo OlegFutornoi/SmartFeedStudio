@@ -23,6 +23,7 @@ export class UpdateSupplierPricingRuleHandler implements ICommandHandler<UpdateS
 
     const data: Prisma.SupplierPricingRuleUpdateInput = {};
     if (dto.categoryId !== undefined) data.categoryId = dto.categoryId;
+    if (dto.categoryNameUk !== undefined) data.categoryNameUk = dto.categoryNameUk;
     if (dto.minPrice !== undefined) data.minPrice = dto.minPrice;
     if (dto.maxPrice !== undefined) data.maxPrice = dto.maxPrice;
     if (dto.marginPercent !== undefined) data.marginPercent = dto.marginPercent;
@@ -39,6 +40,7 @@ export class UpdateSupplierPricingRuleHandler implements ICommandHandler<UpdateS
       id: updated.id,
       supplierId: updated.supplierId,
       categoryId: updated.categoryId,
+      categoryNameUk: updated.categoryNameUk,
       minPrice: updated.minPrice !== null ? Number(updated.minPrice) : null,
       maxPrice: updated.maxPrice !== null ? Number(updated.maxPrice) : null,
       marginPercent: Number(updated.marginPercent),

@@ -72,9 +72,34 @@ export function prepareTauriArgs(command: string, args: unknown): Record<string,
       };
 
     case 'db_get_supplier_feed_sources':
+    case 'db_get_pricing_rules':
       return {
         supplierId: raw.supplierId,
         supplier_id: raw.supplierId,
+      };
+
+    case 'db_create_pricing_rule':
+      return {
+        supplierId: raw.supplierId,
+        supplier_id: raw.supplierId,
+        dto: raw.payload || raw.dto || raw,
+      };
+
+    case 'db_update_pricing_rule':
+      return {
+        supplierId: raw.supplierId,
+        supplier_id: raw.supplierId,
+        ruleId: raw.ruleId,
+        rule_id: raw.ruleId,
+        dto: raw.payload || raw.dto || raw,
+      };
+
+    case 'db_delete_pricing_rule':
+      return {
+        supplierId: raw.supplierId,
+        supplier_id: raw.supplierId,
+        ruleId: raw.ruleId,
+        rule_id: raw.ruleId,
       };
 
     case 'db_bulk_delete_products': {
@@ -97,6 +122,10 @@ export const REGISTERED_TAURI_COMMANDS = new Set([
   'db_create_supplier',
   'db_update_supplier',
   'db_delete_supplier',
+  'db_get_pricing_rules',
+  'db_create_pricing_rule',
+  'db_update_pricing_rule',
+  'db_delete_pricing_rule',
   'db_get_supplier_feed_sources',
   'db_get_all_feed_sources',
   'db_check_feed_collision',

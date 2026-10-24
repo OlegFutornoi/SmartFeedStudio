@@ -55,6 +55,9 @@ export class UpdateSupplierHandler implements ICommandHandler<UpdateSupplierComm
     if (dto.currencyBufferPercent !== undefined)
       data.currencyBufferPercent = dto.currencyBufferPercent;
     if (dto.priceRounding !== undefined) data.priceRounding = dto.priceRounding;
+    if (dto.customRoundingRules !== undefined) {
+      data.customRoundingRules = JSON.parse(JSON.stringify(dto.customRoundingRules));
+    }
     if (dto.defaultMarginPercent !== undefined)
       data.defaultMarginPercent = dto.defaultMarginPercent;
     if (dto.defaultFixedMarkup !== undefined) data.defaultFixedMarkup = dto.defaultFixedMarkup;
@@ -95,6 +98,9 @@ export class UpdateSupplierHandler implements ICommandHandler<UpdateSupplierComm
       exchangeRate: Number(updated.exchangeRate),
       currencyBufferPercent: Number(updated.currencyBufferPercent),
       priceRounding: updated.priceRounding,
+      customRoundingRules: Array.isArray(updated.customRoundingRules)
+        ? updated.customRoundingRules
+        : [],
       defaultMarginPercent: Number(updated.defaultMarginPercent),
       defaultFixedMarkup: Number(updated.defaultFixedMarkup),
       isActive: updated.isActive,

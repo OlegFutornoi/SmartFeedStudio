@@ -48,53 +48,53 @@ export function calculateBaseSellingPrice(
   const categoryId = params.categoryId || null;
   const activeRules = (params.rules || [])
     .filter((r) => r.isActive !== false)
-    .sort((a, b) => (b.priority || 0) - (a.priority || 0));
+    .sort((a, b) => {
+      const pDiff = (b.priority || 0) - (a.priority || 0);
+      if (pDiff !== 0) return pDiff;
+      return (a.minPrice ?? 0) - (b.minPrice ?? 0);
+    });
 
   // 1. Try to find a category-specific rule first (if categoryId is provided)
   if (categoryId) {
-    const categoryRule = activeRules.find(
-      (r) => r.categoryId === categoryId && r.minPrice == null && r.maxPrice == null,
-    );
-    if (categoryRule) {
-      const isFixed =
-        categoryRule.markupType === 'FIXED' ||
-        (categoryRule.markupType == null &&
-          categoryRule.fixedMarkup != null &&
-          Number(categoryRule.fixedMarkup) > 0 &&
-          (categoryRule.marginPercent == null || Number(categoryRule.marginPercent) === 0));
+    const categoryBracketOrDirect = activeRules.find((r) => {
+      if (r.categoryId !== categoryId) return false;
+      const min = r.minPrice != null ? Number(r.minPrice) : -Infinity;
+      const max = r.maxPrice != null ? Number(r.maxPrice) : Infinity;
+      return cost >= min && cost <= max;
+    });
+    if (categoryBracketOrDirect) {
+      const isFixedOnly =
+        categoryBracketOrDirect.markupType === 'FIXED' ||
+        (categoryBracketOrDirect.markupType == null &&
+          categoryBracketOrDirect.fixedMarkup != null &&
+          Number(categoryBracketOrDirect.fixedMarkup) > 0 &&
+          (categoryBracketOrDirect.marginPercent == null ||
+            Number(categoryBracketOrDirect.marginPercent) === 0));
 
-      if (isFixed) {
-        const fixed = Number(categoryRule.fixedMarkup) || 0;
-        const price = cost + fixed;
-        return {
-          costPrice: cost,
-          sellingPrice: Math.round(price * 100) / 100,
-          appliedMarginPercent: 0,
-          appliedFixedMarkup: fixed,
-          matchedRuleType: 'CATEGORY',
-          matchedRuleId: categoryRule.id,
-        };
-      }
-
-      const margin = Number(categoryRule.marginPercent) || 0;
-      const price = cost * (1 + margin / 100);
+      const margin = isFixedOnly ? 0 : Number(categoryBracketOrDirect.marginPercent) || 0;
+      const fixed =
+        categoryBracketOrDirect.markupType === 'PERCENT' &&
+        categoryBracketOrDirect.fixedMarkup == null
+          ? 0
+          : Number(categoryBracketOrDirect.fixedMarkup) || 0;
+      const price = cost * (1 + margin / 100) + fixed;
       return {
         costPrice: cost,
         sellingPrice: Math.round(price * 100) / 100,
         appliedMarginPercent: margin,
-        appliedFixedMarkup: 0,
+        appliedFixedMarkup: fixed,
         matchedRuleType: 'CATEGORY',
-        matchedRuleId: categoryRule.id,
+        matchedRuleId: categoryBracketOrDirect.id,
       };
     }
   }
 
-  // 2. Try to find a price bracket rule (e.g. 0-500 UAH, 500-2000 UAH)
+  // 2. Try to find a general price bracket rule (e.g. 0-500 UAH, 500-2000 UAH)
   const bracketRule = activeRules.find((r) => {
+    if (r.categoryId) return false;
     const min = r.minPrice != null ? Number(r.minPrice) : -Infinity;
     const max = r.maxPrice != null ? Number(r.maxPrice) : Infinity;
-    const matchesCategory = r.categoryId ? r.categoryId === categoryId : true;
-    return matchesCategory && cost >= min && cost <= max;
+    return cost >= min && cost <= max;
   });
 
   if (bracketRule) {

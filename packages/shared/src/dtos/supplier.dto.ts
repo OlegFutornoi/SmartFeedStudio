@@ -1,6 +1,25 @@
 import { z } from 'zod';
 import { CurrencyCode, ExchangeRateMode, PriceRoundingMode } from '../enums/index.js';
 
+export const CustomRoundingRuleTypeSchema = z.enum(['DECIMAL', 'INTEGER_ENDING', 'MULTIPLE']);
+export type CustomRoundingRuleType = z.infer<typeof CustomRoundingRuleTypeSchema>;
+
+export const CustomRoundingRuleDtoSchema = z.object({
+  code: z.string().min(1),
+  type: CustomRoundingRuleTypeSchema,
+  value: z.number().min(0).max(10000),
+  labelUk: z.string().optional(),
+  labelEn: z.string().optional(),
+});
+
+export type CustomRoundingRuleDto = z.infer<typeof CustomRoundingRuleDtoSchema>;
+
+export const PriceRoundingValueSchema = z.union([
+  z.nativeEnum(PriceRoundingMode),
+  z.string().min(1),
+]);
+export type PriceRoundingValue = PriceRoundingMode | string;
+
 export const SupplierDtoSchema = z.object({
   id: z.string(),
   organizationId: z.string().nullable().optional(),
@@ -38,7 +57,8 @@ export const SupplierDtoSchema = z.object({
   exchangeRateMode: z.nativeEnum(ExchangeRateMode).default(ExchangeRateMode.MANUAL),
   exchangeRate: z.number().positive().default(1.0),
   currencyBufferPercent: z.number().min(0).max(100).default(0),
-  priceRounding: z.nativeEnum(PriceRoundingMode).default(PriceRoundingMode.NONE),
+  priceRounding: PriceRoundingValueSchema.default(PriceRoundingMode.NONE),
+  customRoundingRules: z.array(CustomRoundingRuleDtoSchema).default([]).optional(),
 
   // Default markups
   defaultMarginPercent: z.number().nonnegative().default(0),
@@ -91,7 +111,8 @@ export const CreateSupplierDtoSchema = z.object({
   exchangeRateMode: z.nativeEnum(ExchangeRateMode).default(ExchangeRateMode.MANUAL).optional(),
   exchangeRate: z.number().positive().default(1.0).optional(),
   currencyBufferPercent: z.number().min(0).max(100).default(0).optional(),
-  priceRounding: z.nativeEnum(PriceRoundingMode).default(PriceRoundingMode.NONE).optional(),
+  priceRounding: PriceRoundingValueSchema.default(PriceRoundingMode.NONE).optional(),
+  customRoundingRules: z.array(CustomRoundingRuleDtoSchema).optional(),
 
   defaultMarginPercent: z
     .number()

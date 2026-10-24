@@ -335,6 +335,37 @@ fn db_delete_supplier(id: String) -> Result<(), String> {
 }
 
 #[tauri::command]
+fn db_get_pricing_rules(supplier_id: String) -> Result<Vec<models::SupplierPricingRuleDto>, String> {
+    let conn = get_db_conn()?;
+    db::get_supplier_pricing_rules(&conn, &supplier_id).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+fn db_create_pricing_rule(
+    supplier_id: String,
+    dto: models::CreateSupplierPricingRuleDto,
+) -> Result<models::SupplierPricingRuleDto, String> {
+    let conn = get_db_conn()?;
+    db::create_supplier_pricing_rule(&conn, &supplier_id, dto).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+fn db_update_pricing_rule(
+    supplier_id: String,
+    rule_id: String,
+    dto: models::UpdateSupplierPricingRuleDto,
+) -> Result<models::SupplierPricingRuleDto, String> {
+    let conn = get_db_conn()?;
+    db::update_supplier_pricing_rule(&conn, &supplier_id, &rule_id, dto).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+fn db_delete_pricing_rule(supplier_id: String, rule_id: String) -> Result<bool, String> {
+    let conn = get_db_conn()?;
+    db::delete_supplier_pricing_rule(&conn, &supplier_id, &rule_id).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
 fn db_get_supplier_feed_sources(supplier_id: String) -> Result<Vec<models::FeedSourceDto>, String> {
     let conn = get_db_conn()?;
     db::get_supplier_feed_sources(&conn, &supplier_id).map_err(|e| e.to_string())
@@ -495,6 +526,10 @@ pub fn run() {
             db_create_supplier,
             db_update_supplier,
             db_delete_supplier,
+            db_get_pricing_rules,
+            db_create_pricing_rule,
+            db_update_pricing_rule,
+            db_delete_pricing_rule,
             db_get_supplier_feed_sources,
             db_get_all_feed_sources,
             db_check_feed_collision,

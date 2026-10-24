@@ -2,6 +2,7 @@ use rusqlite::{params, Connection, Result};
 use crate::models::{
     SupplierDto, CreateSupplierDto, UpdateSupplierDto,
     SupplierCategoryRuleDto, SupplierPricingRuleDto,
+    CreateSupplierPricingRuleDto, UpdateSupplierPricingRuleDto,
 };
 use super::sync_counters;
 
@@ -16,12 +17,15 @@ pub fn get_suppliers(conn: &Connection) -> Result<Vec<SupplierDto>> {
             (SELECT COUNT(*) FROM local_products p WHERE p.supplier_id = s.id) AS products_count,
             (SELECT COUNT(*) FROM local_feed_sources f WHERE f.supplier_id = s.id) AS active_feeds_count,
             (SELECT COUNT(*) FROM local_supplier_categories c WHERE c.supplier_id = s.id) AS categories_count,
-            (SELECT COUNT(*) FROM local_supplier_categories c WHERE c.supplier_id = s.id AND c.is_active = 1) AS active_categories_count
+            (SELECT COUNT(*) FROM local_supplier_categories c WHERE c.supplier_id = s.id AND c.is_active = 1) AS active_categories_count,
+            COALESCE(s.custom_rounding_rules, '[]')
         FROM local_suppliers s
         ORDER BY s.created_at DESC"
     )?;
     
     let supplier_iter = stmt.query_map([], |row| {
+        let custom_rules_str: String = row.get(38).unwrap_or_else(|_| "[]".to_string());
+        let custom_rounding_rules: Vec<serde_json::Value> = serde_json::from_str(&custom_rules_str).unwrap_or_default();
         Ok(SupplierDto {
             id: row.get(0)?,
             organization_id: row.get(1)?,
@@ -52,6 +56,7 @@ pub fn get_suppliers(conn: &Connection) -> Result<Vec<SupplierDto>> {
             exchange_rate: row.get(26)?,
             currency_buffer_percent: row.get(27)?,
             price_rounding: row.get(28)?,
+            custom_rounding_rules,
             default_margin_percent: row.get(29)?,
             default_fixed_markup: row.get(30)?,
             is_active: row.get::<_, i32>(31)? == 1,
@@ -97,13 +102,16 @@ pub fn get_supplier_by_id(conn: &Connection, id: &str) -> Result<Option<Supplier
             (SELECT COUNT(*) FROM local_products p WHERE p.supplier_id = s.id) AS products_count,
             (SELECT COUNT(*) FROM local_feed_sources f WHERE f.supplier_id = s.id) AS active_feeds_count,
             (SELECT COUNT(*) FROM local_supplier_categories c WHERE c.supplier_id = s.id) AS categories_count,
-            (SELECT COUNT(*) FROM local_supplier_categories c WHERE c.supplier_id = s.id AND c.is_active = 1) AS active_categories_count
+            (SELECT COUNT(*) FROM local_supplier_categories c WHERE c.supplier_id = s.id AND c.is_active = 1) AS active_categories_count,
+            COALESCE(s.custom_rounding_rules, '[]')
         FROM local_suppliers s
         WHERE s.id = ?1"
     )?;
 
     let mut rows = stmt.query([id])?;
     if let Some(row) = rows.next()? {
+        let custom_rules_str: String = row.get(38).unwrap_or_else(|_| "[]".to_string());
+        let custom_rounding_rules: Vec<serde_json::Value> = serde_json::from_str(&custom_rules_str).unwrap_or_default();
         Ok(Some(SupplierDto {
             id: row.get(0)?,
             organization_id: row.get(1)?,
@@ -134,6 +142,7 @@ pub fn get_supplier_by_id(conn: &Connection, id: &str) -> Result<Option<Supplier
             exchange_rate: row.get(26)?,
             currency_buffer_percent: row.get(27)?,
             price_rounding: row.get(28)?,
+            custom_rounding_rules,
             default_margin_percent: row.get(29)?,
             default_fixed_markup: row.get(30)?,
             is_active: row.get::<_, i32>(31)? == 1,
@@ -172,6 +181,8 @@ pub fn create_supplier(conn: &Connection, dto: CreateSupplierDto) -> Result<Supp
     let exchange_rate = dto.exchange_rate.unwrap_or(1.0);
     let currency_buffer_percent = dto.currency_buffer_percent.unwrap_or(0.0);
     let price_rounding = dto.price_rounding.unwrap_or_else(|| "NONE".to_string());
+    let custom_rounding_rules = dto.custom_rounding_rules.unwrap_or_default();
+    let custom_rounding_rules_json = serde_json::to_string(&custom_rounding_rules).unwrap_or_else(|_| "[]".to_string());
     let is_active = dto.is_active.unwrap_or(true);
     
     conn.execute(
@@ -179,18 +190,18 @@ pub fn create_supplier(conn: &Connection, dto: CreateSupplierDto) -> Result<Supp
             id, user_id, name, code, contact_phone, contact_email, website, notes, logo_url,
             legal_name, tax_id, industry, segment, manager_name, manager_position, manager_phone, manager_email, manager_telegram, country, city, address, postcode,
             base_currency, target_currency, exchange_rate_mode, exchange_rate, currency_buffer_percent, price_rounding,
-            default_margin_percent, default_fixed_markup, is_active
+            default_margin_percent, default_fixed_markup, is_active, custom_rounding_rules
         ) VALUES (
             ?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9,
             ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17, ?18, ?19, ?20, ?21, ?22,
             ?23, ?24, ?25, ?26, ?27, ?28,
-            ?29, ?30, ?31
+            ?29, ?30, ?31, ?32
         )",
         params![
             &id, &user_id, &dto.name, &dto.code, &dto.contact_phone, &dto.contact_email, &dto.website, &dto.notes, &dto.logo_url,
             &dto.legal_name, &dto.tax_id, &dto.industry, &dto.segment, &dto.manager_name, &dto.manager_position, &dto.manager_phone, &dto.manager_email, &dto.manager_telegram, &dto.country, &dto.city, &dto.address, &dto.postcode,
             &base_currency, &target_currency, &exchange_rate_mode, exchange_rate, currency_buffer_percent, &price_rounding,
-            dto.default_margin_percent, dto.default_fixed_markup, if is_active { 1 } else { 0 },
+            dto.default_margin_percent, dto.default_fixed_markup, if is_active { 1 } else { 0 }, &custom_rounding_rules_json,
         ],
     )?;
 
@@ -226,6 +237,7 @@ pub fn create_supplier(conn: &Connection, dto: CreateSupplierDto) -> Result<Supp
         exchange_rate,
         currency_buffer_percent,
         price_rounding,
+        custom_rounding_rules,
         default_margin_percent: dto.default_margin_percent,
         default_fixed_markup: dto.default_fixed_markup,
         is_active,
@@ -284,6 +296,8 @@ pub fn update_supplier(conn: &Connection, id: &str, dto: UpdateSupplierDto) -> R
     let exchange_rate = dto.exchange_rate.unwrap_or(current_supplier.exchange_rate);
     let currency_buffer_percent = dto.currency_buffer_percent.unwrap_or(current_supplier.currency_buffer_percent);
     let price_rounding = dto.price_rounding.unwrap_or(current_supplier.price_rounding);
+    let custom_rounding_rules = dto.custom_rounding_rules.unwrap_or(current_supplier.custom_rounding_rules);
+    let custom_rounding_rules_json = serde_json::to_string(&custom_rounding_rules).unwrap_or_else(|_| "[]".to_string());
     let default_margin_percent = dto.default_margin_percent.unwrap_or(current_supplier.default_margin_percent);
     let default_fixed_markup = dto.default_fixed_markup.unwrap_or(current_supplier.default_fixed_markup);
     let is_active = dto.is_active.unwrap_or(current_supplier.is_active);
@@ -297,8 +311,8 @@ pub fn update_supplier(conn: &Connection, id: &str, dto: UpdateSupplierDto) -> R
             base_currency = ?21, target_currency = ?22, exchange_rate_mode = ?23,
             exchange_rate = ?24, currency_buffer_percent = ?25, price_rounding = ?26,
             default_margin_percent = ?27, default_fixed_markup = ?28,
-            is_active = ?29, updated_at = CURRENT_TIMESTAMP
-         WHERE id = ?30",
+            is_active = ?29, custom_rounding_rules = ?30, updated_at = CURRENT_TIMESTAMP
+         WHERE id = ?31",
         params![
             &name, &code, &contact_phone, &contact_email, &website,
             &notes, &logo_url, &legal_name, &tax_id, &industry, &segment,
@@ -307,7 +321,7 @@ pub fn update_supplier(conn: &Connection, id: &str, dto: UpdateSupplierDto) -> R
             &base_currency, &target_currency, &exchange_rate_mode,
             exchange_rate, currency_buffer_percent, &price_rounding,
             default_margin_percent, default_fixed_markup,
-            if is_active { 1 } else { 0 }, id,
+            if is_active { 1 } else { 0 }, &custom_rounding_rules_json, id,
         ],
     )?;
 
@@ -375,4 +389,123 @@ pub fn get_supplier_pricing_rules(conn: &Connection, supplier_id: &str) -> Resul
         list.push(item?);
     }
     Ok(list)
+}
+
+pub fn create_supplier_pricing_rule(
+    conn: &Connection,
+    supplier_id: &str,
+    dto: CreateSupplierPricingRuleDto,
+) -> Result<SupplierPricingRuleDto> {
+    let id = format!("prule_{}", uuid::Uuid::new_v4().to_string().replace("-", ""));
+    let margin_percent = dto.margin_percent.unwrap_or(0.0);
+    let fixed_markup = dto.fixed_markup.unwrap_or(0.0);
+    let priority = dto.priority.unwrap_or(0);
+    let is_active = dto.is_active.unwrap_or(true);
+    let now = chrono::Utc::now().to_rfc3339();
+
+    conn.execute(
+        "INSERT INTO local_supplier_pricing_rules (
+            id, supplier_id, category_id, category_name_uk, min_price, max_price,
+            margin_percent, fixed_markup, priority, is_active, created_at, updated_at
+        ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12)",
+        params![
+            &id,
+            supplier_id,
+            &dto.category_id,
+            &dto.category_name_uk,
+            &dto.min_price,
+            &dto.max_price,
+            margin_percent,
+            fixed_markup,
+            priority,
+            if is_active { 1 } else { 0 },
+            &now,
+            &now,
+        ],
+    )?;
+
+    Ok(SupplierPricingRuleDto {
+        id,
+        supplier_id: supplier_id.to_string(),
+        category_id: dto.category_id,
+        category_name_uk: dto.category_name_uk,
+        min_price: dto.min_price,
+        max_price: dto.max_price,
+        margin_percent,
+        fixed_markup,
+        priority,
+        is_active,
+        created_at: now.clone(),
+        updated_at: now,
+    })
+}
+
+pub fn update_supplier_pricing_rule(
+    conn: &Connection,
+    supplier_id: &str,
+    rule_id: &str,
+    dto: UpdateSupplierPricingRuleDto,
+) -> Result<SupplierPricingRuleDto> {
+    let rules = get_supplier_pricing_rules(conn, supplier_id)?;
+    let current = match rules.into_iter().find(|r| r.id == rule_id) {
+        Some(r) => r,
+        None => return Err(rusqlite::Error::QueryReturnedNoRows),
+    };
+
+    let category_id = if dto.category_id.is_some() { dto.category_id } else { current.category_id };
+    let category_name_uk = if dto.category_name_uk.is_some() { dto.category_name_uk } else { current.category_name_uk };
+    let min_price = if dto.min_price.is_some() { dto.min_price } else { current.min_price };
+    let max_price = if dto.max_price.is_some() { dto.max_price } else { current.max_price };
+    let margin_percent = dto.margin_percent.unwrap_or(current.margin_percent);
+    let fixed_markup = dto.fixed_markup.unwrap_or(current.fixed_markup);
+    let priority = dto.priority.unwrap_or(current.priority);
+    let is_active = dto.is_active.unwrap_or(current.is_active);
+    let now = chrono::Utc::now().to_rfc3339();
+
+    conn.execute(
+        "UPDATE local_supplier_pricing_rules SET
+            category_id = ?1, category_name_uk = ?2, min_price = ?3, max_price = ?4,
+            margin_percent = ?5, fixed_markup = ?6, priority = ?7, is_active = ?8, updated_at = ?9
+         WHERE id = ?10 AND supplier_id = ?11",
+        params![
+            &category_id,
+            &category_name_uk,
+            &min_price,
+            &max_price,
+            margin_percent,
+            fixed_markup,
+            priority,
+            if is_active { 1 } else { 0 },
+            &now,
+            rule_id,
+            supplier_id,
+        ],
+    )?;
+
+    Ok(SupplierPricingRuleDto {
+        id: current.id,
+        supplier_id: current.supplier_id,
+        category_id,
+        category_name_uk,
+        min_price,
+        max_price,
+        margin_percent,
+        fixed_markup,
+        priority,
+        is_active,
+        created_at: current.created_at,
+        updated_at: now,
+    })
+}
+
+pub fn delete_supplier_pricing_rule(
+    conn: &Connection,
+    supplier_id: &str,
+    rule_id: &str,
+) -> Result<bool> {
+    let affected = conn.execute(
+        "DELETE FROM local_supplier_pricing_rules WHERE id = ?1 AND supplier_id = ?2",
+        params![rule_id, supplier_id],
+    )?;
+    Ok(affected > 0)
 }

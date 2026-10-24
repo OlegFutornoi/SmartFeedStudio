@@ -13,6 +13,7 @@ import type {
 import { localDb } from '@/services/local-db';
 import { isTauri } from '@/lib/runtime';
 import { ApiError, fetchWithAuth } from '@/lib/api/client';
+import { appCounterService } from '@/services/counters';
 
 export async function getSupplierPricingRules(
   supplierId: string,
@@ -41,6 +42,7 @@ export async function createSupplierPricingRule(
   dto: CreateSupplierPricingRuleDto,
   token?: string,
 ): Promise<SupplierPricingRuleDto> {
+  appCounterService.invalidate();
   if (!isTauri()) {
     try {
       const response = await fetchWithAuth(
@@ -69,6 +71,7 @@ export async function updateSupplierPricingRule(
   dto: UpdateSupplierPricingRuleDto,
   token?: string,
 ): Promise<SupplierPricingRuleDto> {
+  appCounterService.invalidate();
   if (!isTauri()) {
     try {
       const response = await fetchWithAuth(
@@ -96,6 +99,7 @@ export async function deleteSupplierPricingRule(
   ruleId: string,
   token?: string,
 ): Promise<{ success: boolean }> {
+  appCounterService.invalidate();
   if (!isTauri()) {
     try {
       const response = await fetchWithAuth(

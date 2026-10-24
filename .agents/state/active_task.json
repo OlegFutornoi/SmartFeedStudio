@@ -1,55 +1,16 @@
 {
-  "task_id": "counters-and-window-auto-expand-optimization",
-  "title": "Оптимізація модуля лічильників (категорії/товари/фіди) та автоматичне згортання меню з розгортанням вікон",
-  "status": "completed",
-  "active_plan": null,
-  "completed_plan": "plans/completed/counters_and_window_auto_expand_optimization.md",
-  "updated_at": "2026-10-24T18:59:00Z",
+  "task_id": "supplier-all-tabs-full-backend-crud",
+  "title": "Повний аудит 6 вкладок постачальника та реалізація 100% Backend CRUD + Database Persistence",
+  "status": "planned",
+  "active_plan": "plans/active/supplier_all_tabs_full_backend_crud_plan.md",
+  "updated_at": "2026-10-24T21:37:00Z",
   "completed_stages": [
-    "Stage 1: Discovery & Root Cause Analysis",
-    "Stage 2: Planning & Architecture",
-    "Stage 3: Domain Constraints",
-    "Stage 4: Automated Test Design",
-    "Stage 5: Implementation & Hardening",
-    "Stage 6: Code Review & DoD Verification",
-    "Stage 7: Systematic Debugging & Root Cause Isolation",
-    "Stage 8: Documentation & Task State Persistence"
+    "Stage 1: Discovery & Full-Stack Persistence Audit of All 6 Supplier Tabs",
+    "Stage 2: Authoring Step-by-Step TDD Implementation Plan"
   ],
-  "modified_files": [
-    "apps/desktop/src/services/local-db/types.ts",
-    "apps/desktop/src/services/local-db/mock-driver.ts",
-    "apps/desktop/src/services/local-db/mock/mock-state.ts",
-    "apps/desktop/src/services/local-db/mock/mock-feeds.ts",
-    "apps/desktop/src/services/local-db/mock/mock-products.ts",
-    "apps/desktop/src/services/local-db/mock/mock-suppliers.ts",
-    "apps/desktop/src-tauri/src/db/mod.rs",
-    "apps/desktop/src-tauri/src/db/suppliers.rs",
-    "apps/desktop/src/services/counters/counter.service.ts",
-    "apps/desktop/src/services/counters/useAppCounters.ts",
-    "apps/desktop/src/lib/api/suppliers.ts",
-    "apps/desktop/src/lib/api/supplier-categories.ts",
-    "apps/desktop/src/modules/suppliers/hooks/useSuppliersCrud.ts",
-    "apps/desktop/src/modules/suppliers/components/details/tabs/useSupplierCategoriesState.ts",
-    "apps/desktop/src/contexts/SidebarContext.tsx",
-    "apps/desktop/src/components/ui/sheet.tsx",
-    "apps/desktop/src/components/ui/dialog.tsx",
-    "apps/desktop/src/modules/suppliers/components/drawer/SupplierDrawerSheet.tsx",
-    "apps/desktop/src/modules/suppliers/components/forms/useSupplierFormState.ts",
-    "apps/desktop/src/modules/suppliers/components/forms/SupplierFormSheet.tsx",
-    "apps/desktop/src/components/feeds/ImportFeedWizardDialog.tsx",
-    "apps/desktop/src/components/feeds/WizardDialogHeader.tsx",
-    "apps/desktop/src/modules/suppliers/components/details/tabs/MarketplaceCategoryDrawer.tsx",
-    "apps/desktop/src/modules/suppliers/components/details/tabs/MarketplaceCategoryDrawerHeader.tsx",
-    "apps/desktop/src/components/products/ProductDetailsDrawer.tsx",
-    "apps/desktop/e2e/fixtures/suppliers-mock-entities.ts",
-    "apps/desktop/e2e/suppliers-drawer-and-single-request.spec.ts",
-    "plans/completed/counters_and_window_auto_expand_optimization.md"
-  ],
-  "verification": {
-    "playwright_e2e": "8 passed (14.3s) in e2e/suppliers-drawer-and-single-request.spec.ts",
-    "tsc": "0 errors",
-    "i18n_check": "100% passed",
-    "invariants_check": "0 regressions (UI-05 improved 142 -> 141)"
-  },
-  "next_actions": []
+  "modified_files": ["plans/active/supplier_all_tabs_full_backend_crud_plan.md", "plans/README.md"],
+  "next_actions": [
+    "Wait for explicit user approval ('починай', 'виконуй', 'реалізуй') per PLAN-01 before modifying code or database",
+    "Execute Task 1-6 (Shared Contracts -> Prisma/SQLite Schema -> Feeds CRUD -> Categories CRUD -> Pricing/Sync CRUD -> Desktop Client & E2E Tests)"
+  ]
 }

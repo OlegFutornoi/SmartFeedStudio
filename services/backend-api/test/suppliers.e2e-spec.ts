@@ -107,7 +107,16 @@ describe('Suppliers & Multi-Currency Management (E2E)', () => {
     expect(res.body.exchangeRate).toBe(41.5);
   });
 
-  it('4. PATCH /api/suppliers/:id — updates supplier, CRM fields and toggles isActive status', async () => {
+  it('4. PATCH /api/suppliers/:id — updates supplier, CRM fields, custom rounding rules and toggles isActive status', async () => {
+    const customRules = [
+      {
+        code: 'CUSTOM_DEC_49',
+        type: 'DECIMAL',
+        value: 49,
+        labelUk: 'Закінчення .49 (напр. 449.49 ₴)',
+        labelEn: 'Ending .49 (e.g. 449.49 ₴)',
+      },
+    ];
     const res = await request(app.getHttpServer())
       .patch(`/api/suppliers/${createdSupplierId}`)
       .set('Authorization', `Bearer ${userToken}`)
@@ -117,6 +126,8 @@ describe('Suppliers & Multi-Currency Management (E2E)', () => {
         defaultMarginPercent: 30,
         managerPosition: 'Head of Commercial B2B',
         city: 'Львів',
+        priceRounding: 'CUSTOM_DEC_49',
+        customRoundingRules: customRules,
       })
       .expect(200);
 
@@ -125,6 +136,9 @@ describe('Suppliers & Multi-Currency Management (E2E)', () => {
     expect(res.body.defaultMarginPercent).toBe(30);
     expect(res.body.managerPosition).toBe('Head of Commercial B2B');
     expect(res.body.city).toBe('Львів');
+    expect(res.body.priceRounding).toBe('CUSTOM_DEC_49');
+    expect(res.body.customRoundingRules).toHaveLength(1);
+    expect(res.body.customRoundingRules[0].code).toBe('CUSTOM_DEC_49');
   });
 
   it('5. Multi-Tenant Protection — User 2 cannot access or edit User 1 supplier', async () => {

@@ -33,6 +33,7 @@ pub fn init_schema(conn: &Connection) -> Result<()> {
             exchange_rate REAL DEFAULT 1.0,
             currency_buffer_percent REAL DEFAULT 0,
             price_rounding TEXT DEFAULT 'NONE',
+            custom_rounding_rules TEXT DEFAULT '[]',
             default_margin_percent REAL DEFAULT 0,
             default_fixed_markup REAL DEFAULT 0,
             is_active INTEGER DEFAULT 1,
@@ -244,6 +245,7 @@ pub fn init_schema(conn: &Connection) -> Result<()> {
         ALTER TABLE local_suppliers ADD COLUMN exchange_rate REAL DEFAULT 1.0;
         ALTER TABLE local_suppliers ADD COLUMN currency_buffer_percent REAL DEFAULT 0;
         ALTER TABLE local_suppliers ADD COLUMN price_rounding TEXT DEFAULT 'NONE';
+        ALTER TABLE local_suppliers ADD COLUMN custom_rounding_rules TEXT DEFAULT '[]';
         ALTER TABLE local_suppliers ADD COLUMN legal_name TEXT;
         ALTER TABLE local_suppliers ADD COLUMN tax_id TEXT;
         ALTER TABLE local_suppliers ADD COLUMN industry TEXT;

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { RefreshCw, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -20,6 +20,7 @@ interface CompactBankRatesTableProps {
   onCurrencyChange: (currency: CurrencyCode) => void;
   selectedBankId?: string;
   onSelectBankRate: (bankRate: BankExchangeRate) => void;
+  onRatesLoaded?: (currency: CurrencyCode, rates: BankExchangeRate[]) => void;
 }
 
 const SUPPORTED_CURRENCIES: CurrencyCode[] = [
@@ -27,6 +28,7 @@ const SUPPORTED_CURRENCIES: CurrencyCode[] = [
   CurrencyCode.EUR,
   CurrencyCode.PLN,
   CurrencyCode.GBP,
+  CurrencyCode.CNY,
 ];
 
 export const CompactBankRatesTable: React.FC<CompactBankRatesTableProps> = ({
@@ -34,13 +36,20 @@ export const CompactBankRatesTable: React.FC<CompactBankRatesTableProps> = ({
   onCurrencyChange,
   selectedBankId,
   onSelectBankRate,
+  onRatesLoaded,
 }) => {
   const { t } = useTranslation(['suppliers', 'common']);
   const [bankRates, setBankRates] = useState<BankExchangeRate[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [lastUpdated, setLastUpdated] = useState<string>('');
 
-  const loadRates = async (currency: CurrencyCode, force = false) => {
+  const isFetchingRef = useRef(false);
+  const onRatesLoadedRef = useRef(onRatesLoaded);
+  onRatesLoadedRef.current = onRatesLoaded;
+
+  const loadRates = useCallback(async (currency: CurrencyCode, force = false) => {
+    if (isFetchingRef.current && !force) return;
+    isFetchingRef.current = true;
     setIsLoading(true);
     try {
       const rates = await fetchBankExchangeRates(currency, force);
@@ -48,47 +57,50 @@ export const CompactBankRatesTable: React.FC<CompactBankRatesTableProps> = ({
       if (rates.length > 0) {
         setLastUpdated(rates[0].updatedAt);
       }
+      onRatesLoadedRef.current?.(currency, rates);
     } catch (err) {
       console.warn('[CompactBankRatesTable:loadRates] Error:', err);
     } finally {
+      isFetchingRef.current = false;
       setIsLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
-    loadRates(selectedCurrency);
-  }, [selectedCurrency]);
+    void loadRates(selectedCurrency, false);
+  }, [selectedCurrency, loadRates]);
 
   return (
     <div
-      className="p-3.5 rounded-xl border border-border/70 bg-card flex flex-col justify-between space-y-3"
+      className="p-2.5 rounded-lg border border-border/70 bg-card shadow-xs flex flex-col justify-between space-y-1.5"
       data-testid="compact-bank-rates-table"
     >
       {/* Header with Currency Pills and Sync Button */}
-      <div className="flex items-center justify-between gap-2 pb-2 border-b border-border/40">
-        <div className="flex items-center gap-1.5">
-          <span className="text-xs font-semibold text-foreground">
+      <div className="flex items-center justify-between gap-2 pb-1">
+        <div className="flex items-center gap-1.5 min-w-0">
+          <span className="text-xs font-semibold text-foreground truncate">
             {t('suppliers:bankRatesTitle', { defaultValue: 'Курси банків' })}
           </span>
           {lastUpdated && (
-            <span className="text-[10px] text-muted-foreground font-mono tabular-nums">
+            <span className="text-[10px] text-muted-foreground font-mono tabular-nums shrink-0">
               ({lastUpdated})
             </span>
           )}
         </div>
 
-        <div className="flex items-center gap-1">
-          <div className="flex items-center rounded-lg border border-border/60 bg-muted/30 p-0.5">
+        <div className="flex items-center gap-1 shrink-0">
+          <div className="flex items-center rounded-md border border-border/60 bg-muted/30 p-0.5">
             {SUPPORTED_CURRENCIES.map((curr) => (
               <Button
                 key={curr}
                 variant="ghost"
                 size="sm"
                 onClick={() => onCurrencyChange(curr)}
+                data-testid={`bank-currency-pill-${curr}`}
                 className={cn(
-                  'h-6 px-2 py-0.5 rounded text-2xs font-semibold transition-all',
+                  'h-5 px-1.5 py-0 rounded-sm text-[10px] font-mono font-semibold transition-colors',
                   selectedCurrency === curr
-                    ? 'bg-background text-foreground shadow-xs font-bold'
+                    ? 'bg-background text-foreground shadow-2xs font-bold'
                     : 'text-muted-foreground hover:text-foreground',
                 )}
               >
@@ -100,7 +112,7 @@ export const CompactBankRatesTable: React.FC<CompactBankRatesTableProps> = ({
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => loadRates(selectedCurrency, true)}
+            onClick={() => void loadRates(selectedCurrency, true)}
             disabled={isLoading}
             className="size-6 p-0 text-muted-foreground hover:text-foreground"
             title={t('suppliers:refreshRatesTooltip', { defaultValue: 'Оновити котирування' })}
@@ -110,21 +122,21 @@ export const CompactBankRatesTable: React.FC<CompactBankRatesTableProps> = ({
         </div>
       </div>
 
-      {/* Financial Table Matrix */}
-      <div className="overflow-hidden rounded-lg border border-border/50 bg-background/50">
+      {/* Financial Table Matrix (UI-11 flat hairline divider, zero nested box) */}
+      <div className="overflow-hidden border-y border-border/40">
         <Table className="w-full text-left border-collapse table-fixed">
           <TableHeader>
-            <TableRow className="border-b border-border/40 bg-muted/20 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider h-7">
-              <TableHead className="w-[38%] py-1 px-2.5 font-medium">
+            <TableRow className="border-b border-border/40 bg-muted/20 text-[11px] font-medium text-muted-foreground h-6">
+              <TableHead className="w-[38%] py-0.5 px-2 font-medium">
                 {t('suppliers:colBank', { defaultValue: 'Банк' })}
               </TableHead>
-              <TableHead className="w-[22%] py-1 px-1.5 text-right font-medium">
+              <TableHead className="w-[22%] py-0.5 px-1.5 text-right font-medium">
                 {t('suppliers:colBuy', { defaultValue: 'Купівля' })}
               </TableHead>
-              <TableHead className="w-[24%] py-1 px-1.5 text-right font-medium">
+              <TableHead className="w-[24%] py-0.5 px-1.5 text-right font-medium">
                 {t('suppliers:colSell', { defaultValue: 'Продаж' })}
               </TableHead>
-              <TableHead className="w-[16%] py-1 px-2 text-right font-medium">
+              <TableHead className="w-[16%] py-0.5 px-2 text-right font-medium">
                 ± {t('suppliers:colNbu', { defaultValue: 'НБУ' })}
               </TableHead>
             </TableRow>
@@ -140,7 +152,7 @@ export const CompactBankRatesTable: React.FC<CompactBankRatesTableProps> = ({
                   key={rate.bankId}
                   onClick={() => onSelectBankRate(rate)}
                   className={cn(
-                    'group cursor-pointer transition-colors select-none h-8',
+                    'group cursor-pointer transition-colors select-none h-6.5',
                     isSelected
                       ? 'bg-primary/10 text-primary font-medium'
                       : 'hover:bg-muted/40 text-foreground',
@@ -148,8 +160,8 @@ export const CompactBankRatesTable: React.FC<CompactBankRatesTableProps> = ({
                   data-testid={`bank-row-${rate.bankId}`}
                 >
                   {/* Bank Column: Logo + Name */}
-                  <TableCell className="py-1 px-2.5 align-middle">
-                    <div className="flex items-center gap-2 min-w-0">
+                  <TableCell className="py-0.5 px-2 align-middle">
+                    <div className="flex items-center gap-1.5 min-w-0">
                       <BankLogo
                         bankId={rate.bankId}
                         bankName={rate.bankName}
@@ -177,7 +189,9 @@ export const CompactBankRatesTable: React.FC<CompactBankRatesTableProps> = ({
                       <span className="text-muted-foreground/60">—</span>
                     ) : (
                       <span
-                        className={rate.deltaNbu > 0 ? 'text-primary/90' : 'text-muted-foreground'}
+                        className={
+                          rate.deltaNbu > 0 ? 'text-foreground/80' : 'text-muted-foreground'
+                        }
                       >
                         {deltaSign}
                       </span>
@@ -190,8 +204,8 @@ export const CompactBankRatesTable: React.FC<CompactBankRatesTableProps> = ({
         </Table>
       </div>
 
-      {/* Footer hint without redundant counter */}
-      <div className="text-[11px] text-muted-foreground pt-0.5">
+      {/* Footer hint */}
+      <div className="text-[11px] text-muted-foreground leading-tight">
         <span>
           {t('suppliers:bankRatesHint', {
             defaultValue: 'Клікніть на банк для застосування курсу продажу',

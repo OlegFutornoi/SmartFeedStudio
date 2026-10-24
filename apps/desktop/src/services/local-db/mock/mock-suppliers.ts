@@ -89,6 +89,7 @@ export function createSupplier(
     exchangeRate: Number(payload.exchangeRate || 1.0),
     currencyBufferPercent: Number(payload.currencyBufferPercent || 0),
     priceRounding: payload.priceRounding || PriceRoundingMode.NONE,
+    customRoundingRules: payload.customRoundingRules || [],
     defaultMarginPercent: Number(payload.defaultMarginPercent || 0),
     defaultFixedMarkup: Number(payload.defaultFixedMarkup || 0),
     isActive: payload.isActive ?? true,
@@ -130,6 +131,7 @@ export function updateSupplier(
         ? Number(payload.currencyBufferPercent)
         : current.currencyBufferPercent,
     priceRounding: payload.priceRounding ?? current.priceRounding,
+    customRoundingRules: payload.customRoundingRules ?? current.customRoundingRules ?? [],
     defaultMarginPercent:
       payload.defaultMarginPercent !== undefined
         ? Number(payload.defaultMarginPercent)
@@ -185,8 +187,11 @@ export function createPricingRule(
     id: `prule_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
     supplierId,
     categoryId: payload.categoryId || null,
-    minPrice: payload.minPrice !== undefined ? Number(payload.minPrice) : null,
-    maxPrice: payload.maxPrice !== undefined ? Number(payload.maxPrice) : null,
+    categoryNameUk: payload.categoryNameUk || null,
+    minPrice:
+      payload.minPrice !== undefined && payload.minPrice !== null ? Number(payload.minPrice) : null,
+    maxPrice:
+      payload.maxPrice !== undefined && payload.maxPrice !== null ? Number(payload.maxPrice) : null,
     marginPercent: Number(payload.marginPercent || 0),
     fixedMarkup: Number(payload.fixedMarkup || 0),
     priority: payload.priority || 0,
@@ -195,7 +200,7 @@ export function createPricingRule(
     updatedAt: new Date().toISOString(),
   };
 
-  list.unshift(newRule);
+  list.push(newRule);
   state.pricingRules.set(supplierId, list);
   return newRule;
 }
@@ -215,8 +220,21 @@ export function updatePricingRule(
   const updated: SupplierPricingRuleDto = {
     ...list[index],
     ...payload,
-    minPrice: payload.minPrice !== undefined ? Number(payload.minPrice) : list[index].minPrice,
-    maxPrice: payload.maxPrice !== undefined ? Number(payload.maxPrice) : list[index].maxPrice,
+    categoryId: payload.categoryId !== undefined ? payload.categoryId : list[index].categoryId,
+    categoryNameUk:
+      payload.categoryNameUk !== undefined ? payload.categoryNameUk : list[index].categoryNameUk,
+    minPrice:
+      payload.minPrice !== undefined
+        ? payload.minPrice !== null
+          ? Number(payload.minPrice)
+          : null
+        : list[index].minPrice,
+    maxPrice:
+      payload.maxPrice !== undefined
+        ? payload.maxPrice !== null
+          ? Number(payload.maxPrice)
+          : null
+        : list[index].maxPrice,
     marginPercent:
       payload.marginPercent !== undefined
         ? Number(payload.marginPercent)

@@ -25,6 +25,7 @@ export type SupplierPricingRuleDto = z.infer<typeof SupplierPricingRuleDtoSchema
 
 export const CreateSupplierPricingRuleDtoSchema = z.object({
   categoryId: z.string().nullable().optional(),
+  categoryNameUk: z.string().nullable().optional(),
   minPrice: z.number().min(0, 'Minimum price must be non-negative').nullable().optional(),
   maxPrice: z.number().min(0, 'Maximum price must be non-negative').nullable().optional(),
   marginPercent: z.number().min(0, 'Margin percent must be non-negative').default(0),

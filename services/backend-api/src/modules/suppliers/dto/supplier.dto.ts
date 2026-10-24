@@ -4,12 +4,16 @@ import {
   IsNumber,
   IsBoolean,
   IsEnum,
+  IsArray,
+  ValidateNested,
   Min,
   Max,
   IsEmail,
   ValidateIf,
 } from 'class-validator';
+import { Type } from 'class-transformer';
 import { CurrencyCode, ExchangeRateMode, PriceRoundingMode } from '@smartfeed/shared';
+import { CustomRoundingRuleItemDto } from '@/modules/suppliers/dto/supplier-rules.dto';
 
 export class CreateSupplierDto {
   @IsString()
@@ -116,8 +120,14 @@ export class CreateSupplierDto {
   currencyBufferPercent?: number;
 
   @IsOptional()
-  @IsEnum(PriceRoundingMode)
-  priceRounding?: PriceRoundingMode;
+  @IsString()
+  priceRounding?: PriceRoundingMode | string;
+
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CustomRoundingRuleItemDto)
+  customRoundingRules?: CustomRoundingRuleItemDto[];
 
   @IsOptional()
   @IsNumber()
@@ -241,8 +251,14 @@ export class UpdateSupplierDto {
   currencyBufferPercent?: number;
 
   @IsOptional()
-  @IsEnum(PriceRoundingMode)
-  priceRounding?: PriceRoundingMode;
+  @IsString()
+  priceRounding?: PriceRoundingMode | string;
+
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CustomRoundingRuleItemDto)
+  customRoundingRules?: CustomRoundingRuleItemDto[];
 
   @IsOptional()
   @IsNumber()
@@ -260,6 +276,7 @@ export class UpdateSupplierDto {
 }
 
 export {
+  CustomRoundingRuleItemDto,
   UpdateSupplierCategoryDto,
   CreateSupplierPricingRuleDto,
   UpdateSupplierPricingRuleDto,

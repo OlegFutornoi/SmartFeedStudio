@@ -1,5 +1,26 @@
 import { IsOptional, IsNumber, IsBoolean, IsString, IsIn, Min, Max } from 'class-validator';
 
+export class CustomRoundingRuleItemDto {
+  @IsString()
+  code: string;
+
+  @IsIn(['DECIMAL', 'INTEGER_ENDING', 'MULTIPLE'])
+  type: 'DECIMAL' | 'INTEGER_ENDING' | 'MULTIPLE';
+
+  @IsNumber()
+  @Min(0)
+  @Max(10000)
+  value: number;
+
+  @IsOptional()
+  @IsString()
+  labelUk?: string;
+
+  @IsOptional()
+  @IsString()
+  labelEn?: string;
+}
+
 export class CreateMarketplaceCategoryDto {
   @IsOptional()
   @IsString()
@@ -105,6 +126,10 @@ export class CreateSupplierPricingRuleDto {
   categoryId?: string | null;
 
   @IsOptional()
+  @IsString()
+  categoryNameUk?: string | null;
+
+  @IsOptional()
   @IsNumber()
   @Min(0)
   minPrice?: number | null;
@@ -135,6 +160,10 @@ export class UpdateSupplierPricingRuleDto {
   @IsOptional()
   @IsString()
   categoryId?: string | null;
+
+  @IsOptional()
+  @IsString()
+  categoryNameUk?: string | null;
 
   @IsOptional()
   @IsNumber()

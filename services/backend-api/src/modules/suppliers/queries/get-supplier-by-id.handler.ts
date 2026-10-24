@@ -61,6 +61,7 @@ export class GetSupplierByIdHandler implements IQueryHandler<GetSupplierByIdQuer
       exchangeRate: Number(s.exchangeRate),
       currencyBufferPercent: Number(s.currencyBufferPercent),
       priceRounding: s.priceRounding,
+      customRoundingRules: Array.isArray(s.customRoundingRules) ? s.customRoundingRules : [],
       defaultMarginPercent: Number(s.defaultMarginPercent),
       defaultFixedMarkup: Number(s.defaultFixedMarkup),
       isActive: s.isActive,

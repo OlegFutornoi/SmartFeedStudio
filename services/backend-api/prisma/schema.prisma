@@ -460,6 +460,7 @@ model Supplier {
   exchangeRate          Decimal                @default(1.0) @db.Decimal(10, 4) @map("exchange_rate")
   currencyBufferPercent Decimal                @default(0) @db.Decimal(5, 2) @map("currency_buffer_percent")
   priceRounding         String                 @default("NONE") @map("price_rounding")
+  customRoundingRules   Json                   @default("[]") @map("custom_rounding_rules")
   defaultMarginPercent  Decimal                @default(0) @db.Decimal(5, 2) @map("default_margin_percent")
   defaultFixedMarkup    Decimal                @default(0) @db.Decimal(10, 2) @map("default_fixed_markup")
   isActive              Boolean                @default(true) @map("is_active")

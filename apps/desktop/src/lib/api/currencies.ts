@@ -1,5 +1,5 @@
 import { CurrencyCode, ExchangeRateMode, LiveBankRateDto } from '@smartfeed/shared';
-import { API_BASE_URL } from '@/lib/api/client';
+import { fetchWithAuth } from '@/lib/api/client';
 
 export interface ExchangeRateQuote {
   currency: CurrencyCode;
@@ -8,7 +8,7 @@ export interface ExchangeRateQuote {
   updatedAt: string;
 }
 
-const DEFAULT_RATES: Record<CurrencyCode, number> = {
+export const DEFAULT_RATES: Record<CurrencyCode, number> = {
   [CurrencyCode.UAH]: 1.0,
   [CurrencyCode.USD]: 41.5,
   [CurrencyCode.EUR]: 45.2,
@@ -19,46 +19,9 @@ const DEFAULT_RATES: Record<CurrencyCode, number> = {
 
 let cachedQuotes: Record<CurrencyCode, number> = { ...DEFAULT_RATES };
 let lastFetchedTimestamp = 0;
+let inFlightLiveRatesPromise: Promise<Record<CurrencyCode, number>> | null = null;
 const CACHE_TTL_MS = 60 * 60 * 1000; // 1 hour
-
-/**
- * Fetches real-time exchange rates from National Bank of Ukraine (NBU) API.
- * Gracefully falls back to local cached or standard commercial rates if offline.
- */
-export async function fetchLiveExchangeRates(force = false): Promise<Record<CurrencyCode, number>> {
-  const now = Date.now();
-  if (!force && now - lastFetchedTimestamp < CACHE_TTL_MS) {
-    return { ...cachedQuotes };
-  }
-
-  try {
-    const response = await fetch(
-      'https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?json',
-      { method: 'GET', headers: { Accept: 'application/json' } },
-    );
-
-    if (response.ok) {
-      const data: Array<{ cc: string; rate: number }> = await response.json();
-      const newRates: Record<CurrencyCode, number> = { ...DEFAULT_RATES };
-
-      for (const item of data) {
-        if (item.cc === 'USD') newRates[CurrencyCode.USD] = item.rate;
-        if (item.cc === 'EUR') newRates[CurrencyCode.EUR] = item.rate;
-        if (item.cc === 'PLN') newRates[CurrencyCode.PLN] = item.rate;
-        if (item.cc === 'GBP') newRates[CurrencyCode.GBP] = item.rate;
-        if (item.cc === 'CNY') newRates[CurrencyCode.CNY] = item.rate;
-      }
-
-      cachedQuotes = newRates;
-      lastFetchedTimestamp = now;
-      return { ...cachedQuotes };
-    }
-  } catch (err) {
-    console.warn('[Currencies] NBU live fetch failed, using fallback rates:', err);
-  }
-
-  return { ...cachedQuotes };
-}
+const BANK_CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes (FE-14)
 
 export type BankId = 'nbu' | 'privat' | 'mono' | 'raiffeisen' | 'pumb';
 
@@ -73,6 +36,61 @@ export interface BankExchangeRate {
   deltaNbu: number;
   deltaPercent: number;
   updatedAt: string;
+}
+
+const bankRatesCache = new Map<CurrencyCode, { data: BankExchangeRate[]; timestamp: number }>();
+
+/**
+ * Fetches real-time exchange rates from National Bank of Ukraine (NBU) API.
+ * Gracefully falls back to local cached or standard commercial rates if offline.
+ */
+export async function fetchLiveExchangeRates(force = false): Promise<Record<CurrencyCode, number>> {
+  const now = Date.now();
+  if (!force && now - lastFetchedTimestamp < CACHE_TTL_MS) {
+    return { ...cachedQuotes };
+  }
+
+  if (!force && inFlightLiveRatesPromise) {
+    return inFlightLiveRatesPromise;
+  }
+
+  inFlightLiveRatesPromise = (async () => {
+    try {
+      const response = await fetch(
+        'https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?json',
+        {
+          method: 'GET',
+          headers: { Accept: 'application/json' },
+          signal: AbortSignal.timeout(4000),
+        },
+      );
+
+      if (response.ok) {
+        const data: Array<{ cc: string; rate: number }> = await response.json();
+        const newRates: Record<CurrencyCode, number> = { ...DEFAULT_RATES };
+
+        for (const item of data) {
+          if (item.cc === 'USD') newRates[CurrencyCode.USD] = Number(item.rate.toFixed(2));
+          if (item.cc === 'EUR') newRates[CurrencyCode.EUR] = Number(item.rate.toFixed(2));
+          if (item.cc === 'PLN') newRates[CurrencyCode.PLN] = Number(item.rate.toFixed(2));
+          if (item.cc === 'GBP') newRates[CurrencyCode.GBP] = Number(item.rate.toFixed(2));
+          if (item.cc === 'CNY') newRates[CurrencyCode.CNY] = Number(item.rate.toFixed(2));
+        }
+
+        cachedQuotes = newRates;
+        lastFetchedTimestamp = Date.now();
+        return { ...cachedQuotes };
+      }
+    } catch (err) {
+      console.warn('[Currencies] NBU live fetch failed, using fallback rates:', err);
+    } finally {
+      inFlightLiveRatesPromise = null;
+    }
+
+    return { ...cachedQuotes };
+  })();
+
+  return inFlightLiveRatesPromise;
 }
 
 /**
@@ -103,9 +121,14 @@ export async function fetchBankExchangeRates(
     ];
   }
 
-  // 1. Primary Strategy: Fetch from Backend Currencies Microservice (dynamically configured banks & spreads)
+  const cached = bankRatesCache.get(currency);
+  if (!force && cached && Date.now() - cached.timestamp < BANK_CACHE_TTL_MS) {
+    return cached.data;
+  }
+
+  // 1. Primary Strategy: Fetch from Backend Currencies Microservice via fetchWithAuth (FE-12)
   try {
-    const res = await fetch(`${API_BASE_URL}/currencies/banks?currency=${currency}`, {
+    const res = await fetchWithAuth(`/currencies/banks?currency=${currency}`, {
       method: 'GET',
       headers: { Accept: 'application/json' },
       signal: AbortSignal.timeout(4000),
@@ -114,7 +137,7 @@ export async function fetchBankExchangeRates(
     if (res.ok) {
       const liveData: LiveBankRateDto[] = await res.json();
       if (Array.isArray(liveData) && liveData.length > 0) {
-        return liveData.map((d) => ({
+        const mapped: BankExchangeRate[] = liveData.map((d) => ({
           bankId: d.bankId as BankId,
           bankName: d.bankName,
           badge: d.badge,
@@ -129,6 +152,14 @@ export async function fetchBankExchangeRates(
             minute: '2-digit',
           }),
         }));
+
+        const nbuEntry = mapped.find((b) => b.bankId === 'nbu');
+        if (nbuEntry && nbuEntry.sellRate > 0) {
+          cachedQuotes[currency] = nbuEntry.sellRate;
+        }
+
+        bankRatesCache.set(currency, { data: mapped, timestamp: Date.now() });
+        return mapped;
       }
     }
   } catch (err) {
@@ -180,7 +211,7 @@ export async function fetchBankExchangeRates(
     },
   ];
 
-  return defaultConfigs.map((cfg) => {
+  const computed = defaultConfigs.map((cfg) => {
     const buyRate = Math.round((nbuRate + cfg.buyOffset) * 100) / 100;
     const sellRate = Math.round((nbuRate + cfg.sellOffset) * 100) / 100;
     const deltaNbu = Math.round((sellRate - nbuRate) * 100) / 100;
@@ -198,6 +229,9 @@ export async function fetchBankExchangeRates(
       updatedAt: timeString,
     };
   });
+
+  bankRatesCache.set(currency, { data: computed, timestamp: Date.now() });
+  return computed;
 }
 
 /**
