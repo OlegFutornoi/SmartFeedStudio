@@ -238,6 +238,23 @@ pub fn init_schema(conn: &Connection) -> Result<()> {
         CREATE INDEX IF NOT EXISTS idx_mcat_user_ext ON local_marketplace_categories(user_id, external_id);
         CREATE INDEX IF NOT EXISTS idx_scmm_user_rule ON local_supplier_category_marketplace_maps(user_id, supplier_category_rule_id);
         CREATE INDEX IF NOT EXISTS idx_scmm_user_mcat ON local_supplier_category_marketplace_maps(user_id, marketplace_category_id);
+
+        CREATE TABLE IF NOT EXISTS local_bank_rates (
+            id TEXT PRIMARY KEY,
+            bank_id TEXT NOT NULL,
+            bank_name TEXT NOT NULL,
+            badge TEXT NOT NULL,
+            logo_url TEXT,
+            currency TEXT NOT NULL,
+            buy_rate REAL NOT NULL,
+            sell_rate REAL NOT NULL,
+            delta_nbu REAL DEFAULT 0.0,
+            delta_percent REAL DEFAULT 0.0,
+            updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+        );
+
+        CREATE UNIQUE INDEX IF NOT EXISTS idx_bank_rates_bank_curr ON local_bank_rates(bank_id, currency);
+        CREATE INDEX IF NOT EXISTS idx_bank_rates_curr ON local_bank_rates(currency);
         "#,
     )?;
 

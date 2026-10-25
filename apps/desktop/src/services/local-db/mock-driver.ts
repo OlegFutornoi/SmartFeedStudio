@@ -275,6 +275,14 @@ export class MockDatabaseDriver {
       activeCategoriesBySupplierId,
     };
   };
+
+  getBankRates = (currency?: string): import('@smartfeed/shared').LiveBankRateDto[] => {
+    return mock.getLocalBankRates(this.state, currency);
+  };
+
+  saveBankRates = (rates: import('@smartfeed/shared').LiveBankRateDto[]): void => {
+    mock.saveLocalBankRates(this.state, rates);
+  };
 }
 
 export const mockDatabaseDriver = new MockDatabaseDriver();

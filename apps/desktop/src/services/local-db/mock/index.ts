@@ -10,3 +10,4 @@ export * from '@/services/local-db/mock/mock-marketplace-categories';
 export * from '@/services/local-db/mock/mock-supplier-sync';
 export * from '@/services/local-db/mock/mock-supplier-categories';
 export * from '@/services/local-db/mock/mock-supplier-category-updates';
+export * from '@/services/local-db/mock/mock-bank-rates';

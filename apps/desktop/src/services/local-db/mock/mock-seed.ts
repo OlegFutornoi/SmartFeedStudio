@@ -1,6 +1,7 @@
 import type { MockDbState } from '@/services/local-db/mock/mock-state';
 import { syncCounters } from '@/services/local-db/mock/mock-state';
 import { getInitialSeededCategories } from '@/services/local-db/mock/mock-seed-categories';
+import { seedInitialBankRates } from '@/services/local-db/mock/mock-bank-rates';
 import {
   FeedFormat,
   FeedSourceType,
@@ -13,6 +14,8 @@ import {
 } from '@smartfeed/shared';
 
 export function seedDefaultMockData(state: MockDbState): void {
+  seedInitialBankRates(state);
+
   const defaultSupplierId = 'sup_demo_01';
   const techSupplierId = 'sup_demo_02';
 
@@ -58,7 +61,8 @@ export function seedDefaultMockData(state: MockDbState): void {
       baseCurrency: CurrencyCode.USD,
       targetCurrency: CurrencyCode.UAH,
       exchangeRateMode: ExchangeRateMode.AUTO_NBU,
-      exchangeRate: 41.5,
+      selectedBankId: 'nbu',
+      exchangeRate: 41.35,
       currencyBufferPercent: 1.5,
       priceRounding: PriceRoundingMode.DECIMAL_99,
       defaultMarginPercent: 20,

@@ -10,6 +10,7 @@ import {
   type LocalSupplierCategoryMarketplaceMapDto,
   type SupplierSyncSettingDto,
   type SupplierSyncLogDto,
+  type LiveBankRateDto,
   SEED_MARKETPLACE_CATEGORIES,
 } from '@smartfeed/shared';
 
@@ -32,6 +33,7 @@ export interface MockDbState {
   exportPricingRules: Map<string, ExportChannelPricingRuleDto[]>;
   products: ProductDto[];
   feedSources: Map<string, FeedSourceDto[]>;
+  bankRates: Map<string, LiveBankRateDto>;
   counters: MockDbCounters;
 }
 
@@ -48,6 +50,7 @@ export function createInitialState(): MockDbState {
     exportPricingRules: new Map(),
     products: [],
     feedSources: new Map(),
+    bankRates: new Map(),
     counters: {
       id: 'main',
       suppliersCount: 0,

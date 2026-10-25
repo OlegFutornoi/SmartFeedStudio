@@ -43,6 +43,7 @@ const TeamPage = lazy(() => import('@/pages/TeamPage').then((m) => ({ default: m
 
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 import { FeatureTeaserGate } from '@/modules/feature-teaser';
+import { useAppCurrencySync } from '@/services/currency/app-currency-sync.service';
 
 function PageLoader() {
   return (
@@ -53,6 +54,8 @@ function PageLoader() {
 }
 
 export default function App() {
+  useAppCurrencySync();
+
   return (
     <ErrorBoundary>
       <Suspense fallback={<PageLoader />}>

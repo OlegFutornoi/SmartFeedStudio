@@ -98,7 +98,7 @@ export function useSupplierCurrenciesState({
         setManualRate(Number(supplier.exchangeRate));
         return;
       }
-      setManualRate(liveRates[nextCurrency] || DEFAULT_RATES[nextCurrency] || 41.5);
+      setManualRate(liveRates[nextCurrency] || 1.0);
       if (!selectedBankId) setSelectedBankId('nbu');
     },
     [liveRates, selectedBankId, supplier.baseCurrency, supplier.exchangeRate],
@@ -110,7 +110,7 @@ export function useSupplierCurrenciesState({
       if (baseCurrency === CurrencyCode.UAH) return;
       if (nextMode === ExchangeRateMode.AUTO_NBU) {
         setSelectedBankId('nbu');
-        setManualRate(liveRates[baseCurrency] || DEFAULT_RATES[baseCurrency] || 41.5);
+        setManualRate(liveRates[baseCurrency] || 1.0);
       } else if (nextMode === ExchangeRateMode.AUTO_PRIVAT) {
         setSelectedBankId('privat');
       }
@@ -120,7 +120,7 @@ export function useSupplierCurrenciesState({
 
   const activeRate = useMemo(() => {
     if (baseCurrency === CurrencyCode.UAH) return 1.0;
-    const fallback = liveRates[baseCurrency] || DEFAULT_RATES[baseCurrency] || 41.5;
+    const fallback = liveRates[baseCurrency] || 1.0;
     if (exchangeMode === ExchangeRateMode.AUTO_NBU)
       return liveRates[baseCurrency] || manualRate || fallback;
     return manualRate > 0 ? manualRate : fallback;
@@ -149,9 +149,10 @@ export function useSupplierCurrenciesState({
           prev[currency] === nbu.sellRate ? prev : { ...prev, [currency]: nbu.sellRate },
         );
       }
-      if (currency === baseCurrency && selectedBankId) {
-        const matchedBank = rates.find((r) => r.bankId === selectedBankId);
-        if (matchedBank && matchedBank.sellRate > 0 && manualRate === DEFAULT_RATES[currency]) {
+      if (currency === baseCurrency) {
+        const matchedBank =
+          (selectedBankId ? rates.find((r) => r.bankId === selectedBankId) : undefined) || nbu;
+        if (matchedBank && matchedBank.sellRate > 0 && (!manualRate || manualRate <= 1)) {
           setManualRate(matchedBank.sellRate);
         }
       }

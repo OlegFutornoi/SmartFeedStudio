@@ -269,6 +269,16 @@ export function executeMockCommand<K extends keyof LocalDbCommandMap>(
       ) as LocalDbCommandMap[K]['result'];
     }
 
+    // Bank Exchange Rates
+    case 'db_get_bank_rates': {
+      const a = args as LocalDbCommandMap['db_get_bank_rates']['args'];
+      return mockDatabaseDriver.getBankRates(a?.currency) as LocalDbCommandMap[K]['result'];
+    }
+    case 'db_save_bank_rates': {
+      const a = args as LocalDbCommandMap['db_save_bank_rates']['args'];
+      return mockDatabaseDriver.saveBankRates(a.rates) as LocalDbCommandMap[K]['result'];
+    }
+
     default:
       throw new Error(`Unknown LocalDB command: ${command}`);
   }

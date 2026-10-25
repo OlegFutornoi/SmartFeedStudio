@@ -30,18 +30,12 @@ export const BUFFER_PRESETS = [0, 1, 2, 3, 5];
 export function resolveInitialSupplierRates(supplier: import('@smartfeed/shared').SupplierDto) {
   const currency = supplier.baseCurrency || CurrencyCode.UAH;
   const mode = supplier.exchangeRateMode || ExchangeRateMode.MANUAL;
-  const defaultRates: Record<string, number> = {
-    UAH: 1.0,
-    USD: 41.5,
-    EUR: 45.2,
-    PLN: 10.45,
-    GBP: 54.1,
-    CNY: 5.85,
-  };
   const rate =
-    currency !== CurrencyCode.UAH && (!supplier.exchangeRate || Number(supplier.exchangeRate) <= 1)
-      ? defaultRates[currency] || 41.5
-      : Number(supplier.exchangeRate || 1.0);
+    currency === CurrencyCode.UAH
+      ? 1.0
+      : supplier.exchangeRate && Number(supplier.exchangeRate) > 0
+        ? Number(supplier.exchangeRate)
+        : 0;
   const buffer = Number(supplier.currencyBufferPercent || 0);
   const rounding = supplier.priceRounding || PriceRoundingMode.NONE;
   const rules = Array.isArray(supplier.customRoundingRules) ? supplier.customRoundingRules : [];

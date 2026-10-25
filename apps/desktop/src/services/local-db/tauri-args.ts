@@ -109,6 +109,16 @@ export function prepareTauriArgs(command: string, args: unknown): Record<string,
       };
     }
 
+    case 'db_get_bank_rates':
+      return {
+        currency: raw.currency || undefined,
+      };
+
+    case 'db_save_bank_rates':
+      return {
+        rates: raw.rates || [],
+      };
+
     default:
       return raw;
   }
@@ -139,4 +149,6 @@ export const REGISTERED_TAURI_COMMANDS = new Set([
   'db_delete_product_image',
   'db_update_product_images_order',
   'db_download_product_image',
+  'db_get_bank_rates',
+  'db_save_bank_rates',
 ]);

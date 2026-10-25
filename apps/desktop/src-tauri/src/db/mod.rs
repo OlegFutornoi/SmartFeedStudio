@@ -7,12 +7,14 @@ pub mod suppliers;
 pub mod feeds;
 pub mod feed_collision;
 pub mod products;
+pub mod currencies;
 
 pub use schema::*;
 pub use suppliers::*;
 pub use feeds::*;
 pub use feed_collision::*;
 pub use products::*;
+pub use currencies::*;
 
 const KEYRING_SERVICE: &str = "SmartFeedStudio";
 const KEYRING_DB_KEY_USER: &str = "sqlcipher_db_key";
@@ -48,7 +50,13 @@ pub fn open_encrypted_connection(db_path: &Path) -> Result<Connection> {
             eprintln!("[Rust SQLite] Keyring retrieval warning: {}", e);
         }
     }
-    conn.execute_batch("PRAGMA foreign_keys = ON;")?;
+    conn.execute_batch(
+        "PRAGMA foreign_keys = ON;
+         PRAGMA journal_mode = WAL;
+         PRAGMA synchronous = NORMAL;
+         PRAGMA cache_size = -64000;
+         PRAGMA temp_store = MEMORY;"
+    )?;
     init_schema(&conn)?;
     Ok(conn)
 }

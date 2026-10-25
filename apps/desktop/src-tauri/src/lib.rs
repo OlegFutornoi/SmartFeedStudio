@@ -502,6 +502,18 @@ async fn db_download_product_image(image_id: String, image_url: String) -> Resul
     }
 }
 
+#[tauri::command]
+fn db_get_bank_rates(currency: Option<String>) -> Result<Vec<models::LocalBankRateDto>, String> {
+    let conn = get_db_conn()?;
+    db::get_bank_rates(&conn, currency.as_deref()).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+fn db_save_bank_rates(rates: Vec<models::LocalBankRateDto>) -> Result<(), String> {
+    let conn = get_db_conn()?;
+    db::upsert_bank_rates(&conn, &rates).map_err(|e| e.to_string())
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -542,7 +554,9 @@ pub fn run() {
             db_get_product_images,
             db_delete_product_image,
             db_update_product_images_order,
-            db_download_product_image
+            db_download_product_image,
+            db_get_bank_rates,
+            db_save_bank_rates
         ])
         .setup(|_app| {
             #[cfg(debug_assertions)]

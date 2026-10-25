@@ -424,3 +424,19 @@ pub struct CategorySummaryDto {
     pub product_count: u32,
 }
 
+#[derive(Serialize, Deserialize, Debug, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct LocalBankRateDto {
+    pub id: String,
+    pub bank_id: String,
+    pub bank_name: String,
+    pub badge: String,
+    pub logo_url: Option<String>,
+    pub currency: String,
+    pub buy_rate: f64,
+    pub sell_rate: f64,
+    pub delta_nbu: f64,
+    pub delta_percent: f64,
+    pub updated_at: String,
+}
+

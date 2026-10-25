@@ -30,6 +30,7 @@ import type {
   LocalSupplierCategoryMarketplaceMapDto,
   CheckFeedCollisionDto,
   FeedCollisionResultDto,
+  LiveBankRateDto,
 } from '@smartfeed/shared';
 
 export interface LocalCountersSummary {
@@ -252,5 +253,15 @@ export interface LocalDbCommandMap {
   db_download_product_image: {
     args: { imageId: string; imageUrl: string };
     result: LocalProductImageDto;
+  };
+
+  // Bank Exchange Rates
+  db_get_bank_rates: {
+    args: { currency?: string };
+    result: LiveBankRateDto[];
+  };
+  db_save_bank_rates: {
+    args: { rates: LiveBankRateDto[] };
+    result: void;
   };
 }
