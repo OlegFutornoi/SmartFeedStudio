@@ -1,12 +1,12 @@
 ---
 name: review-feedback-loop
 description: >-
-  Standardized QA Gatekeeper and review feedback loop protocol between Test Author and Code Reviewer agents in insurance-e2e. Dictates the structured format of review reports, classification of findings (Critical, Major, Minor), actionable diff proposals, surgical fix validation, and commit approval gates.
+  Standardized QA Gatekeeper and review feedback loop protocol between Test Author and Code Reviewer agents in SmartFeed Studio E2E. Dictates the structured format of review reports, classification of findings (Critical, Major, Minor), actionable diff proposals, surgical fix validation, and commit approval gates.
 ---
 
 # QA Review Feedback Loop Protocol (`review-feedback-loop`)
 
-Formal interaction protocol between Test Author and Code Reviewer agents in `insurance-e2e`.
+Formal interaction protocol between Test Author and Code Reviewer agents in SmartFeed Studio E2E.
 
 ---
 
@@ -15,7 +15,7 @@ Formal interaction protocol between Test Author and Code Reviewer agents in `ins
 When authoring is complete and Phase 4 pre-flight checks pass:
 
 1. Provide modified/created file paths.
-2. Link to active plan file (`Plan/activ/<slug>.md`).
+2. Link to active task file (`e2e/tasks/active/qa-fe-<num>-<slug>.md` or `qa-be-...`).
 3. State target environment and execution commands used.
 
 ---

@@ -5,7 +5,7 @@ description: Playwright architecture & infrastructure skill. Use when designing,
 
 # Playwright Architecture & Infrastructure (`pw-arch`)
 
-Framework architecture, core abstractions, environment configurations, and custom fixture design for `insurance-e2e`.
+Framework architecture, core abstractions, environment configurations, and custom fixture design for `SmartFeed Studio E2E`.
 
 ---
 

@@ -1,72 +1,33 @@
 ---
 name: pw-data
-description: Test data generator & domain reference skill for insurance-e2e (finance.ua / minfin.ua). Use when generating, formatting, or validating test data for Ukrainian insurance products (OSAGO, Green Card, Travel), including TIN (RNOKPP), vehicle plates (VRM)/VIN, passports/ID cards/UBD, exemption categories, and Faker generators in utils/leadRandom.ts.
+description: Test data generator & domain reference skill for SmartFeed Studio E2E. Use when generating, formatting, or validating test data for catalogs (XML/CSV feeds, supplier profiles, SKU products, category mapping, pricing rules, licenses, and organizations) using unique test identifiers (runId, testEmail).
 ---
 
-# Test Data & Domain Rules (`pw-data`)
+# Test Data Management (`pw-data`)
 
-Test data provisioning, domain reference, and lifecycle cleanup standards for Ukrainian insurance products (OSAGO, Green Card, Travel, DGO).
-
----
-
-## 1. Primary Data Sources
-
-### A. Lead Generators (`@/utils/leadRandom`)
-
-Use Faker-based lead generators for randomized, schema-valid payloads:
-
-- `generateOsagoLead()`: Complete OSAGO lead DTO (`key`, `vehicle_category`, `vin`, `registration_identifier`, `tax_code`, `birth_date`).
-- `generateGreenCardLead()`: Green Card lead DTO.
-- `generateTravelLead()`: Travel insurance lead DTO.
-- `generateDgoLead()`: Voluntary third-party liability (DGO) lead DTO.
-
-### B. Standard Constants (`@/appConstants`)
-
-For deterministic positive UI and API tests, import constants from `@/appConstants`:
-
-```typescript
-import {
-  DEFAULT_EMAIL,
-  DEFAULT_FIRST_NAME,
-  DEFAULT_LAST_NAME,
-  DEFAULT_MIDDLE_NAME,
-  DEFAULT_PASSPORT_NUMBER,
-  DEFAULT_PASSPORT_SERIES,
-  DEFAULT_PHONE_E164,
-  DEFAULT_REGISTRATION_ADDRESS,
-  DEFAULT_TAX_ID,
-} from '@/appConstants';
-```
-
-- Phone: `DEFAULT_PHONE_E164` (`+380XXXXXXXXX`)
-- Tax ID (RNOKPP): `DEFAULT_TAX_ID` (`2911200000`, 10 digits with valid birthdate checksum)
-- Name: `DEFAULT_FIRST_NAME`, `DEFAULT_LAST_NAME`, `DEFAULT_MIDDLE_NAME`
-- Passport: `DEFAULT_PASSPORT_SERIES` (`АА`), `DEFAULT_PASSPORT_NUMBER` (`123456`)
+Standards for generating isolated, deterministic test data for SmartFeed Studio E2E.
 
 ---
 
-## 2. Domain Data Specifications
+## 1. Test Isolation via `runId`
 
-### A. Vehicles & Plates
+To guarantee 100% test isolation under parallel execution:
 
-- Vehicle Categories: Passenger cars (`B1`-`B5`), Trucks (`C1`, `C2`), Buses (`D1`, `D2`), Trailers (`E`, `F`).
-- License Plates (VRM): Ukrainian format (8 characters, e.g., `AA1234BB`, `KA5678CB`). Characters restricted to Cyrillic letters with Latin lookalikes: `A, B, C, E, H, I, K, M, O, P, T, X`.
-- VIN Code: 17 characters, excluding letters `I`, `O`, `Q` (e.g., `faker.vehicle.vin()`).
-
-### B. Personal Documents
-
-- Passport (Booklet): Series (2 Cyrillic letters, e.g., `АА`) + 6 digits (`123456`).
-- ID Card: 9 digits (`123456789`).
-- Driver's License: 3 Cyrillic letters (`ВВВ`) + 6 digits (`123456`).
+- Generate a unique test run prefix using `@/core/data/test-id`.
+- Suffix all created entities (supplier names, organization names, feed names): `[E2E] Supplier ${runId}`.
+- Format test emails: `e2e.test+<timestamp>@smartfeed.local`.
 
 ---
 
-## 3. Data Cleanup & Teardown Rule
+## 2. Catalog Test Data
 
-Any test generating leads in CRM or iBPM must register the lead key for automatic deletion:
+- XML Feeds: sample XML product data with standard Prom / Rozetka / Horoshop tags (`<offer>`, `<price>`, `<name>`, `<categoryId>`).
+- CSV Feeds: semicolon- or comma-delimited product records with column mapping headers.
+- Currency & Bank Rates: valid ISO codes (`UAH`, `USD`, `EUR`) and positive exchange rates.
 
-```typescript
-deletionLeads.push(lead.key); // Format: osago_<leadId>
-```
+---
 
-Prohibited: Pushing raw UUIDs or skipping teardown.
+## 3. Data Teardown Guarantees
+
+- Server PostgreSQL: All created entities must be registered and deleted via `server/backend/db/cleanup.ts` in strict foreign key dependency order. Never delete manual seed accounts (`qatest@gmail.com`, `shoplinkerxml@gmail.com`).
+- Local SQLite Docker container: Reset database state between runs via `POST http://localhost:5001/api/reset`.

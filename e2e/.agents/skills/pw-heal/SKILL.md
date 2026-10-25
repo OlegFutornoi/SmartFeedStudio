@@ -5,7 +5,7 @@ description: Playwright test healer skill. Use when diagnosing and fixing broken
 
 # Playwright Test Healer (`pw-heal`)
 
-Targeted remediation workflow and diagnostic scripts for failing or flaky Playwright tests in `insurance-e2e`.
+Targeted remediation workflow and diagnostic scripts for failing or flaky Playwright tests in `SmartFeed Studio E2E`.
 
 ---
 

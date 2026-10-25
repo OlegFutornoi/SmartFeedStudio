@@ -5,7 +5,7 @@ description: Playwright API & mock engineer skill. Use when creating or debuggin
 
 # Playwright API & Mock Engineer (`pw-mock`)
 
-Network request interception, route mocking, contract schema validation, and test data seeding in `insurance-e2e`.
+Network request interception, route mocking, contract schema validation, and test data seeding in `SmartFeed Studio E2E`.
 
 ---
 

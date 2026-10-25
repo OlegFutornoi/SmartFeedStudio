@@ -1,68 +1,48 @@
 ---
 name: pw-payment
-description: Payment flow & checkout testing skill for insurance-e2e (finance.ua / minfin.ua). Use when writing, debugging, or mocking payment gateways, PortmoneService, LiqPay, card form checkout screens, 3DS authentication flows, status callbacks, or payment verification in E2E tests.
+description: Payment flow & checkout testing skill for SmartFeed Studio (WayForPay subscription plans, checkout widgets, payment webhooks). Use when writing, debugging, or mocking payment gateways, WayForPay widgets, card form checkout screens, 3DS authentication flows, status webhooks, or license activation verification in E2E tests.
 ---
 
 # Payment Flow & Checkout (`pw-payment`)
 
-Standards for automating payment gateways (Portmone, LiqPay), card form checkout interactions, 3DS challenges, and post-payment order verification in `insurance-e2e`.
+Standards for automating payment gateways (WayForPay), card form checkout interactions, 3DS challenges, webhook verification, and post-payment subscription activation in SmartFeed Studio.
 
 ---
 
-## 1. Portmone Service Infrastructure
+## 1. WayForPay Checkout Infrastructure
 
-E2E tests access payment gateways via the `portmone` fixture from `@/fixtures/index`:
+E2E tests access payment verification via fixtures and API clients:
 
 ```typescript
-import { e2eTest } from '@/fixtures/index';
-import { testCards } from '@/services/portmone/testCards';
+import { test } from '@/core/fixtures/base.fixture';
 
-e2eTest(
-  'Complete OSAGO policy purchase via Portmone',
-  { tag: ['@finance', '@osago', '@payment'] },
-  async ({ finance, portmone, page }) => {
-    // ... Navigate to checkout
-    await portmone.cardForm.fillCardDetails({
-      cardNumber: testCards.successCard.number,
-      expiryDate: testCards.successCard.expiry,
-      cvv: testCards.successCard.cvv,
-    });
-    await portmone.cardForm.clickPay();
+test(
+  'Complete subscription plan purchase via WayForPay checkout',
+  { tag: ['@server-admin', '@payment', '@plans'] },
+  async ({ page }) => {
+    // Navigate to plan checkout
+    await page.getByTestId('plan-checkout-button-pro').click();
 
-    // Verify successful postback and policy screen
-    await expect(page).toHaveURL(/success|sign-contract/);
+    // Verify WayForPay checkout widget or form
+    await expect(page.getByTestId('wayforpay-widget-frame')).toBeVisible();
   },
 );
 ```
 
 ---
 
-## 2. 3D-Secure (3DS) Handling
+## 2. 3D-Secure (3DS) & Mocking Webhooks
 
-- Test environments utilize cards configured to bypass or deterministically pass 3DS authentication.
-- For 3DS challenge redirection or iframe:
-  1. Await URL match: `await expect(page).toHaveURL(/3ds|secure|portmone/);`
-  2. Input test OTP (`111111` or `000000`).
-  3. Await redirect back to insurance application domain.
-
----
-
-## 3. Mocking Payment Status Callbacks
-
-For UI tests isolating checkout error states or callback race conditions without external redirect:
-
-```typescript
-await finance.route.mockApiResponse({
-  endpoint: /\/api\/v3\/orders\/.*\/payment-status/,
-  response: { status: 'SUCCESS', transactionId: 'test-tx-123' },
-});
-```
+- Test environments utilize test cards configured to deterministically pass or fail payment.
+- For isolated backend webhook verification:
+  - Simulate WayForPay postback webhook to `POST /api/payments/webhook` with signed HMAC-MD5 payload.
+  - Assert that license tier and quota limits are immediately updated in `smartfeed_test_db`.
 
 ---
 
-## 4. Payment Verification Checklist
+## 3. Payment Verification Checklist
 
-1. Price Parity: Total on checkout screen must match the selected tariff to the exact kopeck.
-2. Complete Lifecycle: Do not stop at gateway redirect; complete card entry and verify final success screen.
-3. Rejection Scenarios: Verify declined card states display user-friendly error banners without crashing.
-4. Lead Cleanup: Register created lead in `deletionLeads.push(lead.key)`.
+1. Price & Currency Parity: Total on checkout screen must match the selected plan in UAH/USD.
+2. Complete Lifecycle: Complete card entry, verify success toast/redirect, and verify license status transition (`ACTIVE`).
+3. Rejection Scenarios: Verify declined card states display user-friendly error messages without crashing.
+4. Tenant Isolation: Verify payment affects only the subscribing tenant's organization quota.

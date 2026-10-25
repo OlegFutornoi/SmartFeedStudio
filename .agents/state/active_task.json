@@ -1,9 +1,9 @@
 {
-  "task_id": "QA-01-e2e-framework-bootstrap",
-  "title": "Перехід на новий проєкт автотестування — повне очищення старих тестів і розгортання фреймворку e2e/",
+  "task_id": "QA-03-e2e-agents-framework-adaptation",
+  "title": "Адаптація та очищення агентської інфраструктури e2e/.agents та автономний цикл задач e2e/tasks/",
   "status": "completed",
-  "completed_plan": "plans/completed/QA-01-e2e-framework-bootstrap.md",
-  "updated_at": "2026-10-25T15:18:00Z",
+  "completed_plan": "plans/completed/QA-03-e2e-agents-framework-adaptation.md",
+  "updated_at": "2026-10-25T15:55:00Z",
   "completed_stages": [
     "Stage 1 - Baseline Discovery & Project Inventory Recording",
     "Stage 2 - Full Removal of Old Tests (apps/desktop, apps/admin-portal, services/backend-api, shared)",

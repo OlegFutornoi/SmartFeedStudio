@@ -1,4 +1,4 @@
-import { ApiClient } from '../../../core/http/api-client.js';
+import { ApiClient } from '@/core/http/api-client';
 
 export interface AuthLoginResponse {
   accessToken: string;

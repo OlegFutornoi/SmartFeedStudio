@@ -1,181 +1,48 @@
 ---
 name: playwright-e2e
-description: Project-specific reference for writing, editing, and debugging Playwright E2E/API tests, Page Objects, POM components, wizard screens, and API controllers in insurance-e2e (finance.ua / minfin.ua). Activate for creating or maintaining tests, POMs, API clients, route mocks, or debugging test failures.
+description: Reference for writing, editing, and debugging Playwright E2E and API tests in SmartFeed Studio across the 4 projects (server:backend, server:admin, local:backend, local:desktop). Activate for creating or maintaining tests, Page Objects, API clients, or debugging test failures.
 ---
 
-# Playwright E2E Conventions (`insurance-e2e`)
+# Playwright E2E Conventions (`@smartfeed/e2e`)
 
-Core technical specifications and conventions for Playwright E2E and API testing in `insurance-e2e`.
-
----
-
-## 1. Stack & Architecture
-
-- **Runtime:** TypeScript (strict mode) on Node 18+.
-- **Test Runner:** `@playwright/test` + `APIRequestContext`.
-- **Validation & Data:** `@faker-js/faker`, AJV (Draft-07), `envalid`.
-- **Code Style:** ESLint v9 flat config (210 chars, 4 spaces, double quotes, semicolons).
-
-### Directory Placement
-
-- Page Objects: `app-{finance|minfin}/pages/{product}/Name.page.ts` (extends `BasePage`)
-- Components: `app-{finance|minfin}/pages/{product}/components/Name.component.ts` (extends `BaseComponent`)
-- Wizard Screens: `client-wizard/presets/osago/screens/*.screen.ts`
-- API Controllers: `api/{service}/controllers/Name.controller.ts` (extends `BaseController`)
-- API Schemas: `api/schemas/{service}/*.schema.json`
-- UI Tests: `tests/{finance|minfin}/{product}/pages/*.{finance|minfin}.ts`
-- API Tests: `tests/api/{service}/*.api.ts`
+Core technical specifications and conventions for Playwright E2E and API testing in SmartFeed Studio.
 
 ---
 
-## 2. Fixtures & Execution Context
+## 1. The 4 Target Test Projects
 
-### Test Fixtures (`@/fixtures/index`)
-
-- `e2eTest`: UI test fixture providing `finance`, `minfin`, `portmone`, `page`.
-  - Automatic teardown: Leads added to `deletionLeads.push(lead.key)` are deleted via CRM API after test run.
-- `apiTest`: API test fixture providing `api` (`crm`, `ibpm`, `productManager`, `otp`, `bazaGai`).
-
-### Environment Flags
-
-- Default: Stage / Integration (`config/env.stage.ts`).
-- Review stands: `REVIEW=1|2|3` (`config/env.review.ts`).
-- Production: `PROD=1 ALLOW_PROD_TESTS=1` (`config/env.ts`). Note: `env.dev.ts` does not exist.
+1. `server:backend` (`:4000/api`): NestJS REST API black-box tests against `smartfeed_test_db`.
+2. `server:admin` (`:3000`): Next.js 14 Admin Portal UI tests with authenticated `storageState`.
+3. `local:backend` (`:5001`): Local SQLite Docker dev container (`tools/sqlite-dev-server`) invoking `LocalDbCommandMap` commands.
+4. `local:desktop` (`:1420`): Desktop React/Tauri application UI tests in browser mode.
 
 ---
 
-## 3. Locator Priority & Actionability
+## 2. Page Object Model (POM) Standards
 
-1. `page.getByRole("button", { name: /text/i })`
-2. `page.getByLabel(/text/i)`
-3. `page.getByText(/text/i)`
-4. `page.getByTestId("value")` (maps to `[data-state="value"]` via `testIdAttribute: "data-state"`)
-5. `page.locator("[data-gtm-ea='value']")`
-
-### Strict Invariants
-
-- ❌ **Forbidden:** XPath (`xpath=`, `//`), CSS class selectors, `force: true`, `page.waitForTimeout()`, `element.evaluate(el => el.click())`.
-- ✅ **Required:** Web-first assertions (`await expect(el).toBeVisible()`), `expect.poll` for async polling, `scrollIntoViewIfNeeded()`.
-- Overlay dismissal: `try { await el.click({ timeout: 10_000 }); } catch { await page.keyboard.press("Escape"); await el.click({ timeout: 10_000 }); }`.
+- Encapsulation: All Playwright locators must be declared as `private readonly` class fields.
+- User-Facing Locators: Exclusively `getByRole`, `getByLabel`, `getByText`, or `getByTestId`. Prohibit XPath and arbitrary CSS classes.
+- Verification Gate: Every Page Object must implement an asynchronous `toBeLoaded()` method verifying that key elements are visible before performing actions.
+- Actions: All user interactions (`click`, `fill`, `selectOption`) must await `toBeLoaded()`.
 
 ---
 
-## 4. Code Templates
+## 3. API Client Standards
 
-### 4.1 Page Object (`BasePage`)
+- 4-Layer Response Defense:
+  1. `expect(res.status).not.toBe(500)`
+  2. `expect(res.status).toBe(expectedStatus)`
+  3. `expect(res.headers["content-type"]).toMatch(/application\/(?:problem\+)?json/)`
+  4. Non-empty body with Zod schema validation
+- Path Alias: Always import modules via `@/` (e.g. `@/core/http/api-client`).
 
-```typescript
-import { expect } from '@playwright/test';
-import { BasePage } from '@/base/BasePage.abstract';
-import { step } from '@/utils/step';
+---
 
-export default class CatalogPage extends BasePage {
-  private readonly catalogTitle = this.page.getByRole('heading', { level: 1 });
-  private readonly filterButton = this.page.getByRole('button', { name: /фільтри/i });
+## 4. Execution Commands
 
-  @step('Open Catalog')
-  public async open(): Promise<void> {
-    await this.page.goto('/ua/insurance/osago/catalog');
-  }
-
-  @step('Ensure Catalog Loaded')
-  protected async toBeLoaded(): Promise<void> {
-    await expect(this.catalogTitle).toBeVisible();
-  }
-
-  @step('Apply Filters')
-  public async openFilters(): Promise<void> {
-    await this.toBeLoaded();
-    await this.filterButton.click();
-  }
-}
+```bash
+pnpm e2e:server:backend
+pnpm e2e:server:admin
+pnpm e2e:local:backend
+pnpm e2e:local:desktop
 ```
-
-### 4.2 Component (`BaseComponent`)
-
-```typescript
-import { expect } from '@playwright/test';
-import { BaseComponent } from '@/base/BaseComponent.abstract';
-import { step } from '@/utils/step';
-
-export default class PolicyCardComponent extends BaseComponent {
-  private readonly root = this.page.locator("[data-state='policy-card']");
-  private readonly buyButton = this.root.getByRole('button', { name: /купити/i });
-
-  @step('Ensure Policy Card Loaded')
-  protected async toBeLoaded(): Promise<void> {
-    await expect(this.root.first()).toBeVisible();
-  }
-
-  @step('Click Buy First Policy')
-  public async buyFirstPolicy(): Promise<void> {
-    await this.toBeLoaded();
-    await this.buyButton.first().click();
-  }
-}
-```
-
-### 4.3 UI Spec File (`*.finance.ts` / `*.minfin.ts`)
-
-```typescript
-import { expect } from '@playwright/test';
-import { e2eTest } from '@/fixtures/index';
-
-e2eTest.describe('OSAGO Policy Selection Flow', () => {
-  e2eTest.describe.configure({ timeout: 90_000 });
-
-  e2eTest(
-    'User can calculate and view OSAGO offers by car number',
-    {
-      tag: ['@finance', '@osago'],
-      annotation: { type: 'feature', description: 'Search by vehicle plate' },
-    },
-    async ({ finance: { landingPage, catalogPage } }) => {
-      // Actions
-      await landingPage.open();
-      await landingPage.toBeLoaded();
-      await landingPage.searchByVehiclePlate('AA1234BB');
-
-      // Verify
-      await catalogPage.toBeLoaded();
-      expect(await catalogPage.getTitle()).toContain('ОСАГО');
-    },
-  );
-});
-```
-
-### 4.4 API Spec File (`*.api.ts`)
-
-```typescript
-import { expect } from '@playwright/test';
-import { apiTest } from '@/fixtures/index';
-import { generateOsagoLead } from '@/utils/leadRandom';
-import { ApiVersion } from '@/api/ApiConstants';
-
-apiTest(
-  '[POST /leads] Create OSAGO lead returns 200',
-  { tag: ['@crm', '@api'] },
-  async ({ api }) => {
-    const body = generateOsagoLead();
-    const response = await api.crm.lead.createLead({
-      body,
-      productEdpoint: `${ApiVersion.CRM_V3}/osago`,
-    });
-    expect(response.code).toBe(200);
-  },
-);
-```
-
----
-
-## 5. UI Domain Specifics (OSAGO Redesign)
-
-- **Landing vs. Catalog:**
-  - Landing: Vehicle parameter toggles use direct button locators.
-  - Catalog: Editing parameters opens "Calculation Data" modal with MUI Select dropdowns. Click parent label, then select option with `getByRole("option", { name: /value/i })`.
-- **Wizard Calculator ("By Params"):**
-  - Prefer `getByTestId()` mapped to `data-state` (`data-state="input-ownerBirthYear"`, `data-state="input-confirmSms"`).
-- **Datepicker Fallback:**
-  - If datepicker day clicks flake, use keyboard navigation (`page.keyboard.press("ArrowRight")`).
-- **Global DGO Dropdown:**
-  - DGO options are duplicated in hidden cards. Target open container: `page.locator('div[data-state="custom-select-options:open"] div[data-state="dgoProductList"]').first()`.

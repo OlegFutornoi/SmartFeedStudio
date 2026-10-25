@@ -1,80 +1,53 @@
 ---
 name: test-author
-description: >-
-  Unified master QA test automation & lifecycle skill for insurance-e2e. Activate for: creating
-  new Playwright UI tests (Finance, Minfin), Backend API tests (CRM, IBPM, Product Manager, OTP,
-  Baza GAI), fixing broken or flaky tests, investigating and refactoring test suites, authoring
-  test plans in Plan/activ/, running tests on target environments (stage, prod, dev, intg),
-  reverse-engineering API flows via .http files, or DOM exploration of unknown pages. Autonomously
-  determines task type via Decision Engine, activates necessary modular skills, and executes the
-  full 6-phase lifecycle (DEFINE -> PLAN -> BUILD -> SELF-REVIEW -> VERIFY -> CLOSE) without user guidance.
+description: Unified master QA test automation & lifecycle skill for SmartFeed Studio E2E. Activate for creating new Playwright UI or API tests, end-to-end test implementation, task plans in e2e/tasks/active/, running tests on target projects (server:backend, server:admin, local:backend, local:desktop), self-reviewing test code, healing failing tests, or packaging domain workflows.
 ---
 
-# Master Test Engineering Pipeline Skill (`test-author`)
+# Test Author (`test-author`)
 
-Single master orchestrator for the full development, authoring, fixing, and stabilization lifecycle of automated tests in `insurance-e2e`.
+Single master orchestrator for the full development, authoring, fixing, and stabilization lifecycle of automated tests in SmartFeed Studio E2E.
 
 ---
 
-## 1. Autonomous Skill Selection (Decision Map)
+## 1. Operating Rules & Core Constraints
 
-- **Requirements Ambiguity:** `interview-me` (ask 1-2 focused questions if domain or environment is missing).
-- **UI Tests & Page Objects:**
-  - Pages & URLs: `pw-pom` + `playwright-e2e` + `pw-arch`
-  - Components & Widgets: `pw-pom` + `playwright-e2e`
-  - Forms & Inputs: `playwright-automation-fill-in-form` + `pw-pom`
-  - Wizard Screens: `playwright-e2e` + `pw-pom` + `pw-data`
-  - Payment Flow & Checkout: `pw-payment` + `pw-mock` + `pw-pom`
-  - Accessibility & WCAG: `pw-a11y` + `playwright-best-practices`
-  - Visual Snapshots: `pw-visual` + `pw-pom`
-  - DOM Exploration: `playwright-explore-website` + `browser_snapshot`
-- **API Tests & HTTP Flows:**
-  - New API Tests: `pw-api` + `playwright-e2e` + `pw-data` + `pw-arch`
-  - Positive E2E Flows: `pw-api` + `pw-schema-sync` + `pw-data`
-  - Negative Scenarios & 4xx: `pw-api` (Negative Matrix)
-  - AJV JSON Schemas: `pw-api` + `pw-schema-sync`
-  - API Route Mocking: `pw-mock` + `playwright-e2e`
-  - JetBrains HTTP Flows: `http-flow-builder`
-- **Healing & Quality Assurance:**
-  - Test Failures & Traces: `pw-heal` + `playwright-test-results` + `pw-debug-rca`
-  - Flakiness & Races: `flakiness-detector` + `pw-heal` + `playwright-best-practices`
-  - Code Review & Rules: `rules-enforcer` + `pw-review` + `code-review`
-  - Title-to-Payload Parity: `doubt-driven-development`
-  - Suite Simplification: `code-simplification` + `pw-codemod`
+- Zero Tolerance: Always read `.agents/rules/` before writing tests.
+- Path Aliases: Use `@/` for all imports within `e2e/`.
+- User-Facing Locators: `getByRole`, `getByLabel`, `getByTestId` with `data-testid` / `data-state`. Never use XPath or arbitrary CSS classes.
+- Waits: Use `expect.poll` or web-first assertions (`toBeVisible`). Never use `page.waitForTimeout` or `setTimeout`.
+- Data Isolation & Cleanup: Use `runId` and clean up server DB via `cleanup.ts` or reset local DB via `POST /api/reset`.
+- Response 4-Layer Defense: `not.toBe(500)` -> deterministic code -> JSON content-type -> contract schema check.
+- Title-to-Payload Parity: Match payload keys to test names explicitly (`field: undefined`).
 
 ---
 
-## 2. The 6-Phase Lifecycle
+## 2. Mandatory 6-Phase Lifecycle
 
-### Phase 1: DEFINE (Specification & Requirements)
+### Phase 1: DEFINE (Test Design & Analysis)
 
 - Active skills: `pw-test-designer`, `interview-me`, `playwright-explore-website`, `http-flow-builder`.
-- Clarify domain (`finance.ua` vs `minfin.ua`) and environment if not specified.
-- Update library docs via `context7` MCP (`playwright`, `@faker-js/faker`, `ajv`).
-- Construct Lead Flow (7 stages: Lead -> Draft -> Offer -> OTP -> Payment -> Issuance -> Email).
-- Define full Boundary & Nullability matrix (`""`, `"   "`, `null`, explicit `undefined`, string `"null"`, length bounds).
+- Identify target project (`server-admin`, `local-desktop`, `server-backend`, `local-backend`).
+- Define boundary matrix (`""`, `"   "`, `null`, explicit `undefined`, numbers, boundary lengths).
 
 ### Phase 2: PLAN & CONSTRAINTS (Architecture Guardrails)
 
 - Active skills: `pw-plan`, `constraint-driven-development`, `karpathy-guidelines`.
-- Generate active plan: `Plan/activ/<slug>.md` and register in `Plan/README.md`.
-- Lock architectural invariants: `@/` path alias, user-facing locators (no XPath/CSS classes), no `force: true`, no `waitForTimeout`, mandatory `deletionLeads.push(lead.key)`, single deterministic HTTP status codes.
+- Generate active task: `e2e/tasks/active/qa-fe-<num>-<slug>.md` (UI) or `qa-be-<num>-<slug>.md` (API) and register in `e2e/tasks/README.md`.
+- Lock architectural invariants: `@/` path alias, user-facing locators, no `waitForTimeout`, deterministic HTTP status codes.
 
 ### Phase 3: BUILD (Implementation)
 
 - Active skills: `pw-pom`, `pw-api`, `playwright-e2e`, `pw-data`, `pw-mock`, `pw-payment`, `pw-a11y`, `pw-visual`.
-- UI: Encapsulate locators in POM (`private readonly`), implement `toBeLoaded()`, use `@step()`.
-- API: 4-layer defense (`not.toBe(500)`, exact status, JSON content-type regex, AJV schema validation).
-- Logging: Structured markers via `@/utils/apiLogger` (`ApiLogger.step`, `ApiLogger.boundaryCheck`, `ApiLogger.success`). No console.log or emojis.
-- Line limits: Keep spec files < 200 lines. Extract orchestration to `support/flow.helpers.ts`.
+- UI: Encapsulate locators in POM (`private readonly`), implement `toBeLoaded()`.
+- API: 4-layer defense (`not.toBe(500)`, exact status, JSON content-type regex, contract validation).
+- Line limits: Keep spec files < 250 lines.
 
 ### Phase 4: SELF-REVIEW & PARITY (Pre-Flight Audit)
 
 - Active skills: `doubt-driven-development`, `rules-enforcer`.
-- Execute static scans before running tests:
+- Execute static check:
   ```bash
-  node .agents/skills/rules-enforcer/scripts/scan-violations.cjs --changed
-  npx tsc --noEmit && npm run lint
+  pnpm --filter @smartfeed/e2e typecheck
   ```
 - Enforce Title-to-Payload Parity: If test title mentions `undefined`, `null`, or `""`, explicitly declare it in the payload (`field: undefined`). Never omit keys silently.
 
@@ -83,17 +56,16 @@ Single master orchestrator for the full development, authoring, fixing, and stab
 - Active skills: `playwright-cli`, `pw-debug-rca`, `pw-heal`, `playwright-test-results`, `code-simplification`.
 - Run test:
   ```bash
-  npx playwright test <spec_path> --project=<finance|minfin|api>
+  npx playwright test <spec_path> --project=<project>
   ```
 - Stability concurrency gate:
   ```bash
-  npx playwright test <spec_path> --project=<project> --repeat-each=3 --workers=4
+  npx playwright test <spec_path> --project=<project> --repeat-each=3 --workers=2
   ```
-- If failed: diagnose root cause via trace (`parse-trace.js` / `extract-trace.py`). Classify `APP_BUG` vs `TEST_BUG`. Fix locators surgically without `waitForTimeout`.
 
 ### Phase 6: CLOSE & SHIP (Delivery)
 
 - Active skills: `git-commit`, `pw-plan`.
-- Move plan: `Plan/activ/<slug>.md` -> `Plan/close/<slug>.md`.
-- Update `Plan/README.md` entry status to `🟢 Закрито`.
-- Conventional Commit: `git commit -m "<type>(<scope>): <imperative summary>"`.
+- Move task: `e2e/tasks/active/<slug>.md` -> `e2e/tasks/completed/<slug>.md`.
+- Update `e2e/tasks/README.md` entry status to `🟢 Виконано`.
+- Record Conventional Commit.

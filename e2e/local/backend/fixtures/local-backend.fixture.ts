@@ -1,6 +1,6 @@
-import { test as base } from '../../../core/fixtures/base.fixture.js';
-import { LocalDbClient } from '../clients/local-db.client.js';
-import { urls } from '../../../config/urls.js';
+import { test as base } from '@/core/fixtures/base.fixture';
+import { LocalDbClient } from '@/local/backend/clients/local-db.client';
+import { urls } from '@/config/urls';
 
 export interface LocalBackendFixtures {
   localDb: LocalDbClient;
@@ -13,4 +13,4 @@ export const test = base.extend<LocalBackendFixtures>({
   },
 });
 
-export { expect } from '../../../core/fixtures/base.fixture.js';
+export { expect } from '@/core/fixtures/base.fixture';

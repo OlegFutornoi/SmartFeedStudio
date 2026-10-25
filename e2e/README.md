@@ -118,6 +118,22 @@ pnpm e2e:report
 
 ---
 
+## 📋 Автономний цикл задач тестування (`e2e/tasks/`)
+
+Усі задачі автотестування ведуться автономно в папці `e2e/tasks/`:
+
+- **Активні:** `e2e/tasks/active/qa-fe-<номер>-<назва>.md` (UI/Frontend) або `qa-be-<номер>-<назва>.md` (API/Backend).
+- **Виконані:** `e2e/tasks/completed/`.
+- **Реєстр:** [README.md](file://e2e/tasks/README.md).
+- **Керування задачами через CLI:**
+  ```bash
+  node .agents/skills/test-author/scripts/plan-manager.js create <slug> <title> <direction>
+  node .agents/skills/test-author/scripts/plan-manager.js close <slug> [summary]
+  node .agents/skills/test-author/scripts/plan-manager.js list
+  ```
+
+---
+
 ## 📊 Матриця покриття автотестами (Coverage Matrix)
 
 | Домен              | Шлях до спеків              | Кількість тестів |        Статус        |

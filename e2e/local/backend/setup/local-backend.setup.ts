@@ -1,6 +1,6 @@
 import { test as setup } from '@playwright/test';
-import { LocalDbClient } from '../clients/local-db.client.js';
-import { urls } from '../../../config/urls.js';
+import { LocalDbClient } from '@/local/backend/clients/local-db.client';
+import { urls } from '@/config/urls';
 
 setup('verify local backend e2e container and schema parity', async ({ request }) => {
   const e2eClient = new LocalDbClient(request, urls.local.backend);

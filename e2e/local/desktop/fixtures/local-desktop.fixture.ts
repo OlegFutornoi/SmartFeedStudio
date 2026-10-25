@@ -1,5 +1,5 @@
-import { test as base } from '../../../core/fixtures/base.fixture.js';
-import { DesktopSidebarComponent } from '../components/sidebar.component.js';
+import { test as base } from '@/core/fixtures/base.fixture';
+import { DesktopSidebarComponent } from '@/local/desktop/components/sidebar.component';
 
 export interface LocalDesktopFixtures {
   desktopSidebar: DesktopSidebarComponent;
@@ -11,4 +11,4 @@ export const test = base.extend<LocalDesktopFixtures>({
   },
 });
 
-export { expect } from '../../../core/fixtures/base.fixture.js';
+export { expect } from '@/core/fixtures/base.fixture';

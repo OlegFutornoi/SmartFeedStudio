@@ -1,7 +1,7 @@
-import { test as base } from '../../../core/fixtures/base.fixture.js';
-import { AuthClient } from '../clients/auth.client.js';
-import { urls } from '../../../config/urls.js';
-import { cleanupServerDatabase } from '../db/cleanup.js';
+import { test as base } from '@/core/fixtures/base.fixture';
+import { AuthClient } from '@/server/backend/clients/auth.client';
+import { urls } from '@/config/urls';
+import { cleanupServerDatabase } from '@/server/backend/db/cleanup';
 
 export interface ServerBackendFixtures {
   authClient: AuthClient;
@@ -18,4 +18,4 @@ export const test = base.extend<ServerBackendFixtures>({
   },
 });
 
-export { expect } from '../../../core/fixtures/base.fixture.js';
+export { expect } from '@/core/fixtures/base.fixture';

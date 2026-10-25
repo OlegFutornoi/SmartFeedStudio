@@ -1,6 +1,6 @@
 ---
 name: playwright-best-practices
-description: Core Playwright best practices, locator guidelines, web-first assertions, test isolation, and Page Object architecture for the insurance-e2e test suite. Use when creating or refactoring Playwright UI tests, ensuring parallel test safety, or debugging test flakiness.
+description: Core Playwright best practices, locator guidelines, web-first assertions, test isolation, and Page Object architecture for the SmartFeed Studio E2E test suite. Use when creating or refactoring Playwright UI tests, ensuring parallel test safety, or debugging test flakiness.
 ---
 
 # Playwright Best Practices (`playwright-best-practices`)

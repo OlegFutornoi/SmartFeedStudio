@@ -1,5 +1,5 @@
 import { test as base, expect } from '@playwright/test';
-import { createRunId } from '../data/test-id.js';
+import { createRunId } from '@/core/data/test-id';
 
 export interface BaseFixtures {
   runId: string;

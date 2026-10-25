@@ -69,20 +69,20 @@ Core architectural specification for Playwright API test suites (`*.api.ts`) acr
     - Every created lead must push its CRM key: `deletionLeads.push(leadKey)` (`osago_<leadId>`). Do not push raw UUIDs.
 
 11. Anti-Testing Theater & Property Completeness:
-    - Superficial tests (checking only `id`, `shortName`, `logo`) are strictly prohibited. Every property defined in schemas or required by the business domain (e.g. `avg_settlement_days`, `avg_settlement_days_description`, MTSBU metrics) must be explicitly asserted for presence (`"field" in item` and in JSON schema `required`), regardless of nullability.
+    - Superficial tests (checking only `id`, `name`) are strictly prohibited. Every property defined in schemas or required by the business domain must be explicitly asserted for presence.
 
 12. Strict TypeScript Typing (No Weak Types):
     - Prohibited: `Record<string, unknown>`, `Record<string, any>`, `any`, `as unknown as ...`.
-    - Required: Explicit typed interfaces and models exported from `flow.data.ts` or domain model files.
+    - Required: Explicit typed interfaces and models exported from contract models.
 
 13. Dynamic Polling Timeouts:
-    - Never hardcode short polling timeouts (10-15s). Always derive timeouts dynamically from backend contracts (`retryAfter`, minimum 45s for stage SMS OTP).
+    - Never hardcode short arbitrary polling timeouts (5-10s). Always derive timeouts dynamically or configure explicit parameters in `expect.poll`.
 
 14. Title-to-Payload Parity:
     - When test title states `field = undefined`, `field = null`, or `field = ""`, the payload MUST explicitly declare `{ field: undefined }` or `{ field: null }`. Never pass `{}`.
 
-15. Universal Active Plan Mandate:
-    - Any API authoring, refactoring, or audit MUST create an active plan in `Plan/activ/<slug>.md` and register in `Plan/README.md` before applying changes.
+15. Universal Active Task Mandate:
+    - Any API authoring, refactoring, or audit MUST create an active task in `e2e/tasks/active/qa-be-<num>-<slug>.md` and register in `e2e/tasks/README.md` before applying changes.
 
 ---
 

@@ -1,7 +1,7 @@
 ---
 name: flakiness-detector
 description: >-
-  Playwright flakiness, race-condition, and async timing risk detector for insurance-e2e. Analyzes test code (*.finance.ts, *.minfin.ts, *.api.ts) and Page Objects to find hidden causes of intermittent failures, unpolled Promise.race branches, unhandled overlays, brittle button clicks, dynamic selectors, and missing input readiness checks.
+  Playwright flakiness, race-condition, and async timing risk detector for SmartFeed Studio E2E. Analyzes test code (*.finance.ts, *.minfin.ts, *.api.ts) and Page Objects to find hidden causes of intermittent failures, unpolled Promise.race branches, unhandled overlays, brittle button clicks, dynamic selectors, and missing input readiness checks.
 ---
 
 # Flakiness & Race Condition Detector (`flakiness-detector`)

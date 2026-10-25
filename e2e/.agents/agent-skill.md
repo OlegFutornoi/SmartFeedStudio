@@ -36,8 +36,8 @@
    - Skills must not contain unverified or destructive scripts.
    - Enforce consistency with `.agents/rules/` and project invariants (4-layer defense, strict typing, anti-testing theater, title parity).
 
-6. Mandatory Active Plan Registration:
-   - Any skill creation, restructuring, evaluation, or benchmark audit MUST be planned and tracked in `Plan/activ/<slug>.md` and registered in `Plan/README.md` (`🟡 В роботі`) before applying edits. Never conduct skill design solely in chat.
+6. Mandatory Active Task Registration:
+   - Any skill creation, restructuring, evaluation, or benchmark audit MUST be planned and tracked in `e2e/tasks/active/qa-fe-<num>-<slug>.md` or `qa-be-<num>-<slug>.md` and registered in `e2e/tasks/README.md` (`🟡 В роботі`) before applying edits. Never conduct skill design solely in chat.
 
 ---
 

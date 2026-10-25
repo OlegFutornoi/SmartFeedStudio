@@ -1,8 +1,7 @@
 /* eslint-disable */
-import { chromium, Page } from 'playwright';
+import { chromium, type Page } from '@playwright/test';
 import * as fs from 'fs';
 import * as path from 'path';
-import { config } from '../../../../config/env.helper';
 
 /**
  * DOM Explorer Utility
@@ -12,7 +11,7 @@ import { config } from '../../../../config/env.helper';
  * Usage:
  *   npx ts-node .agents/skills/pw-pom/scripts/dom-explorer.ts <URL> [output_name]
  * Example:
- *   npx ts-node .agents/skills/pw-pom/scripts/dom-explorer.ts "https://cms-stage.finance.ua/ua/insurance/osago" "osago_landing"
+ *   npx ts-node .agents/skills/pw-pom/scripts/dom-explorer.ts "http://localhost:3000/feeds" "feeds_landing"
  */
 
 async function extractElements(page: Page) {
@@ -88,7 +87,7 @@ async function extractElements(page: Page) {
 }
 
 (async () => {
-  const url = process.argv[2] || `${config.BASE_URL_FINANCE}/ua/insurance/osago`;
+  const url = process.argv[2] || 'http://localhost:3000';
   const outputName = process.argv[3] || 'dom_elements';
 
   console.log(`[DOM Explorer] Launching browser and navigating to ${url}...`);

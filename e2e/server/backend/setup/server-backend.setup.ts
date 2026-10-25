@@ -1,6 +1,6 @@
 import { test as setup, expect } from '@playwright/test';
-import { urls } from '../../../config/urls.js';
-import { cleanupServerDatabase } from '../db/cleanup.js';
+import { urls } from '@/config/urls';
+import { cleanupServerDatabase } from '@/server/backend/db/cleanup';
 
 setup('verify server backend health and initialize clean database', async ({ request }) => {
   const healthUrl = `${urls.server.api}/health`;

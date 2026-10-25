@@ -1,5 +1,5 @@
-import { test as base } from '../../../core/fixtures/base.fixture.js';
-import { AdminHeaderComponent } from '../components/header.component.js';
+import { test as base } from '@/core/fixtures/base.fixture';
+import { AdminHeaderComponent } from '@/server/admin/components/header.component';
 
 export interface ServerAdminFixtures {
   adminHeader: AdminHeaderComponent;
@@ -11,4 +11,4 @@ export const test = base.extend<ServerAdminFixtures>({
   },
 });
 
-export { expect } from '../../../core/fixtures/base.fixture.js';
+export { expect } from '@/core/fixtures/base.fixture';

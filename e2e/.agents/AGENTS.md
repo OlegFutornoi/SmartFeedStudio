@@ -1,58 +1,55 @@
-# Antigravity Workspace Guidelines & Skills Index — insurance-e2e
+# SmartFeed Studio — Autonomous E2E Test Suite & Agents Guide
 
-Central configuration and architectural reference for autonomous agents in the `insurance-e2e` repository.
+Central configuration and architectural reference for autonomous test engineering agents in the `@smartfeed/e2e` package.
 
 ---
 
 ## 1. Primary Agent Roster & Orchestration
 
-Users invoke agents via `@agent-*` or by describing task intent. Agents autonomously activate required skills:
+Users invoke agents via `@agent-*` or by describing task intent:
 
-- `agent-planner` (Lead Systems Architect & Test Planning Specialist): Deep requirements analysis, architectural scoping, boundary condition modeling, risk assessment, and rigorous task decomposition in `Plan/activ/<slug>.md`.
+- `agent-planner` (Lead Systems Architect & Test Planning Specialist): Deep requirements analysis, architectural scoping, boundary condition modeling, and task authoring in `e2e/tasks/active/qa-fe-<num>-<slug>.md` or `qa-be-<num>-<slug>.md`.
   - Core Skills: `pw-plan`, `pw-test-designer`, `constraint-driven-development`, `karpathy-guidelines`, `interview-me`, `doubt-driven-development`, `find-docs`, `http-flow-builder`, `pw-arch`, `rules-enforcer`.
 
-- `agent-author` (Senior QA Creator): Full lifecycle creation and stabilization of UI and API tests, and domain skills packaging.
-  - Core Skills: `test-author`, `pw-test-designer`, `pw-plan`, `youtrack-reader`, `constraint-driven-development`, `karpathy-guidelines`, `pw-pom`, `pw-api`, `playwright-e2e`, `pw-data`, `http-flow-builder`, `pw-mock`, `pw-payment`, `pw-a11y`, `pw-visual`, `doubt-driven-development`, `rules-enforcer`, `playwright-cli`, `pw-debug-rca`, `pw-heal`, `code-simplification`, `skill-creator`, `git-commit`.
+- `agent-author` (Senior QA Creator): Full lifecycle creation and stabilization of UI (Desktop/Admin) and API (Server/Local DB) tests.
+  - Core Skills: `test-author`, `pw-test-designer`, `pw-plan`, `constraint-driven-development`, `karpathy-guidelines`, `pw-pom`, `pw-api`, `playwright-e2e`, `pw-data`, `http-flow-builder`, `pw-mock`, `pw-payment`, `pw-a11y`, `pw-visual`, `doubt-driven-development`, `rules-enforcer`, `playwright-cli`, `pw-debug-rca`, `pw-heal`, `code-simplification`, `skill-creator`, `git-commit`.
 
 - `agent-reviewer` (QA Gatekeeper & Architect): Code review, PR auditing, static checks, flakiness detection, and pre-commit approval gates.
   - Core Skills: `rules-enforcer`, `pw-review`, `code-review`, `flakiness-detector`, `playwright-best-practices`, `doubt-driven-development`, `pw-test-designer`, `pw-api`, `review-feedback-loop`, `git-commit`.
 
-- `agent-triage` (RCA & Incident Specialist): Triage of CI/local red runs, trace investigation, backend health checks, and failure classification without modifying tests during outages.
-  - Core Skills: `playwright-test-results`, `pw-heal`, `pw-debug-rca`, `ibpm-error`, `pw-triage`, `pw-plan`.
+- `agent-triage` (RCA & Incident Specialist): Triage of CI/local red runs, Playwright trace investigation, backend health checks, and failure classification.
+  - Core Skills: `playwright-test-results`, `pw-heal`, `pw-debug-rca`, `pw-triage`, `pw-plan`.
 
 - `agent-refactor` (Modernization Architect): Batch tech-debt cleanup, `@/` path alias migrations, eliminating `force: true` and XPath, spec file simplification (<200 lines), and skills modularization.
   - Core Skills: `rules-enforcer`, `pw-plan`, `karpathy-guidelines`, `pw-codemod`, `code-simplification`, `pw-arch`, `pw-pom`, `flakiness-detector`, `playwright-cli`, `skill-creator`, `git-commit`.
 
-- `agent-skill` (Skill Architect & Optimizer): End-to-end authoring, evaluation, benchmarking, Progressive Disclosure restructuring (<500 lines, references/scripts extraction), and frontmatter description optimization for agent skills in `.agents/skills/`.
+- `agent-skill` (Skill Architect & Optimizer): End-to-end authoring, evaluation, benchmarking, and frontmatter optimization for agent skills in `.agents/skills/`.
   - Core Skills: `skill-creator`, `pw-plan`, `karpathy-guidelines`, `interview-me`, `code-simplification`, `rules-enforcer`, `git-commit`.
 
 ---
 
 ## 2. Mandatory 6-Phase Lifecycle
 
-1. Phase 1 (DEFINE): Analyze requirements, clarify ambiguities (`interview-me`), map Lead Flow (stages 1-7), define equivalence classes and full boundary matrix (`pw-test-designer`).
-2. Phase 2 (PLAN): Create plan in `Plan/activ/<slug>.md`, register in `Plan/README.md`, lock architectural constraints (`pw-plan`, `constraint-driven-development`, `karpathy-guidelines`).
-3. Phase 3 (BUILD): Implement Page Objects (`BasePage`, `BaseComponent`) or API controllers. Strict TypeScript typing, user-facing locators, structured logging, AJV validation (`pw-pom`, `pw-api`, `playwright-e2e`).
-4. Phase 4 (SELF-REVIEW): Pre-flight terminal checks (`scan-violations.cjs`, `tsc --noEmit`, `npm run lint`). Enforce Title-to-Payload parity (`doubt-driven-development`, `rules-enforcer`).
-5. Phase 5 (VERIFY): Run target test via Playwright CLI. Verify stability under concurrency (`--repeat-each=3 --workers=4`). Heal locators via traces if needed (`playwright-cli`, `pw-debug-rca`, `pw-heal`).
-6. Phase 6 (CLOSE): Move plan to `Plan/close/<slug>.md`, mark `🟢 Закрито` in `Plan/README.md`, create Conventional Commit (`git-commit`).
+1. Phase 1 (DEFINE): Analyze requirements, clarify ambiguities (`interview-me`), map feature flow, define equivalence classes and boundary matrix (`pw-test-designer`).
+2. Phase 2 (PLAN): Create task in `e2e/tasks/active/qa-fe-<num>-<slug>.md` (UI) or `qa-be-<num>-<slug>.md` (API), register in `e2e/tasks/README.md` (`🟡 В роботі`), lock architectural constraints (`pw-plan`, `test-author`).
+3. Phase 3 (BUILD): Implement Page Objects (`BasePage`, components) or API clients. Strict TypeScript typing, user-facing locators, structured logging, Zod contract validation (`pw-pom`, `pw-api`, `playwright-e2e`).
+4. Phase 4 (SELF-REVIEW): Pre-flight terminal checks (`tsc --noEmit`, ESLint). Enforce Title-to-Payload parity and 4-layer response defense (`doubt-driven-development`, `rules-enforcer`).
+5. Phase 5 (VERIFY): Run target test project. Verify stability under concurrency (`--repeat-each=3 --workers=2..4`). Heal locators via traces if needed (`playwright-cli`, `pw-debug-rca`, `pw-heal`).
+6. Phase 6 (CLOSE): Move task to `e2e/tasks/completed/<filename>.md`, mark `🟢 Виконано` in `e2e/tasks/README.md`, record conventional commit (`git-commit`).
 
 ---
 
 ## 3. Technology Stack & Directory Structure
 
-- Stack: TypeScript (strict) · Playwright Test + `APIRequestContext` · `@faker-js/faker` · AJV (Draft-07) · ESLint v9 · Node 18+.
+- Stack: TypeScript (strict) · Playwright Test `@playwright/test ^1.62.1` + `APIRequestContext` · Zod · pg · ESLint v9 · Node 22+.
 - Structure:
-  - `api/{service}/controllers/`: Typed API controllers extending `BaseController.abstract.ts`.
-  - `api/schemas/`: AJV JSON Schemas.
-  - `app-finance/`, `app-minfin/`: Page Objects (`pages/`) and components (`components/`).
-  - `client-wizard/`: Wizard step screens (`*.screen.ts`) and widgets.
-  - `base/`: `BasePage`, `BaseComponent`, `PageHolder`, `Route`.
-  - `fixtures/index.ts`: `e2eTest` (auto-cleans `deletionLeads`), `apiTest`.
-  - `tests/{finance,minfin}/{product}/pages/`: UI tests (`*.finance.ts`, `*.minfin.ts`).
-  - `tests/api/{service}/`: API tests (`*.api.ts`).
-  - `config/`: `env.ts` (prod), `env.stage.ts` (stage/intg, default), `env.review.ts` (review1-3).
-  - `utils/`: `apiLogger.ts`, `leadRandom.ts`, `validation.utils.ts`, `step.ts`.
+  - `server/backend/`: Server NestJS API tests (`:4000/api`), DB cleanup (`smartfeed_test_db`), API clients.
+  - `server/admin/`: Admin Portal UI tests (`:3000`), POM pages and components.
+  - `local/backend/`: Local DB SQLite Docker container tests (`:5001`), `LocalDbClient` (`POST /api/invoke`).
+  - `local/desktop/`: Desktop UI tests (`:1420`), desktop POM pages and components.
+  - `core/`: Base fixtures (`test.extend`), API client wrapper, test data isolation, network counter, locale utils.
+  - `config/`: Zod environment validation (`env.ts`), service URLs (`urls.ts`).
+  - `tasks/`: Task management (`active/`, `completed/`, `README.md`).
 
 ---
 
@@ -62,100 +59,81 @@ Users invoke agents via `@agent-*` or by describing task intent. Agents autonomo
 2. `getByLabel(/text/i)`
 3. `getByText(/text/i)`
 4. `getByTestId("value")` (attributes: `data-state` or `data-testid`)
-5. Scoping & Nesting: `targetLocator.within(parentLocator)` (Playwright 1.64+) — preferred for scoping elements/columns inside cards, modals, or table rows.
-6. Prohibited: XPath (`xpath=`, `//`), CSS class selectors, `input[placeholder*='...']`, `#react-select-*`.
+5. Scoping & Nesting: `targetLocator.within(parentLocator)` — preferred for scoping elements/columns inside cards, modals, or table rows.
+6. Prohibited: XPath (`xpath=`, `//`), arbitrary CSS class selectors, `input[placeholder*='...']`, `#react-select-*`.
 
 ---
 
 ## 5. Architectural Invariants (Zero Tolerance)
 
 1. Import Aliases (`@/` Rule):
-   - All imports from root modules (`fixtures`, `utils`, `api`, `config`, `base`, `services`, `appConstants`, `tests`) MUST use `@/` alias.
-   - Relative imports (`./` or `../`) allowed only within the same local feature folder.
+   - All imports within `e2e/` must use `@/` alias (e.g. `@/core/fixtures/base.fixture`, `@/config/urls`).
+   - Deep relative imports (`../../../../`) across module boundaries are strictly prohibited.
 
 2. Actionability & Waits:
    - Prohibited: `force: true`, `evaluate(e => e.click())`, `page.mouse.click(0, 0)`, `page.waitForTimeout()`, `setTimeout()`.
-   - Permitted: `expect.poll` with intervals/timeout, native auto-waiting, `scrollIntoViewIfNeeded()`.
+   - Permitted: `expect.poll()` with explicit intervals/timeout, web-first assertions (`toBeVisible()`), `scrollIntoViewIfNeeded()`.
 
 3. Response Integrity (4-Layer Defense):
-   - Layer 1: `not.toBe(500)` (Server crash guard).
-   - Layer 2: Deterministic status (`toBe(200)`, `toBe(422)`). No fuzzy arrays (`[422, 500]`).
-   - Layer 3: `headers["content-type"]` matches JSON regex (blocks proxy HTML).
-   - Layer 4: Non-empty body + AJV schema validation (`validateWithSchema(res.body, SchemaPath.*)`).
+   - Layer 1: `expect(res.status).not.toBe(500)` (Server crash guard).
+   - Layer 2: Deterministic status (`toBe(200)`, `toBe(400)`, `toBe(404)`). No fuzzy arrays (`[400, 500]`).
+   - Layer 3: `headers["content-type"]` matches JSON regex (`/application\/(?:problem\+)?json/`).
+   - Layer 4: Non-empty body + Zod/contract schema validation.
 
 4. Title-to-Payload Parity:
    - Test titles specifying `field = undefined`, `field = null`, or `field = ""` must explicitly declare the key in payload: `{ field: undefined }`. Never silently omit keys.
 
-5. Lead Cleanup (Teardown):
-   - All created leads must register their CRM key: `deletionLeads.push(leadKey)` (`osago_<leadId>`). Do not push raw UUIDs.
+5. Test Data Isolation & Clean Teardown:
+   - Every test run uses isolated identifiers (`runId`, unique email `e2e.test+<timestamp>@smartfeed.local`).
+   - Teardown: Server DB deletes scoped records in FK order without touching manual accounts (`qatest@gmail.com`, `shoplinkerxml@gmail.com`); Local DB resets via `POST /api/reset`.
 
-6. Logging:
-   - Use `@/utils/apiLogger` (`ApiLogger.step`, `ApiLogger.request`, `ApiLogger.assertion`, `ApiLogger.success`).
-   - Prohibited: `console.log` and `console.warn` in test specs and helpers.
+6. Single Source of Truth for URLs:
+   - Prohibited: Hardcoding URLs (`http://localhost:...`). Import URLs from `@/config/urls`.
 
-7. Single Source of Truth for URLs:
-   - Prohibited: Hardcoding URLs (`cms-stage`, `finance.ua`, `minfin.ua`).
-   - Import base URLs from `@/config/env.helper` or `PagePrefix`.
+7. Spec Size & SRP:
+   - Spec files must stay < 250 lines. Extract business orchestration into helper clients and test data into factories.
 
-8. Spec Size & SRP:
-   - Spec files must stay < 200 lines. Extract business orchestration into `support/flow.helpers.ts` and test data into `support/flow.data.ts`.
+8. Anti-Testing Theater & Full Property Parity:
+   - Superficial tests (asserting only `id` or `name` and ignoring contract properties) are strictly prohibited.
+   - Assert contract fields for presence, types, and business constraints.
 
-9. Anti-Testing Theater, Unconditional Assertions & Full Property Parity:
-   - Superficial tests (asserting only `id`, `shortName`, `logo`) are strictly prohibited. Every property defined in contracts/schemas (e.g. `company.*`, `legal.*`, `advantages`, `whoChooses`, `documentTypes`, `providerName`, MTSBU metrics) must be explicitly asserted for presence (`"field" in item` and in JSON schema `required`), regardless of nullability.
-   - Prohibited: Wrapping assertions in `if (item.field) { expect(...) }` without unconditional presence checks.
-   - Hit Counter Rule: When validating conditionally populated structures (`assistCompany`, `similarTariffs`, `timeFranchise`), maintain an explicit counter (`let hitCount = 0; hitCount++`) and assert `expect(hitCount).toBeGreaterThan(0)`.
-   - Prohibited: Calling `ApiLogger.assertion()` without executing an actual Playwright `expect()`.
-   - Strict Matchers: Prohibited loose regex alternatives (`/[€$]|EUR|USD/i`) when the contract specifies an exact format (e.g. symbol only `/[€$]/`).
+9. Strict TypeScript Typing (Zero Weak Types):
+   - Prohibited: `Record<string, any>`, `any`, `as unknown as ...`.
+   - Required: Explicit typed interfaces and models.
 
-10. Strict TypeScript Typing (No Weak Types):
-    - Prohibited: `Record<string, unknown>`, `Record<string, any>`, `any`, `as unknown as ...`.
-    - Required: Explicit typed interfaces and models exported from `flow.data.ts` or domain model files.
+10. Dynamic Polling Timeouts:
+    - Never hardcode arbitrary timeouts (10-15s). Derive timeouts dynamically from backend contracts (`retryAfter` or polling options).
 
-11. Dynamic Polling Timeouts:
-    - Never hardcode short polling timeouts (10-15s). Always derive timeouts dynamically from backend headers or contracts (`retryAfter`, minimum 45s for stage SMS OTP).
-
-12. Universal Active Plan Mandate for ALL Agents:
-    - Any analysis, review, audit, test planning, refactoring, or failure triage by any agent MUST be recorded in `Plan/activ/<slug>.md` and registered in `Plan/README.md` (`🟡 В роботі`) before executing code changes. Analysis purely in chat is forbidden.
-
-13. Clean Domain Models Invariant (Pure Business Contracts):
-    - Domain models and request DTOs (`api/**/models/*.model.ts`) must purely represent valid business contracts (e.g. `extended?: boolean`). Never pollute domain models with dirty/negative testing types (`string | number | null`). Separate them into dedicated `*RawParams` interfaces for raw controller methods.
-
-14. Business Delta Invariant for Positive Tests:
-    - Prohibited: Feature-specific positive tests (e.g. active sport risk, work trip risk, locale translation, multivisa, privileges) that only assert `tariffs.length > 0` or `Array.isArray()`. Tests must explicitly assert the observable business outcome / delta (e.g. `sportPrice > basePrice`, localized vocabulary).
-
-15. Full Contract Checklist Parity Gate:
-    - When provided with a contract DTO snippet (in YouTrack AC or user prompt), 100% of declared properties must be declared in JSON schema (`required`), strongly typed in domain models, and explicitly validated in test specs/helpers.
+11. Universal Active Task Mandate in `e2e/tasks/`:
+    - All E2E test tasks MUST be recorded in `e2e/tasks/active/qa-fe-<num>-<slug>.md` or `qa-be-<num>-<slug>.md` and registered in `e2e/tasks/README.md` (`🟡 В роботі`) before executing code changes.
 
 ---
 
 ## 6. Execution Commands
 
 ```bash
-# Typecheck & Lint
-npx tsc --noEmit && npm run lint
+# Typecheck
+pnpm --filter @smartfeed/e2e typecheck
 
-# Scan project architectural violations
-node .agents/skills/rules-enforcer/scripts/scan-violations.cjs --changed
+# Run test suites by domain
+pnpm e2e:server          # All server tests (backend API + admin UI)
+pnpm e2e:server:backend  # NestJS backend API tests
+pnpm e2e:server:admin    # Admin Portal UI tests
+pnpm e2e:local           # All local tests (sqlite-dev + desktop UI)
+pnpm e2e:local:backend   # Local SQLite dev container API tests
+pnpm e2e:local:desktop   # Desktop UI tests
 
-# Run tests
-npx playwright test tests/finance/osago/pages/catalog.finance.ts --project=finance
-npx playwright test tests/api/ibpm/finance/osago/osago-ewa.positive.api.ts --project=api
-
-# Randomize test order to discover hidden inter-test dependencies
-npx playwright test --shuffle
-
-# Concurrency & stability gate
-npx playwright test <spec_path> --project=<project> --repeat-each=3 --workers=4
+# Stability & concurrency check
+npx playwright test <spec_path> --project=<project> --repeat-each=3 --workers=2
 ```
 
 ---
 
-## 7. Plan Management Protocol
+## 7. Task Management Protocol
 
-- Active Plans: Written to `Plan/activ/<slug>.md` and registered in `Plan/README.md`.
-- Code Reviews & Audits Mandate: ALL code reviews and quality audits (`agent-reviewer`, `pw-review`, `code-review`) MUST be recorded as an active plan in `Plan/activ/<slug>.md` and registered in `Plan/README.md` (`🟡 В роботі`) BEFORE conducting analysis or making changes. Conducting reviews solely in chat without an active plan is strictly prohibited.
-- Completion Mandate: When implementation and verification pass (`PASSED`, 0 tsc errors, 0 lint errors), move file to `Plan/close/<slug>.md` and update `Plan/README.md` status to `🟢 Закрито`.
-- Chat Communication Rule: Detailed reasoning, audit tables, and plans reside in plan files. Responses in chat remain concise.
+- Active Tasks: Written to `e2e/tasks/active/qa-fe-<num>-<slug>.md` (UI) or `qa-be-<num>-<slug>.md` (API) and registered in `e2e/tasks/README.md`.
+- Completion Mandate: When tests pass (`PASSED`, 0 tsc errors, 0 lint errors, 3 stable runs), move file to `e2e/tasks/completed/<filename>.md` and update status to `🟢 Виконано`.
+- Management CLI: `node .agents/skills/test-author/scripts/plan-manager.js create|close|list`.
 
 ---
 
@@ -163,16 +141,15 @@ npx playwright test <spec_path> --project=<project> --repeat-each=3 --workers=4
 
 ### Master Orchestrators
 
-- `test-author`: Autonomous orchestrator for full 6-phase test lifecycle (UI, API, HTTP).
+- `test-author`: Autonomous orchestrator for full 6-phase test lifecycle (UI, API).
 - `code-review`: 5-axis code auditor (Standards, Spec, Coverage, Security, Architecture).
-- `skill-creator`: Master creator, validator, benchmarker, and trigger optimizer for agent skills (`.agents/skills/skill-creator/SKILL.md`). Enforces Progressive Disclosure (<500 lines), eval-driven design, and frontmatter optimization.
+- `skill-creator`: Master creator, validator, and benchmarker for agent skills.
 - `git-commit`: Standardized Conventional Commit generator.
 
 ### Domain Modules
 
-- Planning & Disciplines: `pw-plan`, `youtrack-reader`, `constraint-driven-development`, `karpathy-guidelines`, `doubt-driven-development`, `code-simplification`, `interview-me`.
+- Planning & Disciplines: `pw-plan`, `constraint-driven-development`, `karpathy-guidelines`, `doubt-driven-development`, `code-simplification`, `interview-me`.
 - UI & POM: `pw-pom`, `playwright-e2e`, `playwright-best-practices`, `pw-payment`, `pw-a11y`, `pw-visual`, `playwright-explore-website`, `playwright-automation-fill-in-form`, `playwright-generate-test`.
-- API & Network: `pw-api`, `pw-mock`, `pw-schema-sync`, `http-flow-builder`, `ibpm-error`.
+- API & Network: `pw-api`, `pw-mock`, `pw-schema-sync`, `http-flow-builder`.
 - Test Data & Infrastructure: `pw-data`, `pw-arch`, `rules-enforcer`.
 - Verification, Triage & Healing: `playwright-cli`, `playwright-test-results`, `pw-debug-rca`, `pw-heal`, `pw-triage`, `flakiness-detector`, `pw-codemod`, `review-feedback-loop`.
-- Collaboration (Lark): `lark-im`, `lark-base`, `lark-doc`, `lark-drive`, `lark-approval`, `lark-calendar`, `lark-shared`.

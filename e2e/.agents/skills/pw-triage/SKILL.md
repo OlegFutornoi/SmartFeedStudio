@@ -1,12 +1,12 @@
 ---
 name: pw-triage
 description: >-
-  CI & Test Failure Triage skill for insurance-e2e. Analyzes failed test runs from GitHub Actions, terminal logs, or test-results/ directory. Classifies root causes into APP_BUG, TEST_BUG, ENV_DOWN, DATA_STALE, or FLAKY using network traces, console logs, and healthcheck scripts. Produces structured triage reports in Plan/activ/ and prevents accidental test modification when the application backend or 3rd-party provider fails.
+  CI & Test Failure Triage skill for SmartFeed Studio E2E. Analyzes failed test runs from GitHub Actions, terminal logs, or reports/ directory. Classifies root causes into APP_BUG, TEST_BUG, ENV_DOWN, DATA_STALE, or FLAKY using network traces, console logs, and healthchecks. Produces structured triage reports in e2e/tasks/active/ and prevents accidental test modification when the application backend or services fail.
 ---
 
 # CI & Test Failure Triage (`pw-triage`)
 
-Systematic triage and classification engine for automated test failures in `insurance-e2e`.
+Systematic triage and classification engine for automated test failures in SmartFeed Studio E2E.
 
 ---
 
@@ -58,7 +58,7 @@ python3 .agents/skills/pw-heal/scripts/extract-trace.py test-results/<test>/trac
 
 ---
 
-## 4. Triage Report Format (`Plan/activ/triage-<slug>.md`)
+## 4. Triage Report Format (`e2e/tasks/active/qa-fe-<num>-triage-<slug>.md`)
 
 ```markdown
 # Triage Report: {Test Suite Name}

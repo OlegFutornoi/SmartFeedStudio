@@ -1,12 +1,12 @@
 ---
 name: code-review
 description: >-
-  Deep automated QA code review & fix cycle for insurance-e2e. Use whenever the user wants to audit test files (*.finance.ts, *.minfin.ts, *.api.ts), Page Objects, API controllers, or the whole test suite. Performs a 5-phase lifecycle: 1) Multi-axis deep analysis (Standards, Spec, Coverage, Security, Architecture), 2) Creates a structured fix plan in Plan/activ/, 3) Applies fixes, 4) Re-runs analysis, 5) Commits via git-commit. Automatically activates on: review, audit, check tests, analyze coverage, find bugs in tests, flaky tests, missing negative tests, test quality, or code smell.
+  Deep automated QA code review & fix cycle for SmartFeed Studio E2E. Use whenever the user wants to audit test files, Page Objects, API clients, or the whole test suite. Performs a 5-phase lifecycle: 1) Multi-axis deep analysis (Standards, Spec, Coverage, Security, Architecture), 2) Creates a structured audit task in e2e/tasks/active/qa-fe-review-<slug>.md, 3) Applies fixes, 4) Re-runs analysis, 5) Commits via git-commit.
 ---
 
 # Deep QA Code Review & Quality Audit (`code-review`)
 
-5-axis code audit protocol for Playwright UI and API tests in `insurance-e2e`.
+5-axis code audit protocol for Playwright UI and API tests in SmartFeed Studio E2E.
 
 ---
 

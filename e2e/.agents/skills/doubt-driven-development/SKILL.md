@@ -66,6 +66,6 @@ Before executing CLI runs or submitting code for review, verify:
 8. Business Delta: Does every positive feature test assert the actual business outcome (delta/price/text), not merely `length > 0`?
 9. Weak Types: Is the code 100% free of `Record<string, unknown>`, `Record<string, any>`, and `any`?
 10. Dynamic Timeouts: Are async polling intervals and timeouts derived dynamically from backend headers (`retryAfter`, >=45s for stage SMS)?
-11. Teardown: Is `deletionLeads.push(leadKey)` present for any created lead?
+11. Teardown: Is test data scoped via `runId` and cleaned up via `cleanup.ts` (Server DB) or `POST /api/reset` (Local DB)?
 12. Actionability: Is the test free of `force: true` and `waitForTimeout`?
-13. Universal Active Plan: Is the task tracked in `Plan/activ/<slug>.md` and registered in `Plan/README.md`?
+13. Universal Active Task: Is the task tracked in `e2e/tasks/active/qa-fe-<num>-<slug>.md` (or `qa-be-`) and registered in `e2e/tasks/README.md`?

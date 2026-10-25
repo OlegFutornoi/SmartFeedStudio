@@ -1,7 +1,7 @@
 ---
 name: constraint-driven-development
 description: >-
-  Upfront project architectural constraints and quality gates enforcer for insurance-e2e.
+  Upfront project architectural constraints and quality gates enforcer for SmartFeed Studio E2E.
   Activate during the planning and pre-coding phases of any test or Page Object task to
   lock in non-negotiable repository rules before writing code: @/ path aliases, user-facing
   locators, actionability rules, strict typing, 210-character line length, data cleanup,
@@ -12,7 +12,7 @@ description: >-
 
 > **Core Philosophy:** "Design within project constraints from the first line of code. Catching rule violations during planning is 10x cheaper than fixing them during code review or CI triage."
 
-Constraint-Driven Development establishes the fixed boundaries and architectural rules of the `insurance-e2e` repository as non-negotiable guardrails before implementation starts.
+Constraint-Driven Development establishes the fixed boundaries and architectural rules of the `SmartFeed Studio E2E` repository as non-negotiable guardrails before implementation starts.
 
 ---
 

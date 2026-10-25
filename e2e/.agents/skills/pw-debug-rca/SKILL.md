@@ -1,12 +1,12 @@
 ---
 name: pw-debug-rca
 description: >-
-  Systematic Root Cause Analysis (RCA) and deep debugging skill for Playwright UI and API test failures in insurance-e2e. Use when a test fails or is flaky to classify the root cause (UI/DOM overlay, API 4xx/5xx crash, environment downtime, async hydration race, or broken locator) using trace.zip, network dumps, and DOM inspection scripts. Delivers surgical fixes without adding waitForTimeout or masking errors.
+  Systematic Root Cause Analysis (RCA) and deep debugging skill for Playwright UI and API test failures in SmartFeed Studio E2E. Use when a test fails or is flaky to classify the root cause (UI/DOM overlay, API 4xx/5xx crash, environment downtime, async hydration race, or broken locator) using trace.zip, network dumps, and DOM inspection scripts. Delivers surgical fixes without adding waitForTimeout or masking errors.
 ---
 
 # Playwright Root Cause Analysis (`pw-debug-rca`)
 
-Systematic 4-level root cause analysis engine for Playwright test failures in `insurance-e2e`.
+Systematic 4-level root cause analysis engine for Playwright test failures in `SmartFeed Studio E2E`.
 
 ---
 

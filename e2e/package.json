@@ -15,6 +15,7 @@
     "test:ui": "playwright test --ui",
     "report": "playwright show-report reports/html",
     "list": "playwright test --list",
+    "build": "tsc --noEmit",
     "typecheck": "tsc --noEmit",
     "install:browsers": "playwright install chromium"
   },

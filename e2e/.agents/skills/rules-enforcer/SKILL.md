@@ -1,12 +1,12 @@
 ---
 name: rules-enforcer
 description: >-
-  Strict automated compliance and rule-enforcement auditor for insurance-e2e. Validates test files (*.finance.ts, *.minfin.ts, *.api.ts), Page Objects, components, controllers, and HTTP scripts against all rules in .agents/rules/ (gemini-context.md, gemini-context2.md, gemini-pravel.md, gemini-rules.md). Use during code review or before running tests to catch prohibited selectors, import violations, actionability bypasses, fuzzy status codes, and architecture anti-patterns.
+  Strict automated compliance and rule-enforcement auditor for SmartFeed Studio E2E. Validates test files (*.spec.ts), Page Objects, components, and API clients against all rules in .agents/rules/ (gemini-context.md, gemini-context2.md, gemini-pravel.md, gemini-rules.md). Use during code review or before running tests to catch prohibited selectors, import violations, actionability bypasses, fuzzy status codes, and architecture anti-patterns.
 ---
 
 # Project Rules Enforcer (`rules-enforcer`)
 
-Automated compliance validator enforcing the architectural invariants of the `insurance-e2e` repository.
+Automated compliance validator enforcing the architectural invariants of the `SmartFeed Studio E2E` repository.
 
 ---
 
@@ -35,7 +35,7 @@ node .agents/skills/rules-enforcer/scripts/scan-violations.cjs
 - C5 (Deterministic Status Codes): Fuzzy status arrays (`expect([422, 500]).toContain(status)`) prohibited. Assert exact expected status. 500 is an unhandled backend crash.
 - C6 (Strict Typing): `any`, `as any`, `Record<string, any>`, `Record<string, unknown>`, `// eslint-disable` prohibited. Use explicit DTO interfaces.
 - C7 (POM Encapsulation): Public locators (`public btn = ...`) prohibited. Locators must be `private readonly`. Access to `po.page` outside POM prohibited.
-- C8 (SSOT URLs): Hardcoded environment domains (`cms-stage.finance.ua`, `finance.ua`, `minfin.ua`) prohibited. Use `config.*` from `@/config/env.helper` or `PagePrefix`.
+- C8 (SSOT URLs): Hardcoded environment domains (`localhost:4000`, `localhost:3000`, etc.) prohibited. Use `urls` from `@/config/urls`.
 - C9 (JetBrains HTTP Scripts): Inline JavaScript blocks `< {% ... %}` or `> {% ... %}` in `.http` files prohibited. Extract to `scripts/*.js` with `/* eslint-disable */` header.
 - C10 (Missing Awaits): Missing `await` on asynchronous Playwright Locator or API promises prohibited.
 - C11 (Boundary Completeness): Testing payload fields with only 1-2 happy values prohibited. Cover full boundary matrix per `pw-test-designer`.

@@ -1,12 +1,12 @@
 ---
 name: pw-codemod
 description: >-
-  Safe automated codemod and batch refactoring skill for insurance-e2e. Use when migrating legacy anti-patterns (deep relative imports to @/ alias, removing force: true, replacing waitForTimeout with expect.poll, converting XPath to user-facing locators, splitting monolithic spec files). Enforces single-rule-per-batch, atomic commits, and tsc/lint verification gates after every step.
+  Safe automated codemod and batch refactoring skill for SmartFeed Studio E2E. Use when migrating legacy anti-patterns (deep relative imports to @/ alias, removing force: true, replacing waitForTimeout with expect.poll, converting XPath to user-facing locators, splitting monolithic spec files). Enforces single-rule-per-batch, atomic commits, and tsc/lint verification gates after every step.
 ---
 
 # Safe Batch Refactoring & Codemods (`pw-codemod`)
 
-Methodologies and automated recipes for eliminating technical debt across the `insurance-e2e` codebase.
+Methodologies and automated recipes for eliminating technical debt across the `SmartFeed Studio E2E` codebase.
 
 ---
 
