@@ -15,16 +15,21 @@ rules:
 3. If planning integration of external libraries, call context7 to verify current APIs and recommendations.
 4. Do not write or modify code or database schemas until the plan is approved by the user.
 
-## Three-directory plan lifecycle
+## Three-directory task lifecycle & naming conventions
 
-1. `plans/active/`: Contains the currently active task under planning or implementation. Only one active plan should be in flight at a time.
-2. `plans/backlog/`: Strategic roadmaps, future architectural proposals, and deferred feature plans.
-3. `plans/completed/`: Finished and verified implementation plans (100% test pass).
-4. `plans/README.md`: Central registry of all plans categorized by active, backlog, and completed.
+1. Tasks (formerly plans) are classified and named with domain prefix and sequential numbering:
+   - Frontend task: `FR-<num>-<short-title>.md` (UI, UX, React 18, Next.js, Tauri desktop UI, client mock, Playwright tests).
+   - Backend task: `BE-<num>-<short-title>.md` (NestJS 11 CQRS, Prisma, PostgreSQL 16, Redis, BullMQ, Supertest E2E).
+   - Joint full-stack task: `FR-BE-<num>-<short-title>.md` (end-to-end tracer-bullet slice cutting through contracts, DB, API, and UI).
+   - Sequential numbering starts from the next task (`01`); legacy completed/backlog plans remain untouched.
+2. `plans/active/`: Contains the currently active task under implementation. Only one active task should be in flight at a time.
+3. `plans/backlog/`: Strategic roadmaps, future architectural proposals, and deferred feature tasks.
+4. `plans/completed/`: Finished and verified implementation tasks (100% test pass).
+5. `plans/README.md`: Central registry of all tasks categorized by active, backlog, and completed.
 
-## Mandatory plan structure and invariants
+## Mandatory task structure and invariants
 
-Every plan authored in `plans/active/<feature>.md` must follow the standardized specification structure:
+Every task authored in `plans/active/` (`FR-...`, `BE-...`, `FR-BE-...`) must follow the standardized specification structure:
 
 1. Metadata & Runtime Scope:
    - State Target Runtime: Web Portal (`apps/admin-portal`), Desktop Client (`apps/desktop` Tauri v2/SQLite), or Cloud Backend (`services/backend-api`).
@@ -63,13 +68,13 @@ Every plan authored in `plans/active/<feature>.md` must follow the standardized 
 8. Failure modes, bilingual localization & edge cases:
    - Define offline behaviors, network drops, and translations in both `uk` and `en` (`i18n-localization`).
    - Adversarially stress-test TOCTOU concurrency races and payment webhook idempotency (`doubt-driven-development`).
-9. Zero plan dumping in chat:
-   - The complete plan text must be written directly to `plans/active/<feature>.md`.
-   - The chat response must contain only a 1-2 sentence summary and clickable markdown link (`[План](file:///...)`) with the recommended executing agent.
+9. Zero task dumping in chat:
+   - The complete task text must be written directly to `plans/active/<filename>.md`.
+   - The chat response must contain only a 1-2 sentence summary and clickable markdown link (`[Задача](file:///...)`) with the recommended executing agent.
 
-## Plan completion and transition to completed
+## Task completion and transition to completed
 
 1. Upon completing implementation and verifying 100% test pass across targeted suites:
-   - Move plan file from `plans/active/<feature>.md` to `plans/completed/<feature>.md`.
+   - Move task file from `plans/active/<filename>.md` to `plans/completed/<filename>.md`.
    - Update header metadata with completed status and completion date.
    - Update `plans/README.md` to reflect the completed state.

@@ -1,6 +1,26 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsBoolean, IsEnum, IsInt, IsNotEmpty, IsOptional, IsString, Min } from 'class-validator';
-import { FeedFormat, FeedSourceType } from '@smartfeed/shared';
+import {
+  IsArray,
+  IsBoolean,
+  IsEnum,
+  IsInt,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Max,
+  Min,
+  ValidateNested,
+} from 'class-validator';
+import { Type } from 'class-transformer';
+import {
+  CurrencyCode,
+  ExchangeRateMode,
+  FeedFormat,
+  FeedSourceType,
+  PriceRoundingMode,
+} from '@smartfeed/shared';
+import { CustomRoundingRuleItemDto } from '@/modules/suppliers/dto/supplier-rules.dto';
 
 export class CreateSupplierFeedSourceDto {
   @ApiProperty({ description: 'Name of the feed source' })
@@ -88,6 +108,51 @@ export class CreateSupplierFeedSourceDto {
   @IsInt()
   @Min(0)
   productsCount?: number;
+
+  @ApiPropertyOptional({ enum: CurrencyCode, default: CurrencyCode.UAH })
+  @IsOptional()
+  @IsEnum(CurrencyCode)
+  baseCurrency?: CurrencyCode;
+
+  @ApiPropertyOptional({ enum: CurrencyCode, default: CurrencyCode.UAH })
+  @IsOptional()
+  @IsEnum(CurrencyCode)
+  targetCurrency?: CurrencyCode;
+
+  @ApiPropertyOptional({ enum: ExchangeRateMode, default: ExchangeRateMode.MANUAL })
+  @IsOptional()
+  @IsEnum(ExchangeRateMode)
+  exchangeRateMode?: ExchangeRateMode;
+
+  @ApiPropertyOptional({ default: 1.0 })
+  @IsOptional()
+  @IsNumber()
+  @Min(0.0001)
+  exchangeRate?: number;
+
+  @ApiPropertyOptional({ default: 0 })
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  @Max(100)
+  currencyBufferPercent?: number;
+
+  @ApiPropertyOptional({ default: PriceRoundingMode.NONE })
+  @IsOptional()
+  @IsString()
+  priceRounding?: PriceRoundingMode | string;
+
+  @ApiPropertyOptional({ type: [CustomRoundingRuleItemDto] })
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CustomRoundingRuleItemDto)
+  customRoundingRules?: CustomRoundingRuleItemDto[];
+
+  @ApiPropertyOptional({ nullable: true })
+  @IsOptional()
+  @IsString()
+  selectedBankId?: string | null;
 }
 
 export class UpdateSupplierFeedSourceDto {
@@ -175,4 +240,49 @@ export class UpdateSupplierFeedSourceDto {
   @IsOptional()
   @IsString()
   lastSyncStatus?: string;
+
+  @ApiPropertyOptional({ enum: CurrencyCode })
+  @IsOptional()
+  @IsEnum(CurrencyCode)
+  baseCurrency?: CurrencyCode;
+
+  @ApiPropertyOptional({ enum: CurrencyCode })
+  @IsOptional()
+  @IsEnum(CurrencyCode)
+  targetCurrency?: CurrencyCode;
+
+  @ApiPropertyOptional({ enum: ExchangeRateMode })
+  @IsOptional()
+  @IsEnum(ExchangeRateMode)
+  exchangeRateMode?: ExchangeRateMode;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsNumber()
+  @Min(0.0001)
+  exchangeRate?: number;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  @Max(100)
+  currencyBufferPercent?: number;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  priceRounding?: PriceRoundingMode | string;
+
+  @ApiPropertyOptional({ type: [CustomRoundingRuleItemDto] })
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CustomRoundingRuleItemDto)
+  customRoundingRules?: CustomRoundingRuleItemDto[];
+
+  @ApiPropertyOptional({ nullable: true })
+  @IsOptional()
+  @IsString()
+  selectedBankId?: string | null;
 }

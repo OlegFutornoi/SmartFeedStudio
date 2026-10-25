@@ -2,7 +2,14 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { PrismaService } from '@/prisma/prisma.service';
 import { GetAllFeedSourcesQuery } from '@/modules/feeds/queries/get-all-feed-sources.query';
-import type { FeedSourceDto, FeedSourceType, FeedFormat } from '@smartfeed/shared';
+import type {
+  FeedSourceDto,
+  FeedSourceType,
+  FeedFormat,
+  CurrencyCode,
+  ExchangeRateMode,
+  CustomRoundingRuleDto,
+} from '@smartfeed/shared';
 
 @QueryHandler(GetAllFeedSourcesQuery)
 export class GetAllFeedSourcesHandler implements IQueryHandler<GetAllFeedSourcesQuery> {
@@ -44,6 +51,16 @@ export class GetAllFeedSourcesHandler implements IQueryHandler<GetAllFeedSources
       autoUpdatePrices: s.autoUpdatePrices,
       autoUpdateStocks: s.autoUpdateStocks,
       autoCreateNewProducts: s.autoCreateNewProducts,
+      baseCurrency: s.baseCurrency as CurrencyCode,
+      targetCurrency: s.targetCurrency as CurrencyCode,
+      exchangeRateMode: s.exchangeRateMode as ExchangeRateMode,
+      exchangeRate: Number(s.exchangeRate),
+      currencyBufferPercent: Number(s.currencyBufferPercent),
+      priceRounding: s.priceRounding,
+      customRoundingRules: Array.isArray(s.customRoundingRules)
+        ? (s.customRoundingRules as unknown as CustomRoundingRuleDto[])
+        : [],
+      selectedBankId: s.selectedBankId ?? null,
       mappingRules: (s.mappingRules as Record<string, unknown>) ?? null,
       productsCount: s.productsCount,
       lastSyncedAt: s.lastSyncedAt ? s.lastSyncedAt.toISOString() : null,

@@ -1,20 +1,21 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import {
-  SupplierDto,
   CurrencyCode,
   ExchangeRateMode,
   PriceRoundingMode,
   type CustomRoundingRuleDto,
   type CustomRoundingRuleType,
+  type PriceRoundingValue,
   buildCustomRoundingRule,
 } from '@smartfeed/shared';
-import { fetchLiveExchangeRates, updateSupplier } from '@/lib/api';
+import { fetchLiveExchangeRates } from '@/lib/api';
+import { updateSupplierFeedSource, type FeedSourceItemDto } from '@/lib/api/feed-sources';
 import { DEFAULT_RATES, type BankExchangeRate } from '@/lib/api/currencies';
 import { useAuth } from '@/contexts/AuthContext';
 
 interface UseSupplierCurrenciesStateParams {
-  supplier: SupplierDto;
-  onRefreshSupplier: () => void;
+  feed: FeedSourceItemDto;
+  onRefreshFeed?: () => void;
 }
 
 export {
@@ -27,11 +28,11 @@ export {
 import { resolveInitialSupplierRates } from '@/modules/suppliers/components/details/tabs/currencies/currencies.constants';
 
 export function useSupplierCurrenciesState({
-  supplier,
-  onRefreshSupplier,
+  feed,
+  onRefreshFeed,
 }: UseSupplierCurrenciesStateParams) {
   const { token } = useAuth();
-  const init = resolveInitialSupplierRates(supplier);
+  const init = resolveInitialSupplierRates(feed);
 
   const [baseCurrency, setBaseCurrency] = useState<CurrencyCode>(init.currency);
   const [exchangeMode, setExchangeMode] = useState<ExchangeRateMode>(init.mode);
@@ -72,7 +73,7 @@ export function useSupplierCurrenciesState({
   }, [loadRates]);
 
   useEffect(() => {
-    const s = resolveInitialSupplierRates(supplier);
+    const s = resolveInitialSupplierRates(feed);
     setBaseCurrency(s.currency);
     setExchangeMode(s.mode);
     setManualRate(s.rate);
@@ -80,7 +81,7 @@ export function useSupplierCurrenciesState({
     setRoundingMode(s.rounding);
     setCustomRoundingRules(s.rules);
     setSelectedBankId(s.bankId);
-  }, [supplier]);
+  }, [feed]);
 
   const handleBaseCurrencyChange = useCallback(
     (nextCurrency: CurrencyCode) => {
@@ -91,17 +92,17 @@ export function useSupplierCurrenciesState({
         return;
       }
       if (
-        nextCurrency === supplier.baseCurrency &&
-        supplier.exchangeRate &&
-        Number(supplier.exchangeRate) > 1
+        nextCurrency === feed.baseCurrency &&
+        feed.exchangeRate &&
+        Number(feed.exchangeRate) > 1
       ) {
-        setManualRate(Number(supplier.exchangeRate));
+        setManualRate(Number(feed.exchangeRate));
         return;
       }
       setManualRate(liveRates[nextCurrency] || 1.0);
       if (!selectedBankId) setSelectedBankId('nbu');
     },
-    [liveRates, selectedBankId, supplier.baseCurrency, supplier.exchangeRate],
+    [liveRates, selectedBankId, feed.baseCurrency, feed.exchangeRate],
   );
 
   const handleExchangeModeChange = useCallback(
@@ -113,88 +114,78 @@ export function useSupplierCurrenciesState({
         setManualRate(liveRates[baseCurrency] || 1.0);
       } else if (nextMode === ExchangeRateMode.AUTO_PRIVAT) {
         setSelectedBankId('privat');
+      } else {
+        setSelectedBankId(undefined);
       }
     },
     [baseCurrency, liveRates],
   );
 
-  const activeRate = useMemo(() => {
-    if (baseCurrency === CurrencyCode.UAH) return 1.0;
-    const fallback = liveRates[baseCurrency] || 1.0;
-    if (exchangeMode === ExchangeRateMode.AUTO_NBU)
-      return liveRates[baseCurrency] || manualRate || fallback;
-    return manualRate > 0 ? manualRate : fallback;
-  }, [baseCurrency, exchangeMode, manualRate, liveRates]);
-
-  const effectiveRate = useMemo(() => {
-    if (baseCurrency === CurrencyCode.UAH) return 1.0;
-    const safeBuffer = Math.max(0, Math.min(100, bufferPercent || 0));
-    return Math.round(activeRate * (1 + safeBuffer / 100) * 100) / 100;
-  }, [activeRate, baseCurrency, bufferPercent]);
-
   const handleSelectBankRate = useCallback((bankRate: BankExchangeRate) => {
     setSelectedBankId(bankRate.bankId);
-    setBaseCurrency(bankRate.currency);
-    setManualRate(bankRate.sellRate);
-    if (bankRate.bankId === 'nbu') setExchangeMode(ExchangeRateMode.AUTO_NBU);
-    else if (bankRate.bankId === 'privat') setExchangeMode(ExchangeRateMode.AUTO_PRIVAT);
-    else setExchangeMode(ExchangeRateMode.MANUAL);
+    setManualRate(bankRate.sellRate || bankRate.buyRate);
   }, []);
 
   const handleBankRatesSynced = useCallback(
-    (currency: CurrencyCode, rates: BankExchangeRate[]) => {
+    (_currency: CurrencyCode, rates: BankExchangeRate[]) => {
+      if (!rates.length) return;
       const nbu = rates.find((r) => r.bankId === 'nbu');
-      if (nbu && nbu.sellRate > 0) {
-        setLiveRates((prev) =>
-          prev[currency] === nbu.sellRate ? prev : { ...prev, [currency]: nbu.sellRate },
-        );
-      }
-      if (currency === baseCurrency) {
-        const matchedBank =
-          (selectedBankId ? rates.find((r) => r.bankId === selectedBankId) : undefined) || nbu;
-        if (matchedBank && matchedBank.sellRate > 0 && (!manualRate || manualRate <= 1)) {
-          setManualRate(matchedBank.sellRate);
-        }
+      if (nbu) {
+        setLiveRates((prev) => ({
+          ...prev,
+          [nbu.currency as CurrencyCode]: nbu.sellRate || nbu.buyRate,
+        }));
       }
     },
-    [baseCurrency, manualRate, selectedBankId],
+    [],
   );
 
+  const activeRate = useMemo(() => {
+    if (baseCurrency === CurrencyCode.UAH) return 1.0;
+    if (exchangeMode === ExchangeRateMode.AUTO_NBU) {
+      return liveRates[baseCurrency] || manualRate || 1.0;
+    }
+    return manualRate || 1.0;
+  }, [baseCurrency, exchangeMode, liveRates, manualRate]);
+
+  const effectiveRate = useMemo(() => {
+    if (baseCurrency === CurrencyCode.UAH) return 1.0;
+    const buf = Math.max(0, bufferPercent || 0);
+    return Math.round(activeRate * (1 + buf / 100) * 10000) / 10000;
+  }, [activeRate, baseCurrency, bufferPercent]);
+
+  const initialValues = useMemo(() => resolveInitialSupplierRates(feed), [feed]);
+
   const isDirty = useMemo(() => {
-    const savedCurr = supplier.baseCurrency || CurrencyCode.UAH;
-    const savedMode = supplier.exchangeRateMode || ExchangeRateMode.MANUAL;
-    const savedRate = Number(supplier.exchangeRate || 1.0);
-    const savedBuffer = Number(supplier.currencyBufferPercent || 0);
-    const savedRounding = supplier.priceRounding || PriceRoundingMode.NONE;
-    const savedBankId = supplier.selectedBankId ?? undefined;
-    return (
-      baseCurrency !== savedCurr ||
-      exchangeMode !== savedMode ||
-      selectedBankId !== savedBankId ||
-      Math.abs(activeRate - savedRate) > 0.001 ||
-      Math.abs(bufferPercent - savedBuffer) > 0.001 ||
-      roundingMode !== savedRounding
-    );
+    if (baseCurrency !== initialValues.currency) return true;
+    if (exchangeMode !== initialValues.mode) return true;
+    if (bufferPercent !== initialValues.buffer) return true;
+    if (roundingMode !== initialValues.rounding) return true;
+    if (selectedBankId !== initialValues.bankId) return true;
+    if (Math.abs(manualRate - initialValues.rate) > 0.0001) return true;
+    if (customRoundingRules.length !== initialValues.rules.length) return true;
+    return false;
   }, [
-    activeRate,
     baseCurrency,
     bufferPercent,
+    customRoundingRules.length,
     exchangeMode,
+    initialValues,
+    manualRate,
     roundingMode,
     selectedBankId,
-    supplier,
   ]);
 
   const handleResetChanges = useCallback(() => {
-    const s = resolveInitialSupplierRates(supplier);
+    const s = resolveInitialSupplierRates(feed);
     setBaseCurrency(s.currency);
     setExchangeMode(s.mode);
     setManualRate(s.rate);
     setBufferPercent(s.buffer);
     setRoundingMode(s.rounding);
-    setSelectedBankId(s.bankId);
     setCustomRoundingRules(s.rules);
-  }, [supplier]);
+    setSelectedBankId(s.bankId);
+  }, [feed]);
 
   const handleAddCustomRoundingRule = useCallback(
     async (type: CustomRoundingRuleType, rawValue: number) => {
@@ -203,17 +194,18 @@ export function useSupplierCurrenciesState({
       setCustomRoundingRules(nextRules);
       setRoundingMode(rule.code);
       try {
-        await updateSupplier(
-          supplier.id,
-          { priceRounding: rule.code, customRoundingRules: nextRules },
+        await updateSupplierFeedSource(
+          feed.supplierId,
+          feed.id,
+          { priceRounding: rule.code as PriceRoundingValue, customRoundingRules: nextRules },
           token || undefined,
         );
-        onRefreshSupplier();
+        onRefreshFeed?.();
       } catch (err) {
         console.warn('[useSupplierCurrenciesState:handleAddCustomRoundingRule] Error:', err);
       }
     },
-    [customRoundingRules, onRefreshSupplier, supplier.id, token],
+    [customRoundingRules, onRefreshFeed, feed.supplierId, feed.id, token],
   );
 
   const handleDeleteCustomRoundingRule = useCallback(
@@ -223,36 +215,38 @@ export function useSupplierCurrenciesState({
       setCustomRoundingRules(nextRules);
       setRoundingMode(nextRounding);
       try {
-        await updateSupplier(
-          supplier.id,
-          { priceRounding: nextRounding, customRoundingRules: nextRules },
+        await updateSupplierFeedSource(
+          feed.supplierId,
+          feed.id,
+          { priceRounding: nextRounding as PriceRoundingValue, customRoundingRules: nextRules },
           token || undefined,
         );
-        onRefreshSupplier();
+        onRefreshFeed?.();
       } catch (err) {
         console.warn('[useSupplierCurrenciesState:handleDeleteCustomRoundingRule] Error:', err);
       }
     },
-    [customRoundingRules, onRefreshSupplier, roundingMode, supplier.id, token],
+    [customRoundingRules, onRefreshFeed, roundingMode, feed.supplierId, feed.id, token],
   );
 
   const handleSaveCurrencyConfig = useCallback(async () => {
     setIsSaving(true);
     try {
-      await updateSupplier(
-        supplier.id,
+      await updateSupplierFeedSource(
+        feed.supplierId,
+        feed.id,
         {
           baseCurrency,
           exchangeRateMode: exchangeMode,
           exchangeRate: activeRate,
           currencyBufferPercent: baseCurrency === CurrencyCode.UAH ? 0 : bufferPercent,
-          priceRounding: roundingMode,
+          priceRounding: roundingMode as PriceRoundingValue,
           customRoundingRules,
           selectedBankId: selectedBankId ?? null,
         },
         token || undefined,
       );
-      onRefreshSupplier();
+      onRefreshFeed?.();
     } catch (err) {
       console.warn('[useSupplierCurrenciesState:handleSaveCurrencyConfig] Error:', err);
     } finally {
@@ -264,10 +258,11 @@ export function useSupplierCurrenciesState({
     bufferPercent,
     customRoundingRules,
     exchangeMode,
-    onRefreshSupplier,
+    onRefreshFeed,
     roundingMode,
     selectedBankId,
-    supplier.id,
+    feed.supplierId,
+    feed.id,
     token,
   ]);
 

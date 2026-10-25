@@ -1,6 +1,6 @@
 import type { CurrencyCode } from '@smartfeed/shared';
 
-export type SupplierTabType = 'feeds' | 'categories' | 'pricing' | 'currencies' | 'products';
+export type SupplierTabType = 'feeds' | 'categories' | 'pricing' | 'products';
 
 export interface SupplierFiltersState {
   search: string;
@@ -80,8 +80,8 @@ export const SUPPLIER_COLUMNS = [
   },
   {
     id: 'currencyMarkup' as SupplierColumnId,
-    labelUk: 'Валюта',
-    labelEn: 'Currency',
+    labelUk: 'Націнка',
+    labelEn: 'Markup',
     canHide: true,
     defaultVisible: true,
   },

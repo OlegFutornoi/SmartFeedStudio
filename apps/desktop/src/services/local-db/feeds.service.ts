@@ -170,6 +170,10 @@ export class LocalFeedsService {
       deleteProducts,
     });
   }
+
+  async updateFeedSource(id: string, dto: Partial<FeedSourceDto>): Promise<FeedSourceDto> {
+    return invokeLocalDb('db_update_feed_source', { id, dto });
+  }
 }
 
 export const localFeedsService = new LocalFeedsService();

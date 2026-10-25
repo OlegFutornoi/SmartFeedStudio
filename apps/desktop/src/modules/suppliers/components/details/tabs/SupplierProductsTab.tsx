@@ -55,8 +55,6 @@ export const SupplierProductsTab: React.FC<SupplierProductsTabProps> = ({ suppli
     );
   }, [products, search]);
 
-  const currencySym = getCurrencySymbol(supplier.baseCurrency || 'UAH');
-
   return (
     <div className="space-y-4" data-testid="supplier-products-tab">
       {/* Search toolbar */}
@@ -144,7 +142,9 @@ export const SupplierProductsTab: React.FC<SupplierProductsTabProps> = ({ suppli
                       {prod.categoryNameUk || '—'}
                     </TableCell>
                     <TableCell className="py-1.5 text-center font-mono whitespace-nowrap">
-                      {prod.costPrice ? `${prod.costPrice} ${currencySym}` : '—'}
+                      {prod.costPrice
+                        ? `${prod.costPrice} ${getCurrencySymbol(prod.currency || 'UAH')}`
+                        : '—'}
                     </TableCell>
                     <TableCell className="py-1.5 text-center font-mono font-bold text-primary whitespace-nowrap">
                       {prod.price ? `${prod.price} ₴` : '—'}

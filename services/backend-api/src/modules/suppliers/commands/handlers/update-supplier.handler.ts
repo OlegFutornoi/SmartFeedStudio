@@ -48,21 +48,10 @@ export class UpdateSupplierHandler implements ICommandHandler<UpdateSupplierComm
     if (dto.city !== undefined) data.city = dto.city;
     if (dto.address !== undefined) data.address = dto.address;
     if (dto.postcode !== undefined) data.postcode = dto.postcode;
-    if (dto.baseCurrency !== undefined) data.baseCurrency = dto.baseCurrency;
-    if (dto.targetCurrency !== undefined) data.targetCurrency = dto.targetCurrency;
-    if (dto.exchangeRateMode !== undefined) data.exchangeRateMode = dto.exchangeRateMode;
-    if (dto.exchangeRate !== undefined) data.exchangeRate = dto.exchangeRate;
-    if (dto.currencyBufferPercent !== undefined)
-      data.currencyBufferPercent = dto.currencyBufferPercent;
-    if (dto.priceRounding !== undefined) data.priceRounding = dto.priceRounding;
-    if (dto.customRoundingRules !== undefined) {
-      data.customRoundingRules = JSON.parse(JSON.stringify(dto.customRoundingRules));
-    }
     if (dto.defaultMarginPercent !== undefined)
       data.defaultMarginPercent = dto.defaultMarginPercent;
     if (dto.defaultFixedMarkup !== undefined) data.defaultFixedMarkup = dto.defaultFixedMarkup;
     if (dto.isActive !== undefined) data.isActive = dto.isActive;
-    if (dto.selectedBankId !== undefined) data.selectedBankId = dto.selectedBankId;
 
     const updated = await this.prisma.supplier.update({
       where: { id },
@@ -93,19 +82,9 @@ export class UpdateSupplierHandler implements ICommandHandler<UpdateSupplierComm
       city: updated.city,
       address: updated.address,
       postcode: updated.postcode,
-      baseCurrency: updated.baseCurrency,
-      targetCurrency: updated.targetCurrency,
-      exchangeRateMode: updated.exchangeRateMode,
-      exchangeRate: Number(updated.exchangeRate),
-      currencyBufferPercent: Number(updated.currencyBufferPercent),
-      priceRounding: updated.priceRounding,
-      customRoundingRules: Array.isArray(updated.customRoundingRules)
-        ? updated.customRoundingRules
-        : [],
       defaultMarginPercent: Number(updated.defaultMarginPercent),
       defaultFixedMarkup: Number(updated.defaultFixedMarkup),
       isActive: updated.isActive,
-      selectedBankId: updated.selectedBankId ?? null,
       createdAt: updated.createdAt.toISOString(),
       updatedAt: updated.updatedAt.toISOString(),
     };

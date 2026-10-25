@@ -26,21 +26,6 @@ pub struct SupplierDto {
     pub city: Option<String>,
     pub address: Option<String>,
     pub postcode: Option<String>,
-    #[serde(default = "default_currency")]
-    pub base_currency: String,
-    #[serde(default = "default_currency")]
-    pub target_currency: String,
-    #[serde(default = "default_exchange_rate_mode")]
-    pub exchange_rate_mode: String,
-    #[serde(default = "default_exchange_rate")]
-    pub exchange_rate: f64,
-    #[serde(default)]
-    pub currency_buffer_percent: f64,
-    #[serde(default = "default_rounding")]
-    pub price_rounding: String,
-    #[serde(default)]
-    pub custom_rounding_rules: Vec<serde_json::Value>,
-    pub selected_bank_id: Option<String>,
     pub default_margin_percent: f64,
     pub default_fixed_markup: f64,
     pub is_active: bool,
@@ -88,14 +73,6 @@ pub struct CreateSupplierDto {
     pub city: Option<String>,
     pub address: Option<String>,
     pub postcode: Option<String>,
-    pub base_currency: Option<String>,
-    pub target_currency: Option<String>,
-    pub exchange_rate_mode: Option<String>,
-    pub exchange_rate: Option<f64>,
-    pub currency_buffer_percent: Option<f64>,
-    pub price_rounding: Option<String>,
-    pub custom_rounding_rules: Option<Vec<serde_json::Value>>,
-    pub selected_bank_id: Option<String>,
     #[serde(default)]
     pub default_margin_percent: f64,
     #[serde(default)]
@@ -126,14 +103,6 @@ pub struct UpdateSupplierDto {
     pub city: Option<String>,
     pub address: Option<String>,
     pub postcode: Option<String>,
-    pub base_currency: Option<String>,
-    pub target_currency: Option<String>,
-    pub exchange_rate_mode: Option<String>,
-    pub exchange_rate: Option<f64>,
-    pub currency_buffer_percent: Option<f64>,
-    pub price_rounding: Option<String>,
-    pub custom_rounding_rules: Option<Vec<serde_json::Value>>,
-    pub selected_bank_id: Option<String>,
     pub default_margin_percent: Option<f64>,
     pub default_fixed_markup: Option<f64>,
     pub is_active: Option<bool>,
@@ -224,6 +193,21 @@ pub struct FeedSourceDto {
     pub auto_update_stocks: bool,
     pub auto_create_new_products: bool,
     pub mapping_rules: Option<String>, // Keep as JSON string in Rust
+    #[serde(default = "default_currency")]
+    pub base_currency: String,
+    #[serde(default = "default_currency")]
+    pub target_currency: String,
+    #[serde(default = "default_exchange_rate_mode")]
+    pub exchange_rate_mode: String,
+    #[serde(default = "default_exchange_rate")]
+    pub exchange_rate: f64,
+    #[serde(default)]
+    pub currency_buffer_percent: f64,
+    #[serde(default = "default_rounding")]
+    pub price_rounding: String,
+    #[serde(default)]
+    pub custom_rounding_rules: Vec<serde_json::Value>,
+    pub selected_bank_id: Option<String>,
     pub products_count: Option<u32>,
     pub last_synced_at: Option<String>,
     pub last_sync_status: Option<String>,
@@ -250,7 +234,44 @@ pub struct CreateFeedSourceDto {
     pub auto_update_prices: bool,
     pub auto_update_stocks: bool,
     pub auto_create_new_products: bool,
+    pub base_currency: Option<String>,
+    pub target_currency: Option<String>,
+    pub exchange_rate_mode: Option<String>,
+    pub exchange_rate: Option<f64>,
+    pub currency_buffer_percent: Option<f64>,
+    pub price_rounding: Option<String>,
+    pub custom_rounding_rules: Option<Vec<serde_json::Value>>,
+    pub selected_bank_id: Option<String>,
     pub mapping_rules: Option<String>,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct UpdateFeedSourceDto {
+    pub name: Option<String>,
+    pub source_url: Option<String>,
+    pub canonical_url: Option<String>,
+    pub url_fingerprint: Option<String>,
+    pub content_hash: Option<String>,
+    pub parent_feed_source_id: Option<String>,
+    pub auth_header_name: Option<String>,
+    pub auth_header_value: Option<String>,
+    pub sync_interval_hours: Option<i32>,
+    pub auto_update_prices: Option<bool>,
+    pub auto_update_stocks: Option<bool>,
+    pub auto_create_new_products: Option<bool>,
+    pub base_currency: Option<String>,
+    pub target_currency: Option<String>,
+    pub exchange_rate_mode: Option<String>,
+    pub exchange_rate: Option<f64>,
+    pub currency_buffer_percent: Option<f64>,
+    pub price_rounding: Option<String>,
+    pub custom_rounding_rules: Option<Vec<serde_json::Value>>,
+    pub selected_bank_id: Option<String>,
+    pub mapping_rules: Option<String>,
+    pub products_count: Option<u32>,
+    pub last_synced_at: Option<String>,
+    pub last_sync_status: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]

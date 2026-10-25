@@ -2,7 +2,7 @@ import React from 'react';
 import { ArrowLeft, RefreshCw, Edit2, Trash2, Globe, Mail, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
-import { SupplierDto, getCurrencySymbol } from '@smartfeed/shared';
+import { SupplierDto } from '@smartfeed/shared';
 import { useTranslation } from '@/i18n';
 import { SupplierAvatar } from '@/modules/suppliers/components/common/SupplierAvatar';
 
@@ -26,8 +26,6 @@ export const SupplierDetailHeader: React.FC<SupplierDetailHeaderProps> = ({
   onToggleStatus,
 }) => {
   const { t } = useTranslation(['suppliers', 'common']);
-
-  const currencySym = getCurrencySymbol(supplier.baseCurrency || 'UAH');
 
   return (
     <div
@@ -191,10 +189,10 @@ export const SupplierDetailHeader: React.FC<SupplierDetailHeaderProps> = ({
           <div className="h-7 w-px bg-border/80" />
           <div className="text-center">
             <span className="text-xs text-muted-foreground block">
-              {t('suppliers:currency', { defaultValue: 'Валюта' })}
+              {t('suppliers:defaultMargin', { defaultValue: 'Базова націнка' })}
             </span>
             <span className="text-base font-bold font-mono text-primary">
-              {supplier.baseCurrency || 'UAH'} ({currencySym})
+              +{supplier.defaultMarginPercent || 0}%
             </span>
           </div>
         </div>

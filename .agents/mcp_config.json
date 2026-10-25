@@ -1,19 +1,62 @@
 {
   "mcpServers": {
-    "playwright": {
-      "command": "npx",
-      "args": ["-y", "@playwright/mcp@latest"]
+    "context7": {
+      "headers": {
+        "Authorization": "Bearer ctx7sk-6973405a-892e-47eb-8b27-0121053c29a6"
+      },
+      "serverUrl": "https://mcp.context7.com/mcp"
     },
-    "shadcn": {
-      "command": "npx",
-      "args": ["shadcn@latest", "mcp"]
+    "firecrawl": {
+      "args": [
+        "-c",
+        "FIRECRAWL_API_KEY=${FIRECRAWL_API_KEY:-$(security find-generic-password -a oleg -s FIRECRAWL_API_KEY -w 2>/dev/null)} exec npx -y firecrawl-mcp"
+      ],
+      "command": "/bin/bash"
+    },
+    "github": {
+      "args": [
+        "-c",
+        "GITHUB_PERSONAL_ACCESS_TOKEN=$(/opt/homebrew/bin/gh auth token 2>/dev/null) exec /opt/homebrew/bin/github-mcp-server stdio --read-only"
+      ],
+      "command": "/bin/bash"
+    },
+    "playwright": {
+      "args": ["-y", "@playwright/mcp@latest"],
+      "command": "npx"
+    },
+    "postgres": {
+      "args": [
+        "--access-mode=restricted",
+        "postgresql://postgres:postgrespassword@127.0.0.1:5432/smartfeed_db"
+      ],
+      "command": "/Users/oleg/.local/bin/postgres-mcp",
+      "disabled": false
     },
     "railway": {
-      "command": "/Users/oleg/.railway/bin/railway",
       "args": ["mcp"],
+      "command": "/Users/oleg/.railway/bin/railway",
       "env": {
         "RAILWAY_TOKEN": "4f684b38-49ee-4ad8-8809-807592c43181"
       }
+    },
+    "redis": {
+      "args": [
+        "--with",
+        "mcp<2",
+        "--from",
+        "redis-mcp-server",
+        "redis-mcp-server",
+        "--url",
+        "redis://127.0.0.1:6379"
+      ],
+      "command": "/opt/homebrew/bin/uvx"
+    },
+    "sentry": {
+      "command": "/Library/Frameworks/Python.framework/Versions/3.13/bin/mcp-server-sentry"
+    },
+    "shadcn": {
+      "args": ["-y", "shadcn@latest", "mcp"],
+      "command": "npx"
     }
   }
 }

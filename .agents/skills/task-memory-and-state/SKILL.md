@@ -12,14 +12,14 @@ rules:
 
 1. Read `.agents/rules/core.md` and `.agents/rules/docs_and_ops.md`.
 2. All runtime state resides strictly in `.agents/state/active_task.json`.
-3. Never scan the repository or re-read full active plans before checking the active task state.
+3. Never scan the repository or re-read full active tasks before checking the active task state.
 4. Keep the state file concise, structured, and strictly under 60-80 lines (<300 tokens).
 
 ## Core Mission: Token Economy and Zero Context Loss
 
 Without deterministic state management, AI agents lose context across sessions, turns, or handoffs, resulting in:
 
-- Wasted context tokens (re-reading 40KB+ plans or rescanning hundreds of files).
+- Wasted context tokens (re-reading 40KB+ tasks or rescanning hundreds of files).
 - Repetitive work (re-implementing already verified functions or undoing progress).
 - Blind handoffs (reviewers or QA agents lacking knowledge of what was changed and why).
 
@@ -30,7 +30,7 @@ This skill enforces a single, authoritative runtime checkpoint: `.agents/state/a
 ```json
 {
   "taskId": "task-YYYY-MM-DD-NN",
-  "activePlan": "plans/active/<name>.md",
+  "activeTask": "plans/active/FR-01-<title>.md | BE-01-... | FR-BE-01-...",
   "title": "Concise Task Title",
   "currentStage": "Stage N - <Stage Name>",
   "currentTask": "Task M: <Task Name>",

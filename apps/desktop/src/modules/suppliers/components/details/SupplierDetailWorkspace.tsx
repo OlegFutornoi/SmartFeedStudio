@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { Rss, FolderTree, SlidersHorizontal, Coins, Package } from 'lucide-react';
+import { Rss, FolderTree, SlidersHorizontal, Package } from 'lucide-react';
 import { SupplierDto } from '@smartfeed/shared';
 import { SupplierDetailHeader } from '@/modules/suppliers/components/details/SupplierDetailHeader';
 import { SupplierFeedsTab } from '@/modules/suppliers/components/details/tabs/SupplierFeedsTab';
 import { SupplierCategoriesTab } from '@/modules/suppliers/components/details/tabs/SupplierCategoriesTab';
 import { SupplierPricingTab } from '@/modules/suppliers/components/details/tabs/SupplierPricingTab';
-import { SupplierCurrenciesTab } from '@/modules/suppliers/components/details/tabs/SupplierCurrenciesTab';
 import { SupplierProductsTab } from '@/modules/suppliers/components/details/tabs/SupplierProductsTab';
 import { useTranslation } from '@/i18n';
 import type { SupplierTabType } from '@/modules/suppliers/types';
@@ -91,15 +90,6 @@ export const SupplierDetailWorkspace: React.FC<SupplierDetailWorkspaceProps> = (
             </TabsTrigger>
 
             <TabsTrigger
-              value="currencies"
-              className="text-xs gap-1.5 h-7 data-[state=active]:bg-card shadow-xs"
-              data-testid="tab-currencies"
-            >
-              <Coins className="size-3.5" />
-              {t('suppliers:tabCurrencies', { defaultValue: 'Багатовалютність' })}
-            </TabsTrigger>
-
-            <TabsTrigger
               value="products"
               className="text-xs gap-1.5 h-7 data-[state=active]:bg-card shadow-xs"
               data-testid="tab-products"
@@ -129,12 +119,7 @@ export const SupplierDetailWorkspace: React.FC<SupplierDetailWorkspaceProps> = (
           <SupplierPricingTab supplier={supplier} onRefreshSupplier={onRefreshSupplier} />
         </TabsContent>
 
-        {/* Tab 4: Currencies */}
-        <TabsContent value="currencies" className="mt-0 focus-visible:outline-none">
-          <SupplierCurrenciesTab supplier={supplier} onRefreshSupplier={onRefreshSupplier} />
-        </TabsContent>
-
-        {/* Tab 5: Products */}
+        {/* Tab 4: Products */}
         <TabsContent value="products" className="mt-0 focus-visible:outline-none">
           <SupplierProductsTab supplier={supplier} />
         </TabsContent>

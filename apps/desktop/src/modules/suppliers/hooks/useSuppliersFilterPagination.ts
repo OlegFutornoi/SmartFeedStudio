@@ -21,7 +21,7 @@ export function useSuppliersFilterPagination(suppliers: SupplierDto[]) {
         s.name.toLowerCase().includes(filters.search.toLowerCase()) ||
         s.code.toLowerCase().includes(filters.search.toLowerCase());
 
-      const matchesCurrency = filters.currency === 'ALL' || s.baseCurrency === filters.currency;
+      const matchesCurrency = !filters.currency || filters.currency === 'ALL';
 
       const matchesStatus =
         filters.status === 'ALL' ||

@@ -14,8 +14,8 @@ description: Core universal engineering invariants applied across all tasks and 
 ## CORE-02: Zero Silent Failures
 
 - Catch blocks must never be empty or contain only comments.
-- Every catch block must log a structured warning (`this.logger.warn('[Context] Message:', err)` or `console.warn('[Context] Message:', err)`) or throw an explicit domain `HttpException`.
-- Reason: Swallowed exceptions mask critical operational errors, leave state corrupted, and create untraceable runtime freezes.
+- Every catch block must log a structured warning (`this.logger.warn(...)` or `console.warn(...)`) or throw an explicit domain `HttpException`.
+- Reason: Swallowed exceptions mask critical operational errors and leave state corrupted.
 
 ## CORE-03: Zero `as any` Type Bypasses
 
@@ -38,15 +38,15 @@ description: Core universal engineering invariants applied across all tasks and 
 
 ## CORE-06: Upfront Research via context7 and Project MCPs
 
-- When integrating external libraries, adopting new framework features, resolving version drift, or working with complex API signatures (not routine primitives), ground knowledge via `context7`.
-- Use either native MCP tools (`resolve-library-id`, `query-docs`) or the local CLI (`ctx7 library <name> "<query>"`, `ctx7 docs <id> "<query>"`), supplemented by project MCPs (`postgres`, `shadcn`, `redis`).
-- Never guess API signatures or rely on stale training memory for third-party SDKs.
-- Reason: Library APIs evolve frequently; verified official documentation prevents broken builds and debugging churn.
+- When integrating external libraries, adopting framework features, or checking API signatures, ground knowledge via `context7`.
+- Use native MCP tools (`resolve-library-id`, `query-docs`) or CLI (`ctx7`), supplemented by project MCPs (`postgres`, `shadcn`, `redis`).
+- Never guess API signatures or rely on stale training memory. Verified official docs prevent broken builds.
+- Reason: Third-party APIs evolve frequently; verified official documentation prevents debugging churn.
 
 ## CORE-07: Strict Chat Brevity and Zero Plan Dumping
 
 - Never duplicate, rewrite, or dump full plans, task breakdowns, or file contents into chat messages.
-- All detailed plans reside strictly in `plans/active/<name>.md`.
+- All detailed tasks reside strictly in `plans/active/<task-name>.md`.
 - Chat responses must contain only a 1-2 sentence status summary and a clickable file link (`[Plan](file:///...)`).
 - Reason: Dumping large plans into chat burns context tokens without providing operational value.
 
@@ -66,8 +66,8 @@ description: Core universal engineering invariants applied across all tasks and 
 
 - Never automatically execute `git commit` or `git push`.
 - Staging and committing code occurs strictly when the user issues an explicit command (`/git-commit`, `commit`).
-- Regular commits append `[skip ci]` by default and push directly to remote without tags (zero GitHub Actions triggered); release commits (`/git-commit -r` or `/git-commit --release [patch|minor|major]`) omit `[skip ci]`, bump versions, and push ONLY the specific release tag (`refs/tags/vX.Y.Z`, never global `--tags`) to trigger release builds (`release.yml`, `docker.yml`).
-- Reason: Autonomous commits bypass user review; skipping CI on regular commits saves runner minutes and eliminates unneeded CI jobs, reserving CI builds strictly for releases (`-r`).
+- Regular commits append `[skip ci]` and push without tags (zero CI runs); release commits (`/git-commit -r`) omit `[skip ci]`, bump versions, and push ONLY the release tag (`refs/tags/vX.Y.Z`) to trigger release builds (`release.yml`).
+- Reason: Autonomous commits bypass user review; skipping CI on regular commits saves runner minutes.
 
 ## CORE-11: Targeted Feature-Scoped Testing
 
@@ -83,10 +83,11 @@ description: Core universal engineering invariants applied across all tasks and 
 
 ## PLAN-01: Three-Directory Plans Lifecycle
 
-- Implementation plans reside strictly in `plans/active/`, `plans/backlog/`, or `plans/completed/`.
-- Creating a plan in `plans/active/` gives no authority to modify code or database until explicit user approval ("починай", "виконуй", "реалізуй").
-- Once implemented and 100% verified by tests, move the plan to `plans/completed/<name>.md` and update `plans/README.md`.
-- Reason: Deterministic plan lifecycle prevents scope creep, unapproved changes, and undocumented releases.
+- Tasks (formerly plans) reside strictly in `plans/active/`, `plans/backlog/`, or `plans/completed/`.
+- Naming standard: starting from next task, tasks are separated by domain with sequential numbering: frontend `FR-<num>-<short-title>.md`, backend `BE-<num>-<short-title>.md`, or joint full-stack `FR-BE-<num>-<short-title>.md`. Legacy files remain untouched.
+- Creating a task in `plans/active/` gives no authority to modify code or database until explicit user approval ("починай", "виконуй", "реалізуй").
+- Once implemented and 100% verified by tests, move the task to `plans/completed/<filename>.md` and update `plans/README.md`.
+- Reason: Deterministic task taxonomy and lifecycle prevent scope creep, unapproved changes, and undocumented releases.
 
 ## PLAN-02: Mandatory Ukrainian Language for Plans & Audits
 

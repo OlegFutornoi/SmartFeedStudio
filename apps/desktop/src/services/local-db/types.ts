@@ -31,6 +31,9 @@ import type {
   CheckFeedCollisionDto,
   FeedCollisionResultDto,
   LiveBankRateDto,
+  SupplierSyncSettingDto,
+  UpdateSupplierSyncSettingDto,
+  SupplierSyncLogDto,
 } from '@smartfeed/shared';
 
 export interface LocalCountersSummary {
@@ -88,6 +91,10 @@ export interface LocalDbCommandMap {
   db_delete_feed_source: {
     args: { id: string; supplierId: string; deleteProducts?: boolean };
     result: { success: boolean; deletedProductsCount: number };
+  };
+  db_update_feed_source: {
+    args: { id: string; dto: Partial<FeedSourceDto> };
+    result: FeedSourceDto;
   };
 
   // Suppliers
@@ -263,5 +270,27 @@ export interface LocalDbCommandMap {
   db_save_bank_rates: {
     args: { rates: LiveBankRateDto[] };
     result: void;
+  };
+
+  // Supplier Sync & Logs
+  db_get_supplier_sync_settings: {
+    args: { supplierId: string };
+    result: SupplierSyncSettingDto;
+  };
+  db_update_supplier_sync_settings: {
+    args: { supplierId: string; payload: UpdateSupplierSyncSettingDto };
+    result: SupplierSyncSettingDto;
+  };
+  db_get_supplier_sync_logs: {
+    args: { supplierId: string; limit?: number };
+    result: SupplierSyncLogDto[];
+  };
+  db_add_supplier_sync_log: {
+    args: { log: SupplierSyncLogDto };
+    result: SupplierSyncLogDto;
+  };
+  db_clear_supplier_sync_logs: {
+    args: { supplierId: string };
+    result: { success: boolean };
   };
 }

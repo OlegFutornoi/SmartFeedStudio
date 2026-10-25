@@ -1,123 +1,34 @@
 import type { FeedSourceDto } from '@smartfeed/shared';
 import { localDb } from '@/services/local-db';
-import { isTauri } from '@/lib/runtime';
 import { emitDataSync } from '@/lib/syncEvents';
 import { feedEngine } from '@/services/feed-engine';
 import { fetchFeedContent } from '@/lib/api/feeds-mutations';
-import { fetchWithAuth } from '@/lib/api/client';
 import { cleanupStorageOrphans } from '@/services/storage';
-import type { ImportFeedResultDto } from '@/lib/api/feeds';
+import { FeedSourceItemDto, mapLocalFeedSource } from '@/lib/api/feed-sources-types';
 
-export interface FeedSourceItemDto {
-  id: string;
-  supplierId: string;
-  name: string;
-  sourceType: string;
-  fileFormat: string;
-  sourceUrl?: string;
-  s3FileKey?: string;
-  autoUpdatePrices: boolean;
-  autoUpdateStocks: boolean;
-  lastSyncedAt?: string | null;
-  lastSyncStatus?: string | null;
-  productsCount?: number;
-  createdAt: string;
-  updatedAt: string;
-}
-
-function mapLocalFeedSource(s: FeedSourceDto): FeedSourceItemDto {
-  return {
-    id: s.id,
-    supplierId: s.supplierId,
-    name: s.name,
-    sourceType: s.sourceType,
-    fileFormat: s.fileFormat || 'XML',
-    sourceUrl: s.sourceUrl || undefined,
-    autoUpdatePrices: s.autoUpdatePrices ?? true,
-    autoUpdateStocks: s.autoUpdateStocks ?? true,
-    lastSyncedAt: s.lastSyncedAt
-      ? typeof s.lastSyncedAt === 'string'
-        ? s.lastSyncedAt
-        : s.lastSyncedAt.toISOString()
-      : null,
-    lastSyncStatus: s.lastSyncStatus || 'SUCCESS',
-    productsCount: s.productsCount ?? 0,
-    createdAt: typeof s.createdAt === 'string' ? s.createdAt : s.createdAt.toISOString(),
-    updatedAt: typeof s.updatedAt === 'string' ? s.updatedAt : s.updatedAt.toISOString(),
-  };
-}
+export type { FeedSourceItemDto };
 
 export async function getSupplierFeedSources(
   supplierId: string,
-  token?: string,
+  _token?: string,
 ): Promise<FeedSourceItemDto[]> {
-  if (isTauri()) {
-    try {
-      const sources = await localDb.feeds.getSupplierFeedSources(supplierId);
-      return (sources || []).map(mapLocalFeedSource);
-    } catch (err) {
-      console.warn('[feed-sources] localDb lookup failed:', err);
-      return [];
-    }
-  }
-
-  try {
-    const response = await fetchWithAuth(
-      `/feeds/suppliers/${supplierId}/sources`,
-      { method: 'GET' },
-      token,
-    );
-    if (response.ok) {
-      const data = await response.json();
-      if (Array.isArray(data)) return data as FeedSourceItemDto[];
-    }
-  } catch (err) {
-    console.warn('[ApiClient] Remote call failed, using local fallback:', err);
-  }
-
   try {
     const sources = await localDb.feeds.getSupplierFeedSources(supplierId);
-    if (Array.isArray(sources)) {
-      return sources.map(mapLocalFeedSource);
-    }
+    return (sources || []).map(mapLocalFeedSource);
   } catch (err) {
-    console.warn('[feed-sources] localDb fallback failed:', err);
+    console.warn('[feed-sources] localDb lookup failed:', err);
+    return [];
   }
-
-  return [];
 }
 
-export async function getAllFeedSources(token?: string): Promise<FeedSourceItemDto[]> {
-  if (isTauri()) {
-    try {
-      const sources = await localDb.feeds.getAllFeedSources();
-      return (sources || []).map(mapLocalFeedSource);
-    } catch (err) {
-      console.warn('[feed-sources] localDb getAllFeedSources failed:', err);
-      return [];
-    }
-  }
-
-  try {
-    const response = await fetchWithAuth('/feeds/sources', { method: 'GET' }, token);
-    if (response.ok) {
-      const data = await response.json();
-      if (Array.isArray(data)) return data as FeedSourceItemDto[];
-    }
-  } catch (err) {
-    console.warn('[ApiClient] Remote call failed, using local fallback:', err);
-  }
-
+export async function getAllFeedSources(_token?: string): Promise<FeedSourceItemDto[]> {
   try {
     const sources = await localDb.feeds.getAllFeedSources();
-    if (Array.isArray(sources)) {
-      return sources.map(mapLocalFeedSource);
-    }
+    return (sources || []).map(mapLocalFeedSource);
   } catch (err) {
-    console.warn('[feed-sources] localDb fallback failed:', err);
+    console.warn('[feed-sources] localDb getAllFeedSources failed:', err);
+    return [];
   }
-
-  return [];
 }
 
 export async function syncSupplierFeedSource(
@@ -146,21 +57,6 @@ export async function syncSupplierFeedSource(
     throw localErr;
   }
 
-  if (!isTauri()) {
-    try {
-      const response = await fetchWithAuth(
-        `/feeds/suppliers/${supplierId}/sources/${sourceId}/sync`,
-        { method: 'POST' },
-        token,
-      );
-      if (response.ok) {
-        return await response.json();
-      }
-    } catch (err) {
-      console.warn('[ApiClient] Remote call failed, using local fallback:', err);
-    }
-  }
-
   return { success: true, jobId: `job_${Date.now()}` };
 }
 
@@ -170,25 +66,6 @@ export async function deleteSupplierFeedSource(
   token?: string,
   deleteProducts = true,
 ): Promise<{ success: boolean; deletedProductsCount?: number }> {
-  let remoteDeletedCount: number | undefined = undefined;
-
-  if (!isTauri()) {
-    try {
-      const query = deleteProducts ? '?deleteProducts=true' : '';
-      const response = await fetchWithAuth(
-        `/feeds/suppliers/${supplierId}/sources/${sourceId}${query}`,
-        { method: 'DELETE' },
-        token,
-      );
-      if (response.ok) {
-        const res = await response.json();
-        remoteDeletedCount = res.deletedProductsCount;
-      }
-    } catch (err) {
-      console.warn('[ApiClient] Remote call failed, using local fallback:', err);
-    }
-  }
-
   if (deleteProducts && token) {
     try {
       const allProds = await localDb.products.getProducts({ limit: 10000 });
@@ -223,48 +100,18 @@ export async function deleteSupplierFeedSource(
 
   return {
     success: true,
-    deletedProductsCount:
-      localResult.deletedProductsCount !== undefined && localResult.deletedProductsCount > 0
-        ? localResult.deletedProductsCount
-        : remoteDeletedCount || 0,
+    deletedProductsCount: localResult.deletedProductsCount || 0,
   };
 }
+export * from '@/lib/api/feed-sources-import';
 
-export async function importFeedUrl(
-  dto: { supplierId: string; url: string; catalogId?: string },
-  token?: string,
-): Promise<ImportFeedResultDto> {
-  const content = await fetchFeedContent(dto.url, token);
-  const res = await localDb.feeds.importFeedContent(content, {
-    supplierId: dto.supplierId,
-    sourceUrl: dto.url,
-  });
-
-  return {
-    feedSourceId: res.feedSourceId,
-    totalItems: res.totalProcessed,
-    createdItems: res.createdCount,
-    updatedItems: 0,
-    categoriesCreated: 0,
-    format: 'XML',
-  };
-}
-
-export async function importFeedContent(
-  dto: { supplierId: string; content: string; fileName?: string; catalogId?: string },
+export async function updateSupplierFeedSource(
+  _supplierId: string,
+  sourceId: string,
+  dto: Partial<FeedSourceDto>,
   _token?: string,
-): Promise<ImportFeedResultDto> {
-  const res = await localDb.feeds.importFeedContent(dto.content, {
-    supplierId: dto.supplierId,
-    fileName: dto.fileName,
-  });
-
-  return {
-    feedSourceId: res.feedSourceId,
-    totalItems: res.totalProcessed,
-    createdItems: res.createdCount,
-    updatedItems: 0,
-    categoriesCreated: 0,
-    format: 'XML',
-  };
+): Promise<FeedSourceItemDto> {
+  const updated = await localDb.feeds.updateFeedSource(sourceId, dto);
+  emitDataSync('feeds');
+  return mapLocalFeedSource(updated);
 }

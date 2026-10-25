@@ -1,4 +1,12 @@
-import { ProductStatus, type ProductDto, type SupplierPricingRuleDto } from '@smartfeed/shared';
+import {
+  ProductStatus,
+  type ProductDto,
+  type SupplierPricingRuleDto,
+  type FeedSourceDto,
+  convertSupplierPrice,
+  CurrencyCode,
+  PriceRoundingMode,
+} from '@smartfeed/shared';
 import { localDb } from '@/services/local-db';
 import { emitDataSync } from '@/lib/syncEvents';
 import type { RawParsedProduct } from '@/services/feed-engine/stream-parser';
@@ -42,13 +50,42 @@ export class BatchIngester {
     const defaultMargin = supplier.defaultMarginPercent || 0;
     const defaultFixed = supplier.defaultFixedMarkup || 0;
 
+    let feedSource: FeedSourceDto | null = null;
+    try {
+      const sources = await localDb.feeds.getSupplierFeedSources(supplier.id);
+      feedSource = sources.find((f) => f.id === feedSourceId) || null;
+    } catch (feedErr) {
+      console.warn('[BatchIngester] Could not load feed source for currency conversion:', feedErr);
+    }
+
     const BATCH_SIZE = 500;
     let totalProcessed = 0;
 
     for (let offset = 0; offset < rawProducts.length; offset += BATCH_SIZE) {
       const chunk = rawProducts.slice(offset, offset + BATCH_SIZE);
       const productsToUpsert: ProductDto[] = chunk.map((raw, idx) => {
-        const costPrice = raw.costPrice > 0 ? raw.costPrice : raw.price;
+        const rawCostPrice = raw.costPrice > 0 ? raw.costPrice : raw.price;
+        let costPrice = rawCostPrice;
+        let targetCurrency = raw.currency || 'UAH';
+
+        if (feedSource) {
+          const fromCurr = (feedSource.baseCurrency || raw.currency || 'UAH') as CurrencyCode;
+          const toCurr = (feedSource.targetCurrency || 'UAH') as CurrencyCode;
+          targetCurrency = toCurr;
+
+          if (fromCurr !== toCurr || (feedSource.exchangeRate && feedSource.exchangeRate !== 1.0)) {
+            const conv = convertSupplierPrice({
+              costPrice: rawCostPrice,
+              fromCurrency: fromCurr,
+              toCurrency: toCurr,
+              exchangeRate: feedSource.exchangeRate || 1.0,
+              bufferPercent: feedSource.currencyBufferPercent || 0,
+              roundingMode: feedSource.priceRounding || PriceRoundingMode.NONE,
+            });
+            costPrice = conv.finalConvertedPrice;
+          }
+        }
+
         const { finalPrice } = this.calculatePrice(
           costPrice,
           raw.categoryId,
@@ -68,7 +105,7 @@ export class BatchIngester {
           titleUk: raw.titleUk,
           costPrice,
           price: finalPrice,
-          currency: raw.currency || 'UAH',
+          currency: targetCurrency,
           stockQuantity: raw.stockQuantity,
           inStock: raw.inStock,
           categoryId: raw.categoryId || undefined,

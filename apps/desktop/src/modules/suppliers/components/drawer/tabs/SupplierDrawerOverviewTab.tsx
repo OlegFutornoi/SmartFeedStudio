@@ -3,7 +3,6 @@ import {
   Globe,
   Coins,
   Percent,
-  Sliders,
   FileText,
   Hash,
   Factory,
@@ -158,25 +157,18 @@ export const SupplierDrawerOverviewTab: React.FC<SupplierDrawerOverviewTabProps>
           </CardContent>
         </Card>
 
-        {/* Card 4: Currency & Commercial Markups */}
+        {/* Card 4: Commercial Markups */}
         <Card
           className="shadow-xs border-border/80"
           data-testid="supplier-overview-commercial-card"
         >
           <CardHeader className="py-2.5 px-4 border-b border-border/60">
             <CardTitle className="text-xs font-semibold text-foreground flex items-center gap-1.5">
-              <Coins className="size-3.5 text-primary" />
+              <Percent className="size-3.5 text-primary" />
               {t('suppliers:commercialConditions', { defaultValue: 'Комерційні умови' })}
             </CardTitle>
           </CardHeader>
           <CardContent className="p-4 space-y-2.5 text-xs">
-            <div className="flex items-center justify-between">
-              <span className="text-muted-foreground flex items-center gap-1.5">
-                <Coins className="size-3 text-muted-foreground shrink-0" />
-                {t('suppliers:baseCurrencyShort', { defaultValue: 'Базова валюта' })}
-              </span>
-              <span className="font-medium text-foreground">{supplier.baseCurrency || 'UAH'}</span>
-            </div>
             <div className="flex items-center justify-between">
               <span className="text-muted-foreground flex items-center gap-1.5">
                 <Percent className="size-3 text-muted-foreground shrink-0" />
@@ -189,11 +181,11 @@ export const SupplierDrawerOverviewTab: React.FC<SupplierDrawerOverviewTabProps>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-muted-foreground flex items-center gap-1.5">
-                <Sliders className="size-3 text-muted-foreground shrink-0" />
-                {t('suppliers:priceRoundingShort', { defaultValue: 'Крок округлення' })}
+                <Coins className="size-3 text-muted-foreground shrink-0" />
+                {t('suppliers:currenciesTabTitle', { defaultValue: 'Валюти та курси' })}
               </span>
-              <span className="font-medium text-foreground">
-                {supplier.priceRounding || 'NONE'}
+              <span className="font-medium text-muted-foreground">
+                {t('suppliers:configuredPerFeed', { defaultValue: 'Налаштовуються у фідах' })}
               </span>
             </div>
           </CardContent>

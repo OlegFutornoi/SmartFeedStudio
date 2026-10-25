@@ -11,13 +11,13 @@ rules:
 ## Step 0 - Load rules (mandatory, before any analysis or code)
 
 1. Read `.agents/rules/core.md` and `.agents/rules/docs_and_ops.md`.
-2. Plans are strictly saved to `plans/active/<feature-name>.md` per `PLAN-01`.
+2. Tasks are strictly saved to `plans/active/FR-<num>-<title>.md`, `BE-<num>-<title>.md`, or `FR-BE-<num>-<title>.md` per `PLAN-01`.
 3. Do not auto-commit during task execution (`CORE-10`). Git commits occur strictly on explicit user request.
 4. Output strictly a 1-2 sentence summary with clickable file link in chat (`CORE-07`).
 
 ## Overview
 
-Author deterministic implementation plans for engineers who know the tech stack but need explicit file paths, signatures, tests, and boundaries. Provide the plan as bite-sized tasks (2-5 min each) following TDD RED -> GREEN.
+Author deterministic implementation tasks for engineers who know the tech stack but need explicit file paths, signatures, tests, and boundaries. Provide the task as bite-sized steps (2-5 min each) following TDD RED -> GREEN.
 
 ## File Boundaries & Modularity
 
@@ -25,9 +25,9 @@ Author deterministic implementation plans for engineers who know the tech stack 
 - Each file must have one clear responsibility and stay under 250 lines (`CORE-04`).
 - Group files by domain responsibility, not arbitrary technical layers.
 
-## Plan Document Header
+## Task Document Header
 
-Every plan in `plans/active/<feature-name>.md` begins with:
+Every task in `plans/active/` (`FR-...`, `BE-...`, `FR-BE-...`) begins with:
 
 ```markdown
 # [Feature Name] Implementation Plan
@@ -85,4 +85,4 @@ Before finalizing, verify:
 
 ## Handoff
 
-Save the plan to `plans/active/<feature-name>.md`. Update `.agents/state/active_task.json` via `task-memory-and-state` and provide a 1-2 sentence status summary with a clickable link in chat.
+Save the task to `plans/active/` (`FR-...`, `BE-...`, `FR-BE-...`). Update `.agents/state/active_task.json` via `task-memory-and-state` and provide a 1-2 sentence status summary with a clickable link in chat.

@@ -9,7 +9,7 @@ import {
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 import { MoreVertical, ExternalLink, Edit2, Trash2, PlusCircle, Mail, Phone } from 'lucide-react';
-import { SupplierDto, getCurrencySymbol } from '@smartfeed/shared';
+import { SupplierDto } from '@smartfeed/shared';
 import { useTranslation } from '@/i18n';
 import type { SupplierColumnId } from '@/modules/suppliers/types';
 import { SupplierAvatar } from '@/modules/suppliers/components/common/SupplierAvatar';
@@ -37,8 +37,6 @@ export const SupplierTableRow: React.FC<SupplierTableRowProps> = ({
 }) => {
   const { t } = useTranslation(['suppliers', 'common']);
   const visible = (id: SupplierColumnId) => (isColumnVisible ? isColumnVisible(id) : true);
-
-  const currencySym = getCurrencySymbol(s.baseCurrency || 'UAH');
 
   return (
     <TableRow
@@ -172,13 +170,13 @@ export const SupplierTableRow: React.FC<SupplierTableRowProps> = ({
         </TableCell>
       )}
 
-      {/* Currency (Strictly Currency Only) */}
+      {/* Markup */}
       {visible('currencyMarkup') && (
         <TableCell
           className="py-2 text-center text-xs font-normal text-foreground"
           data-testid={`supplier-currency-${s.id}`}
         >
-          {s.baseCurrency || 'UAH'} ({currencySym})
+          <span className="font-medium text-primary">+{s.defaultMarginPercent || 0}%</span>
         </TableCell>
       )}
 

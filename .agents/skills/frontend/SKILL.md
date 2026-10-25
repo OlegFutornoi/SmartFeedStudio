@@ -23,20 +23,20 @@ rules: [core, frontend, ui, i18n, testing]
 ## Procedure
 
 1. Stage 1 - Discovery and UX Scope Analysis: identify the target runtime (Desktop Tauri SQLite vs Web Admin Portal), verify user permissions, map the 5 mandatory UI states (loading skeleton, empty state card, data table, localized error, success feedback), and verify bilingual dictionary keys.
-2. Stage 2 - Planning and Modularity Budgeting: create implementation plan in `plans/active/<feature>.md`. Enforce component modularity budget (<250 lines per file). Explicitly budget row component extraction (`*TableRow.tsx`), modal extraction (`*DialogsContainer.tsx`), and modal state extraction (`use*PageState.ts`). Await user approval before coding.
+2. Stage 2 - Planning and Modularity Budgeting: create task in `plans/active/FR-<num>-<short-title>.md` (or `FR-BE-<num>-<short-title>.md` if joint). Enforce component modularity budget (<250 lines per file). Explicitly budget row component extraction (`*TableRow.tsx`), modal extraction (`*DialogsContainer.tsx`), and modal state extraction (`use*PageState.ts`). Await user approval before coding.
 3. Stage 3 - UI/UX Architecture and Official shadcn Primitives: strictly compose all UI views using official shadcn primitives (`@/components/ui/*`: Button, Input, Switch, Card, Dialog, Select, Badge, Tooltip, etc., `UI-05`). Never hand-roll custom ad-hoc interactive or container elements with raw HTML. Enforce semantic tokens only (`bg-background`, `bg-card`, `text-foreground`, `border-border`, `bg-primary`, `bg-destructive`, `bg-muted`, `bg-success`). Enforce 100% solid sticky headers (`thead.sticky.top-0 bg-card` or `bg-background`, `UI-01`). Zero rainbow/circus decorative icons (`UI-07`). Hide header CTA if empty state CTA is visible (`UI-04`). Enforce form input hygiene (unblocked paste, `spellCheck={false}` on technical/URL/SKU fields, `autocomplete="off"` on non-auth inputs, `UI-08`), micro-typography (`…` true ellipsis, `text-wrap: balance` on headings, `UI-09`), accessible interactive primitives (`<button>` for actions, `<Link>` for navigation, visible `:focus-visible:ring-*`, `scroll-margin-top`, `UI-10`), surface depth hierarchy over heavy borders (`UI-11`), desktop high-density geometry and hover-revealed row actions (`UI-12`), singular boldness doctrine (`UI-13`), restrained neutral multi-select matrices (`UI-14`), and compact 2-column control pairing + inline header search bars (`UI-15`). Install required shadcn primitives via `npx shadcn@latest add <component> -y`.
 4. Stage 4 - Automated Testing (Playwright TDD RED): write Page Object Model E2E test in `apps/desktop/tests/` or `apps/admin-portal/tests/`. Assert real business data (`expect(val).not.toBe('Постачальник')`), single-request network execution (`requestCount === 1`), and dynamic bilingual switching (`UA` ⇄ `EN`). Run test to verify expected functional failure (RED).
 5. Stage 5 - Implementation and UI Polish (GREEN): implement components to turn test GREEN. Use `useRef` guards for API calls (`isFetchingRef`, `lastFetchedTokenRef`). Use clean callback deps (never include locale/theme). Localize 100% of strings, tooltips (`title={t('...')}`), and map backend errors via `getErrorMessage(err, t)`.
 6. Stage 6 - Code Review and Quality Verification: execute pre-commit verification checklist. Check file lengths (<250 lines), zero dead imports, zero `any` types, zero hardcoded colors. Run `pnpm --filter <app> exec tsc --noEmit` and `pnpm format`.
 7. Stage 7 - Systematic Debugging: if UI fails or test breaks, inspect DOM and console with Playwright MCP tools (`browser_snapshot`, `browser_take_screenshot`). Trace root cause backward; apply structural fix.
-8. Stage 8 - Documentation and Plan Handoff: move plan to `plans/completed/<feature>.md`. Update `plans/README.md`.
+8. Stage 8 - Documentation and Task Handoff: move task to `plans/completed/<filename>.md`. Update `plans/README.md`.
 
 ## Outputs
 
 - Modular React components meeting the <250-line budget.
 - Playwright E2E tests covering 5 UI states and bilingual parity.
 - Bilingual localization keys added to both `locales/uk/*.json` and `locales/en/*.json`.
-- Completed plan moved to `plans/completed/`.
+- Completed task moved to `plans/completed/`.
 
 ## Gate (stop condition)
 

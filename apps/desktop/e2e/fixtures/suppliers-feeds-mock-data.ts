@@ -140,6 +140,21 @@ export async function setupSuppliersFeedsRoutes(page: Page) {
     });
   });
 
+  await page.route(/\/api\/feeds\/suppliers\/([^/?#]+)\/sources\/([^/?#]+)$/, async (route) => {
+    if (route.request().method() === 'PATCH') {
+      const payload = route.request().postDataJSON() || {};
+      const sourceId = route.request().url().split('/').pop()?.split('?')[0];
+      const found = mockFeedSources.find((s) => s.id === sourceId) || mockFeedSources[0];
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ ...found, ...payload, updatedAt: new Date().toISOString() }),
+      });
+      return;
+    }
+    await route.fallback();
+  });
+
   await page.route('**/api/feeds/analyze-url', async (route) => {
     await route.fulfill({
       status: 200,

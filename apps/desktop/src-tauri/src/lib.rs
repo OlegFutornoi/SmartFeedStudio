@@ -390,6 +390,12 @@ fn db_create_feed_source(dto: models::CreateFeedSourceDto) -> Result<models::Fee
 }
 
 #[tauri::command]
+fn db_update_feed_source(id: String, dto: models::UpdateFeedSourceDto) -> Result<models::FeedSourceDto, String> {
+    let conn = get_db_conn()?;
+    db::update_feed_source(&conn, &id, dto).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
 fn db_delete_feed_source(id: String, delete_products: Option<bool>) -> Result<serde_json::Value, String> {
     let conn = get_db_conn()?;
     let deleted_count = db::delete_feed_source(&conn, &id, delete_products.unwrap_or(true)).map_err(|e| e.to_string())?;
@@ -546,6 +552,7 @@ pub fn run() {
             db_get_all_feed_sources,
             db_check_feed_collision,
             db_create_feed_source,
+            db_update_feed_source,
             db_delete_feed_source,
             db_get_products,
             db_get_categories_summary,

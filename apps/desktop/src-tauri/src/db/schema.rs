@@ -27,14 +27,6 @@ pub fn init_schema(conn: &Connection) -> Result<()> {
             city TEXT,
             address TEXT,
             postcode TEXT,
-            base_currency TEXT DEFAULT 'UAH',
-            target_currency TEXT DEFAULT 'UAH',
-            exchange_rate_mode TEXT DEFAULT 'MANUAL',
-            exchange_rate REAL DEFAULT 1.0,
-            currency_buffer_percent REAL DEFAULT 0,
-            price_rounding TEXT DEFAULT 'NONE',
-            custom_rounding_rules TEXT DEFAULT '[]',
-            selected_bank_id TEXT,
             default_margin_percent REAL DEFAULT 0,
             default_fixed_markup REAL DEFAULT 0,
             is_active INTEGER DEFAULT 1,
@@ -95,6 +87,14 @@ pub fn init_schema(conn: &Connection) -> Result<()> {
             auto_update_stocks INTEGER DEFAULT 1,
             auto_create_new_products INTEGER DEFAULT 1,
             mapping_rules TEXT,
+            base_currency TEXT DEFAULT 'UAH',
+            target_currency TEXT DEFAULT 'UAH',
+            exchange_rate_mode TEXT DEFAULT 'MANUAL',
+            exchange_rate REAL DEFAULT 1.0,
+            currency_buffer_percent REAL DEFAULT 0,
+            price_rounding TEXT DEFAULT 'NONE',
+            custom_rounding_rules TEXT DEFAULT '[]',
+            selected_bank_id TEXT,
             last_synced_at TEXT,
             last_sync_status TEXT,
             created_at TEXT DEFAULT CURRENT_TIMESTAMP,
@@ -290,8 +290,17 @@ pub fn init_schema(conn: &Connection) -> Result<()> {
         ALTER TABLE local_feed_sources ADD COLUMN url_fingerprint TEXT;
         ALTER TABLE local_feed_sources ADD COLUMN content_hash TEXT;
         ALTER TABLE local_feed_sources ADD COLUMN parent_feed_source_id TEXT;
+        ALTER TABLE local_feed_sources ADD COLUMN base_currency TEXT DEFAULT 'UAH';
+        ALTER TABLE local_feed_sources ADD COLUMN target_currency TEXT DEFAULT 'UAH';
+        ALTER TABLE local_feed_sources ADD COLUMN exchange_rate_mode TEXT DEFAULT 'MANUAL';
+        ALTER TABLE local_feed_sources ADD COLUMN exchange_rate REAL DEFAULT 1.0;
+        ALTER TABLE local_feed_sources ADD COLUMN currency_buffer_percent REAL DEFAULT 0;
+        ALTER TABLE local_feed_sources ADD COLUMN price_rounding TEXT DEFAULT 'NONE';
+        ALTER TABLE local_feed_sources ADD COLUMN custom_rounding_rules TEXT DEFAULT '[]';
+        ALTER TABLE local_feed_sources ADD COLUMN selected_bank_id TEXT;
         CREATE INDEX IF NOT EXISTS idx_feeds_url_fingerprint ON local_feed_sources(url_fingerprint);
         CREATE INDEX IF NOT EXISTS idx_feeds_supplier_fingerprint ON local_feed_sources(supplier_id, url_fingerprint);
+        CREATE INDEX IF NOT EXISTS idx_feeds_supplier_base_curr ON local_feed_sources(supplier_id, base_currency);
     ");
 
     let _ = conn.execute_batch("

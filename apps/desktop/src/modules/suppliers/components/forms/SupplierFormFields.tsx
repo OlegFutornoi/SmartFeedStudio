@@ -3,15 +3,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { ExternalLink } from 'lucide-react';
-import { CurrencyCode } from '@smartfeed/shared';
 import { SupplierAvatarPicker } from '@/modules/suppliers/components/forms/SupplierAvatarPicker';
 import { SupplierCompanyFields } from '@/modules/suppliers/components/forms/SupplierCompanyFields';
 import { SupplierManagerFields } from '@/modules/suppliers/components/forms/SupplierManagerFields';
@@ -33,8 +25,6 @@ export interface SupplierFormFieldsProps {
   setNotes: (v: string) => void;
   logoUrl: string | null;
   setLogoUrl: (v: string | null) => void;
-  baseCurrency: CurrencyCode;
-  setBaseCurrency: (v: CurrencyCode) => void;
   legalName: string;
   setLegalName: (v: string) => void;
   taxId: string;
@@ -79,8 +69,6 @@ export const SupplierFormFields: React.FC<SupplierFormFieldsProps> = ({
   setNotes,
   logoUrl,
   setLogoUrl,
-  baseCurrency,
-  setBaseCurrency,
   legalName,
   setLegalName,
   taxId,
@@ -188,37 +176,6 @@ export const SupplierFormFields: React.FC<SupplierFormFieldsProps> = ({
                 </Button>
               )}
             </div>
-          </div>
-
-          <div>
-            <Label className="text-xs font-medium text-foreground block mb-1">
-              {t('suppliers:filterCurrency', { defaultValue: 'Базова валюта прайсу' })}
-            </Label>
-            <Select
-              value={baseCurrency}
-              onValueChange={(val: CurrencyCode) => setBaseCurrency(val)}
-            >
-              <SelectTrigger
-                className="h-8.5 text-xs bg-background/80"
-                data-testid="supplier-currency-select"
-              >
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value={CurrencyCode.UAH}>
-                  {t('suppliers:currUah', { defaultValue: 'Гривня (UAH ₴)' })}
-                </SelectItem>
-                <SelectItem value={CurrencyCode.USD}>
-                  {t('suppliers:currUsd', { defaultValue: 'Долар (USD $)' })}
-                </SelectItem>
-                <SelectItem value={CurrencyCode.EUR}>
-                  {t('suppliers:currEur', { defaultValue: 'Євро (EUR €)' })}
-                </SelectItem>
-                <SelectItem value={CurrencyCode.PLN}>
-                  {t('suppliers:currPln', { defaultValue: 'Злотий (PLN zł)' })}
-                </SelectItem>
-              </SelectContent>
-            </Select>
           </div>
         </div>
       </div>

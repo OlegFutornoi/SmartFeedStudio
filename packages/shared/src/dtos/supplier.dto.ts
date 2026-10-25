@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { CurrencyCode, ExchangeRateMode, PriceRoundingMode } from '../enums/index.js';
+import { PriceRoundingMode } from '../enums/index.js';
 
 export const CustomRoundingRuleTypeSchema = z.enum(['DECIMAL', 'INTEGER_ENDING', 'MULTIPLE']);
 export type CustomRoundingRuleType = z.infer<typeof CustomRoundingRuleTypeSchema>;
@@ -51,16 +51,6 @@ export const SupplierDtoSchema = z.object({
   address: z.string().nullable().optional(),
   postcode: z.string().nullable().optional(),
 
-  // Currency & Multi-Currency configuration
-  baseCurrency: z.nativeEnum(CurrencyCode).default(CurrencyCode.UAH),
-  targetCurrency: z.nativeEnum(CurrencyCode).default(CurrencyCode.UAH),
-  exchangeRateMode: z.nativeEnum(ExchangeRateMode).default(ExchangeRateMode.MANUAL),
-  exchangeRate: z.number().positive().default(1.0),
-  currencyBufferPercent: z.number().min(0).max(100).default(0),
-  priceRounding: PriceRoundingValueSchema.default(PriceRoundingMode.NONE),
-  customRoundingRules: z.array(CustomRoundingRuleDtoSchema).default([]).optional(),
-  selectedBankId: z.string().nullable().optional(),
-
   // Default markups
   defaultMarginPercent: z.number().nonnegative().default(0),
   defaultFixedMarkup: z.number().nonnegative().default(0),
@@ -106,15 +96,6 @@ export const CreateSupplierDtoSchema = z.object({
   city: z.string().optional(),
   address: z.string().optional(),
   postcode: z.string().optional(),
-
-  baseCurrency: z.nativeEnum(CurrencyCode).default(CurrencyCode.UAH).optional(),
-  targetCurrency: z.nativeEnum(CurrencyCode).default(CurrencyCode.UAH).optional(),
-  exchangeRateMode: z.nativeEnum(ExchangeRateMode).default(ExchangeRateMode.MANUAL).optional(),
-  exchangeRate: z.number().positive().default(1.0).optional(),
-  currencyBufferPercent: z.number().min(0).max(100).default(0).optional(),
-  priceRounding: PriceRoundingValueSchema.default(PriceRoundingMode.NONE).optional(),
-  customRoundingRules: z.array(CustomRoundingRuleDtoSchema).optional(),
-  selectedBankId: z.string().nullable().optional(),
 
   defaultMarginPercent: z
     .number()

@@ -27,12 +27,12 @@ rules: [core, backend, database, frontend, ui, security, testing]
 4. Stage 4 - Frontend, UX, and Theme Audit: verify 100% solid sticky headers (`UI-01`). Verify zero off-scheme arbitrary colors (`UI-02`). Verify zero rainbow decorative icons on forms/cards (`UI-07`). Verify zero duplicate CTA buttons (`UI-04`). Verify `useRef` network deduplication (`FE-01`). Verify 100% bilingual parity via `pnpm i18n:check` (`I18N-01`).
 5. Stage 5 - Database and Schema Audit: verify 100% FK indexes (`DB-01`). Verify timestamptz(6) on all DateTime columns (`DB-02`). Verify snake_case mapping (`DB-03`). Verify CUID primary keys (`DB-04`). Verify cascade deletes (`DB-05`). Verify zero N+1 query loops (`DB-06`). Verify short `$transaction` blocks (`DB-08`).
 6. Stage 6 - Adversarial Stress-Test: analyze concurrent mutation race conditions (`BE-07`). Verify mutex locks on quota checks. Verify `cleanDatabase` teardown in test suites (`TEST-01`). Verify behavioral parity between mock driver and real backend (`FE-08`).
-7. Stage 7 - Remediation Plan Generation: if architectural, security, or quality defects are discovered, generate `plans/active/remediation_<target>.md`. Group findings by severity (P0 Critical, P1 High, P2 Medium, P3 Low) citing exact invariant IDs and file:line locations. Never silently modify production code during an audit.
-8. Stage 8 - Final Review Report: format audit findings in the standardized report structure. Output a 1-2 sentence summary in chat with a link to the remediation plan or report artifact.
+7. Stage 7 - Remediation Task Generation: if architectural, security, or quality defects are discovered, generate remediation task in `plans/active/` (`FR-<num>-remediation-<target>.md` for frontend, `BE-<num>-remediation-<target>.md` for backend, or `FR-BE-<num>-remediation-<target>.md` for joint issues). Group findings by severity (P0 Critical, P1 High, P2 Medium, P3 Low) citing exact invariant IDs and file:line locations. Never silently modify production code during an audit.
+8. Stage 8 - Final Review Report: format audit findings in the standardized report structure. Output a 1-2 sentence summary in chat with a clickable link to the remediation task (`[Задача](file:///...)`).
 
 ## Outputs
 
-- Structured audit report or remediation plan in `plans/active/remediation_<target>.md`.
+- Structured audit report or remediation task in `plans/active/` (`FR-...`, `BE-...`, `FR-BE-...`).
 - Findings grouped by severity P0-P3, citing invariant IDs, file paths, and exact line numbers.
 - Verification status for static typechecking (`tsc --noEmit`) and formatting (`pnpm format`).
 

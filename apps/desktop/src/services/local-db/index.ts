@@ -6,7 +6,6 @@ import { localFeedsService } from '@/services/local-db/feeds.service';
 import { localImagesService } from '@/services/local-db/images.service';
 import { localCountersService } from '@/services/local-db/counters.service';
 import { localCurrenciesService } from '@/services/local-db/currencies.service';
-import { mockDatabaseDriver } from '@/services/local-db/mock-driver';
 
 export {
   localSuppliersService,
@@ -17,7 +16,6 @@ export {
   localImagesService,
   localCountersService,
   localCurrenciesService,
-  mockDatabaseDriver,
 };
 
 export const localDb = {
@@ -29,7 +27,6 @@ export const localDb = {
   images: localImagesService,
   counters: localCountersService,
   currencies: localCurrenciesService,
-  mockDriver: mockDatabaseDriver,
 };
 
 export default localDb;

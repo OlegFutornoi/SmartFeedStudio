@@ -7,7 +7,7 @@ Central intelligence orchestrator connecting 7 specialized autonomous engineerin
 ## 2. Specialized Autonomous Agents
 
 - Planner & Architecture Agent: `@agents_planner` / `@agents-planner`
-  - Domain: Requirements discovery, domain boundary modeling, tracer-bullet vertical slicing, ADRs, contract-first design, web-grounded research via Perplexity Agent API, and implementation plan authoring.
+  - Domain: Requirements discovery, domain boundary modeling, tracer-bullet vertical slicing, ADRs, contract-first design, web-grounded research via Perplexity Agent API, and deterministic task authoring (`FR-`, `BE-`, `FR-BE-`).
   - Specification: `.agents/agents/planner.md`
   - Rules: `core.md`, `agents.md`, `backend.md`, `database.md`, `frontend.md`, `security.md`, `docs_and_ops.md`
 
@@ -100,7 +100,7 @@ Central intelligence orchestrator connecting 7 specialized autonomous engineerin
 - `ci-cd-and-automation`: GitHub Actions workflows, CI release pipelines, Docker health.
 - `release-and-rollback`: SemVer release governance, smoke checks, and rollback runbooks.
 - `observability-and-instrumentation`: Structured logging, Sentry monitoring, incident tracing.
-- `planning-and-lifecycle`: Deterministic plans lifecycle in `plans/active/`, `plans/backlog/`, `plans/completed/`.
+- `planning-and-lifecycle`: Deterministic task lifecycle in `plans/active/`, `plans/backlog/`, `plans/completed/` (`FR-`, `BE-`, `FR-BE-`).
 - `writing-plans`: Bite-sized, testable TDD implementation steps (2-5 min) with explicit file boundaries and interfaces.
 - `to-tickets`: Tracer-bullet vertical slicing through all architectural layers, declaring explicit blocking edges.
 - `brainstorming`: Deep user-need discovery, non-obvious goal mapping, and pre-implementation solution probing.

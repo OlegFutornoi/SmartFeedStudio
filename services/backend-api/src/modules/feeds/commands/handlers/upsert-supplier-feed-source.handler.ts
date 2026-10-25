@@ -3,7 +3,14 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { NotFoundException } from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
 import { UpsertSupplierFeedSourceCommand } from '@/modules/feeds/commands/upsert-supplier-feed-source.command';
-import type { FeedSourceDto, FeedSourceType, FeedFormat } from '@smartfeed/shared';
+import type {
+  FeedSourceDto,
+  FeedSourceType,
+  FeedFormat,
+  CurrencyCode,
+  ExchangeRateMode,
+  CustomRoundingRuleDto,
+} from '@smartfeed/shared';
 
 @CommandHandler(UpsertSupplierFeedSourceCommand)
 export class UpsertSupplierFeedSourceHandler implements ICommandHandler<UpsertSupplierFeedSourceCommand> {
@@ -47,6 +54,17 @@ export class UpsertSupplierFeedSourceHandler implements ICommandHandler<UpsertSu
             autoUpdatePrices: dto.autoUpdatePrices ?? existing.autoUpdatePrices,
             autoUpdateStocks: dto.autoUpdateStocks ?? existing.autoUpdateStocks,
             autoCreateNewProducts: dto.autoCreateNewProducts ?? existing.autoCreateNewProducts,
+            baseCurrency: dto.baseCurrency ?? existing.baseCurrency,
+            targetCurrency: dto.targetCurrency ?? existing.targetCurrency,
+            exchangeRateMode: dto.exchangeRateMode ?? existing.exchangeRateMode,
+            exchangeRate: dto.exchangeRate ?? existing.exchangeRate,
+            currencyBufferPercent: dto.currencyBufferPercent ?? existing.currencyBufferPercent,
+            priceRounding: dto.priceRounding ?? existing.priceRounding,
+            customRoundingRules: dto.customRoundingRules
+              ? JSON.parse(JSON.stringify(dto.customRoundingRules))
+              : existing.customRoundingRules,
+            selectedBankId:
+              dto.selectedBankId !== undefined ? dto.selectedBankId : existing.selectedBankId,
             mappingRules: dto.mappingRules
               ? JSON.parse(JSON.stringify(dto.mappingRules))
               : existing.mappingRules,
@@ -73,6 +91,14 @@ export class UpsertSupplierFeedSourceHandler implements ICommandHandler<UpsertSu
           autoUpdatePrices: dto.autoUpdatePrices ?? true,
           autoUpdateStocks: dto.autoUpdateStocks ?? true,
           autoCreateNewProducts: dto.autoCreateNewProducts ?? true,
+          baseCurrency: dto.baseCurrency ?? 'UAH',
+          targetCurrency: dto.targetCurrency ?? 'UAH',
+          exchangeRateMode: dto.exchangeRateMode ?? 'MANUAL',
+          exchangeRate: dto.exchangeRate ?? 1.0,
+          currencyBufferPercent: dto.currencyBufferPercent ?? 0,
+          priceRounding: dto.priceRounding ?? 'NONE',
+          customRoundingRules: JSON.parse(JSON.stringify(dto.customRoundingRules ?? [])),
+          selectedBankId: dto.selectedBankId ?? null,
           mappingRules: dto.mappingRules ? JSON.parse(JSON.stringify(dto.mappingRules)) : undefined,
           productsCount: dto.productsCount ?? 0,
         },
@@ -98,6 +124,16 @@ export class UpsertSupplierFeedSourceHandler implements ICommandHandler<UpsertSu
       autoUpdatePrices: source.autoUpdatePrices,
       autoUpdateStocks: source.autoUpdateStocks,
       autoCreateNewProducts: source.autoCreateNewProducts,
+      baseCurrency: source.baseCurrency as CurrencyCode,
+      targetCurrency: source.targetCurrency as CurrencyCode,
+      exchangeRateMode: source.exchangeRateMode as ExchangeRateMode,
+      exchangeRate: Number(source.exchangeRate),
+      currencyBufferPercent: Number(source.currencyBufferPercent),
+      priceRounding: source.priceRounding,
+      customRoundingRules: Array.isArray(source.customRoundingRules)
+        ? (source.customRoundingRules as unknown as CustomRoundingRuleDto[])
+        : [],
+      selectedBankId: source.selectedBankId ?? null,
       mappingRules: (source.mappingRules as Record<string, unknown>) ?? null,
       productsCount: source.productsCount,
       lastSyncedAt: source.lastSyncedAt ? source.lastSyncedAt.toISOString() : null,

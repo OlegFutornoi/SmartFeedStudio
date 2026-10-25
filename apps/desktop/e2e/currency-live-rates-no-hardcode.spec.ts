@@ -16,8 +16,17 @@ test.describe('Desktop App — Динамічні курси валют без �
     await page.getByTestId('supplier-name-sup_test_2').click();
     await expect(page.getByTestId('supplier-drawer-sheet')).toBeVisible();
 
-    // 2. Переходимо на вкладку «Багатовалютність»
-    await page.getByTestId('supplier-drawer-tab-currencies').click();
+    // 2. Переходимо на вкладку «Джерела фідів»
+    await page.getByTestId('supplier-drawer-tab-feeds').click();
+    await expect(page.getByTestId('supplier-feeds-tab')).toBeVisible();
+
+    // 3. Відкриваємо налаштування валюти для першого фіду
+    const configureFeedCurrencyBtn = page
+      .locator('[data-testid^="configure-feed-currency-"]')
+      .first();
+    await expect(configureFeedCurrencyBtn).toBeVisible();
+    await configureFeedCurrencyBtn.click();
+
     const currenciesTab = page.getByTestId('supplier-currencies-tab');
     await expect(currenciesTab).toBeVisible();
 
@@ -50,5 +59,11 @@ test.describe('Desktop App — Динамічні курси валют без �
     const saveBtn = page.getByTestId('save-currency-btn');
     await expect(saveBtn).toBeVisible();
     await saveBtn.click();
+
+    // 9. Перевіряємо кнопку повернення до списку фідів
+    const backBtn = page.getByTestId('back-to-feeds-list-btn');
+    await expect(backBtn).toBeVisible();
+    await backBtn.click();
+    await expect(page.getByTestId('supplier-feeds-tab')).toBeVisible();
   });
 });

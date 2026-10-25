@@ -1,6 +1,5 @@
 import type { UserProfile } from '@smartfeed/shared';
 import { TOKEN_KEY, REFRESH_TOKEN_KEY, USER_KEY } from '@/lib/api';
-import { mockDatabaseDriver } from '@/services/local-db/mock-driver';
 import { emitDataSync } from '@/lib/syncEvents';
 
 export const authSessionStorage = {
@@ -17,9 +16,6 @@ export const authSessionStorage = {
     if (!saved) return null;
     try {
       const parsed = JSON.parse(saved) as UserProfile;
-      if (parsed?.id) {
-        mockDatabaseDriver.switchUser(parsed.id);
-      }
       return parsed;
     } catch (e) {
       console.warn('[authSessionStorage] Failed to parse saved user:', e);
@@ -45,7 +41,6 @@ export const authSessionStorage = {
       localStorage.setItem(REFRESH_TOKEN_KEY, tokens.refreshToken);
     }
     localStorage.setItem(USER_KEY, JSON.stringify(user));
-    mockDatabaseDriver.switchUser(user.id);
     emitDataSync(['suppliers', 'feeds', 'products', 'quotas', 'all']);
   },
 
@@ -57,7 +52,6 @@ export const authSessionStorage = {
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(REFRESH_TOKEN_KEY);
     localStorage.removeItem(USER_KEY);
-    mockDatabaseDriver.switchUser(null);
     emitDataSync(['suppliers', 'feeds', 'products', 'quotas', 'all']);
   },
 };

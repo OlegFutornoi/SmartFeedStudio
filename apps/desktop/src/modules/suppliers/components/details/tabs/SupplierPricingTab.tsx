@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableHeader, TableBody, TableRow, TableHead } from '@/components/ui/table';
-import type { SupplierDto } from '@smartfeed/shared';
+import { type SupplierDto, PriceRoundingMode } from '@smartfeed/shared';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTranslation } from '@/i18n';
 import { useSupplierPricingState } from '@/modules/suppliers/components/details/tabs/pricing/useSupplierPricingState';
@@ -280,7 +280,7 @@ export const SupplierPricingTab: React.FC<SupplierPricingTabProps> = ({
             onSimCategoryIdChange={setSimCategoryId}
             categories={categories}
             simulation={simulation}
-            roundingMode={supplier.priceRounding}
+            roundingMode={PriceRoundingMode.NONE}
           />
         </div>
       </div>

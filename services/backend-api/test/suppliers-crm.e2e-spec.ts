@@ -1,5 +1,4 @@
 import * as request from 'supertest';
-import { CurrencyCode } from '@smartfeed/shared';
 import type { INestApplication } from '@nestjs/common';
 import {
   bootstrapSuppliersTestContext,
@@ -41,7 +40,6 @@ describe('Suppliers CRM Fields & Validation (E2E)', () => {
       city: 'Одеса',
       address: 'Промринок 7км, Базова 12',
       postcode: '65000',
-      baseCurrency: CurrencyCode.UAH,
     };
 
     // Create supplier
@@ -97,18 +95,7 @@ describe('Suppliers CRM Fields & Validation (E2E)', () => {
       .expect(200);
   });
 
-  it('9. Validation Guard: rejects invalid currency and negative markups with 400 Bad Request', async () => {
-    // Bad currency
-    await request(app.getHttpServer())
-      .post('/api/suppliers')
-      .set('Authorization', `Bearer ${userToken}`)
-      .send({
-        name: 'Invalid Currency Supplier',
-        code: `BAD_CUR_${timestamp}`,
-        baseCurrency: 'BITCOIN',
-      })
-      .expect(400);
-
+  it('9. Validation Guard: rejects negative markups with 400 Bad Request', async () => {
     // Negative margin percent
     await request(app.getHttpServer())
       .post('/api/suppliers')
@@ -117,6 +104,17 @@ describe('Suppliers CRM Fields & Validation (E2E)', () => {
         name: 'Negative Margin Supplier',
         code: `NEG_MAR_${timestamp}`,
         defaultMarginPercent: -10,
+      })
+      .expect(400);
+
+    // Negative fixed markup
+    await request(app.getHttpServer())
+      .post('/api/suppliers')
+      .set('Authorization', `Bearer ${userToken}`)
+      .send({
+        name: 'Negative Markup Supplier',
+        code: `NEG_FIX_${timestamp}`,
+        defaultFixedMarkup: -50,
       })
       .expect(400);
   });

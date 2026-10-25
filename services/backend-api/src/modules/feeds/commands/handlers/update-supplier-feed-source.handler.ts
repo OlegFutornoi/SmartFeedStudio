@@ -3,7 +3,14 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { NotFoundException } from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
 import { UpdateSupplierFeedSourceCommand } from '@/modules/feeds/commands/update-supplier-feed-source.command';
-import type { FeedSourceDto, FeedSourceType, FeedFormat } from '@smartfeed/shared';
+import type {
+  FeedSourceDto,
+  FeedSourceType,
+  FeedFormat,
+  CurrencyCode,
+  ExchangeRateMode,
+  CustomRoundingRuleDto,
+} from '@smartfeed/shared';
 
 @CommandHandler(UpdateSupplierFeedSourceCommand)
 export class UpdateSupplierFeedSourceHandler implements ICommandHandler<UpdateSupplierFeedSourceCommand> {
@@ -44,6 +51,17 @@ export class UpdateSupplierFeedSourceHandler implements ICommandHandler<UpdateSu
     if (dto.autoUpdateStocks !== undefined) data.autoUpdateStocks = dto.autoUpdateStocks;
     if (dto.autoCreateNewProducts !== undefined)
       data.autoCreateNewProducts = dto.autoCreateNewProducts;
+    if (dto.baseCurrency !== undefined) data.baseCurrency = dto.baseCurrency;
+    if (dto.targetCurrency !== undefined) data.targetCurrency = dto.targetCurrency;
+    if (dto.exchangeRateMode !== undefined) data.exchangeRateMode = dto.exchangeRateMode;
+    if (dto.exchangeRate !== undefined) data.exchangeRate = dto.exchangeRate;
+    if (dto.currencyBufferPercent !== undefined)
+      data.currencyBufferPercent = dto.currencyBufferPercent;
+    if (dto.priceRounding !== undefined) data.priceRounding = dto.priceRounding;
+    if (dto.customRoundingRules !== undefined) {
+      data.customRoundingRules = JSON.parse(JSON.stringify(dto.customRoundingRules));
+    }
+    if (dto.selectedBankId !== undefined) data.selectedBankId = dto.selectedBankId;
     if (dto.mappingRules !== undefined) {
       data.mappingRules = JSON.parse(JSON.stringify(dto.mappingRules));
     }
@@ -77,6 +95,16 @@ export class UpdateSupplierFeedSourceHandler implements ICommandHandler<UpdateSu
       autoUpdatePrices: updated.autoUpdatePrices,
       autoUpdateStocks: updated.autoUpdateStocks,
       autoCreateNewProducts: updated.autoCreateNewProducts,
+      baseCurrency: updated.baseCurrency as CurrencyCode,
+      targetCurrency: updated.targetCurrency as CurrencyCode,
+      exchangeRateMode: updated.exchangeRateMode as ExchangeRateMode,
+      exchangeRate: Number(updated.exchangeRate),
+      currencyBufferPercent: Number(updated.currencyBufferPercent),
+      priceRounding: updated.priceRounding,
+      customRoundingRules: Array.isArray(updated.customRoundingRules)
+        ? (updated.customRoundingRules as unknown as CustomRoundingRuleDto[])
+        : [],
+      selectedBankId: updated.selectedBankId ?? null,
       mappingRules: (updated.mappingRules as Record<string, unknown>) ?? null,
       productsCount: updated.productsCount,
       lastSyncedAt: updated.lastSyncedAt ? updated.lastSyncedAt.toISOString() : null,

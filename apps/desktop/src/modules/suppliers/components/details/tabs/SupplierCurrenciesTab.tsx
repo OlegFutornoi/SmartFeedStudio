@@ -1,21 +1,25 @@
 import React from 'react';
-import { ArrowRightLeft } from 'lucide-react';
-import { SupplierDto, CurrencyCode, getCurrencySymbol } from '@smartfeed/shared';
+import { ArrowLeft, ArrowRightLeft } from 'lucide-react';
+import { CurrencyCode, getCurrencySymbol } from '@smartfeed/shared';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { CompactBankRatesTable } from '@/modules/suppliers/components/details/tabs/currencies/CompactBankRatesTable';
 import { SupplierCurrencyFormCard } from '@/modules/suppliers/components/details/tabs/currencies/SupplierCurrencyFormCard';
 import { SupplierCurrencyPreviewCard } from '@/modules/suppliers/components/details/tabs/currencies/SupplierCurrencyPreviewCard';
 import { useSupplierCurrenciesState } from '@/modules/suppliers/components/details/tabs/currencies/useSupplierCurrenciesState';
 import { useTranslation } from '@/i18n';
+import type { FeedSourceItemDto } from '@/lib/api/feed-sources';
 
 interface SupplierCurrenciesTabProps {
-  supplier: SupplierDto;
-  onRefreshSupplier: () => void;
+  feed: FeedSourceItemDto;
+  onBack?: () => void;
+  onRefreshFeed?: () => void;
 }
 
 export const SupplierCurrenciesTab: React.FC<SupplierCurrenciesTabProps> = ({
-  supplier,
-  onRefreshSupplier,
+  feed,
+  onBack,
+  onRefreshFeed,
 }) => {
   const { t } = useTranslation(['suppliers', 'common']);
 
@@ -43,12 +47,27 @@ export const SupplierCurrenciesTab: React.FC<SupplierCurrenciesTabProps> = ({
     isDirty,
     handleResetChanges,
     handleSaveCurrencyConfig,
-  } = useSupplierCurrenciesState({ supplier, onRefreshSupplier });
+  } = useSupplierCurrenciesState({ feed, onRefreshFeed });
 
   const symbol = getCurrencySymbol(baseCurrency);
 
   return (
     <div className="space-y-2.5" data-testid="supplier-currencies-tab">
+      {onBack && (
+        <div className="flex items-center justify-between pb-1">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onBack}
+            className="h-8 text-xs text-muted-foreground hover:text-foreground gap-1.5 -ml-2"
+            data-testid="back-to-feeds-list-btn"
+          >
+            <ArrowLeft className="size-3.5" />
+            {t('suppliers:backToFeedsList', { defaultValue: 'Назад до списку фідів' })}
+          </Button>
+          <div className="text-xs font-medium text-muted-foreground">{feed.name}</div>
+        </div>
+      )}
       {/* Top Conversion Formula Banner */}
       <div
         className="flex flex-wrap items-center justify-between gap-2 px-3 py-1.5 rounded-lg border border-border/60 bg-muted/20 text-xs"

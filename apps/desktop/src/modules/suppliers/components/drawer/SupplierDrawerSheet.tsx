@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Home, Rss, RefreshCw, FolderTree, TrendingUp, DollarSign } from 'lucide-react';
+import { Home, Rss, RefreshCw, FolderTree, TrendingUp } from 'lucide-react';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { useTranslation } from '@/i18n';
@@ -13,7 +13,6 @@ import { SupplierSyncTab } from '@/modules/suppliers/components/drawer/tabs/Supp
 import { SupplierFeedsTab } from '@/modules/suppliers/components/details/tabs/SupplierFeedsTab';
 import { SupplierCategoriesTab } from '@/modules/suppliers/components/details/tabs/SupplierCategoriesTab';
 import { SupplierPricingTab } from '@/modules/suppliers/components/details/tabs/SupplierPricingTab';
-import { SupplierCurrenciesTab } from '@/modules/suppliers/components/details/tabs/SupplierCurrenciesTab';
 
 interface SupplierDrawerSheetProps {
   isOpen: boolean;
@@ -143,15 +142,6 @@ export const SupplierDrawerSheet: React.FC<SupplierDrawerSheetProps> = ({
                 <TrendingUp className="size-3.5" />
                 {t('suppliers:tabPricing', { defaultValue: 'Націнки' })}
               </TabsTrigger>
-
-              <TabsTrigger
-                value="currencies"
-                className="h-7 px-3 text-xs gap-1.5 rounded-lg border-0 transition-colors text-muted-foreground hover:text-foreground hover:bg-muted/60 data-[state=active]:bg-primary/10 data-[state=active]:text-primary font-medium"
-                data-testid="supplier-drawer-tab-currencies"
-              >
-                <DollarSign className="size-3.5" />
-                {t('suppliers:tabCurrencies', { defaultValue: 'Багатовалютність' })}
-              </TabsTrigger>
             </TabsList>
           </div>
 
@@ -182,10 +172,6 @@ export const SupplierDrawerSheet: React.FC<SupplierDrawerSheetProps> = ({
 
             <TabsContent value="pricing" className="m-0 p-5 focus-visible:outline-none">
               <SupplierPricingTab supplier={supplier} onRefreshSupplier={onRefreshSupplier} />
-            </TabsContent>
-
-            <TabsContent value="currencies" className="m-0 p-5 focus-visible:outline-none">
-              <SupplierCurrenciesTab supplier={supplier} onRefreshSupplier={onRefreshSupplier} />
             </TabsContent>
           </div>
         </Tabs>

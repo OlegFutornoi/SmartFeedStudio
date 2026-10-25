@@ -26,12 +26,6 @@ describe('Supplier Tabs Extended CRUD (E2E)', () => {
         name: 'Brain Extended Tabs Inc',
         code: `BRAIN_TABS_${timestamp}`,
         contactEmail: 'sales@tabs.local',
-        baseCurrency: CurrencyCode.USD,
-        targetCurrency: CurrencyCode.UAH,
-        exchangeRateMode: ExchangeRateMode.MANUAL,
-        exchangeRate: 41.5,
-        currencyBufferPercent: 2.5,
-        priceRounding: PriceRoundingMode.DECIMAL_99,
         defaultMarginPercent: 25,
         defaultFixedMarkup: 100,
         isActive: true,
@@ -45,7 +39,7 @@ describe('Supplier Tabs Extended CRUD (E2E)', () => {
     await ctx.teardown();
   });
 
-  it('1. POST /api/feeds/suppliers/:id/sources — creates cloud feed source for supplier', async () => {
+  it('1. POST /api/feeds/suppliers/:id/sources — creates cloud feed source for supplier with currency config', async () => {
     const res = await request(app.getHttpServer())
       .post(`/api/feeds/suppliers/${createdSupplierId}/sources`)
       .set('Authorization', `Bearer ${userToken}`)
@@ -59,6 +53,12 @@ describe('Supplier Tabs Extended CRUD (E2E)', () => {
         autoUpdatePrices: true,
         autoUpdateStocks: true,
         autoCreateNewProducts: true,
+        baseCurrency: CurrencyCode.USD,
+        targetCurrency: CurrencyCode.UAH,
+        exchangeRateMode: ExchangeRateMode.MANUAL,
+        exchangeRate: 41.5,
+        currencyBufferPercent: 2.5,
+        priceRounding: PriceRoundingMode.DECIMAL_99,
       })
       .expect(201);
 
@@ -68,6 +68,11 @@ describe('Supplier Tabs Extended CRUD (E2E)', () => {
     expect(res.body.sourceUrl).toBe('https://brain.com.ua/feed/rozetka.xml');
     expect(res.body.productsCount).toBe(150);
     expect(res.body.syncIntervalHours).toBe(4);
+    expect(res.body.baseCurrency).toBe('USD');
+    expect(res.body.targetCurrency).toBe('UAH');
+    expect(res.body.exchangeRate).toBe(41.5);
+    expect(res.body.currencyBufferPercent).toBe(2.5);
+    expect(res.body.priceRounding).toBe('DECIMAL_99');
     createdFeedSourceId = res.body.id;
   });
 
@@ -101,7 +106,7 @@ describe('Supplier Tabs Extended CRUD (E2E)', () => {
     expect(res.body.productsCount).toBe(150);
   });
 
-  it('4. PATCH /api/feeds/suppliers/:id/sources/:sourceId — updates feed source metadata', async () => {
+  it('4. PATCH /api/feeds/suppliers/:id/sources/:sourceId — updates feed source metadata and currency settings', async () => {
     const res = await request(app.getHttpServer())
       .patch(`/api/feeds/suppliers/${createdSupplierId}/sources/${createdFeedSourceId}`)
       .set('Authorization', `Bearer ${userToken}`)
@@ -109,12 +114,22 @@ describe('Supplier Tabs Extended CRUD (E2E)', () => {
         name: 'Brain Updated XML',
         productsCount: 200,
         syncIntervalHours: 6,
+        baseCurrency: CurrencyCode.EUR,
+        exchangeRate: 45.2,
+        currencyBufferPercent: 1.5,
+        priceRounding: PriceRoundingMode.INTEGER_9,
+        selectedBankId: 'privat',
       })
       .expect(200);
 
     expect(res.body.name).toBe('Brain Updated XML');
     expect(res.body.productsCount).toBe(200);
     expect(res.body.syncIntervalHours).toBe(6);
+    expect(res.body.baseCurrency).toBe('EUR');
+    expect(res.body.exchangeRate).toBe(45.2);
+    expect(res.body.currencyBufferPercent).toBe(1.5);
+    expect(res.body.priceRounding).toBe('INTEGER_9');
+    expect(res.body.selectedBankId).toBe('privat');
   });
 
   it('5. Multi-Tenant Protection on Feed Sources — User 2 cannot access or mutate User 1 feed source', async () => {

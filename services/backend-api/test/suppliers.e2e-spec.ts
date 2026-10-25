@@ -1,5 +1,4 @@
 import * as request from 'supertest';
-import { CurrencyCode, ExchangeRateMode, PriceRoundingMode } from '@smartfeed/shared';
 import type { INestApplication } from '@nestjs/common';
 import {
   bootstrapSuppliersTestContext,
@@ -47,12 +46,6 @@ describe('Suppliers & Multi-Currency Management (E2E)', () => {
         city: 'Київ',
         address: 'вул. Степана Бандери, 21',
         postcode: '04073',
-        baseCurrency: CurrencyCode.USD,
-        targetCurrency: CurrencyCode.UAH,
-        exchangeRateMode: ExchangeRateMode.MANUAL,
-        exchangeRate: 41.5,
-        currencyBufferPercent: 2.5,
-        priceRounding: PriceRoundingMode.DECIMAL_99,
         defaultMarginPercent: 25,
         defaultFixedMarkup: 100,
         isActive: true,
@@ -71,11 +64,6 @@ describe('Suppliers & Multi-Currency Management (E2E)', () => {
     expect(res.body.city).toBe('Київ');
     expect(res.body.address).toBe('вул. Степана Бандери, 21');
     expect(res.body.postcode).toBe('04073');
-    expect(res.body.baseCurrency).toBe('USD');
-    expect(res.body.targetCurrency).toBe('UAH');
-    expect(res.body.exchangeRate).toBe(41.5);
-    expect(res.body.currencyBufferPercent).toBe(2.5);
-    expect(res.body.priceRounding).toBe('DECIMAL_99');
     expect(res.body.defaultMarginPercent).toBe(25);
     expect(res.body.isActive).toBe(true);
 
@@ -104,41 +92,25 @@ describe('Suppliers & Multi-Currency Management (E2E)', () => {
       .expect(200);
 
     expect(res.body.id).toBe(createdSupplierId);
-    expect(res.body.exchangeRate).toBe(41.5);
+    expect(res.body.defaultMarginPercent).toBe(25);
   });
 
-  it('4. PATCH /api/suppliers/:id — updates supplier, CRM fields, custom rounding rules and toggles isActive status', async () => {
-    const customRules = [
-      {
-        code: 'CUSTOM_DEC_49',
-        type: 'DECIMAL',
-        value: 49,
-        labelUk: 'Закінчення .49 (напр. 449.49 ₴)',
-        labelEn: 'Ending .49 (e.g. 449.49 ₴)',
-      },
-    ];
+  it('4. PATCH /api/suppliers/:id — updates supplier, CRM fields and toggles isActive status', async () => {
     const res = await request(app.getHttpServer())
       .patch(`/api/suppliers/${createdSupplierId}`)
       .set('Authorization', `Bearer ${userToken}`)
       .send({
         isActive: false,
-        exchangeRate: 42.0,
         defaultMarginPercent: 30,
         managerPosition: 'Head of Commercial B2B',
         city: 'Львів',
-        priceRounding: 'CUSTOM_DEC_49',
-        customRoundingRules: customRules,
       })
       .expect(200);
 
     expect(res.body.isActive).toBe(false);
-    expect(res.body.exchangeRate).toBe(42.0);
     expect(res.body.defaultMarginPercent).toBe(30);
     expect(res.body.managerPosition).toBe('Head of Commercial B2B');
     expect(res.body.city).toBe('Львів');
-    expect(res.body.priceRounding).toBe('CUSTOM_DEC_49');
-    expect(res.body.customRoundingRules).toHaveLength(1);
-    expect(res.body.customRoundingRules[0].code).toBe('CUSTOM_DEC_49');
   });
 
   it('5. Multi-Tenant Protection — User 2 cannot access or edit User 1 supplier', async () => {

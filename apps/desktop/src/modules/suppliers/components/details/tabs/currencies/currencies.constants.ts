@@ -1,4 +1,9 @@
-import { CurrencyCode, ExchangeRateMode, PriceRoundingMode } from '@smartfeed/shared';
+import {
+  CurrencyCode,
+  ExchangeRateMode,
+  PriceRoundingMode,
+  type CustomRoundingRuleDto,
+} from '@smartfeed/shared';
 
 export const CURRENCY_OPTIONS: Array<[CurrencyCode, string, string]> = [
   [CurrencyCode.UAH, 'suppliers:currUah', 'UAH (Гривня ₴)'],
@@ -27,20 +32,28 @@ export const ROUNDING_OPTIONS: Array<[PriceRoundingMode, string, string]> = [
 
 export const BUFFER_PRESETS = [0, 1, 2, 3, 5];
 
-export function resolveInitialSupplierRates(supplier: import('@smartfeed/shared').SupplierDto) {
-  const currency = supplier.baseCurrency || CurrencyCode.UAH;
-  const mode = supplier.exchangeRateMode || ExchangeRateMode.MANUAL;
+export function resolveInitialSupplierRates(feed: {
+  baseCurrency?: string;
+  exchangeRateMode?: string;
+  exchangeRate?: number;
+  currencyBufferPercent?: number;
+  priceRounding?: string;
+  customRoundingRules?: CustomRoundingRuleDto[];
+  selectedBankId?: string | null;
+}) {
+  const currency = (feed?.baseCurrency || CurrencyCode.UAH) as CurrencyCode;
+  const mode = (feed?.exchangeRateMode || ExchangeRateMode.MANUAL) as ExchangeRateMode;
   const rate =
     currency === CurrencyCode.UAH
       ? 1.0
-      : supplier.exchangeRate && Number(supplier.exchangeRate) > 0
-        ? Number(supplier.exchangeRate)
+      : feed?.exchangeRate && Number(feed.exchangeRate) > 0
+        ? Number(feed.exchangeRate)
         : 0;
-  const buffer = Number(supplier.currencyBufferPercent || 0);
-  const rounding = supplier.priceRounding || PriceRoundingMode.NONE;
-  const rules = Array.isArray(supplier.customRoundingRules) ? supplier.customRoundingRules : [];
+  const buffer = Number(feed?.currencyBufferPercent || 0);
+  const rounding = (feed?.priceRounding || PriceRoundingMode.NONE) as PriceRoundingMode;
+  const rules = Array.isArray(feed?.customRoundingRules) ? feed.customRoundingRules : [];
   const bankId =
-    supplier.selectedBankId ||
+    feed?.selectedBankId ||
     (mode === ExchangeRateMode.AUTO_NBU
       ? 'nbu'
       : mode === ExchangeRateMode.AUTO_PRIVAT

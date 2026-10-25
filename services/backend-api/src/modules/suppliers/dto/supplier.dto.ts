@@ -3,17 +3,10 @@ import {
   IsOptional,
   IsNumber,
   IsBoolean,
-  IsEnum,
-  IsArray,
-  ValidateNested,
   Min,
-  Max,
   IsEmail,
   ValidateIf,
 } from 'class-validator';
-import { Type } from 'class-transformer';
-import { CurrencyCode, ExchangeRateMode, PriceRoundingMode } from '@smartfeed/shared';
-import { CustomRoundingRuleItemDto } from '@/modules/suppliers/dto/supplier-rules.dto';
 
 export class CreateSupplierDto {
   @IsString()
@@ -97,39 +90,6 @@ export class CreateSupplierDto {
   postcode?: string;
 
   @IsOptional()
-  @IsEnum(CurrencyCode)
-  baseCurrency?: CurrencyCode;
-
-  @IsOptional()
-  @IsEnum(CurrencyCode)
-  targetCurrency?: CurrencyCode;
-
-  @IsOptional()
-  @IsEnum(ExchangeRateMode)
-  exchangeRateMode?: ExchangeRateMode;
-
-  @IsOptional()
-  @IsNumber()
-  @Min(0.0001)
-  exchangeRate?: number;
-
-  @IsOptional()
-  @IsNumber()
-  @Min(0)
-  @Max(100)
-  currencyBufferPercent?: number;
-
-  @IsOptional()
-  @IsString()
-  priceRounding?: PriceRoundingMode | string;
-
-  @IsOptional()
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => CustomRoundingRuleItemDto)
-  customRoundingRules?: CustomRoundingRuleItemDto[];
-
-  @IsOptional()
   @IsNumber()
   @Min(0)
   defaultMarginPercent?: number;
@@ -142,10 +102,6 @@ export class CreateSupplierDto {
   @IsOptional()
   @IsBoolean()
   isActive?: boolean;
-
-  @IsOptional()
-  @IsString()
-  selectedBankId?: string | null;
 }
 
 export class UpdateSupplierDto {
@@ -232,39 +188,6 @@ export class UpdateSupplierDto {
   postcode?: string;
 
   @IsOptional()
-  @IsEnum(CurrencyCode)
-  baseCurrency?: CurrencyCode;
-
-  @IsOptional()
-  @IsEnum(CurrencyCode)
-  targetCurrency?: CurrencyCode;
-
-  @IsOptional()
-  @IsEnum(ExchangeRateMode)
-  exchangeRateMode?: ExchangeRateMode;
-
-  @IsOptional()
-  @IsNumber()
-  @Min(0.0001)
-  exchangeRate?: number;
-
-  @IsOptional()
-  @IsNumber()
-  @Min(0)
-  @Max(100)
-  currencyBufferPercent?: number;
-
-  @IsOptional()
-  @IsString()
-  priceRounding?: PriceRoundingMode | string;
-
-  @IsOptional()
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => CustomRoundingRuleItemDto)
-  customRoundingRules?: CustomRoundingRuleItemDto[];
-
-  @IsOptional()
   @IsNumber()
   @Min(0)
   defaultMarginPercent?: number;
@@ -277,10 +200,6 @@ export class UpdateSupplierDto {
   @IsOptional()
   @IsBoolean()
   isActive?: boolean;
-
-  @IsOptional()
-  @IsString()
-  selectedBankId?: string | null;
 }
 
 export {

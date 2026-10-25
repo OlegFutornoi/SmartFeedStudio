@@ -11,22 +11,16 @@ pub fn get_suppliers(conn: &Connection) -> Result<Vec<SupplierDto>> {
         "SELECT 
             s.id, s.organization_id, s.user_id, s.name, s.code, s.contact_phone, s.contact_email, s.website, s.notes, s.logo_url,
             s.legal_name, s.tax_id, s.industry, s.segment, s.manager_name, s.manager_position, s.manager_phone, s.manager_email, s.manager_telegram, s.country, s.city, s.address, s.postcode,
-            COALESCE(s.base_currency, 'UAH'), COALESCE(s.target_currency, 'UAH'), COALESCE(s.exchange_rate_mode, 'MANUAL'),
-            COALESCE(s.exchange_rate, 1.0), COALESCE(s.currency_buffer_percent, 0.0), COALESCE(s.price_rounding, 'NONE'),
             s.default_margin_percent, s.default_fixed_markup, s.is_active, s.created_at, s.updated_at,
             (SELECT COUNT(*) FROM local_products p WHERE p.supplier_id = s.id) AS products_count,
             (SELECT COUNT(*) FROM local_feed_sources f WHERE f.supplier_id = s.id) AS active_feeds_count,
             (SELECT COUNT(*) FROM local_supplier_categories c WHERE c.supplier_id = s.id) AS categories_count,
-            (SELECT COUNT(*) FROM local_supplier_categories c WHERE c.supplier_id = s.id AND c.is_active = 1) AS active_categories_count,
-            COALESCE(s.custom_rounding_rules, '[]'),
-            s.selected_bank_id
+            (SELECT COUNT(*) FROM local_supplier_categories c WHERE c.supplier_id = s.id AND c.is_active = 1) AS active_categories_count
         FROM local_suppliers s
         ORDER BY s.created_at DESC"
     )?;
     
     let supplier_iter = stmt.query_map([], |row| {
-        let custom_rules_str: String = row.get(38).unwrap_or_else(|_| "[]".to_string());
-        let custom_rounding_rules: Vec<serde_json::Value> = serde_json::from_str(&custom_rules_str).unwrap_or_default();
         Ok(SupplierDto {
             id: row.get(0)?,
             organization_id: row.get(1)?,
@@ -51,35 +45,27 @@ pub fn get_suppliers(conn: &Connection) -> Result<Vec<SupplierDto>> {
             city: row.get(20)?,
             address: row.get(21)?,
             postcode: row.get(22)?,
-            base_currency: row.get(23)?,
-            target_currency: row.get(24)?,
-            exchange_rate_mode: row.get(25)?,
-            exchange_rate: row.get(26)?,
-            currency_buffer_percent: row.get(27)?,
-            price_rounding: row.get(28)?,
-            custom_rounding_rules,
-            selected_bank_id: row.get(39).ok(),
-            default_margin_percent: row.get(29)?,
-            default_fixed_markup: row.get(30)?,
-            is_active: row.get::<_, i32>(31)? == 1,
-            created_at: row.get(32)?,
-            updated_at: row.get(33)?,
+            default_margin_percent: row.get(23)?,
+            default_fixed_markup: row.get(24)?,
+            is_active: row.get::<_, i32>(25)? == 1,
+            created_at: row.get(26)?,
+            updated_at: row.get(27)?,
             products_count: {
-                let f = row.get::<_, u32>(35).unwrap_or(0);
-                let p = row.get::<_, u32>(34).unwrap_or(0);
+                let f = row.get::<_, u32>(29).unwrap_or(0);
+                let p = row.get::<_, u32>(28).unwrap_or(0);
                 Some(if f == 0 { 0 } else { p })
             },
-            active_feeds_count: Some(row.get::<_, u32>(35).unwrap_or(0)),
+            active_feeds_count: Some(row.get::<_, u32>(29).unwrap_or(0)),
             categories_count: {
-                let f = row.get::<_, u32>(35).unwrap_or(0);
-                let p = row.get::<_, u32>(34).unwrap_or(0);
-                let c = row.get::<_, u32>(36).unwrap_or(0);
+                let f = row.get::<_, u32>(29).unwrap_or(0);
+                let p = row.get::<_, u32>(28).unwrap_or(0);
+                let c = row.get::<_, u32>(30).unwrap_or(0);
                 Some(if f == 0 || p == 0 { 0 } else { c })
             },
             active_categories_count: {
-                let f = row.get::<_, u32>(35).unwrap_or(0);
-                let p = row.get::<_, u32>(34).unwrap_or(0);
-                let ac = row.get::<_, u32>(37).unwrap_or(0);
+                let f = row.get::<_, u32>(29).unwrap_or(0);
+                let p = row.get::<_, u32>(28).unwrap_or(0);
+                let ac = row.get::<_, u32>(31).unwrap_or(0);
                 Some(if f == 0 || p == 0 { 0 } else { ac })
             },
         })
@@ -98,23 +84,17 @@ pub fn get_supplier_by_id(conn: &Connection, id: &str) -> Result<Option<Supplier
         "SELECT 
             s.id, s.organization_id, s.user_id, s.name, s.code, s.contact_phone, s.contact_email, s.website, s.notes, s.logo_url,
             s.legal_name, s.tax_id, s.industry, s.segment, s.manager_name, s.manager_position, s.manager_phone, s.manager_email, s.manager_telegram, s.country, s.city, s.address, s.postcode,
-            COALESCE(s.base_currency, 'UAH'), COALESCE(s.target_currency, 'UAH'), COALESCE(s.exchange_rate_mode, 'MANUAL'),
-            COALESCE(s.exchange_rate, 1.0), COALESCE(s.currency_buffer_percent, 0.0), COALESCE(s.price_rounding, 'NONE'),
             s.default_margin_percent, s.default_fixed_markup, s.is_active, s.created_at, s.updated_at,
             (SELECT COUNT(*) FROM local_products p WHERE p.supplier_id = s.id) AS products_count,
             (SELECT COUNT(*) FROM local_feed_sources f WHERE f.supplier_id = s.id) AS active_feeds_count,
             (SELECT COUNT(*) FROM local_supplier_categories c WHERE c.supplier_id = s.id) AS categories_count,
-            (SELECT COUNT(*) FROM local_supplier_categories c WHERE c.supplier_id = s.id AND c.is_active = 1) AS active_categories_count,
-            COALESCE(s.custom_rounding_rules, '[]'),
-            s.selected_bank_id
+            (SELECT COUNT(*) FROM local_supplier_categories c WHERE c.supplier_id = s.id AND c.is_active = 1) AS active_categories_count
         FROM local_suppliers s
         WHERE s.id = ?1"
     )?;
 
     let mut rows = stmt.query([id])?;
     if let Some(row) = rows.next()? {
-        let custom_rules_str: String = row.get(38).unwrap_or_else(|_| "[]".to_string());
-        let custom_rounding_rules: Vec<serde_json::Value> = serde_json::from_str(&custom_rules_str).unwrap_or_default();
         Ok(Some(SupplierDto {
             id: row.get(0)?,
             organization_id: row.get(1)?,
@@ -139,35 +119,27 @@ pub fn get_supplier_by_id(conn: &Connection, id: &str) -> Result<Option<Supplier
             city: row.get(20)?,
             address: row.get(21)?,
             postcode: row.get(22)?,
-            base_currency: row.get(23)?,
-            target_currency: row.get(24)?,
-            exchange_rate_mode: row.get(25)?,
-            exchange_rate: row.get(26)?,
-            currency_buffer_percent: row.get(27)?,
-            price_rounding: row.get(28)?,
-            custom_rounding_rules,
-            selected_bank_id: row.get(39).ok(),
-            default_margin_percent: row.get(29)?,
-            default_fixed_markup: row.get(30)?,
-            is_active: row.get::<_, i32>(31)? == 1,
-            created_at: row.get(32)?,
-            updated_at: row.get(33)?,
+            default_margin_percent: row.get(23)?,
+            default_fixed_markup: row.get(24)?,
+            is_active: row.get::<_, i32>(25)? == 1,
+            created_at: row.get(26)?,
+            updated_at: row.get(27)?,
             products_count: {
-                let f = row.get::<_, u32>(35).unwrap_or(0);
-                let p = row.get::<_, u32>(34).unwrap_or(0);
+                let f = row.get::<_, u32>(29).unwrap_or(0);
+                let p = row.get::<_, u32>(28).unwrap_or(0);
                 Some(if f == 0 { 0 } else { p })
             },
-            active_feeds_count: Some(row.get::<_, u32>(35).unwrap_or(0)),
+            active_feeds_count: Some(row.get::<_, u32>(29).unwrap_or(0)),
             categories_count: {
-                let f = row.get::<_, u32>(35).unwrap_or(0);
-                let p = row.get::<_, u32>(34).unwrap_or(0);
-                let c = row.get::<_, u32>(36).unwrap_or(0);
+                let f = row.get::<_, u32>(29).unwrap_or(0);
+                let p = row.get::<_, u32>(28).unwrap_or(0);
+                let c = row.get::<_, u32>(30).unwrap_or(0);
                 Some(if f == 0 || p == 0 { 0 } else { c })
             },
             active_categories_count: {
-                let f = row.get::<_, u32>(35).unwrap_or(0);
-                let p = row.get::<_, u32>(34).unwrap_or(0);
-                let ac = row.get::<_, u32>(37).unwrap_or(0);
+                let f = row.get::<_, u32>(29).unwrap_or(0);
+                let p = row.get::<_, u32>(28).unwrap_or(0);
+                let ac = row.get::<_, u32>(31).unwrap_or(0);
                 Some(if f == 0 || p == 0 { 0 } else { ac })
             },
         }))
@@ -179,34 +151,22 @@ pub fn get_supplier_by_id(conn: &Connection, id: &str) -> Result<Option<Supplier
 pub fn create_supplier(conn: &Connection, dto: CreateSupplierDto) -> Result<SupplierDto> {
     let id = format!("sf_supplier_{}", uuid::Uuid::new_v4().to_string().replace("-", ""));
     let user_id = "local_user".to_string();
-    let base_currency = dto.base_currency.unwrap_or_else(|| "UAH".to_string());
-    let target_currency = dto.target_currency.unwrap_or_else(|| "UAH".to_string());
-    let exchange_rate_mode = dto.exchange_rate_mode.unwrap_or_else(|| "MANUAL".to_string());
-    let exchange_rate = dto.exchange_rate.unwrap_or(1.0);
-    let currency_buffer_percent = dto.currency_buffer_percent.unwrap_or(0.0);
-    let price_rounding = dto.price_rounding.unwrap_or_else(|| "NONE".to_string());
-    let custom_rounding_rules = dto.custom_rounding_rules.unwrap_or_default();
-    let custom_rounding_rules_json = serde_json::to_string(&custom_rounding_rules).unwrap_or_else(|_| "[]".to_string());
     let is_active = dto.is_active.unwrap_or(true);
     
     conn.execute(
         "INSERT INTO local_suppliers (
             id, user_id, name, code, contact_phone, contact_email, website, notes, logo_url,
             legal_name, tax_id, industry, segment, manager_name, manager_position, manager_phone, manager_email, manager_telegram, country, city, address, postcode,
-            base_currency, target_currency, exchange_rate_mode, exchange_rate, currency_buffer_percent, price_rounding,
-            default_margin_percent, default_fixed_markup, is_active, custom_rounding_rules, selected_bank_id
+            default_margin_percent, default_fixed_markup, is_active
         ) VALUES (
             ?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9,
             ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17, ?18, ?19, ?20, ?21, ?22,
-            ?23, ?24, ?25, ?26, ?27, ?28,
-            ?29, ?30, ?31, ?32, ?33
+            ?23, ?24, ?25
         )",
         params![
             &id, &user_id, &dto.name, &dto.code, &dto.contact_phone, &dto.contact_email, &dto.website, &dto.notes, &dto.logo_url,
             &dto.legal_name, &dto.tax_id, &dto.industry, &dto.segment, &dto.manager_name, &dto.manager_position, &dto.manager_phone, &dto.manager_email, &dto.manager_telegram, &dto.country, &dto.city, &dto.address, &dto.postcode,
-            &base_currency, &target_currency, &exchange_rate_mode, exchange_rate, currency_buffer_percent, &price_rounding,
-            dto.default_margin_percent, dto.default_fixed_markup, if is_active { 1 } else { 0 }, &custom_rounding_rules_json,
-            &dto.selected_bank_id,
+            dto.default_margin_percent, dto.default_fixed_markup, if is_active { 1 } else { 0 },
         ],
     )?;
 
@@ -236,14 +196,6 @@ pub fn create_supplier(conn: &Connection, dto: CreateSupplierDto) -> Result<Supp
         city: dto.city,
         address: dto.address,
         postcode: dto.postcode,
-        base_currency,
-        target_currency,
-        exchange_rate_mode,
-        exchange_rate,
-        currency_buffer_percent,
-        price_rounding,
-        custom_rounding_rules,
-        selected_bank_id: dto.selected_bank_id,
         default_margin_percent: dto.default_margin_percent,
         default_fixed_markup: dto.default_fixed_markup,
         is_active,
@@ -296,15 +248,6 @@ pub fn update_supplier(conn: &Connection, id: &str, dto: UpdateSupplierDto) -> R
     let city = dto.city.or(current_supplier.city);
     let address = dto.address.or(current_supplier.address);
     let postcode = dto.postcode.or(current_supplier.postcode);
-    let base_currency = dto.base_currency.unwrap_or(current_supplier.base_currency);
-    let target_currency = dto.target_currency.unwrap_or(current_supplier.target_currency);
-    let exchange_rate_mode = dto.exchange_rate_mode.unwrap_or(current_supplier.exchange_rate_mode);
-    let exchange_rate = dto.exchange_rate.unwrap_or(current_supplier.exchange_rate);
-    let currency_buffer_percent = dto.currency_buffer_percent.unwrap_or(current_supplier.currency_buffer_percent);
-    let price_rounding = dto.price_rounding.unwrap_or(current_supplier.price_rounding);
-    let custom_rounding_rules = dto.custom_rounding_rules.unwrap_or(current_supplier.custom_rounding_rules);
-    let custom_rounding_rules_json = serde_json::to_string(&custom_rounding_rules).unwrap_or_else(|_| "[]".to_string());
-    let selected_bank_id = dto.selected_bank_id.or(current_supplier.selected_bank_id);
     let default_margin_percent = dto.default_margin_percent.unwrap_or(current_supplier.default_margin_percent);
     let default_fixed_markup = dto.default_fixed_markup.unwrap_or(current_supplier.default_fixed_markup);
     let is_active = dto.is_active.unwrap_or(current_supplier.is_active);
@@ -315,20 +258,16 @@ pub fn update_supplier(conn: &Connection, id: &str, dto: UpdateSupplierDto) -> R
             notes = ?6, logo_url = ?7, legal_name = ?8, tax_id = ?9, industry = ?10, segment = ?11,
             manager_name = ?12, manager_position = ?13, manager_phone = ?14, manager_email = ?15, manager_telegram = ?16,
             country = ?17, city = ?18, address = ?19, postcode = ?20,
-            base_currency = ?21, target_currency = ?22, exchange_rate_mode = ?23,
-            exchange_rate = ?24, currency_buffer_percent = ?25, price_rounding = ?26,
-            default_margin_percent = ?27, default_fixed_markup = ?28,
-            is_active = ?29, custom_rounding_rules = ?30, selected_bank_id = ?31, updated_at = CURRENT_TIMESTAMP
-         WHERE id = ?32",
+            default_margin_percent = ?21, default_fixed_markup = ?22,
+            is_active = ?23, updated_at = CURRENT_TIMESTAMP
+         WHERE id = ?24",
         params![
             &name, &code, &contact_phone, &contact_email, &website,
             &notes, &logo_url, &legal_name, &tax_id, &industry, &segment,
             &manager_name, &manager_position, &manager_phone, &manager_email, &manager_telegram,
             &country, &city, &address, &postcode,
-            &base_currency, &target_currency, &exchange_rate_mode,
-            exchange_rate, currency_buffer_percent, &price_rounding,
             default_margin_percent, default_fixed_markup,
-            if is_active { 1 } else { 0 }, &custom_rounding_rules_json, &selected_bank_id, id,
+            if is_active { 1 } else { 0 }, id,
         ],
     )?;
 

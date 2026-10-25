@@ -22,7 +22,7 @@ test.describe('Desktop App — Постачальники та ліміти', ()
     await expect(page.getByTestId('feeds-quota-card')).toBeVisible();
 
     await expect(page.getByText('Livolo Офіційний')).toBeVisible();
-    await expect(page.getByTestId('supplier-currency-sup_test_1')).toContainText('UAH');
+    await expect(page.getByTestId('supplier-currency-sup_test_1')).toContainText('%');
 
     // Click on active feeds button
     await page.getByTestId('view-supplier-feeds-btn-sup_test_1').click();
@@ -31,6 +31,7 @@ test.describe('Desktop App — Постачальники та ліміти', ()
     await expect(page.getByTestId('supplier-feeds-tab')).toBeVisible();
     await expect(page.getByText('Livolo Main XML')).toBeVisible();
     await expect(page.getByText('XML_ROZETKA')).toBeVisible();
+    await expect(page.getByTestId('feed-currency-badge-src_feed_1')).toBeVisible();
     await expect(page.getByTestId('sync-feed-source-src_feed_1')).toBeVisible();
 
     // Close drawer and return to list

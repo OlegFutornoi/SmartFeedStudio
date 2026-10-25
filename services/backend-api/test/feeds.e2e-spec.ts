@@ -55,8 +55,6 @@ describe('Feeds & Background Jobs API (E2E)', () => {
         userId: uRes.body.user.id,
         name: 'Feed Test Supplier',
         code: `FTS_${timestamp}`,
-        baseCurrency: 'UAH',
-        targetCurrency: 'UAH',
       },
     });
     validSupplierId = testSup.id;

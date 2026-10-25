@@ -44,6 +44,7 @@ pnpm-debug.log*
 *.db
 *.sqlite
 *.sqlite3
+data/
 
 # Test coverage & reports
 coverage/

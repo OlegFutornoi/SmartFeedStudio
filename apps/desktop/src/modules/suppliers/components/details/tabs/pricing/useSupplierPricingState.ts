@@ -121,7 +121,7 @@ export function useSupplierPricingState(
   }, [hasRangeError, minPrice, maxPrice, selectedCategoryId, sortedRules, editingRuleId]);
 
   const simulation = useMemo(() => {
-    const roundingMode = supplier.priceRounding || PriceRoundingMode.NONE;
+    const roundingMode = PriceRoundingMode.NONE;
     const baseCalc = calculateBaseSellingPrice({
       costPrice: simCost,
       defaultMarginPercent: globalMargin,
@@ -143,7 +143,7 @@ export function useSupplierPricingState(
       ...baseCalc,
       sellingPrice: finalPrice,
     };
-  }, [simCost, simCategoryId, globalMargin, globalFixed, sortedRules, supplier.priceRounding]);
+  }, [simCost, simCategoryId, globalMargin, globalFixed, sortedRules]);
 
   const handleSaveGlobalMarkup = async () => {
     setIsSavingGlobal(true);

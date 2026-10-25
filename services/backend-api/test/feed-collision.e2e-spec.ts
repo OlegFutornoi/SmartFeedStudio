@@ -56,8 +56,6 @@ describe('Feed Collision & Deduplication Service (E2E)', () => {
         userId: uRes.body.user.id,
         name: 'Livolo Supplier UA',
         code: `LIV_${timestamp}`,
-        baseCurrency: 'UAH',
-        targetCurrency: 'UAH',
       },
     });
     validSupplierId = testSup.id;

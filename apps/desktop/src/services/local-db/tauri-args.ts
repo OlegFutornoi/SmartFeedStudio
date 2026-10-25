@@ -71,6 +71,12 @@ export function prepareTauriArgs(command: string, args: unknown): Record<string,
         delete_products: raw.deleteProducts ?? true,
       };
 
+    case 'db_update_feed_source':
+      return {
+        id: raw.id,
+        dto: raw.dto || raw.payload || raw,
+      };
+
     case 'db_get_supplier_feed_sources':
     case 'db_get_pricing_rules':
       return {
@@ -140,6 +146,7 @@ export const REGISTERED_TAURI_COMMANDS = new Set([
   'db_get_all_feed_sources',
   'db_check_feed_collision',
   'db_create_feed_source',
+  'db_update_feed_source',
   'db_delete_feed_source',
   'db_get_products',
   'db_get_categories_summary',

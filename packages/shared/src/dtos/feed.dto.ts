@@ -1,5 +1,14 @@
 import { z } from 'zod';
-import { FeedFormat, FeedSourceType, ImportJobStatus, FeedCollisionType } from '../enums/index.js';
+import {
+  FeedFormat,
+  FeedSourceType,
+  ImportJobStatus,
+  FeedCollisionType,
+  CurrencyCode,
+  ExchangeRateMode,
+  PriceRoundingMode,
+} from '../enums/index.js';
+import { CustomRoundingRuleDtoSchema, PriceRoundingValueSchema } from './supplier.dto.js';
 
 export const CategorySummaryDtoSchema = z.object({
   id: z.string(),
@@ -29,6 +38,14 @@ export const FeedSourceDtoSchema = z.object({
   autoUpdatePrices: z.boolean().default(true),
   autoUpdateStocks: z.boolean().default(true),
   autoCreateNewProducts: z.boolean().default(true),
+  baseCurrency: z.nativeEnum(CurrencyCode).default(CurrencyCode.UAH),
+  targetCurrency: z.nativeEnum(CurrencyCode).default(CurrencyCode.UAH),
+  exchangeRateMode: z.nativeEnum(ExchangeRateMode).default(ExchangeRateMode.MANUAL),
+  exchangeRate: z.number().positive().default(1.0),
+  currencyBufferPercent: z.number().min(0).max(100).default(0),
+  priceRounding: PriceRoundingValueSchema.default(PriceRoundingMode.NONE),
+  customRoundingRules: z.array(CustomRoundingRuleDtoSchema).default([]).optional(),
+  selectedBankId: z.string().nullable().optional(),
   mappingRules: z.record(z.any()).nullable().optional(),
   productsCount: z.number().int().nonnegative().optional(),
   lastSyncedAt: z.union([z.date(), z.string()]).nullable().optional(),
@@ -55,6 +72,14 @@ export const CreateFeedSourceDtoSchema = z.object({
   autoUpdatePrices: z.boolean().default(true),
   autoUpdateStocks: z.boolean().default(true),
   autoCreateNewProducts: z.boolean().default(true),
+  baseCurrency: z.nativeEnum(CurrencyCode).default(CurrencyCode.UAH).optional(),
+  targetCurrency: z.nativeEnum(CurrencyCode).default(CurrencyCode.UAH).optional(),
+  exchangeRateMode: z.nativeEnum(ExchangeRateMode).default(ExchangeRateMode.MANUAL).optional(),
+  exchangeRate: z.number().positive().default(1.0).optional(),
+  currencyBufferPercent: z.number().min(0).max(100).default(0).optional(),
+  priceRounding: PriceRoundingValueSchema.default(PriceRoundingMode.NONE).optional(),
+  customRoundingRules: z.array(CustomRoundingRuleDtoSchema).optional(),
+  selectedBankId: z.string().nullable().optional(),
   mappingRules: z.record(z.any()).optional(),
 });
 
@@ -70,6 +95,14 @@ export const UpdateFeedSourceDtoSchema = z.object({
   autoUpdatePrices: z.boolean().optional(),
   autoUpdateStocks: z.boolean().optional(),
   autoCreateNewProducts: z.boolean().optional(),
+  baseCurrency: z.nativeEnum(CurrencyCode).optional(),
+  targetCurrency: z.nativeEnum(CurrencyCode).optional(),
+  exchangeRateMode: z.nativeEnum(ExchangeRateMode).optional(),
+  exchangeRate: z.number().positive().optional(),
+  currencyBufferPercent: z.number().min(0).max(100).optional(),
+  priceRounding: PriceRoundingValueSchema.optional(),
+  customRoundingRules: z.array(CustomRoundingRuleDtoSchema).optional(),
+  selectedBankId: z.string().nullable().optional(),
   mappingRules: z.record(z.any()).optional(),
   productsCount: z.number().int().nonnegative().optional(),
   lastSyncedAt: z.union([z.date(), z.string()]).nullable().optional(),
@@ -107,6 +140,7 @@ export const ImportFeedAsyncDtoSchema = z.object({
   fileName: z.string().optional(),
   catalogId: z.string().optional(),
   selectedCategoryIds: z.array(z.string()).optional(),
+  baseCurrency: z.nativeEnum(CurrencyCode).optional(),
   autoUpdatePrices: z.boolean().default(true),
   autoUpdateStocks: z.boolean().default(true),
 });
@@ -124,6 +158,7 @@ export type FeedColumnMapping = z.infer<typeof FeedColumnMappingSchema>;
 
 export const FeedAnalysisResultDtoSchema = z.object({
   detectedFormat: z.nativeEnum(FeedFormat),
+  detectedCurrency: z.nativeEnum(CurrencyCode).optional(),
   estimatedTotalItems: z.number().int().nonnegative(),
   suggestedMappings: z.array(FeedColumnMappingSchema),
   sampleItems: z.array(z.record(z.any())).default([]),

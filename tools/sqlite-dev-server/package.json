@@ -1,0 +1,11 @@
+{
+  "name": "smartfeed-sqlite-dev-server",
+  "version": "1.0.0",
+  "private": true,
+  "description": "SmartFeed Studio Real SQLite Development & Test Bridge Service",
+  "type": "module",
+  "main": "server.mjs",
+  "scripts": {
+    "start": "node server.mjs"
+  }
+}

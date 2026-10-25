@@ -1,7 +1,7 @@
 import { useState, useRef, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useStorageQuota } from '@/hooks/useStorageQuota';
-import { localProductsService, mockDatabaseDriver } from '@/services/local-db';
+import { localProductsService } from '@/services/local-db';
 import { uploadDirectToS3 } from '@/services/storage';
 
 import {
@@ -137,11 +137,6 @@ export function useCatalogMediaSync(onSuccess?: () => void): UseCatalogMediaSync
           img.cloudUrl = uploadRes.publicUrl;
           img.s3Key = uploadRes.s3Key;
           img.fileSize = blob.size || uploadRes.storageFile?.sizeBytes || 10240;
-
-          // Sync into mockDatabaseDriver state if present
-          if (mockDatabaseDriver) {
-            mockDatabaseDriver.syncCounters();
-          }
 
           completed++;
           setSyncedCount(completed);

@@ -1,11 +1,5 @@
 import { useState, useEffect } from 'react';
-import {
-  SupplierDto,
-  CreateSupplierDto,
-  CurrencyCode,
-  ExchangeRateMode,
-  PriceRoundingMode,
-} from '@smartfeed/shared';
+import { SupplierDto, CreateSupplierDto } from '@smartfeed/shared';
 import { useTranslation } from '@/i18n';
 
 export interface UseSupplierFormStateOptions {
@@ -30,7 +24,6 @@ export function useSupplierFormState({
   const [website, setWebsite] = useState('');
   const [notes, setNotes] = useState('');
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
-  const [baseCurrency, setBaseCurrency] = useState<CurrencyCode>(CurrencyCode.UAH);
 
   // CRM: Company & Business metadata
   const [legalName, setLegalName] = useState('');
@@ -66,7 +59,6 @@ export function useSupplierFormState({
       setWebsite(supplierToEdit.website || '');
       setNotes(supplierToEdit.notes || '');
       setLogoUrl(supplierToEdit.logoUrl || null);
-      setBaseCurrency(supplierToEdit.baseCurrency || CurrencyCode.UAH);
 
       setLegalName(supplierToEdit.legalName || '');
       setTaxId(supplierToEdit.taxId || '');
@@ -91,7 +83,6 @@ export function useSupplierFormState({
       setWebsite('');
       setNotes('');
       setLogoUrl(null);
-      setBaseCurrency(CurrencyCode.UAH);
 
       setLegalName('');
       setTaxId('');
@@ -166,12 +157,6 @@ export function useSupplierFormState({
         city: city.trim() || undefined,
         address: address.trim() || undefined,
         postcode: postcode.trim() || undefined,
-        baseCurrency,
-        targetCurrency: supplierToEdit?.targetCurrency || CurrencyCode.UAH,
-        exchangeRateMode: supplierToEdit?.exchangeRateMode || ExchangeRateMode.MANUAL,
-        exchangeRate: supplierToEdit?.exchangeRate ?? 1.0,
-        currencyBufferPercent: supplierToEdit?.currencyBufferPercent ?? 0,
-        priceRounding: supplierToEdit?.priceRounding || PriceRoundingMode.NONE,
         defaultMarginPercent: supplierToEdit?.defaultMarginPercent ?? 0,
         defaultFixedMarkup: supplierToEdit?.defaultFixedMarkup ?? 0,
       });
@@ -199,8 +184,6 @@ export function useSupplierFormState({
     setNotes,
     logoUrl,
     setLogoUrl,
-    baseCurrency,
-    setBaseCurrency,
     legalName,
     setLegalName,
     taxId,

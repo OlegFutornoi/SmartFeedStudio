@@ -1,18 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Rss, Plus, RefreshCw, Trash2, FileText, Globe, CheckCircle2 } from 'lucide-react';
+import { Rss, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { ConfirmDeleteDialog } from '@/components/ui/ConfirmDeleteDialog';
-import {
-  Table,
-  TableHeader,
-  TableBody,
-  TableRow,
-  TableHead,
-  TableCell,
-} from '@/components/ui/table';
-import { FeedSourceType, SupplierDto } from '@smartfeed/shared';
+import { Table, TableHeader, TableBody, TableRow, TableHead } from '@/components/ui/table';
+import type { SupplierDto } from '@smartfeed/shared';
 import {
   getSupplierFeedSources,
   deleteSupplierFeedSource,
@@ -22,6 +14,8 @@ import {
 import { useAuth } from '@/contexts/AuthContext';
 import { useTranslation } from '@/i18n';
 import { useDataSync } from '@/lib/syncEvents';
+import { SupplierCurrenciesTab } from '@/modules/suppliers/components/details/tabs/SupplierCurrenciesTab';
+import { SupplierFeedRow } from '@/modules/suppliers/components/details/tabs/feeds/SupplierFeedRow';
 
 interface SupplierFeedsTabProps {
   supplier: SupplierDto;
@@ -40,6 +34,9 @@ export const SupplierFeedsTab: React.FC<SupplierFeedsTabProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [syncingId, setSyncingId] = useState<string | null>(null);
   const [feedToDelete, setFeedToDelete] = useState<FeedSourceItemDto | null>(null);
+  const [selectedFeedForCurrency, setSelectedFeedForCurrency] = useState<FeedSourceItemDto | null>(
+    null,
+  );
 
   const loadSources = useCallback(async () => {
     setIsLoading(true);
@@ -83,6 +80,19 @@ export const SupplierFeedsTab: React.FC<SupplierFeedsTabProps> = ({
       setSyncingId(null);
     }
   };
+
+  if (selectedFeedForCurrency) {
+    return (
+      <SupplierCurrenciesTab
+        feed={selectedFeedForCurrency}
+        onBack={() => setSelectedFeedForCurrency(null)}
+        onRefreshFeed={() => {
+          loadSources();
+          onRefreshSupplier();
+        }}
+      />
+    );
+  }
 
   return (
     <div className="space-y-4" data-testid="supplier-feeds-tab">
@@ -157,6 +167,9 @@ export const SupplierFeedsTab: React.FC<SupplierFeedsTabProps> = ({
                 <TableHead className="font-semibold text-foreground text-center">
                   {t('suppliers:columnProducts', { defaultValue: 'Товари' })}
                 </TableHead>
+                <TableHead className="font-semibold text-foreground text-center">
+                  {t('suppliers:columnCurrencyRate', { defaultValue: 'Валюта та курс' })}
+                </TableHead>
                 <TableHead className="font-semibold text-foreground">
                   {t('suppliers:columnLastSync', { defaultValue: 'Остання синхронізація' })}
                 </TableHead>
@@ -166,91 +179,16 @@ export const SupplierFeedsTab: React.FC<SupplierFeedsTabProps> = ({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {sources.map((src) => {
-                const isFile = src.sourceType === FeedSourceType.FILE;
-                const isSyncing = syncingId === src.id;
-
-                return (
-                  <TableRow
-                    key={src.id}
-                    className="h-12 border-b border-border/60 hover:bg-muted/40"
-                  >
-                    <TableCell className="pl-3.5 py-2 font-medium text-foreground">
-                      <div className="flex items-center gap-2">
-                        {isFile ? (
-                          <FileText className="size-4 text-muted-foreground shrink-0" />
-                        ) : (
-                          <Globe className="size-4 text-muted-foreground shrink-0" />
-                        )}
-                        <div className="truncate max-w-[220px]">
-                          <p className="font-medium truncate">{src.name}</p>
-                          {src.sourceUrl && (
-                            <p className="text-2xs text-muted-foreground font-mono truncate">
-                              {src.sourceUrl}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                    </TableCell>
-
-                    <TableCell className="py-2">
-                      <div className="flex items-center gap-1.5">
-                        <Badge variant="outline" className="text-2xs font-mono h-5">
-                          {src.fileFormat}
-                        </Badge>
-                        <span className="text-xs text-muted-foreground">
-                          {isFile
-                            ? t('suppliers:localFile', { defaultValue: 'Локальний файл' })
-                            : t('suppliers:urlStream', { defaultValue: 'URL потік' })}
-                        </span>
-                      </div>
-                    </TableCell>
-
-                    <TableCell className="py-2 text-center font-mono font-medium">
-                      {(src.productsCount || 0).toLocaleString()}
-                    </TableCell>
-
-                    <TableCell className="py-2">
-                      <div className="flex items-center gap-1.5 text-muted-foreground">
-                        <CheckCircle2 className="size-3.5 text-success" />
-                        <span>
-                          {src.lastSyncedAt
-                            ? new Date(src.lastSyncedAt).toLocaleDateString()
-                            : t('suppliers:justNow', { defaultValue: 'Щойно' })}
-                        </span>
-                      </div>
-                    </TableCell>
-
-                    <TableCell className="pr-3.5 py-2 text-right">
-                      <div className="flex items-center justify-end gap-1.5">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleSyncSource(src.id)}
-                          disabled={isSyncing}
-                          className="h-7 text-xs gap-1 px-2 text-muted-foreground hover:text-foreground"
-                          data-testid={`sync-feed-source-${src.id}`}
-                        >
-                          <RefreshCw
-                            className={`size-3 ${isSyncing ? 'animate-spin text-primary' : ''}`}
-                          />
-                          <span>{t('suppliers:syncNow', { defaultValue: 'Синхронізувати' })}</span>
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => setFeedToDelete(src)}
-                          className="size-7 text-destructive hover:text-destructive hover:bg-destructive/10"
-                          title={t('common:delete', { defaultValue: 'Видалити' })}
-                          data-testid={`delete-feed-source-${src.id}`}
-                        >
-                          <Trash2 className="size-3.5" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
+              {sources.map((src) => (
+                <SupplierFeedRow
+                  key={src.id}
+                  source={src}
+                  isSyncing={syncingId === src.id}
+                  onConfigureCurrency={setSelectedFeedForCurrency}
+                  onSync={handleSyncSource}
+                  onDelete={setFeedToDelete}
+                />
+              ))}
             </TableBody>
           </Table>
         </div>
