@@ -1,29 +1,30 @@
 ---
 trigger: glob
-globs: '{**/*.spec.ts,**/*.e2e-spec.ts,**/e2e/**,**/test/**}'
-description: Automated testing, Playwright, Jest E2E, data cleanup, and test isolation invariants.
+globs: 'e2e/**'
+description: Automated testing framework invariants, Playwright E2E, data cleanup, and test isolation.
 ---
 
 # Testing and Quality Invariants
 
-## TEST-01: Mandatory `cleanDatabase` Teardown (Zero Leftovers & Zero Manual Data Deletion)
+## TEST-00: Centralized Test Suite Exclusivity
 
-- Every automated backend test suite creating database rows must invoke the centralized `cleanDatabase` helper in `beforeAll` AND `afterAll`.
-- Tests and database audits must strictly delete ONLY the specific test records created by that test (identified by explicit test `userIds` or timestamped test prefixes like `e2e.test+<timestamp>@smartfeed.local`).
-- Never delete manually created developer/QA user accounts (e.g. `qatest@gmail.com`, `shoplinkerxml@gmail.com`, or any user not created by the test itself) during test teardown, database audits, or cleanup tasks.
-- Teardown strictly follows the foreign-key safe deletion order:
-  1. `Snapshot` and `ProductImage`
-  2. `OrganizationInvitation`
-  3. `OrganizationMember`
-  4. `License`
-  5. `Organization`
-  6. `User` (strictly scoped by test-created ID, test email, or test prefix)
-  7. `TariffPlan` and `NavigationItem` (test-created entities)
-- Reason: Leftover test records corrupt subsequent test runs, while deleting manually created developer accounts destroys active manual testing state.
+- All automated test suites, specs, page objects, fixtures, and API clients reside strictly in the dedicated `e2e/` package.
+- No `*.spec.ts`, `*.test.ts`, `*.e2e-spec.ts`, or test configs are permitted in application or library packages (`apps/*`, `services/*`, `packages/*`).
+- Automated tests are authored exclusively by QA Agent (`@agents_qa`) within dedicated `QA-<num>` tasks. Feature agents (`@agents_frontend`, `@agents_backend`) never author test files.
+- Reason: Eliminates fragmented testing setups, circular dependencies, and duplicate test drivers.
+
+## TEST-01: Mandatory Teardown and Scoped Cleanup
+
+- Every automated backend test suite creating database rows must perform scoped teardown in setup and teardown phases.
+- Server database cleanup strictly scopes deletion to entities matching test-run prefixes (`e2e.<runId>.` or `e2e.test+<timestamp>@smartfeed.local`).
+- Never delete manually created developer/QA user accounts (e.g. `qatest@gmail.com`, `shoplinkerxml@gmail.com`) or modify non-test data.
+- Teardown strictly follows the foreign-key safe deletion order: Snapshot, ProductImage, OrganizationInvitation, OrganizationMember, License, Organization, User, TariffPlan, NavigationItem.
+- Local SQLite cleanup is invoked strictly via `POST /api/reset` against the isolated e2e container (`:5002`), never against active developer database (`:5001`).
+- Reason: Leftover test records corrupt subsequent test runs, while touching developer data disrupts local development.
 
 ## TEST-02: Frontend Test Isolation
 
-- Playwright E2E tests must reset browser `localStorage`, `sessionStorage`, cookies, and route handlers before and after each test case.
+- Playwright UI tests must reset browser `localStorage`, `sessionStorage`, cookies, and route handlers before and after each test case.
 - Reason: Leaked browser storage causes authentication state bleed between test specs, creating non-deterministic flakiness.
 
 ## TEST-03: Real Business Data Assertions (Zero Superficial Tests)
@@ -42,15 +43,32 @@ description: Automated testing, Playwright, Jest E2E, data cleanup, and test iso
 - Key views (Dashboard, Navigation, Suppliers, Licenses) must include tests asserting endpoints are called strictly 1 time on page load (`requestCount === 1`).
 - Reason: Prevents silent performance regressions that cause cascading duplicate API calls during navigation.
 
-## TEST-06: Strict TDD RED -> GREEN Cycle
+## TEST-06: Directory & Naming Contract
 
-- Write the automated test before writing production implementation.
-- Execute the test and verify it fails with the expected functional reason (RED).
-- Implement the minimal code required to pass the test (GREEN).
-- Reason: Writing tests after code produces biased assertions that test implementation details instead of business behavior.
+- Test files adhere to deterministic naming by layer:
+  - Specs: `*.spec.ts` in `specs/` directories.
+  - Setup and Teardown: `*.setup.ts` and `*.teardown.ts`.
+  - Page Object Models: `*.page.ts` in `pages/`.
+  - Reusable Components: `*.component.ts` in `components/`.
+  - API and Local DB Clients: `*.client.ts` in `clients/`.
+  - Test Data Builders: `*.factory.ts` in `factories/`.
+- Reason: Standardized naming enables reliable glob matching, project separation, and linting.
 
 ## TEST-07: Static Typecheck Clean (Zero Errors)
 
-- `tsc --noEmit` must pass with 0 errors across all monorepo packages (`services/backend-api`, `apps/desktop`, `apps/admin-portal`, `packages/shared`).
+- `tsc --noEmit` must pass with 0 errors across all monorepo packages, including `@smartfeed/e2e`.
 - Never suppress TypeScript compiler errors with `@ts-ignore` without an explicit architectural comment.
-- Reason: TypeScript errors in one package break monorepo compilation and hide runtime exceptions.
+- Reason: TypeScript errors hide runtime exceptions and break monorepo build pipelines.
+
+## TEST-08: Isolated Test Entity Prefixes
+
+- All entities created during test execution must incorporate a deterministic run ID: `e2e.<runId>.<entityName>`.
+- Generated emails must strictly follow `e2e.test+<timestamp>@smartfeed.local`.
+- Reason: Guarantees deterministic filtering during cleanup and avoids unique key collisions in multi-run environments.
+
+## TEST-09: Playwright Resilience & Web-First Assertions
+
+- Explicit sleep timeouts (`page.waitForTimeout`) and hardcoded delays are strictly prohibited.
+- Assertions must use web-first locators (`getByTestId`, `getByRole`) and web-first expectations (`await expect(...).toBeVisible()`).
+- In CI mode, `forbidOnly` is mandatory to prevent accidental commits of `test.only`.
+- Reason: Hardcoded delays induce test flakiness and slow down execution suites.

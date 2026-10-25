@@ -68,8 +68,7 @@ const FRONTEND_IGNORES = [
   // shadcn primitives (and our thin wrappers) are the ONLY place raw HTML controls may live.
   '**/components/ui/**',
   '**/generated/**',
-  '**/*.test.{ts,tsx}',
-  '**/*.spec.{ts,tsx}',
+  'e2e/**',
 ];
 
 export const invariantsConfig = [

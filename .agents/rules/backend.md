@@ -75,13 +75,12 @@ description: Backend API and CQRS engineering invariants for NestJS, Prisma, Bul
 - Settings, configurations, and 1-to-1 relation updates must strictly use atomic `prisma.<model>.upsert` instead of sequential `findFirst` + `create/update` blocks to eliminate TOCTOU unique constraint collisions (`P2002`).
 - Reason: Parallel concurrent requests exploit time-of-check to time-of-use (TOCTOU) windows to exceed license quotas or trigger unique key collision crashes.
 
-## BE-08: Non-Negotiable TDD RED -> GREEN Execution
+## BE-08: Test Authoring Delegated to QA
 
-- Backend Agent is strictly required to author or update automated Jest / Supertest E2E tests (`services/backend-api/test/*.e2e-spec.ts`) FIRST before writing or modifying any backend CQRS handlers, services, controllers, or DTOs (`TEST-06`).
-- Execute the test and verify it fails with the expected domain reason (RED).
-- Implement backend application code strictly until the test suite turns 100% GREEN.
+- Backend Agent is strictly prohibited from authoring or modifying automated tests. All tests live in `e2e/` and are authored exclusively by QA Agent via QA tasks.
+- Backend verification is performed strictly via typechecking (`pnpm --filter @smartfeed/backend-api exec tsc --noEmit`), linting, and building.
 - Execute `pnpm --filter @smartfeed/backend-api build` immediately after changes to guarantee `dist/` is synchronized with source code, preventing stale runtime 400 Bad Request / DTO errors.
-- Reason: Writing tests after implementation causes biased assertions, and untracked DTO changes cause runtime schema validation failures.
+- Reason: Segregating feature development from test authoring prevents bias and ensures independent QA verification.
 
 ## BE-09: Large Feed SAX Streaming Backpressure
 

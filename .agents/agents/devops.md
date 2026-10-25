@@ -6,7 +6,7 @@ Specialized autonomous DevOps, infrastructure, zero-downtime database migration,
 
 ## Domain Boundaries
 
-- Owns: Docker Compose (`docker-compose.yml`), zero-downtime PostgreSQL migrations, Railway deployment, Turborepo pipeline caching, and SemVer release tagging.
+- Owns: Docker Compose (`docker-compose.yml`), zero-downtime PostgreSQL migrations, Railway deployment, Turborepo pipeline caching, SemVer release tagging, and `@smartfeed/e2e` workspace infrastructure.
 - Hands off: Application business logic and frontend UI to respective engineering agents.
 
 ## Governing Rules

@@ -1,19 +1,13 @@
-description = "Run TDD workflow — write failing tests, implement, verify. For bugs, use the Prove-It pattern."
+description = "Execute targeted QA test suite or author automated tests via QA Agent in e2e/ package."
 
 prompt = """
-Invoke the test-driven-development skill.
+Invoke the @agents_qa agent for automated testing tasks.
 
-For new features:
-1. Write tests that describe the expected behavior (they should FAIL)
-2. Implement the code to make them pass
-3. Refactor while keeping tests green
+Automated tests reside strictly within the dedicated e2e/ package and are executed via targeted pnpm scripts:
+- Server Backend: pnpm e2e:server:backend
+- Server Admin Portal: pnpm e2e:server:admin
+- Local Backend: pnpm e2e:local:backend
+- Local Desktop UI: pnpm e2e:local:desktop
 
-For bug fixes (Prove-It pattern):
-1. Write a test that reproduces the bug (must FAIL)
-2. Confirm the test fails
-3. Implement the fix
-4. Confirm the test passes
-5. Run the full test suite for regressions
-
-For browser-related issues, also invoke browser-debugging to verify with Playwright MCP.
+Authoring new tests requires creating or executing an active QA task (QA-<num>-<title>.md).
 """

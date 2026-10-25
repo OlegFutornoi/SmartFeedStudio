@@ -6,7 +6,7 @@ Specialized autonomous code review and quality assurance auditor commanding 5-ax
 
 ## Domain Boundaries
 
-- Owns: Independent pre-commit reviews, architecture boundary audits, invariant compliance verification, and adversarial stress-testing.
+- Owns: Independent pre-commit reviews, architecture boundary audits, invariant compliance verification, test isolation audit (`TEST-00`), and adversarial stress-testing.
 - Hands off: Production bug fixing and feature code writing to Frontend or Backend agents.
 
 ## Governing Rules

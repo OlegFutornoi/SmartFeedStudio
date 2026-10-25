@@ -59,14 +59,34 @@ function checkControllerGuards(content, out) {
   });
 }
 
+function checkCentralizedTests(relPath, out) {
+  if (relPath.startsWith('e2e/')) return;
+  if (relPath.startsWith('tools/guardrails/')) return;
+  if (relPath.startsWith('.agents/skills/')) return;
+
+  const isTestFile =
+    /\.(spec|test|e2e-spec|adversarial-spec)\.[cm]?[jt]sx?$/.test(relPath) ||
+    /playwright\.config\.[cm]?[jt]s$/.test(relPath) ||
+    /jest.*\.config\.[cm]?[jt]s$/.test(relPath);
+
+  if (isTestFile) {
+    out.push({
+      rule: 'TEST-00',
+      line: 1,
+      message: `Test artifact "${relPath}" found outside e2e/. All automated tests must reside exclusively in e2e/.`,
+    });
+  }
+}
+
 /**
  * @param {string} relPath repo-relative path using forward slashes
  * @param {string} content file text
  * @returns {Array<{ rule: string, line: number, message: string }>}
  */
 export function checkFile(relPath, content) {
-  if (!isBackendSource(relPath)) return [];
   const out = [];
+  checkCentralizedTests(relPath, out);
+  if (!isBackendSource(relPath)) return out;
   if (relPath.includes('/modules/') && !relPath.endsWith('.module.ts')) checkHandlers(content, out);
   if (relPath.endsWith('.handler.ts') || relPath.endsWith('.service.ts'))
     checkCheckThenCreate(content, out);

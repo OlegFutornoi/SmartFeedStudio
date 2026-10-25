@@ -2,7 +2,7 @@ import { isTauri } from '@/lib/runtime';
 import { prepareTauriArgs, REGISTERED_TAURI_COMMANDS } from '@/services/local-db/tauri-args';
 import type { LocalDbCommandMap } from '@/services/local-db/types';
 
-const DOCKER_SQLITE_URL = 'http://localhost:5001';
+const DOCKER_SQLITE_URL = import.meta.env.VITE_LOCAL_DB_URL || 'http://localhost:5001';
 
 /**
  * Universal Local Database Dispatcher:

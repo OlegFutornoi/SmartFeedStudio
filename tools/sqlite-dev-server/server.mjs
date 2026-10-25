@@ -1,7 +1,7 @@
 // @golden - Reference implementation of SmartFeed Studio Local SQLite Development Server
 import http from 'node:http';
 import { URL } from 'node:url';
-import { db, DB_PATH, getTables, resetDb } from './db.mjs';
+import { db, DB_PATH, getTables, resetDb, getSchemaFingerprint, schemaFileHash } from './db.mjs';
 import { handleCounters } from './handlers/counters.mjs';
 import { handleSuppliers } from './handlers/suppliers.mjs';
 import { handleSync } from './handlers/sync.mjs';
@@ -44,8 +44,18 @@ const server = http.createServer((req, res) => {
 
   if (url.pathname === '/health' && req.method === 'GET') {
     const tables = getTables();
+    const schemaFingerprint = getSchemaFingerprint();
     res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ status: 'ok', dbPath: DB_PATH, tablesCount: tables.length, tables }));
+    res.end(
+      JSON.stringify({
+        status: 'ok',
+        dbPath: DB_PATH,
+        tablesCount: tables.length,
+        tables,
+        schemaFingerprint,
+        schemaFileHash,
+      }),
+    );
     return;
   }
 

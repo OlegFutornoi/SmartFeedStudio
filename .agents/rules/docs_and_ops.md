@@ -10,12 +10,11 @@ description: DevOps, Docker, Railway, SemVer releases, and documentation synchro
 - Whenever architecture, modules, CQRS commands, Prisma models, shared DTOs, or server ports change, update `wiki/` documentation and the respective `AGENTS.md` sub-guides in the same turn.
 - Reason: Outdated documentation misleads engineers and causes agents to produce misaligned code.
 
-## OPS-02: Backend E2E Test Coverage Documentation
+## OPS-02: E2E Test Coverage Documentation
 
-- Whenever an `*.e2e-spec.ts` test file is added or modified in `services/backend-api/test/`:
-  1. Run the test suite: `pnpm --filter @smartfeed/backend-api test:e2e -- test/<spec>.e2e-spec.ts`.
-  2. Update the coverage tables in `services/backend-api/README.md` and `services/backend-api/AGENTS.md`.
-- Reason: Keeps test coverage reporting transparent and verifiable for continuous integration audits.
+- Test coverage matrix is maintained in `e2e/README.md` and `wiki/07-testing-and-qa/test-coverage-matrix.md`.
+- Test coverage matrices are updated exclusively by QA Agent (`@agents_qa`) within `QA-<num>` tasks after new specs are integrated.
+- Reason: Keeps test coverage reporting transparent, synchronized, and free from outdated developer-level duplication.
 
 ## OPS-03: SemVer Release Governance
 

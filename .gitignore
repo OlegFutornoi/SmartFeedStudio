@@ -53,6 +53,10 @@ test-results/
 playwright-report/
 blob-report/
 .playwright-mcp/
+e2e/.env
+e2e/.env.local
+e2e/.auth/
+e2e/reports/
 
 # Sentry Config File
 .env.sentry-build-plugin

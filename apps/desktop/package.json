@@ -5,14 +5,12 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:e2e": "VITE_LOCAL_DB_URL=http://localhost:5002 vite --port 1421 --strictPort",
     "build": "pnpm --filter @smartfeed/shared build && tsc && vite build",
     "preview": "vite preview",
     "tauri": "tauri",
     "tauri:dev": "tauri dev",
-    "tauri:build": "tauri build",
-    "test:e2e": "playwright test",
-    "test:e2e:headed": "playwright test --headed",
-    "test:e2e:ui": "playwright test --ui"
+    "tauri:build": "tauri build"
   },
   "dependencies": {
     "@fontsource/inter": "^5.3.0",
@@ -39,7 +37,6 @@
     "tailwind-merge": "^2.6.0"
   },
   "devDependencies": {
-    "@playwright/test": "^1.62.1",
     "@tauri-apps/cli": "^2.12.3",
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",

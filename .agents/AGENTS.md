@@ -7,19 +7,19 @@ Central intelligence orchestrator connecting 7 specialized autonomous engineerin
 ## 2. Specialized Autonomous Agents
 
 - Planner & Architecture Agent: `@agents_planner` / `@agents-planner`
-  - Domain: Requirements discovery, domain boundary modeling, tracer-bullet vertical slicing, ADRs, contract-first design, web-grounded research via Perplexity Agent API, and deterministic task authoring (`FR-`, `BE-`, `FR-BE-`).
+  - Domain: Requirements discovery, domain boundary modeling, tracer-bullet vertical slicing, ADRs, contract-first design, web-grounded research via Perplexity Agent API, and deterministic task authoring (`FR-`, `BE-`, `FR-BE-`, `QA-`).
   - Specification: `.agents/agents/planner.md`
   - Rules: `core.md`, `agents.md`, `backend.md`, `database.md`, `frontend.md`, `security.md`, `docs_and_ops.md`
 
 - Frontend Agent: `@agents_frontend` / `@agents-frontend`
-  - Domain: UI, UX, React 18, Next.js 14, Tauri v2 desktop UI, Tailwind CSS, shadcn/ui, Playwright E2E.
+  - Domain: UI, UX, React 18, Next.js 14, Tauri v2 desktop UI, Tailwind CSS, shadcn/ui.
   - Specification: `.agents/agents/frontend.md`
-  - Rules: `core.md`, `frontend.md`, `ui.md`, `i18n.md`, `testing.md`
+  - Rules: `core.md`, `frontend.md`, `ui.md`, `i18n.md`
 
 - Backend Agent: `@agents_backend` / `@agents-backend`
   - Domain: NestJS 11 CQRS, Prisma ORM, PostgreSQL 16, Redis, BullMQ, `@smartfeed/shared` contracts.
   - Specification: `.agents/agents/backend.md`
-  - Rules: `core.md`, `backend.md`, `database.md`, `security.md`, `testing.md`
+  - Rules: `core.md`, `backend.md`, `database.md`, `security.md`
 
 - Code Review Agent: `@agents_review` / `@agents-review`
   - Domain: 5-axis code review, architecture compliance, security audit, zero N+1, 100% i18n, adversarial stress testing.
@@ -27,7 +27,7 @@ Central intelligence orchestrator connecting 7 specialized autonomous engineerin
   - Rules: `core.md`, `backend.md`, `database.md`, `frontend.md`, `ui.md`, `security.md`, `testing.md`
 
 - QA & Performance Agent: `@agents_qa` / `@agents-qa`
-  - Domain: QA, 100k+ SKU load benchmarks, chaos concurrency testing, memory backpressure, mock/real parity, cleanDatabase teardown.
+  - Domain: Automated testing framework `e2e/`, Server/Local integration tests, 100k+ SKU benchmarks, chaos testing, mock/real parity.
   - Specification: `.agents/agents/qa.md`
   - Rules: `core.md`, `testing.md`, `database.md`, `i18n.md`
 
@@ -122,17 +122,16 @@ Central intelligence orchestrator connecting 7 specialized autonomous engineerin
 
 To eliminate "raw / half-baked tasks" and disconnected development silos between Planner, Backend, and Frontend:
 
-1. **Vertical Tracer Slices Only**: All feature tasks must cut end-to-end through DB -> API -> Shared -> UI -> Tests. Developing backend endpoints without client consumer tests or developing frontend views without backend contract alignment is prohibited.
-2. **Strict TDD Order (RED -> GREEN)**: Backend agents MUST write failing Supertest E2E tests before implementing handlers (`BE-08`); Frontend agents MUST write failing Playwright tests before implementing components.
-3. **Mandatory Production Compilation**: Backend agents MUST run `pnpm --filter @smartfeed/backend-api build` upon turning tests green to guarantee the runtime bundle in `dist/` is fresh.
+1. **Vertical Tracer Slices Only**: All feature tasks must cut end-to-end through DB -> API -> Shared -> UI. Developing backend endpoints without client consumer views or developing frontend views without backend contract alignment is prohibited.
+2. **Specialized QA Ownership**: Backend and Frontend agents never author automated tests (`BE-08`, `TEST-00`). All test suites live in `e2e/` and are authored exclusively by `@agents_qa` under dedicated `QA-<num>` tasks.
+3. **Mandatory Production Compilation**: Backend agents MUST run `pnpm --filter @smartfeed/backend-api build` upon code changes to guarantee the runtime bundle in `dist/` is fresh.
 4. **Official shadcn Exclusivity**: Frontend agents MUST compose views strictly with official shadcn components (`@/components/ui/*`, `UI-05`), semantic tokens (`UI-02`), and neutral muted icons (`UI-07`). No hand-rolled ad-hoc HTML elements or rainbow icons.
-5. **6-Point Definition of Done (DoD)**:
-   - Criteria 1: Backend Supertest E2E tests pass 100% on real database (`cleanDatabase` teardown).
-   - Criteria 2: Backend `dist/` is compiled and verified fresh (`pnpm --filter @smartfeed/backend-api build`).
-   - Criteria 3: Frontend Playwright tests pass 100% with real business data assertions.
-   - Criteria 4: Static typecheck (`tsc --noEmit`) passes with 0 errors across all monorepo packages.
-   - Criteria 5: Bilingual parity check (`pnpm i18n:check`) passes 100%.
-   - Criteria 6: Automated domain invariants check (`pnpm invariants:check`) passes with 0 violations across UI semantic tokens, solid headers, CQRS single-handler structure, and controller DTOs.
+5. **4-Point Definition of Done (DoD)**:
+   - Criteria 1: Backend `dist/` is compiled and verified fresh (`pnpm --filter @smartfeed/backend-api build`).
+   - Criteria 2: Static typecheck (`tsc --noEmit`) passes with 0 errors across all monorepo packages.
+   - Criteria 3: Bilingual parity check (`pnpm i18n:check`) passes 100%.
+   - Criteria 4: Automated domain invariants check (`pnpm invariants:check`) passes with 0 violations across UI semantic tokens, solid headers, CQRS single-handler structure, and controller DTOs.
+   - (Note: End-to-end integration and Playwright test criteria apply strictly to QA tasks in `e2e/`).
 
 ## 5. Universal Invariant Protocol
 

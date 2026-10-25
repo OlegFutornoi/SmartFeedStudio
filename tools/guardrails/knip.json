@@ -15,12 +15,16 @@
       "ignore": ["src/generated/**"]
     },
     "apps/desktop": {
-      "entry": ["src/main.tsx", "e2e/**/*.ts"],
-      "project": ["src/**/*.{ts,tsx}", "e2e/**/*.{ts,tsx}"]
+      "entry": ["src/main.tsx"],
+      "project": ["src/**/*.{ts,tsx}"]
     },
     "apps/admin-portal": {
       "entry": ["src/app/**/{page,layout,route}.tsx"],
       "project": ["src/**/*.{ts,tsx}"]
+    },
+    "e2e": {
+      "entry": ["playwright.config.ts", "**/*.spec.ts", "**/*.setup.ts", "**/*.teardown.ts"],
+      "project": ["**/*.ts"]
     }
   }
 }

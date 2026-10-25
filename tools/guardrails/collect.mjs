@@ -64,20 +64,27 @@ export function mergeCounts(a, b) {
   return out;
 }
 
-function walkBackend(dir, out = []) {
+function walkRepo(dir, out = []) {
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-    if (entry.name === 'node_modules' || entry.name === 'generated' || entry.name === 'dist')
+    if (
+      entry.name === 'node_modules' ||
+      entry.name === 'generated' ||
+      entry.name === 'dist' ||
+      entry.name === '.git' ||
+      entry.name === '.next' ||
+      entry.name === 'reports' ||
+      entry.name === '.auth'
+    )
       continue;
     const full = path.join(dir, entry.name);
-    if (entry.isDirectory()) walkBackend(full, out);
-    else if (entry.name.endsWith('.ts')) out.push(full);
+    if (entry.isDirectory()) walkRepo(full, out);
+    else if (/\.[cm]?[jt]sx?$/.test(entry.name)) out.push(full);
   }
   return out;
 }
 
 function readStructuralInputs() {
-  const base = path.join(ROOT, 'services/backend-api/src');
-  return walkBackend(base).map((file) => ({
+  return walkRepo(ROOT).map((file) => ({
     relPath: path.relative(ROOT, file).split(path.sep).join('/'),
     content: fs.readFileSync(file, 'utf-8'),
   }));

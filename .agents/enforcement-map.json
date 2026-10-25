@@ -102,10 +102,10 @@
     "mode": "ratchet"
   },
   "BE-08": {
-    "title": "Non-Negotiable TDD RED -> GREEN Execution",
+    "title": "Test Authoring Delegated to QA",
     "domain": "backend",
-    "enforcer": "jest:e2e",
-    "mode": "error"
+    "enforcer": "review-only",
+    "mode": "manual"
   },
   "BE-09": {
     "title": "Large Feed SAX Streaming Backpressure",
@@ -563,11 +563,17 @@
     "enforcer": "review-only",
     "mode": "manual"
   },
-  "TEST-01": {
-    "title": "Mandatory `cleanDatabase` Teardown (Zero Leftovers)",
+  "TEST-00": {
+    "title": "Centralized Test Suite Exclusivity",
     "domain": "testing",
-    "enforcer": "jest:cleanDatabase",
-    "mode": "error"
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "TEST-01": {
+    "title": "Mandatory Teardown and Scoped Cleanup",
+    "domain": "testing",
+    "enforcer": "review-only",
+    "mode": "manual"
   },
   "TEST-02": {
     "title": "Frontend Test Isolation",
@@ -594,7 +600,7 @@
     "mode": "manual"
   },
   "TEST-06": {
-    "title": "Strict TDD RED -> GREEN Cycle",
+    "title": "Directory & Naming Contract",
     "domain": "testing",
     "enforcer": "review-only",
     "mode": "manual"
@@ -604,5 +610,17 @@
     "domain": "testing",
     "enforcer": "tsc:noEmit",
     "mode": "error"
+  },
+  "TEST-08": {
+    "title": "Isolated Test Entity Prefixes",
+    "domain": "testing",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "TEST-09": {
+    "title": "Playwright Resilience & Web-First Assertions",
+    "domain": "testing",
+    "enforcer": "review-only",
+    "mode": "manual"
   }
 }

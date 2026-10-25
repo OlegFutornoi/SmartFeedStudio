@@ -15,7 +15,7 @@ export default tseslint.config(
       '**/src-tauri/target/**',
       '**/coverage/**',
       '**/*.d.ts',
-      '.agents/skills/**',
+      '**/.agents/**',
       '.claude/**',
       'scripts/**',
     ],
@@ -70,9 +70,11 @@ export default tseslint.config(
     },
   },
   {
-    files: ['**/e2e/**', '**/test/**', '**/*.spec.ts', '**/*.test.ts', '**/*.e2e-spec.ts'],
+    files: ['e2e/**/*.ts'],
     rules: {
       'react-hooks/rules-of-hooks': 'off',
+      'no-restricted-imports': 'off',
+      'no-empty-pattern': 'off',
     },
   },
   ...invariantsConfig,

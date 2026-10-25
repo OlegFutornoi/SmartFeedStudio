@@ -59,7 +59,7 @@ description: Core universal engineering invariants applied across all tasks and 
 ## CORE-09: Ban of `browser_subagent`
 
 - Never call `browser_subagent` or `open_browser_url`.
-- For browser inspection and automation, use Playwright MCP tools directly (`browser_navigate`, `browser_snapshot`, `browser_take_screenshot`) or local test runners (`pnpm test:desktop`, `pnpm test:admin`).
+- For browser inspection and automation, use Playwright MCP tools directly (`browser_navigate`, `browser_snapshot`, `browser_take_screenshot`) or targeted test runner (`pnpm e2e:local:desktop`, `pnpm e2e:server:admin`).
 - Reason: The built-in subagent unconditionally fails with a 404 binary download error on macOS ARM64.
 
 ## CORE-10: Git Operations on Explicit Request Only
@@ -69,11 +69,11 @@ description: Core universal engineering invariants applied across all tasks and 
 - Regular commits append `[skip ci]` and push without tags (zero CI runs); release commits (`/git-commit -r`) omit `[skip ci]`, bump versions, and push ONLY the release tag (`refs/tags/vX.Y.Z`) to trigger release builds (`release.yml`).
 - Reason: Autonomous commits bypass user review; skipping CI on regular commits saves runner minutes.
 
-## CORE-11: Targeted Feature-Scoped Testing
+## CORE-11: Targeted QA-Scoped Testing
 
-- During feature implementation or bug fixing, run strictly the tests covering the modified feature or page.
-- Running full global test suites is prohibited during feature work. Full suites run only on explicit user request or release verification.
-- Reason: Running 99+ desktop tests or all backend suites on single-component edits wastes CPU and slows feedback loops.
+- During QA task execution, run strictly the tests covering the targeted domain or feature slice (`--project`, `--grep`).
+- Running full global test suites is prohibited during targeted feature testing. Full suites run only on explicit user request or release verification.
+- Reason: Running exhaustive multi-app suites on targeted validations wastes resources and slows down feedback loops.
 
 ## CORE-12: Quality and Reliability Over "Working is Enough"
 
@@ -84,7 +84,7 @@ description: Core universal engineering invariants applied across all tasks and 
 ## PLAN-01: Three-Directory Plans Lifecycle
 
 - Tasks (formerly plans) reside strictly in `plans/active/`, `plans/backlog/`, or `plans/completed/`.
-- Naming standard: starting from next task, tasks are separated by domain with sequential numbering: frontend `FR-<num>-<short-title>.md`, backend `BE-<num>-<short-title>.md`, or joint full-stack `FR-BE-<num>-<short-title>.md`. Legacy files remain untouched.
+- Naming standard: starting from next task, tasks are separated by domain with sequential numbering: frontend `FR-<num>-<short-title>.md`, backend `BE-<num>-<short-title>.md`, joint full-stack `FR-BE-<num>-<short-title>.md`, or automated testing `QA-<num>-<short-title>.md`. Legacy files remain untouched.
 - Creating a task in `plans/active/` gives no authority to modify code or database until explicit user approval ("починай", "виконуй", "реалізуй").
 - Once implemented and 100% verified by tests, move the task to `plans/completed/<filename>.md` and update `plans/README.md`.
 - Reason: Deterministic task taxonomy and lifecycle prevent scope creep, unapproved changes, and undocumented releases.
