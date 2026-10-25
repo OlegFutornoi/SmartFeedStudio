@@ -470,8 +470,6 @@ model Supplier {
 
   categoryRules         SupplierCategoryRule[]
   pricingRules          SupplierPricingRule[]
-  syncSettings          SupplierSyncSetting?
-  syncLogs              SupplierSyncLog[]
   feedSources           SupplierFeedSource[]
 
   @@unique([userId, code])
@@ -562,56 +560,6 @@ model SupplierPricingRule {
   @@index([supplierId])
   @@index([supplierId, isActive, priority])
   @@map("supplier_pricing_rules")
-}
-
-model SupplierSyncSetting {
-  id                    String    @id @default(cuid())
-  supplierId            String    @unique @map("supplier_id")
-  supplier              Supplier  @relation(fields: [supplierId], references: [id], onDelete: Cascade)
-  protectEditedProducts Boolean   @default(true) @map("protect_edited_products")
-  syncPrices            Boolean   @default(true) @map("sync_prices")
-  syncStocks            Boolean   @default(true) @map("sync_stocks")
-  imageSyncMode         String    @default("DO_NOT_UPDATE") @map("image_sync_mode")
-  descriptionSyncMode   String    @default("DO_NOT_UPDATE") @map("description_sync_mode")
-  attributesSyncMode    String    @default("ADD_NEW_ONLY") @map("attributes_sync_mode")
-  titleSyncMode         String    @default("DO_NOT_UPDATE") @map("title_sync_mode")
-  categorySyncMode      String    @default("KEEP_MANUAL_MAPPING") @map("category_sync_mode")
-  barcodeSyncMode       String    @default("FILL_EMPTY_ONLY") @map("barcode_sync_mode")
-  priceSource           String    @default("WHOLESALE") @map("price_source")
-  zeroPriceAction       String    @default("OUT_OF_STOCK") @map("zero_price_action")
-  missingProductsAction String    @default("OUT_OF_STOCK") @map("missing_products_action")
-  newProductsAction     String    @default("AUTO_PUBLISH") @map("new_products_action")
-  syncIntervalHours     Int       @default(0) @map("sync_interval_hours")
-  lastSyncedAt          DateTime? @map("last_synced_at") @db.Timestamptz(6)
-  lastSyncStatus        String    @default("IDLE") @map("last_sync_status")
-  createdAt             DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt             DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
-
-  @@index([supplierId])
-  @@map("supplier_sync_settings")
-}
-
-model SupplierSyncLog {
-  id              String    @id @default(cuid())
-  supplierId      String    @map("supplier_id")
-  supplier        Supplier  @relation(fields: [supplierId], references: [id], onDelete: Cascade)
-  feedSourceId    String?   @map("feed_source_id")
-  trigger         String    @default("MANUAL")
-  status          String    @default("RUNNING")
-  startedAt       DateTime  @default(now()) @map("started_at") @db.Timestamptz(6)
-  completedAt     DateTime? @map("completed_at") @db.Timestamptz(6)
-  durationMs      Int?      @map("duration_ms")
-  totalProducts   Int       @default(0) @map("total_products")
-  createdCount    Int       @default(0) @map("created_count")
-  updatedCount    Int       @default(0) @map("updated_count")
-  outOfStockCount Int       @default(0) @map("out_of_stock_count")
-  errorsCount     Int       @default(0) @map("errors_count")
-  errorMessage    String?   @map("error_message")
-  createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
-
-  @@index([supplierId])
-  @@index([supplierId, createdAt])
-  @@map("supplier_sync_logs")
 }
 
 model BankCurrencyProvider {

@@ -26,18 +26,3 @@ export class GetSupplierPricingRulesQuery {
     public readonly userId: string,
   ) {}
 }
-
-export class GetSupplierSyncSettingsQuery {
-  constructor(
-    public readonly supplierId: string,
-    public readonly userId: string,
-  ) {}
-}
-
-export class GetSupplierSyncLogsQuery {
-  constructor(
-    public readonly supplierId: string,
-    public readonly userId: string,
-    public readonly limit?: number,
-  ) {}
-}

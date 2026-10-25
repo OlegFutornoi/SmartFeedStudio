@@ -61,20 +61,24 @@ export class CheckFeedCollisionHandler implements IQueryHandler<
       dto.fileName?.trim(),
     ].filter((val): val is string => Boolean(val && val.length > 0));
 
-    // 3. Check for same-supplier duplicate in supplierSyncLog
+    // 3. Check for same-supplier duplicate in supplierFeedSource
     if (matchCandidates.length > 0) {
-      const existingSameSupplierLog = await this.prisma.supplierSyncLog.findFirst({
+      const existingSameSupplierFeed = await this.prisma.supplierFeedSource.findFirst({
         where: {
           supplierId: dto.supplierId,
-          status: 'SUCCESS',
-          feedSourceId: { in: matchCandidates },
+          OR: [
+            ...(urlFingerprint ? [{ urlFingerprint }] : []),
+            ...(canonicalUrl ? [{ canonicalUrl }] : []),
+            ...(dto.sourceUrl ? [{ sourceUrl: dto.sourceUrl }] : []),
+            ...(contentHash ? [{ contentHash }] : []),
+          ],
         },
         orderBy: {
           createdAt: 'desc',
         },
       });
 
-      if (existingSameSupplierLog) {
+      if (existingSameSupplierFeed) {
         this.logger.debug(
           `[CheckFeedCollision] Same-supplier duplicate found for supplier: ${supplier.name}`,
         );
@@ -83,13 +87,13 @@ export class CheckFeedCollisionHandler implements IQueryHandler<
           collisionType: FeedCollisionType.SAME_SUPPLIER_DUPLICATE,
           canonicalUrl,
           urlFingerprint,
-          existingFeedId: existingSameSupplierLog.feedSourceId || existingSameSupplierLog.id,
-          existingFeedName: candidateName,
+          existingFeedId: existingSameSupplierFeed.id,
+          existingFeedName: existingSameSupplierFeed.name || candidateName,
           conflictingSupplierId: supplier.id,
           conflictingSupplierName: supplier.name,
-          existingProductsCount: existingSameSupplierLog.totalProducts,
+          existingProductsCount: existingSameSupplierFeed.productsCount,
           lastSyncedAt: (
-            existingSameSupplierLog.completedAt || existingSameSupplierLog.createdAt
+            existingSameSupplierFeed.lastSyncedAt || existingSameSupplierFeed.createdAt
           ).toISOString(),
           suggestedFeedName: candidateName,
           messageUk: `Цей фід уже підключений до цього постачальника під назвою «${candidateName}». Бажаєте оновити існуючий фід замість створення дубліката?`,
@@ -98,12 +102,16 @@ export class CheckFeedCollisionHandler implements IQueryHandler<
       }
 
       // 4. Check for cross-supplier conflict across other suppliers owned by this user
-      const existingOtherSupplierLog = await this.prisma.supplierSyncLog.findFirst({
+      const existingOtherSupplierFeed = await this.prisma.supplierFeedSource.findFirst({
         where: {
           supplierId: { not: dto.supplierId },
           supplier: { userId },
-          status: 'SUCCESS',
-          feedSourceId: { in: matchCandidates },
+          OR: [
+            ...(urlFingerprint ? [{ urlFingerprint }] : []),
+            ...(canonicalUrl ? [{ canonicalUrl }] : []),
+            ...(dto.sourceUrl ? [{ sourceUrl: dto.sourceUrl }] : []),
+            ...(contentHash ? [{ contentHash }] : []),
+          ],
         },
         include: {
           supplier: true,
@@ -113,8 +121,8 @@ export class CheckFeedCollisionHandler implements IQueryHandler<
         },
       });
 
-      if (existingOtherSupplierLog) {
-        const otherSupplierName = existingOtherSupplierLog.supplier.name;
+      if (existingOtherSupplierFeed) {
+        const otherSupplierName = existingOtherSupplierFeed.supplier.name;
         const suggested = generateDisambiguatedFeedName(
           candidateName,
           [candidateName],
@@ -125,13 +133,13 @@ export class CheckFeedCollisionHandler implements IQueryHandler<
           collisionType: FeedCollisionType.CROSS_SUPPLIER_CONFLICT,
           canonicalUrl,
           urlFingerprint,
-          existingFeedId: existingOtherSupplierLog.feedSourceId || existingOtherSupplierLog.id,
-          existingFeedName: candidateName,
-          conflictingSupplierId: existingOtherSupplierLog.supplierId,
+          existingFeedId: existingOtherSupplierFeed.id,
+          existingFeedName: existingOtherSupplierFeed.name || candidateName,
+          conflictingSupplierId: existingOtherSupplierFeed.supplierId,
           conflictingSupplierName: otherSupplierName,
-          existingProductsCount: existingOtherSupplierLog.totalProducts,
+          existingProductsCount: existingOtherSupplierFeed.productsCount,
           lastSyncedAt: (
-            existingOtherSupplierLog.completedAt || existingOtherSupplierLog.createdAt
+            existingOtherSupplierFeed.lastSyncedAt || existingOtherSupplierFeed.createdAt
           ).toISOString(),
           suggestedFeedName: suggested,
           messageUk: `Цей фід вже зареєстрований за постачальником «${otherSupplierName}». Оберіть унікальну назву для ізольованого імпорту.`,

@@ -271,8 +271,8 @@ describe('Supplier Tabs Extended CRUD (E2E)', () => {
     expect(res.body.length).toBe(3);
   });
 
-  it('11. POST /api/suppliers/:id/sync & DELETE /api/suppliers/:id/sync-logs — triggers sync with metrics and clears logs', async () => {
-    const syncRes = await request(app.getHttpServer())
+  it('11. Local-first decoupling — /api/suppliers/:id/sync and /sync-logs return 404 (strictly client-side)', async () => {
+    await request(app.getHttpServer())
       .post(`/api/suppliers/${createdSupplierId}/sync`)
       .set('Authorization', `Bearer ${userToken}`)
       .send({
@@ -281,30 +281,17 @@ describe('Supplier Tabs Extended CRUD (E2E)', () => {
         updatedCount: 180,
         outOfStockCount: 5,
       })
-      .expect(200);
+      .expect(404);
 
-    expect(syncRes.body.totalProducts).toBe(200);
-    expect(syncRes.body.updatedCount).toBe(180);
-
-    const logsRes = await request(app.getHttpServer())
+    await request(app.getHttpServer())
       .get(`/api/suppliers/${createdSupplierId}/sync-logs`)
       .set('Authorization', `Bearer ${userToken}`)
-      .expect(200);
-
-    expect(Array.isArray(logsRes.body)).toBe(true);
-    expect(logsRes.body.length).toBeGreaterThanOrEqual(1);
+      .expect(404);
 
     await request(app.getHttpServer())
       .delete(`/api/suppliers/${createdSupplierId}/sync-logs`)
       .set('Authorization', `Bearer ${userToken}`)
-      .expect(200);
-
-    const emptyLogsRes = await request(app.getHttpServer())
-      .get(`/api/suppliers/${createdSupplierId}/sync-logs`)
-      .set('Authorization', `Bearer ${userToken}`)
-      .expect(200);
-
-    expect(emptyLogsRes.body.length).toBe(0);
+      .expect(404);
   });
 
   it('12. DELETE /api/feeds/suppliers/:id/sources/:sourceId — deletes feed source', async () => {

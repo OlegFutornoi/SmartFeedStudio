@@ -214,6 +214,24 @@ describe('Suppliers & Multi-Currency Management (E2E)', () => {
       .expect(404);
   });
 
+  it('8b. Local-first decoupling — sync-settings, sync-logs, and sync are decoupled from backend (strictly client-side)', async () => {
+    await request(app.getHttpServer())
+      .get(`/api/suppliers/${createdSupplierId}/sync-settings`)
+      .set('Authorization', `Bearer ${userToken}`)
+      .expect(404);
+
+    await request(app.getHttpServer())
+      .get(`/api/suppliers/${createdSupplierId}/sync-logs`)
+      .set('Authorization', `Bearer ${userToken}`)
+      .expect(404);
+
+    await request(app.getHttpServer())
+      .post(`/api/suppliers/${createdSupplierId}/sync`)
+      .set('Authorization', `Bearer ${userToken}`)
+      .send({ totalProducts: 100 })
+      .expect(404);
+  });
+
   it('9. PATCH & GET /api/suppliers/:id/categories/:categoryId — maps category with mutually exclusive markup (% vs ₴)', async () => {
     const mapRzRes = await request(app.getHttpServer())
       .patch(`/api/suppliers/${createdSupplierId}/categories/cat_switches_elios`)

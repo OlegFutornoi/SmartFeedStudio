@@ -143,13 +143,14 @@ describe('Feed Collision & Deduplication Service (E2E)', () => {
 
     const fingerprint = firstCheck.body.urlFingerprint;
 
-    await prisma.supplierSyncLog.create({
+    await prisma.supplierFeedSource.create({
       data: {
         supplierId: validSupplierId,
-        feedSourceId: fingerprint,
-        status: 'SUCCESS',
-        totalProducts: 42,
-        createdCount: 42,
+        name: 'Livolo Main Feed',
+        sourceType: 'URL',
+        sourceUrl: 'https://livolo.kiev.ua/dup_feed.xml',
+        urlFingerprint: fingerprint,
+        productsCount: 42,
       },
     });
 

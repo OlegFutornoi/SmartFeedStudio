@@ -9,10 +9,6 @@ import {
   GetSupplierPricingRulesHandler,
 } from '@/modules/suppliers/queries/suppliers.handlers';
 import { SupplierCommandHandlers } from '@/modules/suppliers/commands/suppliers.handlers';
-import {
-  GetSupplierSyncSettingsHandler,
-  GetSupplierSyncLogsHandler,
-} from '@/modules/suppliers/queries/supplier-sync.handlers';
 
 export const CommandHandlers = SupplierCommandHandlers;
 
@@ -21,8 +17,6 @@ export const QueryHandlers = [
   GetSupplierByIdHandler,
   GetSupplierCategoriesHandler,
   GetSupplierPricingRulesHandler,
-  GetSupplierSyncSettingsHandler,
-  GetSupplierSyncLogsHandler,
 ];
 
 @Module({

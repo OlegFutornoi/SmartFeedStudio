@@ -10,9 +10,6 @@ import { CreateSupplierPricingRuleHandler } from '@/modules/suppliers/commands/h
 import { UpdateSupplierPricingRuleHandler } from '@/modules/suppliers/commands/handlers/update-supplier-pricing-rule.handler';
 import { DeleteSupplierPricingRuleHandler } from '@/modules/suppliers/commands/handlers/delete-supplier-pricing-rule.handler';
 import { BulkCreateSupplierPricingRulesHandler } from '@/modules/suppliers/commands/handlers/bulk-create-supplier-pricing-rules.handler';
-import { UpdateSupplierSyncSettingsHandler } from '@/modules/suppliers/commands/handlers/update-supplier-sync-settings.handler';
-import { SyncSupplierFeedHandler } from '@/modules/suppliers/commands/handlers/sync-supplier-feed.handler';
-import { ClearSupplierSyncLogsHandler } from '@/modules/suppliers/commands/handlers/clear-supplier-sync-logs.handler';
 
 export {
   CreateSupplierHandler,
@@ -27,9 +24,6 @@ export {
   UpdateSupplierPricingRuleHandler,
   DeleteSupplierPricingRuleHandler,
   BulkCreateSupplierPricingRulesHandler,
-  UpdateSupplierSyncSettingsHandler,
-  SyncSupplierFeedHandler,
-  ClearSupplierSyncLogsHandler,
 };
 
 export const SupplierCommandHandlers = [
@@ -45,7 +39,4 @@ export const SupplierCommandHandlers = [
   UpdateSupplierPricingRuleHandler,
   DeleteSupplierPricingRuleHandler,
   BulkCreateSupplierPricingRulesHandler,
-  UpdateSupplierSyncSettingsHandler,
-  SyncSupplierFeedHandler,
-  ClearSupplierSyncLogsHandler,
 ];

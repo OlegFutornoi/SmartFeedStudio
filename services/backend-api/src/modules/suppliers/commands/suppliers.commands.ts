@@ -63,22 +63,6 @@ export class DeleteSupplierPricingRuleCommand {
   ) {}
 }
 
-export class UpdateSupplierSyncSettingsCommand {
-  constructor(
-    public readonly supplierId: string,
-    public readonly userId: string,
-    public readonly dto: import('../dto/supplier-sync.dto').UpdateSupplierSyncSettingDto,
-  ) {}
-}
-
-export class SyncSupplierFeedCommand {
-  constructor(
-    public readonly supplierId: string,
-    public readonly userId: string,
-    public readonly dto: import('../dto/supplier-sync.dto').TriggerSupplierSyncDto,
-  ) {}
-}
-
 export class ToggleSupplierCategoryCommand {
   constructor(
     public readonly supplierId: string,
@@ -118,12 +102,5 @@ export class BulkCreateSupplierPricingRulesCommand {
     public readonly supplierId: string,
     public readonly userId: string,
     public readonly dto: import('../dto/supplier-rules.dto').BulkCreateSupplierPricingRulesDto,
-  ) {}
-}
-
-export class ClearSupplierSyncLogsCommand {
-  constructor(
-    public readonly supplierId: string,
-    public readonly userId: string,
   ) {}
 }

@@ -17,7 +17,6 @@ import {
   type FetchFeedResultDto,
   type FeedSourceDto,
   type ImportJobDto,
-  type SupplierSyncResultDto,
   type FeedCollisionResultDto,
   ImportJobStatus,
 } from '@smartfeed/shared';
@@ -37,7 +36,6 @@ import { GetAllFeedSourcesQuery } from '@/modules/feeds/queries/get-all-feed-sou
 import { UpsertSupplierFeedSourceCommand } from '@/modules/feeds/commands/upsert-supplier-feed-source.command';
 import { UpdateSupplierFeedSourceCommand } from '@/modules/feeds/commands/update-supplier-feed-source.command';
 import { DeleteSupplierFeedSourceCommand } from '@/modules/feeds/commands/delete-supplier-feed-source.command';
-import { SyncSupplierFeedCommand } from '@/modules/suppliers/commands/suppliers.commands';
 import { GetSupplierByIdQuery } from '@/modules/suppliers/queries/suppliers.queries';
 
 @ApiTags('Feeds')
@@ -141,22 +139,6 @@ export class FeedsController {
   ): Promise<{ success: boolean; id: string }> {
     return this.commandBus.execute(
       new DeleteSupplierFeedSourceCommand(supplierId, sourceId, user.id),
-    );
-  }
-
-  @Post('suppliers/:supplierId/sources/:sourceId/sync')
-  @HttpCode(HttpStatus.OK)
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'Trigger feed source synchronization' })
-  @ApiResponse({ status: 200, description: 'Feed source synchronized successfully' })
-  async syncSupplierSource(
-    @Param('supplierId') supplierId: string,
-    @Param('sourceId') sourceId: string,
-    @CurrentUser() user: { id: string },
-  ): Promise<SupplierSyncResultDto> {
-    return this.commandBus.execute(
-      new SyncSupplierFeedCommand(supplierId, user.id, { feedSourceId: sourceId }),
     );
   }
 
