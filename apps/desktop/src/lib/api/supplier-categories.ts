@@ -93,9 +93,7 @@ export async function getSupplierCategories(
     });
   }
 
-  const validRemote = remoteRules.filter((c) =>
-    Boolean(isFeedActive(c) && (c.productCount ?? 0) > 0),
-  );
+  const validRemote = remoteRules.filter((c) => isFeedActive(c));
   if (search) {
     const q = search.toLowerCase();
     return validRemote.filter((c) => c.name.toLowerCase().includes(q));

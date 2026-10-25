@@ -149,6 +149,7 @@ export class MockDatabaseDriver {
   public getSupplierSyncLogs = (sId: string) => mock.getSupplierSyncLogs(this.state, sId);
   public addSupplierSyncLog = (p: Parameters<typeof mock.addSupplierSyncLog>[1]) =>
     mock.addSupplierSyncLog(this.state, p);
+  public clearSupplierSyncLogs = (sId: string) => mock.clearSupplierSyncLogs(this.state, sId);
 
   // Export Channels
   public getExportChannels = (): ExportChannelDto[] => mock.getExportChannels(this.state);

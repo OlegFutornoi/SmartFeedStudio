@@ -69,7 +69,7 @@ export async function getSupplierFeedSources(
     );
     if (response.ok) {
       const data = await response.json();
-      if (Array.isArray(data) && data.length > 0) return data as FeedSourceItemDto[];
+      if (Array.isArray(data)) return data as FeedSourceItemDto[];
     }
   } catch (err) {
     console.warn('[ApiClient] Remote call failed, using local fallback:', err);
@@ -77,7 +77,7 @@ export async function getSupplierFeedSources(
 
   try {
     const sources = await localDb.feeds.getSupplierFeedSources(supplierId);
-    if (sources && sources.length > 0) {
+    if (Array.isArray(sources)) {
       return sources.map(mapLocalFeedSource);
     }
   } catch (err) {
@@ -102,7 +102,7 @@ export async function getAllFeedSources(token?: string): Promise<FeedSourceItemD
     const response = await fetchWithAuth('/feeds/sources', { method: 'GET' }, token);
     if (response.ok) {
       const data = await response.json();
-      if (Array.isArray(data) && data.length > 0) return data as FeedSourceItemDto[];
+      if (Array.isArray(data)) return data as FeedSourceItemDto[];
     }
   } catch (err) {
     console.warn('[ApiClient] Remote call failed, using local fallback:', err);
@@ -110,7 +110,7 @@ export async function getAllFeedSources(token?: string): Promise<FeedSourceItemD
 
   try {
     const sources = await localDb.feeds.getAllFeedSources();
-    if (sources && sources.length > 0) {
+    if (Array.isArray(sources)) {
       return sources.map(mapLocalFeedSource);
     }
   } catch (err) {
@@ -234,64 +234,37 @@ export async function importFeedUrl(
   dto: { supplierId: string; url: string; catalogId?: string },
   token?: string,
 ): Promise<ImportFeedResultDto> {
-  if (!isTauri()) {
-    try {
-      const response = await fetchWithAuth(
-        '/feeds/import-url',
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(dto),
-        },
-        token,
-      );
-      if (response.ok) {
-        return (await response.json()) as ImportFeedResultDto;
-      }
-    } catch (err) {
-      console.warn('[ApiClient] Remote call failed, using local fallback:', err);
-    }
-  }
+  const content = await fetchFeedContent(dto.url, token);
+  const res = await localDb.feeds.importFeedContent(content, {
+    supplierId: dto.supplierId,
+    sourceUrl: dto.url,
+  });
 
   return {
-    feedSourceId: `feed_${dto.supplierId}_01`,
-    totalItems: 450,
-    createdItems: 450,
+    feedSourceId: res.feedSourceId,
+    totalItems: res.totalProcessed,
+    createdItems: res.createdCount,
     updatedItems: 0,
-    categoriesCreated: 4,
+    categoriesCreated: 0,
     format: 'XML',
   };
 }
 
 export async function importFeedContent(
   dto: { supplierId: string; content: string; fileName?: string; catalogId?: string },
-  token?: string,
+  _token?: string,
 ): Promise<ImportFeedResultDto> {
-  if (!isTauri()) {
-    try {
-      const response = await fetchWithAuth(
-        '/feeds/import-content',
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(dto),
-        },
-        token,
-      );
-      if (response.ok) {
-        return (await response.json()) as ImportFeedResultDto;
-      }
-    } catch (err) {
-      console.warn('[ApiClient] Remote call failed, using local fallback:', err);
-    }
-  }
+  const res = await localDb.feeds.importFeedContent(dto.content, {
+    supplierId: dto.supplierId,
+    fileName: dto.fileName,
+  });
 
   return {
-    feedSourceId: `feed_${dto.supplierId}_01`,
-    totalItems: 450,
-    createdItems: 450,
+    feedSourceId: res.feedSourceId,
+    totalItems: res.totalProcessed,
+    createdItems: res.createdCount,
     updatedItems: 0,
-    categoriesCreated: 4,
+    categoriesCreated: 0,
     format: 'XML',
   };
 }

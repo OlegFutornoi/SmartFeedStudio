@@ -179,6 +179,7 @@ export async function clearSupplierSyncLogs(
         token,
       );
       if (res.ok) {
+        mockDatabaseDriver.clearSupplierSyncLogs(supplierId);
         emitDataSync(['suppliers', 'all']);
         return { success: true };
       }
@@ -187,6 +188,7 @@ export async function clearSupplierSyncLogs(
     }
   }
 
+  mockDatabaseDriver.clearSupplierSyncLogs(supplierId);
   emitDataSync(['suppliers', 'all']);
   return { success: true };
 }

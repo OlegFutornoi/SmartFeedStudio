@@ -10,6 +10,7 @@ import {
   updateSupplierSyncSettings,
   getSupplierSyncLogs,
   syncSupplierFeed,
+  clearSupplierSyncLogs,
 } from '@/lib/api/supplier-sync';
 import { useAuth } from '@/contexts/AuthContext';
 import { SupplierSyncStatusBanner } from '@/modules/suppliers/components/drawer/tabs/sync/SupplierSyncStatusBanner';
@@ -34,6 +35,7 @@ export const SupplierSyncTab: React.FC<SupplierSyncTabProps> = ({
   const [settings, setSettings] = useState<SupplierSyncSettingDto | null>(null);
   const [logs, setLogs] = useState<SupplierSyncLogDto[]>([]);
   const [isSyncing, setIsSyncing] = useState<boolean>(false);
+  const [isClearing, setIsClearing] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const isFetchingRef = useRef<boolean>(false);
 
@@ -85,6 +87,18 @@ export const SupplierSyncTab: React.FC<SupplierSyncTabProps> = ({
     }
   };
 
+  const handleClearLogs = async () => {
+    setIsClearing(true);
+    try {
+      await clearSupplierSyncLogs(supplier.id, token || undefined);
+      setLogs([]);
+    } catch (err) {
+      console.warn('[SupplierSyncTab] Clear logs error:', err);
+    } finally {
+      setIsClearing(false);
+    }
+  };
+
   if (isLoading && !settings) {
     return (
       <div className="p-8 text-center text-xs text-muted-foreground animate-pulse">
@@ -119,7 +133,7 @@ export const SupplierSyncTab: React.FC<SupplierSyncTabProps> = ({
       <SupplierSyncScheduleCard settings={settings} onChange={handleUpdateSettings} />
 
       {/* 6. Execution Audit History Table */}
-      <SupplierSyncHistoryTable logs={logs} />
+      <SupplierSyncHistoryTable logs={logs} onClearLogs={handleClearLogs} isClearing={isClearing} />
     </div>
   );
 };

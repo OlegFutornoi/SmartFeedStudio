@@ -1,7 +1,8 @@
 import React from 'react';
-import { History, CheckCircle2, AlertCircle, Clock } from 'lucide-react';
+import { History, CheckCircle2, AlertCircle, Clock, Trash2 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   Table,
   TableBody,
@@ -15,25 +16,47 @@ import type { SupplierSyncLogDto } from '@smartfeed/shared';
 
 interface SupplierSyncHistoryTableProps {
   logs: SupplierSyncLogDto[];
+  onClearLogs?: () => void;
+  isClearing?: boolean;
 }
 
-export const SupplierSyncHistoryTable: React.FC<SupplierSyncHistoryTableProps> = ({ logs }) => {
+export const SupplierSyncHistoryTable: React.FC<SupplierSyncHistoryTableProps> = ({
+  logs,
+  onClearLogs,
+  isClearing = false,
+}) => {
   const { t } = useTranslation(['suppliers', 'common']);
   const safeLogs = Array.isArray(logs) ? logs : [];
 
   return (
     <Card className="border-border/80 shadow-xs" data-testid="supplier-sync-history-table">
-      <CardHeader className="pb-3 border-b border-border/50">
-        <CardTitle className="text-sm font-semibold flex items-center gap-2">
-          <History className="size-4 text-primary" />
-          {t('suppliers:historyCardTitle', { defaultValue: 'Журнал та історія синхронізацій' })}
-        </CardTitle>
-        <CardDescription className="text-xs">
-          {t('suppliers:historyCardDesc', {
-            defaultValue:
-              'Аудит-лог усіх сеансів оновлення товарів постачальника із детальними підсумками',
-          })}
-        </CardDescription>
+      <CardHeader className="pb-3 border-b border-border/50 flex flex-row items-center justify-between gap-4">
+        <div>
+          <CardTitle className="text-sm font-semibold flex items-center gap-2">
+            <History className="size-4 text-primary" />
+            {t('suppliers:historyCardTitle', { defaultValue: 'Журнал та історія синхронізацій' })}
+          </CardTitle>
+          <CardDescription className="text-xs">
+            {t('suppliers:historyCardDesc', {
+              defaultValue:
+                'Аудит-лог усіх сеансів оновлення товарів постачальника із детальними підсумками',
+            })}
+          </CardDescription>
+        </div>
+        {safeLogs.length > 0 && onClearLogs && (
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={onClearLogs}
+            disabled={isClearing}
+            data-testid="clear-sync-logs-btn"
+            className="text-xs gap-1.5 h-8 text-muted-foreground hover:text-destructive shrink-0"
+          >
+            <Trash2 className="size-3.5" />
+            {t('suppliers:clearLogs', { defaultValue: 'Очистити журнал' })}
+          </Button>
+        )}
       </CardHeader>
 
       <CardContent className="pt-3 p-0">

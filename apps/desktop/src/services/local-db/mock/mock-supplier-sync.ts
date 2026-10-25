@@ -77,3 +77,8 @@ export function addSupplierSyncLog(
   state.syncLogs.set(log.supplierId, list);
   return log;
 }
+
+export function clearSupplierSyncLogs(state: MockDbState, supplierId: string): boolean {
+  state.syncLogs.set(supplierId, []);
+  return true;
+}

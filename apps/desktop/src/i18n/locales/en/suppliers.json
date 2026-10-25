@@ -733,5 +733,6 @@
   "addCustomRoundingBtn": "Add",
   "customRoundingTypeDecimal": ".XX (cents)",
   "customRoundingTypeEnding": "ending in X",
-  "customRoundingTypeMultiple": "multiple of X"
+  "customRoundingTypeMultiple": "multiple of X",
+  "clearLogs": "Clear logs"
 }

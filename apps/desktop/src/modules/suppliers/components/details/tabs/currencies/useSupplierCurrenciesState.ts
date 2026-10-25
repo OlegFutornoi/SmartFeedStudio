@@ -22,39 +22,26 @@ export {
   MODE_OPTIONS,
   ROUNDING_OPTIONS,
   BUFFER_PRESETS,
+  resolveInitialSupplierRates,
 } from '@/modules/suppliers/components/details/tabs/currencies/currencies.constants';
+import { resolveInitialSupplierRates } from '@/modules/suppliers/components/details/tabs/currencies/currencies.constants';
 
 export function useSupplierCurrenciesState({
   supplier,
   onRefreshSupplier,
 }: UseSupplierCurrenciesStateParams) {
   const { token } = useAuth();
-  const initialCurrency = supplier.baseCurrency || CurrencyCode.UAH;
-  const initialMode = supplier.exchangeRateMode || ExchangeRateMode.MANUAL;
-  const initialRate =
-    initialCurrency !== CurrencyCode.UAH &&
-    (!supplier.exchangeRate || Number(supplier.exchangeRate) <= 1)
-      ? DEFAULT_RATES[initialCurrency] || 41.5
-      : Number(supplier.exchangeRate || 1.0);
+  const init = resolveInitialSupplierRates(supplier);
 
-  const [baseCurrency, setBaseCurrency] = useState<CurrencyCode>(initialCurrency);
-  const [exchangeMode, setExchangeMode] = useState<ExchangeRateMode>(initialMode);
-  const [manualRate, setManualRate] = useState<number>(initialRate);
-  const [bufferPercent, setBufferPercent] = useState<number>(
-    Number(supplier.currencyBufferPercent || 0),
-  );
-  const [roundingMode, setRoundingMode] = useState<PriceRoundingMode | string>(
-    supplier.priceRounding || PriceRoundingMode.NONE,
-  );
+  const [baseCurrency, setBaseCurrency] = useState<CurrencyCode>(init.currency);
+  const [exchangeMode, setExchangeMode] = useState<ExchangeRateMode>(init.mode);
+  const [manualRate, setManualRate] = useState<number>(init.rate);
+  const [bufferPercent, setBufferPercent] = useState<number>(init.buffer);
+  const [roundingMode, setRoundingMode] = useState<PriceRoundingMode | string>(init.rounding);
   const [customRoundingRules, setCustomRoundingRules] = useState<CustomRoundingRuleDto[]>(
-    Array.isArray(supplier.customRoundingRules) ? supplier.customRoundingRules : [],
+    init.rules,
   );
-  const [selectedBankId, setSelectedBankId] = useState<string | undefined>(() => {
-    if (supplier.selectedBankId) return supplier.selectedBankId;
-    if (initialMode === ExchangeRateMode.AUTO_NBU) return 'nbu';
-    if (initialMode === ExchangeRateMode.AUTO_PRIVAT) return 'privat';
-    return undefined;
-  });
+  const [selectedBankId, setSelectedBankId] = useState<string | undefined>(init.bankId);
 
   const [liveRates, setLiveRates] = useState<Record<CurrencyCode, number>>({ ...DEFAULT_RATES });
   const [isFetchingRates, setIsFetchingRates] = useState(false);
@@ -83,6 +70,17 @@ export function useSupplierCurrenciesState({
       void loadRates(false);
     }
   }, [loadRates]);
+
+  useEffect(() => {
+    const s = resolveInitialSupplierRates(supplier);
+    setBaseCurrency(s.currency);
+    setExchangeMode(s.mode);
+    setManualRate(s.rate);
+    setBufferPercent(s.buffer);
+    setRoundingMode(s.rounding);
+    setCustomRoundingRules(s.rules);
+    setSelectedBankId(s.bankId);
+  }, [supplier]);
 
   const handleBaseCurrencyChange = useCallback(
     (nextCurrency: CurrencyCode) => {
@@ -187,16 +185,15 @@ export function useSupplierCurrenciesState({
   ]);
 
   const handleResetChanges = useCallback(() => {
-    setBaseCurrency(initialCurrency);
-    setExchangeMode(initialMode);
-    setManualRate(initialRate);
-    setBufferPercent(Number(supplier.currencyBufferPercent || 0));
-    setRoundingMode(supplier.priceRounding || PriceRoundingMode.NONE);
-    setSelectedBankId(supplier.selectedBankId ?? undefined);
-    setCustomRoundingRules(
-      Array.isArray(supplier.customRoundingRules) ? supplier.customRoundingRules : [],
-    );
-  }, [initialCurrency, initialMode, initialRate, supplier]);
+    const s = resolveInitialSupplierRates(supplier);
+    setBaseCurrency(s.currency);
+    setExchangeMode(s.mode);
+    setManualRate(s.rate);
+    setBufferPercent(s.buffer);
+    setRoundingMode(s.rounding);
+    setSelectedBankId(s.bankId);
+    setCustomRoundingRules(s.rules);
+  }, [supplier]);
 
   const handleAddCustomRoundingRule = useCallback(
     async (type: CustomRoundingRuleType, rawValue: number) => {

@@ -733,5 +733,6 @@
   "addCustomRoundingBtn": "Додати",
   "customRoundingTypeDecimal": ".XX (копійки)",
   "customRoundingTypeEnding": "на X (ціле)",
-  "customRoundingTypeMultiple": "кратне X"
+  "customRoundingTypeMultiple": "кратне X",
+  "clearLogs": "Очистити журнал"
 }

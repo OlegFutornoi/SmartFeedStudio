@@ -135,17 +135,18 @@ export class AppCounterService {
 
     return suppliers.map((s) => {
       const activeFeedsCount = summary.feedsBySupplierId[s.id] ?? s.activeFeedsCount ?? 0;
-      const rawProductsCount = summary.productsBySupplierId[s.id] ?? s.productsCount ?? 0;
-      const productsCount = activeFeedsCount === 0 ? 0 : rawProductsCount;
-      const hasNoFeedsOrProducts = activeFeedsCount === 0 || productsCount === 0;
-      const categoriesCount = hasNoFeedsOrProducts
-        ? 0
-        : (summary.categoriesBySupplierId?.[s.id] ?? s.categoriesCount ?? 0);
-      const activeCategoriesCount = hasNoFeedsOrProducts
-        ? 0
-        : (summary.activeCategoriesBySupplierId?.[s.id] ??
-          s.activeCategoriesCount ??
-          categoriesCount);
+      const productsCount =
+        activeFeedsCount === 0 ? 0 : (summary.productsBySupplierId[s.id] ?? s.productsCount ?? 0);
+      const categoriesCount =
+        activeFeedsCount === 0 || productsCount === 0
+          ? 0
+          : (summary.categoriesBySupplierId?.[s.id] ?? s.categoriesCount ?? 0);
+      const activeCategoriesCount =
+        activeFeedsCount === 0 || categoriesCount === 0
+          ? 0
+          : (summary.activeCategoriesBySupplierId?.[s.id] ??
+            s.activeCategoriesCount ??
+            categoriesCount);
 
       return {
         ...s,
