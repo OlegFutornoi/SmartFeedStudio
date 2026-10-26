@@ -10,8 +10,8 @@ setup('verify server backend health and initialize clean database', async ({ req
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : String(err);
     throw new Error(
-      `❌ Backend API is unreachable at ${healthUrl}.\n` +
-        `   Make sure the server is running on port 4000: 'pnpm dev:backend'.\n` +
+      `[ERROR] Backend API is unreachable at ${healthUrl}.\n` +
+        `   Make sure the E2E server is running on port 4001: 'pnpm e2e:dev' or 'pnpm dev:backend:e2e'.\n` +
         `   Original error: ${message}`,
     );
   }

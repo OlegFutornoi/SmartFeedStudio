@@ -19,6 +19,24 @@ services:
       timeout: 5s
       retries: 5
 
+  postgres-e2e:
+    image: postgres:16-alpine
+    container_name: smartfeed-postgres-e2e
+    restart: unless-stopped
+    ports:
+      - '5433:5432'
+    environment:
+      POSTGRES_DB: smartfeed_test_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespassword
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d smartfeed_test_db']
+      interval: 3s
+      timeout: 3s
+      retries: 5
+
   redis:
     image: redis:7-alpine
     container_name: smartfeed-redis

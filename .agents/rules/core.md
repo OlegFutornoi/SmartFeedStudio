@@ -38,14 +38,13 @@ description: Core universal engineering invariants applied across all tasks and 
 
 ## CORE-06: Upfront Research via context7 and Project MCPs
 
-- When integrating external libraries, adopting framework features, or checking API signatures, ground knowledge via `context7`.
-- Use native MCP tools (`resolve-library-id`, `query-docs`) or CLI (`ctx7`), supplemented by project MCPs (`postgres`, `shadcn`, `redis`).
-- Never guess API signatures or rely on stale training memory. Verified official docs prevent broken builds.
-- Reason: Third-party APIs evolve frequently; verified official documentation prevents debugging churn.
+- When integrating libraries, framework features, or APIs, ground knowledge via `context7` (`resolve-library-id`, `query-docs`) or project MCPs (`postgres`, `shadcn`, `redis`).
+- Never guess API signatures or rely on stale training memory.
+- Reason: Verified official docs prevent broken builds and debugging churn.
 
 ## CORE-07: Strict Chat Brevity and Zero Plan Dumping
 
-- Never duplicate, rewrite, or dump full plans, task breakdowns, or file contents into chat messages.
+- Never duplicate, rewrite, or dump full plans or file contents into chat.
 - All detailed tasks reside strictly in `plans/active/<task-name>.md`.
 - Chat responses must contain only a 1-2 sentence status summary and a clickable file link (`[Plan](file:///...)`).
 - Reason: Dumping large plans into chat burns context tokens without providing operational value.
@@ -59,21 +58,20 @@ description: Core universal engineering invariants applied across all tasks and 
 ## CORE-09: Ban of `browser_subagent`
 
 - Never call `browser_subagent` or `open_browser_url`.
-- For browser inspection and automation, use Playwright MCP tools directly (`browser_navigate`, `browser_snapshot`, `browser_take_screenshot`) or targeted test runner (`pnpm e2e:local:desktop`, `pnpm e2e:server:admin`).
-- Reason: The built-in subagent unconditionally fails with a 404 binary download error on macOS ARM64.
+- For browser inspection and automation, use Playwright MCP tools directly (`browser_navigate`, `browser_snapshot`, `browser_take_screenshot`) or targeted test runners (`pnpm e2e:local:desktop`, `pnpm e2e:server:admin`).
+- Reason: Built-in subagent unconditionally fails with a 404 binary download error on macOS ARM64.
 
 ## CORE-10: Git Operations on Explicit Request Only
 
 - Never automatically execute `git commit` or `git push`.
-- Staging and committing code occurs strictly when the user issues an explicit command (`/git-commit`, `commit`).
-- Regular commits append `[skip ci]` and push without tags (zero CI runs); release commits (`/git-commit -r`) omit `[skip ci]`, bump versions, and push ONLY the release tag (`refs/tags/vX.Y.Z`) to trigger release builds (`release.yml`).
+- Staging and committing occurs strictly on explicit user command (`/git-commit`, `commit`).
+- Regular commits append `[skip ci]` and push without tags; release commits (`/git-commit -r`) omit `[skip ci]`, bump versions, and push ONLY the release tag (`refs/tags/vX.Y.Z`) for `release.yml`.
 - Reason: Autonomous commits bypass user review; skipping CI on regular commits saves runner minutes.
 
 ## CORE-11: Targeted QA-Scoped Testing
 
-- During QA task execution, run strictly the tests covering the targeted domain or feature slice (`--project`, `--grep`).
-- Running full global test suites is prohibited during targeted feature testing. Full suites run only on explicit user request or release verification.
-- Reason: Running exhaustive multi-app suites on targeted validations wastes resources and slows down feedback loops.
+- During QA execution, run strictly tests covering the targeted domain or feature slice (`--project`, `--grep`). Full global suites run only on explicit user request or release verification.
+- Reason: Exhaustive multi-app suites on targeted validations waste resources and slow down feedback loops.
 
 ## CORE-12: Quality and Reliability Over "Working is Enough"
 
@@ -81,16 +79,22 @@ description: Core universal engineering invariants applied across all tasks and 
 - Every architectural choice must prioritize scalability, type safety, resource cleanup, and concurrent reliability.
 - Reason: Superficial quick fixes create technical debt that compounds into systemic instability.
 
+## CORE-13: Absolute Ban on Emojis
+
+- Emojis are strictly forbidden across the entire project: in test code, logs, console output, markdown files, plans, commit messages, and chat responses.
+- Use clean, structured ASCII badges (e.g. `[TEST]`, `[STEP]`, `[REQ]`, `[RES]`, `[PASS]`, `[FAIL]`, `[WARN]`) or plain markdown formatting instead.
+- Reason: Emojis degrade log readability in CI/CD terminals and parallel worker streams, and violate enterprise standards.
+
 ## PLAN-01: Three-Directory Plans Lifecycle
 
-- Tasks (formerly plans) reside strictly in `plans/active/`, `plans/backlog/`, or `plans/completed/`.
-- Naming standard: starting from next task, tasks are separated by domain with sequential numbering: frontend `FR-<num>-<short-title>.md`, backend `BE-<num>-<short-title>.md`, joint full-stack `FR-BE-<num>-<short-title>.md`, or automated testing `QA-<num>-<short-title>.md`. Legacy files remain untouched.
+- Tasks reside strictly in `plans/active/`, `plans/backlog/`, or `plans/completed/`.
+- Naming standard: separated by domain with sequential numbering: frontend `FR-<num>-<short-title>.md`, backend `BE-<num>-<short-title>.md`, joint full-stack `FR-BE-<num>-<short-title>.md`, or automated testing `QA-<num>-<short-title>.md`.
 - Creating a task in `plans/active/` gives no authority to modify code or database until explicit user approval ("починай", "виконуй", "реалізуй").
-- Once implemented and 100% verified by tests, move the task to `plans/completed/<filename>.md` and update `plans/README.md`.
+- Once implemented and 100% verified by tests, move task to `plans/completed/<filename>.md` and update `plans/README.md`.
 - Reason: Deterministic task taxonomy and lifecycle prevent scope creep, unapproved changes, and undocumented releases.
 
 ## PLAN-02: Mandatory Ukrainian Language for Plans & Audits
 
-- All plans, specifications, roadmaps, and code review audit reports in `plans/` (`plans/active/`, `plans/backlog/`, `plans/completed/`) must be written strictly in Ukrainian (`uk`).
-- Technical identifiers (file paths, method names, CLI commands, invariant IDs) remain in Latin/code blocks, but all headings, narrative descriptions, criteria, risk analyses, and DoD checklists must be in Ukrainian.
-- Reason: The project owner requires all technical plans and audit summaries to be immediately readable and verifiable in Ukrainian.
+- All plans, specifications, roadmaps, and review audit reports in `plans/` must be written strictly in Ukrainian (`uk`).
+- Technical identifiers (file paths, method names, CLI commands, invariant IDs) remain in Latin/code blocks; all headings, narratives, criteria, risk analyses, and DoD checklists must be in Ukrainian.
+- Reason: Plans and audit summaries must be immediately readable and verifiable in Ukrainian.

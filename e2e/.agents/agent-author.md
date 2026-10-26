@@ -36,7 +36,7 @@ Violations cause instant rejection during review:
    - Layer 4: `expect(res.body).toBeTruthy()`, followed by contract schema validation.
 
 6. Teardown & Data Isolation:
-   - All server tests use unique test data (`runId`, `e2e.test+<timestamp>@smartfeed.local`) and clean up via `cleanup.ts` without touching manual accounts (`qatest@gmail.com`, `shoplinkerxml@gmail.com`).
+   - All server tests use unique test data (`runId`, `e2e.test+<timestamp>@smartfeed.local`) and clean up via `cleanup.ts` without touching seeded test admin accounts (`env.E2E_SUPERADMIN_EMAIL`).
    - Local DB tests reset state via `POST /api/reset`.
 
 7. Title-to-Payload Parity:

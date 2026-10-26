@@ -36,6 +36,18 @@ export class DeleteUserHandler implements ICommandHandler<DeleteUserCommand, { s
       throw new ForbiddenException('CANNOT_DELETE_SUPER_ADMIN');
     }
 
+    if (requesterId) {
+      const requester = await this.prisma.user.findUnique({
+        where: { id: requesterId },
+        select: { role: true },
+      });
+      if (requester?.role === Role.ADMIN && existing.role === Role.ADMIN) {
+        throw new ForbiddenException(
+          'Administrators cannot delete administrator or super-administrator accounts',
+        );
+      }
+    }
+
     await this.prisma.user.delete({
       where: { id: userId },
     });

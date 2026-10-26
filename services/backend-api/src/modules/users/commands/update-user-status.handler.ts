@@ -66,6 +66,21 @@ export class UpdateUserStatusHandler implements ICommandHandler<
       throw new ForbiddenException('CANNOT_SUSPEND_SUPER_ADMIN');
     }
 
+    if (requesterId) {
+      const requester = await this.prisma.user.findUnique({
+        where: { id: requesterId },
+        select: { role: true },
+      });
+      if (
+        requester?.role === Role.ADMIN &&
+        (existing.role === Role.ADMIN || existing.role === Role.SUPER_ADMIN)
+      ) {
+        throw new ForbiddenException(
+          'Administrators cannot modify administrator or super-administrator accounts',
+        );
+      }
+    }
+
     const updated = await this.prisma.user.update({
       where: { id: userId },
       data: { isActive },

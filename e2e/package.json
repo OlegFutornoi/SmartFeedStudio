@@ -4,6 +4,11 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "dev": "node ../scripts/free-dev-ports.mjs 1421 3001 4001 5002 5433 && node ../.agents/scripts/start-e2e.mjs",
+    "start:env": "node ../scripts/free-dev-ports.mjs 1421 3001 4001 5002 5433 && node ../.agents/scripts/start-e2e.mjs",
+    "db:sync": "node ../scripts/sync-server-e2e-db.mjs",
+    "openapi:sync": "node ../scripts/sync-openapi.mjs",
+    "openapi:generate": "openapi-typescript ./schema/openapi.json -o ./core/contracts/api.generated.ts",
     "test": "playwright test",
     "test:server": "playwright test --project=server-backend --project=server-admin",
     "test:server:backend": "playwright test --project=server-backend",
@@ -28,6 +33,7 @@
     "@types/pg": "^8.11.11",
     "dotenv": "^16.4.7",
     "eslint-plugin-playwright": "^2.2.0",
+    "openapi-typescript": "^7.13.0",
     "pg": "^8.13.3",
     "typescript": "^5.7.3",
     "zod": "^3.24.2"

@@ -1,0 +1,4663 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/api/health": {
+      "get": {
+        "operationId": "HealthController_check",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Service is operational"
+          }
+        },
+        "summary": "Liveness and healthcheck probe",
+        "tags": ["Health"]
+      }
+    },
+    "/api/users": {
+      "get": {
+        "operationId": "UsersController_getUsers",
+        "parameters": [
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "description": "Search term for name or email",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "role",
+            "required": false,
+            "in": "query",
+            "description": "Filter by user role",
+            "schema": {
+              "type": "string",
+              "enum": ["SUPER_ADMIN", "ADMIN", "USER"]
+            }
+          },
+          {
+            "name": "orgRoleFilter",
+            "required": false,
+            "in": "query",
+            "description": "Filter by organization membership role",
+            "schema": {
+              "type": "string",
+              "enum": ["ALL", "OWNERS", "MEMBERS"]
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Page limit",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 50,
+              "type": "number"
+            }
+          },
+          {
+            "name": "offset",
+            "required": false,
+            "in": "query",
+            "description": "Page offset",
+            "schema": {
+              "minimum": 0,
+              "default": 0,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of users returned"
+          },
+          "403": {
+            "description": "Forbidden: Admin access required"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get list of users with their licenses",
+        "tags": ["Users"]
+      },
+      "post": {
+        "operationId": "UsersController_createUserByAdmin",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUserByAdminRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User created successfully"
+          },
+          "400": {
+            "description": "Validation failed"
+          },
+          "409": {
+            "description": "Email already exists"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create a new user (Admin Portal)",
+        "tags": ["Users"]
+      }
+    },
+    "/api/users/stats": {
+      "get": {
+        "operationId": "UsersController_getStats",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "User statistics returned"
+          },
+          "403": {
+            "description": "Forbidden: Admin access required"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get user statistics for admin dashboard",
+        "tags": ["Users"]
+      }
+    },
+    "/api/users/dashboard-overview": {
+      "get": {
+        "operationId": "UsersController_getDashboardOverview",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Aggregated dashboard overview data returned"
+          },
+          "403": {
+            "description": "Forbidden: Admin access required"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get aggregated admin dashboard overview data",
+        "tags": ["Users"]
+      }
+    },
+    "/api/users/{id}/status": {
+      "patch": {
+        "operationId": "UsersController_updateUserStatus",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserStatusRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User status updated successfully"
+          },
+          "400": {
+            "description": "Cannot suspend own account"
+          },
+          "403": {
+            "description": "Cannot suspend super admin"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update user active/suspended status",
+        "tags": ["Users"]
+      }
+    },
+    "/api/users/{id}": {
+      "delete": {
+        "operationId": "UsersController_deleteUser",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User deleted successfully"
+          },
+          "400": {
+            "description": "Cannot delete own account"
+          },
+          "403": {
+            "description": "Cannot delete super admin"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Delete user account (Admin Portal)",
+        "tags": ["Users"]
+      }
+    },
+    "/api/auth/register": {
+      "post": {
+        "operationId": "AuthController_register",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User registered successfully with auth tokens"
+          },
+          "409": {
+            "description": "Email already exists"
+          }
+        },
+        "summary": "Register a new user account",
+        "tags": ["Auth"]
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "operationId": "AuthController_login",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Authenticated successfully with auth tokens"
+          },
+          "401": {
+            "description": "Invalid email or password"
+          }
+        },
+        "summary": "Authenticate user with email and password",
+        "tags": ["Auth"]
+      }
+    },
+    "/api/auth/refresh": {
+      "post": {
+        "operationId": "AuthController_refresh",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshTokenDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Tokens refreshed successfully"
+          },
+          "401": {
+            "description": "Invalid or expired refresh token"
+          }
+        },
+        "summary": "Refresh access and refresh tokens",
+        "tags": ["Auth"]
+      }
+    },
+    "/api/auth/me": {
+      "get": {
+        "operationId": "AuthController_getProfile",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "User profile returned"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get current authenticated user profile",
+        "tags": ["Auth"]
+      }
+    },
+    "/api/auth/bootstrap": {
+      "get": {
+        "operationId": "AuthController_getBootstrap",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Bootstrap payload returned"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get unified initial application bootstrap payload",
+        "tags": ["Auth"]
+      }
+    },
+    "/api/auth/forgot-password": {
+      "post": {
+        "operationId": "AuthController_forgotPassword",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ForgotPasswordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password reset instructions dispatched if email exists"
+          },
+          "400": {
+            "description": "Invalid email format"
+          }
+        },
+        "summary": "Request password reset instructions and token",
+        "tags": ["Auth"]
+      }
+    },
+    "/api/auth/reset-password": {
+      "post": {
+        "operationId": "AuthController_resetPassword",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetPasswordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password reset successfully"
+          },
+          "400": {
+            "description": "Invalid or expired reset token, or weak password"
+          }
+        },
+        "summary": "Reset user password using reset token",
+        "tags": ["Auth"]
+      }
+    },
+    "/api/auth/change-password": {
+      "post": {
+        "operationId": "AuthController_changePassword",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangePasswordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password updated successfully"
+          },
+          "400": {
+            "description": "Current password is incorrect"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Change password for current authenticated user",
+        "tags": ["Auth"]
+      }
+    },
+    "/api/auth/avatar": {
+      "patch": {
+        "operationId": "AuthController_updateAvatar",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAvatarDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Avatar updated successfully"
+          },
+          "400": {
+            "description": "Invalid avatar data"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update avatar for current authenticated user",
+        "tags": ["Auth"]
+      }
+    },
+    "/api/organizations": {
+      "get": {
+        "operationId": "OrganizationsController_getUserOrganizations",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of user organizations"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get current user's organizations",
+        "tags": ["Organizations"]
+      }
+    },
+    "/api/organizations/{id}": {
+      "get": {
+        "operationId": "OrganizationsController_getOrganizationById",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Organization details with quotas and member counts"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get organization details by ID",
+        "tags": ["Organizations"]
+      },
+      "patch": {
+        "operationId": "OrganizationsController_updateOrganization",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateOrganizationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated organization"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update organization name",
+        "tags": ["Organizations"]
+      }
+    },
+    "/api/organizations/{id}/members": {
+      "get": {
+        "operationId": "OrganizationsController_getOrganizationMembers",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of members"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get organization members list",
+        "tags": ["Organizations"]
+      },
+      "post": {
+        "deprecated": true,
+        "description": "Deprecated: Use POST :id/invitations instead.",
+        "operationId": "OrganizationsController_inviteMember",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InviteMemberDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Invitation created and link generated"
+          },
+          "403": {
+            "description": "TEAM_SEATS_LIMIT_EXCEEDED when quota is exhausted"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Invite a team member (checks maxTeamSeats quota) [Deprecated]",
+        "tags": ["Organizations"]
+      }
+    },
+    "/api/organizations/{id}/invitations": {
+      "get": {
+        "operationId": "OrganizationsController_getOrganizationInvitations",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of pending invitations"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get pending invitations list for organization",
+        "tags": ["Organizations"]
+      },
+      "post": {
+        "operationId": "OrganizationsController_createInvitation",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InviteMemberDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Invitation created and link generated"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create an invitation for team member",
+        "tags": ["Organizations"]
+      }
+    },
+    "/api/organizations/{id}/invitations/{invitationId}": {
+      "delete": {
+        "operationId": "OrganizationsController_revokeInvitation",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "invitationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Invitation revoked successfully"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Revoke/cancel a pending invitation",
+        "tags": ["Organizations"]
+      }
+    },
+    "/api/organizations/{id}/members/{memberId}": {
+      "delete": {
+        "operationId": "OrganizationsController_removeMember",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "memberId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Member removed successfully"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Remove a team member (liberates a seat)",
+        "tags": ["Organizations"]
+      }
+    },
+    "/api/invitations/{token}": {
+      "get": {
+        "operationId": "InvitationsController_getInvitationByToken",
+        "parameters": [
+          {
+            "name": "token",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Invitation details with company name, email, and role"
+          },
+          "404": {
+            "description": "Invitation not found or invalid token"
+          }
+        },
+        "summary": "Get public invitation details by token",
+        "tags": ["Invitations"]
+      }
+    },
+    "/api/invitations/accept": {
+      "post": {
+        "operationId": "InvitationsController_acceptInvitation",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AcceptInvitationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Invitation accepted and tokens generated"
+          },
+          "400": {
+            "description": "Invalid token, expired, or invalid credentials"
+          },
+          "403": {
+            "description": "TEAM_SEATS_LIMIT_EXCEEDED when quota is exhausted"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Accept invitation (register new user or join existing user)",
+        "tags": ["Invitations"]
+      }
+    },
+    "/api/licenses/my": {
+      "get": {
+        "operationId": "LicensesController_getMyLicense",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "License details returned"
+          },
+          "404": {
+            "description": "No active license found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get current user active license details",
+        "tags": ["Licenses"]
+      }
+    },
+    "/api/licenses/quotas": {
+      "get": {
+        "operationId": "LicensesController_getQuotas",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "User quotas and usage counters returned"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get current user real-time usage quotas and plan limits",
+        "tags": ["Licenses"]
+      }
+    },
+    "/api/licenses/admin": {
+      "get": {
+        "operationId": "LicensesController_getAdminLicenses",
+        "parameters": [
+          {
+            "name": "offset",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "description": "Filter by email or license key",
+            "schema": {}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of user licenses"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get all user licenses for admin management",
+        "tags": ["Licenses"]
+      }
+    },
+    "/api/licenses/select-plan": {
+      "post": {
+        "operationId": "LicensesController_selectPlan",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SelectPlanDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Plan selected and license updated"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Select or renew tariff plan for current user",
+        "tags": ["Licenses"]
+      }
+    },
+    "/api/licenses/upgrade": {
+      "post": {
+        "operationId": "LicensesController_upgradePlan",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpgradeLicenseDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "License upgraded successfully"
+          },
+          "403": {
+            "description": "Forbidden: Admin access required"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Upgrade user subscription plan (Admin only)",
+        "tags": ["Licenses"]
+      }
+    },
+    "/api/licenses/assign": {
+      "post": {
+        "operationId": "LicensesController_assignLicense",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssignLicenseDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Assign a license/plan to a specific user (Admin only)",
+        "tags": ["Licenses"]
+      }
+    },
+    "/api/licenses/{id}/status": {
+      "patch": {
+        "operationId": "LicensesController_updateStatus",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateLicenseStatusDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "License status updated"
+          },
+          "404": {
+            "description": "License not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update license active/suspended status (Admin only)",
+        "tags": ["Licenses"]
+      }
+    },
+    "/api/licenses/{id}": {
+      "delete": {
+        "operationId": "LicensesController_deleteLicense",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "License deleted"
+          },
+          "404": {
+            "description": "License not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Delete a license by ID (Admin only)",
+        "tags": ["Licenses"]
+      }
+    },
+    "/api/plans": {
+      "get": {
+        "operationId": "PlansController_getActivePlans",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of active tariff plans"
+          }
+        },
+        "summary": "Get all active tariff plans for pricing display and subscription",
+        "tags": ["Tariff Plans"]
+      },
+      "post": {
+        "operationId": "PlansController_createPlan",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTariffPlanDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Tariff plan created successfully"
+          },
+          "409": {
+            "description": "Tariff plan code already exists"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create a new tariff plan with custom quotas and features (Admin only)",
+        "tags": ["Tariff Plans"]
+      }
+    },
+    "/api/plans/admin": {
+      "get": {
+        "operationId": "PlansController_getAllForAdmin",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of all tariff plans"
+          },
+          "403": {
+            "description": "Forbidden resource"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get all tariff plans including inactive (Admin only)",
+        "tags": ["Tariff Plans"]
+      }
+    },
+    "/api/plans/{id}": {
+      "get": {
+        "operationId": "PlansController_getPlanById",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Tariff plan details"
+          },
+          "404": {
+            "description": "Plan not found"
+          }
+        },
+        "summary": "Get single tariff plan by ID",
+        "tags": ["Tariff Plans"]
+      },
+      "patch": {
+        "operationId": "PlansController_updatePlan",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTariffPlanDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Tariff plan updated successfully"
+          },
+          "404": {
+            "description": "Plan not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update a tariff plan by ID (Admin only)",
+        "tags": ["Tariff Plans"]
+      },
+      "delete": {
+        "operationId": "PlansController_deletePlan",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Tariff plan deleted successfully"
+          },
+          "404": {
+            "description": "Plan not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Delete a tariff plan by ID (Admin only)",
+        "tags": ["Tariff Plans"]
+      }
+    },
+    "/api/storage/presigned-url": {
+      "post": {
+        "operationId": "StorageController_getPresignedUrl",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PresignedUrlDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Presigned URL generated successfully"
+          },
+          "403": {
+            "description": "Forbidden: Storage access not enabled or quota exceeded"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Generate Cloudflare R2 / S3 presigned upload URL with quota enforcement",
+        "tags": ["Storage"]
+      }
+    },
+    "/api/storage/confirm-upload": {
+      "post": {
+        "operationId": "StorageController_confirmUpload",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConfirmUploadDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Upload confirmed and storage file recorded"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Confirm completed direct upload to Cloudflare R2 and update storage quota",
+        "tags": ["Storage"]
+      }
+    },
+    "/api/storage/files/{id}": {
+      "delete": {
+        "operationId": "StorageController_deleteFile",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "File deleted and quota released"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Delete file from Cloudflare R2 and release storage quota",
+        "tags": ["Storage"]
+      }
+    },
+    "/api/storage/cleanup-orphans": {
+      "post": {
+        "operationId": "StorageController_cleanupOrphans",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CleanupOrphansDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Orphaned files cleaned up or dry-run inspected"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Scan S3 bucket for orphaned unindexed files and purge garbage",
+        "tags": ["Storage"]
+      }
+    },
+    "/api/storage/quota": {
+      "get": {
+        "operationId": "StorageController_getStorageQuota",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Storage quota stats returned"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get current user cloud storage quota limits and disk usage",
+        "tags": ["Storage"]
+      }
+    },
+    "/api/storage/files": {
+      "get": {
+        "operationId": "StorageController_getFiles",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number",
+            "schema": {
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Items per page",
+            "schema": {
+              "default": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "folder",
+            "required": false,
+            "in": "query",
+            "description": "Filter by folder (e.g. images, snapshots)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "description": "Search by file name or S3 key",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of files returned"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get paginated list of uploaded files in Cloudflare R2",
+        "tags": ["Storage"]
+      }
+    },
+    "/api/storage/workspace/default-path": {
+      "get": {
+        "operationId": "StorageController_getDefaultWorkspacePath",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get default OS workspace path for the local machine",
+        "tags": ["Storage"]
+      }
+    },
+    "/api/storage/workspace/info": {
+      "get": {
+        "operationId": "StorageController_getWorkspaceInfo",
+        "parameters": [
+          {
+            "name": "path",
+            "required": false,
+            "in": "query",
+            "description": "Optional workspace path on disk",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get workspace initialization status and metadata",
+        "tags": ["Storage"]
+      }
+    },
+    "/api/storage/workspace/init": {
+      "post": {
+        "operationId": "StorageController_initWorkspace",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InitWorkspaceRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Initialize real workspace directory structure and local database file",
+        "tags": ["Storage"]
+      }
+    },
+    "/api/storage/workspace/stats": {
+      "get": {
+        "operationId": "StorageController_getStorageStats",
+        "parameters": [
+          {
+            "name": "path",
+            "required": false,
+            "in": "query",
+            "description": "Optional workspace path on disk",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get real storage statistics, disk sizes and live database entity counts",
+        "tags": ["Storage"]
+      }
+    },
+    "/api/storage/workspace/open": {
+      "post": {
+        "operationId": "StorageController_openFolder",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OpenFolderRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Open workspace folder in native OS file manager (Finder / Explorer)",
+        "tags": ["Storage"]
+      }
+    },
+    "/api/storage/workspace/backup": {
+      "post": {
+        "operationId": "StorageController_createBackup",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WorkspaceActionRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create physical backup snapshot file in backups directory",
+        "tags": ["Storage"]
+      }
+    },
+    "/api/storage/workspace/maintenance": {
+      "post": {
+        "operationId": "StorageController_runMaintenance",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WorkspaceActionRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Run database integrity check and optimization",
+        "tags": ["Storage"]
+      }
+    },
+    "/api/storage/workspace/clear-cache": {
+      "post": {
+        "operationId": "StorageController_clearCache",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WorkspaceActionRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Clear cached feed downloads and temp files on disk",
+        "tags": ["Storage"]
+      }
+    },
+    "/api/storage/workspace/migrate": {
+      "post": {
+        "operationId": "StorageController_migrateWorkspace",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MigrateWorkspaceRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Migrate workspace to a new folder on disk",
+        "tags": ["Storage"]
+      }
+    },
+    "/api/storage/workspace/select-folder": {
+      "post": {
+        "operationId": "StorageController_selectFolder",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Open native OS dialog to select directory on disk",
+        "tags": ["Storage"]
+      }
+    },
+    "/api/navigation": {
+      "get": {
+        "operationId": "NavigationController_getAccessibleNavigation",
+        "parameters": [
+          {
+            "name": "app",
+            "required": false,
+            "in": "query",
+            "description": "Target application platform (DESKTOP or WEB)",
+            "schema": {
+              "type": "string",
+              "enum": ["DESKTOP", "ADMIN_PORTAL", "ALL"]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of accessible navigation items"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get accessible navigation items for the authenticated user",
+        "tags": ["Navigation"]
+      },
+      "post": {
+        "operationId": "NavigationController_createItem",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create a new navigation item (Admin only)",
+        "tags": ["Navigation"]
+      }
+    },
+    "/api/navigation/admin": {
+      "get": {
+        "operationId": "NavigationController_getAllForAdmin",
+        "parameters": [
+          {
+            "name": "app",
+            "required": false,
+            "in": "query",
+            "description": "Target application platform (DESKTOP or WEB)",
+            "schema": {
+              "type": "string",
+              "enum": ["DESKTOP", "ADMIN_PORTAL", "ALL"]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get all navigation items for management (Admin only)",
+        "tags": ["Navigation"]
+      }
+    },
+    "/api/navigation/reorder": {
+      "patch": {
+        "operationId": "NavigationController_reorderItems",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Reorder navigation items (Admin only)",
+        "tags": ["Navigation"]
+      }
+    },
+    "/api/navigation/{id}": {
+      "patch": {
+        "operationId": "NavigationController_updateItem",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update a navigation item (Admin only)",
+        "tags": ["Navigation"]
+      },
+      "delete": {
+        "operationId": "NavigationController_deleteItem",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Delete a navigation item (Admin only)",
+        "tags": ["Navigation"]
+      }
+    },
+    "/api/payments/checkout": {
+      "post": {
+        "operationId": "PaymentsController_createCheckout",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCheckoutDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": ["Payments"]
+      }
+    },
+    "/api/payments/wayforpay/webhook": {
+      "post": {
+        "operationId": "PaymentsController_handleWayForPayWebhook",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": ["Payments"]
+      }
+    },
+    "/api/payments/simulate-sandbox-webhook": {
+      "post": {
+        "operationId": "PaymentsController_simulateSandboxWebhook",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SimulateSandboxWebhookDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": ["Payments"]
+      }
+    },
+    "/api/payments/transactions": {
+      "get": {
+        "operationId": "PaymentsController_getTransactions",
+        "parameters": [
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "description": "Filter by transaction status",
+            "schema": {
+              "type": "string",
+              "enum": ["PENDING", "APPROVED", "DECLINED", "REFUNDED", "EXPIRED"]
+            }
+          },
+          {
+            "name": "provider",
+            "required": false,
+            "in": "query",
+            "description": "Filter by payment provider",
+            "schema": {
+              "type": "string",
+              "enum": ["WAYFORPAY", "STRIPE", "MANUAL"]
+            }
+          },
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "description": "Search term for invoice, user email, or reference",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Page limit",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 50,
+              "type": "number"
+            }
+          },
+          {
+            "name": "offset",
+            "required": false,
+            "in": "query",
+            "description": "Page offset",
+            "schema": {
+              "minimum": 0,
+              "default": 0,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": ["Payments"]
+      }
+    },
+    "/api/payments/my-transactions": {
+      "get": {
+        "operationId": "PaymentsController_getMyTransactions",
+        "parameters": [
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Page limit",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "type": "number"
+            }
+          },
+          {
+            "name": "offset",
+            "required": false,
+            "in": "query",
+            "description": "Page offset",
+            "schema": {
+              "minimum": 0,
+              "default": 0,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": ["Payments"]
+      }
+    },
+    "/api/payments/stats": {
+      "get": {
+        "operationId": "PaymentsController_getStats",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": ["Payments"]
+      }
+    },
+    "/api/payments/settings": {
+      "get": {
+        "operationId": "PaymentsController_getSettings",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": ["Payments"]
+      }
+    },
+    "/api/payments/settings/{provider}": {
+      "patch": {
+        "operationId": "PaymentsController_updateSettings",
+        "parameters": [
+          {
+            "name": "provider",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": ["Payments"]
+      }
+    },
+    "/api/feeds/fetch-url": {
+      "post": {
+        "operationId": "FeedsController_fetchFeedUrl",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FetchFeedUrlDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Feed content downloaded successfully"
+          },
+          "400": {
+            "description": "Invalid URL or SSRF protection triggered"
+          },
+          "404": {
+            "description": "Remote feed URL not found"
+          },
+          "504": {
+            "description": "Supplier server timed out"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Relay and download XML/CSV feed content by URL bypassing browser CORS restrictions",
+        "tags": ["Feeds"]
+      }
+    },
+    "/api/feeds/check-collision": {
+      "post": {
+        "operationId": "FeedsController_checkCollision",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CheckFeedCollisionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Feed collision check result"
+          },
+          "404": {
+            "description": "Supplier not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Check feed URL or content for duplicates and multi-supplier collisions",
+        "tags": ["Feeds"]
+      }
+    },
+    "/api/feeds/sources": {
+      "get": {
+        "operationId": "FeedsController_getAllSources",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of feed sources"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get all cloud feed sources",
+        "tags": ["Feeds"]
+      }
+    },
+    "/api/feeds/suppliers/{supplierId}/sources": {
+      "get": {
+        "operationId": "FeedsController_getSupplierSources",
+        "parameters": [
+          {
+            "name": "supplierId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of supplier feed sources"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get feed sources for a specific supplier",
+        "tags": ["Feeds"]
+      },
+      "post": {
+        "operationId": "FeedsController_createSupplierSource",
+        "parameters": [
+          {
+            "name": "supplierId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSupplierFeedSourceDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Feed source created or updated"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create or upsert supplier feed source",
+        "tags": ["Feeds"]
+      }
+    },
+    "/api/feeds/suppliers/{supplierId}/sources/{sourceId}": {
+      "patch": {
+        "operationId": "FeedsController_updateSupplierSource",
+        "parameters": [
+          {
+            "name": "supplierId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sourceId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSupplierFeedSourceDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Feed source updated"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update supplier feed source",
+        "tags": ["Feeds"]
+      },
+      "delete": {
+        "operationId": "FeedsController_deleteSupplierSource",
+        "parameters": [
+          {
+            "name": "supplierId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sourceId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Feed source deleted"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Delete supplier feed source",
+        "tags": ["Feeds"]
+      }
+    },
+    "/api/feeds/jobs/active": {
+      "get": {
+        "operationId": "FeedsController_getActiveJobs",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of active feed jobs"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get active background feed processing jobs",
+        "tags": ["Feeds"]
+      }
+    },
+    "/api/feeds/jobs/{id}": {
+      "get": {
+        "operationId": "FeedsController_getJobStatus",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Import job details"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get import job status by ID",
+        "tags": ["Feeds"]
+      }
+    },
+    "/api/feeds/import-async": {
+      "post": {
+        "operationId": "FeedsController_importAsync",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImportFeedAsyncDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Import job queued successfully"
+          },
+          "404": {
+            "description": "Supplier not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Trigger asynchronous feed import",
+        "tags": ["Feeds"]
+      }
+    },
+    "/api/legal": {
+      "get": {
+        "operationId": "LegalController_getPublishedDocuments",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of published legal documents"
+          }
+        },
+        "summary": "Get all published legal documents",
+        "tags": ["Legal"]
+      }
+    },
+    "/api/legal/document/{slug}": {
+      "get": {
+        "operationId": "LegalController_getDocumentBySlug",
+        "parameters": [
+          {
+            "name": "slug",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Legal document data"
+          }
+        },
+        "summary": "Get published legal document by slug",
+        "tags": ["Legal"]
+      }
+    },
+    "/api/legal/admin/all": {
+      "get": {
+        "operationId": "LegalController_getAllDocumentsAdmin",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of all legal documents"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get all legal documents for administration (published and drafts)",
+        "tags": ["Legal"]
+      }
+    },
+    "/api/legal/admin": {
+      "post": {
+        "operationId": "LegalController_createDocumentAdmin",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateLegalDocumentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Legal document created"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create a new legal document",
+        "tags": ["Legal"]
+      }
+    },
+    "/api/legal/admin/{id}": {
+      "put": {
+        "operationId": "LegalController_updateDocumentAdmin",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateLegalDocumentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Legal document updated"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update an existing legal document",
+        "tags": ["Legal"]
+      },
+      "delete": {
+        "operationId": "LegalController_deleteDocumentAdmin",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Legal document deleted"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Delete a legal document",
+        "tags": ["Legal"]
+      }
+    },
+    "/api/page-guides/assistant/profile": {
+      "get": {
+        "operationId": "PageGuidesController_getAssistantProfile",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "AI Assistant profile returned successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AiAssistantProfileResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Get current AI Assistant avatar and profile configuration",
+        "tags": ["Page Guides & AI Assistant"]
+      },
+      "put": {
+        "operationId": "PageGuidesController_updateAssistantProfile",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAiAssistantProfileRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "AI Assistant profile updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AiAssistantProfileResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update AI Assistant avatar and profile configuration",
+        "tags": ["Page Guides & AI Assistant"]
+      }
+    },
+    "/api/page-guides": {
+      "get": {
+        "operationId": "PageGuidesController_getAllPageGuides",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of page guides returned successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PageGuideResponseDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "List all application page guides with AI explanations",
+        "tags": ["Page Guides & AI Assistant"]
+      }
+    },
+    "/api/page-guides/{routeKey}": {
+      "get": {
+        "operationId": "PageGuidesController_getPageGuide",
+        "parameters": [
+          {
+            "name": "routeKey",
+            "required": true,
+            "in": "path",
+            "description": "URL route (e.g. cloud-sync, catalogs, suppliers)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Page guide returned successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageGuideResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Page guide not found"
+          }
+        },
+        "summary": "Get contextual AI page guide for a specific route",
+        "tags": ["Page Guides & AI Assistant"]
+      }
+    },
+    "/api/suppliers": {
+      "get": {
+        "operationId": "SuppliersController_getSuppliers",
+        "parameters": [
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "description": "Search query for supplier name or code",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "description": "Filter by status (e.g. active, inactive)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of suppliers"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get list of suppliers for current user",
+        "tags": ["Suppliers"]
+      },
+      "post": {
+        "operationId": "SuppliersController_createSupplier",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSupplierDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Supplier created"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create new supplier",
+        "tags": ["Suppliers"]
+      }
+    },
+    "/api/suppliers/{id}": {
+      "get": {
+        "operationId": "SuppliersController_getSupplierById",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Supplier details"
+          },
+          "404": {
+            "description": "Supplier not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get supplier by id",
+        "tags": ["Suppliers"]
+      },
+      "patch": {
+        "operationId": "SuppliersController_updateSupplier",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSupplierDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Supplier updated"
+          },
+          "404": {
+            "description": "Supplier not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update existing supplier",
+        "tags": ["Suppliers"]
+      },
+      "delete": {
+        "operationId": "SuppliersController_deleteSupplier",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Supplier deleted"
+          },
+          "404": {
+            "description": "Supplier not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Delete supplier with cascade cleanup",
+        "tags": ["Suppliers"]
+      }
+    },
+    "/api/suppliers/{id}/categories": {
+      "get": {
+        "operationId": "SuppliersController_getCategories",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "description": "Search query for category name",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get category rules for supplier",
+        "tags": ["Suppliers"]
+      }
+    },
+    "/api/suppliers/{id}/categories/bulk-upsert": {
+      "post": {
+        "operationId": "SuppliersController_bulkUpsertCategories",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BulkUpsertSupplierCategoriesDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Bulk upsert category rules from feed",
+        "tags": ["Suppliers"]
+      }
+    },
+    "/api/suppliers/{id}/categories/{categoryId}/toggle": {
+      "patch": {
+        "operationId": "SuppliersController_toggleCategory",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "categoryId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ToggleSupplierCategoryDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Toggle category active status",
+        "tags": ["Suppliers"]
+      }
+    },
+    "/api/suppliers/{id}/categories/batch-toggle": {
+      "post": {
+        "operationId": "SuppliersController_batchToggleCategories",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BatchToggleSupplierCategoriesDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Batch toggle categories active status",
+        "tags": ["Suppliers"]
+      }
+    },
+    "/api/suppliers/{id}/categories/{categoryId}": {
+      "patch": {
+        "operationId": "SuppliersController_updateCategory",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "categoryId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSupplierCategoryDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update markup, marketplace mapping or status of category",
+        "tags": ["Suppliers"]
+      },
+      "delete": {
+        "operationId": "SuppliersController_deleteCategory",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "categoryId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Delete category rule",
+        "tags": ["Suppliers"]
+      }
+    },
+    "/api/suppliers/{id}/pricing-rules": {
+      "get": {
+        "operationId": "SuppliersController_getPricingRules",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get pricing rules for supplier",
+        "tags": ["Suppliers"]
+      },
+      "post": {
+        "operationId": "SuppliersController_createPricingRule",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSupplierPricingRuleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create pricing tier rule",
+        "tags": ["Suppliers"]
+      }
+    },
+    "/api/suppliers/{id}/pricing-rules/bulk": {
+      "post": {
+        "operationId": "SuppliersController_bulkCreatePricingRules",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BulkCreateSupplierPricingRulesDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Bulk create pricing tier rules",
+        "tags": ["Suppliers"]
+      }
+    },
+    "/api/suppliers/{id}/pricing-rules/{ruleId}": {
+      "patch": {
+        "operationId": "SuppliersController_updatePricingRule",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "ruleId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSupplierPricingRuleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update pricing tier rule",
+        "tags": ["Suppliers"]
+      },
+      "delete": {
+        "operationId": "SuppliersController_deletePricingRule",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "ruleId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Delete pricing tier rule",
+        "tags": ["Suppliers"]
+      }
+    },
+    "/api/currencies/banks": {
+      "get": {
+        "operationId": "CurrenciesController_getLiveBankRates",
+        "parameters": [
+          {
+            "name": "currency",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "enum": ["UAH", "USD", "EUR", "PLN", "GBP", "CNY"],
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of live bank exchange rates"
+          }
+        },
+        "summary": "Get live exchange rates for active Ukrainian banks",
+        "tags": ["Currencies"]
+      }
+    },
+    "/api/admin/currencies/providers": {
+      "get": {
+        "operationId": "AdminCurrenciesController_getAllProviders",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of bank providers"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List all configured bank currency providers",
+        "tags": ["Admin Currencies"]
+      }
+    },
+    "/api/admin/currencies/providers/{id}": {
+      "patch": {
+        "operationId": "AdminCurrenciesController_updateProvider",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateBankProviderDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated bank provider configuration"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update bank provider configuration (spreads, enabled status, default)",
+        "tags": ["Admin Currencies"]
+      }
+    },
+    "/api/admin/currencies/sync": {
+      "post": {
+        "operationId": "AdminCurrenciesController_syncRates",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Rates synchronized successfully"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Force sync live rates from NBU and invalidate cache",
+        "tags": ["Admin Currencies"]
+      }
+    }
+  },
+  "info": {
+    "title": "SmartFeed Studio API",
+    "description": "Central REST API with Decoupled CQRS Architecture for SmartFeed Studio Monorepo",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "bearer": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http"
+      }
+    },
+    "schemas": {
+      "CreateUserByAdminRequestDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "manager@company.com",
+            "description": "User email address"
+          },
+          "password": {
+            "type": "string",
+            "example": "SecurePassword123!",
+            "description": "User password (min 6 characters)"
+          },
+          "fullName": {
+            "type": "string",
+            "example": "Іван Коваленко",
+            "description": "User full name"
+          },
+          "role": {
+            "type": "string",
+            "enum": ["SUPER_ADMIN", "ADMIN", "USER"],
+            "default": "USER",
+            "description": "System security role"
+          },
+          "accountType": {
+            "type": "string",
+            "enum": ["ADMIN", "OWNER", "MEMBER"],
+            "default": "OWNER",
+            "description": "Account hierarchy type (ADMIN, OWNER, MEMBER)"
+          },
+          "companyName": {
+            "type": "string",
+            "example": "Rozetka Top Sellers LLC",
+            "description": "Company/Organization name (for OWNER)"
+          },
+          "organizationId": {
+            "type": "string",
+            "example": "cuid12345",
+            "description": "Existing organization ID to attach to (for MEMBER)"
+          },
+          "planCode": {
+            "type": "string",
+            "enum": ["STARTER", "GROWTH", "PRO", "ENTERPRISE"],
+            "example": "PRO",
+            "description": "Initial tariff plan code"
+          }
+        },
+        "required": ["email", "password", "fullName"]
+      },
+      "UpdateUserStatusRequestDto": {
+        "type": "object",
+        "properties": {
+          "isActive": {
+            "type": "boolean",
+            "example": true,
+            "description": "User active (true) or suspended (false) status"
+          }
+        },
+        "required": ["isActive"]
+      },
+      "RegisterDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "user@example.com",
+            "description": "User email address"
+          },
+          "password": {
+            "type": "string",
+            "example": "SecurePassword123!",
+            "minLength": 8,
+            "description": "User password"
+          },
+          "fullName": {
+            "type": "string",
+            "example": "Oleg Doe",
+            "description": "Full name"
+          },
+          "companyName": {
+            "type": "string",
+            "example": "Acme Feeds Inc.",
+            "description": "Company / Organization name"
+          },
+          "role": {
+            "type": "string",
+            "enum": ["SUPER_ADMIN", "ADMIN", "USER"],
+            "default": "USER",
+            "description": "Assigned role"
+          }
+        },
+        "required": ["email", "password"]
+      },
+      "LoginDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "user@example.com",
+            "description": "User email"
+          },
+          "password": {
+            "type": "string",
+            "example": "SecurePassword123!",
+            "description": "User password"
+          }
+        },
+        "required": ["email", "password"]
+      },
+      "RefreshTokenDto": {
+        "type": "object",
+        "properties": {
+          "refreshToken": {
+            "type": "string",
+            "description": "JWT refresh token"
+          }
+        },
+        "required": ["refreshToken"]
+      },
+      "ForgotPasswordDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "user@example.com",
+            "description": "Registered user email address"
+          }
+        },
+        "required": ["email"]
+      },
+      "ResetPasswordDto": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+            "description": "Password reset JWT token"
+          },
+          "newPassword": {
+            "type": "string",
+            "example": "NewSecurePassword123!",
+            "description": "New password (min 8 characters)"
+          }
+        },
+        "required": ["token", "newPassword"]
+      },
+      "ChangePasswordDto": {
+        "type": "object",
+        "properties": {
+          "currentPassword": {
+            "type": "string",
+            "example": "CurrentPassword123!",
+            "description": "Current account password"
+          },
+          "newPassword": {
+            "type": "string",
+            "example": "NewSecurePassword123!",
+            "description": "New password (min 8 characters)"
+          }
+        },
+        "required": ["currentPassword", "newPassword"]
+      },
+      "UpdateAvatarDto": {
+        "type": "object",
+        "properties": {
+          "avatarUrl": {
+            "type": "string",
+            "example": "data:image/png;base64,iVBORw0KGgo...",
+            "description": "Avatar image URL, base64 data URI, or null/empty to remove",
+            "nullable": true
+          }
+        }
+      },
+      "UpdateOrganizationDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Acme Super Feeds",
+            "description": "Updated company name"
+          }
+        },
+        "required": ["name"]
+      },
+      "InviteMemberDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "colleague@example.com",
+            "description": "Email address of member to add/invite"
+          },
+          "role": {
+            "type": "string",
+            "enum": ["OWNER", "ADMIN", "MEMBER"],
+            "default": "MEMBER",
+            "description": "Role within organization"
+          }
+        },
+        "required": ["email"]
+      },
+      "AcceptInvitationDto": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "example": "SF-INV-8f1b6c5a3e2d109478b...",
+            "description": "Unique invitation token"
+          },
+          "fullName": {
+            "type": "string",
+            "example": "Taras Shevchenko",
+            "description": "Full name for new account registration"
+          },
+          "password": {
+            "type": "string",
+            "example": "SecurePassword123!",
+            "description": "Password for new account registration (minimum 6 characters)"
+          }
+        },
+        "required": ["token"]
+      },
+      "SelectPlanDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpgradeLicenseDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "AssignLicenseDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateLicenseStatusDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateTariffPlanDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "example": "PRO",
+            "description": "Unique uppercase plan code identifier"
+          },
+          "nameUk": {
+            "type": "string",
+            "example": "Професійний",
+            "description": "Plan display name in Ukrainian"
+          },
+          "nameEn": {
+            "type": "string",
+            "example": "Pro Plan",
+            "description": "Plan display name in English"
+          },
+          "descriptionUk": {
+            "type": "string",
+            "example": "Для інтернет-магазинів із розширеним каталогом"
+          },
+          "descriptionEn": {
+            "type": "string",
+            "example": "For online stores with expanded catalog"
+          },
+          "priceMonthly": {
+            "type": "number",
+            "example": 49,
+            "description": "Monthly price in USD"
+          },
+          "priceYearly": {
+            "type": "number",
+            "example": 490,
+            "description": "Yearly price in USD"
+          },
+          "currency": {
+            "type": "string",
+            "example": "USD",
+            "default": "USD"
+          },
+          "maxXmlLimit": {
+            "type": "number",
+            "example": 50000,
+            "description": "Maximum product items limit"
+          },
+          "aiCredits": {
+            "type": "number",
+            "example": 500,
+            "description": "Monthly AI assistant credits"
+          },
+          "canCloudBackup": {
+            "type": "boolean",
+            "example": true,
+            "default": false
+          },
+          "maxFeedsLimit": {
+            "type": "number",
+            "example": 5,
+            "default": 1
+          },
+          "maxChannelsLimit": {
+            "type": "number",
+            "example": 3,
+            "default": 1
+          },
+          "syncFrequencyHours": {
+            "type": "number",
+            "example": 24,
+            "default": 0
+          },
+          "maxStorageGb": {
+            "type": "number",
+            "example": 10,
+            "default": 0
+          },
+          "maxTeamSeats": {
+            "type": "number",
+            "example": 3,
+            "default": 1
+          },
+          "maxSuppliersLimit": {
+            "type": "number",
+            "example": 5,
+            "default": 1
+          },
+          "hasApiAccess": {
+            "type": "boolean",
+            "example": true,
+            "default": false
+          },
+          "hasWebhooks": {
+            "type": "boolean",
+            "example": false,
+            "default": false
+          },
+          "hasFeedDiff": {
+            "type": "boolean",
+            "example": true,
+            "default": false
+          },
+          "hasWhiteLabel": {
+            "type": "boolean",
+            "example": false,
+            "default": false
+          },
+          "hasSso": {
+            "type": "boolean",
+            "example": false,
+            "default": false
+          },
+          "hasAuditLog": {
+            "type": "boolean",
+            "example": false,
+            "default": false
+          },
+          "hasCustomS3": {
+            "type": "boolean",
+            "example": false,
+            "default": false
+          },
+          "hasPriorityAi": {
+            "type": "boolean",
+            "example": false,
+            "default": false
+          },
+          "slaUptimePercent": {
+            "type": "number",
+            "example": 99.9,
+            "default": null
+          },
+          "isPopular": {
+            "type": "boolean",
+            "example": true,
+            "default": false
+          },
+          "isActive": {
+            "type": "boolean",
+            "example": true,
+            "default": true
+          },
+          "order": {
+            "type": "number",
+            "example": 2,
+            "default": 0
+          },
+          "durationDays": {
+            "type": "number",
+            "example": 7,
+            "default": 7,
+            "description": "Duration of plan in days (null for indefinite)"
+          },
+          "featuresUk": {
+            "example": ["До 50,000 позицій XML", "500 AI кредитів", "S3 Cloud Backup"],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "featuresEn": {
+            "example": ["Up to 50,000 XML items", "500 AI credits", "S3 Cloud Backup"],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": ["code", "nameUk", "nameEn", "priceMonthly", "maxXmlLimit", "aiCredits"]
+      },
+      "UpdateTariffPlanDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "example": "PRO",
+            "description": "Unique uppercase plan code identifier"
+          },
+          "nameUk": {
+            "type": "string",
+            "example": "Професійний",
+            "description": "Plan display name in Ukrainian"
+          },
+          "nameEn": {
+            "type": "string",
+            "example": "Pro Plan",
+            "description": "Plan display name in English"
+          },
+          "descriptionUk": {
+            "type": "string",
+            "example": "Для інтернет-магазинів із розширеним каталогом"
+          },
+          "descriptionEn": {
+            "type": "string",
+            "example": "For online stores with expanded catalog"
+          },
+          "priceMonthly": {
+            "type": "number",
+            "example": 49,
+            "description": "Monthly price in USD"
+          },
+          "priceYearly": {
+            "type": "number",
+            "example": 490,
+            "description": "Yearly price in USD"
+          },
+          "currency": {
+            "type": "string",
+            "example": "USD",
+            "default": "USD"
+          },
+          "maxXmlLimit": {
+            "type": "number",
+            "example": 50000,
+            "description": "Maximum product items limit"
+          },
+          "aiCredits": {
+            "type": "number",
+            "example": 500,
+            "description": "Monthly AI assistant credits"
+          },
+          "canCloudBackup": {
+            "type": "boolean",
+            "example": true,
+            "default": false
+          },
+          "maxFeedsLimit": {
+            "type": "number",
+            "example": 5,
+            "default": 1
+          },
+          "maxChannelsLimit": {
+            "type": "number",
+            "example": 3,
+            "default": 1
+          },
+          "syncFrequencyHours": {
+            "type": "number",
+            "example": 24,
+            "default": 0
+          },
+          "maxStorageGb": {
+            "type": "number",
+            "example": 10,
+            "default": 0
+          },
+          "maxTeamSeats": {
+            "type": "number",
+            "example": 3,
+            "default": 1
+          },
+          "maxSuppliersLimit": {
+            "type": "number",
+            "example": 5,
+            "default": 1
+          },
+          "hasApiAccess": {
+            "type": "boolean",
+            "example": true,
+            "default": false
+          },
+          "hasWebhooks": {
+            "type": "boolean",
+            "example": false,
+            "default": false
+          },
+          "hasFeedDiff": {
+            "type": "boolean",
+            "example": true,
+            "default": false
+          },
+          "hasWhiteLabel": {
+            "type": "boolean",
+            "example": false,
+            "default": false
+          },
+          "hasSso": {
+            "type": "boolean",
+            "example": false,
+            "default": false
+          },
+          "hasAuditLog": {
+            "type": "boolean",
+            "example": false,
+            "default": false
+          },
+          "hasCustomS3": {
+            "type": "boolean",
+            "example": false,
+            "default": false
+          },
+          "hasPriorityAi": {
+            "type": "boolean",
+            "example": false,
+            "default": false
+          },
+          "slaUptimePercent": {
+            "type": "number",
+            "example": 99.9,
+            "default": null
+          },
+          "isPopular": {
+            "type": "boolean",
+            "example": true,
+            "default": false
+          },
+          "isActive": {
+            "type": "boolean",
+            "example": true,
+            "default": true
+          },
+          "order": {
+            "type": "number",
+            "example": 2,
+            "default": 0
+          },
+          "durationDays": {
+            "type": "number",
+            "example": 7,
+            "default": 7,
+            "description": "Duration of plan in days (null for indefinite)"
+          },
+          "featuresUk": {
+            "example": ["До 50,000 позицій XML", "500 AI кредитів", "S3 Cloud Backup"],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "featuresEn": {
+            "example": ["Up to 50,000 XML items", "500 AI credits", "S3 Cloud Backup"],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "PresignedUrlDto": {
+        "type": "object",
+        "properties": {
+          "fileName": {
+            "type": "string",
+            "description": "File name to upload"
+          },
+          "contentType": {
+            "type": "string",
+            "description": "MIME content type of file"
+          },
+          "folder": {
+            "type": "string",
+            "description": "Target folder in bucket",
+            "default": "images"
+          },
+          "fileSize": {
+            "type": "number",
+            "description": "Expected file size in bytes",
+            "example": 1048576
+          }
+        },
+        "required": ["fileName", "contentType"]
+      },
+      "ConfirmUploadDto": {
+        "type": "object",
+        "properties": {
+          "s3Key": {
+            "type": "string",
+            "description": "S3 Key of uploaded file"
+          },
+          "category": {
+            "type": "string",
+            "enum": ["PRODUCT_IMAGE", "FEED_CATALOG", "SYSTEM_BACKUP", "EXPORT_ARCHIVE"],
+            "default": "PRODUCT_IMAGE"
+          },
+          "originalName": {
+            "type": "string",
+            "description": "Original file name"
+          },
+          "checksumSha256": {
+            "type": "string",
+            "description": "SHA-256 checksum for deduplication"
+          },
+          "width": {
+            "type": "number",
+            "description": "Image width in pixels"
+          },
+          "height": {
+            "type": "number",
+            "description": "Image height in pixels"
+          }
+        },
+        "required": ["s3Key"]
+      },
+      "CleanupOrphansDto": {
+        "type": "object",
+        "properties": {
+          "dryRun": {
+            "type": "boolean",
+            "description": "Dry run flag to inspect orphaned files without deleting them",
+            "default": false
+          },
+          "folder": {
+            "type": "string",
+            "description": "Target folder to scan for orphans (images, snapshots, catalogs)",
+            "default": "images"
+          },
+          "activeKeys": {
+            "description": "List of currently active S3 keys / file identifiers used in the active catalog",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "InitWorkspaceRequestDto": {
+        "type": "object",
+        "properties": {
+          "workspacePath": {
+            "type": "string",
+            "description": "Local path where workspace will be initialized"
+          },
+          "enableEncryption": {
+            "type": "boolean",
+            "description": "Whether to enable encryption for the workspace"
+          }
+        },
+        "required": ["workspacePath"]
+      },
+      "OpenFolderRequestDto": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Directory path to open"
+          }
+        },
+        "required": ["path"]
+      },
+      "WorkspaceActionRequestDto": {
+        "type": "object",
+        "properties": {
+          "workspacePath": {
+            "type": "string",
+            "description": "Path of the workspace"
+          }
+        },
+        "required": ["workspacePath"]
+      },
+      "MigrateWorkspaceRequestDto": {
+        "type": "object",
+        "properties": {
+          "currentPath": {
+            "type": "string",
+            "description": "Current path of the workspace"
+          },
+          "newPath": {
+            "type": "string",
+            "description": "New target path for the workspace"
+          },
+          "moveExistingData": {
+            "type": "boolean",
+            "description": "Whether to move existing files to the new location"
+          }
+        },
+        "required": ["currentPath", "newPath"]
+      },
+      "CreateCheckoutDto": {
+        "type": "object",
+        "properties": {
+          "planCode": {
+            "type": "string",
+            "example": "GROWTH",
+            "description": "Plan code to purchase"
+          },
+          "billingInterval": {
+            "type": "string",
+            "enum": ["monthly", "yearly"],
+            "example": "monthly",
+            "description": "Billing interval"
+          }
+        },
+        "required": ["planCode", "billingInterval"]
+      },
+      "SimulateSandboxWebhookDto": {
+        "type": "object",
+        "properties": {
+          "orderReference": {
+            "type": "string",
+            "description": "Order reference of the payment transaction"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["Approved", "Declined"],
+            "description": "Desired webhook status"
+          },
+          "reason": {
+            "type": "string",
+            "description": "Decline reason text"
+          },
+          "cardPan": {
+            "type": "string",
+            "description": "Card PAN mask or full number for simulation"
+          },
+          "cardType": {
+            "type": "string",
+            "description": "Card Type (e.g. Visa, MasterCard)"
+          },
+          "issuerBank": {
+            "type": "string",
+            "description": "Issuer bank name"
+          }
+        },
+        "required": ["orderReference"]
+      },
+      "FetchFeedUrlDto": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "example": "https://example.com/feeds/products.xml",
+            "description": "Public HTTP/HTTPS URL of the XML/CSV feed"
+          }
+        },
+        "required": ["url"]
+      },
+      "CheckFeedCollisionDto": {
+        "type": "object",
+        "properties": {
+          "supplierId": {
+            "type": "string",
+            "description": "ID of the supplier"
+          },
+          "sourceType": {
+            "type": "string",
+            "enum": ["URL", "FILE"],
+            "description": "Type of feed source"
+          },
+          "sourceUrl": {
+            "type": "string",
+            "description": "Raw feed URL"
+          },
+          "canonicalUrl": {
+            "type": "string",
+            "description": "Normalized canonical URL"
+          },
+          "urlFingerprint": {
+            "type": "string",
+            "description": "SHA-256 URL fingerprint"
+          },
+          "fileName": {
+            "type": "string",
+            "description": "Uploaded feed file name"
+          },
+          "feedName": {
+            "type": "string",
+            "description": "Desired feed name"
+          },
+          "fileContent": {
+            "type": "string",
+            "description": "Raw file content"
+          },
+          "contentHash": {
+            "type": "string",
+            "description": "SHA-256 content hash"
+          }
+        },
+        "required": ["supplierId"]
+      },
+      "CustomRoundingRuleItemDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateSupplierFeedSourceDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the feed source"
+          },
+          "sourceType": {
+            "type": "string",
+            "enum": ["URL", "FILE"],
+            "default": "URL"
+          },
+          "fileFormat": {
+            "type": "string",
+            "enum": ["XML_ROZETKA", "YML_PROM", "XML_GOOGLE", "XML_GENERIC", "CSV", "XLSX"],
+            "default": "XML_ROZETKA"
+          },
+          "sourceUrl": {
+            "type": "string",
+            "description": "Source URL"
+          },
+          "canonicalUrl": {
+            "type": "string",
+            "description": "Canonical URL"
+          },
+          "urlFingerprint": {
+            "type": "string",
+            "description": "URL fingerprint"
+          },
+          "contentHash": {
+            "type": "string",
+            "description": "Content hash"
+          },
+          "parentFeedSourceId": {
+            "type": "string",
+            "description": "Parent feed source ID"
+          },
+          "s3FileKey": {
+            "type": "string",
+            "description": "S3 file key"
+          },
+          "authHeaderName": {
+            "type": "string",
+            "description": "Auth header name"
+          },
+          "authHeaderValue": {
+            "type": "string",
+            "description": "Auth header value"
+          },
+          "syncIntervalHours": {
+            "type": "number",
+            "description": "Sync interval in hours",
+            "default": 0
+          },
+          "autoUpdatePrices": {
+            "type": "boolean",
+            "default": true
+          },
+          "autoUpdateStocks": {
+            "type": "boolean",
+            "default": true
+          },
+          "autoCreateNewProducts": {
+            "type": "boolean",
+            "default": true
+          },
+          "mappingRules": {
+            "type": "object",
+            "description": "Mapping rules JSON"
+          },
+          "productsCount": {
+            "type": "number",
+            "description": "Estimated products count",
+            "default": 0
+          },
+          "baseCurrency": {
+            "type": "string",
+            "enum": ["UAH", "USD", "EUR", "PLN", "GBP", "CNY"],
+            "default": "UAH"
+          },
+          "targetCurrency": {
+            "type": "string",
+            "enum": ["UAH", "USD", "EUR", "PLN", "GBP", "CNY"],
+            "default": "UAH"
+          },
+          "exchangeRateMode": {
+            "type": "string",
+            "enum": ["MANUAL", "AUTO_NBU", "AUTO_PRIVAT", "AUTO_ECB"],
+            "default": "MANUAL"
+          },
+          "exchangeRate": {
+            "type": "number",
+            "default": 1
+          },
+          "currencyBufferPercent": {
+            "type": "number",
+            "default": 0
+          },
+          "priceRounding": {
+            "type": "string",
+            "default": "NONE"
+          },
+          "customRoundingRules": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomRoundingRuleItemDto"
+            }
+          },
+          "selectedBankId": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": ["name"]
+      },
+      "UpdateSupplierFeedSourceDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the feed source"
+          },
+          "sourceUrl": {
+            "type": "string",
+            "description": "Source URL"
+          },
+          "canonicalUrl": {
+            "type": "string",
+            "description": "Canonical URL"
+          },
+          "urlFingerprint": {
+            "type": "string",
+            "description": "URL fingerprint"
+          },
+          "contentHash": {
+            "type": "string",
+            "description": "Content hash"
+          },
+          "parentFeedSourceId": {
+            "type": "string",
+            "description": "Parent feed source ID"
+          },
+          "s3FileKey": {
+            "type": "string",
+            "description": "S3 file key"
+          },
+          "authHeaderName": {
+            "type": "string",
+            "description": "Auth header name"
+          },
+          "authHeaderValue": {
+            "type": "string",
+            "description": "Auth header value"
+          },
+          "syncIntervalHours": {
+            "type": "number",
+            "description": "Sync interval in hours"
+          },
+          "autoUpdatePrices": {
+            "type": "boolean"
+          },
+          "autoUpdateStocks": {
+            "type": "boolean"
+          },
+          "autoCreateNewProducts": {
+            "type": "boolean"
+          },
+          "mappingRules": {
+            "type": "object",
+            "description": "Mapping rules JSON"
+          },
+          "productsCount": {
+            "type": "number",
+            "description": "Estimated products count"
+          },
+          "lastSyncedAt": {
+            "type": "object",
+            "description": "Last synced at"
+          },
+          "lastSyncStatus": {
+            "type": "string",
+            "description": "Last sync status"
+          },
+          "baseCurrency": {
+            "type": "string",
+            "enum": ["UAH", "USD", "EUR", "PLN", "GBP", "CNY"]
+          },
+          "targetCurrency": {
+            "type": "string",
+            "enum": ["UAH", "USD", "EUR", "PLN", "GBP", "CNY"]
+          },
+          "exchangeRateMode": {
+            "type": "string",
+            "enum": ["MANUAL", "AUTO_NBU", "AUTO_PRIVAT", "AUTO_ECB"]
+          },
+          "exchangeRate": {
+            "type": "number"
+          },
+          "currencyBufferPercent": {
+            "type": "number"
+          },
+          "priceRounding": {
+            "type": "string"
+          },
+          "customRoundingRules": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomRoundingRuleItemDto"
+            }
+          },
+          "selectedBankId": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "ImportFeedAsyncDto": {
+        "type": "object",
+        "properties": {
+          "supplierId": {
+            "type": "string",
+            "description": "ID of the supplier"
+          },
+          "sourceType": {
+            "type": "string",
+            "enum": ["URL", "FILE"],
+            "description": "Type of feed source"
+          },
+          "sourceUrl": {
+            "type": "string",
+            "description": "URL of the remote feed"
+          },
+          "fileContent": {
+            "type": "string",
+            "description": "Raw file content if uploaded directly"
+          },
+          "fileName": {
+            "type": "string",
+            "description": "Original uploaded file name"
+          },
+          "catalogId": {
+            "type": "string",
+            "description": "Target catalog ID"
+          },
+          "selectedCategoryIds": {
+            "description": "Selected category IDs for filtering",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "autoUpdatePrices": {
+            "type": "boolean",
+            "description": "Auto-update product prices"
+          },
+          "autoUpdateStocks": {
+            "type": "boolean",
+            "description": "Auto-update product stock levels"
+          }
+        },
+        "required": ["supplierId", "sourceType"]
+      },
+      "CreateLegalDocumentDto": {
+        "type": "object",
+        "properties": {
+          "slug": {
+            "type": "string",
+            "description": "URL slug for the legal document (e.g. terms-of-service)"
+          },
+          "titleUk": {
+            "type": "string",
+            "description": "Document title in Ukrainian"
+          },
+          "titleEn": {
+            "type": "string",
+            "description": "Document title in English"
+          },
+          "contentUk": {
+            "type": "string",
+            "description": "Document content in Ukrainian"
+          },
+          "contentEn": {
+            "type": "string",
+            "description": "Document content in English"
+          },
+          "isPublished": {
+            "type": "boolean",
+            "default": true,
+            "description": "Whether the document is published"
+          },
+          "version": {
+            "type": "string",
+            "default": "2.0",
+            "description": "Document version tag"
+          }
+        },
+        "required": ["slug", "titleUk", "titleEn", "contentUk", "contentEn"]
+      },
+      "UpdateLegalDocumentDto": {
+        "type": "object",
+        "properties": {
+          "slug": {
+            "type": "string",
+            "description": "URL slug for the legal document"
+          },
+          "titleUk": {
+            "type": "string",
+            "description": "Document title in Ukrainian"
+          },
+          "titleEn": {
+            "type": "string",
+            "description": "Document title in English"
+          },
+          "contentUk": {
+            "type": "string",
+            "description": "Document content in Ukrainian"
+          },
+          "contentEn": {
+            "type": "string",
+            "description": "Document content in English"
+          },
+          "isPublished": {
+            "type": "boolean",
+            "description": "Whether the document is published"
+          },
+          "version": {
+            "type": "string",
+            "description": "Document version tag"
+          }
+        }
+      },
+      "AiAssistantProfileResponseDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "SmartFeed AI Copilot"
+          },
+          "avatarUrl": {
+            "type": "string",
+            "example": "https://cdn.smartfeed.studio/avatars/copilot.webp"
+          },
+          "roleUk": {
+            "type": "string",
+            "example": "Персональний AI-асистент з товарних каталогів та фідів"
+          },
+          "roleEn": {
+            "type": "string",
+            "example": "Personal AI Catalog & Feed Copilot"
+          },
+          "badgeUk": {
+            "type": "string",
+            "example": "AI Автопілот 24/7"
+          },
+          "badgeEn": {
+            "type": "string",
+            "example": "24/7 AI Autopilot"
+          }
+        },
+        "required": ["name", "roleUk", "roleEn", "badgeUk", "badgeEn"]
+      },
+      "UpdateAiAssistantProfileRequestDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "SmartFeed AI Copilot",
+            "description": "AI Assistant display name"
+          },
+          "avatarUrl": {
+            "type": "string",
+            "example": "https://r2.smartfeed.studio/avatars/custom-ai.png",
+            "description": "Custom avatar URL for AI Assistant"
+          },
+          "roleUk": {
+            "type": "string",
+            "example": "Персональний AI-асистент з товарних каталогів та фідів",
+            "description": "Role description in Ukrainian"
+          },
+          "roleEn": {
+            "type": "string",
+            "example": "Personal AI Catalog & Feed Copilot",
+            "description": "Role description in English"
+          },
+          "badgeUk": {
+            "type": "string",
+            "example": "AI Автопілот 24/7",
+            "description": "Badge title in Ukrainian"
+          },
+          "badgeEn": {
+            "type": "string",
+            "example": "24/7 AI Autopilot",
+            "description": "Badge title in English"
+          }
+        }
+      },
+      "PageGuideResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "cmv...guide"
+          },
+          "route": {
+            "type": "string",
+            "example": "/cloud-sync"
+          },
+          "titleUk": {
+            "type": "string",
+            "example": "Хмарне сховище & Медіа"
+          },
+          "titleEn": {
+            "type": "string",
+            "example": "Cloud Storage & Media"
+          },
+          "icon": {
+            "type": "string",
+            "example": "Cloud"
+          },
+          "badgeUk": {
+            "type": "string",
+            "example": "Хмарне сховище"
+          },
+          "badgeEn": {
+            "type": "string",
+            "example": "Cloud Storage"
+          },
+          "summaryUk": {
+            "type": "string",
+            "example": "Збереження медіафайлів у Cloudflare R2."
+          },
+          "summaryEn": {
+            "type": "string",
+            "example": "Media files storage in Cloudflare R2."
+          },
+          "descriptionUk": {
+            "type": "string",
+            "example": "Детальний опис можливостей сторінки..."
+          },
+          "descriptionEn": {
+            "type": "string",
+            "example": "Detailed description of page capabilities..."
+          },
+          "featuresUk": {
+            "example": ["Можливість 1", "Можливість 2"],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "featuresEn": {
+            "example": ["Feature 1", "Feature 2"],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "proTipUk": {
+            "type": "string",
+            "example": "Корисна порада ШІ..."
+          },
+          "proTipEn": {
+            "type": "string",
+            "example": "Helpful AI tip..."
+          },
+          "assistant": {
+            "$ref": "#/components/schemas/AiAssistantProfileResponseDto"
+          }
+        },
+        "required": [
+          "route",
+          "titleUk",
+          "titleEn",
+          "icon",
+          "badgeUk",
+          "badgeEn",
+          "summaryUk",
+          "summaryEn",
+          "descriptionUk",
+          "descriptionEn",
+          "featuresUk",
+          "featuresEn"
+        ]
+      },
+      "CreateSupplierDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateSupplierDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "BulkUpsertSupplierCategoriesDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "ToggleSupplierCategoryDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "BatchToggleSupplierCategoriesDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateSupplierCategoryDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateSupplierPricingRuleDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "BulkCreateSupplierPricingRulesDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateSupplierPricingRuleDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateBankProviderDto": {
+        "type": "object",
+        "properties": {
+          "bankName": {
+            "type": "string",
+            "description": "Display name of the bank"
+          },
+          "badge": {
+            "type": "string",
+            "description": "Short badge code (e.g. NBU, PB, MONO)"
+          },
+          "logoUrl": {
+            "type": "string",
+            "description": "URL or SVG path for bank logo"
+          },
+          "isEnabled": {
+            "type": "boolean",
+            "description": "Whether the bank is active in the system"
+          },
+          "isDefault": {
+            "type": "boolean",
+            "description": "Designate this provider as system default"
+          },
+          "sourceType": {
+            "type": "string",
+            "enum": ["API_DIRECT", "COMMERCIAL_SPREAD", "MANUAL"]
+          },
+          "sellSpreadPercent": {
+            "type": "number",
+            "description": "Sell spread percentage relative to NBU",
+            "minimum": -10,
+            "maximum": 30
+          },
+          "buySpreadPercent": {
+            "type": "number",
+            "description": "Buy spread percentage relative to NBU",
+            "minimum": -30,
+            "maximum": 10
+          },
+          "sortOrder": {
+            "type": "number",
+            "description": "Display sort order"
+          }
+        }
+      }
+    }
+  }
+}

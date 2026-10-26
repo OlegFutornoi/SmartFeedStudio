@@ -12,7 +12,7 @@ setup('verify local backend e2e container and schema parity', async ({ request }
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : String(err);
     throw new Error(
-      `❌ Local SQLite E2E container is unreachable at ${urls.local.backend}.\n` +
+      `[ERROR] Local SQLite E2E container is unreachable at ${urls.local.backend}.\n` +
         `   Make sure 'sqlite-dev-e2e' service is running on port 5002: 'pnpm docker:up'.\n` +
         `   Original error: ${message}`,
     );
@@ -27,7 +27,7 @@ setup('verify local backend e2e container and schema parity', async ({ request }
       refHealth.schemaFingerprint !== e2eHealth.schemaFingerprint
     ) {
       throw new Error(
-        `❌ [Local DB Parity] Schema mismatch detected between Dev DB (5001) and E2E DB (5002).\n` +
+        `[ERROR] [Local DB Parity] Schema mismatch detected between Dev DB (5001) and E2E DB (5002).\n` +
           `   Dev: ${refHealth.schemaFingerprint}\n` +
           `   E2E: ${e2eHealth.schemaFingerprint}\n` +
           `   Run 'pnpm db:local:sync' to rebuild and synchronize local sqlite containers.`,

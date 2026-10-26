@@ -1,11 +1,13 @@
 import { Injectable, UnauthorizedException, ForbiddenException, Logger } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
+import * as crypto from 'crypto';
 import * as bcrypt from 'bcrypt';
 import {
   AuthErrorCode,
   AuthResponseDto,
   ForgotPasswordResponseDto,
   ResetPasswordResponseDto,
+  Role,
   UserEntity,
   UserProfile,
 } from '@smartfeed/shared';
@@ -15,6 +17,7 @@ import { LoginDto } from '@/modules/auth/dto/login.dto';
 import { ForgotPasswordDto } from '@/modules/auth/dto/forgot-password.dto';
 import { ResetPasswordDto } from '@/modules/auth/dto/reset-password.dto';
 import { TokenService } from '@/modules/auth/services/token.service';
+import { RedisCacheService } from '@/common/cache/redis-cache.service';
 import { CreateUserCommand } from '@/modules/users/commands/create-user.command';
 import { ResetPasswordCommand } from '@/modules/users/commands/reset-password.command';
 import { GetUserByEmailQuery } from '@/modules/users/queries/get-user-by-email.query';
@@ -28,16 +31,18 @@ export class AuthService {
     private readonly commandBus: CommandBus,
     private readonly queryBus: QueryBus,
     private readonly tokenService: TokenService,
+    private readonly cacheService: RedisCacheService,
   ) {}
 
   /**
    * Register a new user by dispatching CreateUserCommand via CommandBus.
+   * Security defense: Public registration always forces Role.USER to prevent Privilege Escalation.
    */
   async register(dto: RegisterDto): Promise<AuthResponseDto> {
     this.logger.log(`Registering user with email: ${dto.email}`);
 
     const user = await this.commandBus.execute<CreateUserCommand, UserProfile>(
-      new CreateUserCommand(dto.email, dto.password, dto.fullName, dto.role, dto.companyName),
+      new CreateUserCommand(dto.email, dto.password, dto.fullName, Role.USER, dto.companyName),
     );
 
     const tokens = await this.tokenService.generateTokens(user);
@@ -151,5 +156,23 @@ export class AuthService {
       success: true,
       message: 'Password has been reset successfully',
     };
+  }
+
+  /**
+   * Invalidate active session and revoke issued tokens.
+   */
+  async logout(userId: string, rawToken?: string): Promise<void> {
+    this.logger.log(`Logging out user: ${userId}`);
+    await this.cacheService.del(`auth:user:${userId}`);
+    if (rawToken) {
+      const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex');
+      await this.cacheService.set(`auth:blacklist:${tokenHash}`, true, 30 * 24 * 60 * 60);
+    }
+    const revocationTimestamp = Math.floor(Date.now() / 1000);
+    await this.cacheService.set(
+      `auth:revoked_before:${userId}`,
+      revocationTimestamp,
+      30 * 24 * 60 * 60, // 30 days
+    );
   }
 }

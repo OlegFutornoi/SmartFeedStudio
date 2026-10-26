@@ -15,6 +15,8 @@ export default tseslint.config(
       '**/src-tauri/target/**',
       '**/coverage/**',
       '**/*.d.ts',
+      '**/*.generated.ts',
+      '**/generated/**',
       '**/.agents/**',
       '.claude/**',
       'scripts/**',

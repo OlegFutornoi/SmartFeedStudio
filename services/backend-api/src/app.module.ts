@@ -64,6 +64,7 @@ import { HealthController } from '@/common/controllers/health.controller';
           host: configService.get<string>('REDIS_HOST', 'localhost'),
           port: configService.get<number>('REDIS_PORT', 6379),
           password: configService.get<string>('REDIS_PASSWORD') || undefined,
+          db: Number(configService.get<number>('REDIS_DB', 0)),
         },
       }),
       inject: [ConfigService],

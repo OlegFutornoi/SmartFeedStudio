@@ -41,7 +41,7 @@ export default defineConfig({
     },
     {
       name: 'server-backend',
-      testMatch: /server\/backend\/specs\/.*\.spec\.ts/,
+      testMatch: /server\/backend\/tests\/.*\.spec\.ts/,
       dependencies: ['server-backend:setup'],
       use: {
         baseURL: env.E2E_SERVER_API_URL,
@@ -57,7 +57,7 @@ export default defineConfig({
     },
     {
       name: 'server-admin',
-      testMatch: /server\/admin\/specs\/.*\.spec\.ts/,
+      testMatch: /server\/admin\/tests\/.*\.spec\.ts/,
       dependencies: ['server-admin:setup'],
       use: {
         ...devices['Desktop Chrome'],
@@ -75,7 +75,7 @@ export default defineConfig({
     },
     {
       name: 'local-backend',
-      testMatch: /local\/backend\/specs\/.*\.spec\.ts/,
+      testMatch: /local\/backend\/tests\/.*\.spec\.ts/,
       dependencies: ['local-backend:setup'],
       use: {
         baseURL: env.E2E_LOCAL_DB_URL,
@@ -91,7 +91,7 @@ export default defineConfig({
     },
     {
       name: 'local-desktop',
-      testMatch: /local\/desktop\/specs\/.*\.spec\.ts/,
+      testMatch: /local\/desktop\/tests\/.*\.spec\.ts/,
       dependencies: ['local-desktop:setup', 'local-backend:setup'],
       use: {
         ...devices['Desktop Chrome'],

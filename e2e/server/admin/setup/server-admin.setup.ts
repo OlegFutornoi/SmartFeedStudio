@@ -16,7 +16,7 @@ setup('authenticate admin user and store storageState', async ({ page }) => {
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : String(err);
     throw new Error(
-      `❌ Admin portal is unreachable at ${urls.server.admin}.\n` +
+      `[ERROR] Admin portal is unreachable at ${urls.server.admin}.\n` +
         `   Make sure the server is running on port 3000: 'pnpm dev:admin'.\n` +
         `   Original error: ${message}`,
     );

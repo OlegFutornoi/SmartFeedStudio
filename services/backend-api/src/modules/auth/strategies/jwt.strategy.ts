@@ -8,6 +8,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { ConfigService } from '@nestjs/config';
 import { QueryBus } from '@nestjs/cqrs';
+import * as crypto from 'crypto';
 import { JwtPayload, UserProfile, AuthErrorCode, Role } from '@smartfeed/shared';
 import { GetUserByIdQuery } from '@/modules/users/queries/get-user-by-id.query';
 import { RedisCacheService } from '@/common/cache/redis-cache.service';
@@ -38,20 +39,33 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
       secretOrKey,
+      passReqToCallback: true,
     });
   }
 
-  async validate(payload: JwtPayload) {
+  async validate(req: unknown, payload: JwtPayload) {
     if (!payload.sub || !payload.email) {
       throw new UnauthorizedException('Invalid token payload');
     }
 
-    // Check if token was issued prior to password reset or account suspension
+    // 1. Check Redis token blacklist (e.g. from logout)
+    const rawToken = ExtractJwt.fromAuthHeaderAsBearerToken()(req as never);
+    if (rawToken) {
+      const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex');
+      const isBlacklisted = await this.cacheService.get<boolean>(`auth:blacklist:${tokenHash}`);
+      if (isBlacklisted) {
+        throw new UnauthorizedException(
+          'Authentication token has been revoked. Please sign in again.',
+        );
+      }
+    }
+
+    // 2. Check if token was issued prior to password reset or account suspension
     if (payload.iat) {
       const revokedBefore = await this.cacheService.get<number>(
         `auth:revoked_before:${payload.sub}`,
       );
-      if (revokedBefore && payload.iat < revokedBefore) {
+      if (revokedBefore && payload.iat <= revokedBefore) {
         throw new UnauthorizedException(
           'Authentication token has been revoked due to credential change. Please sign in again.',
         );

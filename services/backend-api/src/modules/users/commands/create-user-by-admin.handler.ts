@@ -2,6 +2,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import {
   BadRequestException,
   ConflictException,
+  ForbiddenException,
   Injectable,
   Logger,
   NotFoundException,
@@ -23,8 +24,30 @@ export class CreateUserByAdminHandler implements ICommandHandler<
   constructor(private readonly prisma: PrismaService) {}
 
   async execute(command: CreateUserByAdminCommand): Promise<UserListItemDto> {
-    const { email, password, fullName, role, accountType, companyName, organizationId, planCode } =
-      command;
+    const {
+      email,
+      password,
+      fullName,
+      role,
+      accountType,
+      companyName,
+      organizationId,
+      planCode,
+      requesterId,
+    } = command;
+
+    // Privilege check: ADMIN cannot create ADMIN or SUPER_ADMIN accounts
+    if (requesterId && (role === Role.ADMIN || role === Role.SUPER_ADMIN)) {
+      const requester = await this.prisma.user.findUnique({
+        where: { id: requesterId },
+        select: { role: true },
+      });
+      if (requester?.role === Role.ADMIN) {
+        throw new ForbiddenException(
+          'Administrators cannot create administrator or super-administrator accounts',
+        );
+      }
+    }
 
     const normalizedEmail = email.toLowerCase().trim();
 

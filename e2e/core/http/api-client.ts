@@ -1,10 +1,12 @@
 import { APIRequestContext, APIResponse } from '@playwright/test';
 import { z } from 'zod';
+import { TestLogger } from '@/core/utils/test-logger';
 
 export interface RequestOptions {
   headers?: Record<string, string>;
   data?: unknown;
   params?: Record<string, string | number | boolean>;
+  silent?: boolean;
 }
 
 export class ApiClient {
@@ -48,6 +50,15 @@ export class ApiClient {
     return this.sendWithSchema('patch', path, schema, { ...options, data });
   }
 
+  async put<T>(
+    path: string,
+    data?: unknown,
+    schema?: z.ZodType<T>,
+    options?: RequestOptions,
+  ): Promise<{ response: APIResponse; data: T }> {
+    return this.sendWithSchema('put', path, schema, { ...options, data });
+  }
+
   async delete<T>(
     path: string,
     schema?: z.ZodType<T>,
@@ -57,21 +68,33 @@ export class ApiClient {
   }
 
   private async sendWithSchema<T>(
-    method: 'get' | 'post' | 'patch' | 'delete',
+    method: 'get' | 'post' | 'put' | 'patch' | 'delete',
     path: string,
     schema?: z.ZodType<T>,
     options?: RequestOptions,
   ): Promise<{ response: APIResponse; data: T }> {
-    const url = path.startsWith('http')
-      ? path
-      : `${this.baseUrl}${path.startsWith('/') ? path : `/${path}`}`;
+    let cleanPath = path.startsWith('/') ? path : `/${path}`;
+    if (this.baseUrl.endsWith('/api') && cleanPath.startsWith('/api/')) {
+      cleanPath = cleanPath.slice(4);
+    }
+    const url = path.startsWith('http') ? path : `${this.baseUrl}${cleanPath}`;
     const headers = { ...this.defaultHeaders, ...options?.headers };
+
+    const startTime = Date.now();
+    if (!options?.silent) {
+      TestLogger.request(method, cleanPath);
+    }
 
     const response = await this.request[method](url, {
       headers,
       data: options?.data,
       params: options?.params,
     });
+
+    const durationMs = Date.now() - startTime;
+    if (!options?.silent) {
+      TestLogger.response(response.status(), durationMs);
+    }
 
     let json: unknown;
     try {
@@ -83,9 +106,15 @@ export class ApiClient {
     if (schema && json !== null) {
       const parsed = schema.safeParse(json);
       if (!parsed.success) {
+        if (!options?.silent) {
+          TestLogger.schema(cleanPath, false, parsed.error.message);
+        }
         throw new Error(
           `API Contract Mismatch at ${method.toUpperCase()} ${path}: ${parsed.error.message}`,
         );
+      }
+      if (!options?.silent) {
+        TestLogger.schema(cleanPath, true);
       }
       return { response, data: parsed.data };
     }

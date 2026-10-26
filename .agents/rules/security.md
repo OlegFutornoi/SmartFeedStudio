@@ -57,3 +57,10 @@ description: Application security, OWASP Top 10, secret masking, SSRF defense, a
 - Progression to subsequent wizard steps is strictly gated until explicit analysis is executed and yields `totalDetected > 0`.
 - Format detectors must never fall back to valid XML/CSV types for arbitrary or unrecognized content.
 - Reason: Permitting empty or corrupted feed progression results in broken catalog state and orphaned downstream records.
+
+## SEC-09: Strict Public DTO Whitelisting & Zero Privilege Exposure (Mass Assignment Defense)
+
+- Public DTOs (e.g. `RegisterDto`, public checkout, inquiry forms) must NEVER declare administrative, role, quota, or permission properties (e.g. `role?: Role`, `isAdmin`, `planType`).
+- Global `ValidationPipe` with `whitelist: true` and `forbidNonWhitelisted: true` must reject unexpected privilege properties at the gateway with `400 Bad Request` (`["property <name> should not exist"]`).
+- Never rely on service-level sanitization to silently overwrite unwhitelisted privilege fields with default values; client attacks must fail fast and be rejected at the boundary.
+- Reason: Declaring privilege properties in public DTOs bypasses `forbidNonWhitelisted` validation, exposes mass assignment attack surfaces, and confuses security observability.

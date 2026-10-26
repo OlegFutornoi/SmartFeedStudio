@@ -26,47 +26,61 @@ flowchart TD
 
 ### Напрямки та порти:
 
-1. **Server / Backend (`server/backend/`)**: Інтеграційні API-тести проти NestJS API (`http://localhost:4000/api`), підключеного до тестової бази `smartfeed_test_db`.
-2. **Server / Admin (`server/admin/`)**: Playwright UI-тести веб-порталу адміністратора (`http://localhost:3000`).
+1. **Server / Backend (`server/backend/`)**: Інтеграційні API-тести проти NestJS API (`http://localhost:4001/api`), підключеного до тестової бази `smartfeed_test_db` (порт 5433).
+2. **Server / Admin (`server/admin/`)**: Playwright UI-тести веб-порталу адміністратора (`http://localhost:3001`).
 3. **Local / Backend (`local/backend/`)**: Тести локального SQLite HTTP-моста (`http://localhost:5002`), контейнер `smartfeed-sqlite-dev-e2e`.
 4. **Local / Desktop (`local/desktop/`)**: Playwright UI-тести десктопного веб-клієнта у тестовому режимі (`http://127.0.0.1:1421`), підключеного до тестової SQLite на порту 5002.
 
 ---
 
-## 🚀 Порядок та команди запуску сервісів (П3)
+## 🚀 Єдина команда запуску всього тестового середовища
 
-Для виконання автотестів сервіси запускаються розробником за наступним регламентом:
-
-### 1. Підготовка інфраструктури (Docker):
+Для запуску повного ізольованого тестового контуру (бази даних у Docker, міграції, сиди та dev-сервери) виконується **одна команда**:
 
 ```bash
-# Підняти всі контейнери (PostgreSQL, Redis, MinIO, sqlite-dev, sqlite-dev-e2e)
-pnpm docker:up
+# З кореня монорепозиторію:
+pnpm e2e:dev
 
-# Перевірити статус та здоров'я контейнерів
-docker compose ps
+# Або безпосередньо з папки e2e/:
+cd e2e && pnpm dev
 ```
 
-### 2. Запуск серверної частини:
+Ця команда автоматично виконує:
+
+1. 🧹 Звільнення ізольованих портів E2E (`1421`, `3001`, `4001`, `5002`, `5433`).
+2. 🐳 Підняття необхідних Docker-контейнерів:
+   - `smartfeed-postgres-e2e`: PostgreSQL 16 на порті **`5433`** (RAM `tmpfs`, `smartfeed_test_db`).
+   - `smartfeed-sqlite-dev-e2e`: SQLite на порті **`5002`** (RAM `tmpfs`).
+   - `smartfeed-redis`: Redis 7 на порті `6379` (ізольована **DB 1** для черг E2E).
+   - `smartfeed-mailpit`: SMTP на `1025` та Web UI / REST API на **`8025`**.
+   - `smartfeed-minio`: S3 на `9000/9001`.
+3. 🔄 Синхронізація схем та сид:
+   - `pnpm e2e:db:sync`: застосування міграцій Prisma до `5433` та сид базових тарифів (`STARTER`, `GROWTH`, `PRO`, `ENTERPRISE`) і тестового адміна (`admin@smartfeed.local` / `adminpassword`).
+   - `pnpm db:local:check`: перевірка 100% паритету схем SQLite між dev (`5001`) та e2e (`5002`).
+4. 🌐 Запуск трьох паралельних E2E сервісів:
+   - **Backend API (E2E)** на порті **`4001`** (`http://localhost:4001/api`).
+   - **Admin Portal (E2E)** на порті **`3001`** (`http://localhost:3001`).
+   - **Desktop Client Vite (E2E)** на порті **`1421`** (`http://localhost:1421`).
+
+---
+
+### Окремі команди за потреби:
 
 ```bash
-# Термінал 1: Backend API (порт 4000)
-pnpm dev:backend
+# Синхронізація схеми PostgreSQL E2E (міграції + сид)
+pnpm e2e:db:sync
 
-# Термінал 2: Admin Portal (порт 3000)
-pnpm dev:admin
-```
-
-### 3. Запуск локальної тестової частини:
-
-```bash
-# Синхронізація схеми обох SQLite контейнерів (5001 dev та 5002 e2e)
+# Синхронізація схеми SQLite E2E
 pnpm db:local:sync
-
-# Перевірка паритету схем
 pnpm db:local:check
 
-# Термінал 3: Desktop Client у режимі e2e (порт 1421, база 5002)
+# Запуск тільки бекенду E2E (порт 4001)
+pnpm dev:backend:e2e
+
+# Запуск тільки адмінки E2E (порт 3001)
+pnpm dev:admin:e2e
+
+# Запуск тільки десктопу E2E (порт 1421)
 pnpm dev:desktop:e2e
 ```
 

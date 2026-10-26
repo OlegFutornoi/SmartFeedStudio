@@ -15,11 +15,13 @@ export class RedisCacheService implements OnModuleInit, OnModuleDestroy {
       const host = this.configService.get<string>('REDIS_HOST', 'localhost');
       const port = Number(this.configService.get<number>('REDIS_PORT', 6379));
       const password = this.configService.get<string>('REDIS_PASSWORD') || undefined;
+      const db = Number(this.configService.get<number>('REDIS_DB', 0));
 
       this.client = new Redis({
         host,
         port,
         password,
+        db,
         lazyConnect: true,
         enableOfflineQueue: false,
         maxRetriesPerRequest: 1,

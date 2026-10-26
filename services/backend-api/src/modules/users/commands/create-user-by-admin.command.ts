@@ -10,8 +10,9 @@ export class CreateUserByAdminCommand implements ICommand {
   public readonly companyName?: string;
   public readonly organizationId?: string;
   public readonly planCode?: PlanType;
+  public readonly requesterId?: string;
 
-  constructor(dto: CreateUserByAdminDto) {
+  constructor(dto: CreateUserByAdminDto, requesterId?: string) {
     this.email = dto.email;
     this.password = dto.password;
     this.fullName = dto.fullName;
@@ -20,5 +21,6 @@ export class CreateUserByAdminCommand implements ICommand {
     this.companyName = dto.companyName;
     this.organizationId = dto.organizationId;
     this.planCode = dto.planCode;
+    this.requesterId = requesterId;
   }
 }

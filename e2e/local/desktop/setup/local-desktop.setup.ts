@@ -17,7 +17,7 @@ setup('verify local desktop client availability and store auth state', async ({ 
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : String(err);
     throw new Error(
-      `❌ Desktop client (E2E mode) is unreachable at ${urls.local.desktop}.\n` +
+      `[ERROR] Desktop client (E2E mode) is unreachable at ${urls.local.desktop}.\n` +
         `   Make sure 'dev:e2e' is running on port 1421: 'pnpm --filter @smartfeed/desktop dev:e2e'.\n` +
         `   Original error: ${message}`,
     );

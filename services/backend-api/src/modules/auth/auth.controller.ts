@@ -7,6 +7,7 @@ import {
   Patch,
   Post,
   Query,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -35,6 +36,9 @@ import {
   UserProfile,
 } from '@smartfeed/shared';
 
+const isTestEnv = process.env.NODE_ENV === 'test';
+const authThrottleLimit = isTestEnv ? 50000 : 15;
+
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
@@ -45,7 +49,7 @@ export class AuthController {
   ) {}
 
   @Post('register')
-  @Throttle({ default: { limit: 15, ttl: 60000 } })
+  @Throttle({ default: { limit: authThrottleLimit, ttl: 60000 } })
   @ApiOperation({ summary: 'Register a new user account' })
   @ApiResponse({ status: 201, description: 'User registered successfully with auth tokens' })
   @ApiResponse({ status: 409, description: 'Email already exists' })
@@ -54,7 +58,7 @@ export class AuthController {
   }
 
   @Post('login')
-  @Throttle({ default: { limit: 15, ttl: 60000 } })
+  @Throttle({ default: { limit: authThrottleLimit, ttl: 60000 } })
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Authenticate user with email and password' })
   @ApiResponse({ status: 200, description: 'Authenticated successfully with auth tokens' })
@@ -145,5 +149,23 @@ export class AuthController {
     const avatarUrl = dto.avatarUrl && dto.avatarUrl.trim() !== '' ? dto.avatarUrl : null;
     await this.commandBus.execute(new UpdateUserAvatarCommand(userId, avatarUrl));
     return this.queryBus.execute(new GetUserByIdQuery(userId));
+  }
+
+  @Post('logout')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Logout and revoke active session' })
+  @ApiResponse({ status: 200, description: 'Logged out successfully' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async logout(
+    @CurrentUser('id') userId: string,
+    @Req() req: { headers: Record<string, string | string[] | undefined> },
+  ) {
+    const authHeader = req.headers['authorization'];
+    const rawToken =
+      typeof authHeader === 'string' ? authHeader.replace(/^Bearer\s+/i, '') : undefined;
+    await this.authService.logout(userId, rawToken);
+    return { success: true, message: 'Logged out successfully' };
   }
 }

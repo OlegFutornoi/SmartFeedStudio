@@ -95,9 +95,12 @@ export class UsersController {
   @ApiResponse({ status: 201, description: 'User created successfully' })
   @ApiResponse({ status: 400, description: 'Validation failed' })
   @ApiResponse({ status: 409, description: 'Email already exists' })
-  async createUserByAdmin(@Body() body: CreateUserByAdminRequestDto): Promise<UserListItemDto> {
+  async createUserByAdmin(
+    @Body() body: CreateUserByAdminRequestDto,
+    @CurrentUser('id') requesterId: string,
+  ): Promise<UserListItemDto> {
     const dto: CreateUserByAdminDto = CreateUserByAdminDtoSchema.parse(body);
-    return this.commandBus.execute(new CreateUserByAdminCommand(dto));
+    return this.commandBus.execute(new CreateUserByAdminCommand(dto, requesterId));
   }
 
   @Patch(':id/status')

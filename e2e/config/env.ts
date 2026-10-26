@@ -11,16 +11,19 @@ dotenv.config({ path: path.resolve(__dirname, '../.env') });
 dotenv.config({ path: path.resolve(__dirname, '../.env.local'), override: true });
 
 const EnvSchema = z.object({
-  E2E_SERVER_API_URL: z.string().url().default('http://localhost:4000/api'),
-  E2E_ADMIN_URL: z.string().url().default('http://localhost:3000'),
+  E2E_SERVER_API_URL: z.string().url().default('http://localhost:4001/api'),
+  E2E_ADMIN_URL: z.string().url().default('http://localhost:3001'),
   E2E_LOCAL_DB_URL: z.string().url().default('http://localhost:5002'),
   E2E_LOCAL_DB_REFERENCE_URL: z.string().url().default('http://localhost:5001'),
   E2E_DESKTOP_URL: z.string().url().default('http://127.0.0.1:1421'),
   E2E_TEST_DATABASE_URL: z
     .string()
     .default(
-      'postgresql://postgres:postgrespassword@localhost:5432/smartfeed_test_db?schema=public',
+      'postgresql://postgres:postgrespassword@localhost:5433/smartfeed_test_db?schema=public',
     ),
+  E2E_SUPERADMIN_EMAIL: z.string().email().default('superadmin@smartfeed.local'),
+  E2E_SUPERADMIN_PASSWORD: z.string().default('SuperAdminPassword123!'),
+  E2E_SUPERADMIN_NAME: z.string().default('E2E Super Admin'),
   E2E_ADMIN_EMAIL: z.string().email().default('admin@smartfeed.local'),
   E2E_ADMIN_PASSWORD: z.string().default('adminpassword'),
   E2E_USER_EMAIL: z.string().email().default('user@smartfeed.local'),
@@ -31,7 +34,7 @@ const EnvSchema = z.object({
 const parsed = EnvSchema.safeParse(process.env);
 
 if (!parsed.success) {
-  console.error('❌ [E2E Config] Invalid environment configuration:');
+  console.error('[ERROR] [E2E Config] Invalid environment configuration:');
   parsed.error.issues.forEach((issue) => {
     console.error(`   - ${issue.path.join('.')}: ${issue.message}`);
   });

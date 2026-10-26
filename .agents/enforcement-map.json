@@ -191,6 +191,12 @@
     "enforcer": "review-only",
     "mode": "manual"
   },
+  "CORE-13": {
+    "title": "Absolute Ban on Emojis",
+    "domain": "core",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
   "PLAN-01": {
     "title": "Three-Directory Plans Lifecycle",
     "domain": "core",
@@ -559,6 +565,12 @@
   },
   "SEC-08": {
     "title": "Zero 0-SKU Feed Progression & Format Integrity",
+    "domain": "security",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "SEC-09": {
+    "title": "Strict Public DTO Whitelisting & Zero Privilege Exposure (Mass Assignment Defense)",
     "domain": "security",
     "enforcer": "review-only",
     "mode": "manual"
