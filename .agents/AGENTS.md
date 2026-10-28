@@ -7,7 +7,7 @@ Central intelligence orchestrator connecting 7 specialized autonomous engineerin
 ## 2. Specialized Autonomous Agents
 
 - Planner & Architecture Agent: `@agents_planner` / `@agents-planner`
-  - Domain: Requirements discovery, domain boundary modeling, tracer-bullet vertical slicing, ADRs, contract-first design, web-grounded research via Perplexity Agent API, and deterministic task authoring (`FR-`, `BE-`, `FR-BE-`, `QA-`).
+  - Domain: Requirements discovery, domain boundary modeling, tracer-bullet vertical slicing, ADRs, contract-first design, web-grounded research via Perplexity Agent API, competitor API reverse-engineering via `api-anything` MCP, and deterministic task authoring (`FR-`, `BE-`, `FR-BE-`, `QA-`).
   - Specification: `.agents/agents/planner.md`
   - Rules: `core.md`, `agents.md`, `backend.md`, `database.md`, `frontend.md`, `security.md`, `docs_and_ops.md`
 
@@ -22,7 +22,7 @@ Central intelligence orchestrator connecting 7 specialized autonomous engineerin
   - Rules: `core.md`, `backend.md`, `database.md`, `security.md`
 
 - Code Review Agent: `@agents_review` / `@agents-review`
-  - Domain: 5-axis code review, architecture compliance, security audit, zero N+1, 100% i18n, adversarial stress testing.
+  - Domain: 5-axis code review, architecture compliance, security audit, zero N+1, 100% i18n, adversarial stress testing, live contract drift audit via `api-anything` MCP.
   - Specification: `.agents/agents/review.md`
   - Rules: `core.md`, `backend.md`, `database.md`, `frontend.md`, `ui.md`, `security.md`, `testing.md`
 
@@ -116,6 +116,7 @@ Central intelligence orchestrator connecting 7 specialized autonomous engineerin
 - `context-engineering`: Token economy and prompt context hygiene.
 - `ai-sdk`: Vercel AI SDK streaming integration and LLM catalog enrichment.
 - `firecrawl-parse`: External catalog and documentation scraping into markdown.
+- `api-anything`: Reverse-engineering website frontend traffic into typed JSON APIs, competitor catalog endpoint discovery, and self-healing extraction via api-anything MCP.
 - `perplexity-agent-api`: Web-grounded live search, marketplace research, and multi-provider reasoning via Perplexity Agent API (POST /v1/agent).
 
 ## 4. Full-Stack Orchestra Protocol (`AGENT-04`)

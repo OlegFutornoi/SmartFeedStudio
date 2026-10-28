@@ -51,7 +51,7 @@ description: Core universal engineering invariants applied across all tasks and 
 
 ## CORE-08: 100% MCP Auto-Approval
 
-- Never ask confirmation questions before or during calling any MCP tool (`playwright`, `sentry`, `shadcn`, `railway`, `postgres`, `redis`, `firecrawl`, `context7`, `github`).
+- Never ask confirmation questions before or during calling any MCP tool (`playwright`, `sentry`, `shadcn`, `railway`, `postgres`, `redis`, `firecrawl`, `context7`, `github`, `api-anything`).
 - Autonomous tool execution is 100% pre-approved.
 - Reason: Confirmation prompts block autonomous execution and waste interaction turns.
 
