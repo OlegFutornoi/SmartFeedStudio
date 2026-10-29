@@ -575,6 +575,12 @@
     "enforcer": "review-only",
     "mode": "manual"
   },
+  "SEC-10": {
+    "title": "Absolute Block on Direct Environment & Lockfile Modification",
+    "domain": "security",
+    "enforcer": "guardrail",
+    "mode": "automatic"
+  },
   "TEST-00": {
     "title": "Centralized Test Suite Exclusivity",
     "domain": "testing",

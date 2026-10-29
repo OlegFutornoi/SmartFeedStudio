@@ -61,6 +61,10 @@
     "shadcn": {
       "args": ["-y", "shadcn@latest", "mcp"],
       "command": "npx"
+    },
+    "headroom": {
+      "command": "/Users/oleg/.local/bin/headroom",
+      "args": ["mcp", "serve"]
     }
   }
 }

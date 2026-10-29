@@ -64,3 +64,11 @@ description: Application security, OWASP Top 10, secret masking, SSRF defense, a
 - Global `ValidationPipe` with `whitelist: true` and `forbidNonWhitelisted: true` must reject unexpected privilege properties at the gateway with `400 Bad Request` (`["property <name> should not exist"]`).
 - Never rely on service-level sanitization to silently overwrite unwhitelisted privilege fields with default values; client attacks must fail fast and be rejected at the boundary.
 - Reason: Declaring privilege properties in public DTOs bypasses `forbidNonWhitelisted` validation, exposes mass assignment attack surfaces, and confuses security observability.
+
+## SEC-10: Absolute Block on Direct Environment & Lockfile Modification
+
+- Direct editing or writing to `.env*` files (except `.env.example`, `.env.sample`, `.env.template`) and package lockfiles (`pnpm-lock.yaml`, `package-lock.json`, `yarn.lock`) via agent file editing tools is strictly forbidden.
+- Environment variables must be updated via `.env.example`, OS keychain, or deployment platform CLI (Railway).
+- Dependency lockfiles must be updated deterministically via package manager commands (`pnpm add`, `pnpm update`, `pnpm install`).
+- Enforced at tool execution level via `.claude/hooks/block-protected-files.mjs` and git level via `scripts/check-protected-files.mjs`.
+- Reason: Manual modification of environment files leaks secrets into git history, while hand-editing lockfiles breaks build reproducibility and dependency hashes.

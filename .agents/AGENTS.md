@@ -118,6 +118,8 @@ Central intelligence orchestrator connecting 7 specialized autonomous engineerin
 - `firecrawl-parse`: External catalog and documentation scraping into markdown.
 - `api-anything`: Reverse-engineering website frontend traffic into typed JSON APIs, competitor catalog endpoint discovery, and self-healing extraction via api-anything MCP.
 - `perplexity-agent-api`: Web-grounded live search, marketplace research, and multi-provider reasoning via Perplexity Agent API (POST /v1/agent).
+- `omniroute-delegation`: Dispatches tasks, batch catalog processing, prompt testing, or reasoning workloads to the local OmniRoute AI Gateway on port 20128.
+- `headroom-compression`: Compresses large datasets, plans, specs, feeds, logs, and multi-file diffs via Headroom (port 8787 / MCP) and auto-saves compressed files on disk (`<file>.compressed.<ext>`).
 
 ## 4. Full-Stack Orchestra Protocol (`AGENT-04`)
 

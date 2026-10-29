@@ -19,6 +19,7 @@ export * from './dtos/page-guide.dto';
 export * from './dtos/supplier-category.dto';
 export * from './dtos/currency.dto';
 export * from './dtos/supplier-sync.dto';
+export * from './dtos/ai-gateway.dto';
 export * from './utils/currency-calculator';
 export * from './utils/pricing-calculator';
 export * from './utils/media-naming';

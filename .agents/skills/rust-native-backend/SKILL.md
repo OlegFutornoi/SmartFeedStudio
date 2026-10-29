@@ -24,3 +24,4 @@ rules:
 4. Foreign key enforcement and cascading deletes: Always enable `PRAGMA foreign_keys = ON;` upon opening every SQLite connection. Deleting a supplier or feed must automatically cascade-delete products and local media to prevent orphan records.
 5. Safe operating system execution: Never invoke system shells (`sh -c` or `cmd.exe /c`) with interpolated strings (CWE-78). Use `std::process::Command` with discrete arguments array without shell evaluation.
 6. Lint verification: After editing Rust code in `apps/desktop/src-tauri`, run `cargo clippy --manifest-path apps/desktop/src-tauri/Cargo.toml --all-targets -- -D warnings` and confirm zero warnings.
+7. Incremental verification: Run `pnpm verify:rust` (or background watcher `pnpm watch:rust`) to verify compilation in <1.5s. Git commits touching Rust files trigger `node scripts/verify-rust.mjs` automatically via lint-staged.
