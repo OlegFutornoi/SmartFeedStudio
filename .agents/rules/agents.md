@@ -31,9 +31,12 @@ description: Autonomous specialized agent router and dispatching directives for 
 
 ## AGENT-03: Invariant & Skill Codification Loop
 
-- Whenever an agent discovers a defect, anti-pattern, concurrency flaw, or unhandled bottleneck during review, QA, security audit, or development, the agent must update the relevant domain rule (`.agents/rules/<domain>.md`) and governing skill (`.agents/skills/<skill>/SKILL.md`).
-- Define the new invariant with a concrete invariant ID (e.g., `FE-xx`, `BE-xx`, `SEC-xx`), explicit constraints, and technical rationale.
-- Reason: Fixing a bug or pointing out an architectural defect without codifying the invariant into governing rules allows identical errors to recur across subsequent turns.
+- Whenever an agent discovers a defect, anti-pattern, concurrency flaw, or receives a direct user correction regarding methodology, scope, or repetitive manual steps:
+  1. Record friction observation: append a structured JSON entry to `.agents/state/observations.jsonl` capturing `{ "timestamp", "type", "trigger", "friction", "resolution" }`.
+  2. Structural enforcement over louder rules: if a model repeatedly violates an invariant, never merely shout louder in prompt text. Convert the constraint into a machine-enforced barrier (git hook, pre-tool hook, linter, or CLI validator).
+  3. Codify rule or skill: update the relevant domain rule (`.agents/rules/<domain>.md`) and governing skill (`.agents/skills/<skill>/SKILL.md`) using `skill-creator`.
+- Define new invariants with concrete IDs (e.g. `FE-xx`, `BE-xx`, `SEC-xx`), explicit constraints, and technical rationale.
+- Reason: Logging live friction and codifying structural invariants prevents recurrent bugs and prevents agents from repeating discarded assumptions.
 
 ## AGENT-04: Full-Stack Orchestra Protocol (Zero Siloed & Zero Raw Tasks)
 
