@@ -53,9 +53,27 @@ function freePort(port) {
     for (const pidStr of pids) {
       const pid = parseInt(pidStr, 10);
       if (isNaN(pid) || pid === process.pid || pid === process.ppid) continue;
+
+      let comm = '';
+      try {
+        comm = execSync(`ps -p ${pid} -o comm=`, {
+          encoding: 'utf-8',
+          stdio: ['pipe', 'pipe', 'ignore'],
+        })
+          .trim()
+          .toLowerCase();
+      } catch {
+        // Process might have already exited
+      }
+
+      // Never kill Docker daemon host process (Docker Desktop maps container ports)
+      if (comm.includes('docker') || comm.includes('com.docker')) {
+        continue;
+      }
+
       try {
         process.kill(pid, 'SIGKILL');
-        console.log(`🧹 [Ports] Freed port ${port} (terminated PID ${pid})`);
+        console.log(`🧹 [Ports] Freed port ${port} (terminated PID ${pid}: ${comm || 'process'})`);
       } catch {
         // Already exited
       }
