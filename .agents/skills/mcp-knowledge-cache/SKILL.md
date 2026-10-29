@@ -34,8 +34,8 @@ rules: [core, agents]
    Persist newly fetched MCP information into `.agents/cache/mcp/entries/<slug>.compressed.md` using a single-quoted heredoc (`cat << 'EOF'`) so bash/zsh never expands `$variables` like `$transaction()`:
    - Store with compression: `cat << 'EOF' | pnpm ai:cache set "<key>" --source "<mcp>" --query "<query>" --summary "<1-line summary>"`
    - Store with OmniRoute structuring + Headroom compression: append `--omni` flag.
-4. Stage 4 - Delegate Cache Refresh & Overwrite to OmniRoute:
-   When updating an existing cache key with newly fetched MCP data, delegate merging and distillation to OmniRoute (port 20128) so it overwrites the single `.compressed.md` entry cleanly without consuming IDE tokens:
+4. Stage 4 - Delegate Cache Refresh & Overwrite:
+   When updating an existing cache key with newly fetched MCP data, delegate merging and distillation to zero-cost AI fallback so it overwrites the single `.compressed.md` entry cleanly without consuming IDE tokens:
    - Execute: `cat << 'EOF' | pnpm ai:cache refresh "<key>" --prompt "<merge instructions>"`
 
 ## Outputs

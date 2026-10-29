@@ -1,6 +1,6 @@
 ---
 name: omniroute-delegation
-description: Dispatches tasks, batch catalog processing, prompt testing, translation, or reasoning workloads to the local OmniRoute AI Gateway on port 20128. Use when the user requests tasks via OmniRoute, asks to use DeepSeek or alternative upstream models, or when running high-volume LLM workloads (spec translation, cache synthesis, catalog enrichment) that should not consume IDE tokens. Do not use for standard IDE pair programming, code refactoring, or database queries; use backend or frontend instead.
+description: Dispatches tasks, batch catalog processing, prompt testing, translation, or reasoning workloads directly to zero-cost multi-provider AI fallback (Google AI Studio, Groq Cloud, OpenRouter). Use when the user requests tasks via OmniRoute, asks to use DeepSeek or alternative upstream models, or when running high-volume LLM workloads (spec translation, cache synthesis, catalog enrichment) that should not consume IDE tokens. Do not use for standard IDE pair programming, code refactoring, or database queries; use backend or frontend instead.
 rules: [core, backend]
 ---
 
@@ -17,19 +17,24 @@ rules: [core, backend]
 ## Inputs
 
 - Task specification or prompt payload requested by the user or invoked by system scripts.
-- Target model slug (defaults to `openrouter/deepseek/deepseek-chat` or `auto/best-free`).
+- Target model slug (defaults to zero-cost multi-provider fallback chain: `gemini-3.8-flash` -> `groq/openai/gpt-oss-120b` -> `groq/qwen/qwen3.8-27b` -> `gemini-flash-latest` -> `openrouter/nvidia/nemotron-3-ultra-550b-a55b:free` -> `openrouter/nvidia/nemotron-3.5-lightning:free` -> `openrouter/openrouter/free`).
 - Optional system instructions or JSON schema requirements.
 - Translation, plan compilation, or MCP cache refresh requests.
 
 ## Procedure
 
-1. Stage 1 - Container and Health Verification:
-   Verify that OmniRoute container `smartfeed-omniroute` is healthy on port 20128 using `curl -s http://localhost:20128/v1/models` with `OMNIROUTE_API_KEY`.
-2. Stage 2 - Model Selection and Payload Formation:
-   Select appropriate model based on task requirements:
-   - For plan translation & semantic compression: `openrouter/deepseek/deepseek-chat`.
-   - For fast free-tier deterministic classification: `auto/best-free`.
-   - For general OpenAI compatibility: `auto`.
+1. Stage 1 - Multi-Provider Environment Verification:
+   Verify that `.env` contains valid keys for at least one zero-cost provider (`GEMINI_API_KEY`, `GROQ_API_KEY`, or `OPENROUTER_API_KEY`).
+2. Stage 2 - Model Selection and Resilient Multi-Provider Free Fallback:
+   By default, `omniroute-query.mjs` executes across a resilient multi-provider zero-cost fallback chain ($0.00 / 100% free):
+   - Tier 1: Google AI Studio direct (`gemini-3.8-flash`, 15 RPM, 1M context, flagship reasoning).
+   - Tier 2: Groq direct (`groq/openai/gpt-oss-120b`, 120B model, ~150ms instant response).
+   - Tier 3: Groq direct (`groq/qwen/qwen3.8-27b`, 27B model, ~20ms ultra-fast response).
+   - Tier 4: Google AI Studio backup (`gemini-flash-latest`).
+   - Tier 5: OpenRouter flagship free (`openrouter/nvidia/nemotron-3-ultra-550b-a55b:free`, 550B MoE).
+   - Tier 6: OpenRouter lightning free (`openrouter/nvidia/nemotron-3.5-lightning:free`, 128k context).
+   - Tier 7: OpenRouter dynamic free pool (`openrouter/openrouter/free`, 200k context auto-balancer).
+     If any model or provider encounters HTTP 429 rate limits or cooldowns, OmniRoute automatically falls back to the next tier without human intervention.
 3. Stage 3 - Script Execution:
    Execute prompt through `scripts/omniroute-query.mjs` or npm script `pnpm ai:omni`:
    - Single prompt: `pnpm ai:omni --prompt "<prompt>"`
@@ -51,19 +56,18 @@ rules: [core, backend]
 
 ## Gate (stop condition)
 
-- Task executed via OmniRoute `POST /v1/chat/completions` and returned HTTP 200.
+- Task executed via AI provider `POST /chat/completions` and returned HTTP 200.
 - Output parsed cleanly without error and meets schema constraints.
 - No secrets exposed in logs or console output.
 
 ## Never
 
-- Never send requests directly to external paid LLM endpoints bypassing OmniRoute when this skill is invoked.
-- Never hardcode `OMNIROUTE_API_KEY` into code or committed files.
+- Never send requests to paid LLM tiers when zero-cost models are available.
+- Never hardcode API keys into code or committed files.
 - Never use emojis in CLI logs, output reports, or error messages (`CORE-13`).
-- Never ask confirmation questions before invoking OmniRoute query CLI (`CORE-08`).
+- Never ask confirmation questions before invoking query CLI (`CORE-08`).
 
 ## References
 
-- `scripts/omniroute-query.mjs` - CLI runner for OmniRoute queries.
-- `docker-compose.yml` - OmniRoute container service definition.
+- `scripts/omniroute-query.mjs` - Multi-provider CLI runner.
 - `services/backend-api/src/modules/ai/llm-gateway.service.ts` - NestJS gateway integration service.

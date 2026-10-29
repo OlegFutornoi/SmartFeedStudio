@@ -6,7 +6,7 @@
  *
  * Core Capabilities:
  * 1. Cyrillic/Ukrainian Translation & Distillation: Automatically delegates translation and
- *    semantic compression of Ukrainian specs/plans to OmniRoute (port 20128) at ZERO IDE token cost,
+ *    semantic compression of Ukrainian specs/plans to direct AI providers (Google AI Studio, Groq, OpenRouter) at ZERO IDE token cost,
  *    slashing token counts by 65-75% due to English BPE token density.
  * 2. Headroom Python & Formatting Pipeline: Removes duplicate blank lines, unwraps JSON strings,
  *    and formats Markdown headings for MD041/MD022 compliance.
@@ -66,56 +66,6 @@ function postProcessMarkdown(text, defaultTitle = '') {
       .replace(/^```(?:markdown|md)?\s*\n/i, '')
       .replace(/\n?```$/, '')
       .trim();
-  }
-
-  const lines = cleaned.split('\n');
-  const processed = [];
-
-  for (let i = 0; i < lines.length; i++) {
-    let line = lines[i];
-
-    // Fix line 1 if model output **Title** instead of # Title
-    if (i === 0 && !line.startsWith('#') && line.startsWith('**') && line.endsWith('**')) {
-      line = `# ${line.slice(2, -2).trim()}`;
-    }
-
-    // Strip bold syntax inside headings: ### **Heading** -> ### Heading
-    if (/^#{1,6}\s+\*\*/.test(line)) {
-      line = line.replace(/^(#{1,6}\s+)\*\*([^*]+)\*\*(.*)$/, '$1$2$3');
-    }
-
-    processed.push(line);
-  }
-
-  cleaned = processed.join('\n').trim();
-
-  // Enforce line 1 starts with # Heading (MD041)
-  if (!cleaned.startsWith('#') && defaultTitle) {
-    cleaned = `# ${defaultTitle}\n\n${cleaned}`;
-  }
-
-  return cleaned;
-}
-
-function validateDefectIntegrity(rawText, compressedText) {
-  const origDefects = [...new Set(rawText.match(/\[DEF-\d+\]/g) || [])];
-  if (origDefects.length === 0) return true;
-
-  const missing = origDefects.filter((def) => !compressedText.includes(def));
-  if (missing.length > 0) {
-    console.warn(
-      `[HEADROOM] WARNING: Defect integrity check flagged missing findings: ${missing.join(', ')}`,
-    );
-    return false;
-  }
-  return true;
-}
-
-function postProcessMarkdown(text, defaultTitle = '') {
-  let cleaned = text.trim();
-  // Strip outer ```markdown ... ``` fence
-  if (/^```(?:markdown|md)?\s*\n/i.test(cleaned) && cleaned.endsWith('```')) {
-    cleaned = cleaned.replace(/^```(?:markdown|md)?\s*\n/i, '').replace(/\n?```$/, '').trim();
   }
 
   const lines = cleaned.split('\n');

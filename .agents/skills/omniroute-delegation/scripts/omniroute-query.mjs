@@ -2,7 +2,7 @@
 
 /**
  * OmniRoute Task Runner CLI
- * Executes prompts and delegations through local OmniRoute AI Gateway (port 20128).
+ * Executes prompts and delegations directly through multi-provider zero-cost AI fallback (Google AI Studio, Groq, OpenRouter).
  */
 
 import { readFileSync, existsSync } from 'node:fs';
@@ -29,12 +29,22 @@ function loadEnv() {
 }
 
 const env = loadEnv();
-const headroomEnabled = process.env.HEADROOM_ENABLED !== 'false' && env.HEADROOM_ENABLED !== 'false';
-const headroomUrl = process.env.HEADROOM_BASE_URL || env.HEADROOM_BASE_URL || 'http://localhost:8787/v1';
-const omnirouteUrl = process.env.OMNIROUTE_BASE_URL || env.OMNIROUTE_BASE_URL || 'http://localhost:20128/v1';
-const baseUrl = (headroomEnabled && headroomUrl ? headroomUrl : omnirouteUrl).replace(/\/+$/, '');
-const apiKey = process.env.OMNIROUTE_API_KEY || env.OMNIROUTE_API_KEY || '';
-const defaultModel = process.env.OMNIROUTE_DEFAULT_MODEL || env.OMNIROUTE_DEFAULT_MODEL || 'openrouter/deepseek/deepseek-chat';
+const geminiApiKey = process.env.GEMINI_API_KEY || env.GEMINI_API_KEY || '';
+const geminiBaseUrl = 'https://generativelanguage.googleapis.com/v1beta/openai';
+const groqApiKey = process.env.GROQ_API_KEY || env.GROQ_API_KEY || '';
+const groqBaseUrl = 'https://api.groq.com/openai/v1';
+const openrouterApiKey = process.env.OPENROUTER_API_KEY || env.OPENROUTER_API_KEY || '';
+const openrouterBaseUrl = 'https://openrouter.ai/api/v1';
+const defaultModel =
+  process.env.AI_DEFAULT_MODEL || env.AI_DEFAULT_MODEL || 'gemini-3.8-flash';
+const defaultFallbackModels = (
+  process.env.AI_FALLBACK_MODELS ||
+  env.AI_FALLBACK_MODELS ||
+  'gemini-3.8-flash,groq/openai/gpt-oss-120b,groq/qwen/qwen3.8-27b,gemini-flash-latest,openrouter/nvidia/nemotron-3-ultra-550b-a55b:free,openrouter/openrouter/free'
+)
+  .split(',')
+  .map((m) => m.trim())
+  .filter(Boolean);
 
 function parseArgs() {
   const args = process.argv.slice(2);
@@ -46,12 +56,14 @@ function parseArgs() {
     json: false,
     temperature: 0.2,
     maxTokens: 2048,
+    userSpecifiedModel: false,
   };
 
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
     if (arg === '--model' && args[i + 1]) {
       options.model = args[++i];
+      options.userSpecifiedModel = true;
     } else if (arg === '--prompt' && args[i + 1]) {
       options.prompt = args[++i];
     } else if (arg === '--system' && args[i + 1]) {
@@ -112,27 +124,117 @@ async function run() {
     payload.response_format = { type: 'json_object' };
   }
 
-  const endpoint = `${baseUrl}/chat/completions`;
-  const response = await fetch(endpoint, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${apiKey}`,
-    },
-    body: JSON.stringify(payload),
-  });
+  const candidateModels = [
+    opts.model,
+    ...defaultFallbackModels.filter((m) => m !== opts.model),
+  ];
 
-  if (!response.ok) {
-    const errorText = await response.text();
-    console.error(`OmniRoute error (HTTP ${response.status}): ${errorText}`);
+  let lastError = null;
+  let finalContent = null;
+
+  for (let i = 0; i < candidateModels.length; i++) {
+    const currentModel = candidateModels[i];
+    payload.model = currentModel;
+
+    const isGeminiDirect = currentModel.startsWith('gemini') && geminiApiKey;
+    const isGroqDirect = currentModel.startsWith('groq/') && groqApiKey;
+    const isOpenRouter =
+      (currentModel.startsWith('openrouter/') ||
+        currentModel.includes('/') ||
+        currentModel.endsWith(':free')) &&
+      openrouterApiKey;
+
+    let targetEndpoint = `${openrouterBaseUrl}/chat/completions`;
+    let targetAuth = `Bearer ${openrouterApiKey}`;
+
+    if (isGeminiDirect) {
+      targetEndpoint = `${geminiBaseUrl}/chat/completions`;
+      targetAuth = `Bearer ${geminiApiKey}`;
+    } else if (isGroqDirect) {
+      targetEndpoint = `${groqBaseUrl}/chat/completions`;
+      targetAuth = `Bearer ${groqApiKey}`;
+      payload.model = currentModel.replace(/^groq\//, '');
+    } else if (isOpenRouter) {
+      targetEndpoint = `${openrouterBaseUrl}/chat/completions`;
+      targetAuth = `Bearer ${openrouterApiKey}`;
+      if (currentModel === 'openrouter/openrouter/free' || currentModel === 'openrouter/free') {
+        payload.model = 'openrouter/free';
+      } else if (currentModel.startsWith('openrouter/')) {
+        payload.model = currentModel.slice('openrouter/'.length);
+      }
+    }
+
+    try {
+      const response = await fetch(targetEndpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: targetAuth,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        let errorMsg = `HTTP ${response.status}`;
+        try {
+          const parsed = JSON.parse(errorText);
+          errorMsg = parsed?.error?.message || parsed?.error?.code || errorMsg;
+        } catch {
+          errorMsg = errorText.slice(0, 150);
+        }
+
+        const isRecoverable =
+          response.status === 429 ||
+          response.status === 503 ||
+          response.status === 502 ||
+          /rate[- ]limit|cooldown|cooling down|quota|overloaded/i.test(errorMsg);
+
+        if (isRecoverable && i < candidateModels.length - 1) {
+          console.warn(
+            `[OmniRoute] Model ${currentModel} busy (${errorMsg}). Switching to fallback ${candidateModels[i + 1]}...`,
+          );
+          lastError = new Error(errorMsg);
+          continue;
+        }
+
+        throw new Error(`OmniRoute error (${currentModel}): ${errorMsg}`);
+      }
+
+      const result = await response.json();
+      if (result.error) {
+        const errorMsg = result.error.message || result.error.code || 'Unknown error';
+        if (i < candidateModels.length - 1) {
+          console.warn(
+            `[OmniRoute] Model ${currentModel} error (${errorMsg}). Switching to fallback ${candidateModels[i + 1]}...`,
+          );
+          lastError = new Error(errorMsg);
+          continue;
+        }
+        throw new Error(`OmniRoute error (${currentModel}): ${errorMsg}`);
+      }
+
+      const choice = result.choices && result.choices[0];
+      finalContent = choice?.message?.content || choice?.message?.reasoning_content || '';
+      break;
+    } catch (err) {
+      lastError = err;
+      if (i < candidateModels.length - 1) {
+        console.warn(
+          `[OmniRoute] ${currentModel} attempt failed: ${err.message}. Retrying next free model...`,
+        );
+      } else {
+        throw err;
+      }
+    }
+  }
+
+  if (finalContent === null) {
+    console.error('OmniRoute error: all candidate models failed.', lastError?.message);
     process.exit(1);
   }
 
-  const result = await response.json();
-  const choice = result.choices && result.choices[0];
-  const content = choice?.message?.content || choice?.message?.reasoning_content || '';
-
-  process.stdout.write(content + '\n');
+  process.stdout.write(finalContent + '\n');
 }
 
 run().catch((err) => {

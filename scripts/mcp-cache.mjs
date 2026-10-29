@@ -4,7 +4,7 @@
  * MCP Knowledge Cache Manager for SmartFeed Studio Agents
  * Caches documentation and research from Context7, Perplexity, Firecrawl, api-anything, and shadcn.
  * Stores strictly a single Headroom-compressed file (.compressed.md) per entry (zero duplicate files).
- * Delegates cache updating/synthesis to OmniRoute (port 20128).
+ * Delegates cache updating/synthesis to direct AI fallback (Google AI Studio, Groq, OpenRouter).
  *
  * Usage:
  *   node scripts/mcp-cache.mjs get <key>

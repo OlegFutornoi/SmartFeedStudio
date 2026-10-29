@@ -1,6 +1,6 @@
 ---
 name: headroom-compression
-description: Optimizes context tokens by translating and compressing plans, specs, and feeds through OmniRoute (port 20128) and Headroom (port 8787 / MCP) before passing them to the active model. Automatically delegates non-complex translation/distillation of Ukrainian specs to OmniRoute, saving 65-75% tokens via dense English BPE compression.
+description: Optimizes context tokens by translating and compressing plans, specs, and feeds through local Python Headroom engine and direct multi-provider AI fallback before passing them to the active model. Automatically delegates non-complex translation/distillation of Ukrainian specs to zero-cost AI models, saving 65-75% tokens via dense English BPE compression.
 rules: [core, agents]
 ---
 
@@ -24,12 +24,12 @@ rules: [core, agents]
 
 1. Stage 1 - Pre-Compression Hygiene & Format Check:
    - Ensure input starts with `# Heading` on line 1 (`MD041`) and contains zero Markdown tables (`| col | col |`). Convert any tables into compact bullet lists (`- **ID** | Field: value`).
-2. Stage 2 - OmniRoute Translation & Semantic Distillation:
-   - For Ukrainian/Cyrillic plans or specifications, `scripts/headroom-compress.mjs` automatically delegates translation and semantic compilation to OmniRoute (`smartfeed-omniroute`, port 20128) at ZERO IDE token cost.
+2. Stage 2 - AI Translation & Semantic Distillation:
+   - For Ukrainian/Cyrillic plans or specifications, `scripts/headroom-compress.mjs` automatically delegates translation and semantic compilation to zero-cost multi-provider AI fallback (Google AI Studio, Groq Cloud, OpenRouter) at ZERO IDE token cost.
    - Translating to dense technical English cuts token consumption by 65-75% because BPE tokenizers encode English at ~4 characters/token versus Cyrillic at ~2.7 characters/token, while distilling prose removes narrative fluff.
    - All 100% of defect IDs (`DEF-xx`), file paths, line numbers, CWEs, rule invariants, code signatures, and 4-point DoD are strictly preserved.
-3. Stage 3 - Headroom Optimization:
-   - Run Headroom pipeline on the compiled English text to collapse redundant whitespace, unwrap JSON artifacts, and format headings (`MD022`).
+3. Stage 3 - Local Headroom Optimization:
+   - Run local Headroom Python pipeline (`headroom.compress`) on the compiled English text to collapse redundant whitespace, unwrap JSON artifacts, and format headings (`MD022`).
    - Auto-save execution plan: `node scripts/headroom-compress.mjs <file-path> --save`
    - Formats output via Prettier (`npx prettier --write <output-file>`).
 4. Stage 4 - Delivery to Model / User:
@@ -59,5 +59,4 @@ rules: [core, agents]
 
 ## References
 
-- `scripts/headroom-compress.mjs` - CLI runner combining OmniRoute English compilation and Headroom formatting.
-- `docker-compose.yml` - Headroom (port 8787) and OmniRoute (port 20128) container definitions.
+- `scripts/headroom-compress.mjs` - CLI runner combining multi-provider English compilation and local Headroom formatting.
