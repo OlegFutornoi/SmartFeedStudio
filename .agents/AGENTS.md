@@ -120,6 +120,7 @@ Central intelligence orchestrator connecting 7 specialized autonomous engineerin
 - `perplexity-agent-api`: Web-grounded live search, marketplace research, and multi-provider reasoning via Perplexity Agent API (POST /v1/agent).
 - `omniroute-delegation`: Dispatches tasks, batch catalog processing, prompt testing, or reasoning workloads to the local OmniRoute AI Gateway on port 20128.
 - `headroom-compression`: Compresses large datasets, plans, specs, feeds, logs, and multi-file diffs via Headroom (port 8787 / MCP) and auto-saves compressed files on disk (`<file>.compressed.<ext>`).
+- `mcp-knowledge-cache`: Cache-first MCP knowledge retrieval, storage, Headroom compression, and OmniRoute-delegated cache refreshing in `.agents/cache/mcp/` (`pnpm ai:cache`).
 
 ## 4. Full-Stack Orchestra Protocol (`AGENT-04`)
 

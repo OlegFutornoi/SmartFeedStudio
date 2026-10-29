@@ -119,6 +119,30 @@
     "enforcer": "review-only",
     "mode": "manual"
   },
+  "BE-11": {
+    "title": "Layer-2 Quota Validation & AI Credits",
+    "domain": "backend",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "BE-12": {
+    "title": "Anti-BOLA Tenant & Organization Isolation",
+    "domain": "backend",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "BE-13": {
+    "title": "Atomic Payment Webhook Processing",
+    "domain": "backend",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
+  "BE-14": {
+    "title": "Tight Request Body Limits (Anti-DoS)",
+    "domain": "backend",
+    "enforcer": "review-only",
+    "mode": "manual"
+  },
   "CORE-01": {
     "title": "Path Aliases and Import Boundaries",
     "domain": "core",
@@ -197,6 +221,12 @@
     "enforcer": "review-only",
     "mode": "manual"
   },
+  "CORE-14": {
+    "title": "Two-Tier Plan Compression & Clean Markdown Hygiene",
+    "domain": "core",
+    "enforcer": "scripts/headroom-compress.mjs + scripts/mcp-cache.mjs",
+    "mode": "automatic"
+  },
   "PLAN-01": {
     "title": "Three-Directory Plans Lifecycle",
     "domain": "core",
@@ -246,7 +276,7 @@
     "mode": "manual"
   },
   "DB-07": {
-    "title": "Cursor Pagination on High-Volume Feeds",
+    "title": "Cursor Pagination on High-Volume Feeds and Storage",
     "domain": "database",
     "enforcer": "review-only",
     "mode": "manual"

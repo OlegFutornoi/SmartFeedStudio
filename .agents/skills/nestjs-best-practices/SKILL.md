@@ -11,7 +11,7 @@ rules:
 ## Step 0 - Load rules (mandatory, before any analysis or code)
 
 1. Read `.agents/rules/core.md` and `.agents/rules/backend.md`.
-2. Note all invariant IDs relevant to the task in working notes (BE-01 through BE-10).
+2. Note all invariant IDs relevant to the task in working notes (`BE-01` through `BE-14`, `L-028` through `L-044`).
 3. If touching NestJS, class-validator, or CQRS APIs, call context7: `resolve-library-id {libraryName: "@nestjs/core", query: "..."}` and `query-docs`.
 4. Do not write or edit backend code until steps 1-3 are complete.
 

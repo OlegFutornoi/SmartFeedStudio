@@ -8,7 +8,7 @@ description: PostgreSQL 16 and Prisma ORM database engineering invariants for Sm
 
 ## DB-01: 100% Foreign Key Indexes
 
-- Every foreign key column in `schema.prisma` must have an explicit `@@index([fkColumn])`.
+- Every foreign key column in `schema.prisma` must have an explicit `@@index([fkColumn])`. This includes self-referencing and parent-child hierarchy keys (e.g. `parentFeedSourceId`, `parentId`).
 - PostgreSQL does NOT automatically create indexes on foreign key columns.
 - Reason: Unindexed foreign keys force full table sequential scans on parent deletions, joins, and cascading checks.
 
@@ -37,14 +37,15 @@ description: PostgreSQL 16 and Prisma ORM database engineering invariants for Sm
 
 ## DB-06: Zero N+1 Queries
 
-- Never execute Prisma queries inside iteration loops (`.map()`, `for`, `forEach`).
+- Never execute Prisma queries or mutations inside iteration loops (`.map()`, `for`, `forEach`).
+- Never call `prisma.<model>.delete()` or `update()` per item inside GC/cleanup processors or handlers; use batched `deleteMany({ where: { id: { in: ids } } })` or `updateMany`.
 - Fetch bulk relations using `findMany({ where: { id: { in: ids } } })` or relation `include`/`select`.
-- Reason: N+1 query loops exhaust the database connection pool and cause severe latency degradation under moderate load.
+- Reason: N+1 query and mutation loops exhaust the database connection pool and cause severe latency degradation under moderate load.
 
-## DB-07: Cursor Pagination on High-Volume Feeds
+## DB-07: Cursor Pagination on High-Volume Feeds and Storage
 
-- Endpoints returning product catalogs or feed items must strictly use cursor-based pagination (`take`, `skip: cursor ? 1 : 0`, `cursor: { id }`).
-- `OFFSET` pagination is strictly prohibited on datasets with more than 1,000 items.
+- Endpoints returning product catalogs, feed items, or storage media files must strictly use cursor-based pagination (`take`, `skip: cursor ? 1 : 0`, `cursor: { id }`).
+- `OFFSET` pagination is strictly prohibited on datasets with more than 1,000 items (or 50k+ storage files).
 - Reason: `OFFSET N` forces PostgreSQL to scan and discard all preceding N rows, resulting in quadratic query slowdown at scale.
 
 ## DB-08: Short `$transaction()` Blocks

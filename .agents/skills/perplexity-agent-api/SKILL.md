@@ -26,13 +26,15 @@ rules:
 
 ## Procedure
 
+0. Check local MCP cache first: run `pnpm ai:cache get "perplexity:<topic-slug>"` or `pnpm ai:cache search "<keyword>"`. If a valid entry exists and no explicit refresh is requested, use the cached compressed output immediately.
 1. Verify credential presence: execute `test -n "$PERPLEXITY_API_KEY"` before launching requests. If missing, instruct user to configure `PERPLEXITY_API_KEY` in the API console.
 2. Initialize official SDK: instantiate `Perplexity` from `@perplexity-ai/perplexity_ai` with `{ apiKey }`.
 3. Construct payload: specify `preset: "low"` (default) or custom `model` with `tools: [{"type": "web_search"}]`. Pass question string in `input`.
 4. Process web-grounded answer: read aggregated text from `response.output_text`. Extract source citations and URLs from `response.output[*].results` and annotations.
-5. Multi-turn continuation: pass previous turn ID as `previous_response_id` instead of appending full conversational history.
-6. Structured data extraction: supply `text: { format: { type: "json_schema", json_schema: { ... } } }` when schema-compliant JSON is required.
-7. Error and rate limit management: inspect error status. Map 401 to `UnauthorizedException`. For 429 rate limits, extract `retry-after` header and honor backoff delay before retrying.
+5. Persist or overwrite in MCP cache: store the result via `pnpm ai:cache set "perplexity:<topic-slug>" --source "perplexity" --query "<query>" --text "<output>"` (or `pnpm ai:cache refresh` to synthesize via OmniRoute and compress via Headroom).
+6. Multi-turn continuation: pass previous turn ID as `previous_response_id` instead of appending full conversational history.
+7. Structured data extraction: supply `text: { format: { type: "json_schema", json_schema: { ... } } }` when schema-compliant JSON is required.
+8. Error and rate limit management: inspect error status. Map 401 to `UnauthorizedException`. For 429 rate limits, extract `retry-after` header and honor backoff delay before retrying.
 
 ## Outputs
 

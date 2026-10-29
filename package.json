@@ -82,6 +82,7 @@
     "omniroute:cli": "npx -y omniroute",
     "ai:omni": "node .agents/skills/omniroute-delegation/scripts/omniroute-query.mjs",
     "ai:compress": "node scripts/headroom-compress.mjs",
+    "ai:cache": "node scripts/mcp-cache.mjs",
     "mail:open": "open http://localhost:8025 || xdg-open http://localhost:8025",
     "mail:logs": "docker compose logs -f mailpit",
     "prisma:generate": "pnpm --filter @smartfeed/backend-api prisma:generate",

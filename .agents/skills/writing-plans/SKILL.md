@@ -81,8 +81,8 @@ Before finalizing, verify:
 2. Step scan: Every step is unambiguous and carries a verifiable result.
 3. Type consistency: Signatures match across neighboring tasks.
 4. Failure modes: Edge cases, quotas, and network timeouts are explicitly tested.
-5. Proportion: The plan provides architecture decisions, not a complete copy of source code.
+5. Proportion & Hygiene (`CORE-14`): The plan provides concise architecture decisions without redundant repetition, uses bullet lists instead of Markdown tables (`| col | col |`), starts with `# Heading` on line 1, passes `npx prettier --write`, and when compressed via Headroom leaves strictly a single `.compressed.md` file on disk without duplicate `.md` files.
 
 ## Handoff
 
-Save the task to `plans/active/` (`FR-...`, `BE-...`, `FR-BE-...`). Update `.agents/state/active_task.json` via `task-memory-and-state` and provide a 1-2 sentence status summary with a clickable link in chat.
+Save the task to `plans/active/` (`FR-...`, `BE-...`, `FR-BE-...`). If compressed via `scripts/headroom-compress.mjs --save`, keep strictly the single `.compressed.md` file (`CORE-14`). Update `.agents/state/active_task.json` via `task-memory-and-state` and provide a 1-2 sentence status summary with a clickable link in chat.

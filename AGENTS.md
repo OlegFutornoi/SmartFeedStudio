@@ -48,3 +48,4 @@ All invariants are indexed by unique IDs and partitioned into 10 domain files:
 - Format & lint: `pnpm lint:fix && pnpm format`
 - Localization check: `pnpm i18n:check`
 - Invariants guardrail check: `pnpm invariants:check`
+- MCP Knowledge Cache & Compression: `pnpm ai:cache` / `pnpm ai:compress` / `pnpm ai:omni`

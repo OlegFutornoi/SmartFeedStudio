@@ -1,27 +1,24 @@
 {
-  "active_task_id": "BE-02",
-  "title": "Інтеграція OmniRoute як єдиного локального AI Gateway проксі",
-  "status": "COMPLETED",
+  "active_task_id": "BE-03",
+  "title": "Комплексний аудит архітектури, безпеки та відмовостійкості бекенду і план санації",
+  "status": "PLANNING_READY",
   "branch": "omnirout",
   "current_stage": 8,
   "completed_stages": [1, 2, 3, 4, 5, 6, 7, 8],
-  "plan_file": "plans/completed/BE-02-omniroute-ai-gateway-integration.md",
+  "plan_file": "plans/active/BE-03-backend-architecture-and-security-review.md",
+  "compressed_plan_file": "plans/active/BE-03-backend-architecture-and-security-review.compressed.md",
+  "assigned_agent": "@agents_backend",
+  "next_action": "Очікування явної команди користувача (наприклад: 'починай', 'виконуй', 'реалізуй')",
   "modified_files": [
-    "docker-compose.yml",
-    "package.json",
-    ".env.example",
-    "packages/shared/src/dtos/ai-gateway.dto.ts",
-    "packages/shared/src/index.ts",
-    "services/backend-api/src/modules/ai/llm-gateway.service.ts",
-    "services/backend-api/src/modules/ai/ai.module.ts",
+    "plans/active/BE-03-backend-architecture-and-security-review.md",
+    "plans/active/BE-03-backend-architecture-and-security-review.compressed.md",
     "plans/README.md",
-    "plans/completed/BE-02-omniroute-ai-gateway-integration.md"
+    ".agents/state/active_task.json"
   ],
   "verification": {
     "build_dist_fresh": true,
     "tsc_clean": true,
     "i18n_parity": true,
-    "invariants_clean": true,
-    "omniroute_inference_verified": true
+    "invariants_clean": true
   }
 }

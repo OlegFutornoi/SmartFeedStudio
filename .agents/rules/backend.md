@@ -71,9 +71,9 @@ description: Backend API and CQRS engineering invariants for NestJS, Prisma, Bul
 
 ## BE-07: Concurrency, Atomic Upserts & Mutex Protection
 
-- Sensitive shared state transitions (seat allocations, credit deductions, invitation acceptance) must use mutex locks (`OrganizationMutex`) or serializable transactions.
+- Sensitive shared state transitions (seat allocations, credit deductions, invitation acceptance) must use distributed Redis mutex locks (`SET lock:<key> <uuid> NX PX 15000` with safe Lua release) or serializable DB row locks. Local in-memory mutexes are strictly prohibited in cloud environments.
 - Settings, configurations, and 1-to-1 relation updates must strictly use atomic `prisma.<model>.upsert` instead of sequential `findFirst` + `create/update` blocks to eliminate TOCTOU unique constraint collisions (`P2002`).
-- Reason: Parallel concurrent requests exploit time-of-check to time-of-use (TOCTOU) windows to exceed license quotas or trigger unique key collision crashes.
+- Reason: Parallel concurrent requests across multiple container instances exploit TOCTOU windows to exceed license quotas or trigger unique key collision crashes.
 
 ## BE-08: Test Authoring Delegated to QA
 
@@ -91,4 +91,26 @@ description: Backend API and CQRS engineering invariants for NestJS, Prisma, Bul
 ## BE-10: BullMQ Queue Resilience
 
 - Background jobs must declare deterministic `jobId` for worker idempotency, exponential backoff retries, and a Dead Letter Queue (DLQ).
+- Controllers must never return fake stubs (`status: 'COMPLETED'`) or static arrays; background processing must enqueue real BullMQ jobs.
 - Reason: Non-idempotent workers process duplicate jobs on worker restarts, creating duplicate orders or emails.
+
+## BE-11: Layer-2 Quota Validation & AI Credits
+
+- Mutation handlers that create catalog entities (`CreateSupplierHandler`, feeds, imports) must validate tenant quotas (`license.maxSuppliersLimit`) before writing to the database.
+- AI operations must deduct `aiCredits` and wrap external calls in `AbortSignal.timeout(30_000)`.
+- Reason: Relying only on frontend UI gating allows API clients to bypass commercial tiers (OWASP API4).
+
+## BE-12: Anti-BOLA Tenant & Organization Isolation
+
+- Never filter business entities strictly by `userId`. All catalog queries and mutations must filter by the user's active `organizationId`.
+- Reason: Filtering only by `userId` prevents team collaboration and exposes BOLA/IDOR vulnerabilities (OWASP API1).
+
+## BE-13: Atomic Payment Webhook Processing
+
+- Payment webhook status transitions to `APPROVED` and license activations must be executed within a single atomic Prisma `$transaction` or Transactional Outbox pattern.
+- Reason: Non-atomic processing leaves transactions marked as approved without granting user licenses if subsequent commands fail.
+
+## BE-14: Tight Request Body Limits (Anti-DoS)
+
+- Global body parser limits in `main.ts` must never exceed 2MB (`json({ limit: '2mb' })`). Large feed files must use streaming presigned S3 uploads.
+- Reason: 100MB body parser limits on public endpoints expose the backend to memory exhaustion denial of service (CWE-400).

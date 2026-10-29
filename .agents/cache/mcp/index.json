@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "entries": {
+    "context7:nestjs-11-security": {
+      "key": "context7:nestjs-11-security",
+      "source": "context7",
+      "query": "NestJS 11 security ValidationPipe helmet ThrottlerModule HttpExceptionFilter",
+      "summary": "NestJS 11 global security headers, ValidationPipe, ThrottlerModule, payload limits, and JWT TTL",
+      "updatedAt": "2026-10-29T20:15:45.394Z",
+      "file": ".agents/cache/mcp/entries/context7-nestjs-11-security.compressed.md",
+      "originalTokens": 383,
+      "compressedTokens": 383,
+      "savingsPercent": 0
+    },
+    "context7:prisma-7-postgres": {
+      "key": "context7:prisma-7-postgres",
+      "source": "context7",
+      "query": "Prisma 7 adapter-pg connection pooling indexes transactions",
+      "summary": "Prisma 7 PostgreSQL driver adapter, FK indexes, timestamptz(6), N+1 prevention, and cursor pagination",
+      "updatedAt": "2026-10-29T20:15:45.972Z",
+      "file": ".agents/cache/mcp/entries/context7-prisma-7-postgres.compressed.md",
+      "originalTokens": 254,
+      "compressedTokens": 254,
+      "savingsPercent": 0
+    }
+  }
+}

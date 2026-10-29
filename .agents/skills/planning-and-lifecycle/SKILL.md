@@ -68,8 +68,9 @@ Every task authored in `plans/active/` (`FR-...`, `BE-...`, `FR-BE-...`) must fo
 8. Failure modes, bilingual localization & edge cases:
    - Define offline behaviors, network drops, and translations in both `uk` and `en` (`i18n-localization`).
    - Adversarially stress-test TOCTOU concurrency races and payment webhook idempotency (`doubt-driven-development`).
-9. Zero task dumping in chat:
-   - The complete task text must be written directly to `plans/active/<filename>.md`.
+9. Zero task dumping, zero duplicate files, and clean Markdown (`CORE-07`, `CORE-14`):
+   - Write the task directly to `plans/active/` starting with `# Heading` on line 1, using compact bullet lists instead of Markdown tables (`| col | col |`), and formatted via `npx prettier --write`.
+   - When compressing a task via `scripts/headroom-compress.mjs --save`, keep strictly ONE single `.compressed.md` file in `plans/active/` (never keep both `.md` and `.compressed.md` duplicates).
    - The chat response must contain only a 1-2 sentence summary and clickable markdown link (`[Задача](file:///...)`) with the recommended executing agent.
 
 ## Task completion and transition to completed

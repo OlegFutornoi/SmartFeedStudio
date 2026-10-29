@@ -49,6 +49,7 @@ UTILITY_SKILLS = {
     "browser-debugging",
     "mock-real-parity",
     "code-simplification",
+    "mcp-knowledge-cache",
 }
 
 CYRILLIC_PATTERN = re.compile(r"[\u0400-\u04FF]")

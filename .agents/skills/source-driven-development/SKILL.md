@@ -11,11 +11,12 @@ rules:
 
 1. Read `.agents/rules/core.md` and enforce invariant `CORE-06`.
 2. Inspect `package.json` or `Cargo.toml` to identify exact dependency versions.
-3. Determine whether research is required: skip for standard language primitives and internal project modules; trigger for external libraries, version migrations, or unfamiliar API signatures.
+3. Check the local MCP Knowledge Cache first (`pnpm ai:cache get "context7:<topic>"` or `pnpm ai:cache search "<library>"`). If a valid cached entry exists, use it directly and skip live MCP calls.
+4. Determine whether live research is required: skip for standard language primitives, internal modules, or cached topics; trigger for uncached external libraries or version migrations.
 
-## Two-Step Context7 Workflow
+## Two-Step Context7 Workflow (On Cache Miss or Refresh)
 
-Fetch documentation using either native MCP tools or the local `ctx7` CLI.
+Fetch documentation using either native MCP tools or the local `ctx7` CLI, then persist into `.agents/cache/mcp/`.
 
 ### Step 1: Resolve Library Name to ID
 
@@ -23,11 +24,12 @@ Fetch documentation using either native MCP tools or the local `ctx7` CLI.
 - CLI: `ctx7 library <name> "<specific concept>"` (or with `--json` for scripted parsing).
 - Selection criteria: Pick highest benchmark score, strong source reputation (High/Medium), and match exact project version from `package.json`.
 
-### Step 2: Query Documentation
+### Step 2: Query Documentation & Persist to Cache
 
 - MCP: `context7.query-docs { libraryId: "<id>", query: "<specific concept>" }`
 - CLI: `ctx7 docs <libraryId> "<specific concept>"` (pipe to `head -n 50`, `grep`, or `--json`).
 - Query scoping: Formulate natural-language intent (e.g., "How to configure cascade delete with one-to-many relation"), never generic single-word tokens like "auth" or "delete".
+- Cache persistence: Store fetched docs via `pnpm ai:cache set "context7:<topic>" --source "context7" --query "<query>" --text "<docs>"` (or `pnpm ai:cache refresh` to update via OmniRoute and compress via Headroom).
 
 ## Domain Query Directory
 

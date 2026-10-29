@@ -10,9 +10,10 @@ rules: [core, backend, database, security]
 
 1. Read `.agents/rules/core.md`, `.agents/rules/backend.md`, `.agents/rules/database.md`, `.agents/rules/security.md`.
 2. Follow `AGENT-05` reference hierarchy: use golden templates (`.agents/templates/controller-with-query-dto.ts.md`, `cqrs-query-handler.ts.md`, `singleton-upsert-handler.ts.md`) or `// @golden` files; never copy unverified legacy code.
-3. Note all invariant IDs relevant to the task (e.g. `CORE-01`, `CORE-04`, `ARCH-01` through `ARCH-05`, `BE-01` through `BE-10`, `DB-01` through `DB-12`, `SEC-01` through `SEC-05`, `TEST-01`, `TEST-06`).
-4. If touching any framework or ORM API, call context7: `resolve-library-id {libraryName, query}` then `query-docs {libraryId, query}`.
-5. Do not write or edit backend code until steps 1-4 are complete.
+3. Note all invariant IDs relevant to the task (e.g. `CORE-01`, `CORE-04`, `ARCH-01` through `ARCH-05`, `BE-01` through `BE-14`, `DB-01` through `DB-12`, `SEC-01` through `SEC-05`, `TEST-01`, `TEST-06`).
+4. Cross-reference historical defect invariants in `lessons-learned-registry` (`L-001` through `L-044`).
+5. If touching any framework or ORM API, call context7: `resolve-library-id {libraryName, query}` then `query-docs {libraryId, query}`.
+6. Do not write or edit backend code until steps 1-5 are complete.
 
 ## Inputs
 
@@ -51,13 +52,23 @@ rules: [core, backend, database, security]
 
 - Never write application/handler code before writing a failing test (violates `BE-08`).
 - Never leave `dist/` uncompiled after modifying backend code (violates `BE-08`, `AGENT-04`).
-- Never manipulate local desktop workspace filesystems from cloud backend (violates `ARCH-01`).
-- Never spawn desktop OS GUI explorers from cloud server (violates `ARCH-02`).
-- Never bundle multiple CQRS handlers into a single file (violates `ARCH-04`).
+- Never manipulate local desktop workspace filesystems from cloud backend (`DEF-01`, violates `ARCH-01`).
+- Never spawn desktop OS GUI explorers from cloud server (`DEF-01`, violates `ARCH-02`).
+- Never bundle multiple CQRS handlers into a single file (`DEF-16`, violates `ARCH-04`).
 - Never use procedural `findFirst` + `create/update` for singleton settings; use atomic `prisma.<model>.upsert` (violates `BE-07`).
+- Never use in-memory mutex in cloud backend; use distributed Redis mutex (`DEF-05`, violates `BE-07`, `L-032`).
 - Never accept untyped `@Body()` or raw `@Query()` without validation DTOs (violates `BE-01`).
 - Never leave mutation endpoints without `@UseGuards(JwtAuthGuard)` unless `@Public()` (violates `BE-02`).
-- Never use hardcoded fallback secrets like `|| 'default-secret'` (violates `BE-04`).
+- Never use hardcoded fallback secrets like `|| 'default-secret'` (`DEF-02`, violates `BE-04`, `L-029`).
+- Never use access token TTLs exceeding 15 minutes in production (`DEF-04`, violates `L-031`).
+- Never mock BullMQ queue status with fake immediate stubs like `status: 'COMPLETED'` (`DEF-14`, violates `BE-10`, `L-041`).
+- Never mutate resources without explicit organization/tenant scoping (anti-BOLA) (`DEF-07`, violates `BE-12`, `L-034`).
+- Never queue AI jobs or quota-bound tasks without Layer-2 quota checks & credit deduction (`DEF-06`, violates `BE-11`, `L-033`).
+- Never store API credentials or webhook secrets in plaintext; use AES-256-GCM (`DEF-09`, violates `SEC-03`, `L-036`).
+- Never allow unconstrained 100MB body limits; enforce <= 2MB (`DEF-10`, violates `BE-14`, `L-037`).
+- Never delete or update records in loops; use batched `deleteMany` (`DEF-12`, violates `DB-06`, `L-039`).
+- Never use OFFSET pagination on large datasets (>1,000 items / 50k files); use cursor pagination (`DEF-13`, violates `DB-07`, `L-040`).
+- Never leak raw database error codes or emit emojis in logs (`DEF-17`, violates `CORE-13`, `L-044`).
 - Never return unmasked merchant secret keys in REST responses (violates `SEC-03`).
 - Never wrap external HTTP, S3, or BullMQ calls inside `$transaction()` (violates `DB-08`).
 
