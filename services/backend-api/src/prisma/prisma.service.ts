@@ -9,9 +9,12 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
   private readonly pool: Pool;
 
   constructor() {
-    const connectionString =
-      process.env.DATABASE_URL ||
-      'postgresql://postgres:postgrespassword@localhost:5432/smartfeed_db?schema=public';
+    const connectionString = process.env.DATABASE_URL;
+    if (!connectionString) {
+      throw new Error(
+        'Critical configuration missing: DATABASE_URL environment variable must be defined.',
+      );
+    }
     const pool = new Pool({
       connectionString,
       max: Number(process.env.DB_POOL_MAX) || 20,

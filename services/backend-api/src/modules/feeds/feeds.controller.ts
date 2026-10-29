@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  NotFoundException,
   Body,
   Controller,
   Delete,
@@ -13,6 +14,8 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
+import { InjectQueue } from '@nestjs/bullmq';
+import { Queue } from 'bullmq';
 import {
   type FetchFeedResultDto,
   type FeedSourceDto,
@@ -44,6 +47,7 @@ export class FeedsController {
   constructor(
     private readonly queryBus: QueryBus,
     private readonly commandBus: CommandBus,
+    @InjectQueue('feed-ingestion') private readonly feedQueue: Queue,
   ) {}
 
   @Post('fetch-url')
@@ -148,9 +152,25 @@ export class FeedsController {
   @ApiOperation({ summary: 'Get active background feed processing jobs' })
   @ApiResponse({ status: 200, description: 'List of active feed jobs' })
   async getActiveJobs(): Promise<ImportJobDto[]> {
-    // In local-first desktop, feed ingestion runs locally via SQLite & Tokio workers.
-    // Cloud API returns active server-side BullMQ queue jobs (currently empty).
-    return [];
+    const [activeJobs, waitingJobs] = await Promise.all([
+      this.feedQueue.getJobs(['active']),
+      this.feedQueue.getJobs(['waiting', 'delayed']),
+    ]);
+    const activeIds = new Set(activeJobs.map((j) => j.id));
+    const all = [...activeJobs, ...waitingJobs];
+
+    return all.map((job) => ({
+      id: job.id!,
+      feedSourceId: (job.data?.feedSourceId as string) || 'feed_source_cloud',
+      status: activeIds.has(job.id) ? ImportJobStatus.PARSING : ImportJobStatus.PENDING,
+      totalItems: job.data?.totalItems || 0,
+      processedItems: 0,
+      createdItems: 0,
+      updatedItems: 0,
+      failedItems: 0,
+      progressPercent: typeof job.progress === 'number' ? job.progress : 0,
+      createdAt: new Date(job.timestamp).toISOString(),
+    }));
   }
 
   @Get('jobs/:id')
@@ -159,18 +179,36 @@ export class FeedsController {
   @ApiOperation({ summary: 'Get import job status by ID' })
   @ApiResponse({ status: 200, description: 'Import job details' })
   async getJobStatus(@Param('id') id: string): Promise<ImportJobDto> {
+    const job = await this.feedQueue.getJob(id);
+    if (!job) {
+      throw new NotFoundException(`Feed ingestion job with id ${id} not found`);
+    }
+
+    const state = await job.getState();
+    let status = ImportJobStatus.PENDING;
+    if (state === 'active') status = ImportJobStatus.PARSING;
+    else if (state === 'completed') status = ImportJobStatus.COMPLETED;
+    else if (state === 'failed') status = ImportJobStatus.FAILED;
+
+    const progress =
+      typeof job.progress === 'number'
+        ? job.progress
+        : status === ImportJobStatus.COMPLETED
+          ? 100
+          : 0;
+
     return {
-      id,
-      feedSourceId: 'feed_source_cloud',
-      status: ImportJobStatus.COMPLETED,
-      totalItems: 0,
-      processedItems: 0,
+      id: job.id!,
+      feedSourceId: (job.data?.feedSourceId as string) || 'feed_source_cloud',
+      status,
+      totalItems: job.data?.totalItems || 0,
+      processedItems: status === ImportJobStatus.COMPLETED ? job.data?.totalItems || 0 : 0,
       createdItems: 0,
       updatedItems: 0,
       failedItems: 0,
-      progressPercent: 100,
-      createdAt: new Date().toISOString(),
-      completedAt: new Date().toISOString(),
+      progressPercent: progress,
+      createdAt: new Date(job.timestamp).toISOString(),
+      completedAt: job.finishedOn ? new Date(job.finishedOn).toISOString() : undefined,
     };
   }
 
@@ -204,13 +242,27 @@ export class FeedsController {
       }
     }
 
-    const jobId = `job_${Date.now()}`;
     const feedSourceId = `feed_${dto.supplierId}_${Date.now().toString(36)}`;
+    const job = await this.feedQueue.add(
+      'ingest-feed',
+      {
+        supplierId: dto.supplierId,
+        fileName: dto.fileName,
+        feedSourceId,
+        userId: user.id,
+      },
+      {
+        jobId: `feed_${dto.supplierId}_${Date.now()}`,
+        removeOnComplete: 100,
+        removeOnFail: 200,
+      },
+    );
+
     return {
       success: true,
-      jobId,
+      jobId: job.id!,
       feedSourceId,
-      status: 'COMPLETED',
+      status: 'QUEUED',
     };
   }
 }

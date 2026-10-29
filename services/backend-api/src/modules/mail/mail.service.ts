@@ -5,6 +5,10 @@ import {
   generateInvitationEmailHtml,
   InvitationEmailData,
 } from '@/modules/mail/templates/invitation-email';
+import {
+  generatePasswordResetEmailHtml,
+  PasswordResetEmailData,
+} from '@/modules/mail/templates/password-reset-email';
 
 @Injectable()
 export class MailService {
@@ -87,6 +91,41 @@ export class MailService {
       const errMsg = err instanceof Error ? err.message : String(err);
       this.logger.warn(
         `Failed to send invitation email to ${data.to}: ${errMsg}. Direct link is: ${data.inviteUrl}`,
+      );
+      return { success: false, error: errMsg };
+    }
+  }
+
+  async sendPasswordResetEmail(
+    data: PasswordResetEmailData,
+  ): Promise<{ success: boolean; error?: string }> {
+    const html = generatePasswordResetEmailHtml(data);
+    const subject = 'Відновлення пароля — SmartFeed Studio';
+
+    this.logger.log(`[PASSWORD RESET] Recipient: ${data.to}, Link: ${data.resetUrl}`);
+
+    if (!this.isMailEnabled || !this.transporter) {
+      this.logger.log(
+        `[MAIL_MOCK] Mail sending skipped (disabled or no transporter). Reset URL: ${data.resetUrl}`,
+      );
+      return { success: true };
+    }
+
+    try {
+      await this.transporter.sendMail({
+        from: this.defaultFrom,
+        to: data.to,
+        subject,
+        html,
+        text: `Для скидання пароля на платформі SmartFeed Studio перейдіть за посиланням: ${data.resetUrl}. Посилання дійсне ${data.expiresInMinutes || 15} хвилин.`,
+      });
+
+      this.logger.log(`Password reset email successfully sent to ${data.to}`);
+      return { success: true };
+    } catch (err: unknown) {
+      const errMsg = err instanceof Error ? err.message : String(err);
+      this.logger.warn(
+        `Failed to send password reset email to ${data.to}: ${errMsg}. Direct link is: ${data.resetUrl}`,
       );
       return { success: false, error: errMsg };
     }

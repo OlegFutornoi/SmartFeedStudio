@@ -5,6 +5,7 @@ import { SimulateSandboxWebhookCommand } from '@/modules/payments/commands/simul
 import { HandleWayForPayWebhookCommand } from '@/modules/payments/commands/handle-wayforpay-webhook.command';
 import { WayForPayService } from '@/modules/payments/services/wayforpay.service';
 import { PaymentProvider } from '@smartfeed/shared';
+import { decryptSecret } from '@/common/utils/crypto.util';
 
 @CommandHandler(SimulateSandboxWebhookCommand)
 export class SimulateSandboxWebhookHandler implements ICommandHandler<SimulateSandboxWebhookCommand> {
@@ -36,8 +37,16 @@ export class SimulateSandboxWebhookHandler implements ICommandHandler<SimulateSa
       throw new NotFoundException('Transaction not found or unauthorized');
     }
 
-    const merchantAccount = setting?.merchantAccount || 'test_merch_n1';
-    const secretKey = setting?.merchantSecretKey || 'flk3409refn54t54t*FNJRET';
+    const merchantAccount = setting?.merchantAccount || process.env.WAYFORPAY_MERCHANT_ACCOUNT;
+    const secretKey =
+      (setting?.merchantSecretKey ? decryptSecret(setting.merchantSecretKey) : null) ||
+      process.env.WAYFORPAY_MERCHANT_SECRET_KEY;
+
+    if (!merchantAccount || !secretKey) {
+      throw new ForbiddenException(
+        'Payment gateway credentials must be configured to simulate sandbox webhooks',
+      );
+    }
 
     const cleanedPan = (dto.cardPan || '').replace(/\D/g, '');
     let finalStatus: 'Approved' | 'Declined' = dto.status || 'Approved';

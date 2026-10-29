@@ -1,6 +1,8 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { PrismaService } from '@/prisma/prisma.service';
 import { GetSuppliersQuery } from '@/modules/suppliers/queries/suppliers.queries';
+import { getSupplierTenancyWhere } from '@/modules/suppliers/utils/supplier-tenancy.util';
+import { Prisma } from '@/generated/prisma/client';
 
 @QueryHandler(GetSuppliersQuery)
 export class GetSuppliersHandler implements IQueryHandler<GetSuppliersQuery> {
@@ -9,13 +11,23 @@ export class GetSuppliersHandler implements IQueryHandler<GetSuppliersQuery> {
   async execute(query: GetSuppliersQuery) {
     const { userId, search } = query;
 
-    const where: Record<string, unknown> = { userId };
-    if (search) {
-      where.OR = [
-        { name: { contains: search, mode: 'insensitive' } },
-        { code: { contains: search, mode: 'insensitive' } },
-      ];
-    }
+    const tenancyWhere = await getSupplierTenancyWhere(this.prisma, userId);
+
+    const where: Prisma.SupplierWhereInput = {
+      ...tenancyWhere,
+      ...(search
+        ? {
+            AND: [
+              {
+                OR: [
+                  { name: { contains: search, mode: 'insensitive' } },
+                  { code: { contains: search, mode: 'insensitive' } },
+                ],
+              },
+            ],
+          }
+        : {}),
+    };
 
     const suppliers = await this.prisma.supplier.findMany({
       where,

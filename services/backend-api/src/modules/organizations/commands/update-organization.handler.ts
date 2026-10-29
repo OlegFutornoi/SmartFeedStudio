@@ -38,6 +38,6 @@ export class UpdateOrganizationHandler implements ICommandHandler<UpdateOrganiza
 
     this.logger.log(`Updated organization "${organizationId}" name to "${updated.name}"`);
 
-    return updated;
+    return { id: updated.id };
   }
 }

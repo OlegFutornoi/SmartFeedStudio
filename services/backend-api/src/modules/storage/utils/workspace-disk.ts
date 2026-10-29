@@ -4,7 +4,16 @@ import * as os from 'os';
 import { BadRequestException } from '@nestjs/common';
 import { WorkspaceInfoDto } from '@smartfeed/shared';
 
+export function assertDesktopWorkspaceEnvironment(): void {
+  if (process.env.NODE_ENV === 'production' || process.env.RAILWAY_ENVIRONMENT) {
+    throw new BadRequestException(
+      'Local workspace filesystem management is exclusive to the Tauri desktop application and strictly disabled in cloud environments (ARCH-01). Use S3/R2 object storage APIs instead.',
+    );
+  }
+}
+
 export function validateWorkspacePath(inputPath?: string): void {
+  assertDesktopWorkspaceEnvironment();
   if (!inputPath || inputPath.trim() === '') return;
 
   const trimmed = inputPath.trim();

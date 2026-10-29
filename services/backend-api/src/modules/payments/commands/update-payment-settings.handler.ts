@@ -3,6 +3,7 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { UpdatePaymentSettingsCommand } from '@/modules/payments/commands/update-payment-settings.command';
 import { PaymentSettingDto, PaymentProvider } from '@smartfeed/shared';
 import { PaymentProvider as PrismaPaymentProvider } from '@/generated/prisma/enums';
+import { encryptSecret, decryptSecret } from '@/common/utils/crypto.util';
 
 @CommandHandler(UpdatePaymentSettingsCommand)
 export class UpdatePaymentSettingsHandler implements ICommandHandler<UpdatePaymentSettingsCommand> {
@@ -13,6 +14,8 @@ export class UpdatePaymentSettingsHandler implements ICommandHandler<UpdatePayme
     const prismaProvider = provider as unknown as PrismaPaymentProvider;
 
     const isMaskedSecret = Boolean(dto.merchantSecretKey && dto.merchantSecretKey.includes('•'));
+    const secretToSave =
+      dto.merchantSecretKey && !isMaskedSecret ? encryptSecret(dto.merchantSecretKey) : undefined;
 
     const setting = await this.prisma.paymentSetting.upsert({
       where: { provider: prismaProvider },
@@ -20,9 +23,7 @@ export class UpdatePaymentSettingsHandler implements ICommandHandler<UpdatePayme
         ...(dto.isEnabled !== undefined ? { isEnabled: dto.isEnabled } : {}),
         ...(dto.isTestMode !== undefined ? { isTestMode: dto.isTestMode } : {}),
         ...(dto.merchantAccount !== undefined ? { merchantAccount: dto.merchantAccount } : {}),
-        ...(dto.merchantSecretKey !== undefined && !isMaskedSecret
-          ? { merchantSecretKey: dto.merchantSecretKey }
-          : {}),
+        ...(secretToSave !== undefined ? { merchantSecretKey: secretToSave } : {}),
         ...(dto.merchantDomain !== undefined ? { merchantDomain: dto.merchantDomain } : {}),
         ...(dto.serviceUrl !== undefined ? { serviceUrl: dto.serviceUrl } : {}),
         ...(dto.returnUrl !== undefined ? { returnUrl: dto.returnUrl } : {}),
@@ -32,12 +33,14 @@ export class UpdatePaymentSettingsHandler implements ICommandHandler<UpdatePayme
         isEnabled: dto.isEnabled ?? true,
         isTestMode: dto.isTestMode ?? true,
         merchantAccount: dto.merchantAccount || 'test_merch_n1',
-        merchantSecretKey: dto.merchantSecretKey || null,
+        merchantSecretKey: encryptSecret(dto.merchantSecretKey) || null,
         merchantDomain: dto.merchantDomain || 'localhost',
         serviceUrl: dto.serviceUrl || 'http://localhost:4000/api/payments/wayforpay/webhook',
         returnUrl: dto.returnUrl || 'http://localhost:1420/payment/result',
       },
     });
+
+    const decrypted = decryptSecret(setting.merchantSecretKey);
 
     return {
       id: setting.id,
@@ -45,10 +48,8 @@ export class UpdatePaymentSettingsHandler implements ICommandHandler<UpdatePayme
       isEnabled: setting.isEnabled,
       isTestMode: setting.isTestMode,
       merchantAccount: setting.merchantAccount,
-      merchantSecretKey: setting.merchantSecretKey
-        ? `••••••••${setting.merchantSecretKey.slice(-4)}`
-        : null,
-      isSecretConfigured: Boolean(setting.merchantSecretKey),
+      merchantSecretKey: decrypted ? `••••••••${decrypted.slice(-4)}` : null,
+      isSecretConfigured: Boolean(decrypted),
       merchantDomain: setting.merchantDomain,
       serviceUrl: setting.serviceUrl,
       returnUrl: setting.returnUrl,

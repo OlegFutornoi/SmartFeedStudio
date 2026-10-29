@@ -18,6 +18,11 @@ export class StorageFileListQueryDto {
   @IsOptional()
   limit?: number = 10;
 
+  @ApiPropertyOptional({ description: 'Cursor ID for high-volume pagination (DB-07, DEF-13)' })
+  @IsString()
+  @IsOptional()
+  cursor?: string;
+
   @ApiPropertyOptional({ description: 'Filter by folder (e.g. images, snapshots)' })
   @IsString()
   @IsOptional()

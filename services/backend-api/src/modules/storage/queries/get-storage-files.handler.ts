@@ -43,17 +43,30 @@ export class GetStorageFilesHandler implements IQueryHandler<
       ];
     }
 
+    const cursor = queryDto.cursor;
+
     const [total, files] = await Promise.all([
       this.prisma.storageFile.count({ where }),
       this.prisma.storageFile.findMany({
         where,
-        orderBy: { createdAt: 'desc' },
-        skip,
-        take: limit,
+        orderBy: { id: 'desc' },
+        take: limit + 1,
+        ...(cursor
+          ? {
+              skip: 1,
+              cursor: { id: cursor },
+            }
+          : {
+              skip,
+            }),
       }),
     ]);
 
-    const items: StorageFileDto[] = files.map((file) => ({
+    const hasMore = files.length > limit;
+    const pagedFiles = hasMore ? files.slice(0, limit) : files;
+    const nextCursor = hasMore ? pagedFiles[pagedFiles.length - 1].id : null;
+
+    const items: StorageFileDto[] = pagedFiles.map((file) => ({
       id: file.id,
       userId: file.userId,
       organizationId: file.organizationId,
@@ -79,6 +92,8 @@ export class GetStorageFilesHandler implements IQueryHandler<
       total,
       page,
       totalPages: Math.ceil(total / limit),
+      nextCursor,
+      hasMore,
     };
   }
 }

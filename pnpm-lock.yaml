@@ -377,6 +377,9 @@ importers:
       swagger-ui-express:
         specifier: ^5.0.1
         version: 5.0.1(express@5.2.1)
+      undici:
+        specifier: ^8.12.3
+        version: 8.12.3
     devDependencies:
       '@nestjs/cli':
         specifier: ^11.0.0
@@ -7584,6 +7587,10 @@ packages:
 
   undici@8.12.2:
     resolution: {integrity: sha512-XtuDWVdqTLr3NAxm2ly9/hU6kUsJOgGh1RASzMBbsw6aWCOaQzHdW+QQDfdERjfJ2V5vL5pRPa4RetO9UfivDg==}
+    engines: {node: '>=22.19.0'}
+
+  undici@8.12.3:
+    resolution: {integrity: sha512-+fdndUTwBP86cVjihTp21hZHo7d6oj1c/47XPA3lL8mM0XHs+C4EkcjmgRsFnFk2f/UONGDy9ItBItmXsLOQHw==}
     engines: {node: '>=22.19.0'}
 
   unicorn-magic@0.3.0:
@@ -16082,6 +16089,8 @@ snapshots:
   undici@7.30.0: {}
 
   undici@8.12.2: {}
+
+  undici@8.12.3: {}
 
   unicorn-magic@0.3.0: {}
 

@@ -11,6 +11,7 @@ import type {
   ExchangeRateMode,
   CustomRoundingRuleDto,
 } from '@smartfeed/shared';
+import { encryptSecret, decryptSecret } from '@/common/utils/crypto.util';
 
 @CommandHandler(UpdateSupplierFeedSourceCommand)
 export class UpdateSupplierFeedSourceHandler implements ICommandHandler<UpdateSupplierFeedSourceCommand> {
@@ -45,7 +46,8 @@ export class UpdateSupplierFeedSourceHandler implements ICommandHandler<UpdateSu
     if (dto.parentFeedSourceId !== undefined) data.parentFeedSourceId = dto.parentFeedSourceId;
     if (dto.s3FileKey !== undefined) data.s3FileKey = dto.s3FileKey;
     if (dto.authHeaderName !== undefined) data.authHeaderName = dto.authHeaderName;
-    if (dto.authHeaderValue !== undefined) data.authHeaderValue = dto.authHeaderValue;
+    if (dto.authHeaderValue !== undefined)
+      data.authHeaderValue = encryptSecret(dto.authHeaderValue);
     if (dto.syncIntervalHours !== undefined) data.syncIntervalHours = dto.syncIntervalHours;
     if (dto.autoUpdatePrices !== undefined) data.autoUpdatePrices = dto.autoUpdatePrices;
     if (dto.autoUpdateStocks !== undefined) data.autoUpdateStocks = dto.autoUpdateStocks;
@@ -90,7 +92,7 @@ export class UpdateSupplierFeedSourceHandler implements ICommandHandler<UpdateSu
       parentFeedSourceId: updated.parentFeedSourceId,
       s3FileKey: updated.s3FileKey,
       authHeaderName: updated.authHeaderName,
-      authHeaderValue: updated.authHeaderValue,
+      authHeaderValue: decryptSecret(updated.authHeaderValue),
       syncIntervalHours: updated.syncIntervalHours,
       autoUpdatePrices: updated.autoUpdatePrices,
       autoUpdateStocks: updated.autoUpdateStocks,

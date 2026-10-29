@@ -10,6 +10,7 @@ import type {
   ExchangeRateMode,
   CustomRoundingRuleDto,
 } from '@smartfeed/shared';
+import { decryptSecret } from '@/common/utils/crypto.util';
 
 @QueryHandler(GetAllFeedSourcesQuery)
 export class GetAllFeedSourcesHandler implements IQueryHandler<GetAllFeedSourcesQuery> {
@@ -46,7 +47,7 @@ export class GetAllFeedSourcesHandler implements IQueryHandler<GetAllFeedSources
       parentFeedSourceId: s.parentFeedSourceId,
       s3FileKey: s.s3FileKey,
       authHeaderName: s.authHeaderName,
-      authHeaderValue: s.authHeaderValue,
+      authHeaderValue: decryptSecret(s.authHeaderValue),
       syncIntervalHours: s.syncIntervalHours,
       autoUpdatePrices: s.autoUpdatePrices,
       autoUpdateStocks: s.autoUpdateStocks,

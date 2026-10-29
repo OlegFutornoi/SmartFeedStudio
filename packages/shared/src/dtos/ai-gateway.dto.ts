@@ -49,4 +49,6 @@ export interface AiGatewayCompletionOptions {
   temperature?: number;
   maxTokens?: number;
   responseFormatJson?: boolean;
+  userId?: string;
+  creditsCost?: number;
 }

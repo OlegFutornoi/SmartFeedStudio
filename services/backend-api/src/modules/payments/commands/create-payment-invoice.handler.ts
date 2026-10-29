@@ -8,6 +8,7 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { CreatePaymentInvoiceCommand } from '@/modules/payments/commands/create-payment-invoice.command';
 import { WayForPayService } from '@/modules/payments/services/wayforpay.service';
 import { CheckoutResponseDto, PaymentProvider, PaymentInterval } from '@smartfeed/shared';
+import { decryptSecret } from '@/common/utils/crypto.util';
 
 @CommandHandler(CreatePaymentInvoiceCommand)
 export class CreatePaymentInvoiceHandler implements ICommandHandler<CreatePaymentInvoiceCommand> {
@@ -70,10 +71,11 @@ export class CreatePaymentInvoiceHandler implements ICommandHandler<CreatePaymen
     });
 
     const isSandbox = Boolean(setting?.isTestMode) || process.env.NODE_ENV === 'test';
-    const merchantSecretKey =
+    const rawSecret =
       setting?.merchantSecretKey ||
       process.env.WAYFORPAY_MERCHANT_SECRET_KEY ||
       (isSandbox ? 'flk3409refn54t54t*FNJRET' : undefined);
+    const merchantSecretKey = decryptSecret(rawSecret);
 
     if (!merchantSecretKey) {
       throw new InternalServerErrorException(

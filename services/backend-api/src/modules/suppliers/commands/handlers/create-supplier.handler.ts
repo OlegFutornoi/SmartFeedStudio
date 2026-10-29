@@ -1,7 +1,8 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { ConflictException } from '@nestjs/common';
+import { ConflictException, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
 import { CreateSupplierCommand } from '@/modules/suppliers/commands/suppliers.commands';
+import { resolveUserOrganizationId } from '@/modules/suppliers/utils/supplier-tenancy.util';
 
 @CommandHandler(CreateSupplierCommand)
 export class CreateSupplierHandler implements ICommandHandler<CreateSupplierCommand> {
@@ -9,10 +10,36 @@ export class CreateSupplierHandler implements ICommandHandler<CreateSupplierComm
 
   async execute(command: CreateSupplierCommand) {
     const { userId, dto, organizationId } = command;
+    const targetOrgId = organizationId || (await resolveUserOrganizationId(this.prisma, userId));
+
+    // Layer-2 quota enforcement: Validate tariff plan maxSuppliersLimit (DEF-06, BE-11)
+    const activeLicense = await this.prisma.license.findFirst({
+      where: {
+        OR: [{ userId }, ...(targetOrgId ? [{ organizationId: targetOrgId }] : [])],
+        isActive: true,
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    const maxSuppliers = activeLicense?.maxSuppliersLimit ?? 1;
+    const currentSupplierCount = await this.prisma.supplier.count({
+      where: {
+        OR: [{ userId }, ...(targetOrgId ? [{ organizationId: targetOrgId }] : [])],
+      },
+    });
+
+    if (currentSupplierCount >= maxSuppliers) {
+      throw new ForbiddenException(
+        `Supplier limit reached (${currentSupplierCount}/${maxSuppliers}). Please upgrade your tariff plan to add more suppliers.`,
+      );
+    }
 
     const created = await this.prisma.$transaction(async (tx) => {
       const existing = await tx.supplier.findFirst({
-        where: { userId, code: dto.code },
+        where: {
+          code: dto.code,
+          OR: [{ userId }, ...(targetOrgId ? [{ organizationId: targetOrgId }] : [])],
+        },
       });
       if (existing) {
         throw new ConflictException(`Supplier with code ${dto.code} already exists`);
@@ -21,7 +48,7 @@ export class CreateSupplierHandler implements ICommandHandler<CreateSupplierComm
       return tx.supplier.create({
         data: {
           userId,
-          organizationId,
+          organizationId: targetOrgId,
           name: dto.name,
           code: dto.code,
           contactPhone: dto.contactPhone,

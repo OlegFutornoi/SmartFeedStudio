@@ -1,30 +1,42 @@
 import { Controller, Get, Post, Put, Delete, Body, Param, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { Role } from '@smartfeed/shared';
 import { JwtAuthGuard } from '@/modules/auth/guards/jwt-auth.guard';
 import { RolesGuard } from '@/modules/auth/guards/roles.guard';
 import { Roles } from '@/modules/auth/decorators/roles.decorator';
-import { LegalService } from '@/modules/legal/legal.service';
 import { CreateLegalDocumentDto } from '@/modules/legal/dto/create-legal-document.dto';
 import { UpdateLegalDocumentDto } from '@/modules/legal/dto/update-legal-document.dto';
+import {
+  GetLegalDocumentsQuery,
+  GetLegalDocumentBySlugQuery,
+} from '@/modules/legal/queries/legal.queries';
+import {
+  CreateLegalDocumentCommand,
+  UpdateLegalDocumentCommand,
+  DeleteLegalDocumentCommand,
+} from '@/modules/legal/commands/legal.commands';
 
 @ApiTags('Legal')
 @Controller('legal')
 export class LegalController {
-  constructor(private readonly legalService: LegalService) {}
+  constructor(
+    private readonly commandBus: CommandBus,
+    private readonly queryBus: QueryBus,
+  ) {}
 
   @Get()
   @ApiOperation({ summary: 'Get all published legal documents' })
   @ApiResponse({ status: 200, description: 'List of published legal documents' })
   async getPublishedDocuments() {
-    return this.legalService.findAll(true);
+    return this.queryBus.execute(new GetLegalDocumentsQuery(true));
   }
 
   @Get('document/:slug')
   @ApiOperation({ summary: 'Get published legal document by slug' })
   @ApiResponse({ status: 200, description: 'Legal document data' })
   async getDocumentBySlug(@Param('slug') slug: string) {
-    return this.legalService.findBySlug(slug);
+    return this.queryBus.execute(new GetLegalDocumentBySlugQuery(slug));
   }
 
   @Get('admin/all')
@@ -34,7 +46,7 @@ export class LegalController {
   @ApiOperation({ summary: 'Get all legal documents for administration (published and drafts)' })
   @ApiResponse({ status: 200, description: 'List of all legal documents' })
   async getAllDocumentsAdmin() {
-    return this.legalService.findAll(false);
+    return this.queryBus.execute(new GetLegalDocumentsQuery(false));
   }
 
   @Post('admin')
@@ -44,7 +56,7 @@ export class LegalController {
   @ApiOperation({ summary: 'Create a new legal document' })
   @ApiResponse({ status: 201, description: 'Legal document created' })
   async createDocumentAdmin(@Body() dto: CreateLegalDocumentDto) {
-    return this.legalService.create(dto);
+    return this.commandBus.execute(new CreateLegalDocumentCommand(dto));
   }
 
   @Put('admin/:id')
@@ -54,7 +66,7 @@ export class LegalController {
   @ApiOperation({ summary: 'Update an existing legal document' })
   @ApiResponse({ status: 200, description: 'Legal document updated' })
   async updateDocumentAdmin(@Param('id') id: string, @Body() dto: UpdateLegalDocumentDto) {
-    return this.legalService.update(id, dto);
+    return this.commandBus.execute(new UpdateLegalDocumentCommand(id, dto));
   }
 
   @Delete('admin/:id')
@@ -64,6 +76,6 @@ export class LegalController {
   @ApiOperation({ summary: 'Delete a legal document' })
   @ApiResponse({ status: 200, description: 'Legal document deleted' })
   async deleteDocumentAdmin(@Param('id') id: string) {
-    return this.legalService.remove(id);
+    return this.commandBus.execute(new DeleteLegalDocumentCommand(id));
   }
 }

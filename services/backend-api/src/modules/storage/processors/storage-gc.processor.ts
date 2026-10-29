@@ -46,18 +46,19 @@ export class StorageGcProcessor extends WorkerHost {
     }
 
     this.logger.log(`Found ${expiredPendingFiles.length} expired pending uploads to purge`);
-    let deletedCount = 0;
 
-    for (const file of expiredPendingFiles) {
-      await this.s3StorageService.deleteObject(file.s3Key);
+    // 1. Concurrently purge objects from S3 storage (DB-06, DEF-12)
+    await Promise.allSettled(
+      expiredPendingFiles.map((file) => this.s3StorageService.deleteObject(file.s3Key)),
+    );
 
-      await this.prisma.storageFile.delete({
-        where: { id: file.id },
-      });
-      deletedCount++;
-    }
+    // 2. Purge database records in a single batched query to eliminate N+1 latency
+    const idsToPurge = expiredPendingFiles.map((file) => file.id);
+    const { count } = await this.prisma.storageFile.deleteMany({
+      where: { id: { in: idsToPurge } },
+    });
 
-    return { success: true, count: deletedCount };
+    return { success: true, count };
   }
 
   private async cascadeCleanupKeys(keys: string[]): Promise<{ success: boolean; count: number }> {
@@ -65,11 +66,10 @@ export class StorageGcProcessor extends WorkerHost {
       return { success: true, count: 0 };
     }
 
-    let deletedCount = 0;
-    for (const key of keys) {
-      const deleted = await this.s3StorageService.deleteObject(key);
-      if (deleted) deletedCount++;
-    }
+    const results = await Promise.allSettled(
+      keys.map((key) => this.s3StorageService.deleteObject(key)),
+    );
+    const deletedCount = results.filter((r) => r.status === 'fulfilled' && r.value).length;
 
     return { success: true, count: deletedCount };
   }

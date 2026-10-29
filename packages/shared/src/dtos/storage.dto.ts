@@ -152,6 +152,7 @@ export type StorageQuotaDto = z.infer<typeof StorageQuotaDtoSchema>;
 export const StorageFileListQueryDtoSchema = z.object({
   page: z.coerce.number().int().positive().optional().default(1),
   limit: z.coerce.number().int().positive().max(100).optional().default(10),
+  cursor: z.string().optional(),
   folder: z.string().optional(),
   search: z.string().optional(),
 });
@@ -163,6 +164,8 @@ export const StorageFileListResponseDtoSchema = z.object({
   total: z.number().int().nonnegative(),
   page: z.number().int().positive(),
   totalPages: z.number().int().nonnegative(),
+  nextCursor: z.string().nullable().optional(),
+  hasMore: z.boolean().optional(),
 });
 
 export type StorageFileListResponseDto = z.infer<typeof StorageFileListResponseDtoSchema>;

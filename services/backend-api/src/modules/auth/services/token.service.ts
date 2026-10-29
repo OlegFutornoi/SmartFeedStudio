@@ -54,8 +54,8 @@ export class TokenService {
     };
 
     const accessExpiration = (this.configService.get<string>('JWT_ACCESS_EXPIRATION') ||
-      '30d') as SignOptions['expiresIn'];
-    const expiresInSeconds = 30 * 24 * 60 * 60; // 30 days session
+      '15m') as SignOptions['expiresIn'];
+    const expiresInSeconds = 15 * 60; // 15 minutes session
 
     const accessSecret = this.getAccessSecret();
     const refreshSecret = this.getRefreshSecret();

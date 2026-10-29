@@ -62,7 +62,11 @@ export class GlobalHttpExceptionFilter implements ExceptionFilter {
         }
         default: {
           status = HttpStatus.BAD_REQUEST;
-          message = `Database error code: ${exception.code}`;
+          this.logger.warn(`Prisma unmapped error ${exception.code}: ${exception.message}`);
+          message =
+            process.env.NODE_ENV === 'production'
+              ? 'Database operation failed'
+              : `Database error code: ${exception.code}`;
           error = 'Database Error';
           break;
         }

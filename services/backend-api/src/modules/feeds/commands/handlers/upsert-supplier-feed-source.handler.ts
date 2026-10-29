@@ -11,6 +11,7 @@ import type {
   ExchangeRateMode,
   CustomRoundingRuleDto,
 } from '@smartfeed/shared';
+import { encryptSecret, decryptSecret } from '@/common/utils/crypto.util';
 
 @CommandHandler(UpsertSupplierFeedSourceCommand)
 export class UpsertSupplierFeedSourceHandler implements ICommandHandler<UpsertSupplierFeedSourceCommand> {
@@ -49,7 +50,10 @@ export class UpsertSupplierFeedSourceHandler implements ICommandHandler<UpsertSu
             parentFeedSourceId: dto.parentFeedSourceId ?? existing.parentFeedSourceId,
             s3FileKey: dto.s3FileKey ?? existing.s3FileKey,
             authHeaderName: dto.authHeaderName ?? existing.authHeaderName,
-            authHeaderValue: dto.authHeaderValue ?? existing.authHeaderValue,
+            authHeaderValue:
+              dto.authHeaderValue !== undefined
+                ? encryptSecret(dto.authHeaderValue)
+                : existing.authHeaderValue,
             syncIntervalHours: dto.syncIntervalHours ?? existing.syncIntervalHours,
             autoUpdatePrices: dto.autoUpdatePrices ?? existing.autoUpdatePrices,
             autoUpdateStocks: dto.autoUpdateStocks ?? existing.autoUpdateStocks,
@@ -86,7 +90,7 @@ export class UpsertSupplierFeedSourceHandler implements ICommandHandler<UpsertSu
           parentFeedSourceId: dto.parentFeedSourceId,
           s3FileKey: dto.s3FileKey,
           authHeaderName: dto.authHeaderName,
-          authHeaderValue: dto.authHeaderValue,
+          authHeaderValue: encryptSecret(dto.authHeaderValue),
           syncIntervalHours: dto.syncIntervalHours ?? 0,
           autoUpdatePrices: dto.autoUpdatePrices ?? true,
           autoUpdateStocks: dto.autoUpdateStocks ?? true,
@@ -119,7 +123,7 @@ export class UpsertSupplierFeedSourceHandler implements ICommandHandler<UpsertSu
       parentFeedSourceId: source.parentFeedSourceId,
       s3FileKey: source.s3FileKey,
       authHeaderName: source.authHeaderName,
-      authHeaderValue: source.authHeaderValue,
+      authHeaderValue: decryptSecret(source.authHeaderValue),
       syncIntervalHours: source.syncIntervalHours,
       autoUpdatePrices: source.autoUpdatePrices,
       autoUpdateStocks: source.autoUpdateStocks,

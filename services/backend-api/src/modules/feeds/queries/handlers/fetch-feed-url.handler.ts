@@ -9,6 +9,7 @@ import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import type { FetchFeedResultDto } from '@smartfeed/shared';
 import { FetchFeedUrlQuery } from '@/modules/feeds/queries/fetch-feed-url.query';
 import { validateUrlSafety } from '@/modules/feeds/utils/ssrf-validator';
+import { Agent } from 'undici';
 
 const MAX_FEED_SIZE_BYTES = 50 * 1024 * 1024; // 50 MB limit
 const FETCH_TIMEOUT_MS = 60_000; // 60 seconds
@@ -26,21 +27,22 @@ export class FetchFeedUrlHandler implements IQueryHandler<FetchFeedUrlQuery, Fet
       while (redirectCount <= MAX_REDIRECTS) {
         const validated = await validateUrlSafety(currentUrl);
 
-        // Pin plain HTTP requests directly to the verified IP to prevent DNS rebinding TOCTOU (SEC-05)
-        const requestUrl =
-          validated.parsedUrl.protocol === 'http:' && validated.family === 4
-            ? (() => {
-                const pinned = new URL(currentUrl);
-                pinned.hostname = validated.resolvedAddress;
-                return pinned.toString();
-              })()
-            : currentUrl;
+        // Pin IP at TCP socket level for both http: and https: to eliminate DNS Rebinding TOCTOU (SEC-05)
+        const dispatcher = new Agent({
+          connect: {
+            lookup: (_hostname, _options, callback) => {
+              callback(null, [{ address: validated.resolvedAddress, family: validated.family }]);
+            },
+          },
+        });
 
         this.logger.log(
-          `Fetching remote feed from URL: ${currentUrl} (resolved IP: ${validated.resolvedAddress})`,
+          `Fetching remote feed from URL: ${currentUrl} (pinned IP: ${validated.resolvedAddress})`,
         );
 
-        const response = await fetch(requestUrl, {
+        const response = await fetch(currentUrl, {
+          // @ts-expect-error Node.js global fetch supports undici custom dispatcher
+          dispatcher,
           headers: {
             Host: validated.parsedUrl.host,
             'User-Agent':

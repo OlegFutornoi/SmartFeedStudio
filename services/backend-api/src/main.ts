@@ -12,9 +12,9 @@ async function bootstrap() {
   const logger = new Logger('Bootstrap');
   const app = await NestFactory.create(AppModule);
 
-  // Increase payload limit for large XML/CSV feed uploads (up to 100MB)
-  app.use(json({ limit: '100mb' }));
-  app.use(urlencoded({ limit: '100mb', extended: true }));
+  // Restrict JSON and URL-encoded body payloads to 2MB to prevent OOM DoS attacks (BE-14, CWE-400)
+  app.use(json({ limit: '2mb' }));
+  app.use(urlencoded({ limit: '2mb', extended: true }));
 
   // Security Headers via Helmet (relaxed CSP for Swagger UI)
   app.use(
@@ -107,8 +107,8 @@ async function bootstrap() {
   const port = process.env.PORT || 4000;
   await app.listen(port);
 
-  logger.log(`🚀 SmartFeed Studio API running on: http://localhost:${port}/api`);
-  logger.log(`📚 Swagger documentation available at: http://localhost:${port}/api/docs`);
+  logger.log(`[BOOTSTRAP] SmartFeed Studio API running on: http://localhost:${port}/api`);
+  logger.log(`[SWAGGER] Swagger documentation available at: http://localhost:${port}/api/docs`);
 }
 
 bootstrap().catch((err) => {

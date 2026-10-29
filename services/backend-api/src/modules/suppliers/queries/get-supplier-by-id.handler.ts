@@ -3,6 +3,7 @@ import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { NotFoundException } from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
 import { GetSupplierByIdQuery } from '@/modules/suppliers/queries/suppliers.queries';
+import { getSupplierTenancyWhere } from '@/modules/suppliers/utils/supplier-tenancy.util';
 
 @QueryHandler(GetSupplierByIdQuery)
 export class GetSupplierByIdHandler implements IQueryHandler<GetSupplierByIdQuery> {
@@ -11,8 +12,9 @@ export class GetSupplierByIdHandler implements IQueryHandler<GetSupplierByIdQuer
   async execute(query: GetSupplierByIdQuery) {
     const { id, userId } = query;
 
+    const tenancyWhere = await getSupplierTenancyWhere(this.prisma, userId);
     const s = await this.prisma.supplier.findFirst({
-      where: { id, userId },
+      where: { id, ...tenancyWhere },
       include: {
         _count: {
           select: {

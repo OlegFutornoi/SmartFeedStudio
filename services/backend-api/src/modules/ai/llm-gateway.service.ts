@@ -2,9 +2,11 @@ import {
   Injectable,
   Logger,
   BadGatewayException,
+  ForbiddenException,
   ServiceUnavailableException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { PrismaService } from '@/prisma/prisma.service';
 import type {
   ClassifyCategoryDto,
   ClassifyCategoryResultDto,
@@ -41,7 +43,10 @@ interface OpenAiChatCompletionResponse {
 export class LlmGatewayService {
   private readonly logger = new Logger(LlmGatewayService.name);
 
-  constructor(private readonly configService: ConfigService) {}
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly prisma: PrismaService,
+  ) {}
 
   private getBaseUrl(): string {
     const headroomEnabled =
@@ -83,6 +88,7 @@ export class LlmGatewayService {
       const response = await fetch(`${baseUrl}/models`, {
         method: 'GET',
         headers: this.getAuthHeaders(),
+        signal: AbortSignal.timeout(5_000),
       });
 
       const latencyMs = Date.now() - start;
@@ -139,11 +145,32 @@ export class LlmGatewayService {
       payload.response_format = { type: 'json_object' };
     }
 
+    // Layer-2 Quota Validation & Deduction: AI credits check (DEF-06, BE-11)
+    let activeLicenseId: string | null = null;
+    const creditsCost = options?.creditsCost ?? 1;
+
+    if (options?.userId) {
+      const license = await this.prisma.license.findFirst({
+        where: { userId: options.userId, isActive: true },
+        orderBy: { createdAt: 'desc' },
+      });
+
+      if (license) {
+        if (license.aiCredits < creditsCost) {
+          throw new ForbiddenException(
+            `Insufficient AI credits (${license.aiCredits}/${creditsCost}). Please upgrade your tariff plan to continue using AI enrichment.`,
+          );
+        }
+        activeLicenseId = license.id;
+      }
+    }
+
     try {
       const res = await fetch(`${baseUrl}/chat/completions`, {
         method: 'POST',
         headers,
         body: JSON.stringify(payload),
+        signal: AbortSignal.timeout(30_000),
       });
 
       if (!res.ok) {
@@ -158,6 +185,14 @@ export class LlmGatewayService {
       if (!content) {
         this.logger.warn('Empty completion content received from OmniRoute');
         throw new BadGatewayException('Empty completion payload from LLM gateway');
+      }
+
+      // Deduct credits only after successful completion
+      if (activeLicenseId) {
+        await this.prisma.license.update({
+          where: { id: activeLicenseId },
+          data: { aiCredits: { decrement: creditsCost } },
+        });
       }
 
       return content;

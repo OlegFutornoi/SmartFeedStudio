@@ -17,6 +17,8 @@ import { LoginDto } from '@/modules/auth/dto/login.dto';
 import { ForgotPasswordDto } from '@/modules/auth/dto/forgot-password.dto';
 import { ResetPasswordDto } from '@/modules/auth/dto/reset-password.dto';
 import { TokenService } from '@/modules/auth/services/token.service';
+import { MailService } from '@/modules/mail/mail.service';
+import { ConfigService } from '@nestjs/config';
 import { RedisCacheService } from '@/common/cache/redis-cache.service';
 import { CreateUserCommand } from '@/modules/users/commands/create-user.command';
 import { ResetPasswordCommand } from '@/modules/users/commands/reset-password.command';
@@ -32,6 +34,8 @@ export class AuthService {
     private readonly queryBus: QueryBus,
     private readonly tokenService: TokenService,
     private readonly cacheService: RedisCacheService,
+    private readonly mailService: MailService,
+    private readonly configService: ConfigService,
   ) {}
 
   /**
@@ -135,6 +139,16 @@ export class AuthService {
     }
 
     const resetToken = await this.tokenService.generatePasswordResetToken(user);
+    const appUrl = this.configService.get<string>('APP_URL', 'http://localhost:1420');
+    const resetUrl = `${appUrl}/reset-password?token=${encodeURIComponent(resetToken)}`;
+
+    await this.mailService.sendPasswordResetEmail({
+      to: user.email,
+      userName: user.fullName || undefined,
+      resetUrl,
+      expiresInMinutes: 15,
+    });
+
     const isTestEnvironment = process.env.NODE_ENV === 'test';
 
     return {

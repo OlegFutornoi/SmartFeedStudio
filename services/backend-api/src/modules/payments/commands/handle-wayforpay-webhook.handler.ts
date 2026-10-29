@@ -11,6 +11,7 @@ import { HandleWayForPayWebhookCommand } from '@/modules/payments/commands/handl
 import { WayForPayService } from '@/modules/payments/services/wayforpay.service';
 import { SelectTariffPlanCommand } from '@/modules/licenses/commands/select-tariff-plan.command';
 import { PaymentProvider } from '@smartfeed/shared';
+import { decryptSecret } from '@/common/utils/crypto.util';
 
 @CommandHandler(HandleWayForPayWebhookCommand)
 export class HandleWayForPayWebhookHandler implements ICommandHandler<HandleWayForPayWebhookCommand> {
@@ -34,7 +35,8 @@ export class HandleWayForPayWebhookHandler implements ICommandHandler<HandleWayF
     const setting = await this.prisma.paymentSetting.findUnique({
       where: { provider: PaymentProvider.WAYFORPAY },
     });
-    const secretKey = setting?.merchantSecretKey || process.env.WAYFORPAY_MERCHANT_SECRET_KEY;
+    const secretKey =
+      decryptSecret(setting?.merchantSecretKey) || process.env.WAYFORPAY_MERCHANT_SECRET_KEY;
 
     if (!secretKey) {
       this.logger.error('Payment gateway secret key is not configured');
@@ -69,12 +71,30 @@ export class HandleWayForPayWebhookHandler implements ICommandHandler<HandleWayF
     }
 
     if (isApproved) {
-      // BE-07: Atomic conditional update ensures single license provisioning under concurrent webhook deliveries
-      const updateResult = await this.prisma.paymentTransaction.updateMany({
-        where: {
-          id: transaction.id,
-          status: { not: 'APPROVED' },
-        },
+      // 1. Provision / extend License for user first (BE-13, DEF-15)
+      const interval = transaction.billingInterval === 'YEARLY' ? 'yearly' : 'monthly';
+      try {
+        await this.commandBus.execute(
+          new SelectTariffPlanCommand(
+            transaction.userId,
+            transaction.planCode,
+            interval,
+            transaction.id,
+            true,
+          ),
+        );
+      } catch (activationErr) {
+        this.logger.error(
+          `Failed to activate tariff plan for order ${transaction.orderReference}: ${activationErr}`,
+        );
+        throw new InternalServerErrorException(
+          `License activation failed: ${activationErr instanceof Error ? activationErr.message : String(activationErr)}`,
+        );
+      }
+
+      // 2. Transition transaction status to APPROVED only after successful license activation
+      await this.prisma.paymentTransaction.update({
+        where: { id: transaction.id },
         data: {
           status: 'APPROVED',
           providerPaymentId: payload.authCode || undefined,
@@ -86,27 +106,8 @@ export class HandleWayForPayWebhookHandler implements ICommandHandler<HandleWayF
         },
       });
 
-      if (updateResult.count === 0) {
-        this.logger.log(
-          `Transaction ${payload.orderReference} already APPROVED by concurrent execution. Returning idempotent response.`,
-        );
-        return this.wayforpayService.generateAcceptResponse(payload.orderReference, secretKey);
-      }
-
-      // 5. Automatically provision / extend License for user
-      const interval = transaction.billingInterval === 'YEARLY' ? 'yearly' : 'monthly';
-      await this.commandBus.execute(
-        new SelectTariffPlanCommand(
-          transaction.userId,
-          transaction.planCode,
-          interval,
-          transaction.id,
-          true,
-        ),
-      );
-
       this.logger.log(
-        `Successfully processed payment for order ${transaction.orderReference}, plan ${transaction.planCode} (${interval})`,
+        `Successfully activated license and approved payment for order ${transaction.orderReference}, plan ${transaction.planCode} (${interval})`,
       );
     } else {
       await this.prisma.paymentTransaction.update({
