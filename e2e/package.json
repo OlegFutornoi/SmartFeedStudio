@@ -4,7 +4,6 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "node ../scripts/free-dev-ports.mjs 1421 3001 4001 5002 5433 && node ../.agents/scripts/start-e2e.mjs",
     "start:env": "node ../scripts/free-dev-ports.mjs 1421 3001 4001 5002 5433 && node ../.agents/scripts/start-e2e.mjs",
     "db:sync": "node ../scripts/sync-server-e2e-db.mjs",
     "openapi:sync": "node ../scripts/sync-openapi.mjs",
