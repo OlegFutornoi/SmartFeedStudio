@@ -1,0 +1,30 @@
+{
+  "models": {
+    "openrouter/nvidia/nemotron-3.5-lightning": {
+      "status": "healthy",
+      "lastSuccess": "2026-11-01T18:41:14.907Z",
+      "failureCount": 0
+    },
+    "openrouter/nvidia/nemotron-3.5-super-vl": {
+      "status": "healthy",
+      "failureCount": 0
+    },
+    "openrouter/nvidia/nemotron-3-ultra-550b-a55b": {
+      "status": "healthy",
+      "failureCount": 0
+    },
+    "groq/qwen/qwen3.8-27b": {
+      "status": "healthy",
+      "failureCount": 0
+    },
+    "groq/openai/gpt-oss-120b": {
+      "status": "healthy",
+      "failureCount": 0
+    },
+    "groq/openai/gpt-oss-20b": {
+      "status": "healthy",
+      "failureCount": 0
+    }
+  },
+  "updatedAt": "2026-11-01T18:41:14.909Z"
+}

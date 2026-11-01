@@ -1,1 +1,182 @@
-{}
+{
+  "backend": {
+    "lastVerifiedHash": "424a4ef9d15ebe6a",
+    "lastVerifiedAt": "2026-11-01T11:05:23.000Z",
+    "lastResult": "pass",
+    "provider": "omniroute",
+    "score": "3/3",
+    "baseScore": 0,
+    "delta": 0,
+    "runs": 1
+  },
+  "ai-sdk": {
+    "lastVerifiedHash": "6a6eb02099e9eb45",
+    "lastVerifiedAt": "2026-11-01T18:41:14.939Z",
+    "lastResult": "pass",
+    "provider": "omniroute",
+    "score": "3/3",
+    "baseScore": 0,
+    "delta": 0,
+    "runs": 1
+  },
+  "api-anything": {
+    "lastVerifiedHash": "6d4382e633797ef6",
+    "lastVerifiedAt": "2026-11-01T11:20:25.112Z",
+    "lastResult": "pass",
+    "provider": "omniroute",
+    "score": "3/3",
+    "baseScore": 0,
+    "delta": 0,
+    "runs": 1
+  },
+  "api-security-testing": {
+    "lastVerifiedHash": "458bbe9347b7093c",
+    "lastVerifiedAt": "2026-11-01T11:28:06.918Z",
+    "lastResult": "pass",
+    "provider": "omniroute",
+    "score": "3/3",
+    "baseScore": 0,
+    "delta": 0,
+    "runs": 1
+  },
+  "brainstorming": {
+    "lastVerifiedHash": "3128c68aaefd48f9",
+    "lastVerifiedAt": "2026-11-01T11:53:54.126Z",
+    "lastResult": "pass",
+    "provider": "omniroute",
+    "score": "3/3",
+    "baseScore": 0,
+    "delta": 0,
+    "runs": 1
+  },
+  "browser-debugging": {
+    "lastVerifiedHash": "5e9b3b14dec44066",
+    "lastVerifiedAt": "2026-11-01T11:55:30.496Z",
+    "lastResult": "pass",
+    "provider": "omniroute",
+    "score": "3/3",
+    "baseScore": 0,
+    "delta": 0,
+    "runs": 1
+  },
+  "bullmq-jobs": {
+    "lastVerifiedHash": "b77e4ae0e9c72f43",
+    "lastVerifiedAt": "2026-11-01T11:56:55.517Z",
+    "lastResult": "pass",
+    "provider": "omniroute",
+    "score": "3/3",
+    "baseScore": 0,
+    "delta": 0,
+    "runs": 1
+  },
+  "ci-cd-and-automation": {
+    "lastVerifiedHash": "f63bc14e18fe1d4f",
+    "lastVerifiedAt": "2026-11-01T14:05:06.513Z",
+    "lastResult": "pass",
+    "provider": "omniroute",
+    "score": "3/3",
+    "baseScore": 0,
+    "delta": 0,
+    "runs": 1
+  },
+  "code-simplification": {
+    "lastVerifiedHash": "1e89916702d007a7",
+    "lastVerifiedAt": "2026-11-01T15:22:18.498Z",
+    "lastResult": "pass",
+    "provider": "omniroute",
+    "score": "3/3",
+    "baseScore": 0,
+    "delta": 0,
+    "runs": 1
+  },
+  "contract-first-api": {
+    "lastVerifiedHash": "29343421378c1167",
+    "lastVerifiedAt": "2026-11-01T15:26:42.163Z",
+    "lastResult": "pass",
+    "provider": "omniroute",
+    "score": "3/3",
+    "baseScore": 0,
+    "delta": 0,
+    "runs": 1
+  },
+  "documentation-and-adrs": {
+    "lastVerifiedHash": "aa9c78c2f3324f58",
+    "lastVerifiedAt": "2026-11-01T15:59:49.538Z",
+    "lastResult": "pass",
+    "provider": "omniroute",
+    "score": "3/3",
+    "baseScore": 0,
+    "delta": 0,
+    "runs": 1
+  },
+  "doubt-driven-development": {
+    "lastVerifiedHash": "455a0ad4fa5e350d",
+    "lastVerifiedAt": "2026-11-01T16:06:01.676Z",
+    "lastResult": "pass",
+    "provider": "omniroute",
+    "score": "3/3",
+    "baseScore": 0,
+    "delta": 0,
+    "runs": 1
+  },
+  "find-skills": {
+    "lastVerifiedHash": "2c54954635fe66cc",
+    "lastVerifiedAt": "2026-11-01T16:11:04.141Z",
+    "lastResult": "pass",
+    "provider": "omniroute",
+    "score": "3/3",
+    "baseScore": 0,
+    "delta": 0,
+    "runs": 1
+  },
+  "firecrawl-parse": {
+    "lastVerifiedHash": "997d8da202807339",
+    "lastVerifiedAt": "2026-11-01T16:13:33.245Z",
+    "lastResult": "pass",
+    "provider": "omniroute",
+    "score": "3/3",
+    "baseScore": 0,
+    "delta": 0,
+    "runs": 1
+  },
+  "frontend": {
+    "lastVerifiedHash": "d3eb4acae594442a",
+    "lastVerifiedAt": "2026-11-01T16:19:03.511Z",
+    "lastResult": "pass",
+    "provider": "omniroute",
+    "score": "3/3",
+    "baseScore": 0,
+    "delta": 0,
+    "runs": 1
+  },
+  "git-commit": {
+    "lastVerifiedHash": "8879387908bf6019",
+    "lastVerifiedAt": "2026-11-01T18:36:17.057Z",
+    "lastResult": "pass",
+    "provider": "omniroute",
+    "score": "3/3",
+    "baseScore": 0,
+    "delta": 0,
+    "runs": 1
+  },
+  "headroom-compression": {
+    "lastVerifiedHash": "abceb3abfd1abeb4",
+    "lastVerifiedAt": "2026-11-01T18:33:37.869Z",
+    "lastResult": "pass",
+    "provider": "omniroute",
+    "score": "3/3",
+    "baseScore": 0,
+    "delta": 0,
+    "runs": 1
+  },
+  "i18n-localization": {
+    "lastVerifiedHash": "d4487d92eb487819",
+    "lastVerifiedAt": "2026-11-01T18:39:31.788Z",
+    "lastResult": "fail",
+    "provider": "omniroute",
+    "score": "2/3",
+    "baseScore": 0,
+    "delta": 0,
+    "runs": 1
+  }
+}

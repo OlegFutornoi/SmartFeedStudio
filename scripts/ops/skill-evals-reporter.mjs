@@ -26,21 +26,43 @@ export function extractJsonArray(raw) {
   }
   try {
     const parsed = JSON.parse(cleaned);
-    return Array.isArray(parsed) ? parsed : null;
-  } catch {
-    const arrayMatch = cleaned.match(/\[\s*\{[\s\S]*\}\s*\]/);
-    if (arrayMatch) {
-      try {
-        return JSON.parse(arrayMatch[0]);
-      } catch {
-        return null;
-      }
+    if (Array.isArray(parsed)) return parsed;
+    if (parsed && Array.isArray(parsed.expectations)) {
+      return parsed.expectations.map((e) => ({
+        expectation: e.text || e.expectation || '',
+        pass: typeof e.passed === 'boolean' ? e.passed : Boolean(e.pass),
+        reason: e.evidence || e.reason || '',
+      }));
     }
-    return null;
+  } catch {}
+
+  const arrayMatch = cleaned.match(/\[\s*\{[\s\S]*\}\s*\]/);
+  if (arrayMatch) {
+    try {
+      return JSON.parse(arrayMatch[0]);
+    } catch {}
   }
+
+  const items = [];
+  const blocks = raw.split(/\{\s*"expectation"/g).slice(1);
+  for (const b of blocks) {
+    const expMatch = b.match(/^\s*:\s*"([\s\S]*?)",/);
+    const passMatch = b.match(/"pass"\s*:\s*(true|false)/i);
+    const reasonMatch = b.match(/"reason"\s*:\s*"([\s\S]*?)"\s*\}/);
+    if (expMatch && passMatch) {
+      items.push({
+        expectation: expMatch[1],
+        pass: passMatch[1].toLowerCase() === 'true',
+        reason: reasonMatch ? reasonMatch[1] : '',
+      });
+    }
+  }
+  if (items.length > 0) return items;
+
+  return null;
 }
 
-export function runOmni(systemPrompt, userPrompt, omniRouteBin, repoRoot, temperature = 0.2) {
+export function runOmni(systemPrompt, userPrompt, omniRouteBin, repoRoot, temperature = 0.2, maxTokens = 650) {
   const stdout = execFileSync(
     process.execPath,
     [
@@ -51,11 +73,13 @@ export function runOmni(systemPrompt, userPrompt, omniRouteBin, repoRoot, temper
       userPrompt,
       '--temp',
       String(temperature),
+      '--max-tokens',
+      String(maxTokens),
     ],
     {
       cwd: repoRoot,
       encoding: 'utf8',
-      timeout: 60000,
+      timeout: 600000,
     }
   );
   return stdout.trim();

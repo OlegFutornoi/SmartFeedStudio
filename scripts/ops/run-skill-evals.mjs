@@ -28,11 +28,21 @@ const OMNIROUTE_BIN = path.join(
   SKILLS_DIR,
   'omniroute-delegation/scripts/omniroute-query.mjs'
 );
-const GRADER_MD_PATH = path.join(SKILLS_DIR, 'skill-creator/agents/grader.md');
-const GRADER_INSTRUCTIONS = fs.existsSync(GRADER_MD_PATH)
-  ? fs.readFileSync(GRADER_MD_PATH, 'utf8').slice(0, 4000)
-  : 'You are a strict QA Judge. Output valid JSON only.';
-const MAX_SKILL_CHARS = 24000;
+const GRADER_INSTRUCTIONS =
+  'You are a fast automated grader. Do not translate the prompt or explain user intent. Evaluate the candidate output against the numbered expectations. Output ONLY a valid JSON array: [{"expectation": string, "pass": boolean, "reason": string}].';
+function compactText(text) {
+  if (!text || typeof text !== 'string') return '';
+  return text
+    .replace(/<!--[\s\S]*?-->/g, '')
+    .replace(/\r\n/g, '\n')
+    .split('\n')
+    .map((l) => l.trimEnd())
+    .join('\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+}
+
+const MAX_SKILL_CHARS = 16000;
 
 function parseArgs(argv) {
   const opts = {
@@ -175,7 +185,8 @@ async function main() {
                 baseJudgePrompt,
                 OMNIROUTE_BIN,
                 REPO_ROOT,
-                0.0
+                0.0,
+                300
               )
             );
             if (baseVerdict && baseVerdict.every((v) => v.pass)) {
@@ -185,34 +196,39 @@ async function main() {
           } catch {}
         }
 
-        const candidateSystem = `${skillMd.slice(0, MAX_SKILL_CHARS)}\n\nFollow all instructions from the skill above.`;
+        const strippedSkillMd = skillMd.replace(/^---\n[\s\S]*?\n---\n/, '');
+        const candidateSystem = compactText(`${strippedSkillMd.slice(0, MAX_SKILL_CHARS)}\n\nFollow all instructions from the skill above.`);
         const candidateOutput = runOmni(
           candidateSystem,
           c.prompt,
           OMNIROUTE_BIN,
           REPO_ROOT,
-          0.2
+          0.2,
+          1500
         );
 
-        const judgePrompt = [
-          `Evaluate if the candidate response satisfies each expectation for '${skill}'.`,
-          `Prompt: "${c.prompt}"`,
-          `Candidate Output:\n${candidateOutput}`,
+        await new Promise((r) => setTimeout(r, 4000));
+
+        const judgePrompt = compactText([
+          `Evaluate if Candidate Output satisfies each numbered expectation for '${skill}'.`,
+          `Candidate Output:\n${candidateOutput.trim()}`,
           `Expectations:\n${c.expectations.map((e, idx) => `${idx + 1}. ${e}`).join('\n')}`,
           'Return JSON: [{"expectation": string, "pass": boolean, "reason": string}]',
-        ].join('\n\n');
+        ].join('\n\n'));
 
         const judgeRaw = runOmni(
           GRADER_INSTRUCTIONS,
           judgePrompt,
           OMNIROUTE_BIN,
           REPO_ROOT,
-          0.0
+          0.0,
+          3000
         );
         const verdicts = extractJsonArray(judgeRaw);
 
         if (!verdicts || verdicts.length === 0) {
           console.log('[FAIL] (Judge output unparseable)');
+          console.log(`    - Judge raw output: ${judgeRaw.slice(0, 300)}`);
           skillPassed = false;
           allPassed = false;
           continue;
@@ -221,6 +237,9 @@ async function main() {
         const failedExpectations = verdicts.filter((v) => !v.pass);
         if (failedExpectations.length > 0) {
           console.log(`[FAIL] (${failedExpectations.length} expectations failed)`);
+          for (const fe of failedExpectations) {
+            console.log(`    - Failed: "${fe.expectation}" -> Reason: ${fe.reason}`);
+          }
           skillPassed = false;
           allPassed = false;
         } else {
@@ -234,6 +253,10 @@ async function main() {
         console.log(`[ERROR] (${err.message})`);
         skillPassed = false;
         allPassed = false;
+      }
+
+      if (cases.indexOf(c) < cases.length - 1) {
+        await new Promise((r) => setTimeout(r, 20000));
       }
     }
 

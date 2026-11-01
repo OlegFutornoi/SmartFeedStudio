@@ -88,6 +88,8 @@
     "ai:omni": "node .agents/skills/omniroute-delegation/scripts/omniroute-query.mjs",
     "ai:compress": "node scripts/headroom-compress.mjs",
     "ai:cache": "node scripts/mcp-cache.mjs",
+    "ai:models": "node scripts/ops/model-cooldown-manager.mjs",
+    "ai:models:reset": "node scripts/ops/model-cooldown-manager.mjs --reset",
     "skills:status": "node scripts/ops/skills-status.mjs",
     "skills:eval": "node scripts/ops/run-skill-evals.mjs",
     "skills:eval:changed": "node scripts/ops/run-skill-evals.mjs --changed",
