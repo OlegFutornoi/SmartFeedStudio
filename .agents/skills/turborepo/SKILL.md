@@ -1,6 +1,6 @@
 ---
 name: turborepo
-description: Turborepo monorepo pipeline orchestration, build caching, task filtering, and dependency graphs. Use when configuring turbo.json, optimizing monorepo builds, setting up workspace packages, or tuning CI pipeline speed.
+description: Turborepo monorepo pipeline orchestration, build caching, task filtering, and dependency graphs. Use when configuring turbo.json, optimizing monorepo builds, setting up workspace packages, or tuning CI pipeline speed. Do not use for general npm script authoring; use package.json scripts instead.
 rules:
   - core
   - docs_and_ops

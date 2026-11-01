@@ -1,0 +1,35 @@
+{
+  "skill_name": "git-commit",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Закоміть зміни після додавання нових негативних API тестів для OTP сервісу та оновлення реєстру планів.",
+      "expected_output": "Runs pre-commit quality gates (scan-violations --changed, tsc, lint), stages only relevant files, and creates a Conventional Commit without --no-verify.",
+      "expectations": [
+        "Inspects git status and git diff before staging and never uses git commit --no-verify",
+        "Verifies Plan/activ/ temporary file is deleted and Plan/compact/ is marked 🟢 Done before final closure commit",
+        "Formats commit message using Conventional Commits (e.g. test(otp): add negative boundary API suite)"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Створи коміт для рефакторингу імпортів на @/ у app-finance/ та запропонуй завершення гілки.",
+      "expected_output": "Stages refactored files, creates refactor(finance): migrate relative imports to @/ alias commit, and presents the 4-option Branch Integration Protocol.",
+      "expectations": [
+        "Uses refactor(<scope>): <description> Conventional Commit format",
+        "Excludes untracked scratch/debug artifacts or .env files from staging",
+        "Follows Phase 6 Branch Integration Protocol (Merge locally with post-merge tsc check / Push & PR / Keep as-is / Discard)"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Виправ помилку типізації у файлі api/crm/models/lead.model.ts, де поле id позначено як any.",
+      "expected_output": "Recognizes that code refactoring and TypeScript fixes belong to pw-api / agent-author, maintaining git-commit scope strictly to staging and committing.",
+      "expectations": [
+        "Recognizes that fixing TypeScript compilation errors is outside git-commit scope",
+        "Directs code modifications to pw-api or agent-author before committing",
+        "Executes git commit only after verification gates pass cleanly"
+      ]
+    }
+  ]
+}

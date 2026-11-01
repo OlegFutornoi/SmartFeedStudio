@@ -5,10 +5,11 @@
       "command": "/usr/local/bin/node"
     },
     "context7": {
-      "headers": {
-        "Authorization": "Bearer ctx7sk-6973405a-892e-47eb-8b27-0121053c29a6"
-      },
-      "serverUrl": "https://mcp.context7.com/mcp"
+      "args": [
+        "-c",
+        "CONTEXT7_API_KEY=${CONTEXT7_API_KEY:-$(security find-generic-password -a oleg -s CONTEXT7_API_KEY -w 2>/dev/null)} exec npx -y @upstash/context7-mcp"
+      ],
+      "command": "/bin/bash"
     },
     "firecrawl": {
       "args": [
@@ -30,18 +31,18 @@
     },
     "postgres": {
       "args": [
-        "--access-mode=restricted",
-        "postgresql://postgres:postgrespassword@127.0.0.1:5432/smartfeed_db"
+        "-c",
+        "DB_CONN=${DATABASE_URL:-postgresql://postgres@127.0.0.1:5432/smartfeed_db}; exec /Users/oleg/.local/bin/postgres-mcp --access-mode=restricted \"$DB_CONN\""
       ],
-      "command": "/Users/oleg/.local/bin/postgres-mcp",
+      "command": "/bin/bash",
       "disabled": false
     },
     "railway": {
-      "args": ["mcp"],
-      "command": "/Users/oleg/.railway/bin/railway",
-      "env": {
-        "RAILWAY_TOKEN": "4f684b38-49ee-4ad8-8809-807592c43181"
-      }
+      "args": [
+        "-c",
+        "RAILWAY_TOKEN=${RAILWAY_TOKEN:-$(security find-generic-password -a oleg -s RAILWAY_TOKEN -w 2>/dev/null)} exec /Users/oleg/.railway/bin/railway mcp"
+      ],
+      "command": "/bin/bash"
     },
     "redis": {
       "args": [

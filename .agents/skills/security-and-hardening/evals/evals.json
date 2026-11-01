@@ -1,0 +1,35 @@
+{
+  "skill_name": "security-and-hardening",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Захисти ендпоінт імпорту фіду від SSRF атак на локальні адреси та хмарні метадані.",
+      "expected_output": "Enforces DNS resolution before fetch, blocks private IP ranges (127.0.0.1, 10.0.0.0/8, 169.254.169.254, 192.168.0.0/16), and uses safe HTTP client with IP pinning.",
+      "expectations": [
+        "Validates destination URL IP resolution against private/loopback/cloud metadata IP ranges",
+        "Applies DNS pinning to prevent Time-of-Check to Time-of-Use (TOCTOU) SSRF re-binding",
+        "Rejects URLs targeting internal monorepo ports (4000, 5432, 6379, 9000)"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Перевір модуль автентифікації на наявність витоків паролів та токенів у логах або Sentry.",
+      "expected_output": "Enforces secret masking, sanitizes serialization sinks (JSON.stringify, logger), and prevents plaintext credential logging.",
+      "expectations": [
+        "Masks sensitive fields (password, token, apiKey, secret) before logging or telemetry sinks",
+        "Verifies user entities strip passwordHash before returning JSON responses",
+        "Enforces zero hardcoded fallback secrets in configuration files"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Зміни розмір шрифту та відступи у картці товару в apps/desktop.",
+      "expected_output": "Recognizes that visual styling and typography belong to frontend and ui-ux-pro-max skills.",
+      "expectations": [
+        "Recognizes that UI styling and spacing belong to frontend domain",
+        "Delegates UI design changes to frontend and ui-ux-pro-max skills",
+        "Maintains focus on application security, OWASP hardening, and secret defense"
+      ]
+    }
+  ]
+}

@@ -1,5 +1,6 @@
 {
   "*.{js,jsx,ts,tsx}": ["eslint --fix --no-warn-ignored", "prettier --write"],
   "*.{json,md,yml,yaml}": ["prettier --write"],
+  ".agents/**/*.{md,json,mjs}": ["node .agents/scripts/validate-agents.mjs"],
   "apps/desktop/src-tauri/**/*.{rs,toml}": ["node scripts/verify-rust.mjs"]
 }

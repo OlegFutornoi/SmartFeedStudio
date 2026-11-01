@@ -1,0 +1,36 @@
+{
+  "skill_name": "code-simplification",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Спрости файл спеки tests/api/ibpm/finance/osago/osago-ewa.positive.api.ts, який виріс до 310 рядків через дублювання кроків створення чернетки та перевірки тарифів.",
+      "expected_output": "Refactored spec <200 lines delegating shared orchestration to support/flow.helpers.ts and static payloads to support/flow.data.ts while preserving 100% of 4-Layer Response Defense assertions.",
+      "expectations": [
+        "Reduces spec file strictly below 200 lines (Invariant 8)",
+        "Extracts reusable orchestration into typed functions in support/flow.helpers.ts and static fixtures into support/flow.data.ts",
+        "Preserves all 4-Layer Response Defense checks, AJV schema validations, and deletionLeads.push(`osago_${leadId}`) cleanup without weakening assertions",
+        "Uses @/ root import aliases and explicit TypeScript interfaces (zero any or Record<string, unknown>)"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Прибери дублювання у трьох UI тестах каталогу Finance, де кожен тест повторює 45 рядків заповнення модалки номера авто та очікування видачі.",
+      "expected_output": "DRY helper or Page Object flow method encapsulating modal submission and catalog readiness with @step() and zero behavioral changes.",
+      "expectations": [
+        "Consolidates duplicated UI setup steps into a single typed Page Object method or support/flow.helpers.ts function",
+        "Keeps test titles, tags ({ tag: ['@finance', '@osago'] }), and business assertions intact",
+        "Avoids over-abstraction or generic wrapper layers that obscure test intent"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "У спеку tests/api/ibpm/finance/osago/osago-flow.api.ts падає статус-код 502 Bad Gateway через завислий бекенд EWA. Оптимізуй дублювання в спеку.",
+      "expected_output": "Refuses code simplification during an infrastructure/backend outage, routing failure to pw-triage / pw-heal under Invariant 16 & 17.",
+      "expectations": [
+        "Identifies that 502 Bad Gateway is an infrastructure outage (ENV_DOWN / APP_BUG)",
+        "Refuses to perform code simplification or refactoring on failing tests during active backend outages",
+        "Delegates failure triage to pw-triage or pw-heal with concrete log evidence"
+      ]
+    }
+  ]
+}

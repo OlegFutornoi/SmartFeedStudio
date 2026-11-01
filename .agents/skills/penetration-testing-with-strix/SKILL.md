@@ -1,6 +1,6 @@
 ---
 name: penetration-testing-with-strix
-description: Autonomous penetration testing using the Strix security engine. Exploits and validates vulnerabilities across web applications, REST APIs, and repositories, returning validated proof-of-concept reports.
+description: Autonomous penetration testing using the Strix security engine. Exploits and validates vulnerabilities across web applications, REST APIs, and repositories, returning validated proof-of-concept reports. Use when executing comprehensive red-team penetration tests on running environments. Do not use for fixing vulnerabilities; use fix-security-vulnerabilities-with-strix instead.
 rules:
   - core
   - security

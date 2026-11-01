@@ -1,6 +1,6 @@
 ---
 name: source-driven-development
-description: Context7 documentation protocol for grounding library APIs via MCP tools or ctx7 CLI. Use when adopting new libraries, designing non-trivial framework integrations, verifying version-specific APIs, or troubleshooting unfamiliar SDK behavior. Do not use for standard language primitives, trivial utilities, or repetitive internal refactoring.
+description: Authoritative documentation protocol for grounding library APIs via Context7 MCP tools or ctx7 CLI. Use when adopting new libraries, designing non-trivial framework integrations, verifying version-specific APIs, or troubleshooting unfamiliar SDK behavior. Do not use for standard language primitives, trivial utilities, or repetitive internal refactoring; use context-engineering instead.
 rules:
   - core
 ---

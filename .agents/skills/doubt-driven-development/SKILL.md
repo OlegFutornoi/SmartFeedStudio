@@ -1,6 +1,6 @@
 ---
 name: doubt-driven-development
-description: Adversarial cross-examination of non-trivial architectural decisions, concurrency races, quota bypasses, and TOCTOU edge cases. Use when verifying critical security, database, or subscription logic.
+description: Adversarial cross-examination of non-trivial architectural decisions, concurrency races, quota bypasses, and TOCTOU edge cases. Use when verifying critical security, database, or subscription logic. Do not use for routine styling or simple CRUD endpoints; use frontend or backend instead.
 rules:
   - core
   - testing

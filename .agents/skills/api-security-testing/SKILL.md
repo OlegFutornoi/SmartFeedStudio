@@ -1,6 +1,6 @@
 ---
 name: api-security-testing
-description: Security testing for REST APIs targeting the OWASP API Security Top 10 (2023). Probes for BOLA/IDOR, broken authentication, mass assignment, excessive data exposure, SSRF, and business logic flaws with working proof-of-concept tests.
+description: Security testing for REST APIs targeting the OWASP API Security Top 10 (2023). Probes for BOLA/IDOR, broken authentication, mass assignment, excessive data exposure, SSRF, and business logic flaws with working proof-of-concept tests. Use when auditing backend endpoints, validating authorization boundaries, or testing mutation routes for tenant leaks. Do not use for frontend visual testing; use playwright-automation or browser-debugging instead.
 rules:
   - core
   - security

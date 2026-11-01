@@ -1,6 +1,6 @@
 ---
 name: release-and-rollback
-description: Semantic versioning, changelog generation, post-deployment health verification, and zero-data-loss rollback procedures. Use when tagging releases, deploying to production, or managing deployment rollbacks.
+description: Semantic versioning, changelog generation, post-deployment health verification, and zero-data-loss rollback procedures. Use when tagging releases, deploying to production, or managing deployment rollbacks. Do not use for day-to-day code commits; use git-commit instead.
 rules:
   - core
   - docs_and_ops

@@ -1,6 +1,6 @@
 ---
 name: handoff
-description: Compact the current conversation into a handoff document for another agent to pick up.
+description: Compact the current conversation into a structured handoff document for another agent or session to pick up. Use when transitioning across sessions, handing off between specialized agents, or summarizing execution state. Do not use for persistent task memory updates; use task-memory-and-state instead.
 rules:
   - core
   - docs_and_ops

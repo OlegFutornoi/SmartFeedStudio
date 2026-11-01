@@ -1,0 +1,35 @@
+{
+  "skill_name": "prisma-postgres-mastery",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Додай нову модель SupplierFeedSource у schema.prisma з зв'язком до Supplier.",
+      "expected_output": "Enforces 100% FK indexes (@@index([supplier_id])), @db.Timestamptz(6), @@map snake_case naming, CUID primary key, and cascade deletes.",
+      "expectations": [
+        "Adds explicit @@index on foreign key supplier_id (100% FK index invariant)",
+        "Uses @db.Timestamptz(6) for all DateTime timestamp columns",
+        "Maps model and fields to snake_case table and column names via @@map and @map"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Оптимізуй вибірку пов'язаних категорій та постачальників, щоб усунути N+1 проблему.",
+      "expected_output": "Uses Prisma include/select or batch query to eliminate N+1 query loops (L-039).",
+      "expectations": [
+        "Eliminates N+1 loop by fetching relations in a single query via include/select",
+        "Avoids fetching unbounded datasets without cursor-based pagination",
+        "Never uses as any in Prisma query options or where clauses"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Створи Tailwind анімацію для модального вікна завантаження файлу.",
+      "expected_output": "Recognizes that Tailwind CSS animations belong to frontend and emil-design-eng skills.",
+      "expectations": [
+        "Recognizes that CSS animation and styling belong to frontend engineering",
+        "Directs styling to emil-design-eng and frontend skills",
+        "Maintains focus on Prisma ORM, migrations, and PostgreSQL 16 schemas"
+      ]
+    }
+  ]
+}

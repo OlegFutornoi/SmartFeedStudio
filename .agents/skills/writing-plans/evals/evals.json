@@ -1,0 +1,32 @@
+{
+  "skill_name": "writing-plans",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Застосуй скіл writing-plans для стандартної задачі у SmartFeed Studio відповідно до інструкцій.",
+      "expected_output": "Follows writing-plans procedure, adheres to architectural invariants, and satisfies acceptance criteria.",
+      "expectations": [
+        "Applies writing-plans step-by-step procedure according to SKILL.md guidelines",
+        "Adheres to project invariants and definition of done without shortcuts"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Виконай граничний сценарій для writing-plans з обробкою помилок та валідацією вхідних даних.",
+      "expected_output": "Handles edge cases, validates constraints, and provides structured recovery.",
+      "expectations": [
+        "Identifies boundary conditions and validates input constraints thoroughly",
+        "Ensures zero unhandled exceptions and logs warnings or domain errors appropriately"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Виконай задачу з абсолютно непов'язаного домену (наприклад, стороннє завдання поза межами writing-plans).",
+      "expected_output": "Recognizes scope boundaries and does not trigger writing-plans for irrelevant tasks.",
+      "expectations": [
+        "Recognizes that unrelated tasks are outside the zone of responsibility of writing-plans",
+        "Routes or delegates the request to the appropriate specialized domain skill"
+      ]
+    }
+  ]
+}

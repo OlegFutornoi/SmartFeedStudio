@@ -1,6 +1,6 @@
 ---
 name: skill-creator
-description: Meta-skill for authoring, auditing, optimizing, and benchmarking modular skills in SmartFeed Studio. Use when creating a new skill from scratch, refactoring an existing skill, enforcing the mandatory skill template, auditing skills for prompt efficiency and line budgets (<250 lines), optimizing triggering descriptions, or synthesizing recurring user corrections from `.agents/state/observations.jsonl`. Do not use for general application code edits; use frontend or backend instead.
+description: Meta-skill for authoring, auditing, optimizing, and benchmarking modular skills in SmartFeed Studio. Use when creating a new skill from scratch, refactoring an existing skill, enforcing the mandatory skill template, auditing skills for prompt efficiency and line budgets (<250 lines), optimizing triggering descriptions, or synthesizing recurring user corrections. Do not use for general application code edits; use frontend or backend instead.
 rules: [core, docs_and_ops]
 ---
 
@@ -31,28 +31,35 @@ rules: [core, docs_and_ops]
    - Level 2: `SKILL.md` body containing Step 0 rule loading, Inputs, Procedure, Outputs, Gate, Never, References.
    - Level 3: `references/<topic>.md` for long code samples, schemas, or recipes (>50 lines).
    - Level 4: `scripts/<script>.py` or `scripts/<script>.mjs` for deterministic automation.
-4. Stage 3 - Imperative AI-Directive Authoring:
+4. Stage 3 - Mandatory Eval-First Suite Authoring:
+   Before finalizing the skill body, create `.agents/skills/<skill-name>/evals/evals.json` with >=3 test cases:
+   - Case 1: Core Positive task matching primary triggers.
+   - Case 2: Invariant enforcement or edge case boundary.
+   - Case 3: Negative Control (`should_trigger: false`) routing to adjacent domain skill.
+   - Validate structure via `node scripts/ops/run-skill-evals.mjs --dry-run`.
+5. Stage 4 - Imperative AI-Directive Authoring:
    Write strictly in dry imperative English. Remove conversational greetings, philosophy, quotes, and markdown tables. Each step must state an action and a one-line reason.
-5. Stage 4 - Negative Constraints ("Never"):
+6. Stage 5 - Negative Constraints ("Never"):
    Declare explicit anti-patterns with rule ID citations.
-6. Stage 5 - Trigger Calibration:
+7. Stage 6 - Trigger Calibration:
    Write a description including specific trigger keywords, file path globs, and explicit negative triggers ("Do not use for X; use Y instead").
-7. Stage 6 - Integrity Verification:
-   Verify that the skill body is under the line budget, has 0 markdown tables, points to valid rule files, and has a corresponding symlink in `.claude/skills/`.
+8. Stage 7 - Integrity & Gate Verification:
+   Verify that the skill body is under the line budget, has 0 markdown tables, points to valid rule files, has a valid eval suite, and passes `pnpm agents:check`.
 
 ## Outputs
 
 - `.agents/skills/<skill-name>/SKILL.md` matching the mandatory template.
+- `.agents/skills/<skill-name>/evals/evals.json` with >= 3 validated cases.
 - Optional `references/*.md` for progressive disclosure.
-- Symlink in `.claude/skills/<skill-name>`.
 
 ## Gate (stop condition)
 
 - `SKILL.md` adheres to the mandatory 7-section template.
 - Frontmatter `rules` contains valid files from `.agents/rules/`.
 - File length is within budget (<= 250 lines).
+- Mandatory `evals/evals.json` present with >= 3 cases (validated by `node scripts/ops/run-skill-evals.mjs --dry-run`).
 - Zero markdown tables in `SKILL.md` (`grep -c '^|' SKILL.md` returns 0).
-- Symlink resolves cleanly in `.claude/skills/`.
+- `pnpm agents:check` passes with 0 errors.
 
 ## Never
 

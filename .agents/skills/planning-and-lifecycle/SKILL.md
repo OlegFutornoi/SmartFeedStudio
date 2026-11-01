@@ -1,6 +1,6 @@
 ---
 name: planning-and-lifecycle
-description: Deterministic implementation planning, specification drafting, architectural invariant validation, and plan lifecycle management. Governs plans in plans/active/, plans/backlog/, and plans/completed/.
+description: Deterministic implementation planning, specification drafting, architectural invariant validation, and plan lifecycle management. Governs plans in plans/active/, plans/backlog/, and plans/completed/. Use when authoring vertical tracer slices, organizing tasks, or managing plan status transitions. Do not use for writing production feature code; use backend or frontend instead.
 rules:
   - core
   - docs_and_ops
@@ -22,9 +22,9 @@ rules:
    - Backend task: `BE-<num>-<short-title>.md` (NestJS 11 CQRS, Prisma, PostgreSQL 16, Redis, BullMQ, Supertest E2E).
    - Joint full-stack task: `FR-BE-<num>-<short-title>.md` (end-to-end tracer-bullet slice cutting through contracts, DB, API, and UI).
    - Sequential numbering starts from the next task (`01`); legacy completed/backlog plans remain untouched.
-2. `plans/active/`: Contains the currently active task under implementation. Only one active task should be in flight at a time.
+2. `plans/active/`: Contains the currently active human plan in Ukrainian for user review (`PLAN-02`).
 3. `plans/backlog/`: Strategic roadmaps, future architectural proposals, and deferred feature tasks.
-4. `plans/completed/`: Finished and verified implementation tasks (100% test pass).
+4. `plans/completed/`: Contains permanent model compressed plans (`plans/completed/<slug>.compressed.md`) and verified historical tasks. AI models execute ONLY the compressed copy.
 5. `plans/README.md`: Central registry of all tasks categorized by active, backlog, and completed.
 
 ## Mandatory task structure and invariants
@@ -68,14 +68,14 @@ Every task authored in `plans/active/` (`FR-...`, `BE-...`, `FR-BE-...`) must fo
 8. Failure modes, bilingual localization & edge cases:
    - Define offline behaviors, network drops, and translations in both `uk` and `en` (`i18n-localization`).
    - Adversarially stress-test TOCTOU concurrency races and payment webhook idempotency (`doubt-driven-development`).
-9. Zero task dumping, zero duplicate files, and clean Markdown (`CORE-07`, `CORE-14`):
-   - Write the task directly to `plans/active/` starting with `# Heading` on line 1, using compact bullet lists instead of Markdown tables (`| col | col |`), and formatted via `npx prettier --write`.
-   - When compressing a task via `scripts/headroom-compress.mjs --save`, keep strictly ONE single `.compressed.md` file in `plans/active/` (never keep both `.md` and `.compressed.md` duplicates).
+9. Zero task dumping, dual-plan creation, and clean Markdown (`CORE-07`, `CORE-14`):
+   - Create tasks via `node scripts/plan-manager.mjs create <slug> "<title_ua>" "<title_en>"`. This creates the human plan in `plans/active/<slug>.md` and the compressed brief in `plans/completed/<slug>.compressed.md`.
+   - AI models execute ONLY the compressed version in `plans/completed/<slug>.compressed.md` (reading `plans/active/` is blocked by Rule R5).
    - The chat response must contain only a 1-2 sentence summary and clickable markdown link (`[Задача](file:///...)`) with the recommended executing agent.
 
-## Task completion and transition to completed
+## Task completion and deletion of active plan
 
 1. Upon completing implementation and verifying 100% test pass across targeted suites:
-   - Move task file from `plans/active/<filename>.md` to `plans/completed/<filename>.md`.
-   - Update header metadata with completed status and completion date.
+   - Run `node scripts/plan-manager.mjs close <slug>`.
+   - The uncompressed file in `plans/active/<slug>.md` is deleted; the permanent compressed plan in `plans/completed/<slug>.compressed.md` is marked completed and preserved.
    - Update `plans/README.md` to reflect the completed state.

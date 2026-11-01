@@ -1,6 +1,6 @@
 ---
 name: git-commit
-description: Controlled git commit and release workflow. Enforces pre-commit build verification, Conventional Commits, plain branch pushes, and on-demand SemVer release tagging.
+description: Controlled git commit and release workflow. Enforces pre-commit build verification, Conventional Commits, plain branch pushes, and on-demand SemVer release tagging. Use when explicitly requested to commit changes, prepare a git release, or format commit messages. Do not use for autonomous commits without explicit user command (CORE-10); ask first.
 rules:
   - core
   - docs_and_ops

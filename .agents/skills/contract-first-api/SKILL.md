@@ -1,6 +1,6 @@
 ---
 name: contract-first-api
-description: Contract-first API engineering using shared Zod schemas, TypeScript DTOs, and enums in packages/shared. Use when defining new endpoints, altering payload shapes, or synchronizing client and server models.
+description: Contract-first API engineering using shared Zod schemas, TypeScript DTOs, and enums in packages/shared. Use when defining new endpoints, altering payload shapes, or synchronizing client and server models. Do not use for database migrations; use prisma-postgres-mastery instead.
 rules:
   - core
   - backend

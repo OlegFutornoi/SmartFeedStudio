@@ -1,6 +1,6 @@
 ---
 name: project-context-map
-description: Monorepo system topology, service ports, directory boundaries, and data flow navigation. Use at the start of tasks to locate domain code without full repository scans.
+description: Monorepo system topology, service ports, directory boundaries, and data flow navigation. Use when starting tasks to locate domain code without full repository scans. Do not use for deep code refactoring; use backend or frontend instead.
 rules:
   - core
   - docs_and_ops

@@ -1,6 +1,6 @@
 ---
 name: incremental-implementation
-description: Thin vertical slicing of multi-file features into independently verifiable, testable increments under 250 lines. Use when executing complex plans or multi-stage refactorings.
+description: Thin vertical slicing of multi-file features into independently verifiable, testable increments under 250 lines. Use when executing complex plans or multi-stage refactorings. Do not use for initial brainstorming or requirement discovery; use brainstorming instead.
 rules:
   - core
   - docs_and_ops

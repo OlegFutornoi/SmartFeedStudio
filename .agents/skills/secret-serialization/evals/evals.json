@@ -1,0 +1,32 @@
+{
+  "skill_name": "secret-serialization",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Застосуй скіл secret-serialization для стандартної задачі у SmartFeed Studio відповідно до інструкцій.",
+      "expected_output": "Follows secret-serialization procedure, adheres to architectural invariants, and satisfies acceptance criteria.",
+      "expectations": [
+        "Applies secret-serialization step-by-step procedure according to SKILL.md guidelines",
+        "Adheres to project invariants and definition of done without shortcuts"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Виконай граничний сценарій для secret-serialization з обробкою помилок та валідацією вхідних даних.",
+      "expected_output": "Handles edge cases, validates constraints, and provides structured recovery.",
+      "expectations": [
+        "Identifies boundary conditions and validates input constraints thoroughly",
+        "Ensures zero unhandled exceptions and logs warnings or domain errors appropriately"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Виконай задачу з абсолютно непов'язаного домену (наприклад, стороннє завдання поза межами secret-serialization).",
+      "expected_output": "Recognizes scope boundaries and does not trigger secret-serialization for irrelevant tasks.",
+      "expectations": [
+        "Recognizes that unrelated tasks are outside the zone of responsibility of secret-serialization",
+        "Routes or delegates the request to the appropriate specialized domain skill"
+      ]
+    }
+  ]
+}

@@ -78,18 +78,18 @@ description: Core universal engineering invariants applied across all tasks and 
 - Emojis are strictly forbidden across test code, logs, console output, markdown files, plans, commit messages, and chat responses; use ASCII badges (`[PASS]`, `[FAIL]`, `[WARN]`).
 - Reason: Emojis degrade log readability in CI/CD terminals.
 
-## CORE-14: Two-Tier Plan Compression & Clean Markdown Hygiene
+## CORE-14: Dual-Plan Model Isolation & Markdown Hygiene
 
-- Two-Tier Plans: Primary human plans in `plans/active/<name>.md` are written in Ukrainian (`PLAN-02`) for user review. When compressed for AI agent execution (`<name>.compressed.md`), OmniRoute and Headroom compile them into dense technical English, saving 65-75% tokens via English BPE density while keeping 100% of defect IDs, file paths, line numbers, and DoD steps.
-- Single-File MCP Cache: MCP cache entries (`.agents/cache/mcp/`) are stored strictly as single `.compressed.md` files (zero duplicate raw `.md` files).
-- Never use Markdown tables (`| col | col |`) in plans or MCP cache entries (use bullet lists so Headroom `router:tabular` never strips prose sections). Start every Markdown file with `# Heading` on line 1 (`MD041`), never wrap in outer ` ```markdown ` fences, and format with `npx prettier --write`.
-- Reason: English BPE compilation slashes model context burn by ~70%, while clean markdown hygiene prevents tabular truncation and linter failures.
+- Dual-Plan Isolation: Human plans in `plans/active/<name>.md` are in Ukrainian (`PLAN-02`). Model compressed plans are saved to `plans/completed/<name>.compressed.md` in dense technical English. Models execute ONLY the compressed version from `plans/completed/`, even if uncompressed plans are given in prompt. On task completion, delete `plans/active/<name>.md`; the compressed version remains permanently.
+- Single-File MCP Cache: MCP cache entries (`.agents/cache/mcp/`) are strictly single `.compressed.md` files.
+- Never use Markdown tables (`| col |`) in plans/cache (use bullets). Start files with `# Heading` on line 1 (`MD041`), omit outer code fences, and run `npx prettier --write`.
+- Reason: Enforces 70% token savings, model plan isolation, and zero Markdown truncation.
 
-## PLAN-01: Three-Directory Plans Lifecycle
+## PLAN-01: Deterministic Plan Lifecycle
 
-- Tasks reside in `plans/active/`, `plans/backlog/`, or `plans/completed/` (`FR-<num>-<title>.md`, `BE-<num>-<title>.md`, `FR-BE-<num>-<title>.md`, `QA-<num>-<title>.md`).
-- Creating a task in `plans/active/` gives no authority to modify code or DB until explicit user approval ("починай", "виконуй", "реалізуй"). Move completed tasks to `plans/completed/` and update `plans/README.md`.
-- Reason: Deterministic task taxonomy prevents scope creep and unapproved changes.
+- Tasks reside in `plans/active/`, `plans/backlog/`, or `plans/completed/` (`FR-`, `BE-`, `FR-BE-`, `QA-`, `AG-`).
+- Tasks in `plans/active/` grant no execution authority until explicit approval ("виконуй", "починай"). Finished tasks are closed via `node scripts/plan-manager.mjs close <slug>`, deleting the active file while preserving the permanent compressed copy.
+- Reason: Strict task lifecycle prevents scope creep and context pollution.
 
 ## PLAN-02: Mandatory Ukrainian Language for Plans & Audits
 

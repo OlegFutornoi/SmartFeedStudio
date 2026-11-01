@@ -1,6 +1,6 @@
 ---
 name: ci-cd-and-automation
-description: Continuous integration and deployment pipeline engineering. Governs automated quality gates, linting, type checks, build validation, and GitHub Actions workflow management.
+description: Continuous integration and deployment pipeline engineering. Governs automated quality gates, linting, type checks, build validation, and GitHub Actions workflow management. Use when creating or updating GitHub Actions workflows, setting up CI test pipelines, or configuring branch protection gates. Do not use for local desktop builds; use tauri-v2-security-and-ipc or devops instead.
 rules:
   - core
   - docs_and_ops

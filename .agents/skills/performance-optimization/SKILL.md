@@ -1,6 +1,6 @@
 ---
 name: performance-optimization
-description: Full-stack performance optimization across frontend, NestJS CQRS backend, and PostgreSQL 16. Governs latency budgets, profiling, query execution plans, memory management, and Core Web Vitals.
+description: Full-stack performance optimization across frontend, NestJS CQRS backend, and PostgreSQL 16. Governs latency budgets, profiling, query execution plans, memory management, and Core Web Vitals. Use when diagnosing slow response times, reducing page load latency, profiling memory leaks, or tuning CPU usage. Do not use for initial feature design; use backend or frontend instead.
 rules:
   - core
   - testing

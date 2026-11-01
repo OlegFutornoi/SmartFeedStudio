@@ -1,0 +1,32 @@
+{
+  "skill_name": "web-app-penetration-testing",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Застосуй скіл web-app-penetration-testing для стандартної задачі у SmartFeed Studio відповідно до інструкцій.",
+      "expected_output": "Follows web-app-penetration-testing procedure, adheres to architectural invariants, and satisfies acceptance criteria.",
+      "expectations": [
+        "Applies web-app-penetration-testing step-by-step procedure according to SKILL.md guidelines",
+        "Adheres to project invariants and definition of done without shortcuts"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Виконай граничний сценарій для web-app-penetration-testing з обробкою помилок та валідацією вхідних даних.",
+      "expected_output": "Handles edge cases, validates constraints, and provides structured recovery.",
+      "expectations": [
+        "Identifies boundary conditions and validates input constraints thoroughly",
+        "Ensures zero unhandled exceptions and logs warnings or domain errors appropriately"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Виконай задачу з абсолютно непов'язаного домену (наприклад, стороннє завдання поза межами web-app-penetration-testing).",
+      "expected_output": "Recognizes scope boundaries and does not trigger web-app-penetration-testing for irrelevant tasks.",
+      "expectations": [
+        "Recognizes that unrelated tasks are outside the zone of responsibility of web-app-penetration-testing",
+        "Routes or delegates the request to the appropriate specialized domain skill"
+      ]
+    }
+  ]
+}

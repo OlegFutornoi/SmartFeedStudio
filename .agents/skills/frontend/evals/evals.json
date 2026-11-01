@@ -1,0 +1,35 @@
+{
+  "skill_name": "frontend",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Створи сторінку списку товарів у apps/admin-portal з таблицею та діями над рядками.",
+      "expected_output": "Composes view strictly from official shadcn components, enforces 100% solid sticky header (UI-01), semantic tokens (UI-02), and modular decomposition (<250 lines per file).",
+      "expectations": [
+        "Uses official shadcn UI primitives (@/components/ui/*) without raw HTML controls",
+        "Enforces solid sticky header on table (thead.sticky.top-0 bg-card)",
+        "Decomposes view into sub-components (*TableRow.tsx, *Header.tsx) to stay under 250 lines"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Додай кнопку експорту каталогу в CSV з захистом від подвійного кліку та локалізацією.",
+      "expected_output": "Uses useRef in-flight request deduplication, bilingual dictionary keys (UK/EN), and semantic button variants.",
+      "expectations": [
+        "Implements request deduplication using useRef to prevent concurrent duplicate submissions",
+        "Uses bilingual i18n keys without raw hardcoded text strings",
+        "Applies official shadcn Button with accessible focus rings and loading state"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Створи нову міграцію Prisma для додавання індексу на поле organizationId у PostgreSQL.",
+      "expected_output": "Recognizes that database schema changes and Prisma migrations belong strictly to backend and prisma-postgres-mastery skills.",
+      "expectations": [
+        "Recognizes that database migrations and Prisma schemas belong to backend/database domain",
+        "Directs schema changes to backend and prisma-postgres-mastery skills",
+        "Maintains frontend focus on React views, shadcn components, and client state"
+      ]
+    }
+  ]
+}

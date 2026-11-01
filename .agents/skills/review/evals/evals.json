@@ -1,0 +1,35 @@
+{
+  "skill_name": "review",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Проведи 5-осьовий аудит pull request з новими ендпоінтами платежів WayForPay.",
+      "expected_output": "Performs read-only audit across Architecture (CQRS 1 handler/file), Security (Layer 1-4, webhook signature verification), Database (FK indexes), UI/UX, and Invariants without modifying the worktree.",
+      "expectations": [
+        "Operates in strictly read-only mode without modifying production source code files",
+        "Verifies webhook signature verification, replay protection, and Redis idempotency tokens",
+        "Checks for zero unindexed foreign keys and 100% DTO validation"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Перевір зміни у файлі feeds.controller.ts на відповідність бюджету рядків та відсутність as any.",
+      "expected_output": "Validates CORE-03 (zero as any), CORE-04 (file budget <250 lines), and emits an Actionable Fix Report.",
+      "expectations": [
+        "Audits file against CORE-03 (zero 'as any') and CORE-04 (<250 lines budget)",
+        "Reports findings with specific file:line pointers and concrete remediation steps",
+        "Does not dump large text sheets or diffs into chat; persists task in plans/active/"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Напиши реалізацію нового сервісу для парсингу Rozetka XML фідів у backend-api.",
+      "expected_output": "Recognizes that code authoring and feature implementation belong to backend / streaming-large-feeds, maintaining review strictly to auditing.",
+      "expectations": [
+        "Refuses to author production feature implementation directly in review mode",
+        "Directs feature writing to backend and streaming-large-feeds skills",
+        "Emphasizes that review agent acts as an independent auditor and gatekeeper"
+      ]
+    }
+  ]
+}

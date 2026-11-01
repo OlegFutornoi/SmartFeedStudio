@@ -1,6 +1,6 @@
 ---
 name: code-simplification
-description: Refactors code to reduce unnecessary complexity while preserving exact runtime behavior and contract invariants. Use after features are functioning to clean up bloated logic, eliminate nested branches, and improve maintainability.
+description: Refactors code to reduce unnecessary complexity while preserving exact runtime behavior and contract invariants. Use when features are functioning to clean up bloated logic, eliminate nested branches, and improve maintainability. Do not use for adding new functional capabilities; use backend or frontend instead.
 rules:
   - core
   - testing

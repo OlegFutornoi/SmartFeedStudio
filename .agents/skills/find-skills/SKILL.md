@@ -1,6 +1,6 @@
 ---
 name: find-skills
-description: Discovers and installs skills from the open agent skills ecosystem using the Skills CLI. Use when searching for specialized third-party agent capabilities or tooling templates.
+description: Discovers and installs skills from the open agent skills ecosystem using the Skills CLI. Use when searching for specialized third-party agent capabilities or tooling templates. Do not use for internal project refactorings; use skill-creator instead.
 rules:
   - core
 ---

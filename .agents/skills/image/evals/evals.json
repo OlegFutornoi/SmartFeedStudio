@@ -14,7 +14,16 @@
         "Provides structured prompt",
         "Mentions WebP optimization"
       ],
-      "files": []
+      "files": [],
+      "expectations": [
+        "Checks for product-marketing.md",
+        "Recommends AI generation for one-off hero",
+        "Proposes visual metaphor for topic",
+        "Specifies 1200x630 dimensions",
+        "Recommends Flux, Gemini, or Ideogram",
+        "Provides structured prompt",
+        "Mentions WebP optimization"
+      ]
     },
     {
       "id": 2,
@@ -28,7 +37,15 @@
         "Suggests specific screenshot tools",
         "Notes this as a common mistake"
       ],
-      "files": []
+      "files": [],
+      "expectations": [
+        "Refuses to use AI generation for product UI",
+        "Explains models hallucinate UI",
+        "Recommends real screenshots at 2x resolution",
+        "Mentions device mockups for framing",
+        "Suggests specific screenshot tools",
+        "Notes this as a common mistake"
+      ]
     },
     {
       "id": 3,
@@ -42,7 +59,15 @@
         "Mentions Ideogram for text-heavy designs",
         "Recommends testing at display size"
       ],
-      "files": []
+      "files": [],
+      "expectations": [
+        "Specifies 1500x500 dimensions",
+        "Warns about avatar overlap area",
+        "Recommends minimal text",
+        "Suggests Canva or Figma over AI",
+        "Mentions Ideogram for text-heavy designs",
+        "Recommends testing at display size"
+      ]
     },
     {
       "id": 4,
@@ -55,7 +80,14 @@
         "Suggests programmatic text overlays for variants",
         "Says start at highest resolution"
       ],
-      "files": []
+      "files": [],
+      "expectations": [
+        "Recommends Canva Magic Resize",
+        "Lists dimensions for all 5 platforms",
+        "Notes Instagram 4:5 variant",
+        "Suggests programmatic text overlays for variants",
+        "Says start at highest resolution"
+      ]
     },
     {
       "id": 5,
@@ -69,7 +101,15 @@
         "Mentions explicit dimensions to prevent CLS",
         "Provides command line tool example"
       ],
-      "files": []
+      "files": [],
+      "expectations": [
+        "Recommends WebP as default",
+        "Mentions JPEG/PNG fallback strategy",
+        "Lists optimization checklist items",
+        "Mentions lazy loading",
+        "Mentions explicit dimensions to prevent CLS",
+        "Provides command line tool example"
+      ]
     },
     {
       "id": 6,
@@ -83,7 +123,15 @@
         "Specifies 1200x630 dimensions",
         "Notes this is best for high-volume blogs"
       ],
-      "files": []
+      "files": [],
+      "expectations": [
+        "Recommends programmatic OG image generation",
+        "Names Vercel OG, Satori, or Cloudinary",
+        "Mentions template + dynamic data approach",
+        "Lists required og:image meta tags",
+        "Specifies 1200x630 dimensions",
+        "Notes this is best for high-volume blogs"
+      ]
     }
   ]
 }

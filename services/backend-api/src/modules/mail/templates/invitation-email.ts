@@ -128,7 +128,7 @@ export function generateInvitationEmailHtml(data: InvitationEmailData): string {
 <body>
   <div class="card">
     <div class="logo">
-      <span class="logo-badge">⚡ SmartFeed Studio</span>
+      <span class="logo-badge">SmartFeed Studio</span>
     </div>
     <div class="title">Вас запрошено до команди!</div>
     <div class="subtitle">

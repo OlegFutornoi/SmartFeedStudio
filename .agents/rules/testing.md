@@ -72,3 +72,27 @@ description: Automated testing framework invariants, Playwright E2E, data cleanu
 - Assertions must use web-first locators (`getByTestId`, `getByRole`) and web-first expectations (`await expect(...).toBeVisible()`).
 - In CI mode, `forbidOnly` is mandatory to prevent accidental commits of `test.only`.
 - Reason: Hardcoded delays induce test flakiness and slow down execution suites.
+
+## TEST-12: Zero Fallback Masking (No Testing Theater)
+
+- Prohibits fallback expressions masking missing data (`?? "default"`, `|| 0`, `?? 12345`).
+- Missing or malformed data in responses must FAIL the test immediately with an explicit error.
+- Reason: Fallback values create green tests on broken APIs, masking real regressions.
+
+## TEST-13: Unconditional Assertion Execution
+
+- Prohibits wrapping expectations in conditional blocks (`if (response.body) { expect(...) }`).
+- Core schema, header, and contract assertions must execute unconditionally.
+- Reason: Conditional checks silently pass when the guarded object is undefined.
+
+## TEST-14: Read-Back State Verification for Mutations
+
+- Blind `200 OK` responses are never accepted as sufficient proof of state mutation.
+- Every create, update, or delete mutation must be verified by reading state back from the database or API.
+- Reason: Endpoints often return 200 without persisting changes or handling transactional rollback.
+
+## TEST-15: Red Tests as Diagnostic Signals
+
+- Never soften, relax, or "fit-to-pass" test assertions to match broken backend responses.
+- If a test fails due to a real defect, report it as a defect and fix the root cause.
+- Reason: Fitting tests to broken behavior destroys the reliability of the test suite.

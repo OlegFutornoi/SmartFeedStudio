@@ -1,6 +1,6 @@
 ---
 name: automated-guardrails-ci
-description: Automated guardrails enforcement via ESLint rules, TypeScript strict flags, pre-commit hooks, and CI pipelines. Converts policy invariants into machine-enforced blocking checks.
+description: Automated guardrails enforcement via ESLint rules, TypeScript strict flags, pre-commit hooks, and CI pipelines. Converts policy invariants into machine-enforced blocking checks. Use when adding machine-enforced architectural invariants, configuring lint-staged, or auditing CI gates. Do not use for writing application business logic; use backend or frontend instead.
 rules:
   - core
   - testing

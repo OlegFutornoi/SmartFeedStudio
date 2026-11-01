@@ -1,3 +1,21 @@
+---
+name: qa
+description: QA & Performance Testing Agent (@agents_qa / @agents-qa). Commands test automation in e2e/, Playwright integration, chaos, and benchmarks. Sole author of automated test suites (TEST-00). Use when authoring, refactoring, or running automated E2E/integration tests in e2e/. Do not use for production application code; hand off to backend or frontend.
+subagent: true
+model: inherit
+skills:
+  - skills/playwright-automation
+  - skills/test-driven-development
+  - skills/mock-real-parity
+  - skills/browser-debugging
+  - skills/systematic-debugging
+  - skills/doubt-driven-development
+  - skills/performance-optimization
+  - skills/i18n-localization
+  - skills/task-memory-and-state
+  - skills/lessons-learned-registry
+---
+
 # QA & Performance Testing Agent
 
 ## Role

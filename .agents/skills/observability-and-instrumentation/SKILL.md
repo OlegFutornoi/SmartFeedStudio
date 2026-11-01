@@ -1,6 +1,6 @@
 ---
 name: observability-and-instrumentation
-description: Application observability, structured logging, error tracing with Sentry, and health checks across NestJS backend and React frontend. Governs log levels, correlation IDs, and telemetry hygiene.
+description: Application observability, structured logging, error tracing with Sentry, and health checks across NestJS backend and React frontend. Governs log levels, correlation IDs, and telemetry hygiene. Use when configuring Sentry monitoring, setting up structured logging, or tracing errors. Do not use for manual code reviews; use review or code-review-and-quality instead.
 rules:
   - core
   - docs_and_ops

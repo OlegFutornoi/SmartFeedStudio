@@ -1,6 +1,6 @@
 ---
 name: task-memory-and-state
-description: Task context persistence, execution state checkpointing, session handoff, and prompt token optimization. Prevents agents from losing context, repeating work, or re-scanning the monorepo from scratch.
+description: Task context persistence, execution state checkpointing, session handoff, and prompt token optimization in .agents/state/active_task.json. Use when starting tasks to load active task state and at stage gates to persist modified files and handoffs. Do not use for application business state; use backend or database instead.
 rules:
   - core
   - docs_and_ops

@@ -1,6 +1,6 @@
 ---
 name: perplexity-agent-api
-description: Web-grounded live search, marketplace research, and multi-provider reasoning via Perplexity Agent API (POST /v1/agent). Use when agents need real-time web facts, marketplace feed format specifications (Rozetka, Prom.ua, Horoshop), competitor pricing models, or supplier catalog documentation with search_results citations and structured JSON output. Do not use for local SQLite queries or internal code refactoring; use context7-mcp or prisma-postgres-mastery instead.
+description: Web-grounded live search, marketplace research, and multi-provider reasoning via Perplexity Agent API (POST /v1/agent). Use when agents need real-time web facts, marketplace feed format specifications (Rozetka, Prom.ua, Horoshop), competitor pricing models, or supplier catalog documentation with search_results citations and structured JSON output. Do not use for local SQLite queries or internal code refactoring; use context7 or prisma-postgres-mastery instead.
 rules:
   - core
   - backend

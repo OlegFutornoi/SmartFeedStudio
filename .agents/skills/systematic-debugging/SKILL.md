@@ -1,6 +1,6 @@
 ---
 name: systematic-debugging
-description: Four-phase systematic debugging methodology. Use when diagnosing test failures, production defects, performance bottlenecks, or unexpected behavior to locate root cause before proposing fixes.
+description: Four-phase systematic debugging methodology. Use when diagnosing test failures, production defects, performance bottlenecks, or unexpected behavior to locate root cause before proposing fixes. Do not use for initial greenfield feature planning; use planning-and-lifecycle instead.
 rules:
   - core
   - testing

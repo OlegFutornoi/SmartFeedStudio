@@ -121,6 +121,7 @@ Central intelligence orchestrator connecting 7 specialized autonomous engineerin
 - `omniroute-delegation`: Dispatches tasks, batch catalog processing, prompt testing, or reasoning workloads to zero-cost multi-provider AI fallback (Google AI Studio, Groq Cloud, OpenRouter).
 - `headroom-compression`: Compresses large datasets, plans, specs, feeds, logs, and multi-file diffs via local Headroom engine and zero-cost AI translation, saving compressed files on disk (`<file>.compressed.<ext>`).
 - `mcp-knowledge-cache`: Cache-first MCP knowledge retrieval, storage, Headroom compression, and OmniRoute-delegated cache refreshing in `.agents/cache/mcp/` (`pnpm ai:cache`).
+- `find-skills`: Discovers and installs skills from the open agent skills ecosystem using the Skills CLI.
 
 ## 4. Full-Stack Orchestra Protocol (`AGENT-04`)
 

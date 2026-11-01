@@ -1,6 +1,6 @@
 ---
 name: code-review-and-quality
-description: Comprehensive 5-axis code review and quality gating. Use when reviewing pull requests, inspecting diffs, validating changes against architectural invariants, or verifying pre-commit quality gates.
+description: Comprehensive 5-axis code review and quality gating. Use when reviewing pull requests, inspecting diffs, validating changes against architectural invariants, or verifying pre-commit quality gates. Do not use for implementing feature code; use backend or frontend instead.
 rules:
   - core
   - backend

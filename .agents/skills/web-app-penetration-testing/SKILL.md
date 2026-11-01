@@ -1,6 +1,6 @@
 ---
 name: web-app-penetration-testing
-description: Black-box and source-assisted penetration testing for web applications. Probes running local dev servers and staging environments for authentication bypasses, broken access control, XSS, CSRF, and business logic flaws with working proof-of-concept exploits.
+description: Black-box and source-assisted penetration testing for web applications. Probes running local dev servers and staging environments for authentication bypasses, broken access control, XSS, CSRF, and business logic flaws with working proof-of-concept exploits. Use when testing running local dev servers or staging portals for web vulnerabilities. Do not use for static code linting; use automated-guardrails-ci instead.
 rules:
   - core
   - security

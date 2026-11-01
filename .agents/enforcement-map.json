@@ -2,62 +2,74 @@
   "AGENT-01": {
     "title": "Agent Roles and Dispatching",
     "domain": "agents",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": ".agents/scripts/validate-agents.mjs",
+    "mode": "blocking"
   },
   "AGENT-02": {
     "title": "Mandatory 8-Stage Execution Loop",
     "domain": "agents",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": ".agents/scripts/validate-agents.mjs",
+    "mode": "blocking"
   },
   "AGENT-03": {
     "title": "Invariant & Skill Codification Loop",
     "domain": "agents",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": ".agents/scripts/validate-agents.mjs",
+    "mode": "blocking"
   },
   "AGENT-04": {
     "title": "Full-Stack Orchestra Protocol (Zero Siloed & Zero Raw Tasks)",
     "domain": "agents",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": ".agents/scripts/validate-agents.mjs",
+    "mode": "blocking"
   },
   "AGENT-05": {
     "title": "Reference-Pattern Hierarchy",
     "domain": "agents",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": ".agents/scripts/validate-agents.mjs",
+    "mode": "blocking"
   },
   "AGENT-06": {
     "title": "Pre- and Post-Flight Verification Gate",
     "domain": "agents",
     "enforcer": "package.json:verify:fast",
-    "mode": "manual"
+    "mode": "blocking"
+  },
+  "AGENT-07": {
+    "title": "Skill Evolution, Versioning & Trigger Integrity",
+    "domain": "agents",
+    "enforcer": "scripts/ops/run-skill-evals.mjs",
+    "mode": "blocking"
+  },
+  "AGENT-08": {
+    "title": "Subagent Delegation Protocol & Single-Writer Rule",
+    "domain": "agents",
+    "enforcer": ".agents/scripts/pre-tool-guard.mjs",
+    "mode": "blocking"
   },
   "ARCH-01": {
     "title": "Native vs Cloud Runtime Segregation",
     "domain": "backend",
-    "enforcer": "depcruise:apps-never-import-backend",
-    "mode": "error"
+    "enforcer": "tools/guardrails/dependency-cruiser.cjs",
+    "mode": "blocking"
   },
   "ARCH-02": {
     "title": "Zero Headless Server GUI Spawns",
     "domain": "backend",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "tools/guardrails/dependency-cruiser.cjs",
+    "mode": "blocking"
   },
   "ARCH-03": {
     "title": "Shared Contracts First",
     "domain": "backend",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "tools/guardrails/dependency-cruiser.cjs",
+    "mode": "blocking"
   },
   "ARCH-04": {
     "title": "Strict CQRS Modularity (1 File = 1 Handler)",
     "domain": "backend",
-    "enforcer": "invariants:structural/ARCH-04",
-    "mode": "ratchet"
+    "enforcer": "tools/guardrails/structural.mjs",
+    "mode": "blocking"
   },
   "ARCH-05": {
     "title": "UsersModule Zero JWT Awareness",
@@ -68,20 +80,20 @@
   "BE-01": {
     "title": "100% Validated Controller DTOs",
     "domain": "backend",
-    "enforcer": "eslint:invariants/backend-controllers",
-    "mode": "error"
+    "enforcer": "tools/guardrails/dependency-cruiser.cjs",
+    "mode": "blocking"
   },
   "BE-02": {
     "title": "100% Protected Mutation Endpoints",
     "domain": "backend",
-    "enforcer": "invariants:structural/BE-02",
-    "mode": "ratchet"
+    "enforcer": "tools/guardrails/structural.mjs",
+    "mode": "blocking"
   },
   "BE-03": {
     "title": "Guard-Decorator Parity",
     "domain": "backend",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "tools/guardrails/structural.mjs",
+    "mode": "blocking"
   },
   "BE-04": {
     "title": "Zero Hardcoded Fallback Secrets (CWE-798)",
@@ -98,14 +110,14 @@
   "BE-07": {
     "title": "Concurrency, Atomic Upserts & Mutex Protection",
     "domain": "backend",
-    "enforcer": "invariants:structural/BE-07",
-    "mode": "ratchet"
+    "enforcer": "tools/guardrails/structural.mjs",
+    "mode": "blocking"
   },
   "BE-08": {
     "title": "Test Authoring Delegated to QA",
     "domain": "backend",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "tools/guardrails/structural.mjs",
+    "mode": "blocking"
   },
   "BE-09": {
     "title": "Large Feed SAX Streaming Backpressure",
@@ -122,8 +134,8 @@
   "BE-11": {
     "title": "Layer-2 Quota Validation & AI Credits",
     "domain": "backend",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "tools/guardrails/structural.mjs",
+    "mode": "blocking"
   },
   "BE-12": {
     "title": "Anti-BOLA Tenant & Organization Isolation",
@@ -140,74 +152,74 @@
   "BE-14": {
     "title": "Tight Request Body Limits (Anti-DoS)",
     "domain": "backend",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "tools/guardrails/structural.mjs",
+    "mode": "blocking"
   },
   "CORE-01": {
     "title": "Path Aliases and Import Boundaries",
     "domain": "core",
-    "enforcer": "eslint:no-restricted-imports",
-    "mode": "error"
+    "enforcer": "tools/guardrails/dependency-cruiser.cjs",
+    "mode": "blocking"
   },
   "CORE-02": {
     "title": "Zero Silent Failures",
     "domain": "core",
-    "enforcer": "eslint:no-empty",
-    "mode": "error"
+    "enforcer": "tools/guardrails/structural.mjs",
+    "mode": "blocking"
   },
   "CORE-03": {
     "title": "Zero `as any` Type Bypasses",
     "domain": "core",
-    "enforcer": "eslint:no-explicit-any",
-    "mode": "error"
+    "enforcer": "tools/guardrails/structural.mjs",
+    "mode": "blocking"
   },
   "CORE-04": {
     "title": "File Size Budget (<250-300 Lines)",
     "domain": "core",
-    "enforcer": "eslint:max-lines",
-    "mode": "error"
+    "enforcer": ".agents/scripts/stop-guard.mjs",
+    "mode": "blocking"
   },
   "CORE-05": {
     "title": "Safe OS Execution",
     "domain": "core",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "tools/guardrails/structural.mjs",
+    "mode": "blocking"
   },
   "CORE-06": {
     "title": "Upfront Research via context7 and Project MCPs",
     "domain": "core",
-    "enforcer": "mcp:context7",
-    "mode": "review-only"
+    "enforcer": "scripts/mcp-cache.mjs",
+    "mode": "blocking"
   },
   "CORE-07": {
     "title": "Strict Chat Brevity and Zero Plan Dumping",
     "domain": "core",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": ".agents/scripts/validate-agents.mjs",
+    "mode": "blocking"
   },
   "CORE-08": {
     "title": "100% MCP Auto-Approval",
     "domain": "core",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": ".agents/scripts/pre-tool-guard.mjs",
+    "mode": "blocking"
   },
   "CORE-09": {
     "title": "Ban of `browser_subagent`",
     "domain": "core",
-    "enforcer": "invariants:check",
-    "mode": "error"
+    "enforcer": ".agents/scripts/pre-tool-guard.mjs",
+    "mode": "blocking"
   },
   "CORE-10": {
     "title": "Git Operations on Explicit Request Only",
     "domain": "core",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": ".agents/scripts/pre-tool-guard.mjs",
+    "mode": "blocking"
   },
   "CORE-11": {
     "title": "Targeted Feature-Scoped Testing",
     "domain": "core",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "e2e/playwright.config.ts",
+    "mode": "blocking"
   },
   "CORE-12": {
     "title": "Quality and Reliability Over \"Working is Enough\"",
@@ -218,44 +230,44 @@
   "CORE-13": {
     "title": "Absolute Ban on Emojis",
     "domain": "core",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "tools/guardrails/structural.mjs",
+    "mode": "blocking"
   },
   "CORE-14": {
     "title": "Two-Tier Plan Compression & Clean Markdown Hygiene",
     "domain": "core",
-    "enforcer": "scripts/headroom-compress.mjs + scripts/mcp-cache.mjs",
-    "mode": "automatic"
+    "enforcer": ".agents/scripts/validate-agents.mjs",
+    "mode": "blocking"
   },
   "PLAN-01": {
     "title": "Three-Directory Plans Lifecycle",
     "domain": "core",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": ".agents/scripts/validate-agents.mjs",
+    "mode": "blocking"
   },
   "PLAN-02": {
     "title": "Mandatory Ukrainian Language for Plans & Audits",
     "domain": "core",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": ".agents/scripts/validate-agents.mjs",
+    "mode": "blocking"
   },
   "DB-01": {
     "title": "100% Foreign Key Indexes",
     "domain": "database",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "tools/guardrails/structural.mjs",
+    "mode": "blocking"
   },
   "DB-02": {
     "title": "Mandatory `@db.Timestamptz(6)`",
     "domain": "database",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "tools/guardrails/structural.mjs",
+    "mode": "blocking"
   },
   "DB-03": {
     "title": "100% snake_case Database Identifiers",
     "domain": "database",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "tools/guardrails/structural.mjs",
+    "mode": "blocking"
   },
   "DB-04": {
     "title": "CUID Primary Key Ordering",
@@ -266,8 +278,8 @@
   "DB-05": {
     "title": "Cascade Deletions (`onDelete: Cascade`)",
     "domain": "database",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "tools/guardrails/structural.mjs",
+    "mode": "blocking"
   },
   "DB-06": {
     "title": "Zero N+1 Queries",
@@ -344,8 +356,8 @@
   "FE-01": {
     "title": "Zero Duplicate API Calls via `useRef`",
     "domain": "frontend",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "tools/guardrails/eslint-invariants.mjs",
+    "mode": "blocking"
   },
   "FE-02": {
     "title": "No `React.StrictMode` Double Mounts",
@@ -362,8 +374,8 @@
   "FE-04": {
     "title": "Lean `useCallback` Dependency Arrays",
     "domain": "frontend",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "tools/guardrails/eslint-invariants.mjs",
+    "mode": "blocking"
   },
   "FE-05": {
     "title": "Mandatory Table Row Extraction",
@@ -428,80 +440,80 @@
   "UI-01": {
     "title": "100% Solid Sticky Headers",
     "domain": "ui",
-    "enforcer": "eslint:invariants/header",
-    "mode": "ratchet"
+    "enforcer": "tools/guardrails/eslint-invariants.mjs",
+    "mode": "blocking"
   },
   "UI-02": {
     "title": "Zero Off-Scheme Palette Colors & Rainbow Elements",
     "domain": "ui",
-    "enforcer": "eslint:invariants/palette",
-    "mode": "ratchet"
+    "enforcer": "tools/guardrails/eslint-invariants.mjs",
+    "mode": "blocking"
   },
   "UI-03": {
     "title": "Semantic Success Status Badge",
     "domain": "ui",
-    "enforcer": "eslint:invariants/palette",
-    "mode": "ratchet"
+    "enforcer": "tools/guardrails/eslint-invariants.mjs",
+    "mode": "blocking"
   },
   "UI-04": {
     "title": "Zero Duplicate Action / CTA Buttons",
     "domain": "ui",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "tools/guardrails/eslint-invariants.mjs",
+    "mode": "blocking"
   },
   "UI-05": {
     "title": "Strict Official shadcn Component Architecture (Zero Custom Re-invention)",
     "domain": "ui",
-    "enforcer": "eslint:invariants/shadcn",
-    "mode": "ratchet"
+    "enforcer": "tools/guardrails/eslint-invariants.mjs",
+    "mode": "blocking"
   },
   "UI-06": {
     "title": "Compact Typography, Tabular Numbers & Clean Metrics",
     "domain": "ui",
-    "enforcer": "eslint:invariants/tableCell",
-    "mode": "ratchet"
+    "enforcer": "tools/guardrails/eslint-invariants.mjs",
+    "mode": "blocking"
   },
   "UI-07": {
     "title": "Strict Icon & Control Semantic Styling (Zero Rainbow Icons)",
     "domain": "ui",
-    "enforcer": "eslint:invariants/palette",
-    "mode": "ratchet"
+    "enforcer": "tools/guardrails/eslint-invariants.mjs",
+    "mode": "blocking"
   },
   "UI-08": {
     "title": "Form Input Hygiene & Unblocked Paste",
     "domain": "ui",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "tools/guardrails/eslint-invariants.mjs",
+    "mode": "blocking"
   },
   "UI-09": {
     "title": "Micro-Typography, True Ellipses & Widow Prevention",
     "domain": "ui",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "tools/guardrails/eslint-invariants.mjs",
+    "mode": "blocking"
   },
   "UI-10": {
     "title": "Accessible Interactive Primitives & Focus Visibility",
     "domain": "ui",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "tools/guardrails/eslint-invariants.mjs",
+    "mode": "blocking"
   },
   "UI-11": {
     "title": "Surface Depth Hierarchy & Anti-Border Clutter",
     "domain": "ui",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "tools/guardrails/eslint-invariants.mjs",
+    "mode": "blocking"
   },
   "UI-12": {
     "title": "Desktop High-Density Geometry & Hover-Revealed Row Actions",
     "domain": "ui",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "tools/guardrails/eslint-invariants.mjs",
+    "mode": "blocking"
   },
   "UI-13": {
     "title": "Anti-AI-Slop & Singular Boldness Doctrine",
     "domain": "ui",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "tools/guardrails/eslint-invariants.mjs",
+    "mode": "blocking"
   },
   "UI-14": {
     "title": "Restrained Multi-Select & Matrix States (Zero Accent Flood)",
@@ -518,26 +530,26 @@
   "I18N-01": {
     "title": "100% Bilingual Parity (UK ⇄ EN)",
     "domain": "i18n",
-    "enforcer": "i18n:check + eslint:invariants/i18n",
-    "mode": "ratchet"
+    "enforcer": "scripts/check-i18n.mjs",
+    "mode": "blocking"
   },
   "I18N-02": {
     "title": "Zero Raw Untranslated Keys in UI",
     "domain": "i18n",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "scripts/check-i18n.mjs",
+    "mode": "blocking"
   },
   "I18N-03": {
     "title": "Translated HTML Attributes",
     "domain": "i18n",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "scripts/check-i18n.mjs",
+    "mode": "blocking"
   },
   "I18N-04": {
     "title": "Backend Error Response Mapping",
     "domain": "i18n",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "scripts/check-i18n.mjs",
+    "mode": "blocking"
   },
   "I18N-05": {
     "title": "Zero English Enums in UI Tables",
@@ -554,20 +566,20 @@
   "SEC-01": {
     "title": "4-Layer Defense-in-Depth",
     "domain": "security",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "scripts/check-protected-files.mjs",
+    "mode": "blocking"
   },
   "SEC-02": {
     "title": "Zero Secret Serialization Sinks (CWE-640)",
     "domain": "security",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "scripts/check-protected-files.mjs",
+    "mode": "blocking"
   },
   "SEC-03": {
     "title": "Secret Masking on REST Endpoints",
     "domain": "security",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "tools/guardrails/structural.mjs",
+    "mode": "blocking"
   },
   "SEC-04": {
     "title": "BOLA / IDOR Tenant Isolation",
@@ -578,20 +590,20 @@
   "SEC-05": {
     "title": "SSRF TOCTOU Defense",
     "domain": "security",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "tools/guardrails/structural.mjs",
+    "mode": "blocking"
   },
   "SEC-06": {
     "title": "Tauri v2 IPC Security",
     "domain": "security",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "tools/guardrails/structural.mjs",
+    "mode": "blocking"
   },
   "SEC-07": {
     "title": "Strict File Type & Magic Bytes Ingestion",
     "domain": "security",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "tools/guardrails/structural.mjs",
+    "mode": "blocking"
   },
   "SEC-08": {
     "title": "Zero 0-SKU Feed Progression & Format Integrity",
@@ -608,20 +620,20 @@
   "SEC-10": {
     "title": "Absolute Block on Direct Environment & Lockfile Modification",
     "domain": "security",
-    "enforcer": "guardrail",
-    "mode": "automatic"
+    "enforcer": "scripts/check-protected-files.mjs",
+    "mode": "blocking"
   },
   "TEST-00": {
     "title": "Centralized Test Suite Exclusivity",
     "domain": "testing",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "tools/guardrails/structural.mjs",
+    "mode": "blocking"
   },
   "TEST-01": {
     "title": "Mandatory Teardown and Scoped Cleanup",
     "domain": "testing",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "tools/guardrails/structural.mjs",
+    "mode": "blocking"
   },
   "TEST-02": {
     "title": "Frontend Test Isolation",
@@ -662,13 +674,37 @@
   "TEST-08": {
     "title": "Isolated Test Entity Prefixes",
     "domain": "testing",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "tools/guardrails/structural.mjs",
+    "mode": "blocking"
   },
   "TEST-09": {
     "title": "Playwright Resilience & Web-First Assertions",
     "domain": "testing",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "tools/guardrails/structural.mjs",
+    "mode": "blocking"
+  },
+  "TEST-12": {
+    "title": "Zero Fallback Masking (No Testing Theater)",
+    "domain": "testing",
+    "enforcer": "tools/guardrails/structural.mjs",
+    "mode": "blocking"
+  },
+  "TEST-13": {
+    "title": "Unconditional Assertion Execution",
+    "domain": "testing",
+    "enforcer": "tools/guardrails/structural.mjs",
+    "mode": "blocking"
+  },
+  "TEST-14": {
+    "title": "Read-Back State Verification for Mutations",
+    "domain": "testing",
+    "enforcer": "tools/guardrails/structural.mjs",
+    "mode": "blocking"
+  },
+  "TEST-15": {
+    "title": "Red Tests as Diagnostic Signals",
+    "domain": "testing",
+    "enforcer": "tools/guardrails/structural.mjs",
+    "mode": "blocking"
   }
 }

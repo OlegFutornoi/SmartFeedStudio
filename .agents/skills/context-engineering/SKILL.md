@@ -1,6 +1,6 @@
 ---
 name: context-engineering
-description: Context window optimization and prompt token economy for AI coding agents. Governs rule-loading sequences, targeted file reading, and prevention of context pollution.
+description: Context window optimization and prompt token economy for AI coding agents. Governs rule-loading sequences, targeted file reading, and prevention of context pollution. Use when managing always-on instruction budgets, trimming prompt sizes, or configuring progressive disclosure. Do not use for application data compression; use headroom-compression instead.
 rules:
   - core
   - docs_and_ops

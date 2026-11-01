@@ -1,6 +1,6 @@
 ---
 name: headroom-compression
-description: Optimizes context tokens by translating and compressing plans, specs, and feeds through local Python Headroom engine and direct multi-provider AI fallback before passing them to the active model. Automatically delegates non-complex translation/distillation of Ukrainian specs to zero-cost AI models, saving 65-75% tokens via dense English BPE compression.
+description: Optimizes context tokens by translating and compressing plans, specs, and feeds through local Python Headroom engine and direct multi-provider AI fallback before passing them to the active model. Automatically delegates non-complex translation/distillation of Ukrainian specs to zero-cost AI models, saving 65-75% tokens via dense English BPE compression. Use when compressing large files, plans, or diffs (>80 KB). Do not use for caching MCP docs; use mcp-knowledge-cache instead.
 rules: [core, agents]
 ---
 

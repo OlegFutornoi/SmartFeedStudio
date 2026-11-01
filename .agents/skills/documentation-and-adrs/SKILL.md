@@ -1,6 +1,6 @@
 ---
 name: documentation-and-adrs
-description: Architecture Decision Records (ADRs) and continuous knowledge base documentation. Governs wiki synchronization, architectural trade-off recording, and API reference accuracy.
+description: Architecture Decision Records (ADRs) and continuous knowledge base documentation. Governs wiki synchronization, architectural trade-off recording, and API reference accuracy. Use when recording major architectural decisions, updating wiki docs, or documenting public interfaces. Do not use for drafting bite-sized implementation tasks; use writing-plans instead.
 rules:
   - core
   - docs_and_ops

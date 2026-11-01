@@ -1,6 +1,6 @@
 ---
 name: firecrawl-parse
-description: Document parsing and extraction (PDF, DOCX, XLSX, HTML) into markdown via Firecrawl CLI or MCP. Use when ingesting external supplier catalogs or converting document specifications.
+description: Document parsing and extraction (PDF, DOCX, XLSX, HTML) into markdown via Firecrawl CLI or MCP. Use when ingesting external supplier catalogs or converting document specifications. Do not use for live interactive browser testing; use browser-debugging or playwright-automation instead.
 rules:
   - core
   - backend

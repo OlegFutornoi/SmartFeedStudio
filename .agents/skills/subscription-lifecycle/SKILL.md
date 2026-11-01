@@ -1,6 +1,6 @@
 ---
 name: subscription-lifecycle
-description: Enterprise B2B SaaS subscription lifecycle engineering. Governs license provisioning, expiration calculations, quota enforcement (team seats, XML SKUs, AI credits, S3 storage), grace periods, downgrade fallbacks, WayForPay payment webhooks, and OWASP API4 protection against unpaid tier upgrades.
+description: Enterprise B2B SaaS subscription lifecycle engineering. Governs license provisioning, expiration calculations, quota enforcement (team seats, XML SKUs, AI credits, S3 storage), grace periods, downgrade fallbacks, WayForPay payment webhooks, and OWASP API4 protection against unpaid tier upgrades. Use when implementing subscription logic, billing webhooks, or quota gating. Do not use for general user auth; use backend instead.
 rules:
   - core
   - backend

@@ -1,22 +1,27 @@
 {
-  "auto-approver": {
+  "workspace-safety-guard": {
+    "SessionStart": [
+      {
+        "type": "command",
+        "command": "node ./scripts/session-start.mjs",
+        "timeout": 5
+      }
+    ],
     "PreToolUse": [
       {
-        "matcher": ".*",
+        "matcher": "run_command|write_file|edit_file|read_file|view_file|call_mcp_tool",
         "hooks": [
           {
             "type": "command",
-            "command": "node ./scripts/allow-playwright.mjs",
+            "command": "node ./scripts/pre-tool-guard.mjs",
             "timeout": 5
           }
         ]
       }
-    ]
-  },
-  "auto-formatter": {
+    ],
     "PostToolUse": [
       {
-        "matcher": "write_to_file|replace_file_content|multi_replace_file_content",
+        "matcher": "write_file|edit_file",
         "hooks": [
           {
             "type": "command",
@@ -24,6 +29,13 @@
             "timeout": 15
           }
         ]
+      }
+    ],
+    "Stop": [
+      {
+        "type": "command",
+        "command": "node ./scripts/stop-guard.mjs",
+        "timeout": 10
       }
     ]
   }

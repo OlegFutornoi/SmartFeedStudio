@@ -1,0 +1,32 @@
+{
+  "skill_name": "penetration-testing-with-strix",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Застосуй скіл penetration-testing-with-strix для стандартної задачі у SmartFeed Studio відповідно до інструкцій.",
+      "expected_output": "Follows penetration-testing-with-strix procedure, adheres to architectural invariants, and satisfies acceptance criteria.",
+      "expectations": [
+        "Applies penetration-testing-with-strix step-by-step procedure according to SKILL.md guidelines",
+        "Adheres to project invariants and definition of done without shortcuts"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Виконай граничний сценарій для penetration-testing-with-strix з обробкою помилок та валідацією вхідних даних.",
+      "expected_output": "Handles edge cases, validates constraints, and provides structured recovery.",
+      "expectations": [
+        "Identifies boundary conditions and validates input constraints thoroughly",
+        "Ensures zero unhandled exceptions and logs warnings or domain errors appropriately"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Виконай задачу з абсолютно непов'язаного домену (наприклад, стороннє завдання поза межами penetration-testing-with-strix).",
+      "expected_output": "Recognizes scope boundaries and does not trigger penetration-testing-with-strix for irrelevant tasks.",
+      "expectations": [
+        "Recognizes that unrelated tasks are outside the zone of responsibility of penetration-testing-with-strix",
+        "Routes or delegates the request to the appropriate specialized domain skill"
+      ]
+    }
+  ]
+}

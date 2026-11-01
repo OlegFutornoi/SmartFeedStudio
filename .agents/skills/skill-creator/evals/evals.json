@@ -1,0 +1,34 @@
+{
+  "skill_name": "skill-creator",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Створи або оптимізуй скіл у .agents/skills/, який перевищив 550 рядків через великі приклади коду.",
+      "expected_output": "Refactors SKILL.md under 500 lines using 3-tier Progressive Disclosure (extracting heavy templates to references/ or scripts/), adds evals/evals.json, and passes npm run check:agents.",
+      "expectations": [
+        "Enforces <500 lines limit on SKILL.md by moving detailed examples/schemas to references/ (Progressive Disclosure)",
+        "Ensures YAML frontmatter has exact name matching folder and trigger-rich description <=320 chars",
+        "Creates or updates evals/evals.json and verifies integrity via npm run check:agents"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Перевір цілісність усієї екосистеми .agents/ після додавання нового скіла та субагента.",
+      "expected_output": "Indexes the skill in .agents/AGENTS.md, links it in relevant .agents/agents/*.md frontmatter, and validates with node .agents/scripts/validate-agents.cjs.",
+      "expectations": [
+        "Registers the skill in .agents/AGENTS.md Section 8 Skills Architecture Index",
+        "Verifies zero broken paths, npm scripts, or missing evals via npm run check:agents"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Запусти E2E тест оформлення автоцивілки на середовищі stage у браузері Chromium.",
+      "expected_output": "Routes test execution to playwright-cli, keeping skill-creator strictly on authoring and evaluating agent skills.",
+      "expectations": [
+        "Recognizes that test execution belongs to playwright-cli",
+        "Delegates test execution to playwright-cli",
+        "Preserves skill-creator strictly on skill authoring, evals, and progressive disclosure"
+      ]
+    }
+  ]
+}

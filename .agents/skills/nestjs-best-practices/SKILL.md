@@ -1,6 +1,6 @@
 ---
 name: nestjs-best-practices
-description: NestJS 11 CQRS architecture, modularity, dependency injection, validation, and error handling. Use when creating or modifying NestJS modules, controllers, CQRS commands, queries, handlers, services, and validation pipes.
+description: NestJS 11 CQRS architecture, modularity, dependency injection, validation, and error handling. Use when creating or modifying NestJS modules, controllers, CQRS commands, queries, handlers, services, and validation pipes. Do not use for frontend Next.js App Router; use frontend instead.
 rules:
   - core
   - backend

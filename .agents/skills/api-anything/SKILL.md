@@ -1,6 +1,6 @@
 ---
 name: api-anything
-description: Reverse-engineers website frontend traffic into typed JSON APIs and executes fast direct HTTP calls with automatic self-healing via api-anything MCP. Use when Planner or Review agents need to inspect competitor catalog endpoints (Rozetka, Prom.ua, Epicentr), verify live payload structures against @smartfeed/shared contracts, test pricing extraction, or perform catalog enrichment without heavy DOM scraping.
+description: Reverse-engineers website frontend traffic into typed JSON APIs and executes fast direct HTTP calls with automatic self-healing via api-anything MCP. Use when Planner or Review agents need to inspect competitor catalog endpoints, verify live payload structures against @smartfeed/shared contracts, test pricing extraction, or perform catalog enrichment without heavy DOM scraping. Do not use for standard internal backend CQRS endpoints; use backend or nestjs-best-practices instead.
 rules:
   - core
   - backend

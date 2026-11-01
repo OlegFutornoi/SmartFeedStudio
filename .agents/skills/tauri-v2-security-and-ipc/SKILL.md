@@ -1,6 +1,6 @@
 ---
 name: tauri-v2-security-and-ipc
-description: Tauri v2 native desktop security. Governs capabilities and permission scoping, secure IPC commands, SQLCipher key derivation via OS Keychain, path traversal defense, and safe filesystem operations.
+description: Tauri v2 native desktop security. Governs capabilities and permission scoping, secure IPC commands, SQLCipher key derivation via OS Keychain, path traversal defense, and safe filesystem operations. Use when configuring Tauri permissions, security policies, OS Keychain, or native desktop commands. Do not use for cloud server APIs; use backend instead.
 rules:
   - core
   - security

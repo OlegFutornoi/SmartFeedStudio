@@ -1,6 +1,6 @@
 ---
 name: prisma-postgres-mastery
-description: Prisma ORM and PostgreSQL 16 schema design, migrations, indexing, pooling, and query patterns. Use when modifying schema.prisma, writing queries, planning expand/contract migrations, or optimizing database operations.
+description: Prisma ORM and PostgreSQL 16 schema design, migrations, indexing, pooling, and query patterns. Use when modifying schema.prisma, writing queries, planning expand/contract migrations, or optimizing database operations. Do not use for client-side SQLite in Tauri; use rust-native-backend instead.
 rules:
   - core
   - database

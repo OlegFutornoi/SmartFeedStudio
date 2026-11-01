@@ -1,6 +1,6 @@
 ---
 name: mcp-knowledge-cache
-description: Cache-first MCP knowledge retrieval, single-file Headroom compression (.compressed.md), and OmniRoute-delegated cache refreshing in .agents/cache/mcp/. Use before and after calling external documentation or research MCP tools (context7, perplexity-agent-api, firecrawl, api-anything, shadcn) so agents reuse verified knowledge without redundant external requests and overwrite stale entries via OmniRoute. Do not use for application runtime Redis caching; use backend instead.
+description: Cache-first MCP knowledge retrieval, single-file Headroom compression (.compressed.md), and OmniRoute-delegated cache refreshing in .agents/cache/mcp/. Use when calling external documentation or research MCP tools (context7, perplexity-agent-api, firecrawl, api-anything, shadcn) so agents reuse verified knowledge without redundant external requests. Do not use for application runtime Redis caching; use backend instead.
 rules: [core, agents]
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: bullmq-jobs
-description: Asynchronous job queue processing with NestJS 11 and BullMQ on Redis 7. Governs bounded retries, exponential backoff, dead letter queues (DLQ), worker concurrency, memory backpressure, and idempotent processors.
+description: Asynchronous job queue processing with NestJS 11 and BullMQ on Redis 7. Governs bounded retries, exponential backoff, dead letter queues (DLQ), worker concurrency, memory backpressure, and idempotent processors. Use when creating background queue processors, handling feed ingestion jobs, or configuring Redis retry mechanics. Do not use for direct client-facing HTTP mutations; use backend or nestjs-best-practices instead.
 rules:
   - core
   - backend

@@ -1,6 +1,6 @@
 ---
 name: test-driven-development
-description: Test-driven development methodology enforcing the RED-GREEN-REFACTOR cycle, complete database teardown, targeted test execution, and real business invariant assertions. Use when implementing new features or fixing bugs.
+description: Test-driven development methodology enforcing the RED-GREEN-REFACTOR cycle, complete database teardown, targeted test execution, and real business invariant assertions. Use when implementing new features or fixing bugs with automated tests. Do not use for manual exploratory testing; use browser-debugging instead.
 rules:
   - core
   - testing

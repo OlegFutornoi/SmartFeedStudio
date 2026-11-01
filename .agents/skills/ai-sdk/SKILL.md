@@ -1,6 +1,6 @@
 ---
 name: ai-sdk
-description: Vercel AI SDK integration for text generation, streaming, tool loops, structured JSON outputs, and embedding workflows in NestJS and React.
+description: Vercel AI SDK integration for text generation, streaming, tool loops, structured JSON outputs, and embedding workflows in NestJS and React. Use when building AI streaming endpoints, tool-calling pipelines, or LLM-driven catalog enrichment. Do not use for external documentation scraping; use firecrawl-parse or context7 instead.
 rules:
   - core
   - backend

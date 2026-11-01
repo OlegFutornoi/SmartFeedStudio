@@ -1,6 +1,6 @@
 ---
 name: fix-security-vulnerabilities-with-strix
-description: Systematic remediation of security vulnerabilities identified by pentests or audits. Governs root-cause patching, defensive regression tests, and verification re-scans.
+description: Systematic remediation of security vulnerabilities identified by pentests or audits. Governs root-cause patching, defensive regression tests, and verification re-scans. Use when patching confirmed security vulnerabilities, SSRF issues, or authentication bypasses. Do not use for general feature bug fixing; use systematic-debugging instead.
 rules:
   - core
   - security

@@ -1,0 +1,35 @@
+{
+  "skill_name": "ui-ux-pro-max",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Розроби макет панелі керування організацією з таблицею користувачів та формами запрошення.",
+      "expected_output": "Applies 100% official shadcn primitives, semantic tokens (bg-card, text-foreground), 100% solid sticky headers, unblocked paste on inputs, and micro-typography.",
+      "expectations": [
+        "Uses official shadcn UI primitives (@/components/ui/*) with zero hand-rolled HTML controls",
+        "Enforces 100% solid sticky table headers with semantic card background",
+        "Applies form input hygiene (unblocked paste, spellCheck={false} on technical fields)"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Додай кольорові бейджі та яскраві неонові градієнти для кнопок дій у таблиці товарів.",
+      "expected_output": "Rejects off-scheme rainbow/circus palette colors and AI-slop tropes, enforcing semantic badges (neutral/destructive/success) and singular boldness doctrine (UI-02, UI-07, UI-13).",
+      "expectations": [
+        "Enforces semantic token palette (bg-primary, bg-muted, destructive) instead of arbitrary rainbow colors",
+        "Rejects neon gradients and AI-slop decorative styling in favor of singular boldness",
+        "Ensures hover-revealed row actions maintain high-density desktop geometry"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Оптимізуй SQL запит з join для вибірки 100 000 товарів у PostgreSQL.",
+      "expected_output": "Recognizes that database query optimization belongs to postgresql-optimization and prisma-postgres-mastery skills.",
+      "expectations": [
+        "Recognizes that SQL performance and EXPLAIN ANALYZE belong to database skills",
+        "Delegates query optimization to postgresql-optimization skill",
+        "Maintains focus on semantic UI tokens, typography, and shadcn design system"
+      ]
+    }
+  ]
+}

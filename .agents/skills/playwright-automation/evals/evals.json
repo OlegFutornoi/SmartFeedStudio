@@ -1,0 +1,35 @@
+{
+  "skill_name": "playwright-automation",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Напиши автоматизований тест для перевірки створення та фільтрації товарів у Server Admin Portal.",
+      "expected_output": "Authors isolated spec in e2e/server/admin/ using Page Object Model, web-first locators (getByTestId, getByRole), and real business data assertions without waitForTimeout.",
+      "expectations": [
+        "Places test strictly in e2e/ package using Page Object Model architecture",
+        "Uses web-first locators and web-first assertions without arbitrary waitForTimeout (TEST-09)",
+        "Uses isolated test prefixes e2e.<runId> and ensures cleanDatabase teardown"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Додай перевірку двомовності (UA <-> EN) перемикача мов у панелі адміністратора.",
+      "expected_output": "Tests bilingual localization parity, asserting localized strings on UI elements across both locales.",
+      "expectations": [
+        "Asserts real localized UI labels across both Ukrainian and English locales",
+        "Verifies language persistence across page navigations without page refresh glitches",
+        "Maintains strict test isolation and deterministic cleanDatabase cleanup"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Додай нову таблицю product_categories у схему schema.prisma.",
+      "expected_output": "Recognizes that Prisma schema changes belong to prisma-postgres-mastery and backend skills, not QA test automation.",
+      "expectations": [
+        "Recognizes that Prisma ORM schemas belong to backend domain",
+        "Directs schema authoring to prisma-postgres-mastery and backend skills",
+        "Restricts QA automation strictly to e2e/ test specs and Page Objects"
+      ]
+    }
+  ]
+}

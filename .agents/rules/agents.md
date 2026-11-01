@@ -26,7 +26,7 @@ description: Autonomous specialized agent router and dispatching directives for 
   5. Implementation and domain hardening.
   6. Code review and DoD verification against invariant IDs.
   7. Systematic debugging & root cause isolation: codify preventive invariants directly into `.agents/rules/<domain>.md` and `.agents/skills/<skill>/SKILL.md`.
-  8. Documentation, state persistence & completion: update `.agents/state/active_task.json` and move completed tasks to `plans/completed/`. Chat output is strictly 1-2 sentence summary with clickable link (`CORE-07`).
+  8. Documentation, state persistence & completion: update `.agents/state/active_task.json` and delete `plans/active/` plan via `plan-manager close` (retaining `plans/completed/*.compressed.md`). Chat output is 1-2 sentence summary with clickable link (`CORE-07`).
 - Reason: Strict stage progression prevents premature coding, skipped tests, context pollution, and unverified deployments.
 
 ## AGENT-03: Invariant & Skill Codification Loop
@@ -66,3 +66,15 @@ description: Autonomous specialized agent router and dispatching directives for 
 - Stage 6 (Verification): Run `pnpm verify:fast` to guarantee zero regressions against the ratchet baseline.
 - Final Turn: Provide the exact mechanical gate summary line in the report instead of unverified textual claims.
 - Reason: Mandatory mechanical execution catches regressions before user handover.
+
+## AGENT-07: Skill Evolution, Versioning & Trigger Integrity
+
+- Every skill frontmatter must define `name` (matching directory), `description` containing both "Use when" and "Do not use for", and mandatory `evals/evals.json` suite (>=3 cases including negative controls).
+- Any description or procedure modification mandates re-running `node scripts/ops/run-skill-evals.mjs --dry-run` to ensure zero schema drift.
+- Reason: Unverified description edits corrupt autonomous agent dispatching and induce hallucinated tool calls.
+
+## AGENT-08: Subagent Delegation Protocol & Single-Writer Rule
+
+- Every `invoke_subagent` must declare: Goal, Expected Output Format, Boundary Constraints (what NOT to touch), and Link to Compressed Plan (`plans/completed/<name>.compressed.md`).
+- Single-Writer Rule: Strictly one agent may modify workspace files in a vertical slice at any given time. Parallel subagents operate strictly in read-only mode (`research`, `review`).
+- Reason: Unconstrained parallel writing creates worktree collisions, race conditions, and corrupted git state.

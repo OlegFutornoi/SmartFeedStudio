@@ -1,6 +1,6 @@
 ---
 name: idempotency-and-outbox
-description: Idempotency keys, Transactional Outbox pattern with Prisma, BullMQ retry mechanics, and Dead-Letter Queue processing for resilient CQRS mutations. Use when designing mutation handlers, webhook publishing, or payment event processing.
+description: Idempotency keys, Transactional Outbox pattern with Prisma, BullMQ retry mechanics, and Dead-Letter Queue processing for resilient CQRS mutations. Use when designing mutation handlers, webhook publishing, or payment event processing. Do not use for idempotent GET queries; use backend or nestjs-best-practices instead.
 rules:
   - core
   - backend

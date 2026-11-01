@@ -1,6 +1,6 @@
 ---
 name: rust-native-backend
-description: Native Rust backend engineering in Tauri v2 (apps/desktop/src-tauri). Governs SQLCipher encrypted SQLite (rusqlite), schema migrations, atomic transactions, thiserror error handling, IPC commands, and cargo clippy linting.
+description: Native Rust backend engineering in Tauri v2 (apps/desktop/src-tauri). Governs SQLCipher encrypted SQLite (rusqlite), schema migrations, atomic transactions, thiserror error handling, IPC commands, and cargo clippy linting. Use when developing or debugging Tauri desktop SQLite logic, encrypted storage, or native OS IPC. Do not use for cloud PostgreSQL migrations; use prisma-postgres-mastery instead.
 rules:
   - core
   - backend

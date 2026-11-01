@@ -1,6 +1,6 @@
 ---
 name: interview-me
-description: Clarifies underspecified requirements through structured, single-question inquiries with attached hypotheses until target confidence (95%) is achieved. Use when user requests lack clear constraints, users, or success metrics.
+description: Clarifies underspecified requirements through structured, single-question inquiries with attached hypotheses until target confidence (95%) is achieved. Use when user requests lack clear constraints, users, or success metrics. Do not use for already fully specified requirements; use writing-plans instead.
 rules:
   - core
   - docs_and_ops

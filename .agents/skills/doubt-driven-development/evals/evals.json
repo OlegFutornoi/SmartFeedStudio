@@ -1,0 +1,35 @@
+{
+  "skill_name": "doubt-driven-development",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Перевір цей негативний тест перед пушем: title каже 'returns 422 when tin is null', а payload створюється через buildDefaultDraft() без передачі tin.",
+      "expected_output": "Flags Title-to-Payload parity violation andTesting Theater risk, requiring explicit { tin: null } override and constraintViolations field check.",
+      "expectations": [
+        "Detects that buildDefaultDraft() either keeps a valid tin or omits it instead of explicitly sending { tin: null } (Invariant 4)",
+        "Requires explicit key declaration { ...buildDefaultDraft(), tin: null } matching the test title",
+        "Requires asserting the specific field error in res.body.constraintViolations / errors, not just status 422"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Агент написав позитивний тест розрахунку тарифів: expect(res.status).toBe(200); if (res.body.tariffs?.length) { expect(res.body.tariffs[0].id).toBeDefined(); }. Чи можна це мержити?",
+      "expected_output": "Rejects test as Testing Theater (conditional assertion mask + superficial check) and rewrites with unconditional 4-Layer Defense, full contract parity, and non-empty array check.",
+      "expectations": [
+        "Flags if (res.body.tariffs?.length) as a critical conditional assertion mask that passes silently on empty [] responses (Invariant 9 & 16)",
+        "Requires unconditional 4-Layer Response Defense including validateWithSchema(res.body, SchemaPath.*)",
+        "Requires asserting expect(res.body.tariffs.length).toBeGreaterThan(0) and verifying full contract fields plus business delta"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "У нас впала збірка на CI через те що сервер review2 повернув 504 Gateway Timeout. Перевір валідність пейлоадів.",
+      "expected_output": "Classifies failure as infrastructure outage (ENV_DOWN), avoiding speculative payload doubts when the server gateway is down.",
+      "expectations": [
+        "Distinguishes between client payload validity bugs and infrastructure gateway timeouts (504 ENV_DOWN)",
+        "Refers infrastructure outage to pw-triage rather than rewriting valid test payloads",
+        "Enforces Title-to-Payload parity only on tests with functional assertions"
+      ]
+    }
+  ]
+}

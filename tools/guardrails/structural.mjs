@@ -62,7 +62,7 @@ function checkControllerGuards(content, out) {
 function checkCentralizedTests(relPath, out) {
   if (relPath.startsWith('e2e/')) return;
   if (relPath.startsWith('tools/guardrails/')) return;
-  if (relPath.startsWith('.agents/skills/')) return;
+  if (relPath.startsWith('.agents/')) return;
 
   const isTestFile =
     /\.(spec|test|e2e-spec|adversarial-spec)\.[cm]?[jt]sx?$/.test(relPath) ||
@@ -74,6 +74,50 @@ function checkCentralizedTests(relPath, out) {
       rule: 'TEST-00',
       line: 1,
       message: `Test artifact "${relPath}" found outside e2e/. All automated tests must reside exclusively in e2e/.`,
+    });
+  }
+}
+
+function checkUsersModuleJwt(relPath, content, out) {
+  if (relPath.includes('/modules/users/') && (/JwtService/.test(content) || /@nestjs\/jwt/.test(content))) {
+    out.push({
+      rule: 'BE-11',
+      line: 1,
+      message: 'UsersModule must have zero JWT awareness (DEF-01). Route token creation through AuthModule.',
+    });
+  }
+}
+
+function checkNoEmojis(content, out) {
+  const emojiMatch = /[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/u.exec(content);
+  if (emojiMatch) {
+    out.push({
+      rule: 'BE-14',
+      line: lineOf(content, emojiMatch.index),
+      message: 'Emojis are strictly forbidden in code and logs (CORE-13, DEF-17). Use ASCII badges.',
+    });
+  }
+}
+
+function checkSafeOsExec(content, out) {
+  if (/\b(?:from\s+['"]child_process['"]|require\(['"]child_process['"]\))/.test(content)) {
+    if (/\bexec\s*\(/.test(content) && !/\bexecFile\s*\(/.test(content)) {
+      out.push({
+        rule: 'CORE-05',
+        line: 1,
+        message: 'Potentially unsafe OS execution (CWE-78). Use execFile with discrete arguments instead of exec.',
+      });
+    }
+  }
+}
+
+function checkZeroAsAny(content, out) {
+  const anyMatch = /\bas\s+any\b/.exec(content);
+  if (anyMatch) {
+    out.push({
+      rule: 'CORE-03',
+      line: lineOf(content, anyMatch.index),
+      message: "Zero prohibited type bypasses allowed. Use generated Prisma types, Zod parse, or unknown.",
     });
   }
 }
@@ -91,5 +135,9 @@ export function checkFile(relPath, content) {
   if (relPath.endsWith('.handler.ts') || relPath.endsWith('.service.ts'))
     checkCheckThenCreate(content, out);
   if (relPath.endsWith('.controller.ts')) checkControllerGuards(content, out);
+  checkUsersModuleJwt(relPath, content, out);
+  checkNoEmojis(content, out);
+  checkSafeOsExec(content, out);
+  checkZeroAsAny(content, out);
   return out;
 }

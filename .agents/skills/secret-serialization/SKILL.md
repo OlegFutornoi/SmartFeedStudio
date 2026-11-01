@@ -1,6 +1,6 @@
 ---
 name: secret-serialization
-description: Audits code for credential, token, and password leaks through object serialization, JSON.stringify, logging, Sentry telemetry, and HTTP responses. Use when adding credential fields or telemetry sinks.
+description: Audits code for credential, token, and password leaks through object serialization, JSON.stringify, logging, Sentry telemetry, and HTTP responses. Use when adding credential fields or telemetry sinks. Do not use for general REST route testing; use api-security-testing instead.
 rules:
   - core
   - security

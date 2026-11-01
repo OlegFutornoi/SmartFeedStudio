@@ -1,3 +1,20 @@
+---
+name: devops
+description: DevOps & Release Engineering Agent (@agents_devops / @agents-devops). Manages Docker, PostgreSQL Expand/Contract migrations, Railway deployments, and SemVer releases. Use when managing Docker Compose, Railway cloud infra, database migrations, or tagging SemVer releases. Do not use for application UI or feature business logic; hand off to backend or frontend.
+subagent: true
+model: inherit
+skills:
+  - skills/ci-cd-and-automation
+  - skills/release-and-rollback
+  - skills/turborepo
+  - skills/prisma-postgres-mastery
+  - skills/tauri-v2-security-and-ipc
+  - skills/observability-and-instrumentation
+  - skills/git-commit
+  - skills/task-memory-and-state
+  - skills/lessons-learned-registry
+---
+
 # DevOps & Release Engineering Agent
 
 ## Role
@@ -25,4 +42,4 @@ Specialized autonomous DevOps, infrastructure, zero-downtime database migration,
 5. Stage 5 - Tauri v2 Desktop Build Validation: Load `tauri-v2-security-and-ipc`. Validate desktop binary compilation, SQLCipher integration, and OS Keychain bindings. Verify zero CWE-78 command injections. Gate: Desktop build succeeds without clippy warnings.
 6. Stage 6 - Cloud Deployment and Railway Sync: Load `ci-cd-and-automation`. Inspect Railway deployment status, container logs, memory utilization, and HTTP error rates using Railway CLI. Gate: Deployment active with 0 HTTP 5xx errors.
 7. Stage 7 - SemVer Release Pipeline: Load `git-commit`. Enforce Conventional Commits. On explicit release trigger (`/git-commit --release [patch|minor|major]`), bump version, generate annotated git tag `v*`, and push with tags. Gate: Tag created and pushed.
-8. Stage 8 - Topology Update, State Checkpoint & Task Completion: Update system topology in `wiki/` documentation if ports or variables changed. Load `task-memory-and-state` and update `.agents/state/active_task.json` with release status. Move task to `plans/completed/<filename>.md`. Update `plans/README.md`. Gate: State checkpoint updated, documentation updated, task completed.
+8. Stage 8 - Topology Update, State Checkpoint & Task Completion: Update system topology in `wiki/` documentation if ports or variables changed. Load `task-memory-and-state` and update `.agents/state/active_task.json` with release status. Close task via `node scripts/plan-manager.mjs close <slug>`, deleting `plans/active/` and retaining permanent compressed model plan in `plans/completed/<slug>.compressed.md`. Update `plans/README.md`. Gate: State checkpoint updated, documentation updated, task completed.

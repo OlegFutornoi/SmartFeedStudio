@@ -1,6 +1,6 @@
 ---
 name: lessons-learned-registry
-description: Historical registry of solved error classes, known project gotchas, and architectural invariants. Use at the start of tasks to review known pitfalls and after bug fixes to codify new invariants.
+description: Historical registry of solved error classes, known project gotchas, and architectural invariants. Use when starting tasks to review known pitfalls and after bug fixes to codify new invariants. Do not use for live application error monitoring; use observability-and-instrumentation instead.
 rules:
   - core
   - docs_and_ops

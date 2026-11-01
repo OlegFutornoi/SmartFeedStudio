@@ -1,6 +1,6 @@
 ---
 name: writing-plans
-description: Use when you have a spec or requirements for a multi-step task, before touching code
+description: Bite-sized, testable TDD implementation steps (2-5 min) with explicit file boundaries and interfaces. Use when you have a spec or requirements for a multi-step task, before touching code. Do not use for broad roadmap brainstorms; use brainstorming instead.
 rules:
   - core
   - docs_and_ops
@@ -85,4 +85,4 @@ Before finalizing, verify:
 
 ## Handoff
 
-Save the task to `plans/active/` (`FR-...`, `BE-...`, `FR-BE-...`). If compressed via `scripts/headroom-compress.mjs --save`, keep strictly the single `.compressed.md` file (`CORE-14`). Update `.agents/state/active_task.json` via `task-memory-and-state` and provide a 1-2 sentence status summary with a clickable link in chat.
+Create the task via `node scripts/plan-manager.mjs create <slug> "<title_ua>" "<title_en>"`. The human plan is written to `plans/active/` and the model brief to `plans/completed/<slug>.compressed.md` (`CORE-14`). AI models execute ONLY the compressed version. Update `.agents/state/active_task.json` via `task-memory-and-state` and provide a 1-2 sentence status summary with a clickable link in chat.

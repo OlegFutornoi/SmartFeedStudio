@@ -32,7 +32,7 @@ async function readStdin() {
     let data = '';
     const timer = setTimeout(() => {
       resolve(data);
-    }, 100);
+    }, 200);
     timer.unref();
 
     process.stdin.setEncoding('utf8');
@@ -57,7 +57,9 @@ function formatFiles(filePaths) {
 
   const validFiles = filePaths.filter((file) => {
     try {
-      const fullPath = path.isAbsolute(file) ? file : path.join(workspaceRoot, file);
+      const fullPath = path.isAbsolute(file)
+        ? file
+        : path.join(workspaceRoot, file);
       if (!fs.existsSync(fullPath)) return false;
       const ext = path.extname(fullPath).toLowerCase();
       return SUPPORTED_EXTENSIONS.has(ext);
@@ -73,7 +75,12 @@ function formatFiles(filePaths) {
     execSync(`"${prettierBin}" --write --ignore-unknown ${quotedFiles}`, {
       cwd: workspaceRoot,
       stdio: 'ignore',
-      env: { ...process.env, GIT_CONFIG_GLOBAL: '/dev/null', GIT_CONFIG_NOSYSTEM: '1' },
+      timeout: 15000,
+      env: {
+        ...process.env,
+        GIT_CONFIG_GLOBAL: '/dev/null',
+        GIT_CONFIG_NOSYSTEM: '1',
+      },
     });
   } catch {
     // Ignore formatting errors gracefully
@@ -89,6 +96,8 @@ async function run() {
       try {
         const payload = JSON.parse(rawInput);
         const targetFile =
+          payload?.toolCall?.args?.Path ||
+          payload?.tool_input?.Path ||
           payload?.toolCall?.args?.TargetFile ||
           payload?.toolCallArgs?.TargetFile ||
           payload?.targetFile;
@@ -107,7 +116,12 @@ async function run() {
         cwd: workspaceRoot,
         encoding: 'utf8',
         stdio: ['pipe', 'pipe', 'ignore'],
-        env: { ...process.env, GIT_CONFIG_GLOBAL: '/dev/null', GIT_CONFIG_NOSYSTEM: '1' },
+        timeout: 5000,
+        env: {
+          ...process.env,
+          GIT_CONFIG_GLOBAL: '/dev/null',
+          GIT_CONFIG_NOSYSTEM: '1',
+        },
       });
 
       const lines = gitStatusOut.split('\n');

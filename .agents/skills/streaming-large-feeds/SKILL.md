@@ -1,6 +1,6 @@
 ---
 name: streaming-large-feeds
-description: High-volume streaming XML and CSV parsing for 100k+ SKU catalogs with Node.js stream backpressure, chunked BullMQ ingestion, and memory leak prevention. Use when importing, exporting, or parsing large catalog files.
+description: High-volume streaming XML and CSV parsing for 100k+ SKU catalogs with Node.js stream backpressure, chunked BullMQ ingestion, and memory leak prevention. Use when importing, exporting, or parsing large catalog files. Do not use for small REST payloads; use backend instead.
 rules:
   - core
   - backend

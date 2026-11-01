@@ -1,6 +1,6 @@
 ---
 name: i18n-localization
-description: Internationalization (i18n) and dictionary parity verification across Ukrainian (uk) and English (en) locales in SmartFeed Studio. Use whenever adding or editing UI copy, dialogs, forms, toasts, buttons, tooltips, backend error mappings, or running pnpm i18n:check. Do not use for server database queries; use backend or database skills instead.
+description: Internationalization (i18n) and dictionary parity verification across Ukrainian (uk) and English (en) locales in SmartFeed Studio. Use when adding or editing UI copy, dialogs, forms, toasts, buttons, tooltips, backend error mappings, or running pnpm i18n:check. Do not use for server database queries; use backend or database skills instead.
 rules: [core, i18n, frontend]
 ---
 

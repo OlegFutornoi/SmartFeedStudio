@@ -1,6 +1,6 @@
 ---
 name: brainstorming
-description: 'You MUST use this before any creative work - creating features, building components, adding functionality, modifying behavior, or planning anything new.'
+description: Explores and discovers user needs, creative concepts, alternative approaches, and design trade-offs before implementation. Use when initiating new features, exploring unmapped user requirements, comparing multiple design paths, or evaluating trade-offs. Do not use for step-by-step TDD task execution; use planning-and-lifecycle or writing-plans instead.
 rules:
   - core
   - docs_and_ops

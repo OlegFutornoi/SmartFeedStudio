@@ -1,0 +1,35 @@
+{
+  "skill_name": "backend",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Створи новий CQRS query handler для отримання списку постачальників з cursor pagination у services/backend-api.",
+      "expected_output": "Enforces 1 handler per file, CQRS structure, DTO validation via class-validator, and executes pnpm --filter @smartfeed/backend-api build.",
+      "expectations": [
+        "Creates a single handler class in its own dedicated file with DTO validation",
+        "Implements cursor pagination instead of OFFSET (L-040)",
+        "Mandates production build check pnpm --filter @smartfeed/backend-api build to keep dist/ synchronized"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Реалізуй оновлення налаштувань організації з блокуванням паралельних змін у БД.",
+      "expected_output": "Enforces distributed Redis mutex lock on organization mutations (L-032) and checks Layer-2 subscription quota bounds before committing.",
+      "expectations": [
+        "Acquires distributed Redis mutex to prevent concurrent mutation race conditions",
+        "Enforces Layer-2 subscription quota checks before applying state changes",
+        "Never uses as any in Prisma query clauses or DTO definitions"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Напиши React компонент діалогового вікна редагування товару для apps/desktop.",
+      "expected_output": "Recognizes that React components and client UI belong strictly to the frontend skill and routes the request accordingly.",
+      "expectations": [
+        "Recognizes that React views and client components are outside the backend domain",
+        "Delegates UI implementation to frontend skill and official shadcn components",
+        "Focuses strictly on backend CQRS API endpoints and contracts"
+      ]
+    }
+  ]
+}

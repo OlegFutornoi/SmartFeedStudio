@@ -1,0 +1,32 @@
+{
+  "skill_name": "fix-security-vulnerabilities-with-strix",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Застосуй скіл fix-security-vulnerabilities-with-strix для стандартної задачі у SmartFeed Studio відповідно до інструкцій.",
+      "expected_output": "Follows fix-security-vulnerabilities-with-strix procedure, adheres to architectural invariants, and satisfies acceptance criteria.",
+      "expectations": [
+        "Applies fix-security-vulnerabilities-with-strix step-by-step procedure according to SKILL.md guidelines",
+        "Adheres to project invariants and definition of done without shortcuts"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Виконай граничний сценарій для fix-security-vulnerabilities-with-strix з обробкою помилок та валідацією вхідних даних.",
+      "expected_output": "Handles edge cases, validates constraints, and provides structured recovery.",
+      "expectations": [
+        "Identifies boundary conditions and validates input constraints thoroughly",
+        "Ensures zero unhandled exceptions and logs warnings or domain errors appropriately"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Виконай задачу з абсолютно непов'язаного домену (наприклад, стороннє завдання поза межами fix-security-vulnerabilities-with-strix).",
+      "expected_output": "Recognizes scope boundaries and does not trigger fix-security-vulnerabilities-with-strix for irrelevant tasks.",
+      "expectations": [
+        "Recognizes that unrelated tasks are outside the zone of responsibility of fix-security-vulnerabilities-with-strix",
+        "Routes or delegates the request to the appropriate specialized domain skill"
+      ]
+    }
+  ]
+}

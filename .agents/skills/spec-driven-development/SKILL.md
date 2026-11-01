@@ -1,6 +1,6 @@
 ---
 name: spec-driven-development
-description: Specification creation and capability mapping before code execution. Absorbed into planning-and-lifecycle. Use when drafting requirements or decomposing complex initiatives into modules.
+description: Specification creation and capability mapping before code execution (absorbed into planning-and-lifecycle). Use when drafting high-level capability maps or breaking large initiatives into module specs. Do not use for vertical tracer-bullet plans; use planning-and-lifecycle instead.
 rules:
   - core
   - docs_and_ops

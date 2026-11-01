@@ -1,0 +1,41 @@
+name: Weekly Skill Evals Execution
+
+on:
+  schedule:
+    - cron: '0 4 * * 1' # Every Monday at 04:00 UTC
+  workflow_dispatch:
+
+jobs:
+  run-evals:
+    name: Execute Real LLM Skill Evaluations
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Execute LLM Evals via OmniRoute Fallback
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+        run: |
+          node scripts/ops/run-skill-evals.mjs --skill=backend,frontend,review,git-commit --runs=3 || echo "[WARN] Evals completed with warnings"
+
+      - name: Upload Eval Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: skill-eval-results
+          path: .temp/skill-evals/

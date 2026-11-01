@@ -1,6 +1,6 @@
 ---
 name: security-and-hardening
-description: Application security hardening, 4-layer defense, OWASP Top 10 mitigation, secret masking, command injection defense, and SSRF prevention. Use when implementing auth, data persistence, mutation routes, or external integrations.
+description: Application security hardening, 4-layer defense, OWASP Top 10 mitigation, secret masking, command injection defense, and SSRF prevention. Use when implementing auth, data persistence, mutation routes, or external integrations. Do not use for general UI styling; use frontend or ui-ux-pro-max instead.
 rules:
   - core
   - security
