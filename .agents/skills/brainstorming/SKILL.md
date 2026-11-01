@@ -57,3 +57,7 @@ Nothing gets built until the user confirms the written description or plan. Buil
 - Silently filling in defaults without stating them aloud.
 - Assuming verbal approval of an idea equals approval of an unwritten spec.
 - Continuing to build on top of throwaway prototype spikes without re-entering the planning gate.
+
+## References
+
+- [interview-me.md](references/interview-me.md)

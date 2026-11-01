@@ -22,4 +22,4 @@ rules:
 3. Enforce modularity budgets: Break files exceeding 250 lines into focused, cohesive helper modules or domain subcomponents.
 4. Remove dead code: Strip unused variables, dead imports, obsolete comments, and no-op wrapper functions.
 5. Avoid over-simplification: Do not inline functions when inlining obscures business terminology. Do not combine unrelated duties into a single complex helper.
-6. Verify against tests: Run targeted feature test suites (`pnpm exec playwright test ...` or `pnpm test:e2e ...`) after every refactoring step.
+6. Verify against tests: Run targeted feature test suites (`pnpm e2e:server` or `pnpm e2e:local`) after every refactoring step.

@@ -1,0 +1,87 @@
+{
+  "skill_name": "systematic-debugging",
+  "triggers": [
+    {
+      "id": 1,
+      "prompt": "проведи 4-фазну діагностику невідомої помилки та знайди першопричину",
+      "should_trigger": true,
+      "lang": "uk",
+      "split": "train",
+      "category": "direct"
+    },
+    {
+      "id": 2,
+      "prompt": "відтвори плаваючий баг у мінімальному тесті перед внесенням правок",
+      "should_trigger": true,
+      "lang": "uk",
+      "split": "train",
+      "category": "direct"
+    },
+    {
+      "id": 3,
+      "prompt": "знайди першопричину збою парсингу за трасуванням стек-трейсу",
+      "should_trigger": true,
+      "lang": "uk",
+      "split": "test",
+      "category": "direct"
+    },
+    {
+      "id": 4,
+      "prompt": "apply 4-phase systematic debugging to isolate root cause of bug",
+      "should_trigger": true,
+      "lang": "en",
+      "split": "train",
+      "category": "direct"
+    },
+    {
+      "id": 5,
+      "prompt": "reproduce elusive defect with minimal reproduction before patching",
+      "should_trigger": true,
+      "lang": "en",
+      "split": "test",
+      "category": "direct"
+    },
+    {
+      "id": 6,
+      "prompt": "перевір живе DOM дерево у браузері через Playwright MCP",
+      "should_trigger": false,
+      "lang": "uk",
+      "split": "train",
+      "category": "adjacent",
+      "expected_skill": "browser-debugging"
+    },
+    {
+      "id": 7,
+      "prompt": "inspect browser console logs and network waterfall interactively",
+      "should_trigger": false,
+      "lang": "en",
+      "split": "test",
+      "category": "adjacent",
+      "expected_skill": "browser-debugging"
+    },
+    {
+      "id": 8,
+      "prompt": "Перевір фінансовий звіт компанії та надішли email бухгалтеру.",
+      "should_trigger": false,
+      "lang": "uk",
+      "split": "train",
+      "category": "out_of_domain"
+    },
+    {
+      "id": 9,
+      "prompt": "Create a presentation slide deck for marketing campaign.",
+      "should_trigger": false,
+      "lang": "en",
+      "split": "train",
+      "category": "out_of_domain"
+    },
+    {
+      "id": 10,
+      "prompt": "Напиши вірш про осінь у Карпатах.",
+      "should_trigger": false,
+      "lang": "uk",
+      "split": "test",
+      "category": "out_of_domain"
+    }
+  ]
+}

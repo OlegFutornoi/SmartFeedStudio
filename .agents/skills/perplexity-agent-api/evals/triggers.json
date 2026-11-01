@@ -1,0 +1,87 @@
+{
+  "skill_name": "perplexity-agent-api",
+  "triggers": [
+    {
+      "id": 1,
+      "prompt": "знайди актуальні вимоги до XML фіду маркетплейсу Rozetka через Perplexity",
+      "should_trigger": true,
+      "lang": "uk",
+      "split": "train",
+      "category": "direct"
+    },
+    {
+      "id": 2,
+      "prompt": "досліди формати вивантаження Prom.ua та Horoshop з цитуванням джерел",
+      "should_trigger": true,
+      "lang": "uk",
+      "split": "train",
+      "category": "direct"
+    },
+    {
+      "id": 3,
+      "prompt": "отримай свіжі специфікації товарних фідів з вебу у структурованому JSON",
+      "should_trigger": true,
+      "lang": "uk",
+      "split": "test",
+      "category": "direct"
+    },
+    {
+      "id": 4,
+      "prompt": "research live marketplace feed requirements using Perplexity Agent API",
+      "should_trigger": true,
+      "lang": "en",
+      "split": "train",
+      "category": "direct"
+    },
+    {
+      "id": 5,
+      "prompt": "fetch web-grounded Rozetka XML schema specifications with citations",
+      "should_trigger": true,
+      "lang": "en",
+      "split": "test",
+      "category": "direct"
+    },
+    {
+      "id": 6,
+      "prompt": "перевір збережені записи у локальному кеші документації",
+      "should_trigger": false,
+      "lang": "uk",
+      "split": "train",
+      "category": "adjacent",
+      "expected_skill": "mcp-knowledge-cache"
+    },
+    {
+      "id": 7,
+      "prompt": "search local markdown cache for cached framework documentation",
+      "should_trigger": false,
+      "lang": "en",
+      "split": "test",
+      "category": "adjacent",
+      "expected_skill": "mcp-knowledge-cache"
+    },
+    {
+      "id": 8,
+      "prompt": "Перевір фінансовий звіт компанії та надішли email бухгалтеру.",
+      "should_trigger": false,
+      "lang": "uk",
+      "split": "train",
+      "category": "out_of_domain"
+    },
+    {
+      "id": 9,
+      "prompt": "Create a presentation slide deck for marketing campaign.",
+      "should_trigger": false,
+      "lang": "en",
+      "split": "train",
+      "category": "out_of_domain"
+    },
+    {
+      "id": 10,
+      "prompt": "Напиши вірш про осінь у Карпатах.",
+      "should_trigger": false,
+      "lang": "uk",
+      "split": "test",
+      "category": "out_of_domain"
+    }
+  ]
+}

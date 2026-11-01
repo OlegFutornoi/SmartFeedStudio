@@ -80,3 +80,8 @@ Before concluding an execution turn or handing off to another agent:
    - If continuing work: set `nextAction: "Step N+1: <Next step>"`.
 5. **Write Checkpoint**: Write updated state back to `.agents/state/active_task.json`.
 6. **Chat Brevity**: Output strictly a 1-2 sentence summary with clickable links to the plan and modified files per `CORE-07`. Never dump the raw state JSON in chat.
+
+## References
+
+- [context-economy.md](references/context-economy.md)
+- [handoff-protocol.md](references/handoff-protocol.md)

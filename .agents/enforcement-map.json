@@ -74,8 +74,8 @@
   "ARCH-05": {
     "title": "UsersModule Zero JWT Awareness",
     "domain": "backend",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "tools/guardrails/structural.mjs",
+    "mode": "blocking"
   },
   "BE-01": {
     "title": "100% Validated Controller DTOs",
@@ -98,14 +98,14 @@
   "BE-04": {
     "title": "Zero Hardcoded Fallback Secrets (CWE-798)",
     "domain": "backend",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "tools/guardrails/structural.mjs",
+    "mode": "blocking"
   },
   "BE-06": {
     "title": "OWASP API4 Commercial Plan Upgrade Gating",
     "domain": "backend",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "tools/guardrails/structural.mjs",
+    "mode": "blocking"
   },
   "BE-07": {
     "title": "Concurrency, Atomic Upserts & Mutex Protection",
@@ -122,14 +122,14 @@
   "BE-09": {
     "title": "Large Feed SAX Streaming Backpressure",
     "domain": "backend",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "tools/guardrails/structural.mjs",
+    "mode": "blocking"
   },
   "BE-10": {
     "title": "BullMQ Queue Resilience",
     "domain": "backend",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "tools/guardrails/structural.mjs",
+    "mode": "blocking"
   },
   "BE-11": {
     "title": "Layer-2 Quota Validation & AI Credits",
@@ -140,14 +140,14 @@
   "BE-12": {
     "title": "Anti-BOLA Tenant & Organization Isolation",
     "domain": "backend",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "tools/guardrails/structural.mjs",
+    "mode": "blocking"
   },
   "BE-13": {
     "title": "Atomic Payment Webhook Processing",
     "domain": "backend",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "tools/guardrails/structural.mjs",
+    "mode": "blocking"
   },
   "BE-14": {
     "title": "Tight Request Body Limits (Anti-DoS)",
@@ -224,8 +224,8 @@
   "CORE-12": {
     "title": "Quality and Reliability Over \"Working is Enough\"",
     "domain": "core",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "tools/guardrails/structural.mjs",
+    "mode": "blocking"
   },
   "CORE-13": {
     "title": "Absolute Ban on Emojis",
@@ -272,8 +272,8 @@
   "DB-04": {
     "title": "CUID Primary Key Ordering",
     "domain": "database",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "tools/guardrails/structural.mjs",
+    "mode": "blocking"
   },
   "DB-05": {
     "title": "Cascade Deletions (`onDelete: Cascade`)",
@@ -284,74 +284,74 @@
   "DB-06": {
     "title": "Zero N+1 Queries",
     "domain": "database",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "tools/guardrails/structural.mjs",
+    "mode": "blocking"
   },
   "DB-07": {
     "title": "Cursor Pagination on High-Volume Feeds and Storage",
     "domain": "database",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "tools/guardrails/structural.mjs",
+    "mode": "blocking"
   },
   "DB-08": {
     "title": "Short `$transaction()` Blocks",
     "domain": "database",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "tools/guardrails/structural.mjs",
+    "mode": "blocking"
   },
   "DB-09": {
     "title": "Connection Pooling via `@prisma/adapter-pg`",
     "domain": "database",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "tools/guardrails/structural.mjs",
+    "mode": "blocking"
   },
   "DB-10": {
     "title": "GIN `pg_trgm` Indexes for Text Search",
     "domain": "database",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "tools/guardrails/structural.mjs",
+    "mode": "blocking"
   },
   "DB-11": {
     "title": "Zero-Downtime Expand/Contract Migrations",
     "domain": "database",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "tools/guardrails/structural.mjs",
+    "mode": "blocking"
   },
   "DB-12": {
     "title": "Strict Prisma Types",
     "domain": "database",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "tools/guardrails/structural.mjs",
+    "mode": "blocking"
   },
   "OPS-01": {
     "title": "Continuous WIKI and AGENTS.md Synchronization",
     "domain": "docs_and_ops",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "tools/guardrails/structural.mjs",
+    "mode": "blocking"
   },
   "OPS-02": {
     "title": "Backend E2E Test Coverage Documentation",
     "domain": "docs_and_ops",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "tools/guardrails/structural.mjs",
+    "mode": "blocking"
   },
   "OPS-03": {
     "title": "SemVer Release Governance",
     "domain": "docs_and_ops",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "tools/guardrails/structural.mjs",
+    "mode": "blocking"
   },
   "OPS-04": {
     "title": "Rollback Runbook for Infrastructure Changes",
     "domain": "docs_and_ops",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "tools/guardrails/structural.mjs",
+    "mode": "blocking"
   },
   "OPS-05": {
     "title": "Standard Monorepo Ports and Access",
     "domain": "docs_and_ops",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "tools/guardrails/structural.mjs",
+    "mode": "blocking"
   },
   "FE-01": {
     "title": "Zero Duplicate API Calls via `useRef`",
@@ -362,14 +362,14 @@
   "FE-02": {
     "title": "No `React.StrictMode` Double Mounts",
     "domain": "frontend",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "tools/guardrails/structural.mjs",
+    "mode": "blocking"
   },
   "FE-03": {
     "title": "Zero Redundant Post-Auth `/auth/me` Calls",
     "domain": "frontend",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "tools/guardrails/structural.mjs",
+    "mode": "blocking"
   },
   "FE-04": {
     "title": "Lean `useCallback` Dependency Arrays",
@@ -380,62 +380,62 @@
   "FE-05": {
     "title": "Mandatory Table Row Extraction",
     "domain": "frontend",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "tools/guardrails/structural.mjs",
+    "mode": "blocking"
   },
   "FE-06": {
     "title": "List Page Modularity & Dialogs Container",
     "domain": "frontend",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "tools/guardrails/structural.mjs",
+    "mode": "blocking"
   },
   "FE-07": {
     "title": "Session Storage Decoupling",
     "domain": "frontend",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "tools/guardrails/structural.mjs",
+    "mode": "blocking"
   },
   "FE-08": {
     "title": "Mock ⇄ Real Data Parity",
     "domain": "frontend",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "tools/guardrails/structural.mjs",
+    "mode": "blocking"
   },
   "FE-09": {
     "title": "Client-Level In-Flight Request Deduplication",
     "domain": "frontend",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "tools/guardrails/structural.mjs",
+    "mode": "blocking"
   },
   "FE-10": {
     "title": "Zero Duplicate Context Data Re-Fetching",
     "domain": "frontend",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "tools/guardrails/structural.mjs",
+    "mode": "blocking"
   },
   "FE-11": {
     "title": "Aggregated Startup Bootstrap",
     "domain": "frontend",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "tools/guardrails/structural.mjs",
+    "mode": "blocking"
   },
   "FE-12": {
     "title": "Zero Raw Fetch Bypasses in Services",
     "domain": "frontend",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "tools/guardrails/structural.mjs",
+    "mode": "blocking"
   },
   "FE-13": {
     "title": "Scoped Domain DataSync Subscriptions",
     "domain": "frontend",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "tools/guardrails/structural.mjs",
+    "mode": "blocking"
   },
   "FE-14": {
     "title": "In-Memory TTL & Navigation Cache for Reference Data",
     "domain": "frontend",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "tools/guardrails/structural.mjs",
+    "mode": "blocking"
   },
   "UI-01": {
     "title": "100% Solid Sticky Headers",
@@ -518,14 +518,14 @@
   "UI-14": {
     "title": "Restrained Multi-Select & Matrix States (Zero Accent Flood)",
     "domain": "ui",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "tools/guardrails/structural.mjs",
+    "mode": "blocking"
   },
   "UI-15": {
     "title": "Viewport Budget, 2-Column Control Pairing & Inline Toolbar Filters",
     "domain": "ui",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "tools/guardrails/structural.mjs",
+    "mode": "blocking"
   },
   "I18N-01": {
     "title": "100% Bilingual Parity (UK ⇄ EN)",
@@ -554,14 +554,14 @@
   "I18N-05": {
     "title": "Zero English Enums in UI Tables",
     "domain": "i18n",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "tools/guardrails/structural.mjs",
+    "mode": "blocking"
   },
   "I18N-06": {
     "title": "Clean Numeric Metric Formatting",
     "domain": "i18n",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "tools/guardrails/structural.mjs",
+    "mode": "blocking"
   },
   "SEC-01": {
     "title": "4-Layer Defense-in-Depth",
@@ -584,8 +584,8 @@
   "SEC-04": {
     "title": "BOLA / IDOR Tenant Isolation",
     "domain": "security",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "tools/guardrails/structural.mjs",
+    "mode": "blocking"
   },
   "SEC-05": {
     "title": "SSRF TOCTOU Defense",
@@ -608,14 +608,14 @@
   "SEC-08": {
     "title": "Zero 0-SKU Feed Progression & Format Integrity",
     "domain": "security",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "tools/guardrails/structural.mjs",
+    "mode": "blocking"
   },
   "SEC-09": {
     "title": "Strict Public DTO Whitelisting & Zero Privilege Exposure (Mass Assignment Defense)",
     "domain": "security",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "tools/guardrails/structural.mjs",
+    "mode": "blocking"
   },
   "SEC-10": {
     "title": "Absolute Block on Direct Environment & Lockfile Modification",
@@ -638,38 +638,38 @@
   "TEST-02": {
     "title": "Frontend Test Isolation",
     "domain": "testing",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "tools/guardrails/structural.mjs",
+    "mode": "blocking"
   },
   "TEST-03": {
     "title": "Real Business Data Assertions (Zero Superficial Tests)",
     "domain": "testing",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "tools/guardrails/structural.mjs",
+    "mode": "blocking"
   },
   "TEST-04": {
     "title": "Client Avatar Assertions",
     "domain": "testing",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "tools/guardrails/structural.mjs",
+    "mode": "blocking"
   },
   "TEST-05": {
     "title": "Single-Request Performance Tests",
     "domain": "testing",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "tools/guardrails/structural.mjs",
+    "mode": "blocking"
   },
   "TEST-06": {
     "title": "Directory & Naming Contract",
     "domain": "testing",
-    "enforcer": "review-only",
-    "mode": "manual"
+    "enforcer": "tools/guardrails/structural.mjs",
+    "mode": "blocking"
   },
   "TEST-07": {
     "title": "Static Typecheck Clean (Zero Errors)",
     "domain": "testing",
     "enforcer": "tsc:noEmit",
-    "mode": "error"
+    "mode": "blocking"
   },
   "TEST-08": {
     "title": "Isolated Test Entity Prefixes",

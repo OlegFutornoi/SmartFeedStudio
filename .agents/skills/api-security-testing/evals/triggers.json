@@ -1,0 +1,87 @@
+{
+  "skill_name": "api-security-testing",
+  "triggers": [
+    {
+      "id": 1,
+      "prompt": "проведи пентест BOLA та IDOR на ендпоінтах зміни цін",
+      "should_trigger": true,
+      "lang": "uk",
+      "split": "train",
+      "category": "direct"
+    },
+    {
+      "id": 2,
+      "prompt": "перевір захист від масового призначення полів (Mass Assignment) у DTO",
+      "should_trigger": true,
+      "lang": "uk",
+      "split": "train",
+      "category": "direct"
+    },
+    {
+      "id": 3,
+      "prompt": "протестуй чи можна отримати доступ до чужої організації через зміну orgId",
+      "should_trigger": true,
+      "lang": "uk",
+      "split": "test",
+      "category": "direct"
+    },
+    {
+      "id": 4,
+      "prompt": "audit REST API endpoints against OWASP API1 BOLA tenant leakage",
+      "should_trigger": true,
+      "lang": "en",
+      "split": "train",
+      "category": "direct"
+    },
+    {
+      "id": 5,
+      "prompt": "probe mutation controllers for broken object property level authorization",
+      "should_trigger": true,
+      "lang": "en",
+      "split": "test",
+      "category": "direct"
+    },
+    {
+      "id": 6,
+      "prompt": "налаштуй глобальний заголовок Helmet та ThrottlerModule у main.ts",
+      "should_trigger": false,
+      "lang": "uk",
+      "split": "train",
+      "category": "adjacent",
+      "expected_skill": "security-and-hardening"
+    },
+    {
+      "id": 7,
+      "prompt": "configure NestJS global validation pipe with whitelist and forbidNonWhitelisted",
+      "should_trigger": false,
+      "lang": "en",
+      "split": "test",
+      "category": "adjacent",
+      "expected_skill": "security-and-hardening"
+    },
+    {
+      "id": 8,
+      "prompt": "Перевір фінансовий звіт компанії та надішли email бухгалтеру.",
+      "should_trigger": false,
+      "lang": "uk",
+      "split": "train",
+      "category": "out_of_domain"
+    },
+    {
+      "id": 9,
+      "prompt": "Create a presentation slide deck for marketing campaign.",
+      "should_trigger": false,
+      "lang": "en",
+      "split": "train",
+      "category": "out_of_domain"
+    },
+    {
+      "id": 10,
+      "prompt": "Напиши вірш про осінь у Карпатах.",
+      "should_trigger": false,
+      "lang": "uk",
+      "split": "test",
+      "category": "out_of_domain"
+    }
+  ]
+}

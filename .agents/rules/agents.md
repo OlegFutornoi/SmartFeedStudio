@@ -14,7 +14,6 @@ description: Autonomous specialized agent router and dispatching directives for 
 - QA (`@agents_qa` / `@agents-qa`): `e2e/` framework, Server/Local E2E integration tests, QA reports; executes strictly `QA-<num>` tasks (`.agents/agents/qa.md`).
 - DevOps (`@agents_devops` / `@agents-devops`): Docker, zero-downtime PostgreSQL migrations, Railway deployment, SemVer releases (`.agents/agents/devops.md`).
 - Security (`@agents_security` / `@agents-security`): STRIDE threat modeling, OWASP Top 10 pentesting, secret masking, PoC validation, vulnerability remediation (`.agents/agents/security.md`).
-- Reason: Clear domain separation ensures each specialized engineer commands appropriate skills, gates, and tests.
 
 ## AGENT-02: Mandatory 8-Stage Execution Loop
 
@@ -27,7 +26,6 @@ description: Autonomous specialized agent router and dispatching directives for 
   6. Code review and DoD verification against invariant IDs.
   7. Systematic debugging & root cause isolation: codify preventive invariants directly into `.agents/rules/<domain>.md` and `.agents/skills/<skill>/SKILL.md`.
   8. Documentation, state persistence & completion: update `.agents/state/active_task.json` and delete `plans/active/` plan via `plan-manager close` (retaining `plans/completed/*.compressed.md`). Chat output is 1-2 sentence summary with clickable link (`CORE-07`).
-- Reason: Strict stage progression prevents premature coding, skipped tests, context pollution, and unverified deployments.
 
 ## AGENT-03: Invariant & Skill Codification Loop
 
@@ -35,8 +33,7 @@ description: Autonomous specialized agent router and dispatching directives for 
   1. Record friction observation: append a structured JSON entry to `.agents/state/observations.jsonl` capturing `{ "timestamp", "type", "trigger", "friction", "resolution" }`.
   2. Structural enforcement over louder rules: if a model repeatedly violates an invariant, never merely shout louder in prompt text. Convert the constraint into a machine-enforced barrier (git hook, pre-tool hook, linter, or CLI validator).
   3. Codify rule or skill: update the relevant domain rule (`.agents/rules/<domain>.md`) and governing skill (`.agents/skills/<skill>/SKILL.md`) using `skill-creator`.
-- Define new invariants with concrete IDs (e.g. `FE-xx`, `BE-xx`, `SEC-xx`), explicit constraints, and technical rationale.
-- Reason: Logging live friction and codifying structural invariants prevents recurrent bugs and prevents agents from repeating discarded assumptions.
+- Define new invariants with concrete IDs (e.g. `FE-xx`, `BE-xx`, `SEC-xx`), explicit constraints, and technical rationale in `references/rules-rationale.md`.
 
 ## AGENT-04: Full-Stack Orchestra Protocol (Zero Siloed & Zero Raw Tasks)
 
@@ -50,7 +47,6 @@ description: Autonomous specialized agent router and dispatching directives for 
      - Static typecheck (`tsc --noEmit`) passes with 0 errors.
      - Bilingual parity (`pnpm i18n:check`) passes 100%.
      - Domain invariants check (`pnpm invariants:check`) passes with 0 violations.
-- Reason: Siloed development causes runtime contract mismatches, dead UIs, 400 Bad Request errors, and half-baked deliverables.
 
 ## AGENT-05: Reference-Pattern Hierarchy
 
@@ -58,23 +54,19 @@ description: Autonomous specialized agent router and dispatching directives for 
   1. Golden Templates (`.agents/templates/*`): Authoritative reference scaffolds for controllers, CQRS handlers, UI cells, and badges.
   2. Golden Source Files (`// @golden` header): In-tree implementations verified against all active invariants.
   3. Untrusted Code: All unannotated codebase files are treated as legacy; agents must never blindly mimic them without validating against `.agents/rules/`.
-- Reason: Unverified legacy files contain historical anti-patterns that induce few-shot regression loops.
 
 ## AGENT-06: Pre- and Post-Flight Verification Gate
 
 - Stage 1 (Discovery): Record pre-flight baseline via `pnpm guardrails:check` or `pnpm verify:fast`.
 - Stage 6 (Verification): Run `pnpm verify:fast` to guarantee zero regressions against the ratchet baseline.
 - Final Turn: Provide the exact mechanical gate summary line in the report instead of unverified textual claims.
-- Reason: Mandatory mechanical execution catches regressions before user handover.
 
 ## AGENT-07: Skill Evolution, Versioning & Trigger Integrity
 
-- Every skill frontmatter must define `name` (matching directory), `description` containing both "Use when" and "Do not use for", and mandatory `evals/evals.json` suite (>=3 cases including negative controls).
+- Every skill frontmatter must define `name` (matching directory), `description` containing both "Use when" and "Do not use for", and mandatory `evals/evals.json` suite (>=3 cases including negative controls) and `evals/triggers.json` (>=10 triggers with 60/40 train/test split).
 - Any description or procedure modification mandates re-running `node scripts/ops/run-skill-evals.mjs --dry-run` to ensure zero schema drift.
-- Reason: Unverified description edits corrupt autonomous agent dispatching and induce hallucinated tool calls.
 
 ## AGENT-08: Subagent Delegation Protocol & Single-Writer Rule
 
 - Every `invoke_subagent` must declare: Goal, Expected Output Format, Boundary Constraints (what NOT to touch), and Link to Compressed Plan (`plans/completed/<name>.compressed.md`).
 - Single-Writer Rule: Strictly one agent may modify workspace files in a vertical slice at any given time. Parallel subagents operate strictly in read-only mode (`research`, `review`).
-- Reason: Unconstrained parallel writing creates worktree collisions, race conditions, and corrupted git state.

@@ -34,3 +34,10 @@ rules:
 2. Headless server safety (CWE-400): Never invoke desktop GUI tools (`open`, `explorer`, `xdg-open`) inside cloud backend API code.
 3. SSRF TOCTOU defense (CWE-918): Pin validated destination IP addresses when performing DNS lookups prior to HTTP feed fetching to prevent DNS rebinding attacks.
 4. Native desktop security: Store SQLCipher database keys and refresh tokens exclusively in the host OS Keychain using the `keyring` Rust crate.
+
+## References
+
+- [hardening-patterns.md](references/hardening-patterns.md)
+- [strix-pentest.md](references/strix-pentest.md)
+- [vulnerability-remediation.md](references/vulnerability-remediation.md)
+- [web-pentest.md](references/web-pentest.md)

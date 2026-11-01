@@ -78,7 +78,7 @@ function walkRepo(dir, out = []) {
       continue;
     const full = path.join(dir, entry.name);
     if (entry.isDirectory()) walkRepo(full, out);
-    else if (/\.[cm]?[jt]sx?$/.test(entry.name)) out.push(full);
+    else if (/\.[cm]?[jt]sx?$/.test(entry.name) || entry.name.endsWith('.prisma')) out.push(full);
   }
   return out;
 }

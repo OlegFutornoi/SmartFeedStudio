@@ -1,0 +1,87 @@
+{
+  "skill_name": "turborepo",
+  "triggers": [
+    {
+      "id": 1,
+      "prompt": "налаштуй конфігурацію turbo.json з кешуванням артефактів збірки",
+      "should_trigger": true,
+      "lang": "uk",
+      "split": "train",
+      "category": "direct"
+    },
+    {
+      "id": 2,
+      "prompt": "оптимізуй запуск задач у монорепозиторії через фільтри pnpm --filter",
+      "should_trigger": true,
+      "lang": "uk",
+      "split": "train",
+      "category": "direct"
+    },
+    {
+      "id": 3,
+      "prompt": "налаштуй залежності пайплайну збірки між shared, backend та desktop",
+      "should_trigger": true,
+      "lang": "uk",
+      "split": "test",
+      "category": "direct"
+    },
+    {
+      "id": 4,
+      "prompt": "configure Turborepo pipeline caching and task dependencies in turbo.json",
+      "should_trigger": true,
+      "lang": "en",
+      "split": "train",
+      "category": "direct"
+    },
+    {
+      "id": 5,
+      "prompt": "optimize monorepo build graph and cache hit rates in CI pipeline",
+      "should_trigger": true,
+      "lang": "en",
+      "split": "test",
+      "category": "direct"
+    },
+    {
+      "id": 6,
+      "prompt": "створи GitHub Actions workflow для автоматичної перевірки пулреквестів",
+      "should_trigger": false,
+      "lang": "uk",
+      "split": "train",
+      "category": "adjacent",
+      "expected_skill": "ci-cd-and-automation"
+    },
+    {
+      "id": 7,
+      "prompt": "configure CI runner matrix and automated quality check gates",
+      "should_trigger": false,
+      "lang": "en",
+      "split": "test",
+      "category": "adjacent",
+      "expected_skill": "ci-cd-and-automation"
+    },
+    {
+      "id": 8,
+      "prompt": "Перевір фінансовий звіт компанії та надішли email бухгалтеру.",
+      "should_trigger": false,
+      "lang": "uk",
+      "split": "train",
+      "category": "out_of_domain"
+    },
+    {
+      "id": 9,
+      "prompt": "Create a presentation slide deck for marketing campaign.",
+      "should_trigger": false,
+      "lang": "en",
+      "split": "train",
+      "category": "out_of_domain"
+    },
+    {
+      "id": 10,
+      "prompt": "Напиши вірш про осінь у Карпатах.",
+      "should_trigger": false,
+      "lang": "uk",
+      "split": "test",
+      "category": "out_of_domain"
+    }
+  ]
+}

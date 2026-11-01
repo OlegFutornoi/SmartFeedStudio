@@ -1,0 +1,87 @@
+{
+  "skill_name": "security-and-hardening",
+  "triggers": [
+    {
+      "id": 1,
+      "prompt": "налаштуй 4-рівневий захист бекенду та захист від SSRF атак",
+      "should_trigger": true,
+      "lang": "uk",
+      "split": "train",
+      "category": "direct"
+    },
+    {
+      "id": 2,
+      "prompt": "захисти виконання OS команд через execFile замість shell exec",
+      "should_trigger": true,
+      "lang": "uk",
+      "split": "train",
+      "category": "direct"
+    },
+    {
+      "id": 3,
+      "prompt": "перевір відповідність ендпоінтів рекомендаціям OWASP Top 10",
+      "should_trigger": true,
+      "lang": "uk",
+      "split": "test",
+      "category": "direct"
+    },
+    {
+      "id": 4,
+      "prompt": "implement 4-layer defense architecture and SSRF IP pinning",
+      "should_trigger": true,
+      "lang": "en",
+      "split": "train",
+      "category": "direct"
+    },
+    {
+      "id": 5,
+      "prompt": "harden OS command execution using execFile with discrete arguments",
+      "should_trigger": true,
+      "lang": "en",
+      "split": "test",
+      "category": "direct"
+    },
+    {
+      "id": 6,
+      "prompt": "проведи активне тестування BOLA на існуючих ендпоінтах",
+      "should_trigger": false,
+      "lang": "uk",
+      "split": "train",
+      "category": "adjacent",
+      "expected_skill": "api-security-testing"
+    },
+    {
+      "id": 7,
+      "prompt": "probe live REST endpoints for broken object level authorization",
+      "should_trigger": false,
+      "lang": "en",
+      "split": "test",
+      "category": "adjacent",
+      "expected_skill": "api-security-testing"
+    },
+    {
+      "id": 8,
+      "prompt": "Перевір фінансовий звіт компанії та надішли email бухгалтеру.",
+      "should_trigger": false,
+      "lang": "uk",
+      "split": "train",
+      "category": "out_of_domain"
+    },
+    {
+      "id": 9,
+      "prompt": "Create a presentation slide deck for marketing campaign.",
+      "should_trigger": false,
+      "lang": "en",
+      "split": "train",
+      "category": "out_of_domain"
+    },
+    {
+      "id": 10,
+      "prompt": "Напиши вірш про осінь у Карпатах.",
+      "should_trigger": false,
+      "lang": "uk",
+      "split": "test",
+      "category": "out_of_domain"
+    }
+  ]
+}

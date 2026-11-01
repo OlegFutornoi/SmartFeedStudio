@@ -3,6 +3,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { NotFoundException } from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
 import { BatchToggleSupplierCategoriesCommand } from '@/modules/suppliers/commands/suppliers.commands';
+import { getSupplierTenancyWhere } from '@/modules/suppliers/utils/supplier-tenancy.util';
 
 @CommandHandler(BatchToggleSupplierCategoriesCommand)
 export class BatchToggleSupplierCategoriesHandler implements ICommandHandler<BatchToggleSupplierCategoriesCommand> {
@@ -11,8 +12,9 @@ export class BatchToggleSupplierCategoriesHandler implements ICommandHandler<Bat
   async execute(command: BatchToggleSupplierCategoriesCommand) {
     const { supplierId, userId, categoryIds, isActive } = command;
 
+    const tenancyWhere = await getSupplierTenancyWhere(this.prisma, userId);
     const supplier = await this.prisma.supplier.findFirst({
-      where: { id: supplierId, userId },
+      where: { id: supplierId, ...tenancyWhere },
       select: { id: true },
     });
 

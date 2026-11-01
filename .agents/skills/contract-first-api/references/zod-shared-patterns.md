@@ -1,12 +1,12 @@
-# Zod Shared Patterns — Опис схем у packages/shared
+# Zod Shared Patterns
 
-## 1. Структура файлів у `packages/shared/src/`
+## 1. Directory Structure in `packages/shared/src/`
 
-- `contracts/<domain>/<action>.schema.ts` — Zod схема валідації.
-- `contracts/<domain>/<action>.dto.ts` — виведений TypeScript тип (`z.infer<typeof ...>`).
-- `enums/` — єдині доменні перелічення (ролі, статуси, тарифні плани).
+- `contracts/<domain>/<action>.schema.ts`: Zod validation schema.
+- `contracts/<domain>/<action>.dto.ts`: Inferred TypeScript type (`z.infer<typeof ...>`).
+- `enums/`: Canonical domain enums (roles, statuses, subscription plans).
 
-## 2. Еталонний патерн Zod схеми
+## 2. Standard Zod Contract Pattern
 
 ```typescript
 import { z } from 'zod';
@@ -30,9 +30,9 @@ export const ImportFeedResponseSchema = z.object({
 export type ImportFeedResponseDto = z.infer<typeof ImportFeedResponseSchema>;
 ```
 
-## 3. Збірка контрактів
+## 3. Contract Compilation
 
-Після будь-якого редагування схеми обов'язково виконати:
+After modifying contracts in `@smartfeed/shared`, build the package:
 
 ```bash
 pnpm --filter @smartfeed/shared build

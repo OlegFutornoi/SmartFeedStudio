@@ -24,7 +24,7 @@ rules: [core, testing, frontend, i18n]
 
 1. Step 1 - Page Object Model Structuring: define Page Object classes with typed methods and resilient `data-testid` or role-based locators (`page.getByRole('button', { name: ... })`). Never use fragile CSS class chains.
 2. Step 2 - Test Isolation Setup: in `beforeEach` and `afterEach`, clear browser `localStorage`, `sessionStorage`, cookies, and mock route interceptors (`TEST-02`).
-3. Step 3 - Real Data and Business Invariants: assert actual entity names (e.g. `Brain Distribution`). Enforce negative assertion: `expect(name).not.toBe('Постачальник')` to prevent column header leakage (`TEST-03`).
+3. Step 3 - Real Data and Business Invariants: assert actual entity names (e.g. `Brain Distribution`). Enforce negative assertions (e.g. `expect(name).not.toBe('Supplier')`) to prevent raw column header fallback leakage (`TEST-03`).
 4. Step 4 - Single-Request Network Verification: track request count via `page.on('request')`. Assert that endpoint calls execute strictly 1 time on initial load (`TEST-05`).
 5. Step 5 - Dynamic Bilingual Switching: switch language between Ukrainian and English. Assert that all headers, buttons, placeholders, and status badges translate without raw keys leaking (`I18N-01`, `I18N-02`).
 6. Step 6 - Condition-Based Waiting: use explicit waiting predicates (`expect(locator).toBeVisible()`, `page.waitForResponse(...)`, `expect.poll(...)`). Never use arbitrary `page.waitForTimeout()`.

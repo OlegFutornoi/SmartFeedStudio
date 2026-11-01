@@ -65,7 +65,7 @@ rules: [core, ui, i18n]
 
 - Never use `${CLAUDE_PLUGIN_ROOT}` or undefined environment variables in script executions.
 - Never use `emerald-*`, `green-*`, `blue-*`, `amber-*`, `yellow-*` palette classes; use semantic tokens `text-success`, `bg-success/15 border-success/30`, `text-primary` (violates `UI-02`, `UI-03`).
-- Never append noun text suffixes inside table cells whose column headers already name the entity (e.g. `3 фідів`, `10 товарів`); render clean numeric values or badges only (violates `UI-06`).
+- Never append noun text suffixes inside table cells whose column headers already name the entity (e.g. `3 feeds`, `10 items`); render clean numeric values or badges only (violates `UI-06`).
 - Never assign decorative rainbow colors (`blue-*`, `amber-*`, `yellow-*`) to form or card icons (violates `UI-02`, `UI-07`).
 - Never use translucent `backdrop-blur` or opacity modifiers (`bg-card/60`) for sticky headers or sheet drawers (violates `UI-01`).
 - Never write base UI primitives from scratch instead of using shadcn CLI (violates `UI-05`).
@@ -84,3 +84,8 @@ rules: [core, ui, i18n]
 
 - `references/quick-reference.md` - read for UX guidelines on forms, navigation, and touch targets.
 - `references/pro-rules.md` - read for canonical pre-delivery UX checklists.
+
+## References
+
+- [image-optimization.md](references/image-optimization.md)
+- [motion-engineering.md](references/motion-engineering.md)

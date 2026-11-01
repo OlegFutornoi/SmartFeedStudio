@@ -71,7 +71,7 @@ Every task authored in `plans/active/` (`FR-...`, `BE-...`, `FR-BE-...`) must fo
 9. Zero task dumping, dual-plan creation, and clean Markdown (`CORE-07`, `CORE-14`):
    - Create tasks via `node scripts/plan-manager.mjs create <slug> "<title_ua>" "<title_en>"`. This creates the human plan in `plans/active/<slug>.md` and the compressed brief in `plans/completed/<slug>.compressed.md`.
    - AI models execute ONLY the compressed version in `plans/completed/<slug>.compressed.md` (reading `plans/active/` is blocked by Rule R5).
-   - The chat response must contain only a 1-2 sentence summary and clickable markdown link (`[Задача](file:///...)`) with the recommended executing agent.
+   - The chat response must contain only a 1-2 sentence summary and clickable markdown link (`[Task](file:///...)`) with the recommended executing agent.
 
 ## Task completion and deletion of active plan
 
@@ -79,3 +79,9 @@ Every task authored in `plans/active/` (`FR-...`, `BE-...`, `FR-BE-...`) must fo
    - Run `node scripts/plan-manager.mjs close <slug>`.
    - The uncompressed file in `plans/active/<slug>.md` is deleted; the permanent compressed plan in `plans/completed/<slug>.compressed.md` is marked completed and preserved.
    - Update `plans/README.md` to reflect the completed state.
+
+## References
+
+- [spec-driven-development.md](references/spec-driven-development.md)
+- [to-tickets.md](references/to-tickets.md)
+- [writing-plans.md](references/writing-plans.md)

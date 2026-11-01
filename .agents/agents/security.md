@@ -7,10 +7,7 @@ skills:
   - skills/security-and-hardening
   - skills/secret-serialization
   - skills/api-security-testing
-  - skills/web-app-penetration-testing
-  - skills/penetration-testing-with-strix
-  - skills/fix-security-vulnerabilities-with-strix
-  - skills/tauri-v2-security-and-ipc
+  - skills/rust-native-backend
   - skills/doubt-driven-development
   - skills/systematic-debugging
   - skills/task-memory-and-state

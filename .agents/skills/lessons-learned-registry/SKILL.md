@@ -23,3 +23,7 @@ rules:
    - Specify: Invariant ID, Problem statement, Structural root cause, Automated prevention mechanism (test or lint rule).
 3. Zero duplicate records: Search existing registry entries and `.agents/rules/` before authoring new entries.
 4. File size limits: Maintain modular sub-registries (`registry-backend.md`, `registry-frontend.md`) if `references/registry.md` approaches 250 lines.
+
+## References
+
+- [record-template.md](references/record-template.md)

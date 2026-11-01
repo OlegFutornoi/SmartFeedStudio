@@ -30,6 +30,9 @@ export function validateAgents(SUBAGENTS_DIR, AGENTS_DIR, errors, warnings) {
     if (TABLE_PATTERN.test(text)) {
       errors.push(`[SUBAGENT] Agent ${af} contains forbidden markdown table syntax`);
     }
+    if (/[\u0400-\u04FF]/.test(text)) {
+      errors.push(`[CYRILLIC] Agent .agents/agents/${af} contains forbidden Cyrillic characters`);
+    }
 
     const expectedName = af.replace(/\.md$/, '');
     if (
@@ -73,6 +76,19 @@ export function validateEnforcement(ENFORCEMENT_MAP_PATH, RULES_DIR, VALID_RULES
       for (const line of rText.split(/\r?\n/)) {
         const m = line.match(/^##\s+([A-Z0-9]+-\d+):/);
         if (m) definedRules.add(m[1]);
+      }
+    }
+
+    const VALID_MODES = new Set(['blocking', 'manual']);
+    for (const [rid, entry] of Object.entries(map)) {
+      if (!entry || typeof entry !== 'object') {
+        errors.push(`[ENFORCEMENT] Entry ${rid} is not a valid object`);
+        continue;
+      }
+      if (!entry.mode || !VALID_MODES.has(entry.mode)) {
+        errors.push(
+          `[ENFORCEMENT] Entry ${rid} has invalid mode "${entry.mode}" (must be "blocking" or "manual")`
+        );
       }
     }
 

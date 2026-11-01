@@ -25,3 +25,10 @@ rules:
 5. Safe operating system execution: Never invoke system shells (`sh -c` or `cmd.exe /c`) with interpolated strings (CWE-78). Use `std::process::Command` with discrete arguments array without shell evaluation.
 6. Lint verification: After editing Rust code in `apps/desktop/src-tauri`, run `cargo clippy --manifest-path apps/desktop/src-tauri/Cargo.toml --all-targets -- -D warnings` and confirm zero warnings.
 7. Incremental verification: Run `pnpm verify:rust` (or background watcher `pnpm watch:rust`) to verify compilation in <1.5s. Git commits touching Rust files trigger `node scripts/verify-rust.mjs` automatically via lint-staged.
+
+## References
+
+- [ipc-input-validation-rust.md](references/ipc-input-validation-rust.md)
+- [sqlcipher-key-management.md](references/sqlcipher-key-management.md)
+- [tauri-v2-capabilities-and-scopes.md](references/tauri-v2-capabilities-and-scopes.md)
+- [tauri-v2-security-and-ipc.md](references/tauri-v2-security-and-ipc.md)

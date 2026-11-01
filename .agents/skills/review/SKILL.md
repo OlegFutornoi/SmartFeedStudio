@@ -17,7 +17,7 @@ rules: [core, backend, database, frontend, ui, security, testing]
 
 - Target branch, pull request, or modified file paths (`git diff origin/main...HEAD`).
 - Governing rule files in `.agents/rules/`.
-- Invariant ledger in `.agents/_backup/20261015/invariant_ledger.md`.
+- Invariant ledger in `.agents/enforcement-map.json` and `.agents/skills/lessons-learned-registry/references/registry.md`.
 
 ## Procedure
 
@@ -28,7 +28,7 @@ rules: [core, backend, database, frontend, ui, security, testing]
 5. Stage 5 - Database and Schema Audit: verify 100% FK indexes (`DB-01`). Verify timestamptz(6) on all DateTime columns (`DB-02`). Verify snake_case mapping (`DB-03`). Verify CUID primary keys (`DB-04`). Verify cascade deletes (`DB-05`). Verify zero N+1 query loops (`DB-06`). Verify short `$transaction` blocks (`DB-08`).
 6. Stage 6 - Adversarial Stress-Test: analyze concurrent mutation race conditions (`BE-07`). Verify mutex locks on quota checks. Verify `cleanDatabase` teardown in test suites (`TEST-01`). Verify behavioral parity between mock driver and real backend (`FE-08`).
 7. Stage 7 - Remediation Task Generation: if architectural, security, or quality defects are discovered, generate remediation task in `plans/active/` (`FR-<num>-remediation-<target>.md` for frontend, `BE-<num>-remediation-<target>.md` for backend, or `FR-BE-<num>-remediation-<target>.md` for joint issues). Group findings by severity (P0 Critical, P1 High, P2 Medium, P3 Low) citing exact invariant IDs and file:line locations. Never silently modify production code during an audit.
-8. Stage 8 - Final Review Report: format audit findings in the standardized report structure. Output a 1-2 sentence summary in chat with a clickable link to the remediation task (`[Задача](file:///...)`).
+8. Stage 8 - Final Review Report: format audit findings in the standardized report structure. Output a 1-2 sentence summary in chat with a clickable link to the remediation task (`[Task](file:///...)`).
 
 ## Outputs
 

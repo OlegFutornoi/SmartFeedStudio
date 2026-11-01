@@ -11,8 +11,13 @@ import {
   hasAnyProviderKey,
   extractJsonArray,
   runOmni,
-  updateSkillsStatusDoc,
 } from './skill-evals-reporter.mjs';
+import {
+  reconcileSkillsStatus,
+  recordSkillEvalResult,
+  generateSkillsStatusDoc,
+} from './skill-state-manager.mjs';
+import { loadAllSuites, dryRunValidation } from './skill-evals-loader.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -23,6 +28,10 @@ const OMNIROUTE_BIN = path.join(
   SKILLS_DIR,
   'omniroute-delegation/scripts/omniroute-query.mjs'
 );
+const GRADER_MD_PATH = path.join(SKILLS_DIR, 'skill-creator/agents/grader.md');
+const GRADER_INSTRUCTIONS = fs.existsSync(GRADER_MD_PATH)
+  ? fs.readFileSync(GRADER_MD_PATH, 'utf8').slice(0, 4000)
+  : 'You are a strict QA Judge. Output valid JSON only.';
 const MAX_SKILL_CHARS = 24000;
 
 function parseArgs(argv) {
@@ -30,7 +39,10 @@ function parseArgs(argv) {
     skills: [],
     caseId: null,
     dryRun: false,
+    changedOnly: false,
     runs: 1,
+    baseline: false,
+    judgeProvider: null,
     out: path.join(
       REPO_ROOT,
       '.temp/skill-evals',
@@ -45,10 +57,16 @@ function parseArgs(argv) {
         .split(',')
         .map((s) => s.trim())
         .filter(Boolean);
+    } else if (arg === '--changed') {
+      opts.changedOnly = true;
     } else if (arg.startsWith('--case=')) {
       opts.caseId = Number(arg.slice(7));
     } else if (arg === '--dry-run') {
       opts.dryRun = true;
+    } else if (arg === '--baseline') {
+      opts.baseline = true;
+    } else if (arg.startsWith('--judge-provider=')) {
+      opts.judgeProvider = arg.slice(17);
     } else if (arg.startsWith('--runs=')) {
       opts.runs = Number(arg.slice(7)) || 1;
     } else if (arg.startsWith('--out=')) {
@@ -58,101 +76,31 @@ function parseArgs(argv) {
   return opts;
 }
 
-function loadAllSuites(filterSkills = []) {
-  const dirs = fs
-    .readdirSync(SKILLS_DIR, { withFileTypes: true })
-    .filter((d) => d.isDirectory())
-    .map((d) => d.name)
-    .sort();
-
-  if (filterSkills.length > 0) {
-    const unknown = filterSkills.filter((f) => !dirs.includes(f));
-    if (unknown.length > 0) {
-      throw new Error(`Unknown skill(s): ${unknown.join(', ')}`);
-    }
-  }
-
-  const selected =
-    filterSkills.length > 0
-      ? dirs.filter((d) => filterSkills.includes(d))
-      : dirs;
-
-  const results = [];
-  for (const skill of selected) {
-    const evalPath = path.join(SKILLS_DIR, skill, 'evals/evals.json');
-    const skillMdPath = path.join(SKILLS_DIR, skill, 'SKILL.md');
-
-    let suite = null;
-    let evalError = null;
-
-    if (fs.existsSync(evalPath)) {
-      try {
-        suite = JSON.parse(fs.readFileSync(evalPath, 'utf8'));
-      } catch (err) {
-        evalError = `Invalid JSON: ${err.message}`;
-      }
-    } else {
-      evalError = 'Missing evals/evals.json';
-    }
-
-    const skillMd = fs.existsSync(skillMdPath)
-      ? fs.readFileSync(skillMdPath, 'utf8').slice(0, MAX_SKILL_CHARS)
-      : '';
-
-    results.push({ skill, evalPath, skillMdPath, suite, skillMd, evalError });
-  }
-  return results;
-}
-
-export function dryRunValidation(suites) {
-  const errors = [];
-  let validCount = 0;
-  let totalCases = 0;
-
-  for (const { skill, suite, evalError } of suites) {
-    if (evalError) {
-      errors.push(`[${skill}] ${evalError}`);
-      continue;
-    }
-    if (!suite) {
-      errors.push(`[${skill}] Missing suite`);
-      continue;
-    }
-    if (suite.skill_name !== skill) {
-      errors.push(
-        `[${skill}] skill_name "${suite.skill_name}" !== dir "${skill}"`
-      );
-    }
-    if (!Array.isArray(suite.evals) || suite.evals.length < 2) {
-      errors.push(`[${skill}] Must contain at least 2 eval cases`);
-    } else {
-      let caseIdx = 0;
-      for (const c of suite.evals) {
-        caseIdx++;
-        const expList = c.expectations || c.assertions;
-        if (
-          !c.id ||
-          !c.prompt ||
-          !c.expected_output ||
-          !Array.isArray(expList) ||
-          expList.length < 2
-        ) {
-          errors.push(
-            `[${skill}] Case #${c.id || caseIdx} missing required fields or has <2 expectations`
-          );
-        }
-      }
-      validCount++;
-      totalCases += suite.evals.length;
-    }
-  }
-
-  return { errors, validCount, totalCases };
-}
+export { dryRunValidation };
 
 async function main() {
   const opts = parseArgs(process.argv.slice(2));
-  const suites = loadAllSuites(opts.skills);
+
+  if (opts.changedOnly) {
+    const statusList = reconcileSkillsStatus(SKILLS_DIR);
+    const needEval = statusList
+      .filter(
+        (s) =>
+          s.status === 'MODIFIED' ||
+          s.status === 'UNVERIFIED' ||
+          s.status === 'FAILED'
+      )
+      .map((s) => s.name);
+    if (needEval.length === 0) {
+      console.log(
+        '[PASS] All skills are already VERIFIED with current code hashes.'
+      );
+      process.exit(0);
+    }
+    opts.skills = needEval;
+  }
+
+  const suites = loadAllSuites(SKILLS_DIR, opts.skills);
 
   if (opts.dryRun) {
     const { errors, validCount, totalCases } = dryRunValidation(suites);
@@ -161,11 +109,14 @@ async function main() {
     );
 
     if (errors.length > 0) {
-      console.error(`\nDry-run detected ${errors.length} issue(s) across skill evals:`);
+      console.error(
+        `\nDry-run detected ${errors.length} issue(s) across skill evals:`
+      );
       errors.slice(0, 20).forEach((e) => console.error(`  - ${e}`));
       process.exit(1);
     }
 
+    generateSkillsStatusDoc(reconcileSkillsStatus(SKILLS_DIR), STATUS_DOC_PATH);
     console.log('[PASS] All tested skill eval suites are structurally valid.');
     process.exit(0);
   }
@@ -194,25 +145,65 @@ async function main() {
 
     console.log(`\nEvaluating skill: ${skill} (${cases.length} cases)...`);
     let skillPassed = true;
+    let skillScore = 0;
+    let baseScore = 0;
 
     for (const c of cases) {
       process.stdout.write(`  Case #${c.id}: "${c.prompt.slice(0, 45)}..." `);
 
       try {
-        const agentOutput = runOmni(skillMd, c.prompt, OMNIROUTE_BIN, REPO_ROOT, 0.2);
+        let baselinePassed = false;
+        if (opts.baseline) {
+          try {
+            const baseOutput = runOmni(
+              'You are an expert engineer in SmartFeed Studio without extra specialized skills loaded.',
+              c.prompt,
+              OMNIROUTE_BIN,
+              REPO_ROOT,
+              0.2
+            );
+            const baseJudgePrompt = [
+              `Evaluate if the candidate response satisfies each expectation for '${skill}'.`,
+              `Prompt: "${c.prompt}"`,
+              `Candidate Output:\n${baseOutput}`,
+              `Expectations:\n${c.expectations.map((e, idx) => `${idx + 1}. ${e}`).join('\n')}`,
+              'Return JSON: [{"expectation": string, "pass": boolean, "reason": string}]',
+            ].join('\n\n');
+            const baseVerdict = extractJsonArray(
+              runOmni(
+                GRADER_INSTRUCTIONS,
+                baseJudgePrompt,
+                OMNIROUTE_BIN,
+                REPO_ROOT,
+                0.0
+              )
+            );
+            if (baseVerdict && baseVerdict.every((v) => v.pass)) {
+              baselinePassed = true;
+              baseScore++;
+            }
+          } catch {}
+        }
+
+        const candidateSystem = `${skillMd.slice(0, MAX_SKILL_CHARS)}\n\nFollow all instructions from the skill above.`;
+        const candidateOutput = runOmni(
+          candidateSystem,
+          c.prompt,
+          OMNIROUTE_BIN,
+          REPO_ROOT,
+          0.2
+        );
+
         const judgePrompt = [
-          `You are an expert strict quality evaluator.`,
-          `Evaluate if the candidate response satisfies each expectation for the skill '${skill}'.`,
+          `Evaluate if the candidate response satisfies each expectation for '${skill}'.`,
           `Prompt: "${c.prompt}"`,
-          `Candidate Output:\n${agentOutput}`,
-          `Expectations to verify:`,
-          ...c.expectations.map((e, idx) => `  ${idx + 1}. ${e}`),
-          `Return ONLY a JSON array with one object per expectation:`,
-          `[{"expectation": "...", "pass": true/false, "evidence": "direct quote or explanation"}]`,
-        ].join('\n');
+          `Candidate Output:\n${candidateOutput}`,
+          `Expectations:\n${c.expectations.map((e, idx) => `${idx + 1}. ${e}`).join('\n')}`,
+          'Return JSON: [{"expectation": string, "pass": boolean, "reason": string}]',
+        ].join('\n\n');
 
         const judgeRaw = runOmni(
-          'You are a strict QA Judge. Output valid JSON only.',
+          GRADER_INSTRUCTIONS,
           judgePrompt,
           OMNIROUTE_BIN,
           REPO_ROOT,
@@ -233,7 +224,11 @@ async function main() {
           skillPassed = false;
           allPassed = false;
         } else {
-          console.log('[PASS]');
+          skillScore++;
+          const baselineTag = opts.baseline
+            ? ` [baseline: ${baselinePassed ? 'PASS' : 'FAIL'}]`
+            : '';
+          console.log(`[PASS]${baselineTag}`);
         }
       } catch (err) {
         console.log(`[ERROR] (${err.message})`);
@@ -241,10 +236,26 @@ async function main() {
         allPassed = false;
       }
     }
-    results.push({ skill, passed: skillPassed });
+
+    const delta = opts.baseline ? skillScore - baseScore : null;
+    if (opts.baseline && delta <= 0) {
+      console.warn(
+        `  [WARN] Skill ${skill} baseline delta is ${delta} (no measurable improvement over baseline).`
+      );
+    }
+    results.push({ skill, passed: skillPassed, score: skillScore, baseScore, delta });
+
+    recordSkillEvalResult(skill, {
+      passed: skillPassed,
+      score: `${skillScore}/${cases.length}`,
+      baseScore,
+      delta,
+      provider: opts.judgeProvider || 'omniroute',
+      runs: opts.runs,
+    });
   }
 
-  updateSkillsStatusDoc(suites, results, STATUS_DOC_PATH);
+  generateSkillsStatusDoc(reconcileSkillsStatus(SKILLS_DIR), STATUS_DOC_PATH);
   fs.mkdirSync(path.dirname(opts.out), { recursive: true });
   fs.writeFileSync(opts.out, JSON.stringify(results, null, 2), 'utf8');
 

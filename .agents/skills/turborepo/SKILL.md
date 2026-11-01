@@ -30,3 +30,10 @@ rules:
    - Declare environment variables that affect build output in `globalEnv` or task-specific `env` arrays in `turbo.json`.
    - Prevent cache poisoning by ensuring secrets are omitted from build artifacts.
 6. For detailed pipeline patterns and recipes, see `references/turbo-recipes.md`.
+
+## References
+
+- [best-practices](references/best-practices)
+- [boundaries](references/boundaries)
+- [cli](references/cli)
+- [watch](references/watch)

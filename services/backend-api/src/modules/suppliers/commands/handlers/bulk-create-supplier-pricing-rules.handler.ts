@@ -3,6 +3,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { NotFoundException } from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
 import { BulkCreateSupplierPricingRulesCommand } from '@/modules/suppliers/commands/suppliers.commands';
+import { getSupplierTenancyWhere } from '@/modules/suppliers/utils/supplier-tenancy.util';
 
 @CommandHandler(BulkCreateSupplierPricingRulesCommand)
 export class BulkCreateSupplierPricingRulesHandler implements ICommandHandler<BulkCreateSupplierPricingRulesCommand> {
@@ -11,8 +12,9 @@ export class BulkCreateSupplierPricingRulesHandler implements ICommandHandler<Bu
   async execute(command: BulkCreateSupplierPricingRulesCommand) {
     const { supplierId, userId, dto } = command;
 
+    const tenancyWhere = await getSupplierTenancyWhere(this.prisma, userId);
     const supplier = await this.prisma.supplier.findFirst({
-      where: { id: supplierId, userId },
+      where: { id: supplierId, ...tenancyWhere },
       select: { id: true },
     });
 

@@ -25,3 +25,8 @@ rules:
 5. Stage 5 - Application builds: Run `pnpm build` across Next.js Admin Portal and NestJS Backend API.
 6. Desktop client release builds: Build Tauri v2 client binaries using official GitHub Actions runner matrix. Inject code-signing certificates and notarization credentials from repository secrets.
 7. For reference workflow YAML definitions, see `references/workflows.md`.
+
+## References
+
+- [enforcement-playbook.md](references/enforcement-playbook.md)
+- [guardrails-catalog.md](references/guardrails-catalog.md)

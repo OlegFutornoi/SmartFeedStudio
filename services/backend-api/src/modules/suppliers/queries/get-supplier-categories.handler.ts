@@ -3,6 +3,7 @@ import { NotFoundException } from '@nestjs/common';
 import { Prisma } from '@/generated/prisma/client';
 import { PrismaService } from '@/prisma/prisma.service';
 import { GetSupplierCategoriesQuery } from '@/modules/suppliers/queries/suppliers.queries';
+import { getSupplierTenancyWhere } from '@/modules/suppliers/utils/supplier-tenancy.util';
 
 @QueryHandler(GetSupplierCategoriesQuery)
 export class GetSupplierCategoriesHandler implements IQueryHandler<GetSupplierCategoriesQuery> {
@@ -11,8 +12,9 @@ export class GetSupplierCategoriesHandler implements IQueryHandler<GetSupplierCa
   async execute(query: GetSupplierCategoriesQuery) {
     const { supplierId, userId, search } = query;
 
+    const tenancyWhere = await getSupplierTenancyWhere(this.prisma, userId);
     const supplier = await this.prisma.supplier.findFirst({
-      where: { id: supplierId, userId },
+      where: { id: supplierId, ...tenancyWhere },
     });
     if (!supplier) {
       throw new NotFoundException(`Supplier ${supplierId} not found`);

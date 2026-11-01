@@ -1,57 +1,38 @@
-# 🔄 Zero-Loss Rollback — Стратегія швидкого відкату без втрати даних
+# Zero-Loss Rollback Strategy
 
-## 1. Головний принцип: База Даних не відкочується назад руйнівними скриптами
+## 1. Core Doctrine: Database Never Rolled Back via Destructive Scripts
 
-У разі збою в проді ніколи не запускати `DROP COLUMN` або відкат деструктивних міграцій, оскільки за хвилини роботи нового релізу користувачі вже могли створити нові записи.
+In production incidents, never run `DROP COLUMN` or destructive rollback scripts because users may have already written live records during the new release window.
 
-- **Дотримання Expand/Contract**:
-  - Усі нові колонки спочатку створюються як `NULLABLE` або з дефолтними значеннями.
-  - Попередня версія коду працює навіть з новою структурою таблиці.
-  - Для відкату достатньо перемкнути версію додатку (Docker image / Railway deployment).
+- Follow Expand/Contract migration discipline:
+  - All new columns are added as NULLABLE or with sensible defaults.
+  - Previous code version continues functioning with the updated table schema.
+  - Rolling back application code (Docker image / Railway deployment) restores stable behavior without data loss.
 
----
+## 2. Railway Deployment Rollback
 
-## 2. Відкат на платформі Railway
-
-За допомогою MCP інструменту `railway` або CLI:
+Using Railway CLI or MCP tool:
 
 ```bash
-# 1. Перегляд історії деплоїв сервісу
+# 1. Inspect service deployment history
 railway deployment list
 
-# 2. Відкат на попередній стабільний деплой
+# 2. Rollback to preceding stable deployment
 railway rollback <previous-deployment-id>
-
-# Або через MCP tool call_mcp_tool з ServerName: "railway", ToolName: "redeploy"
 ```
 
----
+## 3. Incident Triage Workflow
 
-## 3. Чеклист кроків екстреного реагування (Incident Runbook)
+1. Impact assessment:
+   - Does incident affect financial data, licenses, or catalog integrity?
+   - If YES: immediate ROLLBACK of code to preceding version tag. Database remains intact (Expand/Contract compatibility).
+   - If NO (minor cosmetic UI bug): deploy fast hotfix forward without rollback.
+2. Team notification and incident capture in Sentry and structured logs.
+3. Root cause isolation in local environment via `systematic-debugging`.
+4. Codify missing regression test to prevent defect re-emergence.
 
-```text
-[Виявлено інцидент після деплою]
-              │
-              ▼
-    1. Оцінка масштабу:
-       Чи зачіпає він фінансові дані / ліцензії / збереження товарів?
-              │
-              ├── ТАК ──► Негайний ROLLBACK коду на попередній тег версії.
-              │           БД залишається без змін (сумісність Expand/Contract).
-              │
-              └── НІ  ──► Якщо це косметичний баг UI:
-                          Швидкий HOTFIX без повного відкату.
-              │
-              ▼
-    2. Повідомлення команди та фіксація інциденту в Sentry / логах.
-    3. Дослідження першопричини (root cause) у локальному середовищі через `systematic-debugging`.
-    4. Додавання відсутнього регресійного тесту, щоб унеможливити повторення.
-```
+## 4. BullMQ Queue Backward Compatibility During Rollback
 
----
-
-## 4. Зворотна сумісність черг BullMQ під час відкату
-
-- Нові поля в Job payload повинні бути опціональними.
-- Якщо стара версія воркера бере завдання нової структури, вона повинна ігнорувати невідомі поля (`JSON.parse` з безпечним деструктуруванням).
-- Це гарантує нуль втрачених завдань при раптовому перемиканні версій.
+- All new job payload fields must be optional.
+- If an older worker version processes a job with new payload fields, it must safely ignore unrecognized properties.
+- Guarantees zero dropped or corrupted jobs during rapid version switches.

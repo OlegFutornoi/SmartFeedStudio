@@ -1,8 +1,8 @@
-# Протокол оновлення карти
+# Topology Map Update Protocol
 
-Після зміни: новий модуль, ендпоінт, таблиця, Tauri-команда, порт, shared-контракт:
+When introducing a new module, endpoint, table, Tauri command, port, or shared contract:
 
-1. Оновити рядок у `map.md` (максимум 1–2 рядки на домен).
-2. Синхронізувати `wiki/README.md` та профільний `wiki/0X-*`.
-3. Якщо змінились правила — відповідний `AGENTS.md` пакета.
-4. Не вставляти в карту код чи довгі описи — лише «де» і «що».
+1. Update domain entry in `map.md` (keep to 1-2 lines per domain).
+2. Synchronize `wiki/README.md` and related `wiki/0X-*` documents.
+3. Update relevant package `AGENTS.md` if architectural invariants or boundaries change.
+4. Keep entries concise: specify locations, ports, and contracts without bloated code snippets.

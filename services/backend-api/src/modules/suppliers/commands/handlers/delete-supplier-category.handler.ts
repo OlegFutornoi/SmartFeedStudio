@@ -3,6 +3,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { NotFoundException } from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
 import { DeleteSupplierCategoryCommand } from '@/modules/suppliers/commands/suppliers.commands';
+import { getSupplierTenancyWhere } from '@/modules/suppliers/utils/supplier-tenancy.util';
 
 @CommandHandler(DeleteSupplierCategoryCommand)
 export class DeleteSupplierCategoryHandler implements ICommandHandler<DeleteSupplierCategoryCommand> {
@@ -11,8 +12,9 @@ export class DeleteSupplierCategoryHandler implements ICommandHandler<DeleteSupp
   async execute(command: DeleteSupplierCategoryCommand) {
     const { supplierId, categoryId, userId } = command;
 
+    const tenancyWhere = await getSupplierTenancyWhere(this.prisma, userId);
     const supplier = await this.prisma.supplier.findFirst({
-      where: { id: supplierId, userId },
+      where: { id: supplierId, ...tenancyWhere },
       select: { id: true },
     });
 

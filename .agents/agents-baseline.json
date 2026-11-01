@@ -1,7 +1,7 @@
 {
   "skills_without_evals": 0,
   "descriptions_without_triggers": 0,
-  "manual_invariants": 45,
-  "machine_invariants": 69,
-  "always_on_chars": 13967
+  "manual_invariants": 0,
+  "machine_invariants": 118,
+  "always_on_chars": 11685
 }

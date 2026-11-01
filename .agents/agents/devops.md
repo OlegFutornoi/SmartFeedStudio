@@ -8,7 +8,7 @@ skills:
   - skills/release-and-rollback
   - skills/turborepo
   - skills/prisma-postgres-mastery
-  - skills/tauri-v2-security-and-ipc
+  - skills/rust-native-backend
   - skills/observability-and-instrumentation
   - skills/git-commit
   - skills/task-memory-and-state

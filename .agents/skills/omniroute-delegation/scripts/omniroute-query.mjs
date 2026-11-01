@@ -103,7 +103,7 @@ async function run() {
 
   if (!userPrompt) {
     console.error('Error: No prompt provided. Use --prompt "text", --file <path>, or pipe via stdin.');
-    console.error('Example: pnpm ai:omni --prompt "Напиши план тестування..."');
+    console.error('Example: pnpm ai:omni --prompt "Generate test plan..."');
     process.exit(1);
   }
 

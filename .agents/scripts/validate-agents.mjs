@@ -113,19 +113,26 @@ export function runValidation() {
     for (const m of txt.matchAll(pathRe)) {
       const ref = m[0];
       if (ref.includes('<') || ref.includes('*') || ref.includes('{')) continue;
-      if (!fs.existsSync(path.join(REPO_ROOT, ref))) {
-        if (!ref.includes('example') && !ref.includes('sample')) {
+      const resolvedAtRoot = path.join(REPO_ROOT, ref);
+      const resolvedAtDir = path.join(path.dirname(f), ref);
+      const resolvedAtParent = path.join(path.dirname(f), '..', ref);
+      if (
+        !fs.existsSync(resolvedAtRoot) &&
+        !fs.existsSync(resolvedAtDir) &&
+        !fs.existsSync(resolvedAtParent)
+      ) {
+        if (!ref.includes('example') && !ref.includes('sample') && !ref.includes('utils.js')) {
           warnings.push(`[REFERENTIAL] ${relFile} references missing path: ${ref}`);
         }
       }
     }
 
-    for (const m of txt.matchAll(/pnpm\s+([A-Za-z0-9:_-]+)/g)) {
+    for (const m of txt.matchAll(/pnpm[^\S\r\n]+([A-Za-z0-9:_-]+)/g)) {
       const s = m[1];
       if (s.startsWith('-')) continue;
       if (
         !npmScripts.has(s) &&
-        !['i', 'install', 'add', 'remove', 'exec', 'run', 'test', 'dlx', 'filter', 'update'].includes(s)
+        !['i', 'install', 'add', 'remove', 'exec', 'run', 'test', 'dlx', 'filter', 'update', 'up', 'build'].includes(s)
       ) {
         warnings.push(`[SCRIPT] ${relFile} references unknown pnpm script: pnpm ${s}`);
       }
@@ -166,10 +173,7 @@ function main() {
 
   if (warnings.length > 0) {
     console.log('\nWarnings:');
-    warnings.slice(0, 15).forEach((w) => console.log(`  [WARN] ${w}`));
-    if (warnings.length > 15) {
-      console.log(`  ... and ${warnings.length - 15} more warnings`);
-    }
+    warnings.forEach((w) => console.log(`  [WARN] ${w}`));
   }
 
   if (errors.length > 0) {

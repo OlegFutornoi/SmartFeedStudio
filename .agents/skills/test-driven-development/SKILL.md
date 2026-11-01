@@ -1,6 +1,6 @@
 ---
 name: test-driven-development
-description: Test-driven development methodology enforcing the RED-GREEN-REFACTOR cycle, complete database teardown, targeted test execution, and real business invariant assertions. Use when implementing new features or fixing bugs with automated tests. Do not use for manual exploratory testing; use browser-debugging instead.
+description: Test-driven development methodology enforcing the RED-GREEN-REFACTOR cycle, complete database teardown, targeted test execution, and real business invariant assertions. Use when authoring automated integration or E2E tests in dedicated QA tasks by QA Agent (@agents_qa). Do not use for feature development code without automated test requirements; backend or frontend feature agents never author test suites (BE-08, TEST-00).
 rules:
   - core
   - testing
@@ -23,7 +23,7 @@ rules:
 
 ## Mandatory testing standards
 
-1. Real business invariants: Tests must assert concrete domain data. Never write superficial smoke-only tests. In Playwright, verify actual entity names and assert `expect(name).not.toBe('Постачальник')`. Verify avatar rendering and semantic status colors (`emerald` for approved/active).
+1. Real business invariants: Tests must assert concrete domain data. Never write superficial smoke-only tests. In Playwright, verify actual entity names and assert `expect(name).not.toBe('Supplier')`. Verify avatar rendering and semantic status colors (`emerald` for approved/active).
 2. Complete data cleanup (zero leftovers, zero manual data deletion): Backend E2E tests must call `cleanDatabase(prisma)` in both `beforeAll` and `afterAll` blocks, strictly scoped to the test's own created user IDs or timestamped email prefixes. Never delete manually created developer/QA accounts (e.g. `qatest@gmail.com`) during tests or database audits. Frontend tests must reset `localStorage`, cookies, and route handlers only within the isolated Playwright test context.
-3. Targeted feature execution: Run only the specific test file covering the active feature (e.g. `pnpm exec playwright test e2e/<feature>.spec.ts` or `pnpm test:e2e -- test/<feature>.e2e-spec.ts`). Full suite runs during feature development are prohibited.
+3. Targeted feature execution: Run only the specific test file covering the active feature (e.g. `pnpm e2e:server -- e2e/tests/server/<feature>.spec.ts` or `pnpm e2e:local -- e2e/tests/local/<feature>.spec.ts`). Full suite runs during feature development are prohibited.
 4. Bilingual assertions: Verify dynamic language switching (`UA` to `EN`) across interactive UI elements and confirm absence of untranslated raw keys.

@@ -17,7 +17,7 @@ rules: [core, agents]
 ## Inputs
 
 - Raw data collected by an agent (plans, specs, architecture docs, feed chunks, JSON payloads, git diffs, build/test logs).
-- User direct request to compress a file or plan: "потрібно зжати <файл>", "стисни <файл>", "зжати план".
+- User direct request to compress a file or plan (e.g., requests matching "compress <file>", "distill plan").
 - Optional target output file path (`-o <output-path>` or default `<file>.compressed.<ext>`).
 
 ## Procedure

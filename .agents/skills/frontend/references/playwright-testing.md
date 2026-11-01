@@ -1,27 +1,23 @@
-# 🎭 Playwright Frontend Testing Guide (SmartFeed Studio)
+# Playwright Frontend Testing Guide
 
 Best practices for writing deterministic, isolated, and fast Playwright E2E tests for `apps/desktop` and `apps/admin-portal`.
 
----
-
-## 🚫 1. Browser Automation Execution Policy
+## 1. Browser Automation Execution Policy
 
 > [!CAUTION]
-> **STRICT PROHIBITION OF `browser_subagent`**:
+> STRICT PROHIBITION OF `browser_subagent`:
 > Never invoke `browser_subagent` or `open_browser_url`. Run automated tests directly using local browser binaries via:
 >
-> - `pnpm test:desktop` or `pnpm test:desktop:headed`
-> - `pnpm test:admin` or `pnpm test:admin:headed`
+> - `pnpm e2e:local:desktop`
+> - `pnpm e2e:server:admin`
 
----
-
-## 2. 🏛 Page Object Model (POM) Architecture
+## 2. Page Object Model (POM) Architecture
 
 Organize tests using Page Objects to separate page interactions from assertions:
 
 ```typescript
 // tests/pages/feeds.page.ts
-import { Page, Locator, expect } from '@playwright/test';
+import { Page, Locator } from '@playwright/test';
 
 export class FeedsPage {
   readonly page: Page;
@@ -45,20 +41,18 @@ export class FeedsPage {
 }
 ```
 
----
-
-## 3. 🌐 Dedicated Bilingual UI Localization Test (UA ⇄ EN)
+## 3. Dedicated Bilingual UI Localization Test (UA <-> EN)
 
 Every new view must assert dynamic language switching without hardcoded fallbacks:
 
 ```typescript
-test('dynamically translates all view elements when switching UA ⇄ EN', async ({ page }) => {
+test('dynamically translates all view elements when switching UA <-> EN', async ({ page }) => {
   await page.goto('/catalogs');
 
-  // 1. Assert Ukrainian (default)
-  await expect(page.locator('h1')).toHaveText('Каталоги фідів');
-  await expect(page.locator('[data-testid="th-name"]')).toHaveText('Назва');
-  await expect(page.locator('[data-testid="btn-create"]')).toHaveText('Створити каталог');
+  // 1. Assert Ukrainian locale content rendered
+  await expect(page.locator('h1')).toHaveText(ukDict.catalogs.title);
+  await expect(page.locator('[data-testid="th-name"]')).toHaveText(ukDict.catalogs.nameColumn);
+  await expect(page.locator('[data-testid="btn-create"]')).toHaveText(ukDict.catalogs.createButton);
 
   // 2. Switch to English
   await page.locator('[data-testid="lang-switch-en"]').click();
@@ -70,11 +64,9 @@ test('dynamically translates all view elements when switching UA ⇄ EN', async 
 });
 ```
 
----
+## 4. Automated Network Deduplication Test
 
-## 4. ⚡ Automated Network Deduplication Test
-
-Assert that API endpoints are called strictly **1 time** upon page navigation:
+Assert that API endpoints are called strictly 1 time upon page navigation:
 
 ```typescript
 test('loads catalog data with strictly 1 network request (zero duplicates)', async ({ page }) => {
@@ -89,14 +81,12 @@ test('loads catalog data with strictly 1 network request (zero duplicates)', asy
   await page.goto('/catalogs');
   await page.waitForSelector('[data-testid="catalogs-table"]');
 
-  // Must be strictly 1 request — zero duplicates
+  // Must be strictly 1 request - zero duplicates
   expect(requestCount).toBe(1);
 });
 ```
 
----
-
-## 5. 🧼 Complete Test Isolation & State Cleanup
+## 5. Complete Test Isolation & State Cleanup
 
 Prevent state leakage between test cases:
 
@@ -114,15 +104,13 @@ test.afterEach(async ({ page }) => {
 });
 ```
 
----
-
-## 6. ⏱ Condition-Based Waiting (Zero Arbitrary Sleeps)
+## 6. Condition-Based Waiting (Zero Arbitrary Sleeps)
 
 ```typescript
-// ❌ BAD: Arbitrary sleep creates flaky and slow tests
+// BAD: Arbitrary sleep creates flaky and slow tests
 await page.waitForTimeout(3000);
 
-// ✅ GOOD: Wait for specific condition or response
+// GOOD: Wait for specific condition or response
 await Promise.all([
   page.waitForResponse((res) => res.url().includes('/api/feeds') && res.status() === 201),
   page.locator('[data-testid="btn-submit"]').click(),

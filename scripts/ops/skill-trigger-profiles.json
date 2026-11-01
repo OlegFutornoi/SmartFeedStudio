@@ -1,0 +1,941 @@
+{
+  "CLUSTERS": {
+    "planning": [
+      "planning-and-lifecycle",
+      "writing-plans",
+      "to-tickets",
+      "spec-driven-development",
+      "brainstorming",
+      "interview-me",
+      "incremental-implementation"
+    ],
+    "security": [
+      "security-and-hardening",
+      "api-security-testing",
+      "web-app-penetration-testing",
+      "penetration-testing-with-strix",
+      "fix-security-vulnerabilities-with-strix",
+      "secret-serialization",
+      "tauri-v2-security-and-ipc"
+    ],
+    "review": ["review", "code-review-and-quality", "code-simplification"],
+    "docs": [
+      "source-driven-development",
+      "mcp-knowledge-cache",
+      "context-engineering",
+      "documentation-and-adrs"
+    ],
+    "state": ["task-memory-and-state", "handoff", "context-engineering"],
+    "qa": [
+      "playwright-automation",
+      "browser-debugging",
+      "test-driven-development",
+      "mock-real-parity"
+    ],
+    "backend": [
+      "backend",
+      "nestjs-best-practices",
+      "contract-first-api",
+      "prisma-postgres-mastery",
+      "postgresql-optimization",
+      "streaming-large-feeds",
+      "bullmq-jobs",
+      "idempotency-and-outbox",
+      "subscription-lifecycle",
+      "rust-native-backend"
+    ],
+    "frontend": [
+      "frontend",
+      "ui-ux-pro-max",
+      "vercel-react-best-practices",
+      "emil-design-eng",
+      "image",
+      "i18n-localization"
+    ],
+    "ops": [
+      "ci-cd-and-automation",
+      "automated-guardrails-ci",
+      "turborepo",
+      "release-and-rollback",
+      "git-commit"
+    ],
+    "ai": [
+      "ai-sdk",
+      "omniroute-delegation",
+      "headroom-compression",
+      "perplexity-agent-api",
+      "api-anything",
+      "firecrawl-parse"
+    ]
+  },
+  "PROFILES": {
+    "ai-sdk": {
+      "useUk": [
+        "налаштуй стрімінг генерації тексту через Vercel AI SDK",
+        "додай AI збагачення товарних описів через OpenAI structured output",
+        "зроби потоковий хук useCompletion для адмінки"
+      ],
+      "useEn": [
+        "integrate Vercel AI SDK streamText for product description generator",
+        "create structured JSON output schema using ai sdk for feed categorization"
+      ],
+      "adjSkill": "omniroute-delegation",
+      "adjUk": "перенаправ запити генерації на безкоштовні провайдери через omniroute",
+      "adjEn": "dispatch LLM prompt evaluations to zero-cost Groq Cloud endpoint"
+    },
+    "api-anything": {
+      "useUk": [
+        "відреверси ендпоінти каталогу Rozetka через перехоплення трафіку",
+        "проскануй приховані API запити постачальника без парсингу HTML",
+        "перевір структуру JSON-відповіді конкурента на збіг з контрактом"
+      ],
+      "useEn": [
+        "reverse engineer competitor catalog network traffic into typed JSON schema",
+        "discover hidden supplier API endpoints using api-anything MCP"
+      ],
+      "adjSkill": "backend",
+      "adjUk": "створи NestJS контролер для отримання списку фідів з БД",
+      "adjEn": "implement NestJS CQRS query handler for feeds pagination"
+    },
+    "api-security-testing": {
+      "useUk": [
+        "проведи пентест BOLA та IDOR на ендпоінтах зміни цін",
+        "перевір захист від масового призначення полів (Mass Assignment) у DTO",
+        "протестуй чи можна отримати доступ до чужої організації через зміну orgId"
+      ],
+      "useEn": [
+        "audit REST API endpoints against OWASP API1 BOLA tenant leakage",
+        "probe mutation controllers for broken object property level authorization"
+      ],
+      "adjSkill": "security-and-hardening",
+      "adjUk": "налаштуй глобальний заголовок Helmet та ThrottlerModule у main.ts",
+      "adjEn": "configure NestJS global validation pipe with whitelist and forbidNonWhitelisted"
+    },
+    "automated-guardrails-ci": {
+      "useUk": [
+        "додай нове ESLint правило для заборони relative imports",
+        "налаштуй pre-commit хук lint-staged для перевірки інваріантів",
+        "зроби машинне блокування порушень семантичних токенів у CI"
+      ],
+      "useEn": [
+        "create machine-enforced ESLint rule preventing direct file writes",
+        "configure GitHub Actions architectural guardrails check gate"
+      ],
+      "adjSkill": "ci-cd-and-automation",
+      "adjUk": "налаштуй кешування pnpm store у GitHub Actions workflow",
+      "adjEn": "configure release tagging and semantic versioning workflow in CI"
+    },
+    "backend": {
+      "useUk": [
+        "створи новий CQRS query handler для отримання каталогу товарів",
+        "реалізуй сервіс синхронізації фідів у backend-api",
+        "додай мутацію оновлення цін з перевіркою квоти тарифу"
+      ],
+      "useEn": [
+        "implement NestJS 11 CQRS command handler for feed import",
+        "build backend service with Prisma transaction and BullMQ queue dispatch"
+      ],
+      "adjSkill": "frontend",
+      "adjUk": "створи React компонент таблиці списку товарів у apps/desktop",
+      "adjEn": "build responsive Tailwind UI data table with shadcn dialog"
+    },
+    "brainstorming": {
+      "useUk": [
+        "допоможи дослідити користувацькі потреби для нового майстра імпорту",
+        "проаналізуй альтернативні підходи до архітектури сховища фідів",
+        "проведи мозковий штурм щодо UI/UX сценаріїв виправлення помилок у прайсах"
+      ],
+      "useEn": [
+        "explore user needs and architectural trade-offs for feed scheduling UX",
+        "brainstorm alternative design directions for desktop sqlite sync"
+      ],
+      "adjSkill": "writing-plans",
+      "adjUk": "напиши покроковий TDD план реалізації на 2-5 хвилинні задачі",
+      "adjEn": "author detailed bite-sized implementation task with file boundaries"
+    },
+    "browser-debugging": {
+      "useUk": [
+        "досліди чому кнопка імпорту не клікається через Playwright MCP",
+        "зроби snapshot сторінки та перевір помилки у консолі браузера",
+        "перевір мережевий запит на /api/v1/auth/login через Playwright network inspection"
+      ],
+      "useEn": [
+        "inspect live browser DOM tree and console errors with Playwright MCP",
+        "take full page screenshot and check accessibility tree of modal dialog"
+      ],
+      "adjSkill": "playwright-automation",
+      "adjUk": "напиши постійний Playwright E2E тест з Page Object Model у e2e/",
+      "adjEn": "author automated bilingual Playwright spec with cleanDatabase teardown"
+    },
+    "bullmq-jobs": {
+      "useUk": [
+        "налаштуй чергу BullMQ для обробки великих XML каталогів",
+        "додай повторні спроби з exponential backoff та dead-letter queue (DLQ)",
+        "налаштуй конкаренсі воркерів та контроль пам’яті у Redis черзі"
+      ],
+      "useEn": [
+        "configure resilient BullMQ processor with Redis 7 and idempotent jobId",
+        "implement dead letter queue retry worker for failed catalog imports"
+      ],
+      "adjSkill": "backend",
+      "adjUk": "створи REST ендпоінт для отримання статусу задачі імпорту",
+      "adjEn": "build HTTP controller returning status of background feed sync"
+    },
+    "ci-cd-and-automation": {
+      "useUk": [
+        "налаштуй GitHub Actions пайплайн для збірки Docker образу backend-api",
+        "додай паралельні джоби для перевірки типів та лінтингу у CI",
+        "оптимізуй час виконання CI workflow через кешування залежностей"
+      ],
+      "useEn": [
+        "create GitHub Actions CI workflow with matrix build and caching",
+        "configure branch protection status checks and pull request automation"
+      ],
+      "adjSkill": "release-and-rollback",
+      "adjUk": "випусти нову версію v1.2.0 та згенеруй CHANGELOG.md",
+      "adjEn": "execute SemVer release tagging and run post-deploy smoke checks"
+    },
+    "code-review-and-quality": {
+      "useUk": [
+        "проведи аудит якості коду та перевір інваріанти перед комітом",
+        "перевір diff змін на наявність as any та перевищення бюджету рядків",
+        "проаналізуй пулреквест на дотримання архітектурних кордонів"
+      ],
+      "useEn": [
+        "perform 5-axis code quality audit on pull request diff",
+        "verify architectural invariants and check for missing FK indexes in PR"
+      ],
+      "adjSkill": "code-simplification",
+      "adjUk": "спрости цикломатичну складність функції парсингу без зміни поведінки",
+      "adjEn": "refactor deeply nested conditional branches into guard clauses"
+    },
+    "code-simplification": {
+      "useUk": [
+        "спрости заплутану логіку валідатора фідів без зміни тестів",
+        "видали вкладені if/else та заміни на ранні return guard clauses",
+        "зменши цикломатичну складність сервісу обробки цін"
+      ],
+      "useEn": [
+        "refactor complex nested logic into clean linear pipeline",
+        "simplify conditional branching while preserving exact contract behavior"
+      ],
+      "adjSkill": "review",
+      "adjUk": "проведи 5-осьовий аудит pull request з новими ендпоінтами",
+      "adjEn": "audit pull request diff for security vulnerabilities and invariant adherence"
+    },
+    "context-engineering": {
+      "useUk": [
+        "оптимізуй витрату токенів у завжди активних інструкціях агента",
+        "налаштуй прогресивне розкриття правил для зменшення системного промпту",
+        "проаналізуй бюджет контекстного вікна для 60+ скілів"
+      ],
+      "useEn": [
+        "optimize agent prompt token budget and eliminate redundant context",
+        "tune progressive disclosure for skill references to reduce prompt tokens"
+      ],
+      "adjSkill": "task-memory-and-state",
+      "adjUk": "збережи поточний стан виконання задачі у active_task.json",
+      "adjEn": "update active task checkpoint and record touched files in state"
+    },
+    "contract-first-api": {
+      "useUk": [
+        "визнач Zod схему та TypeScript DTO для нового ендпоінту у packages/shared",
+        "додай контракти пагінації та синхронізуй типи між клієнтом і сервером",
+        "зроби збірку пакету @smartfeed/shared з оновленими моделями"
+      ],
+      "useEn": [
+        "define shared Zod schema and export TypeScript DTO in packages/shared",
+        "update API contract interfaces and compile @smartfeed/shared bundle"
+      ],
+      "adjSkill": "prisma-postgres-mastery",
+      "adjUk": "додай нову таблицю у schema.prisma та згенеруй міграцію",
+      "adjEn": "create Prisma migration with foreign key indexes and timestamptz"
+    },
+    "documentation-and-adrs": {
+      "useUk": [
+        "зафіксуй архітектурне рішення (ADR) щодо вибору черги BullMQ",
+        "оновлю документацію у wiki/ щодо структури монорепозиторію",
+        "документуй публічні інтерфейси та модель безпеки платформи"
+      ],
+      "useEn": [
+        "write Architecture Decision Record (ADR) for SQLite encryption strategy",
+        "synchronize wiki documentation with current backend CQRS topology"
+      ],
+      "adjSkill": "writing-plans",
+      "adjUk": "напиши план реалізації задачі з вертикальними зрізами",
+      "adjEn": "create step-by-step TDD implementation plan for new API endpoint"
+    },
+    "doubt-driven-development": {
+      "useUk": [
+        "проведи стрес-тест конкурентного списання квот на предмет race condition",
+        "перевір захист від TOCTOU вразливості при завантаженні файлів",
+        "піддай сумніву надійність транзакції при аварійному перезапуску сервера"
+      ],
+      "useEn": [
+        "conduct adversarial review of quota deduction for concurrency race flaws",
+        "probe TOCTOU edge cases in distributed payment webhook handling"
+      ],
+      "adjSkill": "test-driven-development",
+      "adjUk": "напиши тест Supertest для перевірки 400 Bad Request на валідацію",
+      "adjEn": "write automated integration test asserting happy path response"
+    },
+    "emil-design-eng": {
+      "useUk": [
+        "налаштуй плавну пружинну анімацію для модального вікна через Framer Motion",
+        "додай мікроінтеракції при наведенні на картку товару в Tailwind",
+        "налаштуй підтримку prefers-reduced-motion для доступності"
+      ],
+      "useEn": [
+        "implement spring micro-interactions for dialog transitions",
+        "tune motion dynamics and hover state feedback in React desktop UI"
+      ],
+      "adjSkill": "ui-ux-pro-max",
+      "adjUk": "підбери семантичні токени та налаштуй solid header для таблиці",
+      "adjEn": "design high-density data table layout using official shadcn primitives"
+    },
+    "find-skills": {
+      "useUk": [
+        "знайди сторонній скіл для обробки PDF у каталозі agentskills.io",
+        "перевір чи є готовий скіл для роботи з AWS S3 через Skills CLI",
+        "пошукай скіл для парсингу специфікацій OpenAPI"
+      ],
+      "useEn": [
+        "search the open agent skills ecosystem for swagger parser skill",
+        "find and inspect external agent skill for cloudflare r2 management"
+      ],
+      "adjSkill": "skill-creator",
+      "adjUk": "створи новий локальний скіл з frontmatter та евалами",
+      "adjEn": "author custom skill template with evals and line budget"
+    },
+    "firecrawl-parse": {
+      "useUk": [
+        "спарси зовнішню документацію постачальника у чистий markdown",
+        "сконвертуй HTML каталог постачальника у markdown через Firecrawl",
+        "витягни таблицю технічних характеристик з веб-сторінки"
+      ],
+      "useEn": [
+        "scrape and convert supplier product documentation into clean markdown",
+        "crawl external catalog webpage and extract markdown specification"
+      ],
+      "adjSkill": "browser-debugging",
+      "adjUk": "відкрий сторінку у Playwright та досліди помилки у DOM",
+      "adjEn": "inspect interactive form validation directly in local browser"
+    },
+    "fix-security-vulnerabilities-with-strix": {
+      "useUk": [
+        "виправ підтверджену SSRF вразливість у завантажувачі фідів",
+        "закрий BOLA дірку у контролері організацій за результатами пентесту",
+        "наклади захисний патч проти command injection у скриптах"
+      ],
+      "useEn": [
+        "remediate confirmed SSRF vulnerability in feed import resolver",
+        "patch BOLA authorization flaw with tenant isolation check"
+      ],
+      "adjSkill": "security-and-hardening",
+      "adjUk": "налаштуй глобальні правила безпеки у .agents/rules/security.md",
+      "adjEn": "review 4-layer defense architecture across backend services"
+    },
+    "frontend": {
+      "useUk": [
+        "створи React сторінку керування фідами у apps/desktop",
+        "додай діалогове вікно підтвердження видалення через shadcn dialog",
+        "зроби фільтрацію товарів з debounce та оновленням стану"
+      ],
+      "useEn": [
+        "build React 18 catalog viewer page in Next.js 14 admin portal",
+        "implement high-density data table with shadcn UI components"
+      ],
+      "adjSkill": "backend",
+      "adjUk": "створи ендпоінт у backend-api для отримання списку товарів",
+      "adjEn": "implement NestJS CQRS query handler with Prisma repository"
+    },
+    "git-commit": {
+      "useUk": [
+        "підготуй conventional commit для оновлення скілів",
+        "зроби коміт з префіксом feat(backend): та додаванням [skip ci]",
+        "сформуй повідомлення коміту з детальним переліком змін"
+      ],
+      "useEn": [
+        "create conventional git commit with proper scope and skip-ci flag",
+        "format git commit message following Conventional Commits standard"
+      ],
+      "adjSkill": "release-and-rollback",
+      "adjUk": "створи git tag v1.0.2 та запусти релізний пайплайн",
+      "adjEn": "bump package versions, tag SemVer release and push release tag"
+    },
+    "handoff": {
+      "useUk": [
+        "зроби передачу контексту задачі для сесії іншого агента",
+        "сформуй компактний підсумок поточної сесії для продовження роботи",
+        "підготуй structured handoff документ перед переходом між агентами"
+      ],
+      "useEn": [
+        "compact current session state into structured agent handoff document",
+        "generate context summary for cross-session agent transition"
+      ],
+      "adjSkill": "task-memory-and-state",
+      "adjUk": "онови active_task.json із переліком змінених файлів",
+      "adjEn": "record current execution stage checkpoint in active_task.json"
+    },
+    "headroom-compression": {
+      "useUk": [
+        "стисни великий XML фід через локальний двигун Headroom",
+        "зменши обсяг специфікації на 70% перед передачею в модель",
+        "виконай BPE компресію великого diff файлу для економії токенів"
+      ],
+      "useEn": [
+        "compress large catalog dataset using local Headroom engine",
+        "translate and compress Ukrainian spec into dense English BPE tokens"
+      ],
+      "adjSkill": "mcp-knowledge-cache",
+      "adjUk": "збережи отриману документацію бібліотеки у кеш .agents/cache/mcp/",
+      "adjEn": "retrieve cached context7 documentation from local MCP cache"
+    },
+    "i18n-localization": {
+      "useUk": [
+        "додай переклади для нових кнопок у locales/uk та locales/en",
+        "перевір двомовний паритет словників через pnpm i18n:check",
+        "налаштуй мапінг бекенд помилок через getErrorMessage(err, t)"
+      ],
+      "useEn": [
+        "add missing English and Ukrainian translation keys with parity",
+        "run dictionary verification and fix unlocalized raw UI strings"
+      ],
+      "adjSkill": "frontend",
+      "adjUk": "створи новий компонент форми з полями вводу в Tailwind",
+      "adjEn": "build shadcn form dialog with React Hook Form and Zod"
+    },
+    "idempotency-and-outbox": {
+      "useUk": [
+        "реалізуй Transactional Outbox патерн у Prisma для публікації подій",
+        "додай перевірку ключа ідемпотентності у Redis для платіжного вебхука",
+        "захисти мутацію списання балансу від дублювання повторних запитів"
+      ],
+      "useEn": [
+        "implement Prisma transactional outbox pattern for reliable webhook dispatch",
+        "configure Redis idempotency key check to prevent duplicate mutations"
+      ],
+      "adjSkill": "bullmq-jobs",
+      "adjUk": "налаштуй воркер BullMQ для обробки черги задач у фоні",
+      "adjEn": "configure concurrency and exponential backoff for queue processor"
+    },
+    "image": {
+      "useUk": [
+        "оптимізуй фотографії товарів каталогу у формат WebP через Sharp",
+        "згенеруй прев’ю та placeholder для швидкого завантаження картинок",
+        "налаштуй пайплайн компресії зображень для збереження трафіку"
+      ],
+      "useEn": [
+        "compress catalog product images to WebP format using Sharp pipeline",
+        "generate responsive thumbnails and blur placeholders for gallery"
+      ],
+      "adjSkill": "ui-ux-pro-max",
+      "adjUk": "налаштуй семантичні кольори та стилі карток товарів",
+      "adjEn": "design responsive product grid layout with shadcn cards"
+    },
+    "incremental-implementation": {
+      "useUk": [
+        "розбий складний рефакторинг на вертикальні зрізи до 250 рядків",
+        "виконай задачу тонкими інкрементами з перевіркою після кожного кроку",
+        "організуй поетапну інтеграцію платіжного шлюзу без великих diffs"
+      ],
+      "useEn": [
+        "decompose multi-file feature into thin independently testable slices",
+        "execute complex refactoring incrementally with verification at each step"
+      ],
+      "adjSkill": "writing-plans",
+      "adjUk": "напиши початковий план задачі у plans/active/",
+      "adjEn": "draft bite-sized implementation task with explicit interfaces"
+    },
+    "interview-me": {
+      "useUk": [
+        "проведи зі мною інтерв’ю щоб уточнити неповні вимоги до задачі",
+        "задай одне питання за раз щоб прояснити сценарій роботи з фідами",
+        "допоможи визначити критерії успіху для нової функціональності через питання"
+      ],
+      "useEn": [
+        "interview me one question at a time to clarify underspecified requirements",
+        "ask targeted single questions to reach 95% confidence on user intent"
+      ],
+      "adjSkill": "brainstorming",
+      "adjUk": "досліди альтернативні технічні варіанти реалізації архітектури",
+      "adjEn": "explore design concepts and trade-offs before locking requirements"
+    },
+    "lessons-learned-registry": {
+      "useUk": [
+        "перевір історичний реєстр помилок L-001..L-044 перед зміною бази",
+        "зафіксуй новий вивчений урок після виправлення складної помилки",
+        "перевір які пастки були зафіксовані щодо обробки великих XML фідів"
+      ],
+      "useEn": [
+        "check lessons learned defect registry before touching database schema",
+        "record new post-incident invariant in lessons learned registry"
+      ],
+      "adjSkill": "systematic-debugging",
+      "adjUk": "діагностуй чому запит падає з помилкою 500 у логах",
+      "adjEn": "isolate root cause of memory leak during feed ingestion"
+    },
+    "mcp-knowledge-cache": {
+      "useUk": [
+        "перевір чи є збережена документація Prisma у .agents/cache/mcp/",
+        "збережи витягнуту з Context7 довідку у локальний MCP кеш",
+        "виконай пошук у кеші документації через pnpm ai:cache search"
+      ],
+      "useEn": [
+        "lookup cached NestJS 11 documentation in .agents/cache/mcp/",
+        "store verified library API reference into single-file compressed cache"
+      ],
+      "adjSkill": "source-driven-development",
+      "adjUk": "знайди офіційну документацію бібліотеки через context7 resolve-library-id",
+      "adjEn": "fetch live framework documentation directly from Context7 MCP"
+    },
+    "mock-real-parity": {
+      "useUk": [
+        "перевір 100% паритет даних між mockDatabaseDriver та PostgreSQL",
+        "переконайся що каскадне видалення у mock працює точно як у SQLite",
+        "вирівняй структуру помилок між локальним браузерним моком та NestJS API"
+      ],
+      "useEn": [
+        "ensure 100% behavioral parity between browser mock driver and Prisma",
+        "verify cascade delete behavior parity across in-memory and SQLite storage"
+      ],
+      "adjSkill": "frontend",
+      "adjUk": "створи React інтерфейс для відображення списку постачальників",
+      "adjEn": "build UI component using mock database driver for development"
+    },
+    "nestjs-best-practices": {
+      "useUk": [
+        "налаштуй валідацію DTO через class-validator у NestJS 11",
+        "структуруй CQRS модуль з 1 хендлером на файл до 150 рядків",
+        "налаштуй глобальний HttpExceptionFilter та логування винятків"
+      ],
+      "useEn": [
+        "enforce NestJS 11 CQRS pattern with single-handler files under 150 lines",
+        "configure strict DTO validation pipes and custom exception filters"
+      ],
+      "adjSkill": "backend",
+      "adjUk": "створи бізнес-логіку обробки фідів у сервісі backend-api",
+      "adjEn": "build feed processing business service with transaction support"
+    },
+    "observability-and-instrumentation": {
+      "useUk": [
+        "налаштуй структуроване JSON логування з correlation ID у NestJS",
+        "додай Sentry відстеження помилок для критичних фонових воркерів",
+        "налаштуй health check ендпоінт для моніторингу статусу БД та Redis"
+      ],
+      "useEn": [
+        "configure Sentry error monitoring and performance tracing in NestJS",
+        "implement structured logging with correlation IDs across microservices"
+      ],
+      "adjSkill": "ci-cd-and-automation",
+      "adjUk": "налаштуй автоматичний запуск тестів у GitHub Actions",
+      "adjEn": "configure build pipeline and notification webhooks in CI"
+    },
+    "omniroute-delegation": {
+      "useUk": [
+        "перенаправ важку пакетну задачу обробки промптів на Groq Cloud",
+        "виконай синтез та переклад тексту через безкоштовний Google AI Studio",
+        "налаштуй фолбек на OpenRouter для економії лімітів IDE токенів"
+      ],
+      "useEn": [
+        "delegate batch prompt processing to zero-cost OmniRoute provider",
+        "dispatch high-volume text translation to Google AI Studio via omniroute"
+      ],
+      "adjSkill": "ai-sdk",
+      "adjUk": "налаштуй потоковий стрімінг Vercel AI SDK у бекенді",
+      "adjEn": "build interactive streaming LLM chat endpoint using ai sdk"
+    },
+    "penetration-testing-with-strix": {
+      "useUk": [
+        "запусти автоматичний пентест робочого порталу через двигун Strix",
+        "проскануй REST API на наявність вразливостей OWASP Top 10 через Strix",
+        "згенеруй валідований звіт з Proof of Concept експлойтами безпеки"
+      ],
+      "useEn": [
+        "run autonomous red-team penetration test using Strix security engine",
+        "probe live application staging endpoint with Strix automated exploits"
+      ],
+      "adjSkill": "api-security-testing",
+      "adjUk": "напиши локальний тест на перевірку прав доступу до ендпоінту",
+      "adjEn": "author targeted security test asserting 403 Forbidden for tenant B"
+    },
+    "performance-optimization": {
+      "useUk": [
+        "профілюй споживання пам’яті та CPU під час парсингу 100k SKU фідів",
+        "зменши p95 затримку API ендпоінту пошуку товарів з 800ms до 150ms",
+        "усунь витоки пам’яті у фонових воркерах обробки каталогів"
+      ],
+      "useEn": [
+        "profile memory allocation and optimize p95 latency under 100k SKU load",
+        "diagnose CPU bottlenecks and memory leaks in streaming feed processor"
+      ],
+      "adjSkill": "postgresql-optimization",
+      "adjUk": "проаналізуй план запиту через EXPLAIN ANALYZE та додай індекси",
+      "adjEn": "add GIN pg_trgm index for fast ILIKE search in PostgreSQL"
+    },
+    "perplexity-agent-api": {
+      "useUk": [
+        "знайди актуальні вимоги до XML фіду маркетплейсу Rozetka через Perplexity",
+        "досліди формати вивантаження Prom.ua та Horoshop з цитуванням джерел",
+        "отримай свіжі специфікації товарних фідів з вебу у структурованому JSON"
+      ],
+      "useEn": [
+        "research live marketplace feed requirements using Perplexity Agent API",
+        "fetch web-grounded Rozetka XML schema specifications with citations"
+      ],
+      "adjSkill": "mcp-knowledge-cache",
+      "adjUk": "перевір збережені записи у локальному кеші документації",
+      "adjEn": "search local markdown cache for cached framework documentation"
+    },
+    "planning-and-lifecycle": {
+      "useUk": [
+        "створи вертикальний tracer-slice план для нової фічі у plans/active/",
+        "сформуй контрактну специфікацію задачі перед початком написання коду",
+        "керуй життєвим циклом задачі FR-BE згідно з правилом AGENT-04"
+      ],
+      "useEn": [
+        "author end-to-end vertical tracer slice plan in plans/active/",
+        "manage deterministic plan lifecycle from requirements to completion"
+      ],
+      "adjSkill": "writing-plans",
+      "adjUk": "розбий готовий план на 2-5 хвилинні TDD кроки",
+      "adjEn": "draft bite-sized implementation checklist for immediate execution"
+    },
+    "playwright-automation": {
+      "useUk": [
+        "напиши Playwright E2E тест для перевірки дедуплікації запитів на клієнті",
+        "додай Page Object Model клас для сторінки списку товарів у e2e/",
+        "перевір двомовне перемикання інтерфейсу (UK/EN) в автоматизованому тесті"
+      ],
+      "useEn": [
+        "author Playwright UI test with Page Object Model and network assertions",
+        "write automated regression spec verifying request deduplication via useRef"
+      ],
+      "adjSkill": "browser-debugging",
+      "adjUk": "досліди через Playwright MCP чому елемент не знайдено на екрані",
+      "adjEn": "inspect live DOM snapshot and console errors interactively in browser"
+    },
+    "postgresql-optimization": {
+      "useUk": [
+        "досліди повільний SQL запит через EXPLAIN ANALYZE у PostgreSQL 16",
+        "додай GIN індекс pg_trgm для швидкого текстового пошуку товарів",
+        "заміни OFFSET пагінацію на швидку курсорну пагінацію за id"
+      ],
+      "useEn": [
+        "optimize slow PostgreSQL queries using EXPLAIN ANALYZE and GIN indexes",
+        "replace OFFSET pagination with high-speed keyset cursor pagination"
+      ],
+      "adjSkill": "prisma-postgres-mastery",
+      "adjUk": "зроби міграцію Prisma та додай зовнішній ключ з cascade delete",
+      "adjEn": "define Prisma schema relations and apply database migration"
+    },
+    "prisma-postgres-mastery": {
+      "useUk": [
+        "додай нову модель у schema.prisma з обов’язковими індексами зовнішніх ключів",
+        "налаштуй timestamptz(6) та cascade deletes у схемі бази даних",
+        "застосуй міграцію Prisma Expand/Contract без зупинки роботи"
+      ],
+      "useEn": [
+        "design Prisma 7 schema with 100% foreign key indexes and timestamptz",
+        "write zero-downtime expand-contract database migrations in Prisma"
+      ],
+      "adjSkill": "postgresql-optimization",
+      "adjUk": "проаналізуй план виконання запиту через EXPLAIN ANALYZE",
+      "adjEn": "tune query performance with GIN pg_trgm text search indexing"
+    },
+    "project-context-map": {
+      "useUk": [
+        "покажи карту топології монорепозиторію та порти сервісів",
+        "з’ясуй у якому пакеті розташована логіка шифрування SQLite для десктопу",
+        "перевір взаємозв’язки між backend-api, desktop та shared пакетами"
+      ],
+      "useEn": [
+        "navigate monorepo service topology and verify port allocations",
+        "locate domain service boundaries and data flow paths across packages"
+      ],
+      "adjSkill": "turborepo",
+      "adjUk": "налаштуй конфігурацію turbo.json для кешування збірки",
+      "adjEn": "configure Turborepo pipeline dependencies and task filters"
+    },
+    "release-and-rollback": {
+      "useUk": [
+        "проведи процедуру релізу нової версії з тегом SemVer та перевіркою health check",
+        "виконай план відкату (rollback) сервісу backend-api без втрати даних",
+        "згенеруй CHANGELOG.md перед публікацією оновлення"
+      ],
+      "useEn": [
+        "tag SemVer release and verify post-deployment health metrics",
+        "execute zero-data-loss rollback procedure for failed service deployment"
+      ],
+      "adjSkill": "git-commit",
+      "adjUk": "зроби звичайний коміт у поточну гілку з описом змін",
+      "adjEn": "create conventional git commit with [skip ci] prefix"
+    },
+    "review": {
+      "useUk": [
+        "проведи 5-осьовий аудит безпеки та архітектури для поточного pull request",
+        "перевір код на відсутність N+1 запитів та дотримання правила одного хендлера",
+        "виконай read-only інспекцію змін перед передачею в тестування"
+      ],
+      "useEn": [
+        "conduct read-only 5-axis code review across architecture and security",
+        "audit pull request diff for zero N+1 queries and invariant compliance"
+      ],
+      "adjSkill": "backend",
+      "adjUk": "напиши реалізацію нового сервісу для парсингу фідів у backend-api",
+      "adjEn": "implement backend CQRS handler and Prisma data persistence"
+    },
+    "rust-native-backend": {
+      "useUk": [
+        "реалізуй Tauri IPC команду для роботи з SQLCipher SQLite у Rust",
+        "додай міграцію локальної бази даних SQLite у desktop додатку",
+        "захисти транзакції SQLite від пошкодження при раптовому вимкненні"
+      ],
+      "useEn": [
+        "implement Tauri v2 Rust IPC command for SQLCipher encrypted database",
+        "manage local SQLite schema migrations with atomic rusqlite transactions"
+      ],
+      "adjSkill": "backend",
+      "adjUk": "створи ендпоінт у NestJS для збереження даних у хмарний PostgreSQL",
+      "adjEn": "implement cloud backend API controller with Prisma and PostgreSQL"
+    },
+    "secret-serialization": {
+      "useUk": [
+        "перевір моделі на витік паролів та токенів через JSON.stringify або логування",
+        "додай маскування секретних полів перед відправкою у Sentry",
+        "переконайся що облікові дані постачальників не потрапляють у REST відповіді"
+      ],
+      "useEn": [
+        "audit codebase for credential and token leaks in JSON serialization",
+        "ensure sensitive password fields are masked before logging or telemetry sinks"
+      ],
+      "adjSkill": "security-and-hardening",
+      "adjUk": "налаштуй валідацію вхідних параметрів та захист від XSS",
+      "adjEn": "implement general application security hardening and rate limiting"
+    },
+    "security-and-hardening": {
+      "useUk": [
+        "налаштуй 4-рівневий захист бекенду та захист від SSRF атак",
+        "захисти виконання OS команд через execFile замість shell exec",
+        "перевір відповідність ендпоінтів рекомендаціям OWASP Top 10"
+      ],
+      "useEn": [
+        "implement 4-layer defense architecture and SSRF IP pinning",
+        "harden OS command execution using execFile with discrete arguments"
+      ],
+      "adjSkill": "api-security-testing",
+      "adjUk": "проведи активне тестування BOLA на існуючих ендпоінтах",
+      "adjEn": "probe live REST endpoints for broken object level authorization"
+    },
+    "skill-creator": {
+      "useUk": [
+        "створи новий скіл для агента з валідацією frontmatter та евалами",
+        "оптимізуй опис скіла щоб покращити точність спрацьовування",
+        "додай тестові кейси у evals.json та перевір бюджет рядків"
+      ],
+      "useEn": [
+        "author new agent skill with frontmatter, evals, and line budget",
+        "optimize skill description and run evals dry-run verification"
+      ],
+      "adjSkill": "find-skills",
+      "adjUk": "знайди готовий скіл у відкритому реєстрі agentskills.io",
+      "adjEn": "search external open agent ecosystem for existing skills"
+    },
+    "source-driven-development": {
+      "useUk": [
+        "знайди офіційну документацію бібліотеки Prisma 7 перед написанням коду",
+        "перевір точні сигнатури методів NestJS 11 через Context7 MCP",
+        "отримай актуальний API reference перед використанням нової бібліотеки"
+      ],
+      "useEn": [
+        "ground library integration in official Context7 documentation first",
+        "verify framework API signatures against live docs before coding"
+      ],
+      "adjSkill": "mcp-knowledge-cache",
+      "adjUk": "перевір чи є потрібна довідка у локальному кеші .agents/cache/mcp/",
+      "adjEn": "retrieve cached documentation from local markdown cache index"
+    },
+    "spec-driven-development": {
+      "useUk": [
+        "склади високорівневу специфікацію вимог перед початком розробки модуля",
+        "визнач межі та інтерфейси компонентів у документі специфікації",
+        "опиши контракт функціональності перед плануванням задач"
+      ],
+      "useEn": [
+        "draft module specification and functional capabilities matrix",
+        "define component boundaries and interface requirements upfront"
+      ],
+      "adjSkill": "planning-and-lifecycle",
+      "adjUk": "створи tracer-slice план задачі у plans/active/",
+      "adjEn": "author vertical tracer slice task with explicit blocking edges"
+    },
+    "streaming-large-feeds": {
+      "useUk": [
+        "реалізуй потоковий парсинг 100k+ SKU XML фіду через SAX parser",
+        "налаштуй Node.js stream backpressure щоб уникнути переповнення пам’яті",
+        "розбий великий CSV файл постачальника на чанки для черги BullMQ"
+      ],
+      "useEn": [
+        "parse 100k+ SKU XML feed using SAX stream with backpressure control",
+        "stream massive CSV catalog without memory overflow into BullMQ queue"
+      ],
+      "adjSkill": "backend",
+      "adjUk": "створи звичайний CRUD контролер для редагування товару",
+      "adjEn": "build standard REST endpoint for single product update"
+    },
+    "subscription-lifecycle": {
+      "useUk": [
+        "реалізуй перевірку квоти товарів та ліміту місць перед додаванням",
+        "оброби платіжний вебхук WayForPay з оновленням статусу підписки",
+        "налаштуй grace period та блокування апгрейду без оплати (OWASP API4)"
+      ],
+      "useEn": [
+        "implement subscription quota gating and WayForPay billing webhook",
+        "enforce tier limits and grace period handling for subscription downgrade"
+      ],
+      "adjSkill": "idempotency-and-outbox",
+      "adjUk": "додай перевірку ключа ідемпотентності для платіжного запиту",
+      "adjEn": "implement transactional outbox for reliable payment event dispatch"
+    },
+    "systematic-debugging": {
+      "useUk": [
+        "проведи 4-фазну діагностику невідомої помилки та знайди першопричину",
+        "відтвори плаваючий баг у мінімальному тесті перед внесенням правок",
+        "знайди першопричину збою парсингу за трасуванням стек-трейсу"
+      ],
+      "useEn": [
+        "apply 4-phase systematic debugging to isolate root cause of bug",
+        "reproduce elusive defect with minimal reproduction before patching"
+      ],
+      "adjSkill": "browser-debugging",
+      "adjUk": "перевір живе DOM дерево у браузері через Playwright MCP",
+      "adjEn": "inspect browser console logs and network waterfall interactively"
+    },
+    "task-memory-and-state": {
+      "useUk": [
+        "збережи контрольний стан виконання задачі у .agents/state/active_task.json",
+        "зафіксуй перелік змінених файлів та передай задачу наступному агенту",
+        "завантаж активний контекст задачі на початку сесії з active_task.json"
+      ],
+      "useEn": [
+        "checkpoint execution state and modified files in active_task.json",
+        "load task context and persistent state at the start of agent session"
+      ],
+      "adjSkill": "handoff",
+      "adjUk": "підготуй документ передачі контексту для сесії іншого агента",
+      "adjEn": "compact full conversation into structured cross-agent handoff"
+    },
+    "tauri-v2-security-and-ipc": {
+      "useUk": [
+        "налаштуй Tauri v2 permissions та обмеження скоупів у capabilities",
+        "захисти ключ шифрування SQLCipher через збереження у OS Keychain",
+        "перевір безпеку Tauri IPC команд від path traversal атак"
+      ],
+      "useEn": [
+        "configure Tauri v2 capabilities and scope permissions securely",
+        "manage SQLCipher encryption key derivation via native OS Keychain"
+      ],
+      "adjSkill": "rust-native-backend",
+      "adjUk": "напиши SQL запит до локальної бази даних SQLite на Rust",
+      "adjEn": "implement rusqlite transaction and table schema in desktop client"
+    },
+    "test-driven-development": {
+      "useUk": [
+        "напиши спершу падаючий E2E тест Supertest перед реалізацією фічі (RED)",
+        "забезпеч повне очищення тестових даних через cleanDatabase(prisma)",
+        "додай інтеграційний тест з перевіркою реальних бізнес-інваріантів"
+      ],
+      "useEn": [
+        "write failing integration test before touching production code (RED phase)",
+        "enforce cleanDatabase teardown in beforeAll and afterAll test blocks"
+      ],
+      "adjSkill": "playwright-automation",
+      "adjUk": "напиши Playwright Page Object Model клас для UI сторінки",
+      "adjEn": "author browser UI interaction test with network request assertions"
+    },
+    "to-tickets": {
+      "useUk": [
+        "декомпозуй архітектурний план на набір tracer-bullet тікетів",
+        "розбий специфікацію на незалежні задачі з явними блокуючими зв’язками",
+        "перетвори дорожню карту фічі на набір тікетів FR-BE-XX"
+      ],
+      "useEn": [
+        "slice architectural roadmap into tracer-bullet tickets with blocking edges",
+        "decompose system initiative into discrete independently executable tickets"
+      ],
+      "adjSkill": "planning-and-lifecycle",
+      "adjUk": "створи головний план імплементації у plans/active/",
+      "adjEn": "author vertical tracer slice task and register in active plans"
+    },
+    "turborepo": {
+      "useUk": [
+        "налаштуй конфігурацію turbo.json з кешуванням артефактів збірки",
+        "оптимізуй запуск задач у монорепозиторії через фільтри pnpm --filter",
+        "налаштуй залежності пайплайну збірки між shared, backend та desktop"
+      ],
+      "useEn": [
+        "configure Turborepo pipeline caching and task dependencies in turbo.json",
+        "optimize monorepo build graph and cache hit rates in CI pipeline"
+      ],
+      "adjSkill": "ci-cd-and-automation",
+      "adjUk": "створи GitHub Actions workflow для автоматичної перевірки пулреквестів",
+      "adjEn": "configure CI runner matrix and automated quality check gates"
+    },
+    "ui-ux-pro-max": {
+      "useUk": [
+        "стилізуй таблицю товарів за допомогою 100% solid sticky header (UI-01)",
+        "застосуй семантичні токени bg-card та text-muted-foreground замість хардкоду",
+        "усунь дублювання кнопок дій та налаштуй високу щільність компонентів"
+      ],
+      "useEn": [
+        "enforce 100% solid sticky table header and semantic color tokens",
+        "design desktop high-density data table layout using official shadcn primitives"
+      ],
+      "adjSkill": "frontend",
+      "adjUk": "створи логіку пагінації та завантаження даних у React хуку",
+      "adjEn": "implement state management and API query hook in React component"
+    },
+    "vercel-react-best-practices": {
+      "useUk": [
+        "усунь каскадні waterfall запити у React та Next.js додатку",
+        "захисти запити від дублювання за допомогою useRef (isFetchingRef)",
+        "оптимізуй повторні рендери великого списку товарів у React 18"
+      ],
+      "useEn": [
+        "eliminate request waterfalls and guard concurrent calls via useRef",
+        "optimize React 18 re-renders and bundle size on high-volume catalog views"
+      ],
+      "adjSkill": "frontend",
+      "adjUk": "додай нову кнопку та діалогове вікно у shadcn компонент",
+      "adjEn": "create new UI view layout with Tailwind CSS classes and buttons"
+    },
+    "web-app-penetration-testing": {
+      "useUk": [
+        "проведи black-box тестування безпеки локального веб-порталу адмінки",
+        "перевір захист від міжсайтового скриптингу (XSS) у полях вводу товарів",
+        "протестуй захист сесій та cookie від перехоплення та викрадення"
+      ],
+      "useEn": [
+        "conduct black-box security penetration test on running web portal",
+        "probe interactive inputs for stored XSS and CSRF token bypass vulnerabilities"
+      ],
+      "adjSkill": "api-security-testing",
+      "adjUk": "протестуй REST API ендпоінти на вразливість BOLA/IDOR",
+      "adjEn": "probe backend API endpoints for object level authorization leaks"
+    },
+    "writing-plans": {
+      "useUk": [
+        "напиши покроковий TDD план реалізації задачі на 2-5 хвилинні кроки",
+        "сформуй план з точним описом файлів, інтерфейсів та критеріїв перевірки",
+        "розбий задачу на дрібні кроки з обов’язковим червоним тестом для кожного"
+      ],
+      "useEn": [
+        "write bite-sized TDD implementation plan with 2-5 minute steps",
+        "draft detailed step-by-step checklist with explicit file interfaces and DoD"
+      ],
+      "adjSkill": "planning-and-lifecycle",
+      "adjUk": "створи високорівневий tracer-slice план у plans/active/",
+      "adjEn": "author architectural feature plan cutting through DB, API, and UI"
+    }
+  }
+}

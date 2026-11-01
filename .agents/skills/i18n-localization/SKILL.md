@@ -27,7 +27,7 @@ rules: [core, i18n, frontend]
 2. Step 2 - Component Hook Invocation: import and invoke `const { t } = useI18n()`. Render strings using `t('namespace:key')`.
 3. Step 3 - Localize HTML Attributes: wrap icon-only buttons with localized `aria-label={t('common:edit')}` and `title={t('common:edit')}`.
 4. Step 4 - Intercept Backend Errors: never pass `err.message` directly into toasts. Use `getErrorMessage(err, t)` to display localized error strings.
-5. Step 5 - Map Backend Enums: map database statuses (`APPROVED`, `Active`, `Done`, `Suspended`, `PENDING`) to localized display values (`Оплачено`, `Активна`, `Виконано`, `Призупинено`, `Очікує`).
+5. Step 5 - Map Backend Enums: map database statuses (`APPROVED`, `Active`, `Done`, `Suspended`, `PENDING`) to localized display dictionary keys (e.g. `subscription.status.approved`, `subscription.status.active`) instead of rendering raw enum strings.
 6. Step 6 - Parity Verification: execute the localization parity script: `pnpm i18n:check`.
 
 ## Outputs

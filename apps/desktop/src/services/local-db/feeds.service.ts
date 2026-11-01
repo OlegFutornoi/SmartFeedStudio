@@ -32,6 +32,10 @@ export class LocalFeedsService {
   async analyzeFeed(content: string, supplierId?: string): Promise<AnalyzeFeedResult> {
     const analysis = feedEngine.analyze(content, supplierId);
 
+    if (analysis.totalDetected === 0) {
+      throw new Error('ZERO_SKU_FEED: Не знайдено жодного товару у фіді (0 SKU)');
+    }
+
     return {
       format: analysis.format,
       categories: analysis.categories.map((c) => ({

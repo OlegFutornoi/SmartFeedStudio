@@ -62,24 +62,46 @@ export function runOmni(systemPrompt, userPrompt, omniRouteBin, repoRoot, temper
 }
 
 export function updateSkillsStatusDoc(suites, executionResults, statusDocPath) {
+  const dateStr = new Date().toISOString().slice(0, 10);
+  const resultMap = new Map();
+  for (const r of executionResults) {
+    resultMap.set(r.skill, r);
+  }
+
   const lines = [
     '# Реєстр верифікації скілів через LLM-Evals (.agents/skills/)',
     '',
-    'Цей документ фіксує поточний статус валідації та реального оцінювання скілів SmartFeed Studio.',
+    'Цей документ фіксує поточний статус валідації, маршрутизації та реального оцінювання скілів SmartFeed Studio.',
     '',
     '## 1. Зведений стан скілів',
     '',
     `- Всього скілів: ${suites.length}`,
     `- Структурно валідних наборів evals: ${suites.filter((s) => !s.evalError).length}`,
     `- Протестовано через LLM: ${executionResults.length}`,
+    `- Дата останнього оновлення: ${dateStr}`,
     '',
     '## 2. Статус валідації по кожному скілу',
     '',
   ];
 
   for (const s of suites) {
-    const count = s.suite && Array.isArray(s.suite.evals) ? s.suite.evals.length : 0;
-    const badge = s.evalError ? `[FAIL] (${s.evalError})` : `[PASS] (${count} cases)`;
+    const evalCount = s.suite && Array.isArray(s.suite.evals) ? s.suite.evals.length : 0;
+    const trgCount = s.triggers && Array.isArray(s.triggers.triggers) ? s.triggers.triggers.length : 0;
+    const exec = resultMap.get(s.skill);
+
+    let statusSuffix = '';
+    if (exec) {
+      const passTag = exec.passed ? '[PASS]' : '[FAIL]';
+      const deltaTag = exec.delta !== null && exec.delta !== undefined ? `, Delta: +${exec.delta}` : '';
+      statusSuffix = ` -> LLM Eval: ${passTag} (Score: ${exec.score}/${evalCount}${deltaTag})`;
+    } else {
+      statusSuffix = ` -> Dry-run OK (Ready for LLM)`;
+    }
+
+    const badge = s.evalError
+      ? `[FAIL] (${s.evalError})`
+      : `[PASS] (${evalCount} cases, ${trgCount} triggers)${statusSuffix}`;
+
     lines.push(`- \`${s.skill}\`: ${badge}`);
   }
 

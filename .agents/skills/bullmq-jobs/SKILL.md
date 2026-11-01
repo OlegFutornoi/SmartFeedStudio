@@ -24,3 +24,10 @@ rules:
 5. Dead letter queue handling: When jobs exhaust retry attempts, capture failed jobs in a dead letter queue or log structured error reports to Sentry. Never silently drop failed jobs.
 6. Graceful worker shutdown: Ensure workers complete current operations or release locks when SIGTERM is received. Enable NestJS shutdown hooks (`app.enableShutdownHooks()`).
 7. Redis inspection: Use the `redis` MCP server to inspect queue states (`LLEN bull:<queue>:wait`, `ZCARD bull:<queue>:failed`, `HGETALL bull:<queue>:<jobId>`).
+
+## References
+
+- [bullmq-dlq-and-retry.md](references/bullmq-dlq-and-retry.md)
+- [idempotency-and-outbox.md](references/idempotency-and-outbox.md)
+- [idempotency-keys-and-cqrs.md](references/idempotency-keys-and-cqrs.md)
+- [transactional-outbox-prisma.md](references/transactional-outbox-prisma.md)

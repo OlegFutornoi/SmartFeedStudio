@@ -5,7 +5,6 @@ subagent: true
 model: inherit
 skills:
   - skills/review
-  - skills/code-review-and-quality
   - skills/code-simplification
   - skills/doubt-driven-development
   - skills/security-and-hardening

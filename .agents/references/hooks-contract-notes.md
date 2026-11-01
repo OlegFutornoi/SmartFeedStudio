@@ -1,34 +1,34 @@
-# Нотатки та специфікація життєвого циклу Hooks (Antigravity Lifecycle Hooks Contract)
+# Lifecycle Hooks Technical Specification
 
-Результат спайк-дослідження AS-2.0 та верифікації документації Antigravity (`hooks.md`).
+Technical specification and contract for Antigravity lifecycle hooks in SmartFeed Studio (`hooks.json`).
 
-## 1. Точні назви інструментів для matcher
+## 1. Tool Matcher Identifiers
 
-- Виконання команд: `run_command`
-- Робота з файлами: `write_file`, `edit_file`, `read_file` (legacy-імена `write_to_file`, `replace_file_content` є недійсними і ніколи не спрацьовували)
-- MCP-інструменти: `call_mcp_tool` або нативні префікси `mcp_.*`
-- Matcher для PreToolUse guard: `run_command|write_file|edit_file|read_file|call_mcp_tool`
+- Command execution: `run_command`
+- File modifications: `write_file`, `edit_file`, `read_file`
+- MCP tools: `call_mcp_tool` or native `mcp_.*` prefix
+- PreToolUse matcher: `run_command|write_file|edit_file|read_file|call_mcp_tool`
 
-## 2. Семантика злиття та авто-схвалення (Auto-Approver vs Guard)
+## 2. Decision Logic and Auto-Approval
 
-- Конфлікт між декількома хуками усувається шляхом консолідації в єдиний guard-модуль `pre-tool-guard.mjs`.
-- Якщо інструмент є MCP (`call_mcp_tool` або `mcp_.*`), guard миттєво повертає `{"decision": "allow"}` згідно з правилом `CORE-08`.
-- Для `run_command`, `write_file`, `edit_file`, `read_file` послідовно перевіряються детерміновані правила R1..R9.
+- Consolidated inside `scripts/pre-tool-guard.mjs`.
+- If tool call is MCP (`call_mcp_tool` or `mcp_.*`), guard returns `{"decision": "allow"}` immediately per `CORE-08`.
+- For `run_command`, `write_file`, `edit_file`, and `read_file`, rules R1 through R9 are sequentially evaluated.
 
-## 3. Специфікація подій Stop та SessionStart
+## 3. SessionStart and Stop Hook Contracts
 
-- `SessionStart`:
-  - Вхід (stdin): `conversationId`, `workspacePaths`, `transcriptPath`, `artifactDirectoryPath`, `modelName`.
-  - Вихід (stdout): `{"injectSteps": [{"ephemeralMessage": "..."}]}`.
-  - Ліміт контексту: до 1500 токенів із нагадуванням про активну задачу, Invariant 20 (читання `plans/compact/`) та ключові правила.
+- SessionStart:
+  - Input (stdin): `conversationId`, `workspacePaths`, `transcriptPath`, `artifactDirectoryPath`, `modelName`.
+  - Output (stdout): `{"injectSteps": [{"ephemeralMessage": "..."}]}`.
+  - Context budget: <=1500 tokens reminding agent of active task, `CORE-14` (reading `plans/completed/*.compressed.md`), and core invariants.
 
-- `Stop`:
-  - Вхід (stdin): `executionNum`, `terminationReason` (`"NO_TOOL_CALL"`), `fullyIdle: true`.
-  - Умова запуску: лише коли `executionNum <= 2` та `terminationReason === "NO_TOOL_CALL"`.
-  - Дія: швидка перевірка змінених файлів (`git diff --name-only`). У разі виявлення CRITICAL-порушень (заборонені `as any`, порушення бюджету рядків >300, залишені `console.log`) повертає `{"decision": "continue", "reason": "..."}` для самовиправлення агента.
+- Stop:
+  - Input (stdin): `executionNum`, `terminationReason` (`"NO_TOOL_CALL"`), `fullyIdle: true`.
+  - Condition: triggered when `executionNum <= 2` and `terminationReason === "NO_TOOL_CALL"`.
+  - Action: fast git diff inspection (`git diff --name-only`). On critical violations (forbidden `as any`, budget >300 lines, unmasked console logs), returns `{"decision": "continue", "reason": "..."}` for autonomous self-remediation.
 
-## 4. Контракт PostToolUse (Auto-Formatter)
+## 4. PostToolUse Contract (Auto-Formatter)
 
 - Matcher: `write_file|edit_file`
-- Вхід: `toolCall.name`, `toolCall.args.Path`
-- Дія: форматування зміненого файлу через Prettier (таймаут 15 с, без аварійного завершення).
+- Input: `toolCall.name`, `toolCall.args.Path`
+- Action: auto-format modified file via Prettier (15s timeout, graceful error handling).

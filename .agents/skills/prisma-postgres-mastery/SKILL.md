@@ -42,3 +42,11 @@ rules:
 1. Phase 1 (Expand): Add new column or table as nullable or with a default. Deploy application writing to both old and new columns.
 2. Phase 2 (Backfill): Backfill existing rows in small cursor-paginated chunks. Create indexes concurrently with `SET lock_timeout = '2s'`.
 3. Phase 3 (Contract): Switch application reads to the new column, remove fallback code, and drop obsolete columns safely.
+
+## Reference Index
+
+- Schema: `references/schema-foreign-key-indexes.md`, `references/schema-data-types.md`, `references/schema-primary-keys.md`, `references/schema-constraints.md`, `references/schema-lowercase-identifiers.md`, `references/schema-partitioning.md`.
+- Indexing & Search: `references/query-missing-indexes.md`, `references/query-composite-indexes.md`, `references/query-covering-indexes.md`, `references/query-partial-indexes.md`, `references/query-index-types.md`, `references/advanced-full-text-search.md`, `references/advanced-jsonb-indexing.md`, `references/postgresql-optimization.md`.
+- Data Access: `references/data-n-plus-one.md`, `references/data-pagination.md`, `references/data-batch-inserts.md`, `references/data-upsert.md`.
+- Connection & Locks: `references/conn-pooling.md`, `references/conn-limits.md`, `references/conn-idle-timeout.md`, `references/conn-prepared-statements.md`, `references/lock-short-transactions.md`, `references/lock-advisory.md`, `references/lock-deadlock-prevention.md`, `references/lock-skip-locked.md`.
+- Monitoring & Security: `references/monitor-explain-analyze.md`, `references/monitor-vacuum-analyze.md`, `references/monitor-pg-stat-statements.md`, `references/security-privileges.md`, `references/security-rls-basics.md`, `references/security-rls-performance.md`.

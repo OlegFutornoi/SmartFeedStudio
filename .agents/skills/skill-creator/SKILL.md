@@ -74,3 +74,7 @@ rules: [core, docs_and_ops]
 
 - `references/eval-loop.md` - read when setting up comparative benchmark evaluations.
 - `references/description-optimization.md` - read when running description trigger optimization.
+
+## References
+
+- [schemas.md](references/schemas.md)

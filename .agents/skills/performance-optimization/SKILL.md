@@ -34,3 +34,7 @@ rules:
 5. Memory backpressure:
    - Use event-driven SAX parsing (`saxes`) for XML/CSV files exceeding 5 MB.
    - Pause readable streams when chunk processing queues are saturated.
+
+## References
+
+- [optimization-patterns.md](references/optimization-patterns.md)

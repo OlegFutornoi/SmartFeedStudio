@@ -1,13 +1,19 @@
-name: Weekly Skill Evals Execution
+name: Skill Quality & Structural Gate
 
 on:
-  schedule:
-    - cron: '0 4 * * 1' # Every Monday at 04:00 UTC
+  push:
+    paths:
+      - '.agents/skills/**'
+      - 'scripts/ops/**'
+  pull_request:
+    paths:
+      - '.agents/skills/**'
+      - 'scripts/ops/**'
   workflow_dispatch:
 
 jobs:
   run-evals:
-    name: Execute Real LLM Skill Evaluations
+    name: Skill Quality & Structural Gate
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
@@ -26,16 +32,9 @@ jobs:
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Execute LLM Evals via OmniRoute Fallback
-        env:
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
-          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+      - name: Structural Dry-Run Verification
         run: |
-          node scripts/ops/run-skill-evals.mjs --skill=backend,frontend,review,git-commit --runs=3 || echo "[WARN] Evals completed with warnings"
-
-      - name: Upload Eval Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: skill-eval-results
-          path: .temp/skill-evals/
+          pnpm agents:check
+          node scripts/ops/run-skill-evals.mjs --dry-run
+          node scripts/ops/run-skill-routing-evals.mjs --dry-run
+          node scripts/ops/skills-status.mjs

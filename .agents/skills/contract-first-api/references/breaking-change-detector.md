@@ -1,16 +1,16 @@
-# Breaking Change Detector — Захист від несумісних змін API
+# Breaking Change Detector
 
-## 1. Що вважається Breaking Change?
+## 1. Defining Breaking Changes
 
-1. **Видалення поля** з відповіді API, на яке покладається клієнт.
-2. **Зміна обов'язковості поля** (було `optional`, стало обов'язковим `required`).
-3. **Зміна типу даних** (наприклад, `id: string` став `id: number` або ціна `number` стала рядком).
-4. **Зміна значень Enum** (видалення або перейменування ролі чи статусу).
+1. Field removal: Deleting an attribute from an API response on which clients depend.
+2. Field optionality modification: Changing an optional attribute into a required attribute.
+3. Data type change: Modifying attribute types (e.g., `id: string` becoming `id: number` or numeric price becoming string).
+4. Enum value modifications: Removing or renaming roles, states, or domain enum values.
 
-## 2. Протокол безпечної еволюції API (Expand & Contract)
+## 2. Expand and Contract Protocol
 
-Якщо потрібно змінити поле:
+When modifying an existing contract:
 
-- **Фаза 1 (Expand)**: Додати нове поле як `optional`, зберігаючи старе поле.
-- **Фаза 2 (Migrate)**: Оновити клієнтські додатки для використання нового поля.
-- **Фаза 3 (Contract)**: Лише після оновлення всіх клієнтів видалити старе депрекейчене поле.
+- Phase 1 (Expand): Introduce the new field as optional while retaining the legacy field.
+- Phase 2 (Migrate): Update client applications to consume the new field.
+- Phase 3 (Contract): Remove the legacy deprecated field only after all clients are migrated and deployed.

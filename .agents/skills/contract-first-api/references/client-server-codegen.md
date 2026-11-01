@@ -1,8 +1,8 @@
-# Client-Server Integration — Інтеграція контрактів на клієнті та сервері
+# Client-Server Contract Integration
 
-## 1. Використання на сервері (NestJS)
+## 1. Backend Server Usage (NestJS)
 
-DTO у контролері наслідує або валідується через спільний контракт:
+DTOs in NestJS controllers inherit or validate against shared contracts:
 
 ```typescript
 import { Body, Controller, Post, UsePipes } from '@nestjs/common';
@@ -19,9 +19,9 @@ export class FeedsController {
 }
 ```
 
-## 2. Використання на клієнті (Desktop / Admin)
+## 2. Frontend Client Usage (Desktop / Admin)
 
-Клієнтський API сервіс строго типізований через DTO з `@smartfeed/shared`:
+Client API services are strictly typed via DTOs from `@smartfeed/shared`:
 
 ```typescript
 import type { ImportFeedDto, ImportFeedResponseDto } from '@smartfeed/shared';
@@ -34,4 +34,4 @@ export const feedsApi = {
 };
 ```
 
-Це гарантує: зміна поля на бекенді викликає помилку компіляції (`tsc --noEmit`) на клієнті, запобігаючи багам у рантаймі.
+This guarantees that contract changes on the backend immediately trigger compile-time errors (`tsc --noEmit`) in client projects, preventing runtime regressions.

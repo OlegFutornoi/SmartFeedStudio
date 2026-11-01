@@ -30,12 +30,12 @@ A structured repository for creating and maintaining React Best Practices optimi
 3. Validate rule files:
 
    ```bash
-   pnpm validate
+   pnpm agents:check
    ```
 
-4. Extract test cases:
+4. Verify test cases:
    ```bash
-   pnpm extract-tests
+   node scripts/ops/run-skill-evals.mjs --skill=vercel-react-best-practices --dry-run
    ```
 
 ## Creating a New Rule
@@ -106,10 +106,8 @@ Reference: [Link](https://example.com)
 
 ## Scripts
 
-- `pnpm build` - Compile rules into AGENTS.md
-- `pnpm validate` - Validate all rule files
-- `pnpm extract-tests` - Extract test cases for LLM evaluation
-- `pnpm dev` - Build and validate
+- `pnpm agents:check` - Validate all agent rules and skills
+- `node scripts/ops/run-skill-evals.mjs` - Run skill evaluations
 
 ## Contributing
 

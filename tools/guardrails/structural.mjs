@@ -63,6 +63,7 @@ function checkCentralizedTests(relPath, out) {
   if (relPath.startsWith('e2e/')) return;
   if (relPath.startsWith('tools/guardrails/')) return;
   if (relPath.startsWith('.agents/')) return;
+  if (relPath.startsWith('scripts/')) return;
 
   const isTestFile =
     /\.(spec|test|e2e-spec|adversarial-spec)\.[cm]?[jt]sx?$/.test(relPath) ||
@@ -81,12 +82,24 @@ function checkCentralizedTests(relPath, out) {
 function checkUsersModuleJwt(relPath, content, out) {
   if (relPath.includes('/modules/users/') && (/JwtService/.test(content) || /@nestjs\/jwt/.test(content))) {
     out.push({
-      rule: 'BE-11',
+      rule: 'ARCH-05',
       line: 1,
-      message: 'UsersModule must have zero JWT awareness (DEF-01). Route token creation through AuthModule.',
+      message: 'UsersModule must have zero JWT awareness (ARCH-05, DEF-01). Route token creation through AuthModule.',
     });
   }
 }
+
+import {
+  checkPrismaSchema,
+  checkPrismaService,
+  checkCursorPagination,
+  checkZeroNPlusOne,
+  checkShortTransactions,
+} from './prisma-checks.mjs';
+import { checkSecurityRules } from './security-checks.mjs';
+import { checkFrontendRules } from './frontend-checks.mjs';
+import { checkTestingRules } from './testing-checks.mjs';
+import { checkOpsRules } from './ops-checks.mjs';
 
 function checkNoEmojis(content, out) {
   const emojiMatch = /[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/u.exec(content);
@@ -119,6 +132,13 @@ function checkZeroAsAny(content, out) {
       line: lineOf(content, anyMatch.index),
       message: "Zero prohibited type bypasses allowed. Use generated Prisma types, Zod parse, or unknown.",
     });
+    if (/prisma\.\w+\.(?:create|update|upsert|findMany|delete)/.test(content)) {
+      out.push({
+        rule: 'DB-12',
+        line: lineOf(content, anyMatch.index),
+        message: 'Strict Prisma Types: Zero as any allowed in Prisma clauses.',
+      });
+    }
   }
 }
 
@@ -130,10 +150,20 @@ function checkZeroAsAny(content, out) {
 export function checkFile(relPath, content) {
   const out = [];
   checkCentralizedTests(relPath, out);
+  checkPrismaSchema(relPath, content, out);
+  checkFrontendRules(relPath, content, out);
+  checkTestingRules(relPath, content, out);
+  checkOpsRules(relPath, content, out);
+  checkSecurityRules(relPath, content, out);
   if (!isBackendSource(relPath)) return out;
+  checkPrismaService(relPath, content, out);
+  checkCursorPagination(relPath, content, out);
   if (relPath.includes('/modules/') && !relPath.endsWith('.module.ts')) checkHandlers(content, out);
-  if (relPath.endsWith('.handler.ts') || relPath.endsWith('.service.ts'))
+  if (relPath.endsWith('.handler.ts') || relPath.endsWith('.service.ts')) {
     checkCheckThenCreate(content, out);
+    checkZeroNPlusOne(content, out);
+    checkShortTransactions(content, out);
+  }
   if (relPath.endsWith('.controller.ts')) checkControllerGuards(content, out);
   checkUsersModuleJwt(relPath, content, out);
   checkNoEmojis(content, out);

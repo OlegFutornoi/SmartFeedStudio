@@ -30,3 +30,8 @@ rules:
 4. Remediation requirements:
    - Never pass raw credential objects to logging or telemetry frameworks.
    - Add unit tests verifying that stringified outputs do not contain sensitive tokens.
+
+## References
+
+- [javascript-typescript.md](references/javascript-typescript.md)
+- [python.md](references/python.md)

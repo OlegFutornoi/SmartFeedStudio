@@ -5,10 +5,7 @@ subagent: true
 model: inherit
 skills:
   - skills/planning-and-lifecycle
-  - skills/writing-plans
-  - skills/to-tickets
   - skills/brainstorming
-  - skills/interview-me
   - skills/contract-first-api
   - skills/incremental-implementation
   - skills/doubt-driven-development

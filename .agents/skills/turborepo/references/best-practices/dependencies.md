@@ -77,7 +77,7 @@ Only repository-level tools:
 ### Single Package
 
 ```bash
-# pnpm
+# Using pnpm
 pnpm add lodash --filter=@repo/utils
 
 # npm
@@ -93,7 +93,7 @@ cd packages/utils && bun add lodash
 ### Multiple Packages
 
 ```bash
-# pnpm
+# Using pnpm
 pnpm add jest --save-dev --filter=web --filter=@repo/ui
 
 # npm
@@ -106,7 +106,7 @@ yarn workspaces foreach -R --from '{web,@repo/ui}' add jest --dev
 ### Internal Packages
 
 ```bash
-# pnpm
+# Using pnpm
 pnpm add @repo/ui --filter=web
 
 # This updates package.json:
@@ -144,7 +144,7 @@ pnpm up --recursive typescript@latest
 npm install typescript@latest --workspaces
 ```
 
-### Option 3: pnpm Catalogs (pnpm 9.5+)
+### Option 3: Workspace Catalogs (PNPM v9.5+)
 
 ```yaml
 # pnpm-workspace.yaml
@@ -219,7 +219,7 @@ For library packages that expect the consumer to provide dependencies:
 Packages can use different versions - this is a feature, not a bug. But if you need consistency:
 
 1. Use tooling (syncpack, manypkg)
-2. Use pnpm catalogs
+2. Use catalog definitions in pnpm-workspace.yaml
 3. Create a lint rule
 
 ### Hoisting Issues

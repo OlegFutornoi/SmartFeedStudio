@@ -24,3 +24,9 @@ rules:
 5. Zero type bypasses: Do not cast payloads with `as any`. Use Zod `.parse()` or `.safeParse()` for runtime payload validation.
 6. Controller DTO synchronization: NestJS request DTOs and Swagger schemas must match Zod schema definitions in `@smartfeed/shared`.
 7. Non-breaking evolution: When modifying existing contracts, introduce optional fields or versioned interfaces to preserve backward compatibility.
+
+## References
+
+- [breaking-change-detector.md](references/breaking-change-detector.md)
+- [client-server-codegen.md](references/client-server-codegen.md)
+- [zod-shared-patterns.md](references/zod-shared-patterns.md)

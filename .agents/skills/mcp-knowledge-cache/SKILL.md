@@ -60,3 +60,7 @@ rules: [core, agents]
 
 - `scripts/mcp-cache.mjs` - CLI manager for MCP cache lookup, single-file Headroom compression, and OmniRoute refresh.
 - `.agents/cache/mcp/index.json` - Central registry of cached MCP knowledge entries.
+
+## References
+
+- [context7-workflow.md](references/context7-workflow.md)

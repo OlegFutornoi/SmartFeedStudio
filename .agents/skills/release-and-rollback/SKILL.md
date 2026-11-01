@@ -36,3 +36,9 @@ rules:
 3. Zero-data-loss rollback strategy:
    - Database migrations must follow the Expand/Contract pattern. Application code rollbacks must remain fully compatible with expanded database schemas.
    - Use Railway CLI (`railway rollback`) or git revert to roll back application containers cleanly.
+
+## References
+
+- [post-deployment-smoke.md](references/post-deployment-smoke.md)
+- [semver-and-changelog.md](references/semver-and-changelog.md)
+- [zero-loss-rollback.md](references/zero-loss-rollback.md)

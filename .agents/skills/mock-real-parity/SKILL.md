@@ -26,7 +26,7 @@ rules: [core, frontend, backend, database]
 2. Step 2 - Cascade Deletion Mirroring: when an entity is deleted in mock mode (e.g. supplier feed), remove all child entities (products, images) and decrement quotas atomically, mirroring PostgreSQL `ON DELETE CASCADE`.
 3. Step 3 - Error Code and Status Alignment: ensure business rule rejections (quota limits, duplicate SKU) return identical error structures (`statusCode`, `message`, `code`) in mock and backend responses.
 4. Step 4 - Quota Recalculation: ensure quota deductions and license counts recalculate in mock driver identically to cloud subscription handlers.
-5. Step 5 - Parity Test Verification: author Playwright tests asserting real hydrated values (`expect(val).not.toBe('Постачальник')`).
+5. Step 5 - Parity Test Verification: author Playwright tests asserting real hydrated values (`expect(val).not.toBe('Supplier')`).
 
 ## Outputs
 

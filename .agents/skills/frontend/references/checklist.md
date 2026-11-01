@@ -82,13 +82,13 @@ Comprehensive self-review checklist for all frontend changes in `apps/desktop` a
 pnpm --filter @smartfeed/desktop exec tsc --noEmit
 
 # 2. Typecheck Admin Web Portal
-pnpm --filter admin-portal exec tsc --noEmit
+pnpm --filter @smartfeed/admin-portal exec tsc --noEmit
 
 # 3. Run Desktop Playwright E2E Tests
-pnpm test:desktop
+pnpm e2e:local:desktop
 
 # 4. Run Admin Playwright E2E Tests
-pnpm test:admin
+pnpm e2e:server:admin
 
 # 5. Format All Code
 pnpm format

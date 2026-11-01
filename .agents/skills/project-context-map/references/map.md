@@ -1,23 +1,21 @@
-# Map — де що лежить
+# Monorepo Topology Map
 
-| Домен                      | Місце                                                        | Примітка                                         |
-| -------------------------- | ------------------------------------------------------------ | ------------------------------------------------ |
-| Контракти (DTO, Zod, enum) | `packages/shared`                                            | `pnpm build:shared` після змін                   |
-| Backend API (:4000)        | `services/backend-api/src/modules/*`                         | CQRS: `commands/`, `queries/`, `events/`, `dto/` |
-| Prisma схема               | `services/backend-api/prisma/schema.prisma`                  | snake_case `@@map`, FK-індекси                   |
-| Backend E2E                | `services/backend-api/test/*.e2e-spec.ts`                    | `cleanDatabase` teardown                         |
-| Admin Portal (:3000)       | `apps/admin-portal`                                          | Next.js 14, хмарний бекенд                       |
-| Desktop UI (:1420)         | `apps/desktop/src`                                           | React 18, API-клієнти `@/services/api/*`         |
-| Desktop native             | `apps/desktop/src-tauri/src` (`db.rs`)                       | SQLCipher, Keychain                              |
-| Mock/local драйвер         | `mockDatabaseDriver`, `LocalProductsService`                 | паритет з реальним бекендом                      |
-| Playwright E2E             | `apps/*/e2e`                                                 | POM, `data-testid`                               |
-| Документація               | `wiki/0X-*`, `AGENTS.md`, `plans/{active,backlog,completed}` |                                                  |
-| Правила/скіли/агенти       | `.agents/rules`, `.agents/skills`, `.agents/agents_*.md`     | rules <12k символів                              |
+## Domain Locations
 
-## Потоки
+- Shared Contracts (DTO, Zod, Enum): `packages/shared` (`pnpm --filter @smartfeed/shared build` after updates).
+- Backend API (:4000): `services/backend-api/src/modules/*` (CQRS: `commands/`, `queries/`, `events/`, `dto/`).
+- Prisma Database Schema: `services/backend-api/prisma/schema.prisma` (snake_case `@@map`, 100% FK indexes).
+- Backend Integration Tests: `services/backend-api/test/*.e2e-spec.ts` (`cleanDatabase` teardown).
+- Admin Portal (:3000): `apps/admin-portal` (Next.js 14 App Router, cloud backend).
+- Desktop Client UI (:1420): `apps/desktop/src` (React 18, API clients `@/services/api/*`).
+- Desktop Client Native: `apps/desktop/src-tauri/src` (`db.rs`, SQLCipher SQLite, OS Keychain).
+- Mock/Local Driver: `mockDatabaseDriver`, `LocalProductsService` (parity with cloud backend).
+- Playwright E2E Automation: `apps/*/e2e` (Page Object Model, `data-testid`).
+- Documentation: `wiki/0X-*`, root `AGENTS.md`, and plans in `plans/{active,backlog,completed}`.
+- Agent System: `.agents/rules`, `.agents/skills`, `.agents/agents/*.md` (rules <12,000 chars).
 
-- Desktop: UI → `@/services/api/*` → (Tauri `invoke` → SQLite) **або** (HTTP → NestJS) — режими мають давати однаковий результат.
-- Admin: UI → HTTP → NestJS → CommandBus/QueryBus → Prisma → PostgreSQL.
-- Імпорт фіда: URL → fetch → стрім-парсинг → товари/категорії → лічильники.
+## Data Flows
 
-> Точні шляхи уточнювати `grep`/`list_dir`; карта дає лише напрямок.
+- Desktop: UI -> `@/services/api/*` -> (Tauri `invoke` -> SQLite) or (HTTP -> NestJS) - both modes maintain 100% parity.
+- Admin: UI -> HTTP -> NestJS -> CommandBus / QueryBus -> Prisma -> PostgreSQL 16.
+- Feed Ingestion: URL -> fetch -> SAX stream parser -> items/categories -> atomic counter increment.

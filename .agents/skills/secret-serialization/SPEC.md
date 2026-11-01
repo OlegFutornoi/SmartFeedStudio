@@ -53,7 +53,7 @@ See `SOURCES.md`. Do not store secrets, customer data, span payloads, or interna
 
 ## Validation
 
-- Run `uv run scripts/quick_validate.py ../secret-serialization` from `skills/skill-writer`.
+- Run `pnpm agents:check` and `node scripts/ops/run-skill-evals.mjs --skill=secret-serialization --dry-run`.
 - Manual check against the incident shape: a diff that adds an unexcluded credential field to a dataclass, with a pre-existing `str(value)` kwarg sink elsewhere in the repository, should produce a high finding naming both.
 - Precision checks: `SecretStr`, `#private`, a lazily read `property`, a filtered sink, and `Field(repr=False, exclude=True)` with only repr or `model_dump` sinks should produce no finding.
 - Recall checks: `Field(exclude=True)` alone on a model passed to `str()` should produce a partial-exclusion finding. Any credential-bearing instance, including a fully excluded or `SecretStr` one, passed to `pickle` or `default=vars` should produce a raw attribute sink finding.

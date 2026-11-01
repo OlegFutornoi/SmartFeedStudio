@@ -3,6 +3,7 @@ import { NotFoundException, ConflictException } from '@nestjs/common';
 import { Prisma } from '@/generated/prisma/client';
 import { PrismaService } from '@/prisma/prisma.service';
 import { UpdateSupplierCommand } from '@/modules/suppliers/commands/suppliers.commands';
+import { getSupplierTenancyWhere } from '@/modules/suppliers/utils/supplier-tenancy.util';
 
 @CommandHandler(UpdateSupplierCommand)
 export class UpdateSupplierHandler implements ICommandHandler<UpdateSupplierCommand> {
@@ -11,8 +12,9 @@ export class UpdateSupplierHandler implements ICommandHandler<UpdateSupplierComm
   async execute(command: UpdateSupplierCommand) {
     const { id, userId, dto } = command;
 
+    const tenancyWhere = await getSupplierTenancyWhere(this.prisma, userId);
     const current = await this.prisma.supplier.findFirst({
-      where: { id, userId },
+      where: { id, ...tenancyWhere },
     });
     if (!current) {
       throw new NotFoundException(`Supplier ${id} not found`);
@@ -20,7 +22,7 @@ export class UpdateSupplierHandler implements ICommandHandler<UpdateSupplierComm
 
     if (dto.code && dto.code !== current.code) {
       const existing = await this.prisma.supplier.findFirst({
-        where: { userId, code: dto.code, NOT: { id } },
+        where: { ...tenancyWhere, code: dto.code, NOT: { id } },
       });
       if (existing) {
         throw new ConflictException(`Supplier with code ${dto.code} already exists`);

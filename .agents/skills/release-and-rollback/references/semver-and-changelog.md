@@ -1,48 +1,41 @@
-# 🏷 SemVer & Changelog — Розрахунок версій та журнал змін
+# SemVer and Changelog Specification
 
-## 1. Правила семантичного версіонування (Semantic Versioning 2.0.0)
+## 1. Semantic Versioning Rules (SemVer 2.0.0)
 
-Формат версії: `MAJOR.MINOR.PATCH` (наприклад, `1.4.2`):
+Format: `MAJOR.MINOR.PATCH` (e.g. `1.4.2`):
 
-| Рівень змін       | Коли піднімати                                                          | Приклади в SmartFeed Studio                                                 | Префікс коміту                           |
-| :---------------- | :---------------------------------------------------------------------- | :-------------------------------------------------------------------------- | :--------------------------------------- |
-| **MAJOR (X.0.0)** | Несумісні зміни API, видалення полів у DTO, зміна поведінки авторизації | Видалення обов'язкового поля в DTO імпорту, кардинальна зміна схеми БД      | `feat!: ...` або `BREAKING CHANGE:`      |
-| **MINOR (0.X.0)** | Новий функціонал із збереженням зворотної сумісності                    | Новий ендпоінт експорту товарів, нова модалка фільтрів, новий тарифний план | `feat: ...`                              |
-| **PATCH (0.0.X)** | Виправлення дефектів, рефакторинг без зміни поведінки, оптимізація CSS  | Фікс відступу sticky-шапки, виправлення помилки дедуплікації запитів        | `fix: ...`, `perf: ...`, `refactor: ...` |
+- MAJOR (X.0.0): Incompatible API changes, breaking DTO changes, auth contract updates (`feat!: ...` or `BREAKING CHANGE:`).
+- MINOR (0.X.0): Backwards-compatible new features, new export endpoints, new UI modals (`feat: ...`).
+- PATCH (0.0.X): Bug fixes, non-breaking refactorings, CSS tuning (`fix: ...`, `perf: ...`, `refactor: ...`).
 
----
+## 2. CHANGELOG.md Format (Keep a Changelog)
 
-## 2. Формат записів у CHANGELOG.md (Keep a Changelog)
-
-Кожен реліз супроводжується секцією в кореневому `CHANGELOG.md`:
+Each release appends a section to root `CHANGELOG.md`:
 
 ```markdown
 ## [1.5.0] - 2026-10-04
 
-### 🚀 Додано (Added)
+### Added
 
-- Потоковий SAX-імпорт великих XML фідів (до 100k SKU) без блокування RAM (`streaming-large-feeds`).
-- Аудит колірного контрасту та доступності a11y на базі `@axe-core/playwright`.
-- Автоматичний контроль бюджетів продуктивності бандла та мережі.
+- Streaming SAX XML import for up to 100k SKU catalogs without RAM blockage.
+- Accessibility audit integration with axe-core.
 
-### 🛠 Виправлено (Fixed)
+### Fixed
 
-- Ліквідовано подвійні виклики API при переході між вкладками за допомогою `useRef` дедуплікації.
-- Забезпечено непрозорий фон (100% Solid Sticky Header) для заголовків таблиць при скролі.
+- Eliminated duplicate API requests using useRef request deduplication.
+- Enforced 100% solid sticky header backgrounds for data tables.
 
-### 🛡 Безпека (Security)
+### Security
 
-- Збереження рефреш-токенів у нативному OS Keychain для десктопного клієнта Tauri v2.
+- Secure token persistence using native OS Keychain in Tauri v2 desktop client.
 ```
 
----
+## 3. Monorepo Version Synchronization
 
-## 3. Скрипт синхронізації версій у монорепозиторії
+Upon release, versions synchronize across:
 
-При релізі версії повинні синхронно оновлюватися в:
-
-1. `package.json` (корінь)
-2. `packages/shared/package.json`
-3. `services/backend-api/package.json`
-4. `apps/desktop/package.json` та `apps/desktop/src-tauri/tauri.conf.json` (`version`)
-5. `apps/admin-portal/package.json`
+- `package.json` (repository root)
+- `packages/shared/package.json`
+- `services/backend-api/package.json`
+- `apps/desktop/package.json` and `apps/desktop/src-tauri/tauri.conf.json` (`version`)
+- `apps/admin-portal/package.json`

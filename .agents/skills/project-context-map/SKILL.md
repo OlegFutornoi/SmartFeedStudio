@@ -30,3 +30,7 @@ rules:
 3. Navigation protocol:
    - Use `project-context-map` and `wiki/` first, followed by ripgrep (`grep_search`) to pinpoint symbols.
    - Update `references/map.md` whenever architectural boundaries or service ports change.
+
+## References
+
+- [update-protocol.md](references/update-protocol.md)

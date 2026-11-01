@@ -1,78 +1,70 @@
-# Реєстр верифікації скілів через LLM-Evals (.agents/skills/)
+# Реєстр верифікації та дрифту скілів (.agents/skills/)
 
-Цей документ фіксує поточний статус валідації та реального оцінювання скілів SmartFeed Studio.
+Цей документ автоматично фіксує статус валідації та контролює зміни (дрифт) скілів SmartFeed Studio.
 
-## 1. Зведений стан скілів
+## 1. Зведений стан каталогу скілів
 
-- Всього скілів: 62
-- Структурно валідних наборів evals: 62
-- Очікують створення evals: 0
+- Всього скілів: 43
+- [VERIFIED] Перевірено з реальними LLM: 0
+- [MODIFIED] Змінено після останньої перевірки (потрібен повторний прогін): 0
+- [UNVERIFIED] Очікують перевірки з LLM (структурно валідні): 43
+- [FAILED] Помилка останнього прогону: 0
+- Дата останньої синхронізації: 2026-11-01
 
-## 2. Реєстр скілів та статус перевірок
+## 2. Статус кожного скіла
 
-- `ai-sdk`: [PASS] Dry-run OK (3 кейси) — Структурно валідний
-- `api-anything`: [PASS] Dry-run OK (3 кейси) — Структурно валідний
-- `api-security-testing`: [PASS] Dry-run OK (3 кейси) — Структурно валідний
-- `automated-guardrails-ci`: [PASS] Dry-run OK (3 кейси) — Структурно валідний
-- `backend`: [PASS] Dry-run OK (3 кейси) — Структурно валідний
-- `brainstorming`: [PASS] Dry-run OK (3 кейси) — Структурно валідний
-- `browser-debugging`: [PASS] Dry-run OK (3 кейси) — Структурно валідний
-- `bullmq-jobs`: [PASS] Dry-run OK (3 кейси) — Структурно валідний
-- `ci-cd-and-automation`: [PASS] Dry-run OK (3 кейси) — Структурно валідний
-- `code-review-and-quality`: [PASS] Dry-run OK (3 кейси) — Структурно валідний
-- `code-simplification`: [PASS] Dry-run OK (3 кейси) — Структурно валідний
-- `context-engineering`: [PASS] Dry-run OK (3 кейси) — Структурно валідний
-- `contract-first-api`: [PASS] Dry-run OK (3 кейси) — Структурно валідний
-- `documentation-and-adrs`: [PASS] Dry-run OK (3 кейси) — Структурно валідний
-- `doubt-driven-development`: [PASS] Dry-run OK (3 кейси) — Структурно валідний
-- `emil-design-eng`: [PASS] Dry-run OK (3 кейси) — Структурно валідний
-- `find-skills`: [PASS] Dry-run OK (3 кейси) — Структурно валідний
-- `firecrawl-parse`: [PASS] Dry-run OK (3 кейси) — Структурно валідний
-- `fix-security-vulnerabilities-with-strix`: [PASS] Dry-run OK (3 кейси) — Структурно валідний
-- `frontend`: [PASS] Dry-run OK (3 кейси) — Структурно валідний
-- `git-commit`: [PASS] Dry-run OK (3 кейси) — Структурно валідний
-- `handoff`: [PASS] Dry-run OK (3 кейси) — Структурно валідний
-- `headroom-compression`: [PASS] Dry-run OK (3 кейси) — Структурно валідний
-- `i18n-localization`: [PASS] Dry-run OK (3 кейси) — Структурно валідний
-- `idempotency-and-outbox`: [PASS] Dry-run OK (3 кейси) — Структурно валідний
-- `image`: [PASS] Dry-run OK (6 кейси) — Структурно валідний
-- `incremental-implementation`: [PASS] Dry-run OK (3 кейси) — Структурно валідний
-- `interview-me`: [PASS] Dry-run OK (3 кейси) — Структурно валідний
-- `lessons-learned-registry`: [PASS] Dry-run OK (3 кейси) — Структурно валідний
-- `mcp-knowledge-cache`: [PASS] Dry-run OK (3 кейси) — Структурно валідний
-- `mock-real-parity`: [PASS] Dry-run OK (3 кейси) — Структурно валідний
-- `nestjs-best-practices`: [PASS] Dry-run OK (3 кейси) — Структурно валідний
-- `observability-and-instrumentation`: [PASS] Dry-run OK (3 кейси) — Структурно валідний
-- `omniroute-delegation`: [PASS] Dry-run OK (3 кейси) — Структурно валідний
-- `penetration-testing-with-strix`: [PASS] Dry-run OK (3 кейси) — Структурно валідний
-- `performance-optimization`: [PASS] Dry-run OK (3 кейси) — Структурно валідний
-- `perplexity-agent-api`: [PASS] Dry-run OK (3 кейси) — Структурно валідний
-- `planning-and-lifecycle`: [PASS] Dry-run OK (3 кейси) — Структурно валідний
-- `playwright-automation`: [PASS] Dry-run OK (3 кейси) — Структурно валідний
-- `postgresql-optimization`: [PASS] Dry-run OK (3 кейси) — Структурно валідний
-- `prisma-postgres-mastery`: [PASS] Dry-run OK (3 кейси) — Структурно валідний
-- `project-context-map`: [PASS] Dry-run OK (3 кейси) — Структурно валідний
-- `release-and-rollback`: [PASS] Dry-run OK (3 кейси) — Структурно валідний
-- `review`: [PASS] Dry-run OK (3 кейси) — Структурно валідний
-- `rust-native-backend`: [PASS] Dry-run OK (3 кейси) — Структурно валідний
-- `secret-serialization`: [PASS] Dry-run OK (3 кейси) — Структурно валідний
-- `security-and-hardening`: [PASS] Dry-run OK (3 кейси) — Структурно валідний
-- `skill-creator`: [PASS] Dry-run OK (3 кейси) — Структурно валідний
-- `source-driven-development`: [PASS] Dry-run OK (3 кейси) — Структурно валідний
-- `spec-driven-development`: [PASS] Dry-run OK (3 кейси) — Структурно валідний
-- `streaming-large-feeds`: [PASS] Dry-run OK (3 кейси) — Структурно валідний
-- `subscription-lifecycle`: [PASS] Dry-run OK (3 кейси) — Структурно валідний
-- `systematic-debugging`: [PASS] Dry-run OK (3 кейси) — Структурно валідний
-- `task-memory-and-state`: [PASS] Dry-run OK (3 кейси) — Структурно валідний
-- `tauri-v2-security-and-ipc`: [PASS] Dry-run OK (3 кейси) — Структурно валідний
-- `test-driven-development`: [PASS] Dry-run OK (3 кейси) — Структурно валідний
-- `to-tickets`: [PASS] Dry-run OK (3 кейси) — Структурно валідний
-- `turborepo`: [PASS] Dry-run OK (3 кейси) — Структурно валідний
-- `ui-ux-pro-max`: [PASS] Dry-run OK (3 кейси) — Структурно валідний
-- `vercel-react-best-practices`: [PASS] Dry-run OK (3 кейси) — Структурно валідний
-- `web-app-penetration-testing`: [PASS] Dry-run OK (3 кейси) — Структурно валідний
-- `writing-plans`: [PASS] Dry-run OK (3 кейси) — Структурно валідний
+- `ai-sdk`: [UNVERIFIED] (Структура OK: 3 кейсів, 10 тригерів, Хеш: 837a37b59ba30da7)
+- `api-anything`: [UNVERIFIED] (Структура OK: 3 кейсів, 10 тригерів, Хеш: a213c4297ed14266)
+- `api-security-testing`: [UNVERIFIED] (Структура OK: 3 кейсів, 10 тригерів, Хеш: 6b11b8306f6e74d7)
+- `backend`: [UNVERIFIED] (Структура OK: 3 кейсів, 10 тригерів, Хеш: fb0fdf892490ae4c)
+- `brainstorming`: [UNVERIFIED] (Структура OK: 3 кейсів, 10 тригерів, Хеш: 6c0b59d09d857a05)
+- `browser-debugging`: [UNVERIFIED] (Структура OK: 3 кейсів, 10 тригерів, Хеш: 843ad381ae47ddc5)
+- `bullmq-jobs`: [UNVERIFIED] (Структура OK: 3 кейсів, 10 тригерів, Хеш: 8ff82da55a5ac6ae)
+- `ci-cd-and-automation`: [UNVERIFIED] (Структура OK: 3 кейсів, 10 тригерів, Хеш: 26acc3250f520905)
+- `code-simplification`: [UNVERIFIED] (Структура OK: 3 кейсів, 10 тригерів, Хеш: b557ca996831e8d9)
+- `contract-first-api`: [UNVERIFIED] (Структура OK: 3 кейсів, 10 тригерів, Хеш: b144cf76d725bd0a)
+- `documentation-and-adrs`: [UNVERIFIED] (Структура OK: 3 кейсів, 10 тригерів, Хеш: d430bee80598e93f)
+- `doubt-driven-development`: [UNVERIFIED] (Структура OK: 3 кейсів, 10 тригерів, Хеш: 26dad0093e566be8)
+- `find-skills`: [UNVERIFIED] (Структура OK: 3 кейсів, 10 тригерів, Хеш: 6ab41c8093144d60)
+- `firecrawl-parse`: [UNVERIFIED] (Структура OK: 3 кейсів, 10 тригерів, Хеш: e82f4e2bb92324dd)
+- `frontend`: [UNVERIFIED] (Структура OK: 3 кейсів, 10 тригерів, Хеш: bc4b1d482096b636)
+- `git-commit`: [UNVERIFIED] (Структура OK: 3 кейсів, 10 тригерів, Хеш: d8841f49b701cfe6)
+- `headroom-compression`: [UNVERIFIED] (Структура OK: 3 кейсів, 10 тригерів, Хеш: e71c608df8806f69)
+- `i18n-localization`: [UNVERIFIED] (Структура OK: 3 кейсів, 10 тригерів, Хеш: 4ce64b53a205638b)
+- `incremental-implementation`: [UNVERIFIED] (Структура OK: 3 кейсів, 10 тригерів, Хеш: 611e2b99956f913d)
+- `lessons-learned-registry`: [UNVERIFIED] (Структура OK: 3 кейсів, 10 тригерів, Хеш: 6d3099ab38550b79)
+- `mcp-knowledge-cache`: [UNVERIFIED] (Структура OK: 3 кейсів, 10 тригерів, Хеш: babefec7311a0c8c)
+- `mock-real-parity`: [UNVERIFIED] (Структура OK: 3 кейсів, 10 тригерів, Хеш: 8fdd13aa95a0fb08)
+- `nestjs-best-practices`: [UNVERIFIED] (Структура OK: 3 кейсів, 10 тригерів, Хеш: 03aafb5b878ede29)
+- `observability-and-instrumentation`: [UNVERIFIED] (Структура OK: 3 кейсів, 10 тригерів, Хеш: f9e404525d46d7ba)
+- `omniroute-delegation`: [UNVERIFIED] (Структура OK: 3 кейсів, 10 тригерів, Хеш: d9d2c903d8266fe8)
+- `performance-optimization`: [UNVERIFIED] (Структура OK: 3 кейсів, 10 тригерів, Хеш: 7531b0cc382d6ae7)
+- `perplexity-agent-api`: [UNVERIFIED] (Структура OK: 3 кейсів, 10 тригерів, Хеш: 18196e66bd780390)
+- `planning-and-lifecycle`: [UNVERIFIED] (Структура OK: 3 кейсів, 10 тригерів, Хеш: 0f551e4951e8424c)
+- `playwright-automation`: [UNVERIFIED] (Структура OK: 3 кейсів, 10 тригерів, Хеш: ff7ba92e2135282b)
+- `prisma-postgres-mastery`: [UNVERIFIED] (Структура OK: 3 кейсів, 10 тригерів, Хеш: b423dec89a6b7a74)
+- `project-context-map`: [UNVERIFIED] (Структура OK: 3 кейсів, 10 тригерів, Хеш: 90c914663f3d9ddd)
+- `release-and-rollback`: [UNVERIFIED] (Структура OK: 3 кейсів, 10 тригерів, Хеш: 02feab6b9ed24055)
+- `review`: [UNVERIFIED] (Структура OK: 3 кейсів, 10 тригерів, Хеш: 13c4bfa4351cbc46)
+- `rust-native-backend`: [UNVERIFIED] (Структура OK: 3 кейсів, 10 тригерів, Хеш: c927f1328e4fce46)
+- `secret-serialization`: [UNVERIFIED] (Структура OK: 3 кейсів, 10 тригерів, Хеш: 591e5f2b0336accd)
+- `security-and-hardening`: [UNVERIFIED] (Структура OK: 3 кейсів, 10 тригерів, Хеш: 536a59668b0d3b53)
+- `skill-creator`: [UNVERIFIED] (Структура OK: 3 кейсів, 10 тригерів, Хеш: dbba054c7f567c9c)
+- `systematic-debugging`: [UNVERIFIED] (Структура OK: 3 кейсів, 10 тригерів, Хеш: acd46c59dc0c4943)
+- `task-memory-and-state`: [UNVERIFIED] (Структура OK: 3 кейсів, 10 тригерів, Хеш: d649c4c781a0bd47)
+- `test-driven-development`: [UNVERIFIED] (Структура OK: 3 кейсів, 10 тригерів, Хеш: 935aac0cc2598ca8)
+- `turborepo`: [UNVERIFIED] (Структура OK: 3 кейсів, 10 тригерів, Хеш: 79c71066d40896c3)
+- `ui-ux-pro-max`: [UNVERIFIED] (Структура OK: 3 кейсів, 10 тригерів, Хеш: ae7e64a947d88a94)
+- `vercel-react-best-practices`: [UNVERIFIED] (Структура OK: 3 кейсів, 10 тригерів, Хеш: 007534d50b50d661)
 
 ---
 
-Оновлено автоматично раннером run-skill-evals.mjs.
+## 3. Корисні команди для керування статусом
+
+- Перевірити статус: `pnpm skills:status`
+- Прогнати тільки змінені або неперевірені: `pnpm skills:eval:changed`
+- Прогнати конкретний скіл: `pnpm skills:eval --skill=backend`
+- Прогнати всі скіли (сухий прогін): `pnpm skills:eval:dry`
+- Прогнати маршрутизацію: `pnpm skills:eval:routing`
+
+Оновлено автоматично через `scripts/ops/skills-status.mjs`.

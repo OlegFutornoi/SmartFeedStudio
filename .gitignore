@@ -36,6 +36,7 @@ pnpm-debug.log*
 
 # OS & Editor files
 .DS_Store
+**/.DS_Store
 *.pem
 .vscode/*
 !.vscode/extensions.json

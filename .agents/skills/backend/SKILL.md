@@ -30,7 +30,7 @@ rules: [core, backend, database, security]
 5. Stage 5 - Implementation with 4-Layer Defense: implement Command, Handler, Query, Service, or Controller. Enforce 1 file = 1 handler (<120-150 lines, `ARCH-04`). Decorate 100% of `@Body()` and `@Query()` with `class-validator` (`BE-01`). Protect mutations with `@UseGuards(JwtAuthGuard)` (`BE-02`). Protect quota state with mutex locks (`BE-07`). Re-compile runtime bundle with `pnpm --filter @smartfeed/backend-api build` so `dist/` is never stale.
 6. Stage 6 - Code Review and DoD Verification: verify zero fallback secrets via grep (`BE-04`), verify secret masking on settings endpoints (`SEC-03`), verify zero `as any` in Prisma queries (`DB-12`), verify short `$transaction` blocks (`DB-08`). Run `pnpm --filter @smartfeed/backend-api exec tsc --noEmit`.
 7. Stage 7 - Systematic Debugging: if compilation or queries fail, trace root cause backward. Inspect query plans with PostgreSQL `EXPLAIN ANALYZE` or inspect BullMQ queue status. Apply structural fix.
-8. Stage 8 - Documentation and Task Completion: verify build `dist/` succeeds. Move task to `plans/completed/<filename>.md` and update `plans/README.md`.
+8. Stage 8 - Documentation and Task Completion: verify build `dist/` succeeds. Close task via `node scripts/plan-manager.mjs close <slug>`, deleting `plans/active/` and retaining permanent compressed model plan in `plans/completed/<slug>.compressed.md`. Update `plans/README.md`.
 
 ## Outputs
 
@@ -76,3 +76,14 @@ rules: [core, backend, database, security]
 
 - `references/cqrs-architecture.md` - read when structuring new CQRS modules.
 - `references/prisma-patterns.md` - read when designing complex Prisma relations and transactions.
+
+## References
+
+- [api-design-and-security.md](references/api-design-and-security.md)
+- [architecture-patterns.md](references/architecture-patterns.md)
+- [bullmq-chunked-ingestion.md](references/bullmq-chunked-ingestion.md)
+- [checklist.md](references/checklist.md)
+- [memory-leak-and-stream-safety.md](references/memory-leak-and-stream-safety.md)
+- [sax-xml-parsing-patterns.md](references/sax-xml-parsing-patterns.md)
+- [streaming-large-feeds.md](references/streaming-large-feeds.md)
+- [subscription-lifecycle.md](references/subscription-lifecycle.md)
